@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confideline Admin Chat Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --panel: #ffffff;
+      --line: #d8e0ea;
+      --text: #203246;
+      --muted: #66788a;
+      --accent: #2f80ed;
+      --accent-soft: #eaf3ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, #ffffff 0, #f7fbff 35%, #eef4fb 100%);
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero {
+      padding: 24px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(8px);
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      line-height: 1.15;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 980px;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 14px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 16px 24px;
+      background: rgba(255, 255, 255, 0.88);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .card {
+      min-width: 260px;
+      max-width: 420px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--panel);
+      box-shadow: 0 14px 32px rgba(30, 51, 76, 0.06);
+    }
+
+    .card h2 {
+      margin: 0 0 6px;
+      font-size: 15px;
+    }
+
+    .card p {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 36px;
+      padding: 0 14px;
+      border-radius: 999px;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-soft {
+      border-color: #cfe0ff;
+      background: var(--accent-soft);
+      color: #245ca8;
+    }
+
+    .viewer-wrap {
+      flex: 1;
+      padding: 18px 24px 24px;
+    }
+
+    .viewer-card {
+      height: calc(100vh - 245px);
+      min-height: 640px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 20px 40px rgba(27, 45, 69, 0.08);
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+    }
+
+    .footer-note {
+      padding: 0 24px 24px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    code {
+      padding: 1px 5px;
+      border-radius: 6px;
+      background: #eef3f9;
+      color: #38506a;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+    }
+
+    @media (max-width: 900px) {
+      .viewer-card {
+        height: calc(100vh - 320px);
+        min-height: 560px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <h1>Confideline Admin Chat Visual Preview</h1>
+      <p>
+        Этот локальный контур предназначен для показа уже продуманных макетов программисту.
+        Здесь собраны два экрана: чат эксперта с кнопкой перевода и отдельная страница системных настроек переводчика.
+      </p>
+    </header>
+
+    <section class="toolbar">
+      <article class="card">
+        <h2>Что это</h2>
+        <p>
+          Готовый макет страницы чата эксперта с новой кнопкой <code>Сделать перевод</code>.
+          Этот экран нужен для согласования UX непосредственно в контексте диалога.
+        </p>
+        <div class="actions">
+          <a class="btn btn-primary" href="./chat-translator-preview.html" target="preview-frame">Открыть чат-макет</a>
+          <a class="btn btn-soft" href="./chat-translator-preview.html" target="_blank">Открыть отдельно</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>Настройки переводчика</h2>
+        <p>
+          Отдельный макет блока управления провайдерами, API-ключами и fallback-логикой.
+          Именно его можно обсуждать как будущий пункт меню в админке.
+        </p>
+        <div class="actions">
+          <a class="btn btn-primary" href="./translator-settings-preview.html" target="preview-frame">Открыть настройки</a>
+          <a class="btn" href="./translator-settings-preview.html" target="_blank">Открыть отдельно</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>Исходники для handoff</h2>
+        <p>
+          Визуальные mock-файлы лежат рядом, а канонический Yii2-source для backend-внедрения находится в
+          <code>Chat/youdate-2.0.2-yii2/Source/youdate_extracted/application/modules/admin</code>.
+        </p>
+        <div class="actions">
+          <button class="btn" id="reloadFrame" type="button">Обновить iframe</button>
+          <a class="btn" href="../admin-chat-ready-v4/README.md" target="_blank">Пакет v4</a>
+        </div>
+      </article>
+    </section>
+
+    <main class="viewer-wrap">
+      <div class="viewer-card">
+        <iframe
+          id="previewFrame"
+          name="preview-frame"
+          src="./chat-translator-preview.html"
+          title="Admin chat preview"
+        ></iframe>
+      </div>
+    </main>
+
+    <div class="footer-note">
+      Для показа программисту достаточно этого визуального стенда. Для backend-реализации уже есть отдельный Yii2-источник и страница <code>settings/translator</code>.
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('reloadFrame').addEventListener('click', function () {
+      var frame = document.getElementById('previewFrame');
+      frame.src = frame.src;
+    });
+  </script>
+</body>
+</html>
