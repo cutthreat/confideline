@@ -60,8 +60,8 @@
     }
 
     .toolbar {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
       padding: 16px 24px;
       border-bottom: 1px solid var(--line);
@@ -69,8 +69,6 @@
     }
 
     .card {
-      min-width: 260px;
-      max-width: 420px;
       padding: 14px 16px;
       border: 1px solid var(--line);
       border-radius: 16px;
@@ -124,26 +122,34 @@
       color: #245ca8;
     }
 
-    .viewer-wrap {
-      flex: 1;
+    .content {
       padding: 18px 24px 24px;
     }
 
-    .viewer-card {
-      height: calc(100vh - 245px);
-      min-height: 640px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      overflow: hidden;
-      background: #fff;
-      box-shadow: 0 20px 40px rgba(27, 45, 69, 0.08);
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
     }
 
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: 0;
+    .link-card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
       background: #fff;
+      box-shadow: 0 18px 40px rgba(27, 45, 69, 0.06);
+    }
+
+    .link-card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .link-card p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 14px;
     }
 
     .footer-note {
@@ -161,10 +167,10 @@
       font-size: 12px;
     }
 
-    @media (max-width: 900px) {
-      .viewer-card {
-        height: calc(100vh - 320px);
-        min-height: 560px;
+    @media (max-width: 960px) {
+      .toolbar,
+      .quick-links {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -175,67 +181,56 @@
       <h1>Confideline Translator Preview</h1>
       <p>
         Публичная страница для показа макетов без локального запуска.
-        Откройте один из экранов через кнопку или используйте встроенный просмотр ниже.
+        Ниже две прямые ссылки на HTML-экраны: чат эксперта и настройки переводчика.
       </p>
     </header>
 
     <section class="toolbar">
       <article class="card">
         <h2>Чат эксперта</h2>
-        <p>
-          Макет чата с кнопкой <code>Сделать перевод</code> внутри входящего сообщения.
-        </p>
+        <p>Макет чата с кнопкой <code>Сделать перевод</code> внутри входящего сообщения.</p>
         <div class="actions">
-          <a class="btn btn-primary" href="Chat/admin-chat-preview-local/chat-translator-preview.html" target="preview-frame">Открыть чат</a>
-          <a class="btn btn-soft" href="Chat/admin-chat-preview-local/chat-translator-preview.html" target="_blank">Открыть отдельно</a>
+          <a class="btn btn-primary" href="Chat/admin-chat-preview-local/chat-translator-preview.html" target="_blank">Открыть чат</a>
+          <a class="btn btn-soft" href="Chat/admin-chat-preview-local/chat-translator-preview.html">Открыть в этой вкладке</a>
         </div>
       </article>
 
       <article class="card">
         <h2>Настройки переводчика</h2>
-        <p>
-          Отдельный системный экран для ключей DeepL, Google и Amazon, а также для глобального режима.
-        </p>
+        <p>Системный экран для ключей DeepL, Google и Amazon, а также для глобального режима.</p>
         <div class="actions">
-          <a class="btn btn-primary" href="Chat/admin-chat-preview-local/translator-settings-preview.html" target="preview-frame">Открыть настройки</a>
-          <a class="btn" href="Chat/admin-chat-preview-local/translator-settings-preview.html" target="_blank">Открыть отдельно</a>
+          <a class="btn btn-primary" href="Chat/admin-chat-preview-local/translator-settings-preview.html" target="_blank">Открыть настройки</a>
+          <a class="btn btn-soft" href="Chat/admin-chat-preview-local/translator-settings-preview.html">Открыть в этой вкладке</a>
         </div>
       </article>
 
       <article class="card">
-        <h2>Как показать</h2>
-        <p>
-          Просто откройте эту страницу в браузере. Все кнопки ведут на HTML-файлы внутри GitHub Pages.
-        </p>
+        <h2>GitHub</h2>
+        <p>Репозиторий можно показывать как исходник, а этот landing как удобную точку входа.</p>
         <div class="actions">
-          <button class="btn" id="reloadFrame" type="button">Обновить iframe</button>
-          <a class="btn" href="https://github.com/cutthreat/confideline" target="_blank">Открыть GitHub</a>
+          <a class="btn" href="https://github.com/cutthreat/confideline" target="_blank">Открыть репозиторий</a>
+          <a class="btn" href="https://cutthreat.github.io/confideline/" target="_blank">Открыть Pages</a>
         </div>
       </article>
     </section>
 
-    <main class="viewer-wrap">
-      <div class="viewer-card">
-        <iframe
-          id="previewFrame"
-          name="preview-frame"
-          src="Chat/admin-chat-preview-local/chat-translator-preview.html"
-          title="Confideline translator preview"
-        ></iframe>
+    <main class="content">
+      <div class="quick-links">
+        <section class="link-card">
+          <h3>Как показывать</h3>
+          <p>Открываете эту страницу и кликаете на нужный экран. Никаких локальных серверов и дополнительных действий не требуется.</p>
+        </section>
+
+        <section class="link-card">
+          <h3>Прямые адреса</h3>
+          <p><a href="Chat/admin-chat-preview-local/chat-translator-preview.html" target="_blank">chat-translator-preview.html</a><br><a href="Chat/admin-chat-preview-local/translator-settings-preview.html" target="_blank">translator-settings-preview.html</a></p>
+        </section>
       </div>
     </main>
 
     <div class="footer-note">
-      Репозиторий: <a href="https://github.com/cutthreat/confideline" target="_blank">github.com/cutthreat/confideline</a>.
-      Прямой публичный URL будет доступен после включения GitHub Pages.
+      Публичный URL: <a href="https://cutthreat.github.io/confideline/" target="_blank">cutthreat.github.io/confideline</a>.
     </div>
   </div>
-
-  <script>
-    document.getElementById('reloadFrame').addEventListener('click', function () {
-      var frame = document.getElementById('previewFrame');
-      frame.src = frame.src;
-    });
-  </script>
 </body>
 </html>
