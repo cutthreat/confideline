@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <base href="https://confideline.com/">
+  <title>Front Notifications Preview</title>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700">
+  <link href="/content/themes/youdate/static/css/modern/bootstrap.css?v=1762852508" rel="stylesheet">
+  <link href="/content/themes/youdate/static/css/modern/attention.css?v=1763928483" rel="stylesheet">
+  <link href="/content/themes/youdate/static/css/app.min.css?v=1738764627" rel="stylesheet">
+  <link href="/content/themes/youdate/static/css/layout-change.css?v=1764013542" rel="stylesheet">
+  <link href="/content/themes/youdate/static/css/messenger.css" rel="stylesheet">
+  <link href="/content/themes/youdate/static/css/messenger-theme-flat.css" rel="stylesheet">
+  <style>
+    .preview-toolbar { padding: 20px 0 12px; }
+    .preview-toolbar .btn { margin-right: 10px; margin-bottom: 10px; }
+    .dashboard-block + .dashboard-block { margin-top: 24px; }
+    .preview-live-list > * + * { margin-top: 16px; }
+    .preview-hidden { display: none; }
+    .runtime-panel .btn { margin-right: 10px; margin-bottom: 10px; }
+  </style>
+</head>
+<body class="ltr body-default light">
+  <div class="page">
+    <div class="important-messages">
+      <div class="alert alert-primary alert-news mb-0">
+        <div class="container">
+          <a href="#">Serenity hassir taken posseson of mying entire</a>
+          <button type="button" class="close"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-main">
+      <div class="header py-2">
+        <div class="container">
+          <div class="d-flex">
+            <a class="header-brand flex-shrink-0" href="/en/">
+              <img class="header-brand-img" src="/content/themes/youdate/static/images/logo@2x.png" alt="YouDate">
+            </a>
+            <div class="d-flex align-items-center order-lg-2 ml-auto">
+              <div class="nav-link py-2">Front notifications preview</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="my-3 my-md-5">
+        <div class="container">
+          <div class="dashboard-block p-4">
+            <h2 class="mb-3">Live front notifications</h2>
+            <p class="text-muted mb-3">
+              Здесь собраны подтверждённые фронтовые уведомления и их типовые состояния на живых стилях `confideline.com`.
+            </p>
+            <div class="preview-toolbar">
+              <button class="btn btn-primary" data-show="all">Show all</button>
+              <button class="btn btn-secondary" data-show="news">Only news bar</button>
+              <button class="btn btn-secondary" data-show="stories">Stories alerts</button>
+              <button class="btn btn-secondary" data-show="form">Form validation</button>
+            </div>
+          </div>
+
+          <div class="dashboard-block p-4 preview-scope preview-news">
+            <h3 class="mb-3">important-messages / alert-news</h3>
+            <div class="important-messages">
+              <div class="alert alert-primary alert-news mb-0">
+                <div class="container">
+                  <a href="#">Serenity hassir taken posseson of mying entire</a>
+                  <button type="button" class="close"></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-block p-4 preview-scope preview-stories">
+            <h3 class="mb-3">Stories / media states</h3>
+            <div class="preview-live-list">
+              <div class="alert alert-success alert-dismissible" id="result-stories-upload" style="display:block;">
+                <button type="button" class="close"></button>
+                <span id="result-stories-upload-text">Story has been uploaded successfully.</span>
+              </div>
+
+              <div id="cropper-alert" class="alert alert-danger mt-3" role="alert" style="display:block;">
+                The image is too small. The width cannot be smaller than 720 pixels.
+              </div>
+
+              <div class="alert alert-danger mt-2" id="video-trim-alert" style="display:block;">
+                The selected video exceeds the allowed duration for stories.
+              </div>
+
+              <div class="alert alert-warning">Header Ad</div>
+            </div>
+          </div>
+
+          <div class="dashboard-block p-4 preview-scope preview-form">
+            <h3 class="mb-3">Form validation / inline error summary</h3>
+            <div class="row">
+              <div class="col-lg-7">
+                <div class="error-summary alert alert-danger" style="display:block;">
+                  <ul>
+                    <li>Message cannot be blank.</li>
+                    <li>Message should contain at least 1 character.</li>
+                  </ul>
+                </div>
+
+                <div class="form-group field-message required">
+                  <textarea aria-required="true" class="form-control" id="message-preview" name="message" placeholder="Enter your message..." rows="3"></textarea>
+                  <div class="help-block"></div>
+                </div>
+              </div>
+              <div class="col-lg-5">
+                <div class="alert alert-success mb-3">
+                  System state example: your story is now visible to other users.
+                </div>
+                <div class="alert alert-info mb-0">
+                  Informational state example: finish cropping before upload.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-block p-4 preview-scope preview-runtime">
+            <h3 class="mb-3">Runtime Messenger / AJAX notifications</h3>
+            <p class="text-muted mb-3">
+              Здесь показаны реальные тексты из фронтовых контроллеров и форм: блокировки действий, ограничения фото, оплата, spotlight, premium и success-state после действий.
+            </p>
+            <div class="runtime-panel">
+              <button class="btn btn-danger" data-toast-type="error" data-toast-text="You are not allowed to send messages to this user">Blocked message</button>
+              <button class="btn btn-danger" data-toast-type="error" data-toast-text="You can not block administrators">Block admin forbidden</button>
+              <button class="btn btn-success" data-toast-type="success" data-toast-text="User has been blocked">User blocked</button>
+              <button class="btn btn-success" data-toast-type="success" data-toast-text="User has been unblocked">User unblocked</button>
+              <button class="btn btn-danger" data-toast-type="error" data-toast-text="Could not block this user">Block failed</button>
+              <button class="btn btn-danger" data-toast-type="error" data-toast-text="Could find block record for this user">Unblock failed</button>
+              <button class="btn btn-success" data-toast-type="success" data-toast-text="Message has been sent">Message sent</button>
+              <button class="btn btn-danger" data-toast-type="error" data-toast-text="Could not create message">Create message failed</button>
+              <button class="btn btn-success" data-toast-type="success" data-toast-text="Gift has been sent">Gift sent</button>
+              <button class="btn btn-success" data-toast-type="success" data-toast-text="User has been reported">User reported</button>
+              <button class="btn btn-danger" data-toast-type="error" data-toast-text="Could not create report for this user">Report failed</button>
+              <button class="btn btn-danger" data-toast-type="error" data-toast-text="You're not allowed to set unverified photo as your main photo">Unverified main photo</button>
+              <button class="btn btn-danger" data-toast-type="error" data-toast-text="You can not set private photo as your main photo">Private main photo</button>
+              <button class="btn btn-danger" data-toast-type="error" data-toast-text="You can not toggle private status for your main photo">Toggle private forbidden</button>
+              <button class="btn btn-danger" data-toast-type="error" data-toast-text="Visibility of this photo has been set by the administrator">Photo visibility locked</button>
+              <button class="btn btn-danger" data-toast-type="error" data-toast-text="Maximum photos per profile is 50">Photo limit</button>
+              <button class="btn btn-warning" data-toast-type="info" data-toast-text="Payment canceled">Payment canceled</button>
+              <button class="btn btn-warning" data-toast-type="error" data-toast-text="Unknown payment error occurred. Please try again later">Payment error</button>
+              <button class="btn btn-success" data-toast-type="success" data-toast-text="Your profile has been raised up in search">Rise up success</button>
+              <button class="btn btn-success" data-toast-type="success" data-toast-text="Premium features activated">Premium activated</button>
+              <button class="btn btn-success" data-toast-type="success" data-toast-text="Premium settings saved">Premium settings saved</button>
+              <button class="btn btn-success" data-toast-type="success" data-toast-text="Photo has been placed on spotlight">Spotlight success</button>
+              <button class="btn btn-success" data-toast-type="success" data-toast-text="Your primary photo has been set">Primary photo set</button>
+              <button class="btn btn-success" data-toast-type="success" data-toast-text="Photo visibility has been changed">Photo visibility changed</button>
+              <button class="btn btn-success" data-toast-type="success" data-toast-text="Photo has been deleted">Photo deleted</button>
+              <button class="btn btn-success" data-toast-type="success" data-toast-text="Private photo access has been changed for this user">Private photo access changed</button>
+              <button class="btn btn-success" data-toast-type="success" data-toast-text="Notifications have been marked as viewed">Notifications viewed</button>
+              <button class="btn btn-success" data-toast-type="success" data-toast-text="Added 100 credits to your balance">Credits added</button>
+              <button class="btn btn-success" data-toast-type="success" data-toast-text="Your profile has been updated">Profile updated</button>
+              <button class="btn btn-success" data-toast-type="success" data-toast-text="Your account details have been updated">Account details updated</button>
+              <button class="btn btn-success" data-toast-type="success" data-toast-text="Settings have been saved">Settings saved</button>
+              <button class="btn btn-info" data-toast-type="info" data-toast-text="Your account has been completely deleted">Account deleted</button>
+              <button class="btn btn-info" data-toast-type="info" data-toast-text="An email has been sent with instructions for resetting your password">Recovery email sent</button>
+              <button class="btn btn-success" data-toast-type="success" data-toast-text="Your password has been changed successfully.">Password changed</button>
+              <button class="btn btn-danger" data-toast-type="error" data-toast-text="An error occurred and your password has not been changed. Please try again later.">Password reset failed</button>
+              <button class="btn btn-danger" data-toast-type="error" data-toast-text="Sorry, you have already requested 3 data exports today">Data export limit</button>
+            </div>
+          </div>
+
+          <div class="dashboard-block p-4 preview-scope preview-runtime">
+            <h3 class="mb-3">Auth / account validation states</h3>
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="error-summary alert alert-danger" style="display:block;">
+                  <ul>
+                    <li>You need to confirm your email address</li>
+                    <li>Your account has been blocked</li>
+                    <li>Invalid login or password</li>
+                    <li>Current password is not valid</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="preview-live-list">
+                  <div class="alert alert-warning mb-0">Please confirm your account to unlock all platform features.</div>
+                  <div class="alert alert-danger mb-0">Your account has been blocked.</div>
+                  <div class="alert alert-danger mb-0">Your IP address has been blocked</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="/content/themes/youdate/static/js/vendors/messenger.min.js"></script>
+  <script src="/content/themes/youdate/static/js/vendors/messenger-theme-flat.js"></script>
+  <script>
+    (function () {
+      var blocks = document.querySelectorAll('.preview-scope');
+
+      function showMode(mode) {
+        blocks.forEach(function (block) {
+          block.classList.remove('preview-hidden');
+        });
+
+        if (mode === 'all') {
+          return;
+        }
+
+        blocks.forEach(function (block) {
+          var keep = block.classList.contains('preview-' + mode);
+          if (!keep) {
+            block.classList.add('preview-hidden');
+          }
+        });
+      }
+
+      document.querySelectorAll('[data-show]').forEach(function (button) {
+        button.addEventListener('click', function () {
+          showMode(button.getAttribute('data-show'));
+        });
+      });
+
+      if (window.Messenger) {
+        Messenger.options = {
+          extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-left',
+          theme: 'flat'
+        };
+        document.querySelectorAll('[data-toast-text]').forEach(function (button) {
+          button.addEventListener('click', function () {
+            Messenger().post({
+              message: button.getAttribute('data-toast-text'),
+              type: button.getAttribute('data-toast-type') || 'info',
+              hideAfter: 5,
+              hideOnNavigate: true,
+              showCloseButton: true
+            });
+          });
+        });
+      }
+
+      showMode('all');
+    })();
+  </script>
+</body>
+</html>

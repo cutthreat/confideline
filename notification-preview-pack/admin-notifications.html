@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Notifications Preview</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="../Chat/youdate-2.0.2-yii2/Source/youdate_extracted/application/modules/admin/static/css/admin.min.css">
+  <link rel="stylesheet" href="../Chat/youdate-2.0.2-yii2/Source/youdate_extracted/application/modules/admin/static/css/messenger.css">
+  <link rel="stylesheet" href="../Chat/youdate-2.0.2-yii2/Source/youdate_extracted/application/modules/admin/static/css/messenger-theme-flat.css">
+  <style>
+    body { background: #ecf0f5; padding: 18px; }
+    .demo-toolbar .btn { margin-right: 8px; margin-bottom: 8px; }
+  </style>
+</head>
+<body class="hold-transition skin-youdate sidebar-mini">
+  <div class="container-fluid">
+    <div class="box box-info">
+      <div class="box-header with-border">
+        <h3 class="box-title">Админпанель: уведомления</h3>
+      </div>
+      <div class="box-body">
+        <div class="demo-toolbar">
+          <button class="btn btn-success" id="showSuccessToast">Messenger success</button>
+          <button class="btn btn-primary" id="showInfoToast">Messenger info</button>
+          <button class="btn btn-danger" id="showErrorToast">Messenger error</button>
+        </div>
+
+        <hr>
+
+        <h4>Flash alerts</h4>
+        <div class="alert alert-success">
+          <i class="icon fa fa-check"></i>
+          Settings have been saved successfully.
+        </div>
+        <div class="alert alert-info">
+          <i class="icon fa fa-info-circle"></i>
+          Cron setup has been updated. Review the commands before production rollout.
+        </div>
+        <div class="alert alert-danger">
+          <i class="icon fa fa-ban"></i>
+          Payment provider credentials are invalid.
+        </div>
+
+        <hr>
+
+        <h4>Inline alerts</h4>
+        <div class="alert alert-warning">
+          <i class="icon fa fa-warning"></i>
+          Language optimizer found messages that should be reviewed manually.
+        </div>
+        <div class="alert alert-danger">
+          <i class="icon fa fa-times-circle"></i>
+          Page template could not be generated from theme files.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="../Chat/youdate-2.0.2-yii2/Source/youdate_extracted/application/modules/admin/static/js/messenger.min.js"></script>
+  <script src="../Chat/youdate-2.0.2-yii2/Source/youdate_extracted/application/modules/admin/static/js/messenger-theme-flat.js"></script>
+  <script>
+    Messenger.options = {
+      extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-left',
+      theme: 'flat'
+    };
+
+    $('#showSuccessToast').on('click', function () {
+      Messenger().post({ message: 'User has been confirmed successfully.', type: 'success', hideAfter: 5 });
+    });
+
+    $('#showInfoToast').on('click', function () {
+      Messenger().post({ message: 'System settings were updated. Reload the page if needed.', type: 'info', hideAfter: 5 });
+    });
+
+    $('#showErrorToast').on('click', function () {
+      Messenger().post({ message: 'Could not load moderation queue.', type: 'error', hideAfter: 5 });
+    });
+  </script>
+</body>
+</html>

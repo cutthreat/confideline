@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <base href="https://confideline.com/">
+  <title>Front Dialogs Preview</title>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700">
+  <link href="/content/themes/youdate/static/css/modern/bootstrap.css?v=1762852508" rel="stylesheet">
+  <link href="/content/themes/youdate/static/css/modern/attention.css?v=1763928483" rel="stylesheet">
+  <link href="/content/themes/youdate/static/css/app.min.css?v=1738764627" rel="stylesheet">
+  <link href="/content/themes/youdate/static/css/layout-change.css?v=1764013542" rel="stylesheet">
+  <style>
+    body { min-height: 100vh; }
+    .preview-toolbar { padding: 20px 0 12px; }
+    .preview-toolbar .btn { margin-right: 10px; margin-bottom: 10px; }
+    .preview-toolbar .btn.is-active {
+      box-shadow: 0 0 0 3px rgba(47, 127, 232, 0.18);
+    }
+    .preview-stage { position: relative; min-height: 1060px; overflow: hidden; border-radius: 6px; background: #f6f8fb; }
+    .preview-stage .modal.show-preview {
+      display: block;
+      position: absolute;
+      inset: 0;
+      opacity: 1;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+    .preview-stage .modal-backdrop.show-preview { display: block; position: absolute; inset: 0; opacity: .62; }
+    .preview-stage .modal { overflow-x: hidden; overflow-y: auto; }
+    .preview-stage .modal-dialog {
+      margin: 78px auto 42px;
+    }
+    .preview-surface { padding: 24px; }
+    .preview-dashboard { min-height: 840px; border-radius: 6px; background: linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%); }
+    .preview-story-grid { display: flex; flex-wrap: wrap; margin: 0 -8px; }
+    .preview-story-grid .photo-item { padding: 0 8px; margin-bottom: 16px; }
+    .preview-story-grid .photo { display: block; height: 190px; border-radius: 10px; background-size: cover; background-position: center; }
+    .preview-note { margin: 16px 0 24px; }
+    .preview-search-grid .form-group { margin-bottom: 14px; }
+    .preview-search-grid .custom-control { margin-bottom: 8px; }
+    .gift-items.preview-gift-items { display: grid; gap: 12px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .gift-items.preview-gift-items .gift-item { border: 1px solid #d9e0e8; border-radius: 10px; padding: 10px 8px; background: #fff; }
+    .gift-items.preview-gift-items .gift { display: block; width: 72px; height: 72px; margin: 0 auto 10px; border-radius: 10px; background-size: cover; background-position: center; }
+    .gifts.preview-user-gifts { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .gifts.preview-user-gifts .gift { height: 86px; border-radius: 10px; background-size: cover; background-position: center; border: 1px solid #d9e0e8; background-color: #fff; }
+    .preview-meta {
+      display: flex;
+      gap: 16px;
+      align-items: stretch;
+      margin-top: 8px;
+      margin-bottom: 16px;
+    }
+    .preview-meta-card {
+      flex: 1 1 0;
+      border: 1px solid #d9e0e8;
+      border-radius: 10px;
+      background: #fff;
+      padding: 14px 16px;
+    }
+    .preview-meta-label {
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: #8a97a8;
+      margin-bottom: 6px;
+    }
+    .preview-meta-value {
+      color: #324b67;
+      font-size: 16px;
+      line-height: 1.4;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="ltr body-default light">
+  <div class="page">
+    <div class="important-messages">
+      <div class="alert alert-primary alert-news mb-0">
+        <div class="container">
+          <a href="#">Live front dialogs preview based on current dashboard/profile/messages markup</a>
+          <button type="button" class="close"></button>
+        </div>
+      </div>
+    </div>
+    <div class="page-main">
+      <div class="header py-2">
+        <div class="container">
+          <div class="d-flex">
+            <a class="header-brand flex-shrink-0" href="/en/">
+              <img class="header-brand-img" src="/content/themes/youdate/static/images/logo@2x.png" alt="YouDate">
+            </a>
+            <div class="d-flex align-items-center order-lg-2 ml-auto">
+              <div class="nav-link py-2">Front dialogs preview</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="my-3 my-md-5">
+        <div class="container">
+          <div class="dashboard-block p-4">
+            <h2 class="mb-3">Live front modals</h2>
+            <p class="text-muted preview-note">
+              Here are all live-confirmed modal ids from dashboard, browse, messages and profile pages.
+            </p>
+            <div class="preview-meta">
+              <div class="preview-meta-card">
+                <span class="preview-meta-label">Selected dialog</span>
+                <div class="preview-meta-value" id="preview-dialog-title">Spotlight submit</div>
+              </div>
+              <div class="preview-meta-card">
+                <span class="preview-meta-label">Live source</span>
+                <div class="preview-meta-value" id="preview-dialog-source">/en/ and /en/dashboard</div>
+              </div>
+              <div class="preview-meta-card">
+                <span class="preview-meta-label">Purpose</span>
+                <div class="preview-meta-value" id="preview-dialog-purpose">Photo selection flow for spotlight placement.</div>
+              </div>
+            </div>
+            <div class="preview-toolbar">
+              <button class="btn btn-secondary" data-front="spotlight-submit" data-title="Spotlight submit" data-source="/en/, /en/dashboard" data-purpose="Photo selection flow for spotlight placement.">Spotlight submit</button>
+              <button class="btn btn-secondary" data-front="spotlight-warning" data-title="Spotlight warning" data-source="/en/, /en/dashboard" data-purpose="Upload error or no-balance warning inside spotlight flow.">Spotlight warning</button>
+              <button class="btn btn-primary" data-front="premiumModal" data-title="Premium modal" data-source="/en/, /en/dashboard, /en/profile/*" data-purpose="Premium upsell and purchase entry point.">Premium modal</button>
+              <button class="btn btn-primary" data-front="profile-new-message" data-title="Profile new message" data-source="/en/, /en/dashboard, /en/profile/*" data-purpose="Compose-and-send message modal with inline validation.">New message</button>
+              <button class="btn btn-primary" data-front="modal-language-switcher" data-title="Language switcher" data-source="Most front pages" data-purpose="Language selection modal shared across the front.">Language switcher</button>
+              <button class="btn btn-primary" data-front="modal-search" data-title="Custom search" data-source="/en/browse" data-purpose="Advanced filter modal for browse/search.">Custom search</button>
+              <button class="btn btn-danger" data-front="conversation-report" data-title="Conversation report" data-source="/en/messages" data-purpose="Report a user from an active conversation.">Conversation report</button>
+              <button class="btn btn-danger" data-front="profile-report" data-title="Profile report" data-source="/en/profile/*" data-purpose="Report a user from a profile page.">Profile report</button>
+              <button class="btn btn-primary" data-front="send-gift" data-title="Send gift" data-source="/en/profile/*" data-purpose="Gift picker modal with credit-priced items.">Send gift</button>
+              <button class="btn btn-secondary" data-front="user-gifts" data-title="User gifts" data-source="/en/profile/*" data-purpose="Read-only modal with received gifts list.">User gifts</button>
+              <button class="btn btn-secondary" data-front="hide-all">Hide all</button>
+            </div>
+
+            <div class="preview-stage" id="front-stage">
+              <div class="preview-surface">
+                <div class="preview-dashboard dashboard-block p-4">
+                  <div class="row">
+                    <div class="col-lg-5 mb-4">
+                      <div class="stories-cards stories-cards-mobile">
+                        <div class="card item item-add card-slot">
+                          <div class="item-cover" style="background-image:url('https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_gLCeJ5lPiP6-3aL78H3bh0NNceDwkYib.webp')"></div>
+                          <div class="item-add-block">
+                            <div class="item-add-icon">+</div>
+                            <div class="item-add-title">Add me</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-7">
+                      <div class="alert alert-warning">Header Ad</div>
+                      <div class="dashboard-block p-4">
+                        <h3 class="mb-3">Coverage</h3>
+                        <p class="text-muted mb-2">This page now covers 10 unique live front modal ids.</p>
+                        <ul class="text-muted mb-0">
+                          <li>spotlight-submit, spotlight-warning, premiumModal, profile-new-message, modal-language-switcher</li>
+                          <li>modal-search, conversation-report, profile-report, send-gift, user-gifts</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal-backdrop fade show-preview" style="display:none;"></div>
+
+              <div aria-hidden="true" aria-labelledby="spotlight-submit-title" class="modal modal-form modal-spotlight-submit fade" id="spotlight-submit" role="dialog" tabindex="-1">
+                <div class="modal-dialog" role="document"><div class="modal-content"><form action="/en/dashboard" id="spotlight-submit-form" method="post"><div class="modal-header"><h5 class="modal-title" id="spotlight-submit-title">Place your photo on spotlight</h5><button aria-label="Close" class="close front-close" type="button"><span aria-hidden="true"></span></button></div><div class="modal-body"><div id="stories-ok"><div class="form-group form-group-picker"><div class="photo-picker row w-100 mx-0 preview-story-grid"><label class="photo-item photo-for-stories col-6 col-sm-4"><input class="photo-input" name="photoId" type="radio" value="328"><span class="photo" style="background-image:url('https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_gLCeJ5lPiP6-3aL78H3bh0NNceDwkYib.webp')"></span></label><label class="photo-item photo-for-stories col-6 col-sm-4"><input class="photo-input" name="photoId" type="radio" value="800"><span class="photo" style="background-image:url('https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_jxSPNscGV5BEjL1BLbBQJNhj29uiYVMv.webp')"></span></label><label class="photo-item photo-for-stories col-6 col-sm-4"><input class="photo-input" name="photoId" type="radio" value="812"><span class="photo" style="background-image:url('https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=600&q=80')"></span></label></div></div><div class="text-center"><a class="btn btn-lg btn-default" href="javascript:void(0);" title="Upload from device">Upload from device</a></div></div></div><div class="modal-footer d-flex justify-content-between"><button class="btn btn-secondary front-close" type="button">Cancel</button><button class="btn btn-primary" type="button">Next</button></div></form></div></div>
+              </div>
+
+              <div aria-hidden="true" aria-labelledby="spotlight-warning-title" class="modal modal-form modal-spotlight-submit fade" id="spotlight-warning" role="dialog" tabindex="-1">
+                <div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="spotlight-warning-title">Place your photo on spotlight</h5><button aria-label="Close" class="close front-close" type="button"><span aria-hidden="true"></span></button></div><div class="modal-body"><div class="alert-danger mt-3 p-3 d-flex align-items-center" role="alert" style="gap: 10px;"><i class="fa fa-times-circle-o" style="color: red; font-size: 41px"></i><span id="stories-has-errors" style="display: inline-block;">The file is too big. Its size cannot exceed 30 MiB.</span></div></div><div class="modal-footer d-flex justify-content-between"><div id="stories-no-balance"><button class="btn btn-secondary front-close" type="button">Cancel</button><a class="btn btn-primary" href="/en/balance/buy">Buy credits</a></div></div></div></div>
+              </div>
+
+              <div class="modal fade" id="premiumModal" role="dialog" tabindex="-1">
+                <div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Get premium</h5><button aria-label="Close" class="close front-close" type="button"></button></div><div class="modal-body">Get premium</div><div class="modal-footer"><button class="btn btn-secondary front-close" type="button">Close</button><a class="btn btn-primary" href="/en/balance/buy">Open plans</a></div></div></div>
+              </div>
+
+              <div aria-hidden="true" aria-labelledby="profile-new-message-title" class="modal modal-form fade" id="profile-new-message" role="dialog" tabindex="-1">
+                <div class="modal-dialog" role="document"><div class="modal-content"><form action="/en/messages/create" id="new-message-form" method="post"><div class="modal-header"><h5 class="modal-title" id="profile-new-message-title">Message to Gin</h5><button aria-label="Close" class="close front-close" type="button"><span aria-hidden="true"></span></button></div><div class="modal-body"><div class="error-summary alert alert-danger" style="display:block;"><ul><li>Message cannot be blank.</li></ul></div><input class="placeholder-contact-id" id="contactid" name="contactId" type="hidden" value="52"><div class="form-group field-message required"><textarea aria-required="true" class="form-control" id="message" name="message" placeholder="Enter your message..." rows="3"></textarea><div class="help-block"></div></div></div><div class="modal-footer"><button class="btn btn-secondary front-close" type="button">Cancel</button><button class="btn btn-primary" type="button"><i class="fa fa-send mr-2"></i>Send message</button></div></form></div></div>
+              </div>
+
+              <div aria-hidden="true" class="modal modal-form modal-language-switcher fade" id="modal-language-switcher" role="dialog">
+                <div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Current language: English (US)</h5><button aria-label="Close" class="close front-close" type="button"></button></div><div class="modal-body"><a class="language-item d-flex align-items-center" href="/en/language/en-US"><img alt="" class="language-switcher-flag" src="/content/themes/youdate/static/images/flags/us.svg"><div class="text-left"><div class="language-name">English (US)</div><div class="language-name-ascii">English (US)</div></div><div class="language-name-active ml-auto"><span>current</span><i class="fe fe-check"></i></div></a><a class="language-item d-flex align-items-center" href="/en/language/de-DE"><img alt="" class="language-switcher-flag" src="/content/themes/youdate/static/images/flags/de.svg"><div class="text-left"><div class="language-name">Deutsch</div><div class="language-name-ascii">German</div></div></a><a class="language-item d-flex align-items-center" href="/en/language/es-ES"><img alt="" class="language-switcher-flag" src="/content/themes/youdate/static/images/flags/es.svg"><div class="text-left"><div class="language-name">Espa&#241;ol (Espa&#241;a)</div><div class="language-name-ascii">Spanish (Spain)</div></div></a><a class="language-item d-flex align-items-center" href="/en/language/fr-FR"><img alt="" class="language-switcher-flag" src="/content/themes/youdate/static/images/flags/fr.svg"><div class="text-left"><div class="language-name">Fran&#231;ais (France)</div><div class="language-name-ascii">French (France)</div></div></a><a class="language-item d-flex align-items-center" href="/en/language/ru-RU"><img alt="" class="language-switcher-flag" src="/content/themes/youdate/static/images/flags/ru.svg"><div class="text-left"><div class="language-name">Russian</div><div class="language-name-ascii">Russian</div></div></a></div><div class="modal-footer"><button class="btn btn-secondary front-close" type="button">Close</button></div></div></div>
+              </div>
+
+              <div class="modal modal-search fade" id="modal-search" role="dialog" tabindex="-1">
+                <div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Custom search</h5><button aria-label="Close" class="close front-close" type="button"></button></div><div class="modal-body preview-search-grid"><div class="form-group field-online"><label class="custom-control custom-checkbox"><input class="custom-control-input" id="online" name="online" type="checkbox" value="1"><span class="custom-control-label">Online users</span></label></div><div class="form-group field-verified"><label class="custom-control custom-checkbox"><input class="custom-control-input" id="verified" name="verified" type="checkbox" value="1"><span class="custom-control-label">Verified users</span></label></div><label rel="tooltip" title="Search faster: Premium opens all search filters - by photo, status and other parameters"><div class="form-group field-withphoto"><label class="custom-control custom-checkbox"><input class="custom-control-input" disabled id="withphoto" name="withPhoto" type="checkbox" value="1"><span class="custom-control-label">With photo</span></label></div></label><div class="form-group"><label class="form-label" for="search-purpose">Dating goal</label><select class="form-control" id="search-purpose" multiple size="4" disabled><option>Premium only</option><option>Friendship</option><option>Romantic relationship</option><option>Marriage</option></select></div><div class="form-group"><label class="form-label" for="search-status">Relationship status</label><select class="form-control" id="search-status" disabled><option>Premium only</option><option>Single</option><option>Divorced</option><option>It's complicated</option></select></div></div><div class="modal-footer"><button class="btn btn-secondary front-close" type="button">Close</button><button class="btn btn-primary" type="button">Apply filters</button></div></div></div>
+              </div>
+
+              <div aria-hidden="true" aria-labelledby="conversation-report-title" class="modal fade conversation-report" id="conversation-report" role="dialog" tabindex="-1">
+                <div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="conversation-report-title">Report user</h5><button aria-label="Close" class="close front-close" type="button"></button></div><div class="modal-body"><div class="pb-3"><strong>What is wrong with this user?</strong></div><label class="custom-control custom-radio"><input class="custom-control-input" name="reason-conversation" type="radio" value="spam"><span class="custom-control-label">Spammer</span></label><label class="custom-control custom-radio"><input class="custom-control-input" name="reason-conversation" type="radio" value="profile"><span class="custom-control-label">Profile content</span></label><label class="custom-control custom-radio"><input class="custom-control-input" name="reason-conversation" type="radio" value="rude"><span class="custom-control-label">Rude behavior</span></label><label class="custom-control custom-radio"><input class="custom-control-input" name="reason-conversation" type="radio" value="fake"><span class="custom-control-label">Fake profile</span></label><label class="custom-control custom-radio"><input class="custom-control-input" name="reason-conversation" type="radio" value="scam"><span class="custom-control-label">Scammer</span></label><div class="form-group"><textarea class="form-control" name="description" placeholder="Description"></textarea></div></div><div class="modal-footer"><button class="btn btn-secondary front-close" type="button">Cancel</button><button class="btn btn-primary" type="button">Report</button></div></div></div>
+              </div>
+
+              <div aria-hidden="true" aria-labelledby="profile-title" class="modal modal-form fade profile-report" id="profile-report" role="dialog" tabindex="-1">
+                <div class="modal-dialog" role="document"><div class="modal-content"><form action="/en/report/create" method="post"><div class="modal-header"><h5 class="modal-title" id="profile-title">Report user</h5><button aria-label="Close" class="close front-close" type="button"></button></div><div class="modal-body"><div class="error-summary alert alert-danger" style="display:block;"><ul><li>Please select a reason.</li></ul></div><div class="pb-3"><strong>What is wrong with this user?</strong></div><div class="form-group field-reason required"><label class="form-label">Reason</label><div aria-required="true" id="reason" role="radiogroup"><label class="custom-control custom-radio"><input class="custom-control-input" name="reason-profile" type="radio" value="spam"><div class="custom-control-label">Spammer</div></label><label class="custom-control custom-radio"><input class="custom-control-input" name="reason-profile" type="radio" value="fake"><div class="custom-control-label">Fake profile</div></label><label class="custom-control custom-radio"><input class="custom-control-input" name="reason-profile" type="radio" value="scam"><div class="custom-control-label">Scammer</div></label><label class="custom-control custom-radio"><input class="custom-control-input" name="reason-profile" type="radio" value="other"><div class="custom-control-label">Other</div></label></div></div><div class="form-group field-description"><label class="form-label" for="description">Description</label><textarea class="form-control" id="description" name="description" placeholder="Description"></textarea></div></div><div class="modal-footer"><button class="btn btn-secondary front-close" type="button">Cancel</button><button class="btn btn-primary" type="button">Report</button></div></form></div></div>
+              </div>
+
+              <div aria-hidden="true" aria-labelledby="gift-form-title" class="modal modal-form modal-gift-form modal-md fade" id="send-gift" role="dialog" tabindex="-1">
+                <div class="modal-dialog" role="document"><div class="modal-content"><form action="/en/gift/send" id="gift-form" method="post"><div class="modal-header"><h5 class="modal-title" id="gift-form-title">Send a gift</h5><button aria-label="Close" class="close front-close" type="button"><span aria-hidden="true"></span></button></div><div class="modal-body"><div class="error-summary alert alert-danger" style="display:none"><ul></ul></div><div class="form-group"><div class="gift-picker"><div class="gift-category">Main</div><div class="gift-items preview-gift-items"><label class="gift-item text-center" title="Sticker_081_star10"><input class="gift-input" name="giftItemId" type="radio" value="224"><span class="gift" style="background-image:url('/content/gifts/main/sticker_081_star10.png')"></span><span class="gift-price badge badge-default">10 credits</span></label><label class="gift-item text-center" title="Sticker_117_star15"><input class="gift-input" name="giftItemId" type="radio" value="120"><span class="gift" style="background-image:url('/content/gifts/main/sticker_117_star15.png')"></span><span class="gift-price badge badge-default">15 credits</span></label><label class="gift-item text-center" title="Sticker_130_star15"><input class="gift-input" name="giftItemId" type="radio" value="164"><span class="gift" style="background-image:url('/content/gifts/main/sticker_130_star15.png')"></span><span class="gift-price badge badge-default">15 credits</span></label></div></div></div></div><div class="modal-footer"><button class="btn btn-secondary front-close" type="button">Cancel</button><button class="btn btn-primary" type="button">Send gift</button></div></form></div></div>
+              </div>
+
+              <div aria-hidden="true" aria-labelledby="users-gifts-title" class="modal modal-user-gifts fade" id="user-gifts" role="dialog" tabindex="-1">
+                <div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="users-gifts-title">User gifts</h5><button aria-label="Close" class="close front-close" type="button"><span aria-hidden="true"></span></button></div><div class="modal-body"><div class="gifts row preview-user-gifts"><div class="gift" style="background-image:url('/content/gifts/main/sticker_081_star10.png')"></div><div class="gift" style="background-image:url('/content/gifts/main/sticker_117_star15.png')"></div><div class="gift" style="background-image:url('/content/gifts/main/sticker_130_star15.png')"></div><div class="gift" style="background-image:url('/content/gifts/main/sticker_080_star10.png')"></div></div></div><div class="modal-footer"><button class="btn btn-secondary front-close" type="button">Close</button></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var stage = document.getElementById('front-stage');
+      var backdrop = stage.querySelector('.modal-backdrop');
+      var modals = stage.querySelectorAll('.modal');
+      var titleNode = document.getElementById('preview-dialog-title');
+      var sourceNode = document.getElementById('preview-dialog-source');
+      var purposeNode = document.getElementById('preview-dialog-purpose');
+
+      function setActiveButton(activeId) {
+        document.querySelectorAll('[data-front]').forEach(function (button) {
+          var match = button.getAttribute('data-front') === activeId;
+          button.classList.toggle('is-active', match);
+        });
+      }
+
+      function updateMeta(button) {
+        if (!button) {
+          titleNode.textContent = 'No dialog selected';
+          sourceNode.textContent = 'Use buttons above';
+          purposeNode.textContent = 'Select a scenario to inspect its current shell.';
+          return;
+        }
+        titleNode.textContent = button.getAttribute('data-title') || button.textContent.trim();
+        sourceNode.textContent = button.getAttribute('data-source') || '-';
+        purposeNode.textContent = button.getAttribute('data-purpose') || '-';
+      }
+
+      function hideAll() {
+        modals.forEach(function (modal) {
+          modal.classList.remove('show-preview', 'in');
+          modal.style.display = 'none';
+          modal.setAttribute('aria-hidden', 'true');
+        });
+        backdrop.classList.remove('show-preview', 'in');
+        backdrop.style.display = 'none';
+        setActiveButton('hide-all');
+        updateMeta(null);
+      }
+      function showModal(id) {
+        hideAll();
+        var modal = document.getElementById(id);
+        if (!modal) { return; }
+        backdrop.style.display = 'block';
+        backdrop.classList.add('show-preview', 'in');
+        modal.style.display = 'block';
+        modal.classList.add('show-preview', 'in');
+        modal.setAttribute('aria-hidden', 'false');
+      }
+      document.querySelectorAll('[data-front]').forEach(function (button) {
+        button.addEventListener('click', function () {
+          var id = button.getAttribute('data-front');
+          if (id === 'hide-all') { hideAll(); return; }
+          setActiveButton(id);
+          updateMeta(button);
+          showModal(id);
+        });
+      });
+      document.querySelectorAll('.front-close').forEach(function (button) {
+        button.addEventListener('click', function (event) {
+          event.preventDefault();
+          hideAll();
+        });
+      });
+      backdrop.addEventListener('click', hideAll);
+      var defaultButton = document.querySelector('[data-front="spotlight-submit"]');
+      if (defaultButton) {
+        setActiveButton('spotlight-submit');
+        updateMeta(defaultButton);
+        showModal('spotlight-submit');
+      } else {
+        hideAll();
+      }
+    })();
+  </script>
+</body>
+</html>
