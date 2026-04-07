@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ТЗ переводчика для Confideline</title>
+  <style>
+    :root {
+      --bg: #edf3fa;
+      --panel: #ffffff;
+      --line: #d9e3ef;
+      --text: #203246;
+      --muted: #63768a;
+      --accent: #2f80ed;
+      --accent-soft: #eaf3ff;
+      --success: #eaf8ef;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at top left, #ffffff 0, #f7fbff 30%, var(--bg) 100%);
+    }
+
+    .shell {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hero {
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 16px 36px rgba(30, 51, 76, 0.08);
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 32px;
+      line-height: 1.12;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+      max-width: 900px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      padding: 0 16px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(300px, 0.9fr);
+      gap: 16px;
+      margin-top: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--panel);
+      box-shadow: 0 16px 36px rgba(27, 45, 69, 0.06);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .panel-head h2,
+    .panel-head h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .panel-body {
+      padding: 18px;
+    }
+
+    .section {
+      margin-bottom: 24px;
+    }
+
+    .section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    .section p,
+    .section li {
+      color: #33475c;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .section ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .fact-box {
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .fact-box strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #4d6276;
+    }
+
+    .fact-box p,
+    .fact-box li {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #33475c;
+    }
+
+    .fact-box ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .callout {
+      margin-top: 16px;
+      padding: 16px 18px;
+      border: 1px solid #cfe0ff;
+      border-radius: 16px;
+      background: var(--accent-soft);
+    }
+
+    .callout h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+    }
+
+    .callout p {
+      margin: 0;
+      color: #245ca8;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .ok-box {
+      margin-top: 16px;
+      padding: 16px 18px;
+      border: 1px solid #cfe6d5;
+      border-radius: 16px;
+      background: var(--success);
+    }
+
+    .ok-box h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+    }
+
+    .ok-box ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .ok-box li {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .code-block {
+      margin: 10px 0 0;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #f8fbff;
+      white-space: pre-wrap;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.55;
+      color: #31485f;
+    }
+
+    code {
+      padding: 1px 5px;
+      border-radius: 6px;
+      background: #eef3f9;
+      color: #38506a;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+    }
+
+    @media (max-width: 980px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <h1>ТЗ: переводчик в чате экспертной админ-панели</h1>
+      <p>
+        Публичная HTML-версия технического задания для программиста. Это тот же самый контент по интеграции
+        переводчика в Confideline, но в удобном для показа и обсуждения виде.
+      </p>
+      <div class="toolbar">
+        <a class="btn btn-primary" href="https://cutthreat.github.io/confideline/">Вернуться на landing</a>
+        <a class="btn" href="Chat/admin-chat-preview-local/chat-translator-preview.html" target="_blank">Открыть чат-макет</a>
+        <a class="btn" href="Chat/admin-chat-preview-local/translator-settings-preview.html" target="_blank">Открыть настройки</a>
+      </div>
+    </section>
+
+    <div class="grid">
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Основное ТЗ</h2>
+        </div>
+        <div class="panel-body">
+          <section class="section">
+            <h3>Result</h3>
+            <ul>
+              <li>В админ-чате эксперта появляется действие <code>Translate</code>, которое переводит входящее сообщение через выбранный провайдер.</li>
+              <li>В админке появляется системный раздел <code>Translator settings</code>, где администратор включает и выключает переводчик и хранит ключи провайдеров.</li>
+              <li>Архитектура сразу допускает три провайдера: <code>DeepL</code>, <code>Google Cloud Translation</code>, <code>Amazon Translate</code>.</li>
+            </ul>
+          </section>
+
+          <section class="section">
+            <h3>Scope</h3>
+            <ul>
+              <li>Контур: Yii2 admin module.</li>
+              <li>Чат эксперта: <code>/en/admin/message/chat</code>.</li>
+              <li>Настройки: <code>admin/settings/translator</code>.</li>
+              <li>Локальный исходник для разработки: <code>H:\GPT-Codex\Confideline\Chat\youdate-2.0.2-yii2\Source\youdate_extracted\application</code>.</li>
+            </ul>
+          </section>
+
+          <section class="section">
+            <h3>Функциональные требования</h3>
+            <div class="fact-box">
+              <strong>1. Настройки переводчика</strong>
+              <ul>
+                <li>Добавить страницу <code>Translator settings</code>.</li>
+                <li>Поля: глобальный enable, default provider, fallback, cache, target language, блоки ключей для DeepL, Google и Amazon.</li>
+                <li>Доступ только для <code>Admin</code>.</li>
+                <li>Если глобальный флаг выключен, кнопка перевода в чате не показывается.</li>
+              </ul>
+            </div>
+            <div class="fact-box">
+              <strong>2. Перевод в чате эксперта</strong>
+              <ul>
+                <li>Кнопка <code>Translate</code> размещается внутри карточки входящего сообщения.</li>
+                <li>Показывается только для текстовых входящих сообщений и только если глобально включен переводчик.</li>
+                <li>По клику отправляется AJAX-запрос на отдельный admin-endpoint.</li>
+              </ul>
+            </div>
+            <div class="fact-box">
+              <strong>3. Отображение результата</strong>
+              <ul>
+                <li>Под оригинальным текстом появляется вторичный блок перевода.</li>
+                <li>В блоке есть translated text и мета-строка: provider, source language, target language, translated at.</li>
+                <li>Оригинальный текст всегда остается основным.</li>
+              </ul>
+            </div>
+            <div class="fact-box">
+              <strong>4. API и backend-контракт</strong>
+              <ul>
+                <li>Новый endpoint: <code>POST /admin/message/translate</code>.</li>
+                <li>Вход: <code>messageId</code>, опционально <code>provider</code>, опционально <code>targetLanguage</code>.</li>
+                <li>Выход: <code>success</code>, <code>translation</code>, <code>provider</code>, <code>sourceLanguage</code>, <code>targetLanguage</code>, <code>cached</code>, <code>translatedAt</code>.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="section">
+            <h3>Данные и хранение</h3>
+            <ul>
+              <li>Рекомендуемая таблица: <code>message_translation</code>.</li>
+              <li>Поля: <code>message_id</code>, <code>provider</code>, <code>source_language</code>, <code>target_language</code>, <code>source_text_hash</code>, <code>translated_text</code>, <code>raw_response</code>, timestamps.</li>
+              <li>Перевод хранится как производный артефакт, а не как замена оригинального сообщения.</li>
+            </ul>
+          </section>
+
+          <section class="section">
+            <h3>Визуализация</h3>
+            <strong>Чат эксперта</strong>
+            <div class="code-block">+--------------------------------------------------------------+
+| Agent chat                                      [Refresh]    |
++----------------------+----------------------+-----------------+
+| conversations        | selected dialog      | participants    |
+|                      |                      |                 |
+|                      | [incoming message]   |                 |
+|                      | original text        |                 |
+|                      | [Translate]          |                 |
+|                      | -------------------  |                 |
+|                      | Translation          |                 |
+|                      | translated text      |                 |
+|                      | DeepL • RU -> EN     |                 |
+|                      |                      |                 |
+|                      | [outgoing message]   |                 |
++----------------------+----------------------+-----------------+</div>
+
+            <strong>Настройки переводчика</strong>
+            <div class="code-block">+--------------------------------------------------------------+
+| Translator settings                                          |
++--------------------------------------------------------------+
+| General mode                                                 |
+| [x] Enable translator in expert chat                         |
+| Provider: [DeepL v]                                          |
+| [x] Allow fallback                                           |
+| [x] Cache translations                                       |
+|                                                              |
+| DeepL                                                        |
+| [x] Enabled                                                  |
+| API key: [************************]                           |
+| [ ] Use Pro endpoint                                         |
+|                                                              |
+| Google Cloud Translation                                     |
+| [ ] Enabled                                                  |
+| API key: [....................]                              |
+| Project ID: [................]                               |
+|                                                              |
+| Amazon Translate                                             |
+| [ ] Enabled                                                  |
+| Access key ID: [................]                            |
+| Secret access key: [................]                        |
+| Region: [us-east-1........]                                  |
+|                                             [Save]           |
++--------------------------------------------------------------+</div>
+          </section>
+        </div>
+      </article>
+
+      <aside class="panel">
+        <div class="panel-head">
+          <h3>Краткое резюме</h3>
+        </div>
+        <div class="panel-body">
+          <div class="fact-box">
+            <strong>Facts</strong>
+            <ul>
+              <li>В проекте уже есть `SettingsAction` и механизм хранения системных настроек.</li>
+              <li>Чат эксперта уже переведен на shell-интерфейс с endpoints `conversations`, `messages`, `send`.</li>
+              <li>В админке уже есть системный раздел `Settings`, куда логично встраивать переводчик.</li>
+            </ul>
+          </div>
+
+          <div class="fact-box">
+            <strong>Inference</strong>
+            <ul>
+              <li>Переводчик нельзя класть в `Languages`, потому что это каталог языков сайта, а не runtime-интеграция.</li>
+              <li>Переводчик нельзя прятать только внутри чата, потому что ключи и режимы работы должны жить на системном уровне.</li>
+              <li>Базовый UX должен быть двухуровневым: системный пункт меню и кнопка перевода внутри bubble сообщения.</li>
+            </ul>
+          </div>
+
+          <div class="fact-box">
+            <strong>Recommendation</strong>
+            <ul>
+              <li>DeepL использовать как default provider.</li>
+              <li>Google и Amazon держать как fallback-ready интеграции.</li>
+              <li>Исходное сообщение никогда не перезаписывать переводом.</li>
+            </ul>
+          </div>
+
+          <div class="callout">
+            <h3>Done when</h3>
+            <p>
+              В админке есть отдельный пункт <code>Translator</code>, настройки сохраняются штатным Yii2 settings-механизмом,
+              а в чате на входящем сообщении можно вызвать перевод без изменения оригинального текста.
+            </p>
+          </div>
+
+          <div class="ok-box">
+            <h3>How to verify</h3>
+            <ul>
+              <li>Открыть <code>admin/settings/translator</code> под `Admin`.</li>
+              <li>Сохранить настройки и проверить повторное чтение значений.</li>
+              <li>Открыть <code>/en/admin/message/chat</code>.</li>
+              <li>Проверить кнопку <code>Translate</code> на входящем сообщении.</li>
+              <li>Проверить, что перевод появляется как отдельный блок под оригиналом.</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>
