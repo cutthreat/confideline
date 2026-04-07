@@ -37,12 +37,24 @@ $menuItems = [
         'visible' => $user->hasPermission(Permission::GROUPS),
     ],
     [
-        'url' => ['message/index'],
+        'url' => ['message/chat'],
         'icon' => 'fa fa-envelope',
         'label' => Yii::t('app', 'Messages'),
         'active' => ($this->context instanceof app\modules\admin\controllers\MessageController),
         'order' => 115,
         'visible' => $user->hasPermission(Permission::MESSAGES),
+        'items' => [
+            [
+                'url' => ['message/chat'],
+                'icon' => 'fa fa-circle-o',
+                'label' => Yii::t('app', 'Chat shell'),
+            ],
+            [
+                'url' => ['message/expert-preview'],
+                'icon' => 'fa fa-circle-o',
+                'label' => Yii::t('app', 'Expert CRM preview'),
+            ],
+        ],
     ],
     [
         'url' => ['photo/index'],
