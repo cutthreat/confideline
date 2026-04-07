@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ТЗ регистрации эксперта для Confideline</title>
+  <style>
+    :root {
+      --bg: #edf3fa;
+      --panel: #ffffff;
+      --line: #d9e3ef;
+      --text: #203246;
+      --muted: #63768a;
+      --accent: #2f80ed;
+      --accent-soft: #eaf3ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at top left, #ffffff 0, #f7fbff 30%, var(--bg) 100%);
+    }
+
+    .shell {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hero {
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 16px 36px rgba(30, 51, 76, 0.08);
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 32px;
+      line-height: 1.12;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+      max-width: 900px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      padding: 0 16px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(300px, 0.9fr);
+      gap: 16px;
+      margin-top: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--panel);
+      box-shadow: 0 16px 36px rgba(27, 45, 69, 0.06);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .panel-head h2,
+    .panel-head h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .panel-body {
+      padding: 18px;
+    }
+
+    .section {
+      margin-bottom: 24px;
+    }
+
+    .section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    .section p,
+    .section li {
+      color: #33475c;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .section ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .fact-box {
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .fact-box strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #4d6276;
+    }
+
+    .fact-box p,
+    .fact-box li {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #33475c;
+    }
+
+    .fact-box ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .callout {
+      margin-top: 16px;
+      padding: 16px 18px;
+      border: 1px solid #cfe0ff;
+      border-radius: 16px;
+      background: var(--accent-soft);
+    }
+
+    .callout h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+    }
+
+    .callout p {
+      margin: 0;
+      color: #245ca8;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .ok-box {
+      margin-top: 16px;
+      padding: 16px 18px;
+      border: 1px solid #cfe6d5;
+      border-radius: 16px;
+      background: #eefaf2;
+    }
+
+    .ok-box h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+    }
+
+    .ok-box ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .ok-box li {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .code-block {
+      margin: 10px 0 0;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #f8fbff;
+      white-space: pre-wrap;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.55;
+      color: #31485f;
+    }
+
+    code {
+      padding: 1px 5px;
+      border-radius: 6px;
+      background: #eef3f9;
+      color: #38506a;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+    }
+
+    @media (max-width: 980px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <h1>ТЗ: страница регистрации эксперта для Confideline</h1>
+      <p>
+        Публичная HTML-версия технического задания для программиста. Это отдельный expert application flow,
+        а не доработка обычного signup. Документ привязан к текущему Confideline UI и админ-контуру.
+      </p>
+      <div class="toolbar">
+        <a class="btn btn-primary" href="https://cutthreat.github.io/confideline/" target="_blank">Вернуться на landing</a>
+        <a class="btn" href="web/expert-registration-mockup.html" target="_blank">Открыть макет</a>
+        <a class="btn" href="ТЗ-expert-registration.md" target="_blank">Открыть source MD</a>
+        <a class="btn" href="expert-registration-tz.docx" target="_blank">Открыть Word</a>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Техническое задание</h2>
+        </div>
+        <div class="panel-body">
+          <div class="section">
+            <h3>Result</h3>
+            <ul>
+              <li>Нужен отдельный поток регистрации эксперта в стиле careers/job application, а не обычный user signup.</li>
+              <li>На фронте уже подготовлен preview-макет: <code>web/expert-registration-mockup.html</code>.</li>
+              <li>Задача backend-разработки: подготовить сущности, маршруты и админ-процесс так, чтобы новый дизайн можно было натянуть без переделки логики.</li>
+              <li>Страница должна быть встроена в визуальную систему текущего <code>confideline.com</code>.</li>
+            </ul>
+          </div>
+
+          <div class="section">
+            <h3>Scope</h3>
+            <ul>
+              <li>Только подготовка функционала под будущий новый дизайн.</li>
+              <li>Без сложной логики биллинга, расписаний, мэтчинга и real-time.</li>
+              <li>Без полноценного кабинета эксперта на этом этапе.</li>
+            </ul>
+          </div>
+
+          <div class="section">
+            <h3>Done when</h3>
+            <ul>
+              <li>Есть отдельная сущность заявки эксперта.</li>
+              <li>Есть endpoint для приема формы.</li>
+              <li>Есть thank-you сценарий после отправки.</li>
+              <li>Есть админ-список заявок с фильтрами и карточкой просмотра.</li>
+              <li>Есть статусы и базовый workflow модерации.</li>
+              <li>Есть возможность позже привязать approve-заявку к будущему аккаунту эксперта.</li>
+            </ul>
+          </div>
+
+          <div class="section">
+            <h3>Как проверить</h3>
+            <ol>
+              <li>Открыть preview-макет и сверить блоки страницы: hero, benefits, requirements, process, FAQ, form.</li>
+              <li>Убедиться, что backend принимает форму в отдельную таблицу, а не пишет сразу в <code>user</code>.</li>
+              <li>Убедиться, что новая заявка появляется в админке со статусом <code>new</code>.</li>
+              <li>Проверить смену статусов <code>new -&gt; in_review -&gt; approved / rejected / needs_info</code>.</li>
+              <li>Проверить, что после <code>approved</code> можно безопасно инициировать следующий этап onboarding без ручной пересборки данных.</li>
+            </ol>
+          </div>
+
+          <div class="section">
+            <h3>Контракт фронта</h3>
+            <ul>
+              <li>Рекомендуемый production route: <code>/experts/apply</code> или <code>/careers/experts</code>.</li>
+              <li>Блоки страницы: hero, преимущества, кого ищем, процесс отбора, FAQ, форма заявки.</li>
+              <li>Страница должна наследовать текущий сайт: header/footer, текущую фиолетово-розовую палитру, существующие кнопки и базовые формы.</li>
+            </ul>
+          </div>
+
+          <div class="section">
+            <h3>Поля формы</h3>
+            <div class="code-block">full_name
+display_name
+email
+messenger_contact
+specializations
+languages
+experience_range
+country
+timezone
+availability_text
+about_text
+portfolio_links
+consent_moderation
+consent_test_task
+consent_truthfulness</div>
+          </div>
+
+          <div class="section">
+            <h3>Backend-модель</h3>
+            <ul>
+              <li>Рекомендуемая таблица: <code>expert_application</code>.</li>
+              <li>Поля: id, status, full_name, display_name, email, messenger_contact, specializations_json, languages_json, experience_range, country, timezone, availability_text, about_text, portfolio_links_json, consent_moderation, consent_test_task, consent_truthfulness, source, ip, user_agent, admin_comment, reviewed_by, reviewed_at, created_at, updated_at.</li>
+            </ul>
+          </div>
+
+          <div class="section">
+            <h3>Статусы</h3>
+            <div class="code-block">new
+in_review
+needs_info
+approved
+rejected
+archived</div>
+          </div>
+
+          <div class="section">
+            <h3>Workflow</h3>
+            <ol>
+              <li>Кандидат отправляет форму.</li>
+              <li>Создается запись <code>expert_application</code> со статусом <code>new</code>.</li>
+              <li>Кандидат видит thank-you экран или success-блок.</li>
+              <li>Администратор открывает заявку в админке.</li>
+              <li>Модератор меняет статус на <code>in_review</code>, <code>needs_info</code>, <code>approved</code> или <code>rejected</code>.</li>
+              <li>При <code>approved</code> появляется действие на следующий onboarding flow.</li>
+            </ol>
+          </div>
+
+          <div class="section">
+            <h3>Админка</h3>
+            <ul>
+              <li>Нужен раздел <code>Expert Applications</code> в <code>admin</code> модуле.</li>
+              <li>Список заявок: ID, дата, имя, email, специализация, страна, статус, ответственный.</li>
+              <li>Фильтры: статус, дата, страна, специализация, поиск по имени/email.</li>
+              <li>Карточка заявки: все поля анкеты, комментарий, история смены статуса, approve/reject/request info/archive.</li>
+            </ul>
+          </div>
+
+          <div class="section">
+            <h3>Email и уведомления</h3>
+            <ul>
+              <li>После отправки формы отправлять подтверждение приема заявки.</li>
+              <li>После смены статуса опционально отправлять уведомление: <code>needs_info</code>, <code>approved</code>, <code>rejected</code>.</li>
+              <li>Тексты уведомлений вынести в отдельные шаблоны.</li>
+            </ul>
+          </div>
+
+          <div class="section">
+            <h3>Технические рекомендации</h3>
+            <ul>
+              <li>Не использовать существующий <code>RegistrationForm</code> как базовую модель для expert flow.</li>
+              <li>Создать отдельный <code>ExpertApplicationForm</code>.</li>
+              <li>Создать отдельный controller, например <code>ExpertApplicationController</code>.</li>
+              <li>Не создавать <code>User</code> автоматически на submit.</li>
+              <li>Множественные поля хранить как JSON или через связующую таблицу.</li>
+              <li>Сразу предусмотреть защиту от спама: rate limit, honeypot или captcha, логирование IP/user-agent.</li>
+            </ul>
+          </div>
+
+          <div class="section">
+            <h3>Что можно отложить</h3>
+            <ul>
+              <li>Автоматическое создание профиля эксперта.</li>
+              <li>Автоматический скоринг кандидата.</li>
+              <li>Календарь и расписания слотов.</li>
+              <li>Привязка биллинга/выплат.</li>
+              <li>Сложный медиазагрузчик.</li>
+            </ul>
+          </div>
+
+          <div class="section">
+            <h3>Что важно не перепутать</h3>
+            <ul>
+              <li>Это не редизайн обычной страницы <code>/signup</code>.</li>
+              <li>Это не замена текущей модели пользователя.</li>
+              <li>Это отдельная воронка с ручной модерацией и отдельной админ-очередью.</li>
+            </ul>
+          </div>
+
+          <div class="section">
+            <h3>Файлы результата</h3>
+            <ul>
+              <li>Preview-макет: <code>web/expert-registration-mockup.html</code></li>
+              <li>Стили макета: <code>web/css/expert-registration.css</code></li>
+              <li>Source MD: <code>ТЗ-expert-registration.md</code></li>
+              <li>Word: <code>expert-registration-tz.docx</code></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Краткий контракт</h3>
+          </div>
+          <div class="panel-body">
+            <div class="fact-box">
+              <strong>Source of truth</strong>
+              <p>Репозиторий Confideline. Локальный markdown и public HTML/TZ считаются частью одного пакета.</p>
+            </div>
+            <div class="fact-box">
+              <strong>Public entry</strong>
+              <p>Landing: <a href="https://cutthreat.github.io/confideline/" target="_blank">cutthreat.github.io/confideline</a></p>
+            </div>
+            <div class="fact-box">
+              <strong>UI preview</strong>
+              <p><code>web/expert-registration-mockup.html</code></p>
+            </div>
+            <div class="fact-box">
+              <strong>Word handoff</strong>
+              <p><code>expert-registration-tz.docx</code></p>
+            </div>
+            <div class="callout">
+              <h3>Как показывать</h3>
+              <p>Открыть landing, затем HTML-TЗ или Word-файл. Для программиста это должен быть один короткий путь без локального запуска.</p>
+            </div>
+            <div class="ok-box">
+              <h3>Done when</h3>
+              <ul>
+                <li>Landing показывает ссылку на spec.</li>
+                <li>Spec отдельно лежит в git.</li>
+                <li>Word лежит рядом с исходниками.</li>
+                <li>Макет открыт отдельной ссылкой.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>
