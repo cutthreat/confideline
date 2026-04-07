@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confideline | Expert Applications Admin</title>
+  <style>
+    :root {
+      --bg: #eef4fb;
+      --panel: #ffffff;
+      --line: #d8e2ef;
+      --text: #203246;
+      --muted: #63768a;
+      --accent: #2f80ed;
+      --accent-soft: #eaf3ff;
+      --success: #eaf8ef;
+      --warn: #fff4e8;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: Arial, sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at top left, #fff 0, #f8fbff 28%, var(--bg) 100%);
+    }
+    .shell { min-height: 100vh; display: flex; flex-direction: column; }
+    .hero { padding: 24px; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.9); }
+    .hero h1 { margin: 0 0 8px; font-size: 30px; line-height: 1.1; }
+    .hero p { margin: 0; max-width: 1000px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 8px; padding: 16px 24px; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.92); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--text); text-decoration: none; font-size: 13px; }
+    .btn-primary { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .btn-soft { border-color: #cfe0ff; background: var(--accent-soft); color: #245ca8; }
+    .content { padding: 18px 24px 24px; }
+    .grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 12px; }
+    .card { border: 1px solid var(--line); border-radius: 18px; background: var(--panel); box-shadow: 0 18px 40px rgba(27,45,69,.06); overflow: hidden; }
+    .card-head { padding: 14px 16px; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.94); }
+    .card-head h2, .card-head h3 { margin: 0; font-size: 18px; }
+    .card-body { padding: 16px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+    .stat { padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+    .stat strong { display: block; font-size: 20px; margin-bottom: 4px; }
+    .stat span { color: var(--muted); font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: left; font-size: 13px; vertical-align: top; }
+    th { color: #3d4f65; font-weight: 700; background: #f8fbff; }
+    .badge { display: inline-block; padding: 4px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .badge-new { background: #edf4ff; color: #2463d8; }
+    .badge-review { background: var(--warn); color: #9f5b00; }
+    .badge-ok { background: var(--success); color: #26774a; }
+    .badge-bad { background: #fdeeee; color: #b03c3c; }
+    .side-section { margin-bottom: 12px; }
+    .side-section:last-child { margin-bottom: 0; }
+    .side-section h3 { margin: 0 0 8px; font-size: 16px; }
+    .side-section p, .side-section li { color: #33475c; font-size: 14px; line-height: 1.55; }
+    .side-section ul { margin: 0; padding-left: 18px; }
+    .preview-box { padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: #f8fbff; }
+    .preview-chip { display: inline-block; margin: 0 6px 6px 0; padding: 5px 9px; border-radius: 999px; background: #eef4fb; color: #3f82d4; font-size: 12px; font-weight: 700; }
+    .note { margin-top: 14px; padding: 14px 16px; border: 1px solid #cfe0ff; border-radius: 14px; background: var(--accent-soft); }
+    .note strong { display: block; margin-bottom: 6px; }
+    .footer { padding: 0 24px 24px; color: var(--muted); font-size: 12px; }
+    @media (max-width: 1100px) { .grid { grid-template-columns: 1fr; } .stats { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="hero">
+      <h1>Expert applications</h1>
+      <p>Отдельный HTML-представитель админ-панели для expert registration: очередь заявок, landing preview, статусы модерации и быстрые переходы обратно в пакет.</p>
+    </header>
+
+    <div class="toolbar">
+      <a class="btn btn-primary" href="../index.html">Landing</a>
+      <a class="btn btn-soft" href="./expert-registration-mockup.html">Panel</a>
+      <a class="btn btn-soft" href="../expert-registration-spec.html">HTML-TЗ</a>
+      <a class="btn btn-soft" href="../expert-registration-tz.docx">Word-TЗ</a>
+      <a class="btn" href="https://github.com/cutthreat/confideline" target="_blank">GitHub</a>
+    </div>
+
+    <main class="content">
+      <div class="grid">
+        <section class="card">
+          <div class="card-head"><h2>Applications queue</h2></div>
+          <div class="card-body">
+            <div class="stats">
+              <div class="stat"><strong>4</strong><span>заявки в очереди</span></div>
+              <div class="stat"><strong>1</strong><span>new</span></div>
+              <div class="stat"><strong>1</strong><span>in_review</span></div>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Эксперт</th>
+                  <th>Email</th>
+                  <th>Специализация</th>
+                  <th>Статус</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1024</td>
+                  <td>Анна Петрова</td>
+                  <td>anna@example.com</td>
+                  <td>Психология</td>
+                  <td><span class="badge badge-new">new</span></td>
+                </tr>
+                <tr>
+                  <td>1025</td>
+                  <td>Олег Сидоров</td>
+                  <td>oleg@example.com</td>
+                  <td>Коучинг</td>
+                  <td><span class="badge badge-review">in_review</span></td>
+                </tr>
+                <tr>
+                  <td>1026</td>
+                  <td>Мария Иванова</td>
+                  <td>maria@example.com</td>
+                  <td>Семейная терапия</td>
+                  <td><span class="badge badge-ok">approved</span></td>
+                </tr>
+                <tr>
+                  <td>1027</td>
+                  <td>Дмитрий Орлов</td>
+                  <td>dmitry@example.com</td>
+                  <td>Финансы</td>
+                  <td><span class="badge badge-bad">rejected</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="card">
+          <div class="card-head"><h3>Landing preview</h3></div>
+          <div class="card-body">
+            <div class="side-section">
+              <h3>Что видно в админке</h3>
+              <p>Список заявок, статусы, быстрый переход на landing и назад в task panel.</p>
+            </div>
+            <div class="side-section preview-box">
+              <span class="preview-chip">landing</span>
+              <span class="preview-chip">panel</span>
+              <span class="preview-chip">html-tz</span>
+              <span class="preview-chip">word</span>
+              <span class="preview-chip">github</span>
+            </div>
+            <div class="note">
+              <strong>Связанные страницы</strong>
+              <p style="margin:0">Landing: <a href="../index.html">index.html</a><br>Panel: <a href="./expert-registration-mockup.html">expert-registration-mockup.html</a><br>Spec: <a href="../expert-registration-spec.html">expert-registration-spec.html</a></p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <div class="footer">Dedicated admin HTML for expert registration only.</div>
+  </div>
+</body>
+</html>

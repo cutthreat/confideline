@@ -1,244 +1,165 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Confideline Translator Preview</title>
-  <style>
-    :root {
-      --bg: #edf3fa;
-      --panel: #ffffff;
-      --line: #d9e3ef;
-      --text: #203246;
-      --muted: #63768a;
-      --accent: #2f80ed;
-      --accent-soft: #eaf3ff;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      margin: 0;
-      min-height: 100%;
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at top left, #ffffff 0, #f7fbff 30%, var(--bg) 100%);
-    }
-
-    .shell {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .hero {
-      padding: 24px;
-      border-bottom: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.84);
-      backdrop-filter: blur(8px);
-    }
-
-    .hero h1 {
-      margin: 0 0 8px;
-      font-size: 30px;
-      line-height: 1.1;
-    }
-
-    .hero p {
-      margin: 0;
-      max-width: 980px;
-      color: var(--muted);
-      line-height: 1.5;
-      font-size: 14px;
-    }
-
-    .toolbar {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-      padding: 16px 24px;
-      border-bottom: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.9);
-    }
-
-    .card {
-      padding: 14px 16px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: var(--panel);
-      box-shadow: 0 14px 32px rgba(30, 51, 76, 0.06);
-    }
-
-    .card h2 {
-      margin: 0 0 6px;
-      font-size: 15px;
-    }
-
-    .card p {
-      margin: 0 0 10px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      min-height: 36px;
-      padding: 0 14px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: #fff;
-      color: var(--text);
-      text-decoration: none;
-      font-size: 13px;
-      cursor: pointer;
-    }
-
-    .btn-primary {
-      border-color: var(--accent);
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .btn-soft {
-      border-color: #cfe0ff;
-      background: var(--accent-soft);
-      color: #245ca8;
-    }
-
-    .content {
-      padding: 18px 24px 24px;
-    }
-
-    .quick-links {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .link-card {
-      padding: 16px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: #fff;
-      box-shadow: 0 18px 40px rgba(27, 45, 69, 0.06);
-    }
-
-    .link-card h3 {
-      margin: 0 0 8px;
-      font-size: 18px;
-    }
-
-    .link-card p {
-      margin: 0 0 12px;
-      color: var(--muted);
-      line-height: 1.5;
-      font-size: 14px;
-    }
-
-    .footer-note {
-      padding: 0 24px 24px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    code {
-      padding: 1px 5px;
-      border-radius: 6px;
-      background: #eef3f9;
-      color: #38506a;
-      font-family: Consolas, monospace;
-      font-size: 12px;
-    }
-
-    @media (max-width: 960px) {
-      .toolbar,
-      .quick-links {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="https://confideline.com/YouDate-last/assets/favicon/favicon-96x96.png" sizes="96x96">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://confideline.com/YouDate-last/css/bootstrap.css">
+  <link rel="stylesheet" href="https://confideline.com/YouDate-last/css/home.css">
+  <link rel="stylesheet" href="./preview/expert-flow/assets/expert-registration.css">
+  <title>Confideline | Expert Registration</title>
 </head>
-<body>
-  <div class="shell">
-    <header class="hero">
-      <h1>Confideline Translator Preview</h1>
-      <p>
-        Публичная страница для показа макетов и ТЗ без локального запуска.
-        Ниже прямые ссылки на экран чата, экран настроек и HTML-версию технического задания.
-      </p>
-    </header>
+<body class="cl-expert-page">
+  <div class="cl-wrapper">
+    <div class="cl-content">
+      <header class="cl-header fixed-top">
+        <div class="container">
+          <nav class="cl-header__navbar navbar navbar-expand-sm navbar-dark">
+            <a class="navbar-brand" href="./index.html">
+              <picture>
+                <source srcset="https://confideline.com/YouDate-last/img/logo.avif" type="image/avif">
+                <source srcset="https://confideline.com/YouDate-last/img/logo.webp" type="image/webp">
+                <img class="cl-header__logo" src="https://confideline.com/YouDate-last/img/logo.png" alt="Confideline">
+              </picture>
+            </a>
 
-    <section class="toolbar">
-      <article class="card">
-        <h2>Чат эксперта</h2>
-        <p>Макет чата с кнопкой <code>Сделать перевод</code> внутри входящего сообщения.</p>
-        <div class="actions">
-          <a class="btn btn-primary" href="Chat/admin-chat-preview-local/chat-translator-preview.html" target="_blank">Открыть чат</a>
-          <a class="btn btn-soft" href="Chat/admin-chat-preview-local/chat-translator-preview.html">Открыть в этой вкладке</a>
+            <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#headerNav" aria-controls="headerNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="headerNav">
+              <div class="cl-header__nav py-3 py-sm-0 d-flex flex-column flex-sm-row align-items-end align-items-sm-center">
+                <a class="btn btn-outline-light" href="./web/expert-registration-mockup.html">Открыть панель</a>
+                <div class="cl-header__nav-buttons d-flex flex-row-reverse flex-sm-row align-items-center justify-content-between">
+                  <a class="btn btn-outline-light" href="#package">Пакет</a>
+                </div>
+              </div>
+            </div>
+          </nav>
         </div>
-      </article>
+      </header>
 
-      <article class="card">
-        <h2>Настройки переводчика</h2>
-        <p>Системный экран для ключей DeepL, Google и Amazon, а также для глобального режима.</p>
-        <div class="actions">
-          <a class="btn btn-primary" href="Chat/admin-chat-preview-local/translator-settings-preview.html" target="_blank">Открыть настройки</a>
-          <a class="btn btn-soft" href="Chat/admin-chat-preview-local/translator-settings-preview.html">Открыть в этой вкладке</a>
-        </div>
-      </article>
+      <main class="cl-page">
+        <section class="cl-expert-hero">
+          <div class="container">
+            <div class="cl-expert-hero__panel">
+              <div class="row align-items-center">
+                <div class="col-lg-7">
+                  <div class="cl-expert-hero__content">
+                    <span class="cl-expert-kicker">Для экспертов</span>
+                    <h1 class="cl-expert-title">Страница регистрации эксперта в Confideline.</h1>
+                    <p class="cl-expert-lead">
+                      Это отдельный публичный пакет: landing, task panel, admin HTML, HTML-ТЗ, Word-ТЗ и исходник.
+                      Ни один переход не ведет в чужие задачи или смешанные панели.
+                    </p>
 
-      <article class="card">
-        <h2>GitHub</h2>
-        <p>Репозиторий можно показывать как исходник, а этот landing как удобную точку входа.</p>
-        <div class="actions">
-          <a class="btn" href="https://github.com/cutthreat/confideline" target="_blank">Открыть репозиторий</a>
-          <a class="btn" href="https://cutthreat.github.io/confideline/" target="_blank">Открыть Pages</a>
-        </div>
-      </article>
+                    <div class="cl-expert-actions">
+                      <a class="btn btn-secondary px-4" href="./web/expert-registration-mockup.html">Открыть панель</a>
+                      <a class="btn btn-outline-light px-4" href="./web/expert-registration-admin.html">Открыть админку</a>
+                    </div>
 
-      <article class="card">
-        <h2>Техническое задание</h2>
-        <p>Публичная HTML-версия ТЗ по переводчику для программиста с описанием UI, backend-контракта и хранения.</p>
-        <div class="actions">
-          <a class="btn btn-primary" href="translator-spec.html" target="_blank">Открыть ТЗ</a>
-          <a class="btn btn-soft" href="translator-spec.html">Открыть в этой вкладке</a>
-        </div>
-      </article>
-    </section>
+                    <div class="row cl-expert-hero__metrics">
+                      <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="cl-expert-stat">
+                          <strong>1 landing</strong>
+                          <span>единая страница входа только по expert registration</span>
+                        </div>
+                      </div>
+                      <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="cl-expert-stat">
+                          <strong>1 admin HTML</strong>
+                          <span>отдельный экран просмотра заявок и landing page</span>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="cl-expert-stat">
+                          <strong>0 чужих задач</strong>
+                          <span>внутри пакета только экспертная регистрация</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-    <main class="content">
-      <div class="quick-links">
-        <section class="link-card">
-          <h3>Как показывать</h3>
-          <p>Открываете эту страницу и кликаете на нужный экран. Никаких локальных серверов и дополнительных действий не требуется.</p>
+                <div class="col-lg-5">
+                  <div class="cl-expert-side">
+                    <div class="cl-expert-preview">
+                      <div class="cl-expert-preview__body">
+                        <div class="cl-expert-preview__label">Пакет страницы</div>
+                        <h3>Изолированный контур</h3>
+                        <p>Landing, панель, админка, ТЗ и Word-версия доступны из одной задачи и не уводят в другой проект.</p>
+                        <ul class="cl-expert-preview__list">
+                          <li>Landing как входная страница</li>
+                          <li>Task panel как рабочая витрина</li>
+                          <li>Admin HTML как отдельный просмотр</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div class="cl-expert-note">
+                      <span class="cl-expert-note__eyebrow">Важно</span>
+                      <p>Все ссылки должны оставаться внутри этой задачи: панель, админка, HTML-ТЗ, Word-ТЗ, source MD и GitHub.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
-        <section class="link-card">
-          <h3>Прямые адреса</h3>
-          <p><a href="Chat/admin-chat-preview-local/chat-translator-preview.html" target="_blank">chat-translator-preview.html</a><br><a href="Chat/admin-chat-preview-local/translator-settings-preview.html" target="_blank">translator-settings-preview.html</a><br><a href="translator-spec.html" target="_blank">translator-spec.html</a></p>
-        </section>
-      </div>
-    </main>
+        <section class="cl-expert-section" id="package">
+          <div class="container">
+            <div class="row align-items-end cl-expert-section__head">
+              <div class="col-lg-5 mb-3 mb-lg-0">
+                <span class="cl-expert-section__eyebrow">Пакет</span>
+                <h2>Все нужные страницы открываются отсюда и не смешиваются с другими задачами.</h2>
+              </div>
+              <div class="col-lg-7">
+                <p class="cl-expert-section__lead">Landing - это главный вход. Панель - рабочая витрина. Админка - отдельный HTML-экран. Спецификация и Word лежат рядом и доступны по прямым ссылкам.</p>
+              </div>
+            </div>
 
-    <div class="footer-note">
-      Публичный URL: <a href="https://cutthreat.github.io/confideline/" target="_blank">cutthreat.github.io/confideline</a>.
+            <div class="row">
+              <div class="col-lg-4 mb-4">
+                <article class="cl-expert-card">
+                  <span class="cl-expert-card__badge">01</span>
+                  <h3>Landing</h3>
+                  <p>Входная страница по регистрации эксперта.</p>
+                  <a class="btn btn-sm btn-outline-light" href="./web/expert-registration-mockup.html">Открыть panel</a>
+                </article>
+              </div>
+              <div class="col-lg-4 mb-4">
+                <article class="cl-expert-card">
+                  <span class="cl-expert-card__badge">02</span>
+                  <h3>Admin HTML</h3>
+                  <p>Просмотр заявок и landing page в админ-представлении.</p>
+                  <a class="btn btn-sm btn-outline-light" href="./web/expert-registration-admin.html">Открыть admin</a>
+                </article>
+              </div>
+              <div class="col-lg-4 mb-4">
+                <article class="cl-expert-card">
+                  <span class="cl-expert-card__badge">03</span>
+                  <h3>ТЗ</h3>
+                  <p>HTML, Word и source MD для передачи программисту.</p>
+                  <a class="btn btn-sm btn-outline-light" href="./expert-registration-spec.html">Открыть spec</a>
+                  <a class="btn btn-sm btn-outline-light" href="./expert-registration-tz.docx">Word</a>
+                  <a class="btn btn-sm btn-outline-light" href="./ТЗ-expert-registration.md">Source</a>
+                </article>
+              </div>
+              <div class="col-lg-4 mb-4">
+                <article class="cl-expert-card">
+                  <span class="cl-expert-card__badge">04</span>
+                  <h3>GitHub</h3>
+                  <p>Репозиторий и Pages как источник правды и публичный вход.</p>
+                  <a class="btn btn-sm btn-outline-light" href="https://github.com/cutthreat/confideline" target="_blank">Repository</a>
+                  <a class="btn btn-sm btn-outline-light" href="https://cutthreat.github.io/confideline/" target="_blank">Pages</a>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
   </div>
 </body>
