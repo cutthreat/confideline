@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confideline | Dashboard Analytics Spec</title>
+  <title>Confideline | ТЗ по аналитическому дашборду</title>
   <link rel="stylesheet" href="./css/dashboard-analytics-handoff.css">
 </head>
 <body class="cl-task-page">
   <main class="cl-task-shell">
     <section class="cl-task-hero">
       <span class="cl-task-kicker">HTML-ТЗ</span>
-      <h1 class="cl-task-title">Confideline Analytics Dashboard Spec</h1>
+      <h1 class="cl-task-title">ТЗ по аналитическому дашборду Confideline</h1>
       <p class="cl-task-lead">
-        Спецификация для backend-интеграции админского dashboard под эзотерические консультации в живом текстовом чате с поминутной оплатой.
+        Спецификация для бекенд-интеграции админского дашборда под эзотерические консультации в живом текстовом чате с поминутной оплатой.
       </p>
       <div class="cl-task-meta">
-        <span class="cl-chip">Source of truth: `index-admin.php`</span>
+        <span class="cl-chip">Источник правды: `index-admin.php`</span>
         <span class="cl-chip">Активная версия: `v3`</span>
         <span class="cl-chip">Архивные варианты: `v1`, `v2`</span>
       </div>
@@ -24,12 +24,12 @@
     <div class="cl-grid">
       <section class="cl-card cl-card--wide">
         <h2>Результат</h2>
-        <p>В админке YouDate/Confideline есть рабочая страница dashboard, построенная на существующих admin-компонентах и адаптированная под консультационный продукт, а не под дейтинг.</p>
+        <p>В админке YouDate/Confideline есть рабочая страница дашборда, построенная на существующих админских компонентах и адаптированная под консультационный продукт, а не под дейтинговый сценарий.</p>
         <div class="cl-code">application/modules/admin/views/default/index-admin.php</div>
       </section>
 
       <section class="cl-card cl-card--wide">
-        <h2>Scope</h2>
+        <h2>Область задачи</h2>
         <ul>
           <li>Только эзотерические / консультационные услуги.</li>
           <li>Только живой текстовый чат с поминутной оплатой.</li>
@@ -39,44 +39,95 @@
       </section>
 
       <section class="cl-card cl-card--wide">
-        <h2>Done When</h2>
+        <h2>Технический стек и ограничения</h2>
         <ul>
-          <li>Верхний экран отвечает на 4 вопроса: спрос, выход в free, конверсия в первую оплату, повторы.</li>
-          <li>Продуктовый и операционный контуры читаются раздельно.</li>
-          <li>В файле нет dating-логики: likes, matches, gifts, private photos и т.д.</li>
-          <li>Разметка опирается на существующий admin stack: `info-box`, `box`, таблицы, `ChartJs`.</li>
+          <li>Боевой дашборд собирается на текущем стеке `Yii2 + yii\bootstrap + AdminLTE 2`.</li>
+          <li>Основа админских ассетов подключается через `application/modules/admin/assets/AdminAsset.php`.</li>
+          <li>Используются существующие стили админ-панели: `admin.min.css`, `info-box`, `box`, стандартные таблицы, `ChartJs`.</li>
+          <li>`Bootstrap 4.6` есть в публичной теме сайта, но это другой контур и не источник правды для боевой админки.</li>
+          <li>Файлы из `web/` служат только для передачи и навигации, а не как CSS-слой для переноса в админку.</li>
         </ul>
       </section>
 
       <section class="cl-card cl-card--wide">
-        <h2>How To Verify</h2>
+        <h2>Готово, когда</h2>
+        <ul>
+          <li>Верхний экран отвечает на 4 вопроса: спрос, выход в бесплатные минуты, конверсия в первую оплату, повторы.</li>
+          <li>Продуктовый и операционный контуры читаются раздельно.</li>
+          <li>В файле нет дейтинговой логики: лайков, мэтчей, подарков как ядра продукта, приватных фото и т.д.</li>
+          <li>Разметка опирается на существующий админский стек: `info-box`, `box`, таблицы, `ChartJs`.</li>
+        </ul>
+      </section>
+
+      <section class="cl-card cl-card--wide">
+        <h2>Как проверить</h2>
         <ul>
           <li>Открыть локальную админку: `http://127.0.0.1:8092/admin`.</li>
-          <li>Убедиться, что рендерятся блоки `Дашборд живых консультаций`, `Фильтры и период`, `Потери между free и paid`, `LTV и когорты`.</li>
-          <li>Проверить синтаксис view: `php -l application/modules/admin/views/default/index-admin.php`.</li>
+          <li>Убедиться, что рендерятся блоки `Дашборд живых консультаций`, `Фильтры и период`, `Потери между бесплатным этапом и оплатой`, `LTV и когорты`.</li>
+          <li>Проверить синтаксис файла представления: `php -l application/modules/admin/views/default/index-admin.php`.</li>
           <li>Если нужен rollback, сравнить `index-admin.php` с `index-admin-v1.php`.</li>
         </ul>
       </section>
 
       <section class="cl-card cl-card--wide">
-        <h2>Основные блоки dashboard</h2>
+        <h2>Основные блоки дашборда</h2>
         <ul>
-          <li>Hero с системными статусами и управляемым периодом.</li>
-          <li>Primary KPI: старт бесплатных минут, конверсия в первую оплату, доля повторных оплат, GMV/чистая выручка.</li>
-          <li>Secondary KPI: спрос, принятие, медианный первый ответ, потери между free и paid.</li>
+          <li>Верхний блок с системными статусами и управляемым периодом.</li>
+          <li>Первый ряд KPI: старт бесплатных минут, конверсия в первую оплату, доля повторных оплат, GMV/чистая выручка.</li>
+          <li>Второй ряд KPI: спрос, принятие, медианный первый ответ, потери между бесплатным этапом и оплатой.</li>
           <li>Продуктовый контур, воронка, unit-экономика, повторы и выручка, LTV и когорты, драйверы роста, риски и операционка.</li>
         </ul>
       </section>
 
       <section class="cl-card cl-card--wide">
         <h2>Воронка</h2>
-        <div class="cl-code">Просмотр эксперта / каталога → Создан запрос → Принято экспертом → Старт бесплатных минут → Paywall shown → Первая оплаченная минута → Списанные оплаченные минуты → Повторная платная сессия</div>
+        <div class="cl-code">Просмотр эксперта / каталога → Создан запрос → Принято экспертом → Старт бесплатных минут → Показан экран оплаты → Первая оплаченная минута → Списанные оплаченные минуты → Повторная платная сессия</div>
         <p class="cl-footer-note">`LTV D7 / D30 / D90` идут отдельным когортным слоем ниже, а не вставляются внутрь основной продуктовой воронки.</p>
+      </section>
+
+      <section class="cl-card cl-card--wide">
+        <h2>Контракт верстки</h2>
+        <ul>
+          <li>Порядок секций фиксирован: продуктовый контур, воронка и unit-экономика, повторы и выручка, LTV и когорты, драйверы роста, риски и операционка.</li>
+          <li>Используются только существующие админские компоненты YouDate/Yii2.</li>
+          <li>Фильтры и кнопки действий сохраняют свое место в шапке даже в макетном режиме.</li>
+          <li>Пустые данные не должны скрывать блоки или ломать сетку.</li>
+        </ul>
+      </section>
+
+      <section class="cl-card cl-card--wide">
+        <h2>Контракт данных</h2>
+        <ul>
+          <li>KPI-карточка: `title`, `value`, `description`, `icon`, `color`.</li>
+          <li>Строка воронки: `step`, `count`, `conversion`, `meaning`.</li>
+          <li>Строка очереди: `incident`, `waiting`, `oldest`, `statusColor`, `statusText`.</li>
+          <li>Графики: `labels`, `datasets`, `legend`, `colors`.</li>
+        </ul>
+      </section>
+
+      <section class="cl-card cl-card--wide">
+        <h2>Примечание по бекенд-привязке</h2>
+        <ul>
+          <li>Для верстки и UI-передачи этого ТЗ достаточно.</li>
+          <li>Для реализации без смысловых потерь нужно отдельно зафиксировать источники данных и формулы расчета метрик.</li>
+          <li>Критичные метрики для явного маппинга: `старт бесплатных минут`, `показ экрана оплаты`, `первая оплаченная минута`, `повторная платная сессия`, `LTV D7 / D30 / D90`, `размер очереди`, SLA, платежные инциденты.</li>
+        </ul>
+      </section>
+
+      <section class="cl-card cl-card--wide">
+        <h2>Чеклист приемки</h2>
+        <ul>
+          <li>Верхний экран читается как `free -> paid -> repeat`.</li>
+          <li>Есть отдельный блок потерь и отдельный блок рисков.</li>
+          <li>Есть отдельный LTV-слой.</li>
+          <li>Нет дейтинговых терминов и сущностей.</li>
+          <li>Бекенд может подставить реальные данные без перестройки контракта верстки.</li>
+        </ul>
       </section>
 
       <section class="cl-card cl-card--full">
         <h2>Файлы</h2>
-        <div class="cl-code">Активный view: Chat/youdate-2.0.2-yii2/Source/youdate_extracted/application/modules/admin/views/default/index-admin.php</div>
+        <div class="cl-code">Активный файл: Chat/youdate-2.0.2-yii2/Source/youdate_extracted/application/modules/admin/views/default/index-admin.php</div>
         <div class="cl-code">Архив v1: Chat/youdate-2.0.2-yii2/Source/youdate_extracted/application/modules/admin/views/default/index-admin-v1.php</div>
         <div class="cl-code">Архив v2: Chat/youdate-2.0.2-yii2/Source/youdate_extracted/application/modules/admin/views/default/index-admin-v2.php</div>
         <div class="cl-code">Архив v3: Chat/youdate-2.0.2-yii2/Source/youdate_extracted/application/modules/admin/views/default/index-admin-v3.php</div>
