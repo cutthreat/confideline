@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | Dashboard Analytics Spec</title>
+  <link rel="stylesheet" href="./css/dashboard-analytics-handoff.css">
+</head>
+<body class="cl-task-page">
+  <main class="cl-task-shell">
+    <section class="cl-task-hero">
+      <span class="cl-task-kicker">HTML-ТЗ</span>
+      <h1 class="cl-task-title">Confideline Analytics Dashboard Spec</h1>
+      <p class="cl-task-lead">
+        Спецификация для backend-интеграции админского dashboard под эзотерические консультации в живом текстовом чате с поминутной оплатой.
+      </p>
+      <div class="cl-task-meta">
+        <span class="cl-chip">Source of truth: `index-admin.php`</span>
+        <span class="cl-chip">Активная версия: `v3`</span>
+        <span class="cl-chip">Архивные варианты: `v1`, `v2`</span>
+      </div>
+    </section>
+
+    <div class="cl-grid">
+      <section class="cl-card cl-card--wide">
+        <h2>Результат</h2>
+        <p>В админке YouDate/Confideline есть рабочая страница dashboard, построенная на существующих admin-компонентах и адаптированная под консультационный продукт, а не под дейтинг.</p>
+        <div class="cl-code">application/modules/admin/views/default/index-admin.php</div>
+      </section>
+
+      <section class="cl-card cl-card--wide">
+        <h2>Scope</h2>
+        <ul>
+          <li>Только эзотерические / консультационные услуги.</li>
+          <li>Только живой текстовый чат с поминутной оплатой.</li>
+          <li>Воронка `free -> first paid -> repeat` обязательна.</li>
+          <li>LTV считается отдельным аналитическим слоем, не шагом основной воронки.</li>
+        </ul>
+      </section>
+
+      <section class="cl-card cl-card--wide">
+        <h2>Done When</h2>
+        <ul>
+          <li>Верхний экран отвечает на 4 вопроса: спрос, выход в free, конверсия в первую оплату, повторы.</li>
+          <li>Продуктовый и операционный контуры читаются раздельно.</li>
+          <li>В файле нет dating-логики: likes, matches, gifts, private photos и т.д.</li>
+          <li>Разметка опирается на существующий admin stack: `info-box`, `box`, таблицы, `ChartJs`.</li>
+        </ul>
+      </section>
+
+      <section class="cl-card cl-card--wide">
+        <h2>How To Verify</h2>
+        <ul>
+          <li>Открыть локальную админку: `http://127.0.0.1:8092/admin`.</li>
+          <li>Убедиться, что рендерятся блоки `Дашборд живых консультаций`, `Фильтры и период`, `Потери между free и paid`, `LTV и когорты`.</li>
+          <li>Проверить синтаксис view: `php -l application/modules/admin/views/default/index-admin.php`.</li>
+          <li>Если нужен rollback, сравнить `index-admin.php` с `index-admin-v1.php`.</li>
+        </ul>
+      </section>
+
+      <section class="cl-card cl-card--wide">
+        <h2>Основные блоки dashboard</h2>
+        <ul>
+          <li>Hero с системными статусами и управляемым периодом.</li>
+          <li>Primary KPI: старт бесплатных минут, конверсия в первую оплату, доля повторных оплат, GMV/чистая выручка.</li>
+          <li>Secondary KPI: спрос, принятие, медианный первый ответ, потери между free и paid.</li>
+          <li>Продуктовый контур, воронка, unit-экономика, повторы и выручка, LTV и когорты, драйверы роста, риски и операционка.</li>
+        </ul>
+      </section>
+
+      <section class="cl-card cl-card--wide">
+        <h2>Воронка</h2>
+        <div class="cl-code">Просмотр эксперта / каталога → Создан запрос → Принято экспертом → Старт бесплатных минут → Paywall shown → Первая оплаченная минута → Списанные оплаченные минуты → Повторная платная сессия</div>
+        <p class="cl-footer-note">`LTV D7 / D30 / D90` идут отдельным когортным слоем ниже, а не вставляются внутрь основной продуктовой воронки.</p>
+      </section>
+
+      <section class="cl-card cl-card--full">
+        <h2>Файлы</h2>
+        <div class="cl-code">Активный view: Chat/youdate-2.0.2-yii2/Source/youdate_extracted/application/modules/admin/views/default/index-admin.php</div>
+        <div class="cl-code">Архив v1: Chat/youdate-2.0.2-yii2/Source/youdate_extracted/application/modules/admin/views/default/index-admin-v1.php</div>
+        <div class="cl-code">Архив v2: Chat/youdate-2.0.2-yii2/Source/youdate_extracted/application/modules/admin/views/default/index-admin-v2.php</div>
+        <div class="cl-code">Архив v3: Chat/youdate-2.0.2-yii2/Source/youdate_extracted/application/modules/admin/views/default/index-admin-v3.php</div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
