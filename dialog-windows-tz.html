@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ТЗ - унификация диалоговых окон Confideline</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    :root {
+      --bg: #f3f6fa;
+      --surface: #ffffff;
+      --line: #d9e0e8;
+      --text: #32465d;
+      --muted: #66788f;
+      --blue: #2f7fe8;
+      --green: #2e9b60;
+      --red: #d14b5a;
+      --yellow: #f3ad32;
+      --shadow: 0 14px 34px rgba(10, 16, 27, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #f7f9fc 0%, #edf2f7 100%);
+      color: var(--text);
+      font: 15px/1.6 "Segoe UI", Arial, sans-serif;
+    }
+    .page {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 28px 20px 72px;
+    }
+    .hero {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 28px 32px;
+      margin-bottom: 22px;
+    }
+    h1, h2, h3, h4 { margin: 0; }
+    h1 {
+      font-size: 34px;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 17px;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .pill {
+      background: #eef4fb;
+      border: 1px solid #d6e2f0;
+      border-radius: 999px;
+      color: #47617d;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+    .section__head {
+      border-bottom: 1px solid var(--line);
+      padding: 18px 24px;
+    }
+    .section__body {
+      padding: 20px 24px 24px;
+    }
+    .section__head h2 {
+      font-size: 24px;
+      line-height: 1.2;
+    }
+    .lead {
+      color: var(--muted);
+      margin: 6px 0 0;
+    }
+    .grid-2 {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .grid-3 {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fbfcfe;
+      padding: 16px 18px;
+    }
+    .card h3, .card h4 {
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+    .card p, .card li { color: #50657d; }
+    ul, ol {
+      margin: 0;
+      padding-left: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      vertical-align: top;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    th {
+      background: #f5f8fc;
+      font-weight: 700;
+    }
+    .tag {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .tag.red { background: var(--red); }
+    .tag.blue { background: var(--blue); }
+    .tag.green { background: var(--green); }
+    .tag.yellow { background: var(--yellow); color: #604400; }
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #0f1722;
+      color: #e7eef8;
+      border-radius: 14px;
+      padding: 18px;
+      overflow: auto;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .preview {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: linear-gradient(180deg, #eef2f7 0%, #dde6ef 100%);
+      padding: 18px;
+      min-height: 270px;
+    }
+    .dialog {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 20px 44px rgba(10, 16, 27, 0.18);
+      overflow: hidden;
+    }
+    .dialog__head, .dialog__foot { padding: 16px 18px; }
+    .dialog__head {
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .dialog__title {
+      font-size: 21px;
+      font-weight: 700;
+    }
+    .dialog__body {
+      display: flex;
+      gap: 14px;
+      padding: 18px;
+    }
+    .dialog__icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex: 0 0 44px;
+    }
+    .dialog__message {
+      margin: 0;
+      font-weight: 600;
+      color: #415772;
+    }
+    .dialog__hint {
+      margin: 8px 0 0;
+      color: #73859b;
+      font-size: 13px;
+    }
+    .dialog__foot {
+      border-top: 1px solid var(--line);
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+    .btn {
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      min-width: 118px;
+      padding: 10px 16px;
+      font-weight: 700;
+      color: #486078;
+    }
+    .btn.main.blue { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .btn.main.green { background: var(--green); border-color: var(--green); color: #fff; }
+    .btn.main.red { background: var(--red); border-color: var(--red); color: #fff; }
+    .dialog.red .dialog__icon { background: rgba(209,75,90,.12); color: var(--red); }
+    .dialog.blue .dialog__icon { background: rgba(47,127,232,.12); color: var(--blue); }
+    .dialog.green .dialog__icon { background: rgba(46,155,96,.12); color: var(--green); }
+    .inline-note {
+      margin-top: 10px;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 13px;
+    }
+    .inline-note.red { background: #fdf0f2; color: #8d2d36; border: 1px solid #f3c8cf; }
+    .code-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 1.05fr .95fr;
+      align-items: start;
+    }
+    .frame {
+      width: 100%;
+      min-height: 760px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+    }
+    .caption {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+    .small { font-size: 13px; color: var(--muted); }
+    .warn {
+      background: #fff7e8;
+      border: 1px solid #f1dfb2;
+      color: #73520a;
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    @media (max-width: 980px) {
+      .grid-2, .grid-3, .code-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <h1>Техническое задание по унификации диалоговых окон Confideline</h1>
+      <p class="subtitle">Документ подготовлен по структуре и уровню детализации, аналогичным образцу Google Doc “ТЗ 11 - разработка доски объявлений на сайте”, но применительно к фронтовым и административным диалоговым окнам.</p>
+      <div class="meta">
+        <span class="pill">Проект: Confideline / YouDate Yii2</span>
+        <span class="pill">Дата: 06.04.2026</span>
+        <span class="pill">Основание: текущий live + локальный Yii2 source</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section__head">
+        <h2>Описание задачи</h2>
+      </div>
+      <div class="section__body">
+        <p>Необходимо привести к единому визуальному и поведенческому стандарту все диалоговые окна и уведомления на сайте Confideline: как на пользовательском фронте, так и в административной панели Yii2. Сейчас окна используют разные стили, разные механики вызова и разный уровень информативности. Требуется описать все найденные сценарии, задать единый шаблон, определить состояния окна и дать HTML-шаблоны для внедрения.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section__head">
+        <h2>Цель и ожидаемый результат</h2>
+      </div>
+      <div class="section__body">
+        <div class="grid-3">
+          <div class="card">
+            <h3>1. Инвентаризация</h3>
+            <p>Получить полный перечень диалоговых окон: где находятся, когда появляются, каким кодом вызываются и какой тип действия подтверждают.</p>
+          </div>
+          <div class="card">
+            <h3>2. Единый стиль</h3>
+            <p>Задать общий визуальный язык для модалок, confirm-окон, flash-alert и toast-уведомлений с едиными цветами, кнопками, иконками и отступами.</p>
+          </div>
+          <div class="card">
+            <h3>3. Внедрение</h3>
+            <p>Подготовить HTML-шаблоны и правила интеграции в Yii2 admin asset layer и в пользовательский шаблон без точечной ручной переписи каждой view.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section__head">
+        <h2>Текущая проблема</h2>
+      </div>
+      <div class="section__body">
+        <div class="grid-2">
+          <div class="card">
+            <h3>Факт</h3>
+            <ul>
+              <li>В админке одновременно используются `data-confirm`, `bootbox.confirm`, прямой `window.confirm`, Bootstrap modal, flash-alert и Messenger.</li>
+              <li>На фронте подтверждены отдельные модалки для upload/premium и отдельные inline alert-блоки.</li>
+              <li>Сейчас разные сценарии показывают разные размеры окна, кнопки, цвета и плотность текста.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Следствие</h3>
+            <ul>
+              <li>Пользователь не получает единый паттерн поведения.</li>
+              <li>Администратор видит смесь браузерных confirm-окон и кастомных модалок.</li>
+              <li>Доработка становится дорогой, если менять каждую точку вызова вручную.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section__head">
+        <h2>Полный перечень диалоговых окон</h2>
+        <p class="lead">Сводка по локальному Yii2-коду и статическому фронтовому preview.</p>
+      </div>
+      <div class="section__body">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 48px;">№</th>
+              <th style="width: 240px;">Название / тип окна</th>
+              <th>Когда и где появляется</th>
+              <th style="width: 160px;">Текущая реализация</th>
+              <th style="width: 260px;">Источник</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Удаление / блокировка / подтверждение пользователя</td>
+              <td>Список пользователей и карточка пользователя в админке: confirm, block, unblock, add/remove admin, add/remove verification, delete.</td>
+              <td><span class="tag red">data-confirm</span></td>
+              <td>`modules/admin/views/user/index.php`, `modules/admin/views/user/update.php`</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Операции с группами</td>
+              <td>Карточка группы и список групп: добавить/снять значок верификации, удалить группу.</td>
+              <td><span class="tag red">data-confirm</span></td>
+              <td>`modules/admin/views/group/_layout.php`, `modules/admin/views/group/index.php`</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Удаление сообщений и логов</td>
+              <td>Legacy messages, log index, help, gifts, reports, bans, plugins, settings-admin и другие delete-сценарии.</td>
+              <td><span class="tag red">data-confirm</span></td>
+              <td>Сводно: `modules/admin/views/...`</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Предупреждение о несохранённых изменениях</td>
+              <td>Страница редактирования страниц в админке при смене языка без сохранения.</td>
+              <td><span class="tag blue">bootbox.confirm</span></td>
+              <td>`modules/admin/static/js/admin.js`, `modules/admin/views/page/index.php`</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Подтверждение удаления в language scan</td>
+              <td>Удаление одного и нескольких элементов в языковом сканере.</td>
+              <td><span class="tag yellow">window.confirm</span></td>
+              <td>`modules/admin/static/js/translate.js`</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>`Cron setup`</td>
+              <td>Информационное модальное окно на админском dashboard.</td>
+              <td><span class="tag blue">Bootstrap modal</span></td>
+              <td>`modules/admin/views/default/index-admin.php`</td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td>`New page`</td>
+              <td>Форма создания новой страницы в разделе управления страницами.</td>
+              <td><span class="tag blue">Bootstrap modal</span></td>
+              <td>`modules/admin/views/page/index.php`</td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td>Flash alerts</td>
+              <td>Сообщения об успехе/ошибке/информации на страницах админки.</td>
+              <td><span class="tag green">Yii Alert</span></td>
+              <td>`modules/admin/widgets/Alert.php`, `modules/admin/views/layouts/main.php`</td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td>Messenger toasts</td>
+              <td>AJAX errors, успешные действия в list view, уведомления agent chat.</td>
+              <td><span class="tag blue">Messenger</span></td>
+              <td>`modules/admin/static/js/admin.js`, `modules/admin/static/js/admin-agent-chat.js`</td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td>Upload error на фронте</td>
+              <td>Ошибка загрузки файла в spotlight/story media, когда превышен размер или нарушены ограничения.</td>
+              <td><span class="tag red">Frontend modal</span></td>
+              <td>`web/dashboard-real-preview.html`, `#spotlight-warning`</td>
+            </tr>
+            <tr>
+              <td>11</td>
+              <td>Premium/info modal на фронте</td>
+              <td>Информационное окно с CTA на фронте.</td>
+              <td><span class="tag blue">Frontend modal</span></td>
+              <td>`web/dashboard-real-preview.html`, `#premiumModal`</td>
+            </tr>
+            <tr>
+              <td>12</td>
+              <td>Inline alerts на фронте</td>
+              <td>Ошибки upload/cropper/video trim и form error-summary.</td>
+              <td><span class="tag red">Inline alert</span></td>
+              <td>`#result-stories-upload`, `#cropper-alert`, `#video-trim-alert`</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="small" style="margin-top: 12px;">Подробная локальная карта окон и точек вызова вынесена в отдельный файл: `H:\GPT-Codex\Confideline\dialog-windows-audit.md`.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section__head">
+        <h2>Требования к новому стилю</h2>
+      </div>
+      <div class="section__body">
+        <div class="grid-3">
+          <div class="card">
+            <h3>Красное состояние</h3>
+            <p><span class="tag red">danger</span></p>
+            <ul>
+              <li>Ошибки</li>
+              <li>Удаление</li>
+              <li>Блокировка</li>
+              <li>Необратимые действия</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Синее состояние</h3>
+            <p><span class="tag blue">info</span></p>
+            <ul>
+              <li>Нейтральная информация</li>
+              <li>Предупреждение о переходе</li>
+              <li>Служебные окна и подсказки</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Зелёное состояние</h3>
+            <p><span class="tag green">success / important</span></p>
+            <ul>
+              <li>Подтверждение</li>
+              <li>Верификация</li>
+              <li>Выдача прав</li>
+              <li>Важное действие с позитивным исходом</li>
+            </ul>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-top: 16px;">
+          <div class="card">
+            <h3>Единые визуальные правила</h3>
+            <ul>
+              <li>Скругление окна: 12-14 px</li>
+              <li>Тень: мягкая, глубокая, без чёрного “грязного” контура</li>
+              <li>Заголовок: 21-24 px, semibold/bold</li>
+              <li>Тело текста: 15-16 px</li>
+              <li>Кнопки: pill shape, одна главная, одна вторичная</li>
+              <li>Слева обязательна круглая иконка состояния</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Поведенческие правила</h3>
+            <ul>
+              <li>`data-confirm` должен отрисовываться через общий JS helper, а не браузерный native dialog.</li>
+              <li>Прямые `window.confirm` должны быть заменены на общий helper.</li>
+              <li>Flash alerts и Messenger должны использовать ту же цветовую семантику, что и модалки.</li>
+              <li>На фронте и в админке должен сохраняться один язык компонентов, даже если стек плагинов отличается.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section__head">
+        <h2>HTML-шаблоны</h2>
+        <p class="lead">Ниже приведены шаблоны для confirm/error/info/important, которые можно использовать и во фронте, и в админке.</p>
+      </div>
+      <div class="section__body">
+        <div class="code-grid">
+          <div>
+            <pre>&lt;div class="cfd-dialog__body"&gt;
+  &lt;span class="cfd-dialog__icon"&gt;
+    &lt;i class="fa fa-info-circle"&gt;&lt;/i&gt;
+  &lt;/span&gt;
+  &lt;div class="cfd-dialog__copy"&gt;
+    &lt;p class="cfd-dialog__message"&gt;
+      Вы действительно хотите удалить это сообщение?
+    &lt;/p&gt;
+    &lt;p class="cfd-dialog__hint"&gt;
+      Действие выполнится сразу и без дополнительного шага.
+    &lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+          </div>
+          <div class="preview">
+            <div class="dialog blue">
+              <div class="dialog__head">
+                <div class="dialog__title">Подтвердите действие</div>
+                <div class="small"><i class="fa fa-times"></i></div>
+              </div>
+              <div class="dialog__body">
+                <span class="dialog__icon"><i class="fa fa-info-circle"></i></span>
+                <div>
+                  <p class="dialog__message">Вы действительно хотите удалить это сообщение?</p>
+                  <p class="dialog__hint">Действие выполнится сразу и без дополнительного шага.</p>
+                </div>
+              </div>
+              <div class="dialog__foot">
+                <button class="btn">Отмена</button>
+                <button class="btn main blue">OK</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-3" style="margin-top: 18px;">
+          <div class="preview">
+            <div class="dialog red">
+              <div class="dialog__head">
+                <div class="dialog__title">Upload error</div>
+                <div class="small"><i class="fa fa-times"></i></div>
+              </div>
+              <div class="dialog__body">
+                <span class="dialog__icon"><i class="fa fa-times-circle"></i></span>
+                <div>
+                  <p class="dialog__message">Файл “video.mp4” слишком большой. Допустимый размер не должен превышать 30 MiB.</p>
+                  <p class="dialog__hint">Выберите другой файл или сожмите текущий перед повторной загрузкой.</p>
+                </div>
+              </div>
+              <div class="inline-note red">Использовать для ошибок, удаления, блокировки и необратимых действий.</div>
+              <div class="dialog__foot">
+                <button class="btn">Закрыть</button>
+                <button class="btn main red">Выбрать другой файл</button>
+              </div>
+            </div>
+          </div>
+          <div class="preview">
+            <div class="dialog blue">
+              <div class="dialog__head">
+                <div class="dialog__title">Информация</div>
+                <div class="small"><i class="fa fa-times"></i></div>
+              </div>
+              <div class="dialog__body">
+                <span class="dialog__icon"><i class="fa fa-info-circle"></i></span>
+                <div>
+                  <p class="dialog__message">У вас есть несохранённые изменения. При переходе они будут потеряны.</p>
+                  <p class="dialog__hint">Использовать для нейтральных предупреждений и служебных пояснений.</p>
+                </div>
+              </div>
+              <div class="dialog__foot">
+                <button class="btn">Остаться</button>
+                <button class="btn main blue">Продолжить</button>
+              </div>
+            </div>
+          </div>
+          <div class="preview">
+            <div class="dialog green">
+              <div class="dialog__head">
+                <div class="dialog__title">Важное действие</div>
+                <div class="small"><i class="fa fa-times"></i></div>
+              </div>
+              <div class="dialog__body">
+                <span class="dialog__icon"><i class="fa fa-check-circle"></i></span>
+                <div>
+                  <p class="dialog__message">Вы уверены, что хотите подтвердить аккаунт пользователя?</p>
+                  <p class="dialog__hint">Использовать для подтверждения, верификации и выдачи прав.</p>
+                </div>
+              </div>
+              <div class="dialog__foot">
+                <button class="btn">Отмена</button>
+                <button class="btn main green">Подтвердить</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section__head">
+        <h2>Техническая реализация в Yii2</h2>
+      </div>
+      <div class="section__body">
+        <div class="grid-2">
+          <div class="card">
+            <h3>Факт</h3>
+            <ul>
+              <li>В админке уже есть `bootbox.min.js`, `BootstrapAsset`, `BootstrapPluginAsset`, `YiiAsset`, `FontAwesome`.</li>
+              <li>Следовательно, безопасно централизовать confirm-окна через переопределение `yii.confirm`.</li>
+              <li>Прямые `window.confirm` остаются только в отдельных JS-файлах и подлежат адресной замене.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Что нужно внедрить</h3>
+            <ul>
+              <li>Подключить общий CSS для `modal`, `bootbox`, `alert`, `messenger`.</li>
+              <li>Добавить общий JS helper с методами `confirm()` и `alert()`.</li>
+              <li>Переопределить `window.yii.confirm`.</li>
+              <li>Заменить оставшиеся прямые `window.confirm` в custom JS.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="warn" style="margin-top: 16px;">
+          В локальной реализации это уже вынесено в `modules/admin/static/css/admin-dialogs.css` и `modules/admin/static/js/admin-dialogs.js`, а также подключено в `modules/admin/assets/AdminAsset.php`.
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section__head">
+        <h2>Критерии приёмки</h2>
+      </div>
+      <div class="section__body">
+        <ol>
+          <li>Все административные `data-confirm` больше не показывают нативное браузерное окно.</li>
+          <li>Все delete/block/irreversible сценарии используют красное состояние с иконкой.</li>
+          <li>Все neutral/info сценарии используют синее состояние.</li>
+          <li>Все confirm/verify/grant-access сценарии используют зелёное состояние.</li>
+          <li>Flash alerts и Messenger соответствуют той же цветовой системе.</li>
+          <li>Фронтовые окна upload/info визуально совпадают по языку компонентов с админкой.</li>
+          <li>Поведение и внешний вид одинаковы на desktop и mobile.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section__head">
+        <h2>Приложение A. Визуальные шаблоны</h2>
+        <p class="lead">Внутрь документа встроены живые HTML-примеры диалоговых окон.</p>
+      </div>
+      <div class="section__body">
+        <iframe class="frame" src="./web/dialog-unification-demo.html"></iframe>
+        <p class="caption">Встроенный preview: три состояния целевого дизайна диалоговых окон.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section__head">
+        <h2>Приложение B. Текущий фронтовый пример</h2>
+        <p class="lead">Встроенный статический preview с фронтовыми окнами upload/premium.</p>
+      </div>
+      <div class="section__body">
+        <iframe class="frame" src="./web/dashboard-real-preview.html"></iframe>
+        <p class="caption">Встроенный preview: текущий фронтовый экран с окнами `#spotlight-warning` и `#premiumModal`.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section__head">
+        <h2>Приложение C. Админские кейсы из аудита</h2>
+      </div>
+      <div class="section__body">
+        <table>
+          <thead>
+            <tr>
+              <th>Кейс</th>
+              <th>Экран</th>
+              <th>Текст действия</th>
+              <th>Цвет состояния</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Удаление сообщения</td>
+              <td>Управление сообщениями</td>
+              <td>“Вы действительно хотите удалить это сообщение?”</td>
+              <td><span class="tag red">danger</span></td>
+            </tr>
+            <tr>
+              <td>Удаление группы</td>
+              <td>Управление группами</td>
+              <td>“Вы действительно хотите удалить эту группу?”</td>
+              <td><span class="tag red">danger</span></td>
+            </tr>
+            <tr>
+              <td>Удаление значка верификации</td>
+              <td>Карточка группы</td>
+              <td>“Вы действительно хотите удалить значок верификации у этой группы?”</td>
+              <td><span class="tag red">danger</span></td>
+            </tr>
+            <tr>
+              <td>Подтверждение пользователя</td>
+              <td>Карточка пользователя</td>
+              <td>“Вы уверены, что хотите подтвердить аккаунт пользователя?”</td>
+              <td><span class="tag green">success</span></td>
+            </tr>
+            <tr>
+              <td>Блокировка пользователя</td>
+              <td>Карточка пользователя</td>
+              <td>“Вы уверены, что хотите заблокировать пользователя?”</td>
+              <td><span class="tag red">danger</span></td>
+            </tr>
+            <tr>
+              <td>Выдача прав администратора</td>
+              <td>Редактирование баланса / карточка пользователя</td>
+              <td>“Вы действительно хотите дать права администратора этому пользователю?”</td>
+              <td><span class="tag green">success</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="caption">Эти кейсы взяты из переданных скриншотов и подтверждены локальным аудитом точек вызова.</p>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
