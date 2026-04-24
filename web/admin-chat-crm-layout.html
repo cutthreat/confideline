@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | Expert Chat CRM Layout</title>
+  <style>
+    :root {
+      --bg: #eef3f8;
+      --surface: #ffffff;
+      --surface-soft: #f7fafc;
+      --line: #d9e2eb;
+      --line-strong: #c3d1df;
+      --text: #172434;
+      --muted: #6a7a8a;
+      --blue: #385f8d;
+      --blue-dark: #2e4f79;
+      --cyan: #45a7c7;
+      --green: #238b5b;
+      --amber: #a86d13;
+      --red: #b24a4a;
+      --violet: #7357b8;
+      --shadow: 0 12px 28px rgba(28, 50, 74, .08);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    }
+
+    button, input, textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .page {
+      min-height: 100vh;
+      padding: 18px;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 420px minmax(460px, 1fr) 360px;
+      min-height: calc(100vh - 36px);
+      max-width: 1720px;
+      margin: 0 auto;
+      border: 1px solid var(--line-strong);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .queue,
+    .thread,
+    .crm {
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .queue {
+      border-right: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .queue__tabs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0;
+      height: 72px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .queue-tab {
+      border: 0;
+      border-bottom: 3px solid transparent;
+      background: #fff;
+      color: #5b6877;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .queue-tab.is-active {
+      color: #132033;
+      font-weight: 700;
+      border-bottom-color: #3c97b6;
+      box-shadow: inset 0 -8px 0 rgba(60, 151, 182, .12);
+    }
+
+    .queue-tab__count,
+    .filter-btn__count,
+    .conversation__unread {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 34px;
+      height: 34px;
+      margin-left: 8px;
+      border-radius: 999px;
+      background: #edf4fa;
+      color: #27435f;
+      font-weight: 700;
+    }
+
+    .queue__tools {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 144px;
+      gap: 14px;
+      padding: 16px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfdff;
+    }
+
+    .search {
+      display: flex;
+      align-items: center;
+      height: 48px;
+      border: 1px solid #cbd6e2;
+      border-radius: 7px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .search input {
+      min-width: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      padding: 0 12px;
+      color: var(--text);
+      font-size: 18px;
+      outline: 0;
+    }
+
+    .search button,
+    .filter-btn {
+      height: 48px;
+      border: 1px solid #cbd6e2;
+      background: #fff;
+      color: #526376;
+      border-radius: 7px;
+    }
+
+    .search button {
+      width: 52px;
+      border: 0;
+      border-left: 1px solid #e4ebf2;
+      border-radius: 0;
+      font-size: 20px;
+    }
+
+    .filter-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 17px;
+    }
+
+    .conversation-list {
+      height: calc(100vh - 200px);
+      min-height: 590px;
+      overflow: auto;
+    }
+
+    .conversation {
+      width: 100%;
+      display: grid;
+      gap: 8px;
+      padding: 15px 14px 14px 18px;
+      border: 0;
+      border-bottom: 1px solid #e4ebf1;
+      background: #fff;
+      color: var(--text);
+      text-align: left;
+    }
+
+    .conversation.is-active {
+      background: linear-gradient(180deg, var(--blue) 0%, var(--blue-dark) 100%);
+      color: #fff;
+      box-shadow: inset 4px 0 0 #52bfdc;
+    }
+
+    .conversation__route {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: start;
+    }
+
+    .conversation__pair {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      gap: 8px;
+      font-size: 19px;
+      font-weight: 700;
+      line-height: 1.15;
+    }
+
+    .avatar {
+      flex: 0 0 auto;
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      background: #d7e0eb;
+      color: #415469;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 0 0 1px #c6d1dc;
+    }
+
+    .conversation.is-active .avatar {
+      background: #edf4ff;
+      color: #24425f;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.35);
+    }
+
+    .conversation__name {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .conversation__arrow {
+      color: #8b98a6;
+      font-weight: 400;
+    }
+
+    .conversation.is-active .conversation__arrow,
+    .conversation.is-active .conversation__time,
+    .conversation.is-active .conversation__snippet {
+      color: rgba(255,255,255,.88);
+    }
+
+    .conversation__time {
+      color: #7a8795;
+      font-size: 16px;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .conversation__snippet {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #607184;
+      font-size: 17px;
+      line-height: 1.25;
+    }
+
+    .conversation__meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      min-height: 30px;
+    }
+
+    .tag,
+    .tier {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 24px;
+      max-width: 100%;
+      padding: 2px 9px;
+      border: 1px solid #ccd8e4;
+      border-radius: 999px;
+      background: #fff;
+      color: #6b7684;
+      font-size: 14px;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .conversation.is-active .tag {
+      border-color: rgba(255,255,255,.28);
+      background: rgba(255,255,255,.1);
+      color: rgba(255,255,255,.9);
+    }
+
+    .tier {
+      font-weight: 700;
+      border-width: 0;
+      color: #fff;
+    }
+
+    .tier--whale { background: #5b4eb1; }
+    .tier--repeat { background: var(--green); }
+    .tier--paid { background: #2f78b7; }
+    .tier--warm { background: var(--amber); }
+    .tier--trial { background: #4f8795; }
+    .tier--cold { background: #7d8a98; }
+    .tier--risk { background: var(--red); }
+
+    .conversation__pin {
+      margin-left: auto;
+      color: inherit;
+      opacity: .78;
+      font-size: 17px;
+    }
+
+    .conversation__unread {
+      min-width: 31px;
+      height: 31px;
+      margin-left: 0;
+      color: #23577d;
+      font-size: 16px;
+    }
+
+    .thread {
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr) auto;
+      background: #f8fbfd;
+    }
+
+    .thread__header,
+    .crm__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .thread__title {
+      min-width: 0;
+    }
+
+    .thread__title strong {
+      display: block;
+      font-size: 20px;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .thread__title span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid #c8d5e2;
+      border-radius: 7px;
+      background: #fff;
+      color: #30465f;
+      white-space: nowrap;
+    }
+
+    .btn--primary {
+      border-color: #2f78b7;
+      background: #2f78b7;
+      color: #fff;
+    }
+
+    .state-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      border-bottom: 1px solid var(--line);
+      background: var(--line);
+    }
+
+    .state {
+      min-width: 0;
+      padding: 10px 14px;
+      background: #fff;
+    }
+
+    .state span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    .state strong {
+      display: block;
+      margin-top: 3px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    .messages {
+      min-height: 0;
+      overflow: auto;
+      padding: 18px;
+    }
+
+    .day {
+      width: max-content;
+      margin: 0 auto 14px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: #e9f0f6;
+      color: #64778a;
+      font-size: 12px;
+    }
+
+    .message {
+      max-width: 72%;
+      margin-bottom: 14px;
+      padding: 12px 14px;
+      border: 1px solid #dbe4ed;
+      border-radius: 10px;
+      background: #fff;
+      color: #253447;
+    }
+
+    .message--expert {
+      margin-left: auto;
+      border-color: #2f78b7;
+      background: #2f78b7;
+      color: #fff;
+    }
+
+    .message header {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 7px;
+      font-size: 12px;
+      opacity: .82;
+    }
+
+    .message p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .system-event {
+      margin: 12px 0;
+      padding: 10px 12px;
+      border-left: 3px solid var(--amber);
+      background: #fff8eb;
+      color: #79510e;
+      font-size: 13px;
+    }
+
+    .composer {
+      border-top: 1px solid var(--line);
+      background: #fff;
+      padding: 12px 14px;
+    }
+
+    .quick-replies {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .quick-replies .btn {
+      min-height: 30px;
+      font-size: 13px;
+    }
+
+    .composer__form {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+    }
+
+    .composer textarea {
+      width: 100%;
+      min-height: 68px;
+      max-height: 140px;
+      resize: vertical;
+      border: 1px solid #c8d5e2;
+      border-radius: 8px;
+      padding: 10px 12px;
+      outline: 0;
+    }
+
+    .composer__actions {
+      display: flex;
+      align-items: stretch;
+      gap: 7px;
+    }
+
+    .crm {
+      border-left: 1px solid var(--line);
+      background: #fbfdff;
+      overflow: auto;
+    }
+
+    .client {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .client .avatar {
+      width: 42px;
+      height: 42px;
+      font-size: 15px;
+    }
+
+    .client strong,
+    .client span {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .client span {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .crm__body {
+      padding: 14px;
+    }
+
+    .block {
+      padding: 14px;
+      margin-bottom: 12px;
+      border: 1px solid #d8e2ec;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .block h2 {
+      margin: 0 0 12px;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    .kv {
+      display: grid;
+      gap: 8px;
+    }
+
+    .kv__row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #edf2f6;
+      font-size: 13px;
+    }
+
+    .kv__row:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .kv__row span {
+      color: var(--muted);
+    }
+
+    .kv__row strong {
+      text-align: right;
+    }
+
+    .steps {
+      margin: 0;
+      padding-left: 20px;
+      color: #30465f;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .notes {
+      width: 100%;
+      min-height: 92px;
+      resize: vertical;
+      border: 1px solid #c8d5e2;
+      border-radius: 8px;
+      padding: 10px;
+      outline: 0;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .legend .tier {
+      justify-content: flex-start;
+      min-height: 28px;
+    }
+
+    @media (max-width: 1280px) {
+      .workspace {
+        grid-template-columns: 380px minmax(420px, 1fr);
+      }
+
+      .crm {
+        display: none;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .page {
+        padding: 0;
+      }
+
+      .workspace {
+        display: block;
+        min-height: 100vh;
+        border: 0;
+      }
+
+      .queue,
+      .thread {
+        border: 0;
+      }
+
+      .conversation-list {
+        height: auto;
+        min-height: 0;
+        max-height: 430px;
+      }
+
+      .state-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .message {
+        max-width: 88%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="workspace" id="admin-agent-chat">
+      <aside class="queue" aria-label="Очередь диалогов">
+        <header>
+          <nav class="queue__tabs" aria-label="Состояние очереди">
+            <button class="queue-tab is-active" type="button">All chats <span class="queue-tab__count">5</span></button>
+            <button class="queue-tab" type="button">Needs reply <span class="queue-tab__count">2</span></button>
+            <button class="queue-tab" type="button">Mine <span class="queue-tab__count">3</span></button>
+          </nav>
+          <div class="queue__tools">
+            <label class="search">
+              <input type="search" placeholder="Search: name / ID">
+              <button type="button" aria-label="Искать">Search</button>
+            </label>
+            <button class="filter-btn" type="button">Filters <span class="filter-btn__count">0</span></button>
+          </div>
+        </header>
+
+        <div class="conversation-list">
+          <button class="conversation is-active" type="button">
+            <span class="conversation__route">
+              <span class="conversation__pair">
+                <span class="avatar">А</span>
+                <span class="conversation__name">Алла</span>
+                <span class="conversation__arrow">-></span>
+                <span class="avatar">OE</span>
+                <span class="conversation__name">Orion Esposito</span>
+              </span>
+              <time class="conversation__time">8:17 AM</time>
+            </span>
+            <span class="conversation__snippet">Need a quick confirmation for the New York slot ...</span>
+            <span class="conversation__meta">
+              <span class="tier tier--whale">Кит</span>
+              <span class="tag">Needs reply</span>
+              <span class="tag">Overdue 1d</span>
+              <span class="tag">Mine</span>
+              <span class="conversation__pin">Pin</span>
+              <span class="conversation__unread">3</span>
+            </span>
+          </button>
+
+          <button class="conversation" type="button">
+            <span class="conversation__route">
+              <span class="conversation__pair">
+                <span class="avatar">MB</span>
+                <span class="conversation__name">Maya Bennett</span>
+                <span class="conversation__arrow">-></span>
+                <span class="avatar">EP</span>
+                <span class="conversation__name">Elena Park</span>
+              </span>
+              <time class="conversation__time">9:12 AM</time>
+            </span>
+            <span class="conversation__snippet">Client asked to confirm timezone and the best booking option...</span>
+            <span class="conversation__meta">
+              <span class="tier tier--trial">Trial</span>
+              <span class="tag">New</span>
+              <span class="tag">Waiting</span>
+              <span class="tag">Timezone</span>
+              <span class="conversation__unread">1</span>
+            </span>
+          </button>
+
+          <button class="conversation" type="button">
+            <span class="conversation__route">
+              <span class="conversation__pair">
+                <span class="avatar">LC</span>
+                <span class="conversation__name">Liam Carter</span>
+                <span class="conversation__arrow">-></span>
+                <span class="avatar">SR</span>
+                <span class="conversation__name">Sophia Reed</span>
+              </span>
+              <time class="conversation__time">10:04 AM</time>
+            </span>
+            <span class="conversation__snippet">Payment was approved. Front-end reply is the next step...</span>
+            <span class="conversation__meta">
+              <span class="tier tier--paid">Оплачен</span>
+              <span class="tag">Needs reply</span>
+              <span class="tag">Paid</span>
+              <span class="tag">Follow-up</span>
+              <span class="conversation__pin">Pin</span>
+              <span class="conversation__unread">4</span>
+            </span>
+          </button>
+
+          <button class="conversation" type="button">
+            <span class="conversation__route">
+              <span class="conversation__pair">
+                <span class="avatar">SA</span>
+                <span class="conversation__name">Sofia Alvarez</span>
+                <span class="conversation__arrow">-></span>
+                <span class="avatar">NR</span>
+                <span class="conversation__name">Noah Reed</span>
+              </span>
+              <time class="conversation__time">Yesterday</time>
+            </span>
+            <span class="conversation__snippet">Sent the report with screenshots. Waiting for a signal...</span>
+            <span class="conversation__meta">
+              <span class="tier tier--repeat">Регулярный</span>
+              <span class="tag">Resolved</span>
+              <span class="tag">Has notes</span>
+              <span class="tag">Attachments</span>
+              <span class="conversation__unread">0</span>
+            </span>
+          </button>
+
+          <button class="conversation" type="button">
+            <span class="conversation__route">
+              <span class="conversation__pair">
+                <span class="avatar">NR</span>
+                <span class="conversation__name">Noah Reed</span>
+                <span class="conversation__arrow">-></span>
+                <span class="avatar">MS</span>
+                <span class="conversation__name">Mila Stone</span>
+              </span>
+              <time class="conversation__time">4/22/26</time>
+            </span>
+            <span class="conversation__snippet">Client is on hold until after lunch, no rush on the next step...</span>
+            <span class="conversation__meta">
+              <span class="tier tier--risk">Риск</span>
+              <span class="tag">Waiting</span>
+              <span class="tag">Attachment</span>
+              <span class="tag">Follow-up</span>
+              <span class="conversation__pin">Pin</span>
+              <span class="conversation__unread">2</span>
+            </span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="thread" aria-label="Рабочее окно диалога">
+        <header class="thread__header">
+          <div class="thread__title">
+            <strong>Алла -> Orion Esposito</strong>
+            <span>Client ID U-9001. Expert profile 101. Last activity 8:17 AM.</span>
+          </div>
+          <div class="actions">
+            <button class="btn" type="button">Pin</button>
+            <button class="btn" type="button">Follow-up</button>
+            <button class="btn btn--primary" type="button">Request payment</button>
+          </div>
+        </header>
+
+        <section class="state-strip" aria-label="Состояние консультации">
+          <div class="state"><span>Client type</span><strong>Кит / high value</strong></div>
+          <div class="state"><span>Payment</span><strong>Paid before, trial now</strong></div>
+          <div class="state"><span>Free minutes</span><strong>4 of 10 used</strong></div>
+          <div class="state"><span>Next step</span><strong>Confirm slot, move to paid</strong></div>
+        </section>
+
+        <section class="messages">
+          <div class="day">Today</div>
+          <article class="message message--client">
+            <header><strong>Алла</strong><time>8:12 AM</time></header>
+            <p>I want to know if the New York slot is still available.</p>
+          </article>
+          <article class="message message--expert">
+            <header><strong>Orion Esposito</strong><time>8:14 AM</time></header>
+            <p>Yes, I can confirm it. Let me check the timezone before booking.</p>
+          </article>
+          <div class="system-event">Trial consultation started. Free minutes are being used. Paid transition should be shown before minute 10.</div>
+          <article class="message message--client">
+            <header><strong>Алла</strong><time>8:17 AM</time></header>
+            <p>Need a quick confirmation for the New York slot.</p>
+          </article>
+        </section>
+
+        <footer class="composer">
+          <div class="quick-replies">
+            <button class="btn" type="button">Clarify timezone</button>
+            <button class="btn" type="button">Move to paid</button>
+            <button class="btn" type="button">Soft follow-up</button>
+          </div>
+          <form class="composer__form">
+            <textarea placeholder="Type expert reply..."></textarea>
+            <div class="composer__actions">
+              <button class="btn" type="button">File</button>
+              <button class="btn" type="button">Tpl</button>
+              <button class="btn btn--primary" type="submit">Send</button>
+            </div>
+          </form>
+        </footer>
+      </main>
+
+      <aside class="crm" aria-label="CRM карточка клиента">
+        <header class="crm__header">
+          <div class="client">
+            <span class="avatar">А</span>
+            <div>
+              <strong>Алла</strong>
+              <span>ID U-9001. Europe/Minsk.</span>
+            </div>
+          </div>
+          <span class="tier tier--whale">Кит</span>
+        </header>
+
+        <div class="crm__body">
+          <section class="block">
+            <h2>Payment capacity labels</h2>
+            <div class="legend">
+              <span class="tier tier--whale">Кит</span>
+              <span class="tier tier--repeat">Регулярный</span>
+              <span class="tier tier--paid">Оплачен</span>
+              <span class="tier tier--warm">Теплый</span>
+              <span class="tier tier--trial">Trial</span>
+              <span class="tier tier--cold">Холодный</span>
+              <span class="tier tier--risk">Риск</span>
+            </div>
+          </section>
+
+          <section class="block">
+            <h2>Client status</h2>
+            <div class="kv">
+              <div class="kv__row"><span>Segment</span><strong>High value payer</strong></div>
+              <div class="kv__row"><span>Stage</span><strong>Trial consultation</strong></div>
+              <div class="kv__row"><span>Risk</span><strong>Overdue reply</strong></div>
+              <div class="kv__row"><span>Owner</span><strong>Mine</strong></div>
+            </div>
+          </section>
+
+          <section class="block">
+            <h2>Payment</h2>
+            <div class="kv">
+              <div class="kv__row"><span>Paid sessions</span><strong>18</strong></div>
+              <div class="kv__row"><span>Lifetime spend</span><strong>$740</strong></div>
+              <div class="kv__row"><span>Last payment</span><strong>Apr 21, 2026</strong></div>
+              <div class="kv__row"><span>Trial minutes</span><strong>4 / 10 used</strong></div>
+            </div>
+          </section>
+
+          <section class="block">
+            <h2>Recommended next step</h2>
+            <ol class="steps">
+              <li>Answer now because the dialog is overdue.</li>
+              <li>Confirm timezone and New York slot.</li>
+              <li>Move to paid consultation before free minutes end.</li>
+            </ol>
+          </section>
+
+          <section class="block">
+            <h2>Internal notes</h2>
+            <textarea class="notes" placeholder="Private note for expert/operator...">Prefers fast direct answers. Paid regularly when schedule is clear.</textarea>
+          </section>
+
+          <section class="block">
+            <h2>Templates</h2>
+            <div class="actions">
+              <button class="btn" type="button">Payment transition</button>
+              <button class="btn" type="button">Timezone</button>
+              <button class="btn" type="button">Follow-up</button>
+            </div>
+          </section>
+        </div>
+      </aside>
+    </section>
+  </div>
+</body>
+</html>
