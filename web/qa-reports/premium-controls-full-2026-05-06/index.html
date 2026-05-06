@@ -123,8 +123,8 @@
             <tr><td><code>seePrivatePhotoOn</code></td><td>checkbox + limit</td><td>Проверил sampled profile surfaces.</td><td>Photo surface есть, но private-photo access fixture не найден.</td><td><span class="qa-badge qa-badge--warn">DATA GAP</span></td></tr>
             <tr><td><code>premiumCardOn</code></td><td>checkbox</td><td>Baseline/readback + encounters/profile surface.</td><td>Поле сохраняется; четкого отличимого card behavior в live surface не выделено.</td><td><span class="qa-badge qa-badge--warn">NOT PROVEN</span></td></tr>
             <tr><td><code>messagesInTopOn</code></td><td>checkbox</td><td>Baseline/readback + messages surface.</td><td>Поверхность сообщений открыта, но сортировка/top placement требует контролируемой переписки.</td><td><span class="qa-badge qa-badge--warn">DATA GAP</span></td></tr>
-            <tr><td><code>displayPremiumFieldCardOn</code></td><td>checkbox</td><td>Сравнил free profile surface.</td><td>Hidden/premium fields видны как surface, но ON/OFF business diff не выделен отдельно.</td><td><span class="qa-badge qa-badge--warn">PARTIAL</span></td></tr>
-            <tr><td><code>countryPremiumPriceOn</code></td><td>checkbox</td><td>Проверил services surface и price text.</td><td>Цена premium видна как <code>200 credits for 30 days</code>; country-specific branch без смены страны не доказан.</td><td><span class="qa-badge qa-badge--warn">PARTIAL</span></td></tr>
+            <tr><td><code>displayPremiumFieldCardOn</code></td><td>checkbox</td><td>Сравнил free profile surface.</td><td>Поверхность premium/hidden fields видна, но отдельный ON/OFF diff этой настройки не выделен. Это не баг, а незакрытый сценарий: нужен профиль с полями, которые точно меняются именно этим чекбоксом.</td><td><span class="qa-badge qa-badge--warn">DATA GAP</span></td></tr>
+            <tr><td><code>countryPremiumPriceOn</code></td><td>checkbox</td><td>Проверил services surface и price text.</td><td>Цена premium отображается как <code>200 credits for 30 days</code>. Country-specific ветка не доказана, потому что в прогоне не менялась страна/гео пользователя.</td><td><span class="qa-badge qa-badge--warn">DATA GAP</span></td></tr>
             <tr><td><code>editSentMessageOn</code></td><td>checkbox</td><td>Искал edit action в messages DOM.</td><td>Edit sent message action не найден.</td><td><span class="qa-badge qa-badge--warn">SURFACE NOT FOUND</span></td></tr>
             <tr><td><code>timerInMutualOn</code></td><td>checkbox + limit</td><td>Проверил mutual likes page.</td><td>Mutual page пустая; timer behavior не доказан.</td><td><span class="qa-badge qa-badge--warn">DATA GAP</span></td></tr>
           </tbody>
@@ -181,86 +181,86 @@
     </section>
 
     <section class="qa-section">
-      <h2>Evidence screenshots</h2>
+      <h2>Доказательства со скриншотами</h2>
       <div class="qa-shot-grid">
         <figure class="qa-shot">
-          <figcaption>Что тестировал: baseline страницы premium settings. Что получил: 68 полей admin формы считаны перед мутациями.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Проверка: baseline <code>/en/admin/settings/premium</code>. Факт: считаны 68 полей admin-формы до мутаций. Значение: дальнейшие изменения сравнивались с реальным исходным состоянием. Действие для Игоря: не требуется.</figcaption>
           <img src="./assets/admin-premium-baseline.png" alt="Admin premium baseline">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: rollback после снижения premium limits. Что получил: настройки восстановлены, diff пустой.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Проверка: rollback после снижения premium/free лимитов. Факт: настройки восстановлены, diff пустой. Значение: тест не оставил админские лимиты в измененном состоянии. Действие для Игоря: не требуется.</figcaption>
           <img src="./assets/admin-premium-final-rollback.png" alt="Admin premium rollback">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: incoming likes при включенном premium-only режиме. Что получил: premium user видит страницу.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Проверка: <code>sitePremiumIncomingLikes</code> для premium user. Факт: premium user открывает страницу входящих лайков. Значение: premium-доступ к этой поверхности работает. Действие для Игоря: не требуется.</figcaption>
           <img src="./assets/premium-incoming-likes.png" alt="Premium incoming likes">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: incoming likes для free при том же режиме. Что получил: free user видит premium lock.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Проверка: <code>sitePremiumIncomingLikes</code> для free user. Факт: free user видит premium lock. Значение: разграничение free/premium на этой поверхности подтверждено. Действие для Игоря: не требуется.</figcaption>
           <img src="./assets/free-incoming-likes.png" alt="Free incoming likes lock">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: messagesOutPremium попытка 9 при limit=1. Что получил: <code>success=true</code>, <code>messageId=204</code>, лимит не сработал.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--fail">FAIL</span> Проверка: <code>messagesOutPremium</code>, 9-я отправка при лимите <code>1</code>. Факт: API вернул <code>success=true</code>, <code>messageId=204</code>. Значение: лимит исходящих сообщений не сработал. Действие для Игоря: проверить счетчик/period gate в отправке сообщений.</figcaption>
           <img src="./assets/premium-messages-out-attempt-9.png" alt="Premium message attempt 9">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: messagesOutPremium попытка 10 при limit=1. Что получил: <code>404 Contact not found</code>, это не limit block.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--warn">DATA</span> Проверка: <code>messagesOutPremium</code>, 10-я отправка при лимите <code>1</code>. Факт: ответ <code>404 Contact not found</code>. Значение: это ошибка тестового контакта, не доказательство работы лимита. Действие для Игоря: по этому скрину баг лимита не выводить, использовать попытки с <code>success=true</code>.</figcaption>
           <img src="./assets/premium-messages-out-attempt-10.png" alt="Premium message attempt 10">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: sender-side отправку при <code>messagesOutPremium=1</code>. Что получил: попытка 2 отправлена, <code>messageId=206</code>, блокировки нет.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--fail">FAIL</span> Проверка: sender-side отправка при <code>messagesOutPremium=1</code>. Факт: 2-я попытка отправлена, <code>messageId=206</code>. Значение: система принимает лишнее сообщение после лимита. Действие для Игоря: блокировать отправку до создания message record.</figcaption>
           <img src="./assets/sender-attempt-2-to-6.png" alt="Sender attempt 2 to recipient 6">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: recipient-side доставку сообщения <code>messageId=206</code>. Что получил: user <code>6</code> видит точный QA-текст в интерфейсе сообщений.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--fail">FAIL</span> Проверка: recipient-side доставка <code>messageId=206</code>. Факт: user <code>6</code> видит точный QA-текст в интерфейсе сообщений. Значение: лишнее сообщение не только создано, но реально доставлено. Действие для Игоря: исправлять не только UI, а серверную доставку/создание.</figcaption>
           <img src="./assets/recipient-attempt-2-user-6.png" alt="Recipient 6 received exact message">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: recipient-side доставку сообщения <code>messageId=207</code>. Что получил: user <code>10</code> видит точный QA-текст в интерфейсе сообщений.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--fail">FAIL</span> Проверка: recipient-side доставка <code>messageId=207</code>. Факт: user <code>10</code> видит точный QA-текст в интерфейсе сообщений. Значение: дефект воспроизводится на втором получателе. Действие для Игоря: покрыть fix тестом sender + recipient.</figcaption>
           <img src="./assets/recipient-attempt-3-user-10.png" alt="Recipient 10 received exact message">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: recipient-side доставку сообщения <code>messageId=205</code>. Что получил: user <code>3</code> не показал точный QA-текст в sampled UI, поэтому доставка этой попытки не доказана.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--warn">NOT PROVEN</span> Проверка: recipient-side доставка <code>messageId=205</code>. Факт: user <code>3</code> не показал точный QA-текст в sampled UI. Значение: sender-side лимит все равно не сработал, но доставка этой конкретной попытки не доказана. Действие для Игоря: не использовать этот скрин как proof доставки.</figcaption>
           <img src="./assets/recipient-attempt-1-user-3.png" alt="Recipient 3 exact message not visible">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: profileViewPremium второй профиль при limit=1. Что получил: профиль открылся без блокировки.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--fail">FAIL</span> Проверка: <code>profileViewPremium</code>, второй профиль при лимите <code>1</code>. Факт: профиль открылся без блокировки. Значение: premium profile-view limit не применяется. Действие для Игоря: проверить запись просмотров и gate перед открытием профиля.</figcaption>
           <img src="./assets/premium-profileView-attempt-2.png" alt="Premium profile view second attempt">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: profileLikePremium второй like при limit=1. Что получил: лимит сработал, но copy показывает <code>Get Premium</code> premium-пользователю.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--warn">UX BUG</span> Проверка: <code>profileLikePremium</code>, второй like при лимите <code>1</code>. Факт: лимит сработал, но premium user видит copy <code>Get Premium</code>. Значение: логика лимита есть, текст модального окна неверный для premium. Действие для Игоря: поправить copy/branch для premium-limit state.</figcaption>
           <img src="./assets/premium-profileLike-attempt-2-after.png" alt="Premium profile like second attempt">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: writeWithoutMutual при включенных чекбоксах и limit=1. Что получил: сообщения отправлены, блокировки нет.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--fail">FAIL</span> Проверка: <code>writeWithoutMutual*</code> при включенных чекбоксах и лимите <code>1</code>. Факт: сообщения отправлены, блокировки нет. Значение: лимит/permission для non-mutual переписки не применяется. Действие для Игоря: проверить связку mutual-state + gender-specific limit.</figcaption>
           <img src="./assets/writeWithoutMutual-messages.png" alt="Write without mutual messages">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: messagesIn при limit=1 после двух входящих. Что получил: receiver screen без понятного limit state, загрузка сообщений зависла.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--fail">FAIL</span> Проверка: <code>messagesIn*</code> при лимите <code>1</code> после двух входящих. Факт: receiver screen не показывает понятный limit state, загрузка сообщений зависла. Значение: пользователь получает неопределенное состояние вместо правила лимита. Действие для Игоря: проверить incoming limit и frontend loader/error handling.</figcaption>
           <img src="./assets/messagesIn-receiver.png" alt="Messages in receiver">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: extendedSearch OFF для free. Что получил: premium-lock с фильтров снят.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Проверка: <code>extendedSearch*</code> OFF для free user. Факт: premium-lock с фильтров снят. Значение: выключенный чекбокс реально меняет доступность фильтров. Действие для Игоря: не требуется.</figcaption>
           <img src="./assets/extendedSearch-off-free-browse.png" alt="Extended search off free">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: extendedSearch ON для free. Что получил: premium-lock на фильтрах возвращается.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Проверка: <code>extendedSearch*</code> ON для free user. Факт: premium-lock на фильтрах возвращается. Значение: ON/OFF логика чекбоксов подтверждена. Действие для Игоря: не требуется.</figcaption>
           <img src="./assets/extendedSearch-on-free-browse.png" alt="Extended search on free">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: noAdsOn для premium. Что получил: sidebar ad отсутствует.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Проверка: <code>noAdsOn</code> для premium user. Факт: sidebar ad отсутствует. Значение: premium no-ads поведение подтверждено. Действие для Игоря: не требуется.</figcaption>
           <img src="./assets/premiumNoAdsProfile.png" alt="Premium no ads profile">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: noAdsOn контроль для free. Что получил: sidebar ad отображается.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Проверка: <code>noAdsOn</code> контроль для free user. Факт: sidebar ad отображается. Значение: отличие premium/free подтверждено. Действие для Игоря: не требуется.</figcaption>
           <img src="./assets/freeNoAdsProfileControl.png" alt="Free profile ads">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: editSentMessageOn surface. Что получил: на странице messages edit action не найден.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--warn">SURFACE NOT FOUND</span> Проверка: <code>editSentMessageOn</code>. Факт: на sampled странице messages edit action не найден. Значение: бизнес-поведение настройки не доказано. Действие для Игоря: дать тестовую переписку/route, где у отправленного сообщения должен быть edit action.</figcaption>
           <img src="./assets/messages.png" alt="Messages surface">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: timerInMutualOn surface. Что получил: mutual likes пустая, timer behavior не доказан.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--warn">DATA GAP</span> Проверка: <code>timerInMutualOn</code>. Факт: mutual likes page пустая. Значение: timer behavior не доказан из-за отсутствия mutual fixture. Действие для Игоря: подготовить пару пользователей с mutual match и ожидаемым timer state.</figcaption>
           <img src="./assets/mutualLikes.png" alt="Mutual likes surface">
         </figure>
       </div>
