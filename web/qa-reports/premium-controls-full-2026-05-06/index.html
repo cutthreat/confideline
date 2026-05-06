@@ -12,7 +12,7 @@
     <header class="tp-hero qa-hero">
       <p class="qa-kicker">QA report · live Confideline · 2026-05-06</p>
       <h1>Полная проверка настроек Premium/free</h1>
-      <p>Проверена live-страница <code>/en/admin/settings/premium</code>: числовые лимиты, checkbox-переключатели, free/premium поведение, readback после сохранения, evidence screenshots и rollback admin settings.</p>
+      <p>Проверена live-страница <code>/en/admin/settings/premium</code>: числовые лимиты, checkbox-переключатели, free/premium поведение, sender/recipient proof для сообщений, readback после сохранения, evidence screenshots и rollback admin settings.</p>
       <div class="tp-actions" style="margin-top:16px">
         <a class="tp-btn tp-btn--primary" href="#igor">Блок для Игоря</a>
         <a class="tp-btn" href="../">Все QA reports</a>
@@ -50,7 +50,7 @@
             <tr>
               <td><span class="qa-badge qa-badge--fail">P0</span></td>
               <td><code>messagesOutFree*</code>, <code>messagesOutPremium*</code></td>
-              <td>Лимит исходящих сообщений не применяется. При <code>messagesOutPremiumMen/Women=1</code> premium user отправил попытки 1-9. Попытки 4-9 вернули <code>success=true</code>, <code>messageId=199..204</code>; попытка 10 вернула <code>404 Contact not found</code>, это не лимит.</td>
+              <td>Лимит исходящих сообщений не применяется. При <code>messagesOutPremiumMen/Women=1</code> premium user отправил попытки 1-9. Дополнительная recipient-side проверка: при новом лимите <code>1</code> sender получил <code>success=true</code> и <code>messageId=205..207</code>; получатели <code>6</code> и <code>10</code> увидели точный текст сообщения в UI, получатель <code>3</code> в sampled UI точный текст не показал.</td>
               <td>После первого разрешенного сообщения последующие должны блокироваться лимитом за период.</td>
               <td><code>/en/messages/create</code>, <code>MessagesController::actionCreate()</code>, счетчик premium/free лимита исходящих.</td>
             </tr>
@@ -112,7 +112,7 @@
             <tr><td><code>sitePremiumIncomingLikes</code></td><td>checkbox</td><td>Включил premium-only incoming likes и сравнил premium/free.</td><td>Premium видит страницу, free видит premium lock.</td><td><span class="qa-badge qa-badge--pass">PASS</span></td></tr>
             <tr><td><code>profileLikeFree*</code>, <code>profileLikePremium*</code>, <code>profileLikePeriod</code></td><td>limit</td><td>Снизил premium limit до 1, сделал 2 лайка в encounters.</td><td>Второй like показывает limit, но copy для premium ошибочный.</td><td><span class="qa-badge qa-badge--warn">PASS + UX BUG</span></td></tr>
             <tr><td><code>profileViewFree*</code>, <code>profileViewPremium*</code>, <code>profileViewPeriod</code></td><td>limit</td><td>Снизил premium limit до 1, открыл 2 профиля.</td><td>Оба профиля открылись без блока.</td><td><span class="qa-badge qa-badge--fail">FAIL</span></td></tr>
-            <tr><td><code>messagesOutFree*</code>, <code>messagesOutPremium*</code>, <code>messagesOutPeriod</code></td><td>limit</td><td>Снизил premium limit до 1, отправил 1-10 попытки по разным контактам.</td><td>1-9 ушли, 10 = contact not found, лимита нет.</td><td><span class="qa-badge qa-badge--fail">FAIL</span></td></tr>
+            <tr><td><code>messagesOutFree*</code>, <code>messagesOutPremium*</code>, <code>messagesOutPeriod</code></td><td>limit</td><td>Снизил premium limit до 1, отправил 1-10 попытки по разным контактам; отдельно проверил сторону получателей для 3 новых сообщений.</td><td>Sender-side лимит не сработал: <code>messageId=205..207</code>. Recipient-side доставка доказана для 2 из 3 получателей: users <code>6</code> и <code>10</code> видят точный текст, user <code>3</code> не показал точный текст в sampled UI.</td><td><span class="qa-badge qa-badge--fail">FAIL</span></td></tr>
             <tr><td><code>messagesInFree*</code>, <code>messagesInPremium*</code>, <code>messagesInPeriod</code></td><td>limit</td><td>Снизил free limit до 1, создал 2 входящих сообщения.</td><td>Явной limit-блокировки нет, receiver screen зависает на loading.</td><td><span class="qa-badge qa-badge--fail">FAIL</span></td></tr>
             <tr><td><code>writeWithoutMutualFree*</code>, <code>writeWithoutMutualPremium*</code>, <code>writeWithoutMutualMenOn/WomenOn</code></td><td>limit + checkbox</td><td>Включил toggles, снизил free limit до 1, отправил 2 сообщения.</td><td>Обе отправки успешны.</td><td><span class="qa-badge qa-badge--fail">FAIL</span></td></tr>
             <tr><td><code>seeMessageStatusOn</code></td><td>checkbox</td><td>Выключил чекбокс и отправил сообщение.</td><td>Read-status premium upsell не появился.</td><td><span class="qa-badge qa-badge--pass">PASS</span></td></tr>
@@ -129,6 +129,54 @@
             <tr><td><code>timerInMutualOn</code></td><td>checkbox + limit</td><td>Проверил mutual likes page.</td><td>Mutual page пустая; timer behavior не доказан.</td><td><span class="qa-badge qa-badge--warn">DATA GAP</span></td></tr>
           </tbody>
         </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Допроверка доставки сообщений получателю</h2>
+      <p>После уточнения добавлена научная проверка chat-limit: недостаточно видеть <code>success=true</code> у отправителя, нужно зайти со стороны получателя и найти точный QA-текст в интерфейсе сообщений.</p>
+      <div class="qa-table-wrap">
+        <table class="qa-table">
+          <thead>
+            <tr>
+              <th>Попытка</th>
+              <th>Sender</th>
+              <th>Recipient</th>
+              <th>Sender response</th>
+              <th>Recipient UI</th>
+              <th>Вывод</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Premium user <code>182</code></td>
+              <td>User <code>3</code></td>
+              <td><code>success=true</code>, <code>messageId=205</code></td>
+              <td>Точный текст не найден в sampled <code>/en/messages</code>.</td>
+              <td>Лимит sender-side не сработал; доставка этому получателю не доказана.</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Premium user <code>182</code></td>
+              <td>User <code>6</code></td>
+              <td><code>success=true</code>, <code>messageId=206</code></td>
+              <td>Точный текст найден в UI получателя.</td>
+              <td>Лимит не сработал, сообщение реально дошло получателю.</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Premium user <code>182</code></td>
+              <td>User <code>10</code></td>
+              <td><code>success=true</code>, <code>messageId=207</code></td>
+              <td>Точный текст найден в UI получателя.</td>
+              <td>Лимит не сработал, сообщение реально дошло получателю.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="qa-note">
+        <p><strong>Итог допроверки:</strong> defect по <code>messagesOutPremium*</code> стал сильнее: система не только принимает лишние отправки после лимита, но минимум в 2 из 3 новых попыток получатели реально видят точный текст. Для user <code>3</code> доставка не доказана, поэтому она не засчитана как recipient-side proof.</p>
       </div>
     </section>
 
@@ -158,6 +206,22 @@
         <figure class="qa-shot">
           <figcaption>Что тестировал: messagesOutPremium попытка 10 при limit=1. Что получил: <code>404 Contact not found</code>, это не limit block.</figcaption>
           <img src="./assets/premium-messages-out-attempt-10.png" alt="Premium message attempt 10">
+        </figure>
+        <figure class="qa-shot">
+          <figcaption>Что тестировал: sender-side отправку при <code>messagesOutPremium=1</code>. Что получил: попытка 2 отправлена, <code>messageId=206</code>, блокировки нет.</figcaption>
+          <img src="./assets/sender-attempt-2-to-6.png" alt="Sender attempt 2 to recipient 6">
+        </figure>
+        <figure class="qa-shot">
+          <figcaption>Что тестировал: recipient-side доставку сообщения <code>messageId=206</code>. Что получил: user <code>6</code> видит точный QA-текст в интерфейсе сообщений.</figcaption>
+          <img src="./assets/recipient-attempt-2-user-6.png" alt="Recipient 6 received exact message">
+        </figure>
+        <figure class="qa-shot">
+          <figcaption>Что тестировал: recipient-side доставку сообщения <code>messageId=207</code>. Что получил: user <code>10</code> видит точный QA-текст в интерфейсе сообщений.</figcaption>
+          <img src="./assets/recipient-attempt-3-user-10.png" alt="Recipient 10 received exact message">
+        </figure>
+        <figure class="qa-shot">
+          <figcaption>Что тестировал: recipient-side доставку сообщения <code>messageId=205</code>. Что получил: user <code>3</code> не показал точный QA-текст в sampled UI, поэтому доставка этой попытки не доказана.</figcaption>
+          <img src="./assets/recipient-attempt-1-user-3.png" alt="Recipient 3 exact message not visible">
         </figure>
         <figure class="qa-shot">
           <figcaption>Что тестировал: profileViewPremium второй профиль при limit=1. Что получил: профиль открылся без блокировки.</figcaption>
@@ -212,6 +276,7 @@
             <tr><td><code>premium-free-options-deep-audit-20260506-203234</code></td><td><span class="qa-badge qa-badge--fail">FAIL</span></td><td>seeMessageStatus, writeWithoutMutual, messagesIn, extendedSearch ON/OFF.</td><td>PASS for each mutation</td></tr>
             <tr><td><code>premium-remaining-surfaces-audit-20260506-203234</code></td><td><span class="qa-badge qa-badge--warn">GAPS</span></td><td>edit sent message, private photo, favorite, ads, timer mutual, swipe back, country price surfaces.</td><td>No admin mutation</td></tr>
             <tr><td><code>premium-messages-out-extended-audit-20260506-203612</code></td><td><span class="qa-badge qa-badge--fail">FAIL</span></td><td>messagesOutPremium attempts 4-10 with limit=1.</td><td>PASS, diff empty</td></tr>
+            <tr><td><code>premium-messages-recipient-delivery-audit-20260506-205001</code></td><td><span class="qa-badge qa-badge--fail">FAIL</span></td><td>Sender/recipient proof for messagesOutPremium: sender accepted 3 messages after limit; 2 recipients saw exact text.</td><td>PASS, diff empty</td></tr>
           </tbody>
         </table>
       </div>
