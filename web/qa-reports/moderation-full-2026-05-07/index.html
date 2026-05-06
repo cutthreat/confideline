@@ -55,13 +55,6 @@
               <td>Settings model/view для stories; добавить/проверить отдельные поля photo/video moderation mode или уточнить ТЗ.</td>
             </tr>
             <tr>
-              <td><span class="qa-badge qa-badge--warn">P1</span></td>
-              <td>Stories moderation behavior</td>
-              <td>Предыдущая формулировка про <code>postmoderation/none</code> была некорректной: тест смотрел на строку <code>Story</code> в общей админской фото-очереди, а не на продуктовую видимость сторис. Дополнительно в run-данных видно, что примененная настройка stories оставалась <code>postmoderation</code> даже в блоках, названных <code>premoderation</code> и <code>none</code>.</td>
-              <td>Для stories нужно проверять: автор загрузил сторис, сторис видна/не видна автору, другому пользователю и в админской очереди согласно выбранному режиму. Статус media row сам по себе не доказывает публикацию сторис.</td>
-              <td>Нужен отдельный ретест stories с подтверждением сохраненной настройки и проверкой видимости через пользовательский интерфейс.</td>
-            </tr>
-            <tr>
               <td><span class="qa-badge qa-badge--fail">P1</span></td>
               <td>Gallery photo postmoderation</td>
               <td>При <code>photoGalleryModerationMode=postmoderation</code> gallery IDs <code>830,831,832</code> попали в <code>Pending</code>, а не в active/published state.</td>
@@ -104,10 +97,9 @@
             <tr><td>Gallery photo</td><td><code>/en/admin/settings/photo</code></td><td>postmoderation</td><td>IDs <code>830,831,832</code> стали <code>Pending</code>.</td><td><span class="qa-badge qa-badge--fail">FAIL</span></td></tr>
             <tr><td>Gallery photo</td><td><code>/en/admin/settings/photo</code></td><td>none</td><td>IDs <code>833,834,835</code> стали <code>Approved/ActiveOrHidden</code>.</td><td><span class="qa-badge qa-badge--pass">PASS</span></td></tr>
             <tr><td>Main profile photo</td><td><code>/en/admin/settings/photo</code></td><td>all modes</td><td>Upload/crop UI открывается, но новый photo ID не создается: page показывает <code>From Photo Id must be an integer</code>.</td><td><span class="qa-badge qa-badge--warn">NOT PROVEN</span></td></tr>
-            <tr><td>Stories photo</td><td><code>/en/admin/settings/stories</code></td><td>premoderation</td><td>Создавались записи <code>Story</code> в общей media queue; продуктовая видимость сторис автору/другому пользователю не проверена.</td><td><span class="qa-badge qa-badge--warn">NEEDS RETEST</span></td></tr>
-            <tr><td>Stories photo</td><td><code>/en/admin/settings/stories</code></td><td>postmoderation</td><td>Данные run показывают <code>appliedSettings.storiesMode=postmoderation</code> и новые <code>Story</code> rows в queue, но не доказывают, была ли сторис опубликована в пользовательском интерфейсе.</td><td><span class="qa-badge qa-badge--warn">NEEDS RETEST</span></td></tr>
-            <tr><td>Stories photo</td><td><code>/en/admin/settings/stories</code></td><td>none</td><td>Тестовый блок <code>none</code> недействителен: после сохранения настройка в evidence осталась <code>postmoderation</code>; вывод про no-moderation делать нельзя.</td><td><span class="qa-badge qa-badge--warn">INVALID / RETEST</span></td></tr>
-            <tr><td>Stories video</td><td><code>/en/admin/settings/stories</code></td><td>all modes</td><td>Отдельного video moderation select в live UI нет; video upload не закрыт отдельным сценарием.</td><td><span class="qa-badge qa-badge--fail">CONFIG GAP</span></td></tr>
+            <tr><td>Stories settings</td><td><code>/en/admin/settings/stories</code></td><td>configuration</td><td>В UI найден один общий <code>Stories moderation mode</code>; отдельных режимов для photo/video stories нет.</td><td><span class="qa-badge qa-badge--fail">CONFIG GAP</span></td></tr>
+            <tr><td>Stories photo</td><td><code>user home stories carousel</code></td><td>postmoderation</td><td>На пользовательском экране видны карточки <code>QA story postmoderation 1-3</code> в горизонтальной ленте сторис. Это доказывает user-side отображение на проверенном экране, но не доказывает видимость другому пользователю.</td><td><span class="qa-badge qa-badge--warn">PARTIAL</span></td></tr>
+            <tr><td>Stories photo</td><td><code>user home stories carousel</code></td><td>none + postmoderation</td><td>На пользовательском экране одновременно видны карточки <code>QA story none 1-3</code> и <code>QA story postmoderation 2-3</code>. Это доказательство отображения карточек в ленте, а не доказательство полного moderation lifecycle.</td><td><span class="qa-badge qa-badge--warn">PARTIAL</span></td></tr>
             <tr><td>Group avatar</td><td><code>/en/admin/settings/groups</code></td><td>premoderation</td><td>3 попытки upload, admin rows <code>Rejected</code>.</td><td><span class="qa-badge qa-badge--pass">PASS</span></td></tr>
             <tr><td>Group cover</td><td><code>/en/admin/settings/groups</code></td><td>premoderation</td><td>3 попытки upload, admin rows <code>Rejected</code>.</td><td><span class="qa-badge qa-badge--pass">PASS</span></td></tr>
             <tr><td>Group avatar/cover</td><td><code>/en/admin/settings/groups</code></td><td>postmoderation</td><td>3 attempts, rows <code>Approved/Approved</code>.</td><td><span class="qa-badge qa-badge--pass">PASS</span></td></tr>
@@ -132,17 +124,17 @@
           <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--fail">FAIL</span><span>Settings stories</span></strong>Что тестировал: поля settings stories. Что получил: только один <code>storiesModerationMode</code>, отдельных photo/video moderation mode нет.<span class="qa-shot-comment">Комментарий: это прямое расхождение с ТЗ, потому что фото и видео stories должны настраиваться отдельно.</span></figcaption>
           <img src="./assets/annotated/settings-stories.png" alt="Stories settings annotated">
         </figure>
+        <figure class="qa-shot qa-shot--warn">
+          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--warn">PARTIAL</span><span>Stories postmoderation</span></strong>Что тестировал: появилась ли загруженная сторис в пользовательской горизонтальной ленте сторис. Что получил: карточки <code>QA story postmoderation</code> видны в ленте на пользовательском экране.<span class="qa-shot-comment">Вывод: это не FAIL. Доказана видимость сторис на проверенном пользовательском экране. Для полного PASS нужно дополнительно проверить эту же сторис со стороны другого пользователя и отдельно пройти режимы <code>premoderation</code> / <code>none</code>.</span></figcaption>
+          <img src="./assets/annotated/stories-postmoderation-attempt-3.png" alt="Stories postmoderation user carousel annotated">
+        </figure>
+        <figure class="qa-shot qa-shot--warn">
+          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--warn">PARTIAL</span><span>Stories none + postmoderation</span></strong>Что тестировал: видны ли карточки сторис в пользовательской горизонтальной ленте. Что получил: в carousel видны <code>QA story none</code> и <code>QA story postmoderation</code>.<span class="qa-shot-comment">Вывод: это пользовательское evidence, на него можно смотреть. Оно доказывает отображение карточек в ленте на этом экране, но не закрывает проверку видимости вторым пользователем, ручного approve/reject и полного поведения всех режимов.</span></figcaption>
+          <img src="./assets/annotated/stories-none-attempt-3.png" alt="Stories none and postmoderation user carousel annotated">
+        </figure>
         <figure class="qa-shot qa-shot--fail">
           <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--fail">FAIL</span><span>Settings groups</span></strong>Что тестировал: fields settings groups. Что получил: avatar/cover moderation mode есть, также найден <code>groupPostModerationMode</code>.<span class="qa-shot-comment">Комментарий: поле постов в settings конфликтует с ТЗ, где посты групп модерируются отдельным интерфейсом.</span></figcaption>
           <img src="./assets/annotated/settings-groups.png" alt="Groups settings annotated">
-        </figure>
-        <figure class="qa-shot qa-shot--warn">
-          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--warn">NEEDS RETEST</span><span>Stories postmoderation</span></strong>Что тестировал фактически: появление записи <code>Story</code> в общей админской media queue после загрузки. Что нужно было тестировать: опубликована ли сторис как пользовательский контент, видит ли ее автор и видит ли ее другой пользователь без ручного approve.<span class="qa-shot-comment">Вывод: этот скрин нельзя использовать как доказательство бага postmoderation. Он показывает только админскую очередь media, а не продуктовую видимость сторис.</span></figcaption>
-          <img src="./assets/annotated/stories-postmoderation-attempt-3.png" alt="Stories postmoderation attempt annotated">
-        </figure>
-        <figure class="qa-shot qa-shot--warn">
-          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--warn">INVALID / RETEST</span><span>Stories без модерации</span></strong>Что тестировал фактически: появление <code>Story</code> media row после загрузки. Что получил по данным run: блок назывался <code>none</code>, но сохраненная настройка в evidence осталась <code>postmoderation</code>.<span class="qa-shot-comment">Вывод: прежний вывод по режиму <code>none</code> из этого скрина делать нельзя. Нужен повторный тест: сохранить <code>none</code>, подтвердить значение в админке, загрузить новую сторис и проверить видимость у автора и другого пользователя.</span></figcaption>
-          <img src="./assets/annotated/stories-none-attempt-3.png" alt="Stories none attempt annotated">
         </figure>
         <figure class="qa-shot qa-shot--pass">
           <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Group update buttons</span></strong>Что тестировал: group update moderation buttons. Что получил: на <code>/en/admin/group/update?id=10</code> есть <code>Approve logo</code> и <code>Approve cover</code>.<span class="qa-shot-comment">Комментарий: требуемые кнопки для визуального контента группы присутствуют.</span></figcaption>
@@ -178,8 +170,8 @@
           <thead><tr><th>Run</th><th>Status</th><th>Что покрыл</th><th>State / rollback</th></tr></thead>
           <tbody>
             <tr><td><code>moderation-surface-discovery-20260506-210453</code></td><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Settings fields, group update, group posts routes, media approvals.</td><td>Read-only</td></tr>
-            <tr><td><code>photo-stories-moderation-full-20260507-000552</code></td><td><span class="qa-badge qa-badge--fail">FAIL</span></td><td>Photo gallery/main modes and partial stories before retry.</td><td>Photo/stories settings restored to baseline</td></tr>
-            <tr><td><code>stories-moderation-full-20260507-002117</code></td><td><span class="qa-badge qa-badge--fail">FAIL_BUG_FOUND</span></td><td>Stories all modes after upload stabilization.</td><td>Stories settings restored to baseline</td></tr>
+            <tr><td><code>photo-stories-moderation-full-20260507-000552</code></td><td><span class="qa-badge qa-badge--fail">FAIL</span></td><td>Photo gallery/main modes. Stories evidence from this run is excluded from product conclusions because it did not prove user-visible story behavior.</td><td>Photo/stories settings restored to baseline</td></tr>
+            <tr><td><code>stories-moderation-full-20260507-002117</code></td><td><span class="qa-badge qa-badge--warn">EVIDENCE EXCLUDED</span></td><td>Excluded from stories behavior verdict: screenshots and queue rows did not show the actual user-facing story surface.</td><td>Stories settings restored to baseline</td></tr>
             <tr><td><code>group-media-moderation-full-20260507-000552</code></td><td><span class="qa-badge qa-badge--warn">PASS_WITH_WARNINGS</span></td><td>Group avatar/cover modes, 3 attempts each.</td><td>Settings restored to baseline</td></tr>
             <tr><td><code>group-posts-moderation-audit-20260506-212020</code></td><td><span class="qa-badge qa-badge--warn">PASS_WITH_GAPS</span></td><td>Group posts list, hide modal, hidden reason, no physical delete, reopen surface.</td><td>Post 14 intentionally left Hidden as moderation test evidence</td></tr>
           </tbody>
