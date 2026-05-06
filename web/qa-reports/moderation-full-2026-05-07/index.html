@@ -55,11 +55,11 @@
               <td>Settings model/view для stories; добавить/проверить отдельные поля photo/video moderation mode или уточнить ТЗ.</td>
             </tr>
             <tr>
-              <td><span class="qa-badge qa-badge--fail">P0</span></td>
-              <td>Stories postmoderation / none</td>
-              <td>При <code>postmoderation</code> новые story IDs <code>839,840,841</code> остались <code>Pending</code>. При <code>none</code> IDs <code>843,844</code> тоже <code>Pending</code>. То есть post/none ведут себя как premoderation.</td>
-              <td>Postmoderation должна публиковать сразу; none не должен требовать ручной модерации.</td>
-              <td>Stories upload/create pipeline, media queue status assignment.</td>
+              <td><span class="qa-badge qa-badge--warn">P1</span></td>
+              <td>Stories moderation behavior</td>
+              <td>Предыдущая формулировка про <code>postmoderation/none</code> была некорректной: тест смотрел на строку <code>Story</code> в общей админской фото-очереди, а не на продуктовую видимость сторис. Дополнительно в run-данных видно, что примененная настройка stories оставалась <code>postmoderation</code> даже в блоках, названных <code>premoderation</code> и <code>none</code>.</td>
+              <td>Для stories нужно проверять: автор загрузил сторис, сторис видна/не видна автору, другому пользователю и в админской очереди согласно выбранному режиму. Статус media row сам по себе не доказывает публикацию сторис.</td>
+              <td>Нужен отдельный ретест stories с подтверждением сохраненной настройки и проверкой видимости через пользовательский интерфейс.</td>
             </tr>
             <tr>
               <td><span class="qa-badge qa-badge--fail">P1</span></td>
@@ -104,9 +104,9 @@
             <tr><td>Gallery photo</td><td><code>/en/admin/settings/photo</code></td><td>postmoderation</td><td>IDs <code>830,831,832</code> стали <code>Pending</code>.</td><td><span class="qa-badge qa-badge--fail">FAIL</span></td></tr>
             <tr><td>Gallery photo</td><td><code>/en/admin/settings/photo</code></td><td>none</td><td>IDs <code>833,834,835</code> стали <code>Approved/ActiveOrHidden</code>.</td><td><span class="qa-badge qa-badge--pass">PASS</span></td></tr>
             <tr><td>Main profile photo</td><td><code>/en/admin/settings/photo</code></td><td>all modes</td><td>Upload/crop UI открывается, но новый photo ID не создается: page показывает <code>From Photo Id must be an integer</code>.</td><td><span class="qa-badge qa-badge--warn">NOT PROVEN</span></td></tr>
-            <tr><td>Stories photo</td><td><code>/en/admin/settings/stories</code></td><td>premoderation</td><td>IDs <code>837,838</code> стали <code>Pending</code>; часть попыток blocked из-за story runtime limits.</td><td><span class="qa-badge qa-badge--pass">PASS/PARTIAL</span></td></tr>
-            <tr><td>Stories photo</td><td><code>/en/admin/settings/stories</code></td><td>postmoderation</td><td>IDs <code>839,840,841</code> стали <code>Pending</code>.</td><td><span class="qa-badge qa-badge--fail">FAIL</span></td></tr>
-            <tr><td>Stories photo</td><td><code>/en/admin/settings/stories</code></td><td>none</td><td>IDs <code>843,844</code> стали <code>Pending</code>.</td><td><span class="qa-badge qa-badge--fail">FAIL</span></td></tr>
+            <tr><td>Stories photo</td><td><code>/en/admin/settings/stories</code></td><td>premoderation</td><td>Создавались записи <code>Story</code> в общей media queue; продуктовая видимость сторис автору/другому пользователю не проверена.</td><td><span class="qa-badge qa-badge--warn">NEEDS RETEST</span></td></tr>
+            <tr><td>Stories photo</td><td><code>/en/admin/settings/stories</code></td><td>postmoderation</td><td>Данные run показывают <code>appliedSettings.storiesMode=postmoderation</code> и новые <code>Story</code> rows в queue, но не доказывают, была ли сторис опубликована в пользовательском интерфейсе.</td><td><span class="qa-badge qa-badge--warn">NEEDS RETEST</span></td></tr>
+            <tr><td>Stories photo</td><td><code>/en/admin/settings/stories</code></td><td>none</td><td>Тестовый блок <code>none</code> недействителен: после сохранения настройка в evidence осталась <code>postmoderation</code>; вывод про no-moderation делать нельзя.</td><td><span class="qa-badge qa-badge--warn">INVALID / RETEST</span></td></tr>
             <tr><td>Stories video</td><td><code>/en/admin/settings/stories</code></td><td>all modes</td><td>Отдельного video moderation select в live UI нет; video upload не закрыт отдельным сценарием.</td><td><span class="qa-badge qa-badge--fail">CONFIG GAP</span></td></tr>
             <tr><td>Group avatar</td><td><code>/en/admin/settings/groups</code></td><td>premoderation</td><td>3 попытки upload, admin rows <code>Rejected</code>.</td><td><span class="qa-badge qa-badge--pass">PASS</span></td></tr>
             <tr><td>Group cover</td><td><code>/en/admin/settings/groups</code></td><td>premoderation</td><td>3 попытки upload, admin rows <code>Rejected</code>.</td><td><span class="qa-badge qa-badge--pass">PASS</span></td></tr>
@@ -136,12 +136,12 @@
           <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--fail">FAIL</span><span>Settings groups</span></strong>Что тестировал: fields settings groups. Что получил: avatar/cover moderation mode есть, также найден <code>groupPostModerationMode</code>.<span class="qa-shot-comment">Комментарий: поле постов в settings конфликтует с ТЗ, где посты групп модерируются отдельным интерфейсом.</span></figcaption>
           <img src="./assets/annotated/settings-groups.png" alt="Groups settings annotated">
         </figure>
-        <figure class="qa-shot qa-shot--fail">
-          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--fail">FAIL</span><span>Stories postmoderation</span></strong>Что тестировал: stories postmoderation upload. Что получил: новые story media остаются pending, режим ведет себя как premoderation.<span class="qa-shot-comment">Комментарий: postmoderation должна публиковать сразу, а не отправлять контент в ожидание approve.</span></figcaption>
+        <figure class="qa-shot qa-shot--warn">
+          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--warn">NEEDS RETEST</span><span>Stories postmoderation</span></strong>Что тестировал фактически: появление записи <code>Story</code> в общей админской media queue после загрузки. Что нужно было тестировать: опубликована ли сторис как пользовательский контент, видит ли ее автор и видит ли ее другой пользователь без ручного approve.<span class="qa-shot-comment">Вывод: этот скрин нельзя использовать как доказательство бага postmoderation. Он показывает только админскую очередь media, а не продуктовую видимость сторис.</span></figcaption>
           <img src="./assets/annotated/stories-postmoderation-attempt-3.png" alt="Stories postmoderation attempt annotated">
         </figure>
-        <figure class="qa-shot qa-shot--fail">
-          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--fail">FAIL</span><span>Stories без модерации</span></strong>Что тестировал: stories none upload. Что получил: новые story media также остаются pending, none не работает как без модерации.<span class="qa-shot-comment">Комментарий: в режиме none ручная очередь не должна быть обязательной.</span></figcaption>
+        <figure class="qa-shot qa-shot--warn">
+          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--warn">INVALID / RETEST</span><span>Stories без модерации</span></strong>Что тестировал фактически: появление <code>Story</code> media row после загрузки. Что получил по данным run: блок назывался <code>none</code>, но сохраненная настройка в evidence осталась <code>postmoderation</code>.<span class="qa-shot-comment">Вывод: прежний вывод по режиму <code>none</code> из этого скрина делать нельзя. Нужен повторный тест: сохранить <code>none</code>, подтвердить значение в админке, загрузить новую сторис и проверить видимость у автора и другого пользователя.</span></figcaption>
           <img src="./assets/annotated/stories-none-attempt-3.png" alt="Stories none attempt annotated">
         </figure>
         <figure class="qa-shot qa-shot--pass">
