@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline QA | Full moderation audit</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">QA report · live Confideline · 2026-05-07</p>
+      <h1>Полная проверка модерации: photo / stories / groups</h1>
+      <p>Повторный live-аудит гибкой модерации по ТЗ Игоря: три режима <code>premoderation</code>, <code>postmoderation</code>, <code>none</code>, настройки фото, stories, визуального оформления групп и интерфейса постов групп.</p>
+      <div class="tp-actions" style="margin-top:16px">
+        <a class="tp-btn tp-btn--primary" href="#igor">Блок для Игоря</a>
+        <a class="tp-btn" href="../">Все QA reports</a>
+      </div>
+    </header>
+
+    <section class="qa-summary">
+      <div class="qa-metric"><span>Итог</span><strong>FAIL</strong></div>
+      <div class="qa-metric"><span>Контуры</span><strong>4</strong></div>
+      <div class="qa-metric"><span>Режимы</span><strong>3</strong></div>
+      <div class="qa-metric"><span>Rollback</span><strong>OK</strong></div>
+    </section>
+
+    <section class="qa-section">
+      <div class="qa-note">
+        <p><strong>Ожидание по ТЗ:</strong> premoderation не публикует контент до approve; postmoderation публикует сразу и проверяет позже; none публикует без ручной очереди. Для group avatar/cover после reject должен возвращаться предыдущий одобренный image. Для group posts запись должна скрываться, не удаляться, с reason/moderator metadata и возможностью повторного открытия.</p>
+        <p><strong>Источник ожиданий:</strong> ТЗ из задачи + таблица Google “Таблица: типы модерации фото по точкам загрузки”, где описаны точки загрузки, видимость, действия при отклонении, авторская видимость и технические статусы.</p>
+      </div>
+    </section>
+
+    <section id="igor" class="qa-section">
+      <h2>Сводка для Игоря</h2>
+      <div class="qa-table-wrap">
+        <table class="qa-table">
+          <thead>
+            <tr>
+              <th>Приоритет</th>
+              <th>Зона</th>
+              <th>Факт</th>
+              <th>Ожидание</th>
+              <th>Куда смотреть</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">P0</span></td>
+              <td>Stories moderation settings</td>
+              <td>В live admin `/en/admin/settings/stories` есть только один select <code>storiesModerationMode</code>. Отдельных настроек для stories photo и stories video нет.</td>
+              <td>По ТЗ должны быть отдельные режимы для stories photo и stories video.</td>
+              <td>Settings model/view для stories; добавить/проверить отдельные поля photo/video moderation mode или уточнить ТЗ.</td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">P0</span></td>
+              <td>Stories postmoderation / none</td>
+              <td>При <code>postmoderation</code> новые story IDs <code>839,840,841</code> остались <code>Pending</code>. При <code>none</code> IDs <code>843,844</code> тоже <code>Pending</code>. То есть post/none ведут себя как premoderation.</td>
+              <td>Postmoderation должна публиковать сразу; none не должен требовать ручной модерации.</td>
+              <td>Stories upload/create pipeline, media queue status assignment.</td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">P1</span></td>
+              <td>Gallery photo postmoderation</td>
+              <td>При <code>photoGalleryModerationMode=postmoderation</code> gallery IDs <code>830,831,832</code> попали в <code>Pending</code>, а не в active/published state.</td>
+              <td>Postmoderation: фото видно сразу, затем может быть скрыто после проверки.</td>
+              <td>Photo moderation status for gallery uploads.</td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">P1</span></td>
+              <td>Group settings / posts</td>
+              <td>В `/en/admin/settings/groups` найдено поле <code>groupPostModerationMode</code>, хотя ТЗ говорит, что group posts не настраиваются через settings.</td>
+              <td>Либо убрать/не использовать поле из settings, либо обновить ТЗ и интерфейсное описание.</td>
+              <td>Group settings form and group post moderation source of truth.</td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--warn">P2</span></td>
+              <td>Group avatar/cover none</td>
+              <td>В режиме <code>none</code> avatar/cover uploads проходят как <code>Approved/Approved</code>, но строки остаются видимыми в admin media approvals.</td>
+              <td>Без модерации не должно зависеть от очереди; если это audit history, нужно визуально отделить от pending/review queue.</td>
+              <td>`/en/admin/group/media-approvals`, status/filter semantics.</td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--warn">P2</span></td>
+              <td>Group posts reopen</td>
+              <td>Hide post работает: post <code>14</code> стал <code>Hidden</code>, reason сохранен. Но action повторного открытия в sampled hidden row не найден.</td>
+              <td>По ТЗ должны быть approve/hide/reopen tools.</td>
+              <td>`/en/admin/group/posts?groupId=10`, actions for hidden posts.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Матрица проверок</h2>
+      <div class="qa-table-wrap">
+        <table class="qa-table">
+          <thead><tr><th>Контент</th><th>Настройка / route</th><th>Режим</th><th>Факт</th><th>Вердикт</th></tr></thead>
+          <tbody>
+            <tr><td>Gallery photo</td><td><code>/en/admin/settings/photo</code></td><td>premoderation</td><td>IDs <code>827,828,829</code> стали <code>Pending</code>.</td><td><span class="qa-badge qa-badge--pass">PASS</span></td></tr>
+            <tr><td>Gallery photo</td><td><code>/en/admin/settings/photo</code></td><td>postmoderation</td><td>IDs <code>830,831,832</code> стали <code>Pending</code>.</td><td><span class="qa-badge qa-badge--fail">FAIL</span></td></tr>
+            <tr><td>Gallery photo</td><td><code>/en/admin/settings/photo</code></td><td>none</td><td>IDs <code>833,834,835</code> стали <code>Approved/ActiveOrHidden</code>.</td><td><span class="qa-badge qa-badge--pass">PASS</span></td></tr>
+            <tr><td>Main profile photo</td><td><code>/en/admin/settings/photo</code></td><td>all modes</td><td>Upload/crop UI открывается, но новый photo ID не создается: page показывает <code>From Photo Id must be an integer</code>.</td><td><span class="qa-badge qa-badge--warn">NOT PROVEN</span></td></tr>
+            <tr><td>Stories photo</td><td><code>/en/admin/settings/stories</code></td><td>premoderation</td><td>IDs <code>837,838</code> стали <code>Pending</code>; часть попыток blocked из-за story runtime limits.</td><td><span class="qa-badge qa-badge--pass">PASS/PARTIAL</span></td></tr>
+            <tr><td>Stories photo</td><td><code>/en/admin/settings/stories</code></td><td>postmoderation</td><td>IDs <code>839,840,841</code> стали <code>Pending</code>.</td><td><span class="qa-badge qa-badge--fail">FAIL</span></td></tr>
+            <tr><td>Stories photo</td><td><code>/en/admin/settings/stories</code></td><td>none</td><td>IDs <code>843,844</code> стали <code>Pending</code>.</td><td><span class="qa-badge qa-badge--fail">FAIL</span></td></tr>
+            <tr><td>Stories video</td><td><code>/en/admin/settings/stories</code></td><td>all modes</td><td>Отдельного video moderation select в live UI нет; video upload не закрыт отдельным сценарием.</td><td><span class="qa-badge qa-badge--fail">CONFIG GAP</span></td></tr>
+            <tr><td>Group avatar</td><td><code>/en/admin/settings/groups</code></td><td>premoderation</td><td>3 попытки upload, admin rows <code>Rejected</code>.</td><td><span class="qa-badge qa-badge--pass">PASS</span></td></tr>
+            <tr><td>Group cover</td><td><code>/en/admin/settings/groups</code></td><td>premoderation</td><td>3 попытки upload, admin rows <code>Rejected</code>.</td><td><span class="qa-badge qa-badge--pass">PASS</span></td></tr>
+            <tr><td>Group avatar/cover</td><td><code>/en/admin/settings/groups</code></td><td>postmoderation</td><td>3 attempts, rows <code>Approved/Approved</code>.</td><td><span class="qa-badge qa-badge--pass">PASS</span></td></tr>
+            <tr><td>Group avatar/cover</td><td><code>/en/admin/settings/groups</code></td><td>none</td><td>3 attempts, rows <code>Approved/Approved</code>, но видны в media approvals.</td><td><span class="qa-badge qa-badge--warn">PASS + WARN</span></td></tr>
+            <tr><td>Group update buttons</td><td><code>/en/admin/group/update?id=10</code></td><td>moderated modes</td><td>Кнопки <code>Approve logo</code> и <code>Approve cover</code> есть.</td><td><span class="qa-badge qa-badge--pass">PASS</span></td></tr>
+            <tr><td>Group posts</td><td><code>/en/admin/group/posts?groupId=10</code></td><td>post UI</td><td>Страница открывается, 20 items, filters Active/Pending/Hidden, Hide action есть.</td><td><span class="qa-badge qa-badge--pass">PASS</span></td></tr>
+            <tr><td>Group posts hide</td><td><code>hide-post-modal -> delete-post</code></td><td>manual moderation</td><td>Post <code>14</code> стал <code>Hidden</code>, reason <code>QA hide reason 20260506-212020</code> сохранен; запись не исчезла.</td><td><span class="qa-badge qa-badge--pass">PASS</span></td></tr>
+            <tr><td>Group posts reopen</td><td><code>/en/admin/group/posts?groupId=10</code></td><td>manual moderation</td><td>Reopen/show action для hidden row не найден.</td><td><span class="qa-badge qa-badge--warn">NOT PROVEN</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Evidence screenshots</h2>
+      <div class="qa-shot-grid">
+        <figure class="qa-shot"><figcaption>Что тестировал: поля settings photo. Что получил: есть раздельные selects main/gallery moderation mode.</figcaption><img src="./assets/settings-photo.png" alt="Photo settings"></figure>
+        <figure class="qa-shot"><figcaption>Что тестировал: поля settings stories. Что получил: только один <code>storiesModerationMode</code>, отдельных photo/video moderation mode нет.</figcaption><img src="./assets/settings-stories.png" alt="Stories settings"></figure>
+        <figure class="qa-shot"><figcaption>Что тестировал: fields settings groups. Что получил: avatar/cover moderation mode есть, также найден <code>groupPostModerationMode</code>.</figcaption><img src="./assets/settings-groups.png" alt="Groups settings"></figure>
+        <figure class="qa-shot"><figcaption>Что тестировал: stories postmoderation upload. Что получил: новые story media остаются pending, режим ведет себя как premoderation.</figcaption><img src="./assets/stories-postmoderation-attempt-3.png" alt="Stories postmoderation attempt"></figure>
+        <figure class="qa-shot"><figcaption>Что тестировал: stories none upload. Что получил: новые story media также остаются pending, none не работает как без модерации.</figcaption><img src="./assets/stories-none-attempt-3.png" alt="Stories none attempt"></figure>
+        <figure class="qa-shot"><figcaption>Что тестировал: group update moderation buttons. Что получил: на `/en/admin/group/update?id=10` есть <code>Approve logo</code> и <code>Approve cover</code>.</figcaption><img src="./assets/admin-group-update.png" alt="Group update buttons"></figure>
+        <figure class="qa-shot"><figcaption>Что тестировал: group media premoderation. Что получил: загрузка avatar/cover прошла, admin rows в состоянии Rejected после проверки.</figcaption><img src="./assets/group-media-premoderation-attempt-3.png" alt="Group media premoderation"></figure>
+        <figure class="qa-shot"><figcaption>Что тестировал: group media no moderation. Что получил: статус Approved, но row остается в media approvals.</figcaption><img src="./assets/group-media-none-attempt-3.png" alt="Group media none"></figure>
+        <figure class="qa-shot"><figcaption>Что тестировал: group posts route. Что получил: `/en/admin/group/posts?groupId=10` открывает список постов, фильтры и actions.</figcaption><img src="./assets/group-posts-initial.png" alt="Group posts initial"></figure>
+        <figure class="qa-shot"><figcaption>Что тестировал: hide group post. Что получил: post 14 стал Hidden, reason сохранен, запись физически не удалена.</figcaption><img src="./assets/group-posts-after-hide-attempt.png" alt="Group post hidden"></figure>
+        <figure class="qa-shot"><figcaption>Что тестировал: hidden filter / reopen surface. Что получил: hidden post виден, но reopen/show action в sampled row не найден.</figcaption><img src="./assets/group-posts-hidden-filter.png" alt="Group posts hidden filter"></figure>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Прогоны и rollback</h2>
+      <div class="qa-table-wrap">
+        <table class="qa-table">
+          <thead><tr><th>Run</th><th>Status</th><th>Что покрыл</th><th>State / rollback</th></tr></thead>
+          <tbody>
+            <tr><td><code>moderation-surface-discovery-20260506-210453</code></td><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Settings fields, group update, group posts routes, media approvals.</td><td>Read-only</td></tr>
+            <tr><td><code>photo-stories-moderation-full-20260507-000552</code></td><td><span class="qa-badge qa-badge--fail">FAIL</span></td><td>Photo gallery/main modes and partial stories before retry.</td><td>Photo/stories settings restored to baseline</td></tr>
+            <tr><td><code>stories-moderation-full-20260507-002117</code></td><td><span class="qa-badge qa-badge--fail">FAIL_BUG_FOUND</span></td><td>Stories all modes after upload stabilization.</td><td>Stories settings restored to baseline</td></tr>
+            <tr><td><code>group-media-moderation-full-20260507-000552</code></td><td><span class="qa-badge qa-badge--warn">PASS_WITH_WARNINGS</span></td><td>Group avatar/cover modes, 3 attempts each.</td><td>Settings restored to baseline</td></tr>
+            <tr><td><code>group-posts-moderation-audit-20260506-212020</code></td><td><span class="qa-badge qa-badge--warn">PASS_WITH_GAPS</span></td><td>Group posts list, hide modal, hidden reason, no physical delete, reopen surface.</td><td>Post 14 intentionally left Hidden as moderation test evidence</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="tp-footer">
+      <a href="../">Все QA reports</a> · <a href="#igor">Блок для Игоря</a>
+    </footer>
+  </main>
+</body>
+</html>
