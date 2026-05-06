@@ -124,17 +124,50 @@
     <section class="qa-section">
       <h2>Evidence screenshots</h2>
       <div class="qa-shot-grid">
-        <figure class="qa-shot"><figcaption>Что тестировал: поля settings photo. Что получил: есть раздельные selects main/gallery moderation mode.</figcaption><img src="./assets/settings-photo.png" alt="Photo settings"></figure>
-        <figure class="qa-shot"><figcaption>Что тестировал: поля settings stories. Что получил: только один <code>storiesModerationMode</code>, отдельных photo/video moderation mode нет.</figcaption><img src="./assets/settings-stories.png" alt="Stories settings"></figure>
-        <figure class="qa-shot"><figcaption>Что тестировал: fields settings groups. Что получил: avatar/cover moderation mode есть, также найден <code>groupPostModerationMode</code>.</figcaption><img src="./assets/settings-groups.png" alt="Groups settings"></figure>
-        <figure class="qa-shot"><figcaption>Что тестировал: stories postmoderation upload. Что получил: новые story media остаются pending, режим ведет себя как premoderation.</figcaption><img src="./assets/stories-postmoderation-attempt-3.png" alt="Stories postmoderation attempt"></figure>
-        <figure class="qa-shot"><figcaption>Что тестировал: stories none upload. Что получил: новые story media также остаются pending, none не работает как без модерации.</figcaption><img src="./assets/stories-none-attempt-3.png" alt="Stories none attempt"></figure>
-        <figure class="qa-shot"><figcaption>Что тестировал: group update moderation buttons. Что получил: на `/en/admin/group/update?id=10` есть <code>Approve logo</code> и <code>Approve cover</code>.</figcaption><img src="./assets/admin-group-update.png" alt="Group update buttons"></figure>
-        <figure class="qa-shot"><figcaption>Что тестировал: group media premoderation. Что получил: загрузка avatar/cover прошла, admin rows в состоянии Rejected после проверки.</figcaption><img src="./assets/group-media-premoderation-attempt-3.png" alt="Group media premoderation"></figure>
-        <figure class="qa-shot"><figcaption>Что тестировал: group media no moderation. Что получил: статус Approved, но row остается в media approvals.</figcaption><img src="./assets/group-media-none-attempt-3.png" alt="Group media none"></figure>
-        <figure class="qa-shot"><figcaption>Что тестировал: group posts route. Что получил: `/en/admin/group/posts?groupId=10` открывает список постов, фильтры и actions.</figcaption><img src="./assets/group-posts-initial.png" alt="Group posts initial"></figure>
-        <figure class="qa-shot"><figcaption>Что тестировал: hide group post. Что получил: post 14 стал Hidden, reason сохранен, запись физически не удалена.</figcaption><img src="./assets/group-posts-after-hide-attempt.png" alt="Group post hidden"></figure>
-        <figure class="qa-shot"><figcaption>Что тестировал: hidden filter / reopen surface. Что получил: hidden post виден, но reopen/show action в sampled row не найден.</figcaption><img src="./assets/group-posts-hidden-filter.png" alt="Group posts hidden filter"></figure>
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Настройки фото</span></strong>Что тестировал: поля settings photo. Что получил: есть раздельные selects main/gallery moderation mode.<span class="qa-shot-comment">Комментарий: базовая конфигурация фото соответствует идее раздельных настроек.</span></figcaption>
+          <img src="./assets/annotated/settings-photo.png" alt="Photo settings annotated">
+        </figure>
+        <figure class="qa-shot qa-shot--fail">
+          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--fail">FAIL</span><span>Settings stories</span></strong>Что тестировал: поля settings stories. Что получил: только один <code>storiesModerationMode</code>, отдельных photo/video moderation mode нет.<span class="qa-shot-comment">Комментарий: это прямое расхождение с ТЗ, потому что фото и видео stories должны настраиваться отдельно.</span></figcaption>
+          <img src="./assets/annotated/settings-stories.png" alt="Stories settings annotated">
+        </figure>
+        <figure class="qa-shot qa-shot--fail">
+          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--fail">FAIL</span><span>Settings groups</span></strong>Что тестировал: fields settings groups. Что получил: avatar/cover moderation mode есть, также найден <code>groupPostModerationMode</code>.<span class="qa-shot-comment">Комментарий: поле постов в settings конфликтует с ТЗ, где посты групп модерируются отдельным интерфейсом.</span></figcaption>
+          <img src="./assets/annotated/settings-groups.png" alt="Groups settings annotated">
+        </figure>
+        <figure class="qa-shot qa-shot--fail">
+          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--fail">FAIL</span><span>Stories postmoderation</span></strong>Что тестировал: stories postmoderation upload. Что получил: новые story media остаются pending, режим ведет себя как premoderation.<span class="qa-shot-comment">Комментарий: postmoderation должна публиковать сразу, а не отправлять контент в ожидание approve.</span></figcaption>
+          <img src="./assets/annotated/stories-postmoderation-attempt-3.png" alt="Stories postmoderation attempt annotated">
+        </figure>
+        <figure class="qa-shot qa-shot--fail">
+          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--fail">FAIL</span><span>Stories без модерации</span></strong>Что тестировал: stories none upload. Что получил: новые story media также остаются pending, none не работает как без модерации.<span class="qa-shot-comment">Комментарий: в режиме none ручная очередь не должна быть обязательной.</span></figcaption>
+          <img src="./assets/annotated/stories-none-attempt-3.png" alt="Stories none attempt annotated">
+        </figure>
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Group update buttons</span></strong>Что тестировал: group update moderation buttons. Что получил: на <code>/en/admin/group/update?id=10</code> есть <code>Approve logo</code> и <code>Approve cover</code>.<span class="qa-shot-comment">Комментарий: требуемые кнопки для визуального контента группы присутствуют.</span></figcaption>
+          <img src="./assets/annotated/admin-group-update.png" alt="Group update buttons annotated">
+        </figure>
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Group media premoderation</span></strong>Что тестировал: group media premoderation. Что получил: загрузка avatar/cover прошла, admin rows в состоянии Rejected после проверки.<span class="qa-shot-comment">Комментарий: контент попадает в moderation flow; отдельный вопрос возврата к предыдущему approved image надо проверять точечно после исправлений.</span></figcaption>
+          <img src="./assets/annotated/group-media-premoderation-attempt-3.png" alt="Group media premoderation annotated">
+        </figure>
+        <figure class="qa-shot qa-shot--warn">
+          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--warn">WARN</span><span>Group media none</span></strong>Что тестировал: group media no moderation. Что получил: статус Approved, но row остается в media approvals.<span class="qa-shot-comment">Комментарий: если это история действий, ее нужно отделить от очереди на проверку; иначе админ будет видеть лишнюю модерационную работу.</span></figcaption>
+          <img src="./assets/annotated/group-media-none-attempt-3.png" alt="Group media none annotated">
+        </figure>
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Group posts route</span></strong>Что тестировал: group posts route. Что получил: <code>/en/admin/group/posts?groupId=10</code> открывает список постов, фильтры и actions.<span class="qa-shot-comment">Комментарий: правильный route найден; варианты <code>id=10</code> и nested index не являются рабочей точкой для списка.</span></figcaption>
+          <img src="./assets/annotated/group-posts-initial.png" alt="Group posts initial annotated">
+        </figure>
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Hide group post</span></strong>Что тестировал: hide group post. Что получил: post 14 стал Hidden, reason сохранен, запись физически не удалена.<span class="qa-shot-comment">Комментарий: базовое требование hide вместо delete подтверждено доказательством в строке поста.</span></figcaption>
+          <img src="./assets/annotated/group-posts-after-hide-attempt.png" alt="Group post hidden annotated">
+        </figure>
+        <figure class="qa-shot qa-shot--warn">
+          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--warn">WARN</span><span>Reopen hidden post</span></strong>Что тестировал: hidden filter / reopen surface. Что получил: hidden post виден, но reopen/show action в sampled row не найден.<span class="qa-shot-comment">Комментарий: скрытие работает, но полный цикл модерации не доказан без действия повторного открытия.</span></figcaption>
+          <img src="./assets/annotated/group-posts-hidden-filter.png" alt="Group posts hidden filter annotated">
+        </figure>
       </div>
     </section>
 
