@@ -21,8 +21,8 @@
 
     <section class="qa-summary">
       <div class="qa-metric"><span>Итог</span><strong>FAIL</strong></div>
-      <div class="qa-metric"><span>Проверок</span><strong>13</strong></div>
-      <div class="qa-metric"><span>Дефектов</span><strong>2+2</strong></div>
+      <div class="qa-metric"><span>Проверок</span><strong>16</strong></div>
+      <div class="qa-metric"><span>Дефектов</span><strong>3+2</strong></div>
       <div class="qa-metric"><span>Rollback</span><strong>OK</strong></div>
     </section>
 
@@ -49,7 +49,7 @@
             <tr>
               <td><span class="qa-badge qa-badge--fail">P0</span></td>
               <td><code>messagesOutFree*</code> и <code>messagesOutPremium*</code></td>
-              <td>Лимиты исходящих сообщений не применяются. Free user ранее отправил 3 сообщения при limit=1; premium user 182 тоже отправил 3 сообщения подряд, все <code>success=true</code>.</td>
+              <td>Лимиты исходящих сообщений не применяются. Free user ранее отправил 3 сообщения при limit=1; premium user 182 отправил 3 сообщения подряд, затем дополнительные попытки 4-9 тоже ушли успешно. Попытка 10 дала <code>404 Contact not found</code>, это не limit block.</td>
               <td>После первого разрешенного действия второе/третье сообщение должно блокироваться или возвращать action-specific limit response.</td>
               <td><code>/en/messages/create</code>, <code>MessagesController::actionCreate()</code>, <code>MessageManager::createMessage()</code>, premium/free limit event chain.</td>
             </tr>
@@ -131,7 +131,7 @@
             <tr>
               <td><code>messagesOutPremium*</code></td>
               <td><span class="qa-badge qa-badge--fail">FAIL</span></td>
-              <td>3 сообщения подряд, все success=true.</td>
+              <td>Попытки 1-9: сообщения отправлены, все доступные responses <code>success=true</code>. Попытка 10: <code>404 Contact not found</code>, не лимит.</td>
               <td>Free ветка ранее дала такой же FAIL.</td>
               <td>Общий backend defect outgoing messages.</td>
             </tr>
@@ -155,39 +155,73 @@
     </section>
 
     <section class="qa-section">
+      <h2>Повторная проверка messagesOutPremium: попытки 4-10</h2>
+      <p>После замечания дополнительно проверено поведение при тех же лимитах: <code>messagesOutPremiumMen=1</code>, <code>messagesOutPremiumWomen=1</code>, <code>messagesOutPeriod=1</code>. Цель: понять, появится ли блокировка не на 2-3 сообщении, а позже.</p>
+      <div class="qa-table-wrap">
+        <table class="qa-table">
+          <thead>
+            <tr>
+              <th>Попытка</th>
+              <th>Target user</th>
+              <th>Ответ системы</th>
+              <th>Вывод</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>4</td><td>17</td><td><code>success=true</code>, <code>messageId=185</code></td><td>Лимит не сработал.</td></tr>
+            <tr><td>5</td><td>43</td><td><code>success=true</code>, <code>messageId=186</code></td><td>Лимит не сработал.</td></tr>
+            <tr><td>6</td><td>51</td><td><code>success=true</code>, <code>messageId=187</code></td><td>Лимит не сработал.</td></tr>
+            <tr><td>7</td><td>180</td><td><code>success=true</code>, <code>messageId=188</code></td><td>Лимит не сработал.</td></tr>
+            <tr><td>8</td><td>181</td><td><code>success=true</code>, <code>messageId=189</code></td><td>Лимит не сработал.</td></tr>
+            <tr><td>9</td><td>184</td><td><code>success=true</code>, <code>messageId=190</code></td><td>Лимит не сработал.</td></tr>
+            <tr><td>10</td><td>186</td><td><code>404 Contact not found</code></td><td>Это не блокировка лимита, а недоступный контакт.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
       <h2>Evidence screenshots</h2>
       <div class="qa-shot-grid">
         <figure class="qa-shot">
-          <figcaption>Premium active: user 182, active until Jun 4, 2026</figcaption>
+          <figcaption>Что тестировал: проверял, что user 182 действительно premium. Что получил: premium активен до Jun 4, 2026, баланс 250 credits.</figcaption>
           <img src="./assets/premiumUserAfterActivation-services.png" alt="Premium active services page">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Admin settings rollback: diff пустой</figcaption>
+          <figcaption>Что тестировал: откат временно сниженных premium settings. Что получил: rollback успешен, diff пустой.</figcaption>
           <img src="./assets/admin-premium-final-rollback.png" alt="Admin rollback settings">
         </figure>
         <figure class="qa-shot">
-          <figcaption>FAIL: messagesOutPremium не блокирует 3-е сообщение</figcaption>
+          <figcaption>Что тестировал: third outgoing message при premium лимите 1. Что получил: сообщение отправлено, блокировки нет.</figcaption>
           <img src="./assets/premium-messages-out-attempt-3.png" alt="Premium messages out attempt 3">
         </figure>
         <figure class="qa-shot">
-          <figcaption>FAIL: profileViewPremium второй профиль открыт</figcaption>
+          <figcaption>Что тестировал: второй просмотр профиля при premium profile-view лимите 1. Что получил: второй профиль открылся без limit modal.</figcaption>
           <img src="./assets/premium-profileView-attempt-2.png" alt="Premium profile view second profile">
         </figure>
         <figure class="qa-shot">
-          <figcaption>PASS: incoming likes доступен premium</figcaption>
+          <figcaption>Что тестировал: входящие лайки при включенном premium-only доступе. Что получил: premium user видит страницу без lock.</figcaption>
           <img src="./assets/premium-incoming-likes.png" alt="Premium incoming likes">
         </figure>
         <figure class="qa-shot">
-          <figcaption>PASS: incoming likes locked для free</figcaption>
+          <figcaption>Что тестировал: тот же incoming likes сценарий на free control user. Что получил: free user видит premium lock.</figcaption>
           <img src="./assets/free-incoming-likes.png" alt="Free incoming likes lock">
         </figure>
         <figure class="qa-shot">
-          <figcaption>PASS: no ads у premium</figcaption>
+          <figcaption>Что тестировал: показ рекламы на profile page у premium. Что получил: sidebar ad отсутствует.</figcaption>
           <img src="./assets/premiumNoAdsProfile.png" alt="Premium profile without ads">
         </figure>
         <figure class="qa-shot">
-          <figcaption>PASS: sidebar ad у free</figcaption>
+          <figcaption>Что тестировал: контроль рекламы на profile page у free user. Что получил: sidebar ad отображается.</figcaption>
           <img src="./assets/freeNoAdsProfileControl.png" alt="Free profile with sidebar ad">
+        </figure>
+        <figure class="qa-shot">
+          <figcaption>Что тестировал: попытка 9 отправки сообщения при premium outgoing limit=1. Что получил: сообщение отправлено, <code>messageId=190</code>, лимит не сработал.</figcaption>
+          <img src="./assets/premium-messages-out-attempt-9.png" alt="Premium messages out attempt 9">
+        </figure>
+        <figure class="qa-shot">
+          <figcaption>Что тестировал: попытка 10 при тех же лимитах. Что получил: <code>404 Contact not found</code>; это не premium limit block.</figcaption>
+          <img src="./assets/premium-messages-out-attempt-10.png" alt="Premium messages out attempt 10">
         </figure>
       </div>
     </section>
