@@ -43,6 +43,7 @@
               <th>Зона</th>
               <th>Факт</th>
               <th>Ожидание</th>
+              <th>Как найти / воспроизвести</th>
               <th>Куда смотреть</th>
             </tr>
           </thead>
@@ -52,6 +53,7 @@
               <td>Stories moderation settings</td>
               <td>В live admin `/en/admin/settings/stories` есть только один select <code>storiesModerationMode</code>. Отдельных настроек для stories photo и stories video нет.</td>
               <td>По ТЗ должны быть отдельные режимы для stories photo и stories video.</td>
+              <td>Открыть <code>/en/admin/settings/stories</code>; сравнить форму с ТЗ; убедиться, что есть только <code>storiesModerationMode</code>, а отдельных photo/video select нет.</td>
               <td>Settings model/view для stories; добавить/проверить отдельные поля photo/video moderation mode или уточнить ТЗ.</td>
             </tr>
             <tr>
@@ -59,6 +61,7 @@
               <td>Gallery photo postmoderation</td>
               <td>При <code>photoGalleryModerationMode=postmoderation</code> gallery IDs <code>830,831,832</code> попали в <code>Pending</code>, а не в active/published state.</td>
               <td>Postmoderation: фото видно сразу, затем может быть скрыто после проверки.</td>
+              <td>В <code>/en/admin/settings/photo</code> поставить gallery postmoderation; загрузить новое gallery photo пользователем; открыть admin photo/media queue и проверить, что новый ID получает <code>Pending</code>, а не опубликованное состояние.</td>
               <td>Photo moderation status for gallery uploads.</td>
             </tr>
             <tr>
@@ -66,6 +69,7 @@
               <td>Group settings / posts</td>
               <td>В `/en/admin/settings/groups` найдено поле <code>groupPostModerationMode</code>, хотя ТЗ говорит, что group posts не настраиваются через settings.</td>
               <td>Либо убрать/не использовать поле из settings, либо обновить ТЗ и интерфейсное описание.</td>
+              <td>Открыть <code>/en/admin/settings/groups</code>; найти <code>groupPostModerationMode</code>; сверить с ТЗ, где модерация постов должна идти через отдельный интерфейс постов, а не через settings.</td>
               <td>Group settings form and group post moderation source of truth.</td>
             </tr>
             <tr>
@@ -73,6 +77,7 @@
               <td>Group avatar/cover none</td>
               <td>В режиме <code>none</code> avatar/cover uploads проходят как <code>Approved/Approved</code>, но строки остаются видимыми в admin media approvals.</td>
               <td>Без модерации не должно зависеть от очереди; если это audit history, нужно визуально отделить от pending/review queue.</td>
+              <td>Поставить group avatar/cover mode <code>none</code>; загрузить новые avatar/cover; открыть <code>/en/admin/group/media-approvals</code> и проверить, появляются ли approved rows в общей очереди рядом с review items.</td>
               <td>`/en/admin/group/media-approvals`, status/filter semantics.</td>
             </tr>
             <tr>
@@ -80,6 +85,7 @@
               <td>Group posts reopen</td>
               <td>Hide post работает: post <code>14</code> стал <code>Hidden</code>, reason сохранен. Но action повторного открытия в sampled hidden row не найден.</td>
               <td>По ТЗ должны быть approve/hide/reopen tools.</td>
+              <td>Открыть <code>/en/admin/group/posts?groupId=10</code>; скрыть active post через hide modal; включить фильтр Hidden; найти эту строку и проверить наличие действия reopen/show/approve.</td>
               <td>`/en/admin/group/posts?groupId=10`, actions for hidden posts.</td>
             </tr>
           </tbody>

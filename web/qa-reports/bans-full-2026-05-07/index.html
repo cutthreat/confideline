@@ -37,42 +37,48 @@
       <h2>Сводка для Игоря</h2>
       <div class="qa-table-wrap">
         <table class="qa-table">
-          <thead><tr><th>Статус</th><th>Зона</th><th>Факт</th><th>Что делать</th></tr></thead>
+          <thead><tr><th>Статус</th><th>Зона</th><th>Факт</th><th>Как найти / воспроизвести</th><th>Что делать</th></tr></thead>
           <tbody>
             <tr>
               <td><span class="qa-badge qa-badge--pass">PASS</span></td>
               <td>Список активных банов</td>
               <td>Есть заголовок Ban management, Add ban, авто-фильтры, таблица с ID, USER, BAN CRITERIA, MODE, STATUS, PERIOD, CREATED, ACTIONS. В строке активного IP-бана показывается только фактический критерий IP.</td>
+              <td>Открыть <code>/en/admin/ban/index</code>; проверить верхнюю панель, фильтры и строку активного IP-бана <code>#1</code>.</td>
               <td>UI соответствует ТЗ по базовой структуре списка.</td>
             </tr>
             <tr>
               <td><span class="qa-badge qa-badge--pass">PASS</span></td>
               <td>Действия списка</td>
               <td>В активной строке есть View, Update, Release. Release имеет <code>data-method=post</code>.</td>
+              <td>В строке активного бана на <code>/en/admin/ban/index</code> проверить три action-кнопки; inspect/DOM показывает <code>data-method=post</code> у Release.</td>
               <td>Подтвердить русские labels в финальной локализации, если интерфейс должен быть полностью русским.</td>
             </tr>
             <tr>
               <td><span class="qa-badge qa-badge--pass">PASS</span></td>
               <td>Создание бана</td>
               <td>Экран создания содержит выбор пользователя, режим Full/Shadow, период Permanent/Temporary, date range, комментарий, notify checkbox и автоподтянутые user/email/IP/cookie данные через endpoint.</td>
+              <td>Открыть <code>/en/admin/ban/create</code>; выбрать/найти пользователя <code>165</code>; проверить, что user/email/IP/cookie подтягиваются автоматически и не выбираются вручную как критерии.</td>
               <td>Структура формы соответствует ТЗ. Ручного выбора критериев в UI не обнаружено, что соответствует логике "бан по всем доступным данным".</td>
             </tr>
             <tr>
               <td><span class="qa-badge qa-badge--pass">PASS</span></td>
               <td>Просмотр бана</td>
               <td>Экран просмотра открывается, показывает текущую запись и фактические критерии бана.</td>
+              <td>Из <code>/en/admin/ban/index</code> нажать View у активного бана <code>#1</code>; проверить ID, режим, период и фактический критерий IP.</td>
               <td>Проверить UX вкладки "История банов" отдельным прогоном с пользователем, у которого есть несколько снятых/активных банов.</td>
             </tr>
             <tr>
               <td><span class="qa-badge qa-badge--fail">BLOCKED</span></td>
               <td>Полный behavior-прогон</td>
               <td>Существующий автотест завис; fresh JSON с полным behavior-result не был записан. Диагностический probe без реально созданного shadow-ban показал доставку сообщения, но это invalid evidence, потому что <code>active_ban_id=false</code>.</td>
+              <td>Запустить behavior-проверку шагами: создать shadow ban для U1 <code>165</code>; сначала доказать <code>active_ban_id</code>; затем U1 отправляет QA-сообщение U2 <code>167</code>; U2 открывает <code>/en/messages</code> и не должен видеть точный текст.</td>
               <td>Починить/разделить <code>ban-behavior-audit.mjs</code>: отдельный admin-create test, отдельный message/like test, явные step logs, обязательный cleanup в каждом шаге.</td>
             </tr>
             <tr>
               <td><span class="qa-badge qa-badge--pass">PASS</span></td>
               <td>Cleanup</td>
               <td>После зависшего прогона активный shadow-ban <code>#16</code> был снят; user <code>165</code>, <code>166</code>, <code>167</code>, <code>168</code> сейчас имеют <code>active_ban_id=false</code>.</td>
+              <td>Открыть <code>/en/admin/ban/create</code> и дернуть <code>/en/admin/ban/user-data?id=165/166/167/168</code>; у всех должен быть <code>active_ban_id=false</code>.</td>
               <td>Не требуется, тестовые пользователи возвращены в рабочее состояние.</td>
             </tr>
           </tbody>

@@ -43,6 +43,7 @@
               <th>Настройка</th>
               <th>Факт</th>
               <th>Ожидание</th>
+              <th>Как найти / воспроизвести</th>
               <th>Куда смотреть</th>
             </tr>
           </thead>
@@ -52,6 +53,7 @@
               <td><code>messagesOutFree*</code>, <code>messagesOutPremium*</code></td>
               <td>Лимит исходящих сообщений не применяется. При <code>messagesOutPremiumMen/Women=1</code> premium user отправил попытки 1-9. Дополнительная recipient-side проверка: при новом лимите <code>1</code> sender получил <code>success=true</code> и <code>messageId=205..207</code>; получатели <code>6</code> и <code>10</code> увидели точный текст сообщения в UI, получатель <code>3</code> в sampled UI точный текст не показал.</td>
               <td>После первого разрешенного сообщения последующие должны блокироваться лимитом за период.</td>
+              <td>В админке поставить <code>messagesOutPremiumMen/Women=1</code> и короткий period; зайти как premium user <code>182</code>; отправить 2-3 QA-сообщения разным контактам; затем зайти получателем <code>6</code> или <code>10</code> и найти точный QA-текст в <code>/en/messages</code>.</td>
               <td><code>/en/messages/create</code>, <code>MessagesController::actionCreate()</code>, счетчик premium/free лимита исходящих.</td>
             </tr>
             <tr>
@@ -59,6 +61,7 @@
               <td><code>writeWithoutMutual*</code></td>
               <td>При включенных <code>writeWithoutMutualMenOn/WomenOn=1</code> и free limit=1 free user отправил 2 сообщения без premium/limit block: <code>messageId=195</code>, <code>196</code>.</td>
               <td>Если писать без mutual можно только в пределах лимита, второе действие должно блокироваться.</td>
+              <td>Включить <code>writeWithoutMutualMenOn/WomenOn</code>, поставить free limit <code>1</code>; зайти free user; написать двум пользователям без mutual-match; проверить, что второе сообщение не блокируется.</td>
               <td>Проверить связь mutual-state, gender-specific limit и route <code>/en/messages/create</code>.</td>
             </tr>
             <tr>
@@ -66,6 +69,7 @@
               <td><code>messagesIn*</code></td>
               <td>При <code>messagesInFreeMen/Women=1</code> два входящих сообщения созданы, но free receiver не получил понятной limit-блокировки; экран остался в состоянии <code>Loading messages...</code>.</td>
               <td>После достижения лимита входящих должен быть явный block/CTA/response, а не неопределенное состояние.</td>
+              <td>Поставить <code>messagesInFreeMen/Women=1</code>; двумя отправителями написать одному free receiver; зайти receiver в <code>/en/messages</code> и проверить, появляется ли limit state вместо бесконечной загрузки.</td>
               <td>Incoming messages limit, unread/inbox load, frontend loader handling.</td>
             </tr>
             <tr>
@@ -73,6 +77,7 @@
               <td><code>profileViewPremium*</code></td>
               <td>При premium profile-view limit=1 premium user открыл два профиля подряд без limit modal.</td>
               <td>Второй profile view должен блокироваться или возвращать premium-limit state.</td>
+              <td>Поставить <code>profileViewPremiumMen/Women=1</code>; зайти premium user <code>182</code>; открыть два разных профиля подряд; второй профиль открывается без блокировки.</td>
               <td>Profile view tracking для premium ветки.</td>
             </tr>
             <tr>
@@ -80,6 +85,7 @@
               <td><code>profileLikePremium*</code></td>
               <td>Лимит сработал на второй like, но premium user получил modal <code>Get Premium</code> с текстом <code>You have exceeded the limit</code>.</td>
               <td>Premium user должен видеть текст про исчерпанный premium limit, не upsell на premium.</td>
+              <td>Поставить <code>profileLikePremiumMen/Women=1</code>; зайти premium user; сделать два like в Encounters; на втором действии открыть modal и проверить заголовок/copy.</td>
               <td>Copy/UX для premium limit modal.</td>
             </tr>
             <tr>
@@ -87,6 +93,7 @@
               <td><code>editSentMessageOn</code>, <code>timerInMutualOn</code>, <code>seePrivatePhotoOn</code></td>
               <td>Admin readback есть, но полноценное бизнес-действие не доказано: edit action не найден в DOM messages; mutual timer/private-photo требуют подготовленных тестовых данных.</td>
               <td>Нужны seeded sent-message edit action, mutual match with timer и private photo access fixture.</td>
+              <td>Подготовить fixtures: отправленное сообщение с ожидаемым edit action, mutual pair с timer, профиль с private photo. После этого повторить ON/OFF чекбоксы и проверить конкретные элементы в пользовательском UI.</td>
               <td>Добавить тестовые данные или дать route/API для этих действий.</td>
             </tr>
           </tbody>
