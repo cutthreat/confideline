@@ -10,76 +10,91 @@
 <body class="cl-task-standard qa-report-page">
   <main class="tp-page">
     <header class="tp-hero qa-hero">
-      <p class="qa-kicker">QA report · live Confideline · 2026-05-07</p>
+      <p class="qa-kicker">QA report · live Confideline · 2026-05-07 23:53 Minsk</p>
       <h1>Проверка банов и теневого бана</h1>
-      <p>Проверены live-экраны <code>/en/admin/ban/index</code>, <code>/en/admin/ban/create</code>, <code>/en/admin/ban/view?id=1</code>, user-data endpoint и cleanup тестовых пользователей. Поведенческий прогон shadow/full ban был запущен, но завис и не может считаться завершенным доказательством.</p>
+      <p>Выполнен новый честный current-pass: сначала доказан реальный <code>active_ban_id</code>, затем проверены действия U1/U2/U3, затем бан снят и cleanup подтвержден. Итог: admin UI и основная full/shadow логика работают, но найден воспроизводимый баг после снятия shadow-ban.</p>
       <div class="tp-actions" style="margin-top:16px">
         <a class="tp-btn tp-btn--primary" href="#igor">Блок для Игоря</a>
+        <a class="tp-btn" href="./assets/current-20260507-205351/ban-behavior-current.json">JSON evidence</a>
         <a class="tp-btn" href="../">Все QA reports</a>
       </div>
     </header>
 
     <section class="qa-summary">
-      <div class="qa-metric"><span>Итог</span><strong>ЧАСТИЧНО</strong></div>
-      <div class="qa-metric"><span>Admin UI</span><strong>PASS</strong></div>
-      <div class="qa-metric"><span>Behavior</span><strong>BLOCKED</strong></div>
+      <div class="qa-metric"><span>Итог</span><strong>FAIL</strong></div>
+      <div class="qa-metric"><span>Проверки</span><strong>14 / 15 PASS</strong></div>
+      <div class="qa-metric"><span>Баги</span><strong>1 HIGH</strong></div>
       <div class="qa-metric"><span>Cleanup</span><strong>OK</strong></div>
     </section>
 
     <section class="qa-section">
       <div class="qa-note">
-        <p><strong>Факт:</strong> админские экраны банов доступны и содержат ожидаемые рабочие элементы: список активных банов, фильтры, колонки, действия View/Update/Release, экран создания и экран просмотра.</p>
-        <p><strong>Важная граница:</strong> полный behavior-прогон через существующий автотест <code>ban-behavior-audit.mjs</code> завис после создания shadow-ban. Я остановил зависший процесс, снял оставшийся ban <code>#16</code> с пользователя <code>165</code> и проверил <code>active_ban_id=false</code>. Поэтому текущий отчет не называет поведение shadow-ban полностью подтвержденным.</p>
+        <p><strong>Факт:</strong> новый прогон <code>ban-behavior-current-20260507-205351</code> создал shadow-ban <code>#19</code> для U1 <code>165</code> и full-ban <code>#20</code> для U166, проверил пользовательские действия, затем снял оба бана. После cleanup у users <code>165</code>, <code>166</code>, <code>167</code>, <code>168</code> снова <code>active_ban_id=false</code>.</p>
+        <p><strong>Главный вывод:</strong> shadow-ban корректно скрывает новое исходящее сообщение во время активного бана, но после снятия бана это же during-ban сообщение становится видимым получателю. Это нарушает смысл теневого бана: действия, сделанные во время shadow-ban, не должны “догонять” других пользователей после release.</p>
       </div>
     </section>
 
     <section id="igor" class="qa-section">
-      <h2>Сводка для Игоря</h2>
+      <h2>Блок для Игоря</h2>
       <div class="qa-table-wrap">
         <table class="qa-table">
-          <thead><tr><th>Статус</th><th>Зона</th><th>Факт</th><th>Как найти / воспроизвести</th><th>Что делать</th></tr></thead>
+          <thead><tr><th>Статус</th><th>Зона</th><th>Что доказано</th><th>Как найти / воспроизвести</th><th>Что делать</th></tr></thead>
           <tbody>
             <tr>
-              <td><span class="qa-badge qa-badge--pass">PASS</span></td>
-              <td>Список активных банов</td>
-              <td>Есть заголовок Ban management, Add ban, авто-фильтры, таблица с ID, USER, BAN CRITERIA, MODE, STATUS, PERIOD, CREATED, ACTIONS. В строке активного IP-бана показывается только фактический критерий IP.</td>
-              <td>Открыть <code>/en/admin/ban/index</code>; проверить верхнюю панель, фильтры и строку активного IP-бана <code>#1</code>.</td>
-              <td>UI соответствует ТЗ по базовой структуре списка.</td>
+              <td><span class="qa-badge qa-badge--fail">FAIL</span></td>
+              <td>Shadow-ban release</td>
+              <td>U1 отправляет сообщение U2 во время активного shadow-ban. Во время бана U2 не видит точный QA-текст. После снятия shadow-ban U2 видит этот during-ban текст.</td>
+              <td>Создать shadow-ban U1 <code>165</code> -> проверить <code>active_ban_id</code> -> U1 отправляет <code>QA ban current 20260507-205351 active shadow outbound U1 to U2</code> пользователю U2 <code>167</code> -> U2 не видит текст -> снять ban -> U2 открывает <code>/en/messages</code> и текст появляется.</td>
+              <td>Искать в логике доставки/видимости сообщений после release: during-shadow записи должны оставаться недоставленными/невидимыми для других пользователей и после снятия бана.</td>
             </tr>
             <tr>
               <td><span class="qa-badge qa-badge--pass">PASS</span></td>
-              <td>Действия списка</td>
-              <td>В активной строке есть View, Update, Release. Release имеет <code>data-method=post</code>.</td>
-              <td>В строке активного бана на <code>/en/admin/ban/index</code> проверить три action-кнопки; inspect/DOM показывает <code>data-method=post</code> у Release.</td>
-              <td>Подтвердить русские labels в финальной локализации, если интерфейс должен быть полностью русским.</td>
+              <td>Shadow-ban active state</td>
+              <td>Shadow-ban реально создается через админку: user-data после создания возвращает <code>active_ban_id=19</code>; в списке активных банов появляется запись пользователя.</td>
+              <td>Открыть <code>/en/admin/ban/create</code>, выбрать U1 <code>165</code>, mode <code>Shadow</code>, period <code>Permanent</code>, сохранить; проверить <code>/en/admin/ban/user-data?id=165</code>.</td>
+              <td>Admin-create flow рабочий; не чинить без причины.</td>
             </tr>
             <tr>
               <td><span class="qa-badge qa-badge--pass">PASS</span></td>
-              <td>Создание бана</td>
-              <td>Экран создания содержит выбор пользователя, режим Full/Shadow, период Permanent/Temporary, date range, комментарий, notify checkbox и автоподтянутые user/email/IP/cookie данные через endpoint.</td>
-              <td>Открыть <code>/en/admin/ban/create</code>; выбрать/найти пользователя <code>165</code>; проверить, что user/email/IP/cookie подтягиваются автоматически и не выбираются вручную как критерии.</td>
-              <td>Структура формы соответствует ТЗ. Ручного выбора критериев в UI не обнаружено, что соответствует логике "бан по всем доступным данным".</td>
+              <td>Shadow user experience</td>
+              <td>U1 под shadow-ban открывает главную, сообщения и профиль без явного бан-экрана. Это соответствует ТЗ: пользователь не должен понимать, что забанен.</td>
+              <td>После создания shadow-ban зайти login-as U1 и открыть <code>/en</code>, <code>/en/messages</code>, <code>/en/settings/profile</code>.</td>
+              <td>Поведение соответствует логике теневого бана.</td>
             </tr>
             <tr>
               <td><span class="qa-badge qa-badge--pass">PASS</span></td>
-              <td>Просмотр бана</td>
-              <td>Экран просмотра открывается, показывает текущую запись и фактические критерии бана.</td>
-              <td>Из <code>/en/admin/ban/index</code> нажать View у активного бана <code>#1</code>; проверить ID, режим, период и фактический критерий IP.</td>
-              <td>Проверить UX вкладки "История банов" отдельным прогоном с пользователем, у которого есть несколько снятых/активных банов.</td>
+              <td>Shadow outbound during ban</td>
+              <td>Во время активного shadow-ban U1 может отправить сообщение, действие выглядит успешным, но U2 не видит точный текст в <code>/en/messages</code>.</td>
+              <td>Использовать точный QA-текст из JSON evidence и проверять именно страницу получателя, не только ответ отправителя.</td>
+              <td>Активная фаза shadow-ban по сообщениям работает.</td>
             </tr>
             <tr>
-              <td><span class="qa-badge qa-badge--fail">BLOCKED</span></td>
-              <td>Полный behavior-прогон</td>
-              <td>Существующий автотест завис; fresh JSON с полным behavior-result не был записан. Диагностический probe без реально созданного shadow-ban показал доставку сообщения, но это invalid evidence, потому что <code>active_ban_id=false</code>.</td>
-              <td>Запустить behavior-проверку шагами: создать shadow ban для U1 <code>165</code>; сначала доказать <code>active_ban_id</code>; затем U1 отправляет QA-сообщение U2 <code>167</code>; U2 открывает <code>/en/messages</code> и не должен видеть точный текст.</td>
-              <td>Починить/разделить <code>ban-behavior-audit.mjs</code>: отдельный admin-create test, отдельный message/like test, явные step logs, обязательный cleanup в каждом шаге.</td>
+              <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+              <td>Shadow inbound during ban</td>
+              <td>U3 отправляет новое сообщение U1 во время shadow-ban, U1 его не видит. Это соответствует ТЗ: новые входящие сигналы к shadow-banned пользователю скрываются.</td>
+              <td>U3 <code>168</code> -> U1 <code>165</code>, затем login-as U1 и поиск точного текста в <code>/en/messages</code>.</td>
+              <td>Активная фаза inbound скрытия работает.</td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+              <td>Shadow like</td>
+              <td>Лайк U1 -> U2 во время shadow-ban внешне отправляется, но U2 не видит U1 во входящих лайках.</td>
+              <td>После shadow-ban вызвать U1 -> U2 like, затем login-as U2 и открыть <code>/en/connections/likes?type=to</code>.</td>
+              <td>Проверенный представительский action работает правильно.</td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+              <td>Full ban</td>
+              <td>Full-ban реально создается, основные страницы пользователя показывают <code>Forbidden / Your IP address has been blocked</code>, сообщение full-banned пользователя не доставляется U2, после снятия новые сообщения снова доставляются.</td>
+              <td>Создать full-ban U166 -> открыть <code>/en</code>, <code>/en/messages</code>, <code>/en/settings/profile</code> под U166 -> отправить U166->U2 -> снять ban -> повторить отправку.</td>
+              <td>Основная full-ban логика прошла.</td>
             </tr>
             <tr>
               <td><span class="qa-badge qa-badge--pass">PASS</span></td>
               <td>Cleanup</td>
-              <td>После зависшего прогона активный shadow-ban <code>#16</code> был снят; user <code>165</code>, <code>166</code>, <code>167</code>, <code>168</code> сейчас имеют <code>active_ban_id=false</code>.</td>
-              <td>Открыть <code>/en/admin/ban/create</code> и дернуть <code>/en/admin/ban/user-data?id=165/166/167/168</code>; у всех должен быть <code>active_ban_id=false</code>.</td>
-              <td>Не требуется, тестовые пользователи возвращены в рабочее состояние.</td>
+              <td>После прогона оба созданных бана сняты: <code>#19</code> shadow и <code>#20</code> full. Финальная проверка user-data: <code>active_ban_id=false</code> у 165/166/167/168.</td>
+              <td>Открыть <code>/en/admin/ban/user-data?id=165</code>, <code>166</code>, <code>167</code>, <code>168</code> из admin context.</td>
+              <td>Тестовые пользователи возвращены в рабочее состояние.</td>
             </tr>
           </tbody>
         </table>
@@ -87,53 +102,71 @@
     </section>
 
     <section class="qa-section">
-      <h2>Покрытие ТЗ</h2>
+      <h2>Матрица свежего прогона</h2>
       <div class="qa-table-wrap">
         <table class="qa-table">
-          <thead><tr><th>Сценарий</th><th>Статус</th><th>Комментарий</th></tr></thead>
+          <thead><tr><th>Проверка</th><th>Статус</th><th>Комментарий</th></tr></thead>
           <tbody>
-            <tr><td>Список банов: заголовок, Add ban, фильтры, таблица, действия</td><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Подтверждено текущими скриншотами live UI.</td></tr>
-            <tr><td>Просмотр бана: карточка, критерии, режим, период</td><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Подтверждено на активном IP-бане <code>#1</code>.</td></tr>
-            <tr><td>Добавить бан: user search, режим, период, comment, notify, auto criteria</td><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Подтверждено по форме и user-data endpoint.</td></tr>
-            <tr><td>Full ban: вход/действия запрещены, после снятия восстановлены</td><td><span class="qa-badge qa-badge--warn">ПОВТОРИТЬ</span></td><td>Был покрыт старым полным прогоном, но свежий полный прогон завис. Нужен новый current proof.</td></tr>
-            <tr><td>Shadow ban: U1 видит сайт, U2 не видит новые действия U1</td><td><span class="qa-badge qa-badge--warn">ПОВТОРИТЬ</span></td><td>Текущий завершенный proof отсутствует из-за зависшего автотеста.</td></tr>
-            <tr><td>Сообщения U1 -> U2 во время shadow-ban и после снятия</td><td><span class="qa-badge qa-badge--warn">ПОВТОРИТЬ</span></td><td>Нужен повтор с реально созданным <code>active_ban_id</code> и проверкой получателя.</td></tr>
-            <tr><td>Лайки, favorites, visits, story/spotlight, photo access, gifts</td><td><span class="qa-badge qa-badge--warn">НЕ ЗАКРЫТО</span></td><td>Не закрыто текущим прогоном. Это отдельные user-side сценарии с U1/U2.</td></tr>
-            <tr><td>Группы, посты, участники групп под shadow-ban</td><td><span class="qa-badge qa-badge--warn">НЕ ЗАКРЫТО</span></td><td>Не закрыто текущим прогоном. Нужны подготовленные G1/G2/P1/P2.</td></tr>
-            <tr><td>Admin chat для U1</td><td><span class="qa-badge qa-badge--warn">НЕ ЗАКРЫТО</span></td><td>Не закрыто текущим прогоном. Нужен отдельный скрин admin chat до/во время/после.</td></tr>
+            <tr><td>Перед тестом у QA-пользователей нет активного бана</td><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Проверено через user-data endpoint.</td></tr>
+            <tr><td>До shadow-ban U2 получает сообщение от U1</td><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Базовая доставка до бана доказана.</td></tr>
+            <tr><td>Shadow-ban создан и подтвержден <code>active_ban_id</code></td><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Создан ban <code>#19</code>.</td></tr>
+            <tr><td>U1 под shadow-ban может пользоваться сайтом без явного бан-экрана</td><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Главная, сообщения, настройки открываются.</td></tr>
+            <tr><td>U2 не видит новое сообщение U1 во время shadow-ban</td><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Во время активного бана точный текст скрыт.</td></tr>
+            <tr><td>U1 не видит новое входящее U3 во время shadow-ban</td><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Inbound скрытие работает.</td></tr>
+            <tr><td>U2 не видит лайк U1 во время shadow-ban</td><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Incoming likes не показывает U1.</td></tr>
+            <tr><td>Shadow-ban снят, <code>active_ban_id=false</code></td><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Release сработал.</td></tr>
+            <tr><td>During-ban сообщение остается скрытым после снятия shadow-ban</td><td><span class="qa-badge qa-badge--fail">FAIL</span></td><td>Баг: после release U2 видит сообщение, созданное во время shadow-ban.</td></tr>
+            <tr><td>После снятия shadow-ban новые U1->U2 сообщения доставляются</td><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Нормальная доставка восстановлена.</td></tr>
+            <tr><td>Full-ban создан и подтвержден <code>active_ban_id</code></td><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Создан ban <code>#20</code>.</td></tr>
+            <tr><td>Full-ban блокирует пользовательские страницы</td><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Показывается Forbidden / IP blocked.</td></tr>
+            <tr><td>Сообщение full-banned пользователя не доставляется</td><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>U2 не видит точный текст.</td></tr>
+            <tr><td>Full-ban снят, <code>active_ban_id=false</code></td><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Release сработал.</td></tr>
+            <tr><td>После снятия full-ban новые сообщения доставляются</td><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Нормальная доставка восстановлена.</td></tr>
           </tbody>
         </table>
       </div>
     </section>
 
     <section class="qa-section">
-      <h2>Доказательства со скриншотами</h2>
+      <h2>Evidence screenshots</h2>
       <div class="qa-shot-grid">
-        <figure class="qa-shot">
-          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Проверка: список активных банов. Факт: видны фильтры, таблица и actions. Значение: основное рабочее окно реализовано. Действие для Игоря: проверить финальную локализацию labels.</figcaption>
-          <img src="./assets/annotated-admin-ban-index.png" alt="Annotated ban index">
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Что тестировал: создание shadow-ban через админку. Что получил: запись активна, дальше behavior можно проверять честно, потому что есть реальный <code>active_ban_id</code>.</figcaption>
+          <img src="./assets/current-20260507-205351/admin-active-shadow.png" alt="Active shadow ban evidence">
         </figure>
-        <figure class="qa-shot">
-          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Проверка: форма добавления бана. Факт: есть user search, режим, период, даты, комментарий и notify checkbox. Значение: форма соответствует упрощенной логике создания бана. Действие для Игоря: не требуется по структуре.</figcaption>
-          <img src="./assets/annotated-admin-ban-create.png" alt="Annotated ban create">
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Что тестировал: видимость сообщения U1->U2 во время shadow-ban. Что получил: U2 не видит точный during-ban текст, активная фаза shadow-ban работает.</figcaption>
+          <img src="./assets/current-20260507-205351/shadow-recipient-during-hidden.png" alt="Recipient does not see shadow message during ban">
         </figure>
-        <figure class="qa-shot">
-          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Проверка: просмотр активного бана. Факт: открывается карточка с фактическим критерием IP. Значение: View action из списка ведет к детальному экрану. Действие для Игоря: отдельно проверить историю банов на пользователе с несколькими записями.</figcaption>
-          <img src="./assets/annotated-admin-ban-view-1.png" alt="Annotated ban view">
+        <figure class="qa-shot qa-shot--fail">
+          <figcaption><span class="qa-badge qa-badge--fail">FAIL</span> Что тестировал: остается ли during-ban сообщение скрытым после снятия shadow-ban. Что получил: U2 видит текст <code>active shadow outbound U1 to U2</code>. Это подтвержденный баг.</figcaption>
+          <img src="./assets/current-20260507-205351/shadow-recipient-after-release-still-hidden.png" alt="Recipient sees shadow message after release">
+        </figure>
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Что тестировал: full-ban. Что получил: пользователь получает <code>Forbidden / Your IP address has been blocked</code> на основных страницах.</figcaption>
+          <img src="./assets/current-20260507-205351/full-user-perspective-active.png" alt="Full ban blocks user">
+        </figure>
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Что тестировал: сообщение full-banned пользователя. Что получил: U2 не видит точный текст попытки U166 во время full-ban.</figcaption>
+          <img src="./assets/current-20260507-205351/full-ban-recipient-during-hidden.png" alt="Full ban message hidden">
+        </figure>
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Что тестировал: восстановление после full-ban. Что получил: после release новое сообщение U166->U2 снова отображается у получателя.</figcaption>
+          <img src="./assets/current-20260507-205351/post-full-release-recipient-visible.png" alt="Post full release message visible">
         </figure>
       </div>
     </section>
 
     <section class="qa-section">
-      <h2>Что исправить в тест-контуре</h2>
+      <h2>Честная граница</h2>
       <div class="qa-note">
-        <p>Главная проблема сейчас не в том, что shadow-ban "не работает", а в том, что текущий полный автотест не дал завершенного current evidence. Следующий правильный шаг: разбить behavior-проверку на маленькие независимые прогоны с логом каждого шага и обязательным post-step cleanup.</p>
-        <p>Минимальный порядок следующего прогона: создать shadow-ban и доказать <code>active_ban_id</code> → U1 отправляет сообщение → U1 видит свое сообщение → U2 не видит точный текст → снять ban → U2 все еще не видит during-ban сообщение → новое сообщение после снятия доставляется.</p>
+        <p>Этот свежий проход закрывает core-поведение банов: создание, активное состояние, сообщения в обе стороны, лайк как представительский action, снятие, post-release delivery и cleanup. Он не притворяется полным покрытием всех платных/fixture-heavy действий из расширенного списка Игоря: gifts, photo access, visits, stories/spotlight и группы требуют отдельные подготовленные fixtures, чтобы не смешивать баланс, media state и group ownership с ядром ban delivery.</p>
+        <p>Для разработки сейчас достаточно главного воспроизводимого бага: <strong>SHADOW-RELEASE-001</strong>. После фикса нужен ретест именно этой цепочки плюс расширение на gifts/photo access/groups, чтобы убедиться, что та же delayed-visibility ошибка не повторяется в других действиях.</p>
       </div>
     </section>
 
     <footer class="tp-footer">
-      <a href="../">Все QA reports</a> · <a href="#igor">Блок для Игоря</a>
+      <a href="../">Все QA reports</a> · <a href="#igor">Блок для Игоря</a> · <a href="./assets/current-20260507-205351/ban-behavior-current.json">JSON evidence</a>
     </footer>
   </main>
 </body>

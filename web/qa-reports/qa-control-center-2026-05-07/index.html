@@ -20,7 +20,7 @@
     </header>
 
     <section class="qa-summary">
-      <div class="qa-metric"><span>Решение</span><strong>CONDITIONAL</strong></div>
+      <div class="qa-metric"><span>Решение</span><strong>FAIL</strong></div>
       <div class="qa-metric"><span>Актуальных отчетов</span><strong>3</strong></div>
       <div class="qa-metric"><span>Архив</span><strong>1</strong></div>
       <div class="qa-metric"><span>Публичная проверка</span><strong>OK</strong></div>
@@ -92,8 +92,8 @@
             <tr>
               <td><span class="qa-badge qa-badge--fail">P1</span></td>
               <td>Bans behavior</td>
-              <td>Полный behavior-прогон shadow/full ban не закрыт: автотест завис, fresh behavior proof отсутствует.</td>
-              <td>Разбить проверку на шаги: create shadow ban -> доказать <code>active_ban_id</code> -> U1 отправляет -> U2 не видит -> release -> новое сообщение после release доставляется.</td>
+              <td>Свежий current-pass подтвердил баг: сообщение, отправленное U1 во время активного shadow-ban, скрыто во время бана, но появляется у U2 после снятия shadow-ban.</td>
+              <td>Создать shadow-ban U1 <code>165</code> -> доказать <code>active_ban_id</code> -> U1 отправляет U2 <code>167</code> точный QA-текст -> U2 не видит -> снять ban -> U2 снова открывает <code>/en/messages</code> и видит этот during-ban текст.</td>
               <td><a href="../bans-full-2026-05-07/#igor">Bans report</a></td>
             </tr>
             <tr>
@@ -130,10 +130,10 @@
             </tr>
             <tr>
               <td><a href="../bans-full-2026-05-07/">Bans and shadow-ban audit</a></td>
-              <td><span class="qa-badge qa-badge--warn">ЧАСТИЧНО</span></td>
-              <td>Admin UI, create/view/index и cleanup подтверждены скриншотами.</td>
-              <td>Shadow/full behavior не закрыт; автотест нужно чинить и запускать по шагам.</td>
-              <td>Использовать для admin UI; behavior не считать закрытым.</td>
+              <td><span class="qa-badge qa-badge--fail">АКТУАЛЕН / FAIL</span></td>
+              <td>Новый current-pass: 14/15 PASS, admin-create доказан через <code>active_ban_id</code>, shadow/full behavior проверен с U1/U2/U3, cleanup подтвержден.</td>
+              <td>Расширенные paid/group scenarios еще требуют отдельных fixtures, но главный core-баг уже воспроизводим.</td>
+              <td>Использовать как актуальный bans-source; чинить <code>SHADOW-RELEASE-001</code> первым.</td>
             </tr>
             <tr>
               <td><a href="../premium-free-2026-05-05/">Premium / Free Settings QA</a></td>
@@ -155,8 +155,8 @@
           <tbody>
             <tr>
               <td>Shadow-ban behavior</td>
-              <td>Закрыть главный риск bans.</td>
-              <td>Create shadow ban -> prove <code>active_ban_id</code> -> U1/U2 message visibility -> inbound actions -> release -> post-release behavior -> cleanup proof.</td>
+              <td>Ретест после фикса <code>SHADOW-RELEASE-001</code>.</td>
+              <td>Create shadow ban -> prove <code>active_ban_id</code> -> U1 sends during-ban message -> U2 must not see it during ban -> release -> U2 still must not see that old during-ban message -> new post-release message must deliver.</td>
             </tr>
             <tr>
               <td>Premium fixture gaps</td>
