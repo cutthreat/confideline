@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline QA | Control Center</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">QA control center · live Confideline · 2026-05-07</p>
+      <h1>Единый контроль тестирований</h1>
+      <p>Рабочая панель для Алексея, тестировщика и Игоря: какие отчеты актуальны, какие дефекты чинить первыми, как воспроизвести баг и какие зоны требуют ретеста.</p>
+      <div class="tp-actions" style="margin-top:16px">
+        <a class="tp-btn tp-btn--primary" href="#igor-board">Доска Игоря</a>
+        <a class="tp-btn" href="../">Все QA reports</a>
+      </div>
+    </header>
+
+    <section class="qa-summary">
+      <div class="qa-metric"><span>Решение</span><strong>CONDITIONAL</strong></div>
+      <div class="qa-metric"><span>Актуальных отчетов</span><strong>3</strong></div>
+      <div class="qa-metric"><span>Архив</span><strong>1</strong></div>
+      <div class="qa-metric"><span>Публичная проверка</span><strong>OK</strong></div>
+    </section>
+
+    <section class="qa-section">
+      <div class="qa-note">
+        <p><strong>Итог аудита:</strong> отчеты уже можно передавать Игорю, но работать дальше нужно через эту контрольную страницу. Старый <code>Premium / Free Settings QA</code> от 2026-05-05 оставлен как архив и не должен использоваться как основной источник правды, потому что новый premium-отчет содержит recipient-side proof и колонку воспроизведения.</p>
+        <p><strong>Правило порядка:</strong> актуальный дефект считается готовым для Игоря только если есть факт, ожидание, путь воспроизведения, зона кода/логики и evidence screenshot или честная пометка why not proven.</p>
+      </div>
+    </section>
+
+    <section id="igor-board" class="qa-section">
+      <h2>Доска Игоря</h2>
+      <div class="qa-table-wrap">
+        <table class="qa-table">
+          <thead>
+            <tr>
+              <th>Приоритет</th>
+              <th>Зона</th>
+              <th>Что чинить / проверить</th>
+              <th>Как найти баг</th>
+              <th>Источник</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">P0</span></td>
+              <td>Premium messages out</td>
+              <td>Лимит исходящих premium/free сообщений не блокирует лишние отправки; минимум 2 лишних сообщения реально дошли получателям.</td>
+              <td>Поставить <code>messagesOutPremium=1</code>, зайти user <code>182</code>, отправить 2-3 QA-сообщения, затем зайти получателем <code>6</code>/<code>10</code> и найти точный текст в <code>/en/messages</code>.</td>
+              <td><a href="../premium-controls-full-2026-05-06/#igor">Premium report</a></td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">P0</span></td>
+              <td>Stories settings</td>
+              <td>В админке есть один общий <code>storiesModerationMode</code>, а по ТЗ нужны отдельные режимы для photo и video stories.</td>
+              <td>Открыть <code>/en/admin/settings/stories</code> и сравнить форму с ТЗ: нет отдельных select для photo/video.</td>
+              <td><a href="../moderation-full-2026-05-07/#igor">Moderation report</a></td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">P1</span></td>
+              <td>Photo gallery postmoderation</td>
+              <td>Gallery photo в режиме postmoderation попадает в <code>Pending</code>, то есть ведет себя как premoderation.</td>
+              <td>Поставить gallery postmoderation, загрузить gallery photo, проверить новый ID в admin media/photo queue.</td>
+              <td><a href="../moderation-full-2026-05-07/#igor">Moderation report</a></td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">P1</span></td>
+              <td>Premium messages in</td>
+              <td>При лимите входящих free receiver получает неопределенное состояние <code>Loading messages...</code> вместо понятного limit state.</td>
+              <td>Поставить <code>messagesInFree=1</code>, отправить два входящих на одного free receiver, открыть receiver <code>/en/messages</code>.</td>
+              <td><a href="../premium-controls-full-2026-05-06/#igor">Premium report</a></td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">P1</span></td>
+              <td>Premium profile view</td>
+              <td>Premium profile-view limit не применяется: второй профиль открывается без блока.</td>
+              <td>Поставить <code>profileViewPremium=1</code>, зайти premium user <code>182</code>, открыть два разных профиля подряд.</td>
+              <td><a href="../premium-controls-full-2026-05-06/#igor">Premium report</a></td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">P1</span></td>
+              <td>Group posts settings</td>
+              <td>В settings групп найден <code>groupPostModerationMode</code>, хотя ТЗ говорит, что посты модерируются отдельным интерфейсом.</td>
+              <td>Открыть <code>/en/admin/settings/groups</code>, найти поле и сверить с ТЗ.</td>
+              <td><a href="../moderation-full-2026-05-07/#igor">Moderation report</a></td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">P1</span></td>
+              <td>Bans behavior</td>
+              <td>Полный behavior-прогон shadow/full ban не закрыт: автотест завис, fresh behavior proof отсутствует.</td>
+              <td>Разбить проверку на шаги: create shadow ban -> доказать <code>active_ban_id</code> -> U1 отправляет -> U2 не видит -> release -> новое сообщение после release доставляется.</td>
+              <td><a href="../bans-full-2026-05-07/#igor">Bans report</a></td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--warn">P2</span></td>
+              <td>UX / data gaps</td>
+              <td>Есть незакрытые/fixture-dependent проверки: edit sent message, mutual timer, private photo, group post reopen, group media reject rollback, gifts/photo access under shadow-ban.</td>
+              <td>Подготовить fixtures и запускать отдельными узкими тестами, не смешивать с общими настройками.</td>
+              <td><a href="#retest-queue">Очередь ретеста</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Статус отчетов</h2>
+      <div class="qa-table-wrap">
+        <table class="qa-table">
+          <thead><tr><th>Отчет</th><th>Статус качества</th><th>Что хорошо</th><th>Ограничение</th><th>Решение</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><a href="../premium-controls-full-2026-05-06/">Premium/free controls full audit</a></td>
+              <td><span class="qa-badge qa-badge--pass">АКТУАЛЕН</span></td>
+              <td>Есть rollback, recipient-side proof, матрица всех настроек, блок для Игоря, пути воспроизведения.</td>
+              <td>Длинная страница; нет интерактивного фильтра по FAIL/P0.</td>
+              <td>Использовать как основной premium-source.</td>
+            </tr>
+            <tr>
+              <td><a href="../moderation-full-2026-05-07/">Moderation full audit</a></td>
+              <td><span class="qa-badge qa-badge--pass">АКТУАЛЕН</span></td>
+              <td>Исправлен фокус stories: доказательства идут из пользовательского carousel и второго пользователя, а не из общей админской очереди.</td>
+              <td>Group media reject rollback и reopen group post требуют отдельного ретеста.</td>
+              <td>Использовать как основной moderation-source.</td>
+            </tr>
+            <tr>
+              <td><a href="../bans-full-2026-05-07/">Bans and shadow-ban audit</a></td>
+              <td><span class="qa-badge qa-badge--warn">ЧАСТИЧНО</span></td>
+              <td>Admin UI, create/view/index и cleanup подтверждены скриншотами.</td>
+              <td>Shadow/full behavior не закрыт; автотест нужно чинить и запускать по шагам.</td>
+              <td>Использовать для admin UI; behavior не считать закрытым.</td>
+            </tr>
+            <tr>
+              <td><a href="../premium-free-2026-05-05/">Premium / Free Settings QA</a></td>
+              <td><span class="qa-badge qa-badge--info">АРХИВ</span></td>
+              <td>Исторический прогон полезен как контекст.</td>
+              <td>Старый формат подписей, нет колонки воспроизведения, нет recipient-side proof.</td>
+              <td>Не использовать как основной источник; ссылка оставлена только для истории.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="retest-queue" class="qa-section">
+      <h2>Очередь ретеста</h2>
+      <div class="qa-table-wrap">
+        <table class="qa-table">
+          <thead><tr><th>Очередь</th><th>Зачем</th><th>Минимальный правильный тест</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Shadow-ban behavior</td>
+              <td>Закрыть главный риск bans.</td>
+              <td>Create shadow ban -> prove <code>active_ban_id</code> -> U1/U2 message visibility -> inbound actions -> release -> post-release behavior -> cleanup proof.</td>
+            </tr>
+            <tr>
+              <td>Premium fixture gaps</td>
+              <td>Закрыть checkbox/settings, которые сейчас DATA GAP.</td>
+              <td>Создать controlled fixtures: editable message, mutual match, private photo, country price user; затем ON/OFF сравнение.</td>
+            </tr>
+            <tr>
+              <td>Group moderation full cycle</td>
+              <td>Доказать не только наличие UI, но полный lifecycle.</td>
+              <td>Hide post -> reason visible -> reopen/show action -> user-side visibility; reject avatar/cover -> previous approved image restored.</td>
+            </tr>
+            <tr>
+              <td>Stories video moderation</td>
+              <td>Проверить ТЗ photo/video split после решения Игоря.</td>
+              <td>Если добавят отдельные поля: загрузить photo story и video story в каждом режиме и проверить author + second user visibility.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Стандарт порядка</h2>
+      <div class="qa-note">
+        <p><strong>Обязательный формат дефекта:</strong> приоритет, зона, факт, ожидание, как воспроизвести, куда смотреть, evidence. Без пути воспроизведения дефект нельзя отдавать Игорю как готовый.</p>
+        <p><strong>Обязательный формат доказательства:</strong> скрин должен показывать именно тот пользовательский или админский surface, по которому сделан вывод. Если правило зависит от второго пользователя, второй пользователь проверяется до публикации.</p>
+      </div>
+    </section>
+
+    <footer class="tp-footer">
+      <a href="../">Все QA reports</a> · <a href="#igor-board">Доска Игоря</a>
+    </footer>
+  </main>
+</body>
+</html>

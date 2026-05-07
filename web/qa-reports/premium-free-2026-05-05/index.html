@@ -14,7 +14,7 @@
       <h1>Premium / Free Settings: полный отчет тестирования</h1>
       <p>Проверка настроек premium/free на live test-сайте Confideline: активация premium test user, снижение лимитов до единиц, сравнение premium и free поведения, фиксация дефектов для Игоря и rollback admin settings.</p>
       <div class="tp-actions" style="margin-top:16px">
-        <a class="tp-btn tp-btn--primary" href="#igor">Блок для Игоря</a>
+        <a class="tp-btn tp-btn--primary" href="../premium-controls-full-2026-05-06/">Открыть актуальный отчет</a>
         <a class="tp-btn" href="../">Все QA reports</a>
       </div>
     </header>
@@ -28,12 +28,13 @@
 
     <section class="qa-section">
       <div class="qa-note">
+        <p><strong>Статус:</strong> архивный отчет. Не использовать как основной source of truth для Игоря. Актуальная версия: <a href="../premium-controls-full-2026-05-06/">Premium/free controls full audit от 2026-05-06</a>, где добавлены recipient-side proof, единый формат подписей и пути воспроизведения.</p>
         <p><strong>Критичный факт:</strong> premium user <strong>182 / Omkar Tiwari</strong> активирован до <strong>Jun 4, 2026</strong>, баланс после активации <strong>250 credits</strong>. Free control user: <strong>184 / Orion Esposito</strong>. Admin premium settings после теста восстановлены, diff пустой.</p>
       </div>
     </section>
 
     <section id="igor" class="qa-section">
-      <h2>Сводка для Игоря</h2>
+      <h2>Архивная: Сводка для Игоря</h2>
       <div class="qa-table-wrap">
         <table class="qa-table">
           <thead>
@@ -181,46 +182,46 @@
     </section>
 
     <section class="qa-section">
-      <h2>Evidence screenshots</h2>
+      <h2>Архивные доказательства со скриншотами</h2>
       <div class="qa-shot-grid">
         <figure class="qa-shot">
-          <figcaption>Что тестировал: проверял, что user 182 действительно premium. Что получил: premium активен до Jun 4, 2026, баланс 250 credits.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--info">АРХИВ</span> Проверка: user 182 действительно premium. Факт: premium активен до Jun 4, 2026, баланс 250 credits. Значение: исторический контекст активации. Актуальный source: отчет от 2026-05-06.</figcaption>
           <img src="./assets/premiumUserAfterActivation-services.png" alt="Premium active services page">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: откат временно сниженных premium settings. Что получил: rollback успешен, diff пустой.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--info">АРХИВ</span> Проверка: откат временно сниженных premium settings. Факт: rollback успешен, diff пустой. Значение: исторический прогон не оставил настройки измененными.</figcaption>
           <img src="./assets/admin-premium-final-rollback.png" alt="Admin rollback settings">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: third outgoing message при premium лимите 1. Что получил: сообщение отправлено, блокировки нет.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--fail">FAIL</span> Проверка: третье исходящее сообщение при premium лимите 1. Факт: сообщение отправлено, блокировки нет. Значение: дефект подтвержден сильнее в актуальном отчете recipient-side проверкой.</figcaption>
           <img src="./assets/premium-messages-out-attempt-3.png" alt="Premium messages out attempt 3">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: второй просмотр профиля при premium profile-view лимите 1. Что получил: второй профиль открылся без limit modal.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--fail">FAIL</span> Проверка: второй просмотр профиля при premium profile-view лимите 1. Факт: второй профиль открылся без limit modal. Значение: premium profile-view limit требует исправления.</figcaption>
           <img src="./assets/premium-profileView-attempt-2.png" alt="Premium profile view second profile">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: входящие лайки при включенном premium-only доступе. Что получил: premium user видит страницу без lock.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Проверка: входящие лайки при включенном premium-only доступе. Факт: premium user видит страницу без lock. Значение: premium ветка работала в историческом прогоне.</figcaption>
           <img src="./assets/premium-incoming-likes.png" alt="Premium incoming likes">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: тот же incoming likes сценарий на free control user. Что получил: free user видит premium lock.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Проверка: incoming likes на free control user. Факт: free user видит premium lock. Значение: free/premium разделение работало в историческом прогоне.</figcaption>
           <img src="./assets/free-incoming-likes.png" alt="Free incoming likes lock">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: показ рекламы на profile page у premium. Что получил: sidebar ad отсутствует.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Проверка: показ рекламы на profile page у premium. Факт: sidebar ad отсутствует. Значение: no-ads поведение подтверждено исторически.</figcaption>
           <img src="./assets/premiumNoAdsProfile.png" alt="Premium profile without ads">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: контроль рекламы на profile page у free user. Что получил: sidebar ad отображается.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Проверка: контроль рекламы на profile page у free user. Факт: sidebar ad отображается. Значение: отличие premium/free подтверждено исторически.</figcaption>
           <img src="./assets/freeNoAdsProfileControl.png" alt="Free profile with sidebar ad">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: попытка 9 отправки сообщения при premium outgoing limit=1. Что получил: сообщение отправлено, <code>messageId=190</code>, лимит не сработал.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--fail">FAIL</span> Проверка: попытка 9 отправки сообщения при premium outgoing limit=1. Факт: сообщение отправлено, <code>messageId=190</code>. Значение: лимит не сработал.</figcaption>
           <img src="./assets/premium-messages-out-attempt-9.png" alt="Premium messages out attempt 9">
         </figure>
         <figure class="qa-shot">
-          <figcaption>Что тестировал: попытка 10 при тех же лимитах. Что получил: <code>404 Contact not found</code>; это не premium limit block.</figcaption>
+          <figcaption><span class="qa-badge qa-badge--warn">DATA</span> Проверка: попытка 10 при тех же лимитах. Факт: <code>404 Contact not found</code>. Значение: это ошибка контакта, не premium limit block.</figcaption>
           <img src="./assets/premium-messages-out-attempt-10.png" alt="Premium messages out attempt 10">
         </figure>
       </div>
