@@ -15,6 +15,8 @@
       <p>Рабочая панель для Алексея, тестировщика и Игоря: какие отчеты актуальны, какие дефекты чинить первыми, как воспроизвести баг и какие зоны требуют ретеста.</p>
       <div class="tp-actions" style="margin-top:16px">
         <a class="tp-btn tp-btn--primary" href="#igor-board">Доска Игоря</a>
+        <a class="tp-btn" href="#alexey-pass">PASS для Алексея</a>
+        <a class="tp-btn" href="#anton-audit">UX/UI аудит</a>
         <a class="tp-btn" href="../">Все QA reports</a>
       </div>
     </header>
@@ -27,8 +29,43 @@
     </section>
 
     <section class="qa-section">
+      <div class="qa-role-grid">
+        <article class="qa-lane qa-lane--danger">
+          <span class="qa-badge qa-badge--fail">Для Игоря</span>
+          <h3>Только то, что нужно чинить</h3>
+          <p>В эту зону попадают дефекты с путем воспроизведения, ожидаемым поведением и ссылкой на evidence. PASS-кейсы сюда не смешиваются.</p>
+          <ul class="qa-list qa-list--danger">
+            <li>Сначала P0/P1 дефекты, затем fixture gaps.</li>
+            <li>Каждая строка отвечает на вопрос: где искать баг.</li>
+            <li>Если доказательства нет, это не баг, а ретест.</li>
+          </ul>
+        </article>
+        <article class="qa-lane qa-lane--success">
+          <span class="qa-badge qa-badge--pass">Для Алексея</span>
+          <h3>Что подтверждено и можно принимать</h3>
+          <p>Здесь собраны успешные проверки: они показывают, что часть ТЗ работает и не должна возвращаться Игорю как задача.</p>
+          <ul class="qa-list qa-list--success">
+            <li>PASS нужен для управленческого контроля качества.</li>
+            <li>Успешный кейс остается в evidence, но не шумит в bug board.</li>
+            <li>Если PASS зависит от условий, это указано в комментарии.</li>
+          </ul>
+        </article>
+        <article class="qa-lane qa-lane--work">
+          <span class="qa-badge qa-badge--warn">Для тестировщика</span>
+          <h3>Что перепроверять после фиксов</h3>
+          <p>Ретесты отделены от багов: это сценарии, которые нужны после исправлений или после подготовки fixtures.</p>
+          <ul class="qa-list qa-list--work">
+            <li>Не смешивать paid actions, группы и сообщения в один прогон.</li>
+            <li>Перед выводом всегда проверять сторону получателя.</li>
+            <li>Скрин должен показывать тот surface, по которому сделан вывод.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="qa-section">
       <div class="qa-note">
-        <p><strong>Итог аудита:</strong> отчеты уже можно передавать Игорю, но работать дальше нужно через эту контрольную страницу. Старый <code>Premium / Free Settings QA</code> от 2026-05-05 оставлен как архив и не должен использоваться как основной источник правды, потому что новый premium-отчет содержит recipient-side proof и колонку воспроизведения.</p>
+        <p><strong>Итог аудита:</strong> интерфейс теперь должен читаться по ролям. Игорь получает только дефекты и способы их найти; Алексей получает подтвержденные PASS и управленческий статус; тестировщик получает очередь ретеста. Старый <code>Premium / Free Settings QA</code> от 2026-05-05 оставлен как архив и не должен использоваться как основной источник правды.</p>
         <p><strong>Правило порядка:</strong> актуальный дефект считается готовым для Игоря только если есть факт, ожидание, путь воспроизведения, зона кода/логики и evidence screenshot или честная пометка why not proven.</p>
       </div>
     </section>
@@ -94,6 +131,53 @@
       </div>
     </section>
 
+    <section id="alexey-pass" class="qa-section">
+      <h2>PASS для Алексея</h2>
+      <div class="qa-table-wrap">
+        <table class="qa-table">
+          <thead><tr><th>Зона</th><th>Что подтверждено</th><th>Почему это важно</th><th>Источник</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Stories visibility</td>
+              <td>Premoderation скрывает сторис от второго пользователя до approve; postmoderation/none видны в пользовательском carousel у второго пользователя.</td>
+              <td>Это закрывает главный прошлый риск: больше не делаем вывод по пустой media queue, а смотрим фактическую пользовательскую видимость.</td>
+              <td><a href="../moderation-full-2026-05-07/#igor">Moderation report</a></td>
+            </tr>
+            <tr>
+              <td>Group posts hide</td>
+              <td>Пост группы скрывается без физического удаления, статус <code>Hidden</code> и причина сохраняются.</td>
+              <td>Это соответствует ТЗ по ручной модерации постов: запись остается управляемой, а не исчезает.</td>
+              <td><a href="../moderation-full-2026-05-07/#igor">Moderation report</a></td>
+            </tr>
+            <tr>
+              <td>Group avatar / cover</td>
+              <td>Для avatar/cover есть отдельные настройки и approve-кнопки; postmoderation/none дают approved-состояние, premoderation создает модерационные записи.</td>
+              <td>Визуальное оформление группы управляется отдельно от постов, как отдельная зона модерации.</td>
+              <td><a href="../moderation-full-2026-05-07/#igor">Moderation report</a></td>
+            </tr>
+            <tr>
+              <td>Full ban</td>
+              <td>Full-ban создает активную запись, блокирует пользовательские страницы, не доставляет сообщение, после снятия нормальная доставка восстанавливается.</td>
+              <td>Основная жесткая блокировка работает и не должна смешиваться с багом shadow-release.</td>
+              <td><a href="../bans-full-2026-05-07/#igor">Bans report</a></td>
+            </tr>
+            <tr>
+              <td>Shadow active phase</td>
+              <td>Во время активного shadow-ban исходящее U1->U2 скрыто от U2, входящее U3->U1 скрыто от U1, лайк U1->U2 не появляется у U2.</td>
+              <td>Активная фаза shadow-ban в проверенных сценариях работает; проблема найдена именно после снятия бана.</td>
+              <td><a href="../bans-full-2026-05-07/#igor">Bans report</a></td>
+            </tr>
+            <tr>
+              <td>Premium reports</td>
+              <td>Новый premium/free отчет содержит rollback, recipient-side evidence и пути воспроизведения по лимитам.</td>
+              <td>Его можно использовать как источник постановки задач, а старый отчет держать только как архив.</td>
+              <td><a href="../premium-controls-full-2026-05-06/#igor">Premium report</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
     <section class="qa-section">
       <h2>Статус отчетов</h2>
       <div class="qa-table-wrap">
@@ -130,6 +214,36 @@
             </tr>
           </tbody>
         </table>
+      </div>
+    </section>
+
+    <section id="anton-audit" class="qa-section">
+      <h2>UX/UI аудит Антона</h2>
+      <div class="qa-status-grid">
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--pass">Исправлено</span>
+          <h3>Разделены аудитории</h3>
+          <p>Баги для программиста, успешные проверки для постановщика и ретесты для тестировщика теперь находятся в разных блоках.</p>
+        </article>
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--pass">Исправлено</span>
+          <h3>Убраны неактуальные дефекты</h3>
+          <p>Неактуальные пункты по настройкам stories и групп удалены из актуальной доски, чтобы не создавать ложные задачи.</p>
+        </article>
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--warn">Осталось</span>
+          <h3>Нужны фильтры</h3>
+          <p>Следующий уровень интерфейса: фильтр по P0/P1/P2, PASS/FAIL, контуру и владельцу. Пока это решено статическими блоками.</p>
+        </article>
+      </div>
+      <div class="qa-note" style="margin-top:12px">
+        <p><strong>Оценка Антона:</strong> интерфейс стал пригоден для передачи Игорю, потому что не смешивает “что чинить” и “что успешно проверено”. До уровня полноценного QA-портала еще не хватает интерактивных фильтров и отдельного поля “owner / status after fix”.</p>
+        <div class="qa-score">
+          <div><span>Clarity</span><strong>8/10</strong></div>
+          <div><span>Trust</span><strong>8/10</strong></div>
+          <div><span>Navigation</span><strong>7/10</strong></div>
+          <div><span>Operator readiness</span><strong>7/10</strong></div>
+        </div>
       </div>
     </section>
 
