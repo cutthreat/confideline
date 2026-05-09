@@ -40,7 +40,7 @@
 
     <section class="qa-summary">
       <div class="qa-metric"><span>Решение</span><strong>FAIL</strong></div>
-      <div class="qa-metric"><span>Актуальных отчетов</span><strong>3</strong></div>
+      <div class="qa-metric"><span>Актуальных отчетов</span><strong>11</strong></div>
       <div class="qa-metric"><span>Архив</span><strong>1</strong></div>
       <div class="qa-metric"><span>Публичная проверка</span><strong>OK</strong></div>
     </section>
@@ -229,6 +229,12 @@
           <p>Dashboard, browse, likes, encounters, countries и groups открываются пользователем и показывают контент или честные состояния.</p>
           <a href="../discovery-surfaces-2026-05-09/"><img src="../discovery-surfaces-2026-05-09/assets/browse.png" alt="Discovery surfaces evidence"></a>
         </article>
+        <article class="qa-evidence-card qa-status-card">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>Detail surfaces</h3>
+          <p>Видимые ссылки профиля, стран и групп из каталогов открываются как detail-страницы; дефектов для Игоря нет.</p>
+          <a href="../detail-surfaces-2026-05-10/"><img src="../detail-surfaces-2026-05-10/assets/source-group.png" alt="Detail surfaces evidence"></a>
+        </article>
       </div>
     </section>
 
@@ -281,6 +287,12 @@
               <td><a href="../discovery-surfaces-2026-05-09/#alexey">Discovery report</a></td>
             </tr>
             <tr>
+              <td>Detail surfaces</td>
+              <td>Видимые ссылки профиля, стран и групп открываются как detail-страницы: `/en/profile`, `/en/country/armenia`, `/en/country/estonia`, `/en/country/azerbaijan`, `/en/groups/...`.</td>
+              <td>Следующий слой после discovery подтвержден: каталоги не просто открываются, а ведут на рабочие detail-страницы. Вопрос по русскому контенту в EN-разделах вынесен в BA-матрицу для Алексея.</td>
+              <td><a href="../detail-surfaces-2026-05-10/#alexey">Detail report</a></td>
+            </tr>
+            <tr>
               <td>Premium reports</td>
               <td>Новый premium/free отчет содержит rollback, recipient-side evidence и пути воспроизведения по лимитам.</td>
               <td>Его можно использовать как источник постановки задач, а старый отчет держать только как архив.</td>
@@ -317,6 +329,13 @@
               <td>Новый current-pass: 14/15 PASS, admin-create доказан через <code>active_ban_id</code>, shadow/full behavior проверен с U1/U2/U3, cleanup подтвержден.</td>
               <td>Расширенные paid/group scenarios еще требуют отдельных fixtures, но главный core-баг уже воспроизводим.</td>
               <td>Использовать как актуальный bans-source; чинить <code>SHADOW-RELEASE-001</code> первым.</td>
+            </tr>
+            <tr>
+              <td><a href="../detail-surfaces-2026-05-10/">Detail surfaces QA</a></td>
+              <td><span class="qa-badge qa-badge--pass">АКТУАЛЕН</span></td>
+              <td>Проверены реальные видимые ссылки, а не guessed routes; старое подозрение на скрытый `/en/profile/view` не отправлено Игорю как ложный баг.</td>
+              <td>Есть BA-вопрос по локализации EN-разделов, но это product/content decision, а не подтвержденный дефект Yii2-route.</td>
+              <td>Использовать как текущий источник по profile/country/group detail-переходам.</td>
             </tr>
             <tr>
               <td><a href="../premium-free-2026-05-05/">Premium / Free Settings QA</a></td>

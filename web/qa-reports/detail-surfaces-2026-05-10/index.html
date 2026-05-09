@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | Detail surfaces QA 2026-05-10</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+  <style>
+    .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:18px 0}
+    .metric{background:#fff;border:1px solid #c8d8ea;border-radius:8px;padding:14px}.metric strong{display:block;font-size:24px;line-height:1.15}.metric span{color:#5e738f;font-size:12px}
+    .badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800;line-height:1;max-width:100%;overflow-wrap:anywhere}.badge.pass{background:#dcfce7;color:#166534}.badge.warn{background:#fef3c7;color:#92400e}.badge.info{background:#dbeafe;color:#1e40af}
+    .table-wrap{overflow:auto;background:#fff;border:1px solid #c8d8ea;border-radius:8px}table{width:100%;border-collapse:collapse;min-width:900px}th,td{padding:10px;border-bottom:1px solid #e6ebf2;text-align:left;vertical-align:top}th{background:#f8fafc;color:#22344d}
+    .igor-box{background:#f0fdf4;border:2px solid #22c55e;border-radius:8px;padding:16px}.alexey-box{background:#fffbeb;border:2px solid #f59e0b;border-radius:8px;padding:16px}
+    .evidence-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:18px}.evidence{background:#fff;border:2px solid #22c55e;border-radius:8px;padding:14px}.evidence.warn{border-color:#f59e0b}.evidence-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.evidence h3{margin:0;font-size:18px}
+    .shot{position:relative;margin-top:10px;overflow:hidden;border:1px solid #d7deea;border-radius:6px;background:#f8fafc}.shot img{display:block;width:100%;height:auto}
+    .callout{position:absolute;border:3px solid #16a34a;border-radius:6px}.callout.warn{border-color:#d97706}.arrow{position:absolute;width:3px;background:#16a34a;transform-origin:0 0}.arrow.warn{background:#d97706}.arrow:after{content:"";position:absolute;right:-6px;bottom:-2px;border-left:8px solid #16a34a;border-top:6px solid transparent;border-bottom:6px solid transparent}.arrow.warn:after{border-left-color:#d97706}
+    .a-profile-empty{left:6%;top:33%;width:88%;height:36%}.ar-profile-empty{left:16%;top:18%;height:26%;transform:rotate(-20deg)}
+    .a-profile-detail{left:6%;top:18%;width:88%;height:60%}.ar-profile-detail{left:7%;top:8%;height:24%;transform:rotate(-18deg)}
+    .a-country-list{left:6%;top:20%;width:84%;height:22%}.ar-country-list{left:5%;top:8%;height:22%;transform:rotate(-20deg)}
+    .a-country-ru{left:7%;top:39%;width:85%;height:43%}.ar-country-ru{left:8%;top:30%;height:22%;transform:rotate(-18deg)}
+    .a-group-list{left:6%;top:13%;width:88%;height:79%}.ar-group-list{left:5%;top:6%;height:24%;transform:rotate(-16deg)}
+    .a-group-detail{left:3%;top:18%;width:93%;height:66%}.ar-group-detail{left:5%;top:8%;height:24%;transform:rotate(-16deg)}
+  </style>
+</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">Confideline QA/BA · 2026-05-10</p>
+      <h1>Detail surfaces: профили, страны, группы</h1>
+      <p>Проверка следующего слоя после discovery: реальные видимые ссылки из каталогов открываются как detail-страницы. Прогон выполнен в отдельной QA Chrome/CDP-сессии, без общего браузера пользователя.</p>
+      <div class="tp-actions" style="margin-top:16px"><a class="tp-btn" href="../">Назад к каталогу</a><a class="tp-btn tp-btn--primary" href="#alexey">Матрица для Алексея</a></div>
+    </header>
+
+    <section class="summary-grid">
+      <div class="metric"><span>Итог</span><strong>PASS</strong><p>Подтвержденных дефектов для Игоря нет.</p></div>
+      <div class="metric"><span>Detail-переходы</span><strong>7</strong><p>1 профиль, 3 страны, 3 группы.</p></div>
+      <div class="metric"><span>Для Игоря</span><strong>0</strong><p>Нет воспроизводимого FAIL.</p></div>
+      <div class="metric"><span>Для Алексея</span><strong>1</strong><p>BA-рекомендация по языку EN-разделов.</p></div>
+    </section>
+
+    <section class="qa-section" id="igor">
+      <h2>Вывод для Игоря</h2>
+      <div class="igor-box">
+        <p><strong>Новых подтвержденных дефектов нет.</strong> Скрипт проверял только видимые ссылки с DOM evidence: координаты, текст, href и HTML-фрагмент. После этого открыты detail-страницы профиля, стран и групп; 404/500/login redirect не получены.</p>
+        <p>Подозрение на `/en/profile/view` из предыдущего сырого прогона не отправляется в работу: оно не прошло критерий видимой пользовательской ссылки. Источник правды по этому блоку: этот отчет и raw JSON.</p>
+      </div>
+    </section>
+
+    <section class="qa-section" id="alexey">
+      <h2>Матрица улучшений для Алексея</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Квадрант</th><th>Зона</th><th>Наблюдение</th><th>Почему важно</th><th>Совет</th><th>Как проверить готовность</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="badge warn">Важно, но не срочно</span></td>
+              <td>Контент / локализация EN-разделов</td>
+              <td>На `/en/countries`, `/en/profile` и части `/en/groups/...` заметен русский текст.</td>
+              <td>Для англоязычного пользователя смешение языков снижает доверие, ухудшает SEO и усложняет приемку EN-версии.</td>
+              <td>Принять product decision: либо EN-контур сейчас считается технически рабочим, но контентно не готовым; либо завести отдельную задачу на разделение контента по языкам.</td>
+              <td>На `/en/...` основной контент на английском, либо такие страницы явно помечены как content backlog и не блокируют техническую приемку.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Таблица результата</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Статус</th><th>Тип</th><th>URL</th><th>Что проверял</th><th>Что получил</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge pass">PASS</span></td><td>Profile</td><td><code>/en/profile</code></td><td>Видимая ссылка из верхней панели профиля.</td><td>200, h1 Kaelir Tamm, страница профиля открыта.</td></tr>
+            <tr><td><span class="badge pass">PASS</span></td><td>Country</td><td><code>/en/country/armenia</code></td><td>Переход из списка стран.</td><td>200, h1 Armenia.</td></tr>
+            <tr><td><span class="badge pass">PASS</span></td><td>Country</td><td><code>/en/country/estonia</code></td><td>Переход из списка стран.</td><td>200, h1 Estonia.</td></tr>
+            <tr><td><span class="badge pass">PASS</span></td><td>Country</td><td><code>/en/country/azerbaijan</code></td><td>Переход из списка стран.</td><td>200, h1 Azerbaijan.</td></tr>
+            <tr><td><span class="badge pass">PASS</span></td><td>Group</td><td><code>/en/groups/pogoda-na-gorizonte</code></td><td>Переход из карточки группы.</td><td>200, h1 Погода на горизонте.</td></tr>
+            <tr><td><span class="badge pass">PASS</span></td><td>Group</td><td><code>/en/groups/gruppa-dla-sbora-deneg</code></td><td>Переход из карточки группы.</td><td>200, открывается purchase/access state.</td></tr>
+            <tr><td><span class="badge pass">PASS</span></td><td>Group</td><td><code>/en/groups/test</code></td><td>Переход из карточки группы.</td><td>200, открывается purchase/access state.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Evidence screenshots</h2>
+      <div class="evidence-grid">
+        <article class="evidence">
+          <div class="evidence-head"><span class="badge pass">PASS</span><h3>Browse source</h3></div>
+          <p>Что тестировал: источник profile detail-ссылок. Что получил: `/en/browse` открыт корректно, но список пользователей пустой; тест не стал считать скрытые/пустые ссылки пользовательским дефектом.</p>
+          <div class="shot"><img src="assets/source-profile.png" alt="Browse source"><span class="callout a-profile-empty"></span><span class="arrow ar-profile-empty"></span></div>
+        </article>
+        <article class="evidence warn">
+          <div class="evidence-head"><span class="badge warn">BA</span><h3>Profile detail</h3></div>
+          <p>Что тестировал: видимая ссылка на собственный профиль. Что получил: страница открыта, но внутри EN-route много русского текста. Это не задача Игорю без product decision.</p>
+          <div class="shot"><img src="assets/profile-detail.png" alt="Profile detail"><span class="callout warn a-profile-detail"></span><span class="arrow warn ar-profile-detail"></span></div>
+        </article>
+        <article class="evidence warn">
+          <div class="evidence-head"><span class="badge warn">BA</span><h3>Countries source</h3></div>
+          <p>Что тестировал: список стран на `/en/countries`. Что получил: ссылки стран работают, но ниже списка виден большой русский контент на EN-странице.</p>
+          <div class="shot"><img src="assets/source-country.png" alt="Countries source"><span class="callout a-country-list"></span><span class="callout warn a-country-ru"></span><span class="arrow warn ar-country-ru"></span></div>
+        </article>
+        <article class="evidence">
+          <div class="evidence-head"><span class="badge pass">PASS</span><h3>Country detail</h3></div>
+          <p>Что тестировал: переход в страну из списка. Что получил: `/en/country/armenia` открылась с h1 Armenia и без 404/login redirect.</p>
+          <div class="shot"><img src="assets/country-armenia.png" alt="Country detail"><span class="callout a-group-detail"></span><span class="arrow ar-group-detail"></span></div>
+        </article>
+        <article class="evidence">
+          <div class="evidence-head"><span class="badge pass">PASS</span><h3>Groups source</h3></div>
+          <p>Что тестировал: карточки групп и реальные href формата Yii2 `groups/&lt;alias&gt;`. Что получил: карточки видны, ссылки собраны по фактическому DOM.</p>
+          <div class="shot"><img src="assets/source-group.png" alt="Groups source"><span class="callout a-group-list"></span><span class="arrow ar-group-list"></span></div>
+        </article>
+        <article class="evidence warn">
+          <div class="evidence-head"><span class="badge warn">BA</span><h3>Group detail</h3></div>
+          <p>Что тестировал: переход в группу из каталога. Что получил: `/en/groups/pogoda-na-gorizonte` открывается; смешанный язык остается контентным вопросом для EN-контура.</p>
+          <div class="shot"><img src="assets/group-pogoda.png" alt="Group detail"><span class="callout warn a-group-detail"></span><span class="arrow warn ar-group-detail"></span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Raw evidence</h2>
+      <p><a href="raw/detail-surfaces.json">detail-surfaces.json</a> · <a href="raw/detail-surfaces.md">detail-surfaces.md</a></p>
+    </section>
+  </main>
+</body>
+</html>
