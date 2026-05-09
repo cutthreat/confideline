@@ -1,0 +1,54 @@
+{
+  "schema": "confideline-qa-subagent-spark-policy.v1",
+  "updatedAt": "2026-05-10",
+  "contour": "Тестировщик",
+  "maxSubagentsPerPass": 10,
+  "subagentLane": {
+    "enabled": true,
+    "defaultModel": "gpt-5.3-codex-spark",
+    "defaultReasoningEffort": "xhigh",
+    "allowedReasoningEfforts": [
+      "high",
+      "xhigh"
+    ],
+    "allowFullAvailableSparkQuotaForUsefulTesting": true,
+    "quotaUseMode": "use_available_quota_until_exhausted_or_not_useful"
+  },
+  "useWhen": [
+    "independent QA scenarios can run in parallel",
+    "visual or browser evidence review can be split by page, role, or flow",
+    "log, report, and artifact triage can be split by artifact",
+    "security, performance, accessibility, or regression review is bounded and evidence-only",
+    "each subagent receives one concrete QA card with expected output"
+  ],
+  "doNotUseWhen": [
+    "task needs one shared live browser session with mutable state",
+    "human login, MFA, payment, account consent, or credential action is required",
+    "operation is destructive outside the local trust boundary",
+    "work cannot be split into independent evidence-producing cards",
+    "running more agents would duplicate the same task or hide evidence"
+  ],
+  "stopConditions": [
+    "available Spark quota is exhausted or unavailable",
+    "no useful independent testing work remains",
+    "site, account, or browser state is unstable and parallelism would corrupt evidence",
+    "human boundary is reached",
+    "critical production-impacting blocker requires primary-agent review"
+  ],
+  "requiredPerSubagentContract": {
+    "scope": "one bounded QA card",
+    "outputs": [
+      "verdict",
+      "evidence paths or URLs",
+      "findings",
+      "residual risks",
+      "recommended next action"
+    ],
+    "forbidden": [
+      "credentials",
+      "unapproved external mutations",
+      "broad repo-wide changes",
+      "duplicating another active subagent card"
+    ]
+  }
+}
