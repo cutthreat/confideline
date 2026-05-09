@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | Discovery surfaces QA 2026-05-09</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+  <style>
+    .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:18px 0}
+    .metric{background:#fff;border:1px solid #dde3ee;border-radius:8px;padding:14px}.metric strong{display:block;font-size:24px}
+    .badge{display:inline-flex;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800}.badge.pass{background:#dcfce7;color:#166534}.badge.warn{background:#fef3c7;color:#92400e}
+    .table-wrap{overflow:auto;background:#fff;border:1px solid #dde3ee;border-radius:8px}table{width:100%;border-collapse:collapse;min-width:900px}th,td{padding:10px;border-bottom:1px solid #e6ebf2;text-align:left;vertical-align:top}th{background:#f8fafc}
+    .igor-box{background:#f0fdf4;border:2px solid #22c55e;border-radius:8px;padding:16px}.alexey-box{background:#eff6ff;border:2px solid #3b82f6;border-radius:8px;padding:16px}
+    .evidence-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:18px}.evidence{background:#fff;border:2px solid #22c55e;border-radius:8px;padding:14px}.evidence-head{display:flex;gap:10px;align-items:center}.evidence h3{margin:0;font-size:18px}
+    .shot{position:relative;margin-top:10px;overflow:hidden;border:1px solid #d7deea;border-radius:6px;background:#f8fafc}.shot img{display:block;width:100%;height:auto}
+    .callout{position:absolute;border:3px solid #16a34a;border-radius:6px}.arrow{position:absolute;width:3px;background:#16a34a;transform-origin:0 0}.arrow:after{content:"";position:absolute;right:-6px;bottom:-2px;border-left:8px solid #16a34a;border-top:6px solid transparent;border-bottom:6px solid transparent}
+    .a-nav{left:10%;top:16%;width:52%;height:6%}.ar-nav{left:8%;top:7%;height:18%;transform:rotate(-28deg)}
+    .a-cards{left:18%;top:30%;width:62%;height:42%}.ar-cards{left:14%;top:18%;height:28%;transform:rotate(-25deg)}
+    .a-list{left:7%;top:19%;width:86%;height:54%}.ar-list{left:4%;top:8%;height:25%;transform:rotate(-18deg)}
+  </style>
+</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">Confideline QA/BA · 2026-05-09</p>
+      <h1>Discovery surfaces</h1>
+      <p>Проверка пользовательских discovery-поверхностей авторизованным пользователем: dashboard, `/en`, browse, likes, encounters, countries, groups. Цель: доказать не только HTTP 200, а что пользователь видит контент, карточки, формы или понятное состояние.</p>
+      <div class="tp-actions" style="margin-top:16px"><a class="tp-btn" href="../">Назад к каталогу</a><a class="tp-btn tp-btn--primary" href="#alexey">Матрица для Алексея</a></div>
+    </header>
+
+    <section class="summary-grid">
+      <div class="metric"><span>Итог</span><strong>PASS</strong><p>Подтвержденных дефектов нет.</p></div>
+      <div class="metric"><span>Проверено</span><strong>7</strong><p>Dashboard, home, browse, likes, encounters, countries, groups.</p></div>
+      <div class="metric"><span>Для Игоря</span><strong>0</strong><p>Новых задач по этому проходу нет.</p></div>
+      <div class="metric"><span>Для Алексея</span><strong>1</strong><p>BA-рекомендация по критерию пользовательской ценности.</p></div>
+    </section>
+
+    <section class="qa-section" id="igor">
+      <h2>Вывод для Игоря</h2>
+      <div class="igor-box">
+        <p><strong>Новых подтвержденных дефектов нет.</strong> Проверенные discovery-поверхности открываются авторизованным пользователем, не уходят на login, не дают 404/500 и показывают контент, форму или честное пустое состояние.</p>
+        <p>Этот блок не содержит рекомендаций по развитию продукта. Рекомендации вынесены отдельно для Алексея.</p>
+      </div>
+    </section>
+
+    <section class="qa-section" id="alexey">
+      <h2>Матрица улучшений для Алексея</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Квадрант</th><th>Зона</th><th>Наблюдение</th><th>Почему важно</th><th>Совет</th><th>Как проверить готовность</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="badge warn">Важно, но не срочно</span></td>
+              <td>QA/BA evidence</td>
+              <td>Discovery-поверхности лучше тестировать отдельным продуктовым проходом, а не route inventory.</td>
+              <td>HTTP 200 не доказывает, что пользователь понимает страницу и может двигаться дальше.</td>
+              <td>Для следующих слоев добавлять сценарный критерий пользовательской ценности: что пользователь увидел и что может сделать дальше.</td>
+              <td>В каждом отчете есть PASS/FAIL по пользовательскому результату и отдельная матрица улучшений, а не только список route status.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Таблица результата</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Статус</th><th>Страница</th><th>Route</th><th>Что проверено</th><th>Факт</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge pass">PASS</span></td><td>Dashboard</td><td><code>/en/dashboard</code></td><td>Авторизованный пользователь видит dashboard blocks.</td><td>200, cards=3, forms=3, login redirect нет.</td></tr>
+            <tr><td><span class="badge pass">PASS</span></td><td>Home</td><td><code>/en</code></td><td>Главная авторизованного пользователя.</td><td>200, dashboard content, cards=3, forms=3.</td></tr>
+            <tr><td><span class="badge pass">PASS</span></td><td>Browse</td><td><code>/en/browse</code></td><td>Поиск/просмотр людей.</td><td>200, title Find People, cards=2, form=1.</td></tr>
+            <tr><td><span class="badge pass">PASS</span></td><td>Likes</td><td><code>/en/connections/likes</code></td><td>Входящие likes.</td><td>200, title Likes, cards=2.</td></tr>
+            <tr><td><span class="badge pass">PASS</span></td><td>Encounters</td><td><code>/en/connections/encounters</code></td><td>Карточка encounter и действия.</td><td>200, title Encounters, cards=1.</td></tr>
+            <tr><td><span class="badge pass">PASS</span></td><td>Countries</td><td><code>/en/countries</code></td><td>Каталог стран.</td><td>200, h1 Countries, cards=18.</td></tr>
+            <tr><td><span class="badge pass">PASS</span></td><td>Groups</td><td><code>/en/groups</code></td><td>Каталог групп.</td><td>200, h1 Groups, cards=20.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Evidence screenshots</h2>
+      <div class="evidence-grid">
+        <article class="evidence"><div class="evidence-head"><span class="badge pass">PASS</span><h3>Dashboard</h3></div><p>Проверка: авторизованный пользователь видит dashboard и discovery blocks. Результат: есть навигация, encounters, matches/new members states.</p><a href="raw/discovery-surfaces.json">Raw evidence</a><div class="shot"><img src="assets/dashboard.png" alt="Dashboard"><span class="callout a-cards"></span><span class="arrow ar-cards"></span></div></article>
+        <article class="evidence"><div class="evidence-head"><span class="badge pass">PASS</span><h3>Browse</h3></div><p>Проверка: `/en/browse`. Результат: страница Find People открыта, есть форма и пользовательские карточки/состояния.</p><a href="raw/discovery-surfaces.md">Raw MD</a><div class="shot"><img src="assets/browse.png" alt="Browse"><span class="callout a-list"></span><span class="arrow ar-list"></span></div></article>
+        <article class="evidence"><div class="evidence-head"><span class="badge pass">PASS</span><h3>Encounters</h3></div><p>Проверка: `/en/connections/encounters`. Результат: route из nav открывается и показывает encounter content.</p><a href="raw/discovery-surfaces.json">Raw evidence</a><div class="shot"><img src="assets/encounters.png" alt="Encounters"><span class="callout a-cards"></span><span class="arrow ar-cards"></span></div></article>
+        <article class="evidence"><div class="evidence-head"><span class="badge pass">PASS</span><h3>Countries</h3></div><p>Проверка: `/en/countries`. Результат: каталог стран открыт, карточки стран присутствуют.</p><a href="raw/discovery-surfaces.json">Raw evidence</a><div class="shot"><img src="assets/countries.png" alt="Countries"><span class="callout a-list"></span><span class="arrow ar-list"></span></div></article>
+        <article class="evidence"><div class="evidence-head"><span class="badge pass">PASS</span><h3>Groups</h3></div><p>Проверка: `/en/groups`. Результат: каталог групп открыт, карточки групп присутствуют.</p><a href="raw/discovery-surfaces.json">Raw evidence</a><div class="shot"><img src="assets/groups.png" alt="Groups"><span class="callout a-list"></span><span class="arrow ar-list"></span></div></article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
