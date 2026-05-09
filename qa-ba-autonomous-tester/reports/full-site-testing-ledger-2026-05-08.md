@@ -1194,3 +1194,36 @@ Raw evidence:
 BA / рекомендации для Алексея:
 
 - `Важно, но не срочно`: для visits/likes/favorites нужен пул чистых user pairs или автоматический поиск пары с before-state `not contains`, иначе тест превращается в WARN и не доказывает новое действие.
+
+## 2026-05-10 Continued QA: messages and group posts
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\continued-testing-2026-05-10\index.html`
+
+Raw evidence:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\continued-testing-2026-05-10\raw\premium-messages-recipient-delivery-audit.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\continued-testing-2026-05-10\raw\group-posts-moderation-audit.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\continued-testing-2026-05-10\raw\restore-premium-message-limits.json`
+- Screenshots: `H:\GPT-Codex\Confideline\web\qa-reports\continued-testing-2026-05-10\assets\*.png`
+
+Что исправлено в тестовом контуре:
+
+- `premium-messages-recipient-delivery-audit.mjs` и `group-posts-moderation-audit.mjs` по умолчанию используют изолированный `chromium.launch()`.
+- Общий CDP теперь остается только диагностическим режимом через `CONFIDELINE_QA_USE_CDP=1`.
+- Добавлен аварийный helper `restore-premium-message-limits.mjs` для возврата `messagesOutPremiumMen=99`, `messagesOutPremiumWomen=99`, `messagesOutPeriod=24`.
+
+Результат:
+
+- Общий статус: `FAIL + WARN`.
+- FAIL: при лимите `messagesOutPremiumMen=1`, `messagesOutPremiumWomen=1`, `messagesOutPeriod=1 hour` отправитель U182 успешно отправил 2 сообщения, оба POST `/en/messages/create` вернули `success=true`, messageId `238` и `239`.
+- FAIL: recipient-side proof подтвержден: U6 и U10 видят точный текст сообщений после превышения лимита.
+- PASS: rollback premium settings выполнен, diff пустой, значения восстановлены `99/99/24`.
+- PASS: `/en/admin/group/posts?groupId=10` открывается, hide action найден, post ID 25 после hide остается в списке, получает статус `Hidden`, причина модерации сохраняется.
+- WARN: reopen/show/restore action для hidden group post не найден. По исходному ТЗ повторное открытие контента должно быть доступно; нужен product/development decision.
+
+BA / рекомендации для Алексея:
+
+- `Срочно и важно`: premium message limits сейчас нельзя считать рабочей бизнес-логикой, потому что сверхлимитное сообщение реально доставляется получателю.
+- `Важно, но не срочно`: для group posts нужно подтвердить, требуется ли администратору reopen hidden post; если да, это отдельная задача Игорю.
