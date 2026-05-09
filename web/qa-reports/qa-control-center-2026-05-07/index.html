@@ -6,6 +6,18 @@
   <title>Confideline QA | Control Center</title>
   <link rel="stylesheet" href="../../css/task-panel-standard.css">
   <link rel="stylesheet" href="../qa-report.css">
+  <style>
+    .qa-toolbar{position:sticky;top:0;z-index:20;background:#fff;border:1px solid #d8e0ec;border-radius:8px;padding:12px;margin:18px 0;box-shadow:0 8px 20px rgba(15,23,42,.08)}
+    .qa-toolbar-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    .qa-toolbar-title{font-weight:800;color:#15233b;margin-right:6px}
+    .qa-filter-pill{display:inline-flex;gap:6px;align-items:center;border:1px solid #cfd8e6;border-radius:999px;padding:7px 10px;background:#f8fafc;font-weight:700;cursor:pointer}
+    .qa-filter-pill input{margin:0}
+    .qa-done-control{min-width:260px}
+    .qa-done-control label{display:flex;gap:8px;align-items:center;font-weight:700;margin-bottom:6px}
+    .qa-done-control input[type="text"]{width:100%;box-sizing:border-box;border:1px solid #cfd8e6;border-radius:6px;padding:8px;font:14px/1.3 Arial,sans-serif}
+    .qa-filter-hidden{display:none!important}
+    .qa-filter-muted{opacity:.55}
+  </style>
 </head>
 <body class="cl-task-standard qa-report-page">
   <main class="tp-page">
@@ -26,6 +38,20 @@
       <div class="qa-metric"><span>Актуальных отчетов</span><strong>3</strong></div>
       <div class="qa-metric"><span>Архив</span><strong>1</strong></div>
       <div class="qa-metric"><span>Публичная проверка</span><strong>OK</strong></div>
+    </section>
+
+    <section class="qa-toolbar" aria-label="Фильтры QA панели">
+      <div class="qa-toolbar-row">
+        <span class="qa-toolbar-title">Фильтр:</span>
+        <label class="qa-filter-pill"><input type="checkbox" data-qa-status-filter="fail" checked> FAIL</label>
+        <label class="qa-filter-pill"><input type="checkbox" data-qa-status-filter="warn" checked> WARN</label>
+        <label class="qa-filter-pill"><input type="checkbox" data-qa-status-filter="pass" checked> PASS</label>
+        <label class="qa-filter-pill"><input type="checkbox" data-qa-status-filter="info" checked> INFO/архив</label>
+        <label class="qa-filter-pill"><input type="checkbox" id="qa-hide-done"> скрыть выполненные</label>
+        <button class="tp-btn" type="button" id="qa-only-fail">Только FAIL</button>
+        <button class="tp-btn" type="button" id="qa-show-all">Показать все</button>
+      </div>
+      <p class="qa-help" style="margin:8px 0 0">Поле “Выполнено” добавлено в доску Игоря и сохраняется локально в браузере. Для общего фиксирования статуса нужен коммит/обновление отчета.</p>
     </section>
 
     <section class="qa-section">
@@ -285,5 +311,98 @@
       <a href="../">Все QA reports</a> · <a href="#igor-board">Доска Игоря</a>
     </footer>
   </main>
+  <script>
+    (() => {
+      const storageKey = 'confideline.qa-control-center.done.v1';
+      const readStore = () => {
+        try { return JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch { return {}; }
+      };
+      const writeStore = (value) => localStorage.setItem(storageKey, JSON.stringify(value));
+      const slug = (value) => String(value || '').toLowerCase().replace(/[^a-z0-9а-яё]+/gi, '-').replace(/^-+|-+$/g, '') || 'row';
+      const store = readStore();
+
+      const igorTable = document.querySelector('#igor-board table');
+      if (igorTable) {
+        const headRow = igorTable.querySelector('thead tr');
+        if (headRow && !headRow.querySelector('[data-qa-done-head]')) {
+          const th = document.createElement('th');
+          th.dataset.qaDoneHead = '1';
+          th.textContent = 'Выполнено';
+          headRow.appendChild(th);
+        }
+        igorTable.querySelectorAll('tbody tr').forEach((row, index) => {
+          const cells = row.querySelectorAll('td');
+          const taskId = slug(`${cells[1]?.innerText || ''}-${cells[2]?.innerText || ''}-${index}`);
+          row.dataset.qaTaskId = taskId;
+          const saved = store[taskId] || {};
+          const td = document.createElement('td');
+          td.className = 'qa-done-control';
+          td.innerHTML = `
+            <label><input type="checkbox" data-qa-done-checkbox ${saved.done ? 'checked' : ''}> выполнено</label>
+            <input type="text" data-qa-done-note placeholder="Комментарий Игоря для Алексея" value="${String(saved.note || '').replace(/"/g, '&quot;')}">
+          `;
+          row.appendChild(td);
+        });
+      }
+
+      const statusOf = (node) => {
+        if (node.querySelector('.qa-badge--fail')) return 'fail';
+        if (node.querySelector('.qa-badge--warn')) return 'warn';
+        if (node.querySelector('.qa-badge--pass')) return 'pass';
+        if (node.querySelector('.qa-badge--info')) return 'info';
+        const section = node.closest('section');
+        if (section?.id === 'alexey-pass') return 'pass';
+        if (section?.id === 'retest-queue') return 'warn';
+        return '';
+      };
+
+      const filterable = () => [...document.querySelectorAll('.qa-table tbody tr, .qa-status-card, .qa-lane, .tp-card')]
+        .filter((node) => !node.closest('.qa-toolbar') && statusOf(node));
+
+      const applyFilters = () => {
+        const enabled = new Set([...document.querySelectorAll('[data-qa-status-filter]')]
+          .filter((input) => input.checked)
+          .map((input) => input.dataset.qaStatusFilter));
+        const hideDone = document.querySelector('#qa-hide-done')?.checked;
+        filterable().forEach((node) => {
+          const status = statusOf(node);
+          const done = Boolean(node.querySelector('[data-qa-done-checkbox]')?.checked);
+          node.classList.toggle('qa-filter-hidden', !enabled.has(status) || (hideDone && done));
+          node.classList.toggle('qa-filter-muted', done);
+        });
+      };
+
+      document.addEventListener('change', (event) => {
+        if (event.target.matches('[data-qa-status-filter], #qa-hide-done')) applyFilters();
+        if (event.target.matches('[data-qa-done-checkbox], [data-qa-done-note]')) {
+          const row = event.target.closest('tr[data-qa-task-id]');
+          if (row) {
+            const current = readStore();
+            current[row.dataset.qaTaskId] = {
+              done: Boolean(row.querySelector('[data-qa-done-checkbox]')?.checked),
+              note: row.querySelector('[data-qa-done-note]')?.value || '',
+              updatedAt: new Date().toISOString()
+            };
+            writeStore(current);
+          }
+          applyFilters();
+        }
+      });
+      document.addEventListener('input', (event) => {
+        if (event.target.matches('[data-qa-done-note]')) event.target.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      document.querySelector('#qa-only-fail')?.addEventListener('click', () => {
+        document.querySelectorAll('[data-qa-status-filter]').forEach((input) => { input.checked = input.dataset.qaStatusFilter === 'fail'; });
+        applyFilters();
+      });
+      document.querySelector('#qa-show-all')?.addEventListener('click', () => {
+        document.querySelectorAll('[data-qa-status-filter]').forEach((input) => { input.checked = true; });
+        const hideDone = document.querySelector('#qa-hide-done');
+        if (hideDone) hideDone.checked = false;
+        applyFilters();
+      });
+      applyFilters();
+    })();
+  </script>
 </body>
 </html>
