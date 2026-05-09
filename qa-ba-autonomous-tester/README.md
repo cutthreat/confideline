@@ -12,6 +12,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File H:\GPT-Codex\Confideline\qa-
 
 ## Quick Run
 
+Project/testing map:
+
+- `PROJECT-QA-MAP.md` - working map of Confideline code areas, QA reports, product zones, next testing waves, and subagent lanes.
+
 Production run:
 
 ```powershell
