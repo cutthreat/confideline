@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | Shadow-ban extended matrix 2026-05-09</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+  <style>
+    .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:18px 0}.metric{background:#fff;border:1px solid #dde3ee;border-radius:8px;padding:14px}.metric strong{display:block;font-size:24px}.badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800}.badge.pass{background:#dcfce7;color:#166534}.badge.fail{background:#fee2e2;color:#991b1b}.badge.warn{background:#fef3c7;color:#92400e}.badge.info{background:#e0f2fe;color:#075985}.table-wrap{overflow:auto;background:#fff;border:1px solid #dde3ee;border-radius:8px}table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #e6ebf2;text-align:left;vertical-align:top}th{background:#f8fafc}.evidence-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:18px}.evidence{background:#fff;border:2px solid #dde3ee;border-radius:8px;padding:14px}.evidence.pass{border-color:#22c55e}.evidence.warn{border-color:#f59e0b}.evidence.fail{border-color:#ef4444}.evidence-head{display:flex;gap:10px;align-items:center}.evidence h3{margin:0;font-size:18px}.evidence img{width:100%;border:1px solid #d7deea;border-radius:6px;margin-top:10px}.igor-box{background:#fff7ed;border:2px solid #f59e0b;border-radius:8px;padding:16px}.code-link{font-family:Consolas,monospace}
+  </style>
+</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">Confideline QA/BA · 2026-05-09</p>
+      <h1>Shadow-ban extended matrix</h1>
+      <p>Повторный доказательный проход по shadow-ban после исправления тестового контура: отдельная Chromium-сессия, U1/U2/Admin, before/after, credits fixture, cleanup бана. Итог: критичных FAIL по shadow-ban не найдено; найден отдельный WARN по group-post baseline.</p>
+      <div class="tp-actions" style="margin-top:16px"><a class="tp-btn" href="../">Назад к каталогу</a><a class="tp-btn tp-btn--primary" href="raw/shadow-ban-extended-matrix-20260509-110749.json">Raw JSON</a></div>
+    </header>
+
+    <section class="summary-grid">
+      <div class="metric"><span>Вердикт</span><strong>WARN</strong><p>Shadow-ban сценарии прошли, но group-post baseline требует отдельного разбора.</p></div>
+      <div class="metric"><span>Пользователи</span><strong>U165 / U167 / U166</strong><p>U165 shadow, U167 recipient/baseline, U166 viewer.</p></div>
+      <div class="metric"><span>Cleanup</span><strong>PASS</strong><p>После теста active_ban_id=false, профиль восстановлен.</p></div>
+    </section>
+
+    <section class="qa-section" id="igor">
+      <h2>Вывод для Игоря</h2>
+      <div class="igor-box">
+        <p><strong>Что работает:</strong> shadow-ban скрывает профиль U1 от U2; gift и photo access для U1 выглядят успешными и не создают нового видимого входящего эффекта у U2; группа U1 видна самому U1 и скрыта от viewer; после снятия бана профиль снова виден.</p>
+        <p><strong>Что смотреть отдельно:</strong> group post publication. Контрольный обычный пользователь до shadow-ban создает пост, URL получает <code>highlightPostId</code>, но feed владельца показывает <code>No posts yet</code>. Это общий gap публикации/модерации постов групп, не доказанный shadow-ban баг.</p>
+        <p><strong>Где искать:</strong> Yii2 flow <code>/en/group/new-post?alias=...</code>, модель/форма <code>PostForm[content]</code>, сохранение/статус <code>GroupPost</code>, фильтр feed, moderation visibility и redirect на <code>highlightPostId</code>.</p>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Таблица проверок</h2>
+      <div class="table-wrap"><table><thead><tr><th>Статус</th><th>ID</th><th>Что проверял</th><th>Комментарий</th></tr></thead><tbody>
+<tr><td><span class='badge pass'>PASS</span></td><td><code>SHADOW-FIXTURE-BALANCE-READY</code></td><td>U1 имеет credits для gift-сценария</td><td>Баланс подготовлен через админку, чтобы не спутать shadow-ban с нехваткой credits.</td></tr>
+<tr><td><span class='badge pass'>PASS</span></td><td><code>SHADOW-PROFILE-BASELINE-VISIBLE</code></td><td>До shadow-ban профиль U1 доступен второму пользователю</td><td>Baseline подтвержден.</td></tr>
+<tr><td><span class='badge warn'>WARN</span></td><td><code>SHADOW-GIFT-BASELINE-RECIPIENT</code></td><td>До shadow-ban gift U1-&gt;U2 имеет recipient-side эффект</td><td>Baseline gift не дал сильного recipient evidence; shadow-check будет оценен осторожно.</td></tr>
+<tr><td><span class='badge warn'>WARN</span></td><td><code>GROUP-POST-BASELINE-OWNER-SEES</code></td><td>Обычный пользователь видит свою группу и пост до shadow-ban</td><td>Baseline group создана, но пост не виден в owner-side feed; shadow group post нельзя оценивать без учета этого дефекта/ограничения.</td></tr>
+<tr><td><span class='badge pass'>PASS</span></td><td><code>SHADOW-CREATE</code></td><td>Shadow-ban создан и подтвержден active_ban_id</td><td></td></tr>
+<tr><td><span class='badge pass'>PASS</span></td><td><code>SHADOW-PROFILE-HIDDEN-FROM-VIEWER</code></td><td>Во время shadow-ban профиль U1 скрыт/недоступен для U2</td><td></td></tr>
+<tr><td><span class='badge pass'>PASS</span></td><td><code>SHADOW-GIFT-ACTOR-SEES-SUCCESS</code></td><td>Shadow user отправляет gift без явной ошибки</td><td>Для U1 действие выглядит успешным.</td></tr>
+<tr><td><span class='badge pass'>PASS</span></td><td><code>SHADOW-GIFT-HIDDEN-FROM-RECIPIENT</code></td><td>Gift от shadow user не виден получателю</td><td></td></tr>
+<tr><td><span class='badge pass'>PASS</span></td><td><code>SHADOW-PHOTO-ACCESS-ACTOR-SEES-SUCCESS</code></td><td>Shadow user делает photo access request без явной ошибки</td><td></td></tr>
+<tr><td><span class='badge pass'>PASS</span></td><td><code>SHADOW-PHOTO-ACCESS-HIDDEN-FROM-OWNER</code></td><td>Photo access request от shadow user не создает нового видимого входящего эффекта владельцу</td><td>После запроса количество совпадений по shadow user у владельца не выросло.</td></tr>
+<tr><td><span class='badge pass'>PASS</span></td><td><code>SHADOW-GROUP-OWNER-SEES-OWN</code></td><td>Shadow user видит созданную им группу</td><td></td></tr>
+<tr><td><span class='badge warn'>WARN</span></td><td><code>SHADOW-GROUP-POST-OWNER-SEES-OWN</code></td><td>Shadow user видит/создает пост в своей группе</td><td>Пост owner-side не найден и у обычного baseline пользователя; это общий group-post gap, не доказанный shadow-ban баг.</td></tr>
+<tr><td><span class='badge pass'>PASS</span></td><td><code>SHADOW-GROUP-HIDDEN-FROM-VIEWER</code></td><td>Группа/пост shadow user скрыты от второго пользователя</td><td></td></tr>
+<tr><td><span class='badge pass'>PASS</span></td><td><code>SHADOW-RELEASE-CLEAN-EXTENDED</code></td><td>Shadow-ban снят после расширенного прохода</td><td></td></tr>
+<tr><td><span class='badge pass'>PASS</span></td><td><code>SHADOW-PROFILE-RESTORED-AFTER-RELEASE</code></td><td>После снятия shadow-ban профиль U1 снова виден U2</td><td></td></tr>
+      </tbody></table></div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Evidence screenshots</h2>
+      <div class="evidence-grid">
+<article class='evidence pass'><div class='evidence-head'><span class='badge pass'>PASS</span><h3>Shadow-ban создан</h3></div><p>Admin создал активный shadow-ban для U1 и user-data подтвердил active_ban_id.</p><img src='screens/admin-shadow-active.png' alt='Shadow-ban создан'></article>
+<article class='evidence pass'><div class='evidence-head'><span class='badge pass'>PASS</span><h3>Профиль скрыт от второго пользователя</h3></div><p>U2 открывает профиль U1 во время shadow-ban и получает скрытие/недоступность, до бана и после снятия профиль виден.</p><img src='screens/profile-during-shadow-hidden.png' alt='Профиль скрыт от второго пользователя'></article>
+<article class='evidence pass'><div class='evidence-head'><span class='badge pass'>PASS</span><h3>Gift выглядит успешным для U1</h3></div><p>После пополнения баланса U1 отправляет gift во время shadow-ban без явной ошибки.</p><img src='screens/shadow-gift-actor.png' alt='Gift выглядит успешным для U1'></article>
+<article class='evidence pass'><div class='evidence-head'><span class='badge pass'>PASS</span><h3>Gift не дошел до U2</h3></div><p>У получателя нет уникального сообщения текущего gift, старые совпадения по имени не считаются доказательством.</p><img src='screens/shadow-gift-recipient.png' alt='Gift не дошел до U2'></article>
+<article class='evidence pass'><div class='evidence-head'><span class='badge pass'>PASS</span><h3>Photo access скрыт от владельца</h3></div><p>Запрос photo access выглядит успешным для U1, но у владельца количество входящих совпадений по U1 не выросло.</p><img src='screens/shadow-photo-access-owner-after.png' alt='Photo access скрыт от владельца'></article>
+<article class='evidence warn'><div class='evidence-head'><span class='badge warn'>WARN</span><h3>Group post baseline gap</h3></div><p>Даже обычный пользователь до shadow-ban создает post с highlightPostId, но owner-side feed показывает No posts yet. Поэтому shadow group post не закрывается как отдельный shadow-ban баг.</p><img src='screens/baseline-group-owner-group.png' alt='Group post baseline gap'></article>
+<article class='evidence pass'><div class='evidence-head'><span class='badge pass'>PASS</span><h3>Shadow group скрыта от viewer</h3></div><p>U1 во время shadow-ban видит свою группу, второй пользователь группу/пост не видит.</p><img src='screens/shadow-group-viewer-hidden.png' alt='Shadow group скрыта от viewer'></article>
+<article class='evidence pass'><div class='evidence-head'><span class='badge pass'>PASS</span><h3>Снятие бана и восстановление</h3></div><p>После release active_ban_id=false, профиль U1 снова доступен U2.</p><img src='screens/profile-after-shadow-visible.png' alt='Снятие бана и восстановление'></article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
