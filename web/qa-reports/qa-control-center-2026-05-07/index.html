@@ -40,7 +40,7 @@
 
     <section class="qa-summary">
       <div class="qa-metric"><span>Решение</span><strong>FAIL</strong></div>
-      <div class="qa-metric"><span>Актуальных отчетов</span><strong>11</strong></div>
+      <div class="qa-metric"><span>Актуальных отчетов</span><strong>12</strong></div>
       <div class="qa-metric"><span>Архив</span><strong>1</strong></div>
       <div class="qa-metric"><span>Публичная проверка</span><strong>OK</strong></div>
     </section>
@@ -235,6 +235,12 @@
           <p>Видимые ссылки профиля, стран и групп из каталогов открываются как detail-страницы; дефектов для Игоря нет.</p>
           <a href="../detail-surfaces-2026-05-10/"><img src="../detail-surfaces-2026-05-10/assets/source-group.png" alt="Detail surfaces evidence"></a>
         </article>
+        <article class="qa-evidence-card qa-status-card">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>User interactions</h3>
+          <p>На чистой паре U166 -> U168 visit и like доказаны before/after со стороны получателя.</p>
+          <a href="../user-interactions-2026-05-10/"><img src="../user-interactions-2026-05-10/assets/incoming-likes-after.png" alt="User interactions evidence"></a>
+        </article>
       </div>
     </section>
 
@@ -293,6 +299,12 @@
               <td><a href="../detail-surfaces-2026-05-10/#alexey">Detail report</a></td>
             </tr>
             <tr>
+              <td>User interactions</td>
+              <td>На чистой паре U166 -> U168 профильный визит появился у получателя в Guests, а like появился у получателя в People who likes you.</td>
+              <td>Закрыт старый WARN по guest visit: теперь есть before-state без actor и after-state с actor. Favorite, gift и photo access surfaces найдены как следующие отдельные сценарии.</td>
+              <td><a href="../user-interactions-2026-05-10/#alexey">User interactions report</a></td>
+            </tr>
+            <tr>
               <td>Premium reports</td>
               <td>Новый premium/free отчет содержит rollback, recipient-side evidence и пути воспроизведения по лимитам.</td>
               <td>Его можно использовать как источник постановки задач, а старый отчет держать только как архив.</td>
@@ -336,6 +348,13 @@
               <td>Проверены реальные видимые ссылки, а не guessed routes; старое подозрение на скрытый `/en/profile/view` не отправлено Игорю как ложный баг.</td>
               <td>Есть BA-вопрос по локализации EN-разделов, но это product/content decision, а не подтвержденный дефект Yii2-route.</td>
               <td>Использовать как текущий источник по profile/country/group detail-переходам.</td>
+            </tr>
+            <tr>
+              <td><a href="../user-interactions-2026-05-10/">User interactions QA</a></td>
+              <td><span class="qa-badge qa-badge--pass">АКТУАЛЕН</span></td>
+              <td>Before/after доказательства на чистой паре: guests и incoming likes создаются именно новым действием.</td>
+              <td>Gift и photo access в этом отчете только surface checks; полный paid/request flow остается отдельным тестом.</td>
+              <td>Использовать как текущий источник по visits/likes/favorite surfaces.</td>
             </tr>
             <tr>
               <td><a href="../premium-free-2026-05-05/">Premium / Free Settings QA</a></td>

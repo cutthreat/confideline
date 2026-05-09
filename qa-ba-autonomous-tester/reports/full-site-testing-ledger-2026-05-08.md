@@ -1162,3 +1162,35 @@ Raw evidence:
 BA / рекомендации для Алексея:
 
 - `Важно, но не срочно`: на `/en/countries`, `/en/profile` и части `/en/groups/...` заметен русский контент. Нужно product decision: EN-контур сейчас технически рабочий, но контентно не готов, либо заводить отдельную задачу на разделение контента по языкам.
+
+## 2026-05-10 User interactions QA
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\user-interactions-2026-05-10\index.html`
+
+Raw evidence:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\user-interactions-2026-05-10\raw\user-interactions-scenario.json`
+- Screenshots: `H:\GPT-Codex\Confideline\web\qa-reports\user-interactions-2026-05-10\assets\*.png`
+
+Что исправлено в тестовом контуре:
+
+- `user-interactions-scenario-audit.mjs` переведен на опциональный CDP endpoint `INTERACTIONS_CDP_URL` / `FULL_SITE_CDP_URL`.
+- CDP persistent context больше не закрывается между user-switching шагами; закрывается только страница, а не весь контекст.
+- Статус отчета теперь учитывает `result.errors`, чтобы runtime-error не мог ошибочно стать `PASS`.
+- Перед строгим прогоном найден clean pair: U166 -> U168, где before-state не содержит actor ни в guests, ни во входящих лайках.
+
+Результат:
+
+- Общий статус: `PASS`.
+- PASS: до визита U168 не видит U166 в guests; после открытия профиля U168 пользователем U166 карточка U166 появляется у U168 в guests.
+- PASS: до лайка U168 не видит U166 во входящих лайках; после like U166 -> U168 карточка U166 появляется у U168 в `People who likes you`.
+- PASS_SURFACE: favorite action найден и POST успешен.
+- PASS_SURFACE: gift form/actions найдены на профиле.
+- PASS_SURFACE: photo access/private признаки найдены на профиле.
+- Для Игоря новых подтвержденных дефектов нет.
+
+BA / рекомендации для Алексея:
+
+- `Важно, но не срочно`: для visits/likes/favorites нужен пул чистых user pairs или автоматический поиск пары с before-state `not contains`, иначе тест превращается в WARN и не доказывает новое действие.

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | User interactions QA 2026-05-10</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+  <style>
+    .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:18px 0}
+    .metric{background:#fff;border:1px solid #c8d8ea;border-radius:8px;padding:14px}.metric strong{display:block;font-size:24px;line-height:1.15}.metric span{color:#5e738f;font-size:12px}
+    .badge{display:inline-flex;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800}.badge.pass{background:#dcfce7;color:#166534}.badge.warn{background:#fef3c7;color:#92400e}.badge.info{background:#dbeafe;color:#1e40af}
+    .table-wrap{overflow:auto;background:#fff;border:1px solid #c8d8ea;border-radius:8px}table{width:100%;border-collapse:collapse;min-width:900px}th,td{padding:10px;border-bottom:1px solid #e6ebf2;text-align:left;vertical-align:top}th{background:#f8fafc;color:#22344d}
+    .igor-box{background:#f0fdf4;border:2px solid #22c55e;border-radius:8px;padding:16px}.alexey-box{background:#eff6ff;border:2px solid #3b82f6;border-radius:8px;padding:16px}
+    .evidence-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:18px}.evidence{background:#fff;border:2px solid #22c55e;border-radius:8px;padding:14px}.evidence.warn{border-color:#f59e0b}.evidence-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.evidence h3{margin:0;font-size:18px}
+    .shot{position:relative;margin-top:10px;overflow:hidden;border:1px solid #d7deea;border-radius:6px;background:#f8fafc}.shot img{display:block;width:100%;height:auto}
+    .callout{position:absolute;border:3px solid #16a34a;border-radius:6px}.callout.warn{border-color:#d97706}.arrow{position:absolute;width:3px;background:#16a34a;transform-origin:0 0}.arrow.warn{background:#d97706}.arrow:after{content:"";position:absolute;right:-6px;bottom:-2px;border-left:8px solid #16a34a;border-top:6px solid transparent;border-bottom:6px solid transparent}.arrow.warn:after{border-left-color:#d97706}
+    .a-empty{left:26%;top:18%;width:28%;height:44%}.ar-empty{left:14%;top:9%;height:24%;transform:rotate(-20deg)}
+    .a-card-left{left:26%;top:18%;width:24%;height:55%}.ar-card-left{left:14%;top:9%;height:28%;transform:rotate(-20deg)}
+    .a-card-row{left:27%;top:18%;width:46%;height:55%}.ar-card-row{left:15%;top:9%;height:28%;transform:rotate(-20deg)}
+    .a-profile-actions{left:5%;top:18%;width:88%;height:60%}.ar-profile-actions{left:7%;top:8%;height:24%;transform:rotate(-18deg)}
+  </style>
+</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">Confideline QA/BA · 2026-05-10</p>
+      <h1>User interactions: visits, likes, favorite surfaces</h1>
+      <p>Сценарный проход по пользовательским взаимодействиям на чистой паре U166 -> U168. Проверялись before/after состояния у получателя, чтобы не повторять старый частичный вывод по загрязненной паре.</p>
+      <div class="tp-actions" style="margin-top:16px"><a class="tp-btn" href="../">Назад к каталогу</a><a class="tp-btn tp-btn--primary" href="#alexey">Матрица Алексея</a></div>
+    </header>
+
+    <section class="summary-grid">
+      <div class="metric"><span>Итог</span><strong>PASS</strong><p>Дефектов для Игоря нет.</p></div>
+      <div class="metric"><span>Пара</span><strong>166 -> 168</strong><p>До действия не было guest/like следа.</p></div>
+      <div class="metric"><span>End-to-end</span><strong>2</strong><p>Guest visit и like проверены со стороны получателя.</p></div>
+      <div class="metric"><span>Surface checks</span><strong>3</strong><p>Favorite, gift, photo access surfaces найдены.</p></div>
+    </section>
+
+    <section class="qa-section" id="igor">
+      <h2>Вывод для Игоря</h2>
+      <div class="igor-box">
+        <p><strong>Новых подтвержденных дефектов нет.</strong> На чистой паре U166 -> U168 визит в профиль и лайк создают ожидаемый видимый результат у получателя U168.</p>
+        <p>Предыдущий run `184 -> 166` оставлен только как diagnostic: там before-state уже содержал старые guests/likes, поэтому он не используется как источник правды.</p>
+      </div>
+    </section>
+
+    <section class="qa-section" id="alexey">
+      <h2>Матрица улучшений для Алексея</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Квадрант</th><th>Зона</th><th>Наблюдение</th><th>Почему важно</th><th>Совет</th><th>Как проверить готовность</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="badge pass">Важно, но не срочно</span></td>
+              <td>QA fixtures / user interactions</td>
+              <td>Взаимодействия типа visits/likes нельзя тестировать на любой паре: старые следы превращают PASS в WARN.</td>
+              <td>Без чистой пары тестировщик не сможет доказать, что именно новое действие создало новый результат.</td>
+              <td>Для будущих interaction-тестов держать пул чистых пар или добавлять автоматический поиск пары с before-state `not contains`.</td>
+              <td>Перед действием в отчете есть before-screen без actor, после действия after-screen с actor.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Таблица результата</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Статус</th><th>Проверка</th><th>Before</th><th>Action</th><th>After</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge pass">PASS</span></td><td>Profile visit -> Guests</td><td>U168 не видит U166 в guests.</td><td>U166 открывает профиль U168.</td><td>U168 видит U166 в guests.</td></tr>
+            <tr><td><span class="badge pass">PASS</span></td><td>Like -> People who likes you</td><td>U168 не видит U166 во входящих лайках.</td><td>U166 отправляет like на U168.</td><td>U168 видит U166 во входящих лайках.</td></tr>
+            <tr><td><span class="badge pass">PASS_SURFACE</span></td><td>Favorite</td><td>Открыт профиль U168.</td><td>Найден favorite action, POST успешен.</td><td>Surface работает как локальное действие актера.</td></tr>
+            <tr><td><span class="badge pass">PASS_SURFACE</span></td><td>Gift</td><td>Открыт профиль U168.</td><td>Проверены gift form/actions.</td><td>Подарок не отправлялся в этом проходе, потому что это отдельный paid/balance сценарий.</td></tr>
+            <tr><td><span class="badge pass">PASS_SURFACE</span></td><td>Photo access</td><td>Открыт профиль U168.</td><td>Найдены photo/private/access признаки.</td><td>Полный request-flow остается отдельным сценарием с owner-side проверкой.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Evidence screenshots</h2>
+      <div class="evidence-grid">
+        <article class="evidence">
+          <div class="evidence-head"><span class="badge pass">PASS</span><h3>Guests before</h3></div>
+          <p>Что тестировал: до визита U166 отсутствует в guests у U168. Что получил: на экране есть старый Kaelir, но нет Kaelaris Dorn Schwarz.</p>
+          <div class="shot"><img src="assets/guests-before.png" alt="Guests before"><span class="callout a-empty"></span><span class="arrow ar-empty"></span></div>
+        </article>
+        <article class="evidence">
+          <div class="evidence-head"><span class="badge pass">PASS</span><h3>Guests after</h3></div>
+          <p>Что тестировал: после открытия профиля U168 пользователем U166 новый визит появляется у получателя. Что получил: карточка Kaelaris Dorn Schwarz появилась в guests.</p>
+          <div class="shot"><img src="assets/guests-after.png" alt="Guests after"><span class="callout a-card-left"></span><span class="arrow ar-card-left"></span></div>
+        </article>
+        <article class="evidence">
+          <div class="evidence-head"><span class="badge pass">PASS</span><h3>Like before</h3></div>
+          <p>Что тестировал: до лайка U166 отсутствует во входящих лайках U168. Что получил: исходный список не содержит Kaelaris Dorn Schwarz.</p>
+          <div class="shot"><img src="assets/incoming-likes-before.png" alt="Incoming likes before"><span class="callout a-empty"></span><span class="arrow ar-empty"></span></div>
+        </article>
+        <article class="evidence">
+          <div class="evidence-head"><span class="badge pass">PASS</span><h3>Like after</h3></div>
+          <p>Что тестировал: после like U166 -> U168 получатель видит новый входящий лайк. Что получил: Kaelaris Dorn Schwarz появился в People who likes you.</p>
+          <div class="shot"><img src="assets/incoming-likes-after.png" alt="Incoming likes after"><span class="callout a-card-left"></span><span class="arrow ar-card-left"></span></div>
+        </article>
+        <article class="evidence">
+          <div class="evidence-head"><span class="badge pass">PASS_SURFACE</span><h3>Favorite action</h3></div>
+          <p>Что тестировал: наличие и успешный POST favorite на профиле. Что получил: action найден, запрос выполнен успешно; это локальный surface актера.</p>
+          <div class="shot"><img src="assets/favorite-profile-after.png" alt="Favorite action"><span class="callout a-profile-actions"></span><span class="arrow ar-profile-actions"></span></div>
+        </article>
+        <article class="evidence">
+          <div class="evidence-head"><span class="badge pass">PASS_SURFACE</span><h3>Gift / photo access surfaces</h3></div>
+          <p>Что тестировал: есть ли на профиле surfaces для gift и photo access. Что получил: gift form/actions и photo access/private признаки найдены; полный paid/request flow выносится в отдельный тест.</p>
+          <div class="shot"><img src="assets/surfaces-profile.png" alt="Gift and photo access surfaces"><span class="callout a-profile-actions"></span><span class="arrow ar-profile-actions"></span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Raw evidence</h2>
+      <p><a href="raw/user-interactions-scenario.json">user-interactions-scenario.json</a> · <a href="raw/user-interactions-scenario.md">user-interactions-scenario.md</a></p>
+    </section>
+  </main>
+</body>
+</html>
