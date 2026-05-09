@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | Continued QA 2026-05-10</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+  <style>
+    .qa-proof-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
+    .qa-proof-card{border:1px solid #d7e0ec;border-radius:8px;background:#fff;overflow:hidden}
+    .qa-proof-card img{display:block;width:100%;height:auto}
+    .qa-proof-body{padding:14px}
+    .qa-proof-body p{margin:8px 0 0}
+    .qa-raw-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    .qa-raw-links a{word-break:break-word}
+  </style>
+</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">Confideline QA/BA</p>
+      <h1>Продолжение тестирования: сообщения и посты групп</h1>
+      <p>Дата прохода: 2026-05-10. Проверены два следующих блока из QA project map: `messagesOutPremium` с recipient-side proof и админская модерация group posts.</p>
+      <div class="qa-summary-grid">
+        <div class="qa-metric"><span>Итог</span><strong>FAIL + WARN</strong></div>
+        <div class="qa-metric"><span>Rollback</span><strong>PASS</strong></div>
+        <div class="qa-metric"><span>Изоляция браузера</span><strong>PASS</strong></div>
+      </div>
+    </header>
+
+    <section class="qa-section" id="summary">
+      <h2>Короткий вывод</h2>
+      <table class="qa-table">
+        <thead>
+          <tr>
+            <th>Статус</th>
+            <th>Зона</th>
+            <th>Что доказано</th>
+            <th>Что делать</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="qa-badge qa-badge--fail">FAIL</span></td>
+            <td>Premium / outgoing messages</td>
+            <td>При лимите `messagesOutPremiumMen=1`, `messagesOutPremiumWomen=1`, `messagesOutPeriod=1 hour` две отправки от U182 прошли успешно, получатели U6 и U10 видят точный текст сообщений.</td>
+            <td>Игорю: искать место применения лимита `messagesOutPremium` в message create flow. Нужно блокировать сверхлимитную отправку до создания сообщения и доставки получателю.</td>
+          </tr>
+          <tr>
+            <td><span class="qa-badge qa-badge--warn">WARN</span></td>
+            <td>Admin group posts</td>
+            <td>Hide post работает: пост ID 25 остался в админке, получил статус `Hidden`, причина модерации сохранена. Reopen/show action для hidden post не найден.</td>
+            <td>Игорю/Алексею: подтвердить продуктово, должен ли админ уметь повторно открыть скрытый пост. Если да, добавить действие reopen/show и ретест.</td>
+          </tr>
+          <tr>
+            <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+            <td>QA contour</td>
+            <td>Старые скрипты переведены на изолированный `chromium.launch` по умолчанию; общий CDP теперь только через `CONFIDELINE_QA_USE_CDP=1`.</td>
+            <td>Продолжать новые evidence-прогоны без смешивания с пользовательскими вкладками.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="igor">
+      <h2>Для Игоря</h2>
+      <div class="qa-status-grid">
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--fail">FAIL</span>
+          <h3>PREMIUM-MESSAGES-OUT-LIMIT-BYPASS-DELIVERED-TO-RECIPIENTS</h3>
+          <p><strong>Факт:</strong> после установки premium outgoing message limit в `1` оба POST `/en/messages/create` вернули `success=true`, messageId `238` и `239`, а получатели U6 и U10 видят точный текст.</p>
+          <p><strong>Ожидание:</strong> вторая отправка сверх лимита должна блокироваться до доставки получателю.</p>
+          <p><strong>Где смотреть:</strong> `controllers\MessagesController.php`, `actionCreate`, premium-limit manager/service, настройки `messagesOutPremiumMen`, `messagesOutPremiumWomen`, `messagesOutPeriod`.</p>
+          <p><strong>Как ретестить:</strong> поставить лимит `1`, отправить минимум 2 сообщения от premium U182 разным получателям, проверить sender response и `/en/messages` у каждого получателя.</p>
+        </article>
+
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--warn">WARN</span>
+          <h3>GROUP-POST-REOPEN-ACTION-NOT-FOUND</h3>
+          <p><strong>Факт:</strong> `/en/admin/group/posts?groupId=10` открывается, hide modal найден, form action ведет на `/en/admin/group/delete-post?id=25`, пост становится `Hidden`, причина сохраняется. В hidden list не найдено действие reopen/show/restore.</p>
+          <p><strong>Ожидание по ТЗ:</strong> в админке доступны инструменты для одобрения, скрытия и повторного открытия контента. Если reopen не нужен, это надо явно поменять в ТЗ.</p>
+          <p><strong>Где смотреть:</strong> admin group posts view/actions, admin group controller actions around hide/delete/reopen post.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="qa-section" id="evidence">
+      <h2>Evidence screenshots</h2>
+      <div class="qa-proof-grid">
+        <article class="qa-proof-card">
+          <img src="./assets/premium-limit-set-annotated.png" alt="Premium limit set to 1">
+          <div class="qa-proof-body">
+            <span class="qa-badge qa-badge--fail">FAIL</span>
+            <h3>Лимит выставлен в 1</h3>
+            <p>Что тестировал: применяются ли premium outgoing message limits. Что получил: настройки сохранены как `1 / 1 / Hour`, но следующие отправки не блокируются.</p>
+          </div>
+        </article>
+
+        <article class="qa-proof-card">
+          <img src="./assets/recipient-6-message-visible-annotated.png" alt="Recipient 6 sees message">
+          <div class="qa-proof-body">
+            <span class="qa-badge qa-badge--fail">FAIL</span>
+            <h3>Получатель U6 видит сообщение</h3>
+            <p>Что тестировал: дошло ли первое сообщение до получателя. Что получил: U6 видит точный текст `QA recipient delivery ... attempt 1 target 6`.</p>
+          </div>
+        </article>
+
+        <article class="qa-proof-card">
+          <img src="./assets/recipient-10-message-visible-annotated.png" alt="Recipient 10 sees second message">
+          <div class="qa-proof-body">
+            <span class="qa-badge qa-badge--fail">FAIL</span>
+            <h3>Получатель U10 видит второе сообщение</h3>
+            <p>Что тестировал: блокируется ли сверхлимитная отправка. Что получил: U10 также видит точный текст второго сообщения, значит лимит не остановил доставку.</p>
+          </div>
+        </article>
+
+        <article class="qa-proof-card">
+          <img src="./assets/premium-rollback-annotated.png" alt="Premium rollback restored">
+          <div class="qa-proof-body">
+            <span class="qa-badge qa-badge--pass">PASS</span>
+            <h3>Rollback premium settings</h3>
+            <p>Что тестировал: вернулись ли настройки после проверки. Что получил: `messagesOutPremiumMen=99`, `messagesOutPremiumWomen=99`, `messagesOutPeriod=24`, diff пустой.</p>
+          </div>
+        </article>
+
+        <article class="qa-proof-card">
+          <img src="./assets/group-post-hidden-annotated.png" alt="Group post hidden">
+          <div class="qa-proof-body">
+            <span class="qa-badge qa-badge--pass">PASS</span>
+            <h3>Group post hide</h3>
+            <p>Что тестировал: скрывается ли пост без физического удаления. Что получил: пост ID 25 остался в списке, статус `Hidden`, причина `QA hide reason 20260509-234841` сохранена.</p>
+          </div>
+        </article>
+
+        <article class="qa-proof-card">
+          <img src="./assets/group-post-hidden-filter-annotated.png" alt="Group post hidden filter">
+          <div class="qa-proof-body">
+            <span class="qa-badge qa-badge--warn">WARN</span>
+            <h3>Hidden filter без reopen</h3>
+            <p>Что тестировал: можно ли найти и повторно открыть hidden post. Что получил: hidden post отображается в admin list, но action reopen/show/restore не найден.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="qa-section" id="alexey">
+      <h2>Матрица Алексея</h2>
+      <table class="qa-table">
+        <thead>
+          <tr>
+            <th>Квадрант</th>
+            <th>Наблюдение</th>
+            <th>Совет</th>
+            <th>Как проверить готовность</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Срочно и важно</td>
+            <td>Платный/premium лимит outgoing messages не влияет на реальную доставку сообщений.</td>
+            <td>Считать это дефектом приемки Premium/free logic, а не UX-улучшением.</td>
+            <td>При лимите 1 вторая отправка получает явный блок, у получателя нет сообщения.</td>
+          </tr>
+          <tr>
+            <td>Важно, но не срочно</td>
+            <td>Для group posts есть hide, но нет доказанного reopen.</td>
+            <td>Принять product decision: нужен ли администратору возврат скрытого поста. По исходному ТЗ нужен.</td>
+            <td>В hidden post row есть действие reopen/show, после него viewer снова видит пост.</td>
+          </tr>
+          <tr>
+            <td>Срочно, но не важно</td>
+            <td>Старый широкий прогон завис на проблемном target и не успел записать JSON.</td>
+            <td>Для новых проходов держать короткие targets и аварийный rollback helper.</td>
+            <td>При таймауте есть отдельный restore script и raw restore JSON.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="raw">
+      <h2>Raw evidence</h2>
+      <div class="qa-raw-links">
+        <a class="tp-btn" href="./raw/premium-messages-recipient-delivery-audit.json">premium JSON</a>
+        <a class="tp-btn" href="./raw/premium-messages-recipient-delivery-audit.md">premium MD</a>
+        <a class="tp-btn" href="./raw/group-posts-moderation-audit.json">group posts JSON</a>
+        <a class="tp-btn" href="./raw/group-posts-moderation-audit.md">group posts MD</a>
+        <a class="tp-btn" href="./raw/restore-premium-message-limits.json">rollback JSON</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

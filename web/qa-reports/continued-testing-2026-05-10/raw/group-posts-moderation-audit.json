@@ -1,0 +1,211 @@
+{
+  "startedAt": "2026-05-09T23:48:41.306Z",
+  "finishedAt": "2026-05-09T23:48:55.146Z",
+  "status": "PASS_WITH_GAPS",
+  "groupId": 10,
+  "outDir": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\group-posts-moderation-audit-20260509-234841",
+  "checks": [
+    {
+      "name": "group posts page opens with groupId filter",
+      "status": "PASS",
+      "evidence": {
+        "url": "https://confideline.com/en/admin/group/posts?groupId=10",
+        "rowCount": 15,
+        "text": "YouDate Toggle navigation admin Dashboard Content Partners Users Finance Support Groups Messages Photos 40 Content Reports 2 Verifications Gifts Bans System Common_settings Logs Profile fields Мониторинг очереди Кеш Redis Мониторинг WebSocket Plugins Для розробника Manage group posts Administration Groups Posts Groups Posts Media approvals Reset filter Showing 1-15 of 31 items. ID SENDER POST STATUS CREATED AT Active Pending moderation Hidden 25 Orion Esposito OrionEsposito Group: QA Fullsite Group 20260509-171552 (qa-fullsite-group-20260509-171552) Status: Active QA group lifecycle post 20260509-171552 Active May 09, 2026 17:16 24 Zephyron Kael Hoffmann ZephyronKaelHoffmann Group: QA shadow-ext 20260509-110749 group 1778325155846 (qa-shadow-ext-20260509-110749-group-1778325155846) Status: Pending moderation QA shadow-ext 20260509-110749 group post 1778325155846 Pending moderation May 09, 2026 11:12 23 Kaelir Tamm KaelirTamm Group: QA shadow-ext 20260509-110749 group 1778324978285 (qa-shadow-ext-20260509-110749-group-1778324978285) Status: Pending moderation QA shadow-ext 20260509-110749 group post 1778324978285 Pending moderation May 09, 2026 11:09 22 Zephyron Kael Hoffmann Zephyr"
+      }
+    },
+    {
+      "name": "active group post selected",
+      "status": "PASS",
+      "evidence": {
+        "id": 25,
+        "status": "Active",
+        "text": "25 Orion Esposito OrionEsposito Group: QA Fullsite Group 20260509-171552 (qa-fullsite-group-20260509-171552) Status: Active QA group lifecycle post 20260509-171552 Active May 09, 2026 17:16"
+      }
+    },
+    {
+      "name": "hide post action available",
+      "status": "PASS",
+      "evidence": {
+        "hideAction": {
+          "tag": "A",
+          "text": "",
+          "href": "javascript:void(0);",
+          "title": "Hide post",
+          "className": "btn btn-sm btn-danger",
+          "data": {
+            "data-pjax": "0"
+          },
+          "onclick": "showHtmlInModal(\"modal-for-action\", \"\\/en\\/admin\\/group\\/hide-post-modal?id=25\", \"Hide post\", \"get\")"
+        }
+      }
+    },
+    {
+      "name": "hide post modal form callable",
+      "status": "NOT_PROVEN",
+      "evidence": {
+        "hideSubmit": {
+          "formInfo": {
+            "found": true,
+            "action": "https://confideline.com/en/admin/group/delete-post?id=25",
+            "method": "post",
+            "fields": [
+              {
+                "name": "_csrf",
+                "id": "",
+                "tag": "INPUT",
+                "type": "hidden",
+                "value": "j9eHsumkgbEjD-MR8I6vq0X_q0mxWTSdQ_BaD3_Pa9q8-teD2fHy4ElApiWXufXyaJHveusLTvAklzNZJ7gJow=="
+              },
+              {
+                "name": "reason",
+                "id": "group-post-moderation-reason",
+                "tag": "TEXTAREA",
+                "type": "",
+                "value": ""
+              }
+            ],
+            "text": "Moderation reason The reason is required and will be saved to the moderation log Cancel Hide post"
+          },
+          "payload": {
+            "reason": "QA hide reason 20260509-234841"
+          },
+          "submit": {
+            "status": 0,
+            "location": "",
+            "text": ""
+          }
+        }
+      }
+    },
+    {
+      "name": "post still exists after hide attempt",
+      "status": "PASS",
+      "evidence": {
+        "postId": 25,
+        "status": "Hidden"
+      }
+    },
+    {
+      "name": "post status becomes Hidden",
+      "status": "PASS",
+      "evidence": {
+        "postId": 25,
+        "text": "25 Orion Esposito OrionEsposito Group: QA Fullsite Group 20260509-171552 (qa-fullsite-group-20260509-171552) Status: Hidden QA group lifecycle post 20260509-171552 Moderation reason: QA hide reason 20260509-234841 Hidden May 09, 2026 17:16"
+      }
+    },
+    {
+      "name": "hidden filter can show moderated post",
+      "status": "PASS",
+      "evidence": {
+        "postId": 25,
+        "hiddenRows": 15,
+        "hiddenPostStatus": "Hidden",
+        "text": "YouDate Toggle navigation admin Dashboard Content Partners Users Finance Support Groups Messages Photos 40 Content Reports 2 Verifications Gifts Bans System Common_settings Logs Profile fields Мониторинг очереди Кеш Redis Мониторинг WebSocket Plugins Для розробника Manage group posts Administration Groups Posts Groups Posts Media approvals Reset filter Showing 1-15 of 31 items. ID SENDER POST STATUS CREATED AT Active Pending moderation Hidden 25 Orion Esposito OrionEsposito Group: QA Fullsite Group 20260509-171552 (qa-fullsite-group-20260509-171552) Status: Hidden QA group lifecycle post 20260509-171552 Moderation reason: QA hide reason 20260509-234841 Hidden May 09, 2026 17:16 24 Zephyron Kael Hoffmann ZephyronKaelHoffmann Group: QA shadow-ext 20260509-110749 group 1778325155846 (qa-shadow-ext-20260509-110749-group-1778325155846) Status: Pending moderation QA shadow-ext 20260509-110749 group post 1778325155846 Pending moderation May 09, 2026 11:12 23 Kaelir Tamm KaelirTamm Group: QA shadow-ext 20260509-110749 group 1778324978285 (qa-shadow-ext-20260509-110749-group-1778324978285) Status: Pending moderation QA shadow-ext 20260509-110749 group post 1778324978285 Pending moderation M"
+      }
+    },
+    {
+      "name": "reopen/show action available for hidden post",
+      "status": "NOT_PROVEN",
+      "evidence": {}
+    }
+  ],
+  "findings": [],
+  "post": {
+    "id": 25,
+    "initialStatus": "Active",
+    "text": "25 Orion Esposito OrionEsposito Group: QA Fullsite Group 20260509-171552 (qa-fullsite-group-20260509-171552) Status: Active QA group lifecycle post 20260509-171552 Active May 09, 2026 17:16",
+    "actions": [
+      {
+        "tag": "A",
+        "text": "Orion Esposito OrionEsposito",
+        "href": "https://confideline.com/en/admin/user/info?id=184",
+        "title": "",
+        "className": "",
+        "data": {
+          "data-pjax": "0"
+        },
+        "onclick": ""
+      },
+      {
+        "tag": "A",
+        "text": "",
+        "href": "https://confideline.com/en/admin/user/block?id=184",
+        "title": "Block sender",
+        "className": "btn btn-sm btn-warning",
+        "data": {
+          "data-pjax": "0",
+          "data-method": "post",
+          "data-confirm": "Are you sure want to block this user?"
+        },
+        "onclick": ""
+      },
+      {
+        "tag": "A",
+        "text": "",
+        "href": "https://confideline.com/en/admin/group/toggle-post-user-ban?id=25",
+        "title": "Ban in group",
+        "className": "btn btn-sm btn-default",
+        "data": {
+          "data-pjax": "0",
+          "data-method": "post",
+          "data-confirm": "Are you sure want to ban this user in the group?"
+        },
+        "onclick": ""
+      },
+      {
+        "tag": "A",
+        "text": "",
+        "href": "javascript:void(0);",
+        "title": "Hide post",
+        "className": "btn btn-sm btn-danger",
+        "data": {
+          "data-pjax": "0"
+        },
+        "onclick": "showHtmlInModal(\"modal-for-action\", \"\\/en\\/admin\\/group\\/hide-post-modal?id=25\", \"Hide post\", \"get\")"
+      }
+    ]
+  },
+  "screenshots": {
+    "group-posts-initial": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\group-posts-moderation-audit-20260509-234841\\group-posts-initial.png",
+    "group-posts-after-hide-attempt": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\group-posts-moderation-audit-20260509-234841\\group-posts-after-hide-attempt.png",
+    "group-posts-hidden-filter": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\group-posts-moderation-audit-20260509-234841\\group-posts-hidden-filter.png"
+  },
+  "errors": [],
+  "hideEndpointAttempts": [
+    {
+      "candidate": "https://confideline.com/en/admin/group/hide-post-modal?id=25",
+      "response": {
+        "status": 0,
+        "location": "",
+        "text": ""
+      },
+      "formInfo": {
+        "found": true,
+        "action": "https://confideline.com/en/admin/group/delete-post?id=25",
+        "method": "post",
+        "fields": [
+          {
+            "name": "_csrf",
+            "id": "",
+            "tag": "INPUT",
+            "type": "hidden",
+            "value": "j9eHsumkgbEjD-MR8I6vq0X_q0mxWTSdQ_BaD3_Pa9q8-teD2fHy4ElApiWXufXyaJHveusLTvAklzNZJ7gJow=="
+          },
+          {
+            "name": "reason",
+            "id": "group-post-moderation-reason",
+            "tag": "TEXTAREA",
+            "type": "",
+            "value": ""
+          }
+        ],
+        "text": "Moderation reason The reason is required and will be saved to the moderation log Cancel Hide post"
+      },
+      "payload": {
+        "reason": "QA hide reason 20260509-234841"
+      }
+    }
+  ],
+  "reopenAction": null
+}

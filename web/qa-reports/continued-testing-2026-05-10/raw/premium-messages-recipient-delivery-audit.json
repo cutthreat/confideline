@@ -1,0 +1,184 @@
+{
+  "startedAt": "2026-05-09T23:47:10.881Z",
+  "finishedAt": "2026-05-09T23:48:29.192Z",
+  "status": "FAIL_WITH_ROLLBACK",
+  "baseURL": "https://confideline.com",
+  "senderId": 182,
+  "targets": [
+    6,
+    10
+  ],
+  "outDir": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\premium-messages-recipient-delivery-audit-20260509-234710",
+  "baseline": {
+    "messagesOutPremiumMen": "99",
+    "messagesOutPremiumWomen": "99",
+    "messagesOutPeriod": "24"
+  },
+  "checks": [
+    {
+      "name": "messagesOutPremium limits set to 1",
+      "status": "PASS",
+      "evidence": {
+        "readback": {
+          "messagesOutPremiumMen": "1",
+          "messagesOutPremiumWomen": "1",
+          "messagesOutPeriod": "1"
+        },
+        "badReadback": []
+      }
+    },
+    {
+      "name": "sender accepted messages beyond premium limit",
+      "status": "FAIL",
+      "evidence": {
+        "sentSuccessCount": 2,
+        "senderLimitHitCount": 0,
+        "attempts": [
+          {
+            "attempt": 1,
+            "targetId": 6,
+            "sendStatus": 200,
+            "sendJson": {
+              "success": true,
+              "message": "Message has been sent",
+              "messageId": "238",
+              "pendingMessageId": 1778370461983
+            }
+          },
+          {
+            "attempt": 2,
+            "targetId": 10,
+            "sendStatus": 200,
+            "sendJson": {
+              "success": true,
+              "message": "Message has been sent",
+              "messageId": "239",
+              "pendingMessageId": 1778370483091
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "recipient side received exact message text",
+      "status": "FAIL",
+      "evidence": {
+        "sentSuccessCount": 2,
+        "recipientVisibleCount": 2,
+        "recipientEvidence": [
+          {
+            "attempt": 1,
+            "targetId": 6,
+            "sendSuccess": true,
+            "exactTextVisible": true
+          },
+          {
+            "attempt": 2,
+            "targetId": 10,
+            "sendSuccess": true,
+            "exactTextVisible": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "rollback messagesOutPremium settings",
+      "status": "PASS",
+      "evidence": {
+        "attempted": true,
+        "ok": true,
+        "diff": []
+      }
+    }
+  ],
+  "findings": [
+    {
+      "id": "PREMIUM-MESSAGES-OUT-LIMIT-BYPASS-DELIVERED-TO-RECIPIENTS",
+      "severity": "major",
+      "title": "messagesOutPremium limit did not block extra sends; recipient delivery is proven for visible recipient-side messages",
+      "evidence": {
+        "limit": 1,
+        "sentSuccessCount": 2,
+        "recipientVisibleCount": 2,
+        "attempts": [
+          {
+            "attempt": 1,
+            "targetId": 6,
+            "messageId": "238",
+            "exactTextVisible": true
+          },
+          {
+            "attempt": 2,
+            "targetId": 10,
+            "messageId": "239",
+            "exactTextVisible": true
+          }
+        ]
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "targetId": 6,
+      "text": "QA recipient delivery 20260509-234710 attempt 1 target 6",
+      "send": {
+        "status": 200,
+        "ok": true,
+        "rawText": "{\"success\":true,\"message\":\"Message has been sent\",\"messageId\":\"238\",\"pendingMessageId\":1778370461983}",
+        "json": {
+          "success": true,
+          "message": "Message has been sent",
+          "messageId": "238",
+          "pendingMessageId": 1778370461983
+        }
+      },
+      "recipient": {
+        "targetId": 6,
+        "url": "/en/messages",
+        "exactTextVisible": true,
+        "bodyText": "Serenity hassir taken posseson of mying entire 50 Алла alla1 Dashboard Browse Groups Connections Messages 4 Countries Omkar Tiwari QA recipient delivery 20260509-234710 attempt 1 target 6 1 Nair Pillai QA premium-limit step 20260505-090010 source 181 attempt 2 3 Orvian Mozart QA assigned-dialog 2026-05-02T22:01:14.824Z #07: admin-panel reply from alla1 to OrvianMozart. Orion Esposito Можем сегоня в 12.00 по NY Omkar Tiwari OmkarTiwari 02.05.2026 QA assigned-dialog 2026-05-02T22:03:43.091Z #13: inbound user message from OmkarTiwari to alla1. 22:04 QA assigned-dialog 2026-05-02T22:03:43.091Z #13: admin-panel reply from alla1 to OmkarTiwari. 22:04 05.05.2026 QA premium-user messagesOut 20260505-195555 attempt 2 19:57 QA premium-user messagesOut 20260505-200535 attempt 2 20:06 06.05.2026 QA premium-user messagesOut 20260506-202918 attempt 2 20:31 QA recipient delivery 20260506-205001 attempt 2 target 6 20:51 09.05.2026 QA recipient delivery 20260509-081438 attempt 2 target 6 8:15 QA recipient delivery 20260509-234301 attempt 2 target 6 23:45 QA recipient delivery 20260509-234710 attempt 1 target 6 23:47 About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+      }
+    },
+    {
+      "attempt": 2,
+      "targetId": 10,
+      "text": "QA recipient delivery 20260509-234710 attempt 2 target 10",
+      "send": {
+        "status": 200,
+        "ok": true,
+        "rawText": "{\"success\":true,\"message\":\"Message has been sent\",\"messageId\":\"239\",\"pendingMessageId\":1778370483091}",
+        "json": {
+          "success": true,
+          "message": "Message has been sent",
+          "messageId": "239",
+          "pendingMessageId": 1778370483091
+        }
+      },
+      "recipient": {
+        "targetId": 10,
+        "url": "/en/messages",
+        "exactTextVisible": true,
+        "bodyText": "Serenity hassir taken posseson of mying entire 0 Ксюша Ksy23 Dashboard Browse Groups Connections Messages 5 Countries Omkar Tiwari QA recipient delivery 20260509-234710 attempt 2 target 10 1 Nair Pillai QA premium-limit step 20260505-090010 source 181 attempt 3 2 Orvian Mozart QA assigned-dialog 2026-05-02T22:01:40.438Z #08: admin-panel reply from Ksy23 to OrvianMozart. 1 Orion Esposito QA assigned-dialog 2026-05-02T21:59:06.527Z #02: admin-panel reply from Ksy23 to OrionEsposito. 1 Omkar Tiwari OmkarTiwari 02.05.2026 QA assigned-dialog 2026-05-02T22:04:06.173Z #14: inbound user message from OmkarTiwari to Ksy23. 22:04 QA assigned-dialog 2026-05-02T22:04:06.173Z #14: admin-panel reply from Ksy23 to OmkarTiwari. 22:04 05.05.2026 QA premium-user messagesOut 20260505-195555 attempt 3 19:57 QA premium-user messagesOut 20260505-200535 attempt 3 20:06 06.05.2026 QA premium-user messagesOut 20260506-202918 attempt 3 20:31 QA recipient delivery 20260506-205001 attempt 3 target 10 20:51 09.05.2026 QA recipient delivery 20260509-081438 attempt 3 target 10 8:16 QA recipient delivery 20260509-234301 attempt 3 target 10 23:46 QA recipient delivery 20260509-234710 attempt 2 target 10 23:48 About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US) You don't have a photo Please upload your photo Upload photo Later"
+      }
+    }
+  ],
+  "screenshots": {
+    "adminBaseline": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\premium-messages-recipient-delivery-audit-20260509-234710\\admin-recipient-delivery-baseline.png",
+    "adminMutated": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\premium-messages-recipient-delivery-audit-20260509-234710\\admin-recipient-delivery-mutated.png",
+    "sender-182-logged-in-messages": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\premium-messages-recipient-delivery-audit-20260509-234710\\sender-182-logged-in-messages.png",
+    "senderAttempt1": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\premium-messages-recipient-delivery-audit-20260509-234710\\sender-attempt-1-to-6.png",
+    "recipient-attempt-1-6-logged-in-messages": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\premium-messages-recipient-delivery-audit-20260509-234710\\recipient-attempt-1-6-logged-in-messages.png",
+    "recipientAttempt1": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\premium-messages-recipient-delivery-audit-20260509-234710\\recipient-attempt-1-user-6.png",
+    "senderAttempt2": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\premium-messages-recipient-delivery-audit-20260509-234710\\sender-attempt-2-to-10.png",
+    "recipient-attempt-2-10-logged-in-messages": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\premium-messages-recipient-delivery-audit-20260509-234710\\recipient-attempt-2-10-logged-in-messages.png",
+    "recipientAttempt2": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\premium-messages-recipient-delivery-audit-20260509-234710\\recipient-attempt-2-user-10.png",
+    "adminRollback": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\premium-messages-recipient-delivery-audit-20260509-234710\\admin-recipient-delivery-rollback.png"
+  },
+  "rollback": {
+    "attempted": true,
+    "ok": true,
+    "diff": []
+  },
+  "errors": []
+}
