@@ -1100,3 +1100,36 @@ Raw evidence:
 Действие для Игоря:
 
 - Чинить в Yii2 PHP views/CSS публичных страниц: alert close button accessible name, signup sex radio labels, dob select names, link contrast, non-color-only link affordance, meta viewport zoom.
+
+## 2026-05-09 Discovery surfaces QA
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\discovery-surfaces-2026-05-09\index.html`
+
+Raw evidence:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\discovery-surfaces-2026-05-09\raw\discovery-surfaces.json`
+- Screenshots: `H:\GPT-Codex\Confideline\web\qa-reports\discovery-surfaces-2026-05-09\assets\*.png`
+
+Что исправлено в тестовом контуре:
+
+- Playwright `chromium.launch()` в текущей среде зависал на headless pipe; для этого прохода поднят отдельный Chrome QA-профиль на CDP `9444`, не общий `9224`.
+- Убраны guessed routes `/en/connections` и `/en/connections/likes?type=to`; сценарий использует реальные навигационные surfaces: `/en/dashboard`, `/en`, `/en/browse`, `/en/connections/likes`, `/en/connections/encounters`, `/en/countries`, `/en/groups`.
+- Исправлен ложный classifier: текст `Users not found` на нормальном empty state больше не считается `404`.
+
+Результат:
+
+- Общий статус: `PASS`.
+- PASS: `/en/dashboard` открывается авторизованным пользователем, показывает dashboard/discovery blocks.
+- PASS: `/en` открывается авторизованным пользователем и показывает dashboard content.
+- PASS: `/en/browse` открывается, title `Find People`, есть form/cards.
+- PASS: `/en/connections/likes` открывается, title `Likes`, есть cards/empty states.
+- PASS: `/en/connections/encounters` открывается, title `Encounters`, есть encounter content.
+- PASS: `/en/countries` открывается, h1 `Countries`, есть country cards.
+- PASS: `/en/groups` открывается, h1 `Groups`, есть group cards.
+- Для Игоря новых подтвержденных дефектов нет.
+
+BA / рекомендации для Алексея:
+
+- `Важно, но не срочно`: discovery-поверхности нужно продолжать оценивать как продуктовый сценарий, а не route inventory. HTTP 200 не доказывает пользовательскую ценность; в следующих слоях фиксировать, что пользователь увидел и какое следующее действие доступно.
