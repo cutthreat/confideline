@@ -151,6 +151,13 @@
               <td><a href="../bans-full-2026-05-07/#igor">Bans report</a></td>
             </tr>
             <tr>
+              <td><span class="qa-badge qa-badge--fail">P2</span></td>
+              <td>Public/Auth accessibility</td>
+              <td>Публичные страницы `/en`, `/en/login`, `/en/signup` имеют accessibility-дефекты: unnamed alert close button, слабый контраст, radio/select label/name issues, viewport zoom restriction.</td>
+              <td>Запустить axe WCAG 2A/2AA на `/en`, `/en/login`, `/en/signup`; затем проверить в PHP views/CSS: alert close button, signup sex radio labels, dob select names, login/signup link contrast, meta viewport.</td>
+              <td><a href="../public-auth-accessibility-2026-05-09/#igor">Public/Auth report</a></td>
+            </tr>
+            <tr>
               <td><span class="qa-badge qa-badge--warn">P2</span></td>
               <td>UX / data gaps</td>
               <td>Есть незакрытые/fixture-dependent проверки: edit sent message, mutual timer, private photo, group post reopen, group media reject rollback, gifts/photo access under shadow-ban.</td>
@@ -210,6 +217,12 @@
           <p>Markup debt: в admin surface найден href/текст `{url}`.</p>
           <a href="../full-site-smoke-2026-05-09/"><img src="../full-site-smoke-2026-05-09/assets/admin-template-url-click-result.png" alt="Admin template URL evidence"></a>
         </article>
+        <article class="qa-evidence-card qa-status-card">
+          <span class="qa-badge qa-badge--fail">FAIL</span>
+          <h3>Public/Auth accessibility</h3>
+          <p>Signup работает, но публичные страницы имеют accessibility FAIL по labels, contrast, button-name и viewport.</p>
+          <a href="../public-auth-accessibility-2026-05-09/"><img src="../public-auth-accessibility-2026-05-09/assets/en-signup-desktop.png" alt="Public auth accessibility evidence"></a>
+        </article>
       </div>
     </section>
 
@@ -248,6 +261,12 @@
               <td>Во время активного shadow-ban исходящее U1->U2 скрыто от U2, входящее U3->U1 скрыто от U1, лайк U1->U2 не появляется у U2.</td>
               <td>Активная фаза shadow-ban в проверенных сценариях работает; проблема найдена именно после снятия бана.</td>
               <td><a href="../bans-full-2026-05-07/#igor">Bans report</a></td>
+            </tr>
+            <tr>
+              <td>Signup happy path</td>
+              <td>Новый пользователь создан через `/en/signup`; Country/City заполнены реальным selectize state, после submit показано “Your account has been created”.</td>
+              <td>Базовый публичный signup flow не блокирует нового пользователя; найденные проблемы относятся к accessibility/markup, а не к созданию аккаунта.</td>
+              <td><a href="../public-auth-accessibility-2026-05-09/#igor">Public/Auth report</a></td>
             </tr>
             <tr>
               <td>Premium reports</td>
