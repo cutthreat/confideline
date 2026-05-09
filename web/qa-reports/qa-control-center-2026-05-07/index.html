@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline QA | Control Center</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+  <style>
+    .qa-toolbar{position:sticky;top:0;z-index:20;background:#fff;border:1px solid #d8e0ec;border-radius:8px;padding:12px;margin:18px 0;box-shadow:0 8px 20px rgba(15,23,42,.08)}
+    .qa-toolbar-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    .qa-toolbar-title{font-weight:800;color:#15233b;margin-right:6px}
+    .qa-filter-pill{display:inline-flex;gap:6px;align-items:center;border:1px solid #cfd8e6;border-radius:999px;padding:7px 10px;background:#f8fafc;font-weight:700;cursor:pointer}
+    .qa-filter-pill input{margin:0}
+    .qa-done-control{min-width:260px}
+    .qa-done-control label{display:flex;gap:8px;align-items:center;font-weight:700;margin-bottom:6px}
+    .qa-done-control input[type="text"]{width:100%;box-sizing:border-box;border:1px solid #cfd8e6;border-radius:6px;padding:8px;font:14px/1.3 Arial,sans-serif}
+    .qa-filter-hidden{display:none!important}
+    .qa-filter-muted{opacity:.55}
+  </style>
+</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">QA control center · live Confideline · 2026-05-07</p>
+      <h1>Единый контроль тестирований</h1>
+      <p>Рабочая панель для Алексея, тестировщика и Игоря: какие отчеты актуальны, какие дефекты чинить первыми, как воспроизвести баг и какие зоны требуют ретеста.</p>
+      <div class="tp-actions" style="margin-top:16px">
+        <a class="tp-btn tp-btn--primary" href="#igor-board">Доска Игоря</a>
+        <a class="tp-btn" href="#alexey-pass">PASS для Алексея</a>
+        <a class="tp-btn" href="#anton-audit">UX/UI аудит</a>
+        <a class="tp-btn" href="../">Все QA reports</a>
+      </div>
+    </header>
+
+    <section class="qa-summary">
+      <div class="qa-metric"><span>Решение</span><strong>FAIL</strong></div>
+      <div class="qa-metric"><span>Актуальных отчетов</span><strong>3</strong></div>
+      <div class="qa-metric"><span>Архив</span><strong>1</strong></div>
+      <div class="qa-metric"><span>Публичная проверка</span><strong>OK</strong></div>
+    </section>
+
+    <section class="qa-toolbar" aria-label="Фильтры QA панели">
+      <div class="qa-toolbar-row">
+        <span class="qa-toolbar-title">Фильтр:</span>
+        <label class="qa-filter-pill"><input type="checkbox" data-qa-status-filter="fail" checked> FAIL</label>
+        <label class="qa-filter-pill"><input type="checkbox" data-qa-status-filter="warn" checked> WARN</label>
+        <label class="qa-filter-pill"><input type="checkbox" data-qa-status-filter="pass" checked> PASS</label>
+        <label class="qa-filter-pill"><input type="checkbox" data-qa-status-filter="info" checked> INFO/архив</label>
+        <label class="qa-filter-pill"><input type="checkbox" id="qa-hide-done"> скрыть выполненные</label>
+        <button class="tp-btn" type="button" id="qa-only-fail">Только FAIL</button>
+        <button class="tp-btn" type="button" id="qa-show-all">Показать все</button>
+      </div>
+      <p class="qa-help" style="margin:8px 0 0">Поле “Выполнено” добавлено в доску Игоря и сохраняется локально в браузере. Для общего фиксирования статуса нужен коммит/обновление отчета.</p>
+    </section>
+
+    <section class="qa-section">
+      <div class="qa-role-grid">
+        <article class="qa-lane qa-lane--danger">
+          <span class="qa-badge qa-badge--fail">Для Игоря</span>
+          <h3>Только то, что нужно чинить</h3>
+          <p>В эту зону попадают дефекты с путем воспроизведения, ожидаемым поведением и ссылкой на evidence. PASS-кейсы сюда не смешиваются.</p>
+          <ul class="qa-list qa-list--danger">
+            <li>Сначала P0/P1 дефекты, затем fixture gaps.</li>
+            <li>Каждая строка отвечает на вопрос: где искать баг.</li>
+            <li>Если доказательства нет, это не баг, а ретест.</li>
+          </ul>
+        </article>
+        <article class="qa-lane qa-lane--success">
+          <span class="qa-badge qa-badge--pass">Для Алексея</span>
+          <h3>Что подтверждено и можно принимать</h3>
+          <p>Здесь собраны успешные проверки: они показывают, что часть ТЗ работает и не должна возвращаться Игорю как задача.</p>
+          <ul class="qa-list qa-list--success">
+            <li>PASS нужен для управленческого контроля качества.</li>
+            <li>Успешный кейс остается в evidence, но не шумит в bug board.</li>
+            <li>Если PASS зависит от условий, это указано в комментарии.</li>
+          </ul>
+        </article>
+        <article class="qa-lane qa-lane--work">
+          <span class="qa-badge qa-badge--warn">Для тестировщика</span>
+          <h3>Что перепроверять после фиксов</h3>
+          <p>Ретесты отделены от багов: это сценарии, которые нужны после исправлений или после подготовки fixtures.</p>
+          <ul class="qa-list qa-list--work">
+            <li>Не смешивать paid actions, группы и сообщения в один прогон.</li>
+            <li>Перед выводом всегда проверять сторону получателя.</li>
+            <li>Скрин должен показывать тот surface, по которому сделан вывод.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <div class="qa-note">
+        <p><strong>Итог аудита:</strong> интерфейс теперь должен читаться по ролям. Игорь получает только дефекты и способы их найти; Алексей получает подтвержденные PASS и управленческий статус; тестировщик получает очередь ретеста. Старый <code>Premium / Free Settings QA</code> от 2026-05-05 оставлен как архив и не должен использоваться как основной источник правды.</p>
+        <p><strong>Правило порядка:</strong> актуальный дефект считается готовым для Игоря только если есть факт, ожидание, путь воспроизведения, зона кода/логики и evidence screenshot или честная пометка why not proven.</p>
+      </div>
+    </section>
+
+    <section id="igor-board" class="qa-section">
+      <h2>Доска Игоря</h2>
+      <div class="qa-table-wrap">
+        <table class="qa-table">
+          <thead>
+            <tr>
+              <th>Приоритет</th>
+              <th>Зона</th>
+              <th>Что чинить / проверить</th>
+              <th>Как найти баг</th>
+              <th>Источник</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">P0</span></td>
+              <td>Premium messages out</td>
+              <td>Лимит исходящих premium/free сообщений не блокирует лишние отправки; минимум 2 лишних сообщения реально дошли получателям.</td>
+              <td>Поставить <code>messagesOutPremium=1</code>, зайти user <code>182</code>, отправить 2-3 QA-сообщения, затем зайти получателем <code>6</code>/<code>10</code> и найти точный текст в <code>/en/messages</code>.</td>
+              <td><a href="../premium-controls-full-2026-05-06/#igor">Premium report</a></td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">P1</span></td>
+              <td>Photo gallery postmoderation</td>
+              <td>Gallery photo в режиме postmoderation попадает в <code>Pending</code>, то есть ведет себя как premoderation.</td>
+              <td>Поставить gallery postmoderation, загрузить gallery photo, проверить новый ID в admin media/photo queue.</td>
+              <td><a href="../moderation-full-2026-05-07/#igor">Moderation report</a></td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">P1</span></td>
+              <td>Premium messages in</td>
+              <td>При лимите входящих free receiver получает неопределенное состояние <code>Loading messages...</code> вместо понятного limit state.</td>
+              <td>Поставить <code>messagesInFree=1</code>, отправить два входящих на одного free receiver, открыть receiver <code>/en/messages</code>.</td>
+              <td><a href="../premium-controls-full-2026-05-06/#igor">Premium report</a></td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">P1</span></td>
+              <td>Premium profile view</td>
+              <td>Premium profile-view limit не применяется: второй профиль открывается без блока.</td>
+              <td>Поставить <code>profileViewPremium=1</code>, зайти premium user <code>182</code>, открыть два разных профиля подряд.</td>
+              <td><a href="../premium-controls-full-2026-05-06/#igor">Premium report</a></td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">P1</span></td>
+              <td>Bans behavior</td>
+              <td>Свежий current-pass подтвердил баг: сообщение, отправленное U1 во время активного shadow-ban, скрыто во время бана, но появляется у U2 после снятия shadow-ban.</td>
+              <td>Создать shadow-ban U1 <code>165</code> -> доказать <code>active_ban_id</code> -> U1 отправляет U2 <code>167</code> точный QA-текст -> U2 не видит -> снять ban -> U2 снова открывает <code>/en/messages</code> и видит этот during-ban текст.</td>
+              <td><a href="../bans-full-2026-05-07/#igor">Bans report</a></td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--warn">P2</span></td>
+              <td>UX / data gaps</td>
+              <td>Есть незакрытые/fixture-dependent проверки: edit sent message, mutual timer, private photo, group post reopen, group media reject rollback, gifts/photo access under shadow-ban.</td>
+              <td>Подготовить fixtures и запускать отдельными узкими тестами, не смешивать с общими настройками.</td>
+              <td><a href="#retest-queue">Очередь ретеста</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="alexey-pass" class="qa-section">
+      <h2>PASS для Алексея</h2>
+      <div class="qa-table-wrap">
+        <table class="qa-table">
+          <thead><tr><th>Зона</th><th>Что подтверждено</th><th>Почему это важно</th><th>Источник</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Stories visibility</td>
+              <td>Premoderation скрывает сторис от второго пользователя до approve; postmoderation/none видны в пользовательском carousel у второго пользователя.</td>
+              <td>Это закрывает главный прошлый риск: больше не делаем вывод по пустой media queue, а смотрим фактическую пользовательскую видимость.</td>
+              <td><a href="../moderation-full-2026-05-07/#igor">Moderation report</a></td>
+            </tr>
+            <tr>
+              <td>Group posts hide</td>
+              <td>Пост группы скрывается без физического удаления, статус <code>Hidden</code> и причина сохраняются.</td>
+              <td>Это соответствует ТЗ по ручной модерации постов: запись остается управляемой, а не исчезает.</td>
+              <td><a href="../moderation-full-2026-05-07/#igor">Moderation report</a></td>
+            </tr>
+            <tr>
+              <td>Group avatar / cover</td>
+              <td>Для avatar/cover есть отдельные настройки и approve-кнопки; postmoderation/none дают approved-состояние, premoderation создает модерационные записи.</td>
+              <td>Визуальное оформление группы управляется отдельно от постов, как отдельная зона модерации.</td>
+              <td><a href="../moderation-full-2026-05-07/#igor">Moderation report</a></td>
+            </tr>
+            <tr>
+              <td>Full ban</td>
+              <td>Full-ban создает активную запись, блокирует пользовательские страницы, не доставляет сообщение, после снятия нормальная доставка восстанавливается.</td>
+              <td>Основная жесткая блокировка работает и не должна смешиваться с багом shadow-release.</td>
+              <td><a href="../bans-full-2026-05-07/#igor">Bans report</a></td>
+            </tr>
+            <tr>
+              <td>Shadow active phase</td>
+              <td>Во время активного shadow-ban исходящее U1->U2 скрыто от U2, входящее U3->U1 скрыто от U1, лайк U1->U2 не появляется у U2.</td>
+              <td>Активная фаза shadow-ban в проверенных сценариях работает; проблема найдена именно после снятия бана.</td>
+              <td><a href="../bans-full-2026-05-07/#igor">Bans report</a></td>
+            </tr>
+            <tr>
+              <td>Premium reports</td>
+              <td>Новый premium/free отчет содержит rollback, recipient-side evidence и пути воспроизведения по лимитам.</td>
+              <td>Его можно использовать как источник постановки задач, а старый отчет держать только как архив.</td>
+              <td><a href="../premium-controls-full-2026-05-06/#igor">Premium report</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Статус отчетов</h2>
+      <div class="qa-table-wrap">
+        <table class="qa-table">
+          <thead><tr><th>Отчет</th><th>Статус качества</th><th>Что хорошо</th><th>Ограничение</th><th>Решение</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><a href="../premium-controls-full-2026-05-06/">Premium/free controls full audit</a></td>
+              <td><span class="qa-badge qa-badge--pass">АКТУАЛЕН</span></td>
+              <td>Есть rollback, recipient-side proof, матрица всех настроек, блок для Игоря, пути воспроизведения.</td>
+              <td>Длинная страница; нет интерактивного фильтра по FAIL/P0.</td>
+              <td>Использовать как основной premium-source.</td>
+            </tr>
+            <tr>
+              <td><a href="../moderation-full-2026-05-07/">Moderation full audit</a></td>
+              <td><span class="qa-badge qa-badge--pass">АКТУАЛЕН</span></td>
+              <td>Исправлен фокус stories: доказательства идут из пользовательского carousel и второго пользователя, а не из общей админской очереди.</td>
+              <td>Group media reject rollback и reopen group post требуют отдельного ретеста.</td>
+              <td>Использовать как основной moderation-source.</td>
+            </tr>
+            <tr>
+              <td><a href="../bans-full-2026-05-07/">Bans and shadow-ban audit</a></td>
+              <td><span class="qa-badge qa-badge--fail">АКТУАЛЕН / FAIL</span></td>
+              <td>Новый current-pass: 14/15 PASS, admin-create доказан через <code>active_ban_id</code>, shadow/full behavior проверен с U1/U2/U3, cleanup подтвержден.</td>
+              <td>Расширенные paid/group scenarios еще требуют отдельных fixtures, но главный core-баг уже воспроизводим.</td>
+              <td>Использовать как актуальный bans-source; чинить <code>SHADOW-RELEASE-001</code> первым.</td>
+            </tr>
+            <tr>
+              <td><a href="../premium-free-2026-05-05/">Premium / Free Settings QA</a></td>
+              <td><span class="qa-badge qa-badge--info">АРХИВ</span></td>
+              <td>Исторический прогон полезен как контекст.</td>
+              <td>Старый формат подписей, нет колонки воспроизведения, нет recipient-side proof.</td>
+              <td>Не использовать как основной источник; ссылка оставлена только для истории.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="anton-audit" class="qa-section">
+      <h2>UX/UI аудит Антона</h2>
+      <div class="qa-status-grid">
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--pass">Исправлено</span>
+          <h3>Разделены аудитории</h3>
+          <p>Баги для программиста, успешные проверки для постановщика и ретесты для тестировщика теперь находятся в разных блоках.</p>
+        </article>
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--pass">Исправлено</span>
+          <h3>Убраны неактуальные дефекты</h3>
+          <p>Неактуальные пункты по настройкам stories и групп удалены из актуальной доски, чтобы не создавать ложные задачи.</p>
+        </article>
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--warn">Осталось</span>
+          <h3>Нужны фильтры</h3>
+          <p>Следующий уровень интерфейса: фильтр по P0/P1/P2, PASS/FAIL, контуру и владельцу. Пока это решено статическими блоками.</p>
+        </article>
+      </div>
+      <div class="qa-note" style="margin-top:12px">
+        <p><strong>Оценка Антона:</strong> интерфейс стал пригоден для передачи Игорю, потому что не смешивает “что чинить” и “что успешно проверено”. До уровня полноценного QA-портала еще не хватает интерактивных фильтров и отдельного поля “owner / status after fix”.</p>
+        <div class="qa-score">
+          <div><span>Clarity</span><strong>8/10</strong></div>
+          <div><span>Trust</span><strong>8/10</strong></div>
+          <div><span>Navigation</span><strong>7/10</strong></div>
+          <div><span>Operator readiness</span><strong>7/10</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="retest-queue" class="qa-section">
+      <h2>Очередь ретеста</h2>
+      <div class="qa-table-wrap">
+        <table class="qa-table">
+          <thead><tr><th>Очередь</th><th>Зачем</th><th>Минимальный правильный тест</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Shadow-ban behavior</td>
+              <td>Ретест после фикса <code>SHADOW-RELEASE-001</code>.</td>
+              <td>Create shadow ban -> prove <code>active_ban_id</code> -> U1 sends during-ban message -> U2 must not see it during ban -> release -> U2 still must not see that old during-ban message -> new post-release message must deliver.</td>
+            </tr>
+            <tr>
+              <td>Premium fixture gaps</td>
+              <td>Закрыть checkbox/settings, которые сейчас DATA GAP.</td>
+              <td>Создать controlled fixtures: editable message, mutual match, private photo, country price user; затем ON/OFF сравнение.</td>
+            </tr>
+            <tr>
+              <td>Group moderation full cycle</td>
+              <td>Доказать не только наличие UI, но полный lifecycle.</td>
+              <td>Hide post -> reason visible -> reopen/show action -> user-side visibility; reject avatar/cover -> previous approved image restored.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Стандарт порядка</h2>
+      <div class="qa-note">
+        <p><strong>Обязательный формат дефекта:</strong> приоритет, зона, факт, ожидание, как воспроизвести, куда смотреть, evidence. Без пути воспроизведения дефект нельзя отдавать Игорю как готовый.</p>
+        <p><strong>Обязательный формат доказательства:</strong> скрин должен показывать именно тот пользовательский или админский surface, по которому сделан вывод. Если правило зависит от второго пользователя, второй пользователь проверяется до публикации.</p>
+      </div>
+    </section>
+
+    <footer class="tp-footer">
+      <a href="../">Все QA reports</a> · <a href="#igor-board">Доска Игоря</a>
+    </footer>
+  </main>
+  <script>
+    (() => {
+      const storageKey = 'confideline.qa-control-center.done.v1';
+      const readStore = () => {
+        try { return JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch { return {}; }
+      };
+      const writeStore = (value) => localStorage.setItem(storageKey, JSON.stringify(value));
+      const slug = (value) => String(value || '').toLowerCase().replace(/[^a-z0-9а-яё]+/gi, '-').replace(/^-+|-+$/g, '') || 'row';
+      const store = readStore();
+
+      const igorTable = document.querySelector('#igor-board table');
+      if (igorTable) {
+        const headRow = igorTable.querySelector('thead tr');
+        if (headRow && !headRow.querySelector('[data-qa-done-head]')) {
+          const th = document.createElement('th');
+          th.dataset.qaDoneHead = '1';
+          th.textContent = 'Выполнено';
+          headRow.appendChild(th);
+        }
+        igorTable.querySelectorAll('tbody tr').forEach((row, index) => {
+          const cells = row.querySelectorAll('td');
+          const taskId = slug(`${cells[1]?.innerText || ''}-${cells[2]?.innerText || ''}-${index}`);
+          row.dataset.qaTaskId = taskId;
+          const saved = store[taskId] || {};
+          const td = document.createElement('td');
+          td.className = 'qa-done-control';
+          td.innerHTML = `
+            <label><input type="checkbox" data-qa-done-checkbox ${saved.done ? 'checked' : ''}> выполнено</label>
+            <input type="text" data-qa-done-note placeholder="Комментарий Игоря для Алексея" value="${String(saved.note || '').replace(/"/g, '&quot;')}">
+          `;
+          row.appendChild(td);
+        });
+      }
+
+      const statusOf = (node) => {
+        if (node.querySelector('.qa-badge--fail')) return 'fail';
+        if (node.querySelector('.qa-badge--warn')) return 'warn';
+        if (node.querySelector('.qa-badge--pass')) return 'pass';
+        if (node.querySelector('.qa-badge--info')) return 'info';
+        const section = node.closest('section');
+        if (section?.id === 'alexey-pass') return 'pass';
+        if (section?.id === 'retest-queue') return 'warn';
+        return '';
+      };
+
+      const filterable = () => [...document.querySelectorAll('.qa-table tbody tr, .qa-status-card, .qa-lane, .tp-card')]
+        .filter((node) => !node.closest('.qa-toolbar') && statusOf(node));
+
+      const applyFilters = () => {
+        const enabled = new Set([...document.querySelectorAll('[data-qa-status-filter]')]
+          .filter((input) => input.checked)
+          .map((input) => input.dataset.qaStatusFilter));
+        const hideDone = document.querySelector('#qa-hide-done')?.checked;
+        filterable().forEach((node) => {
+          const status = statusOf(node);
+          const done = Boolean(node.querySelector('[data-qa-done-checkbox]')?.checked);
+          node.classList.toggle('qa-filter-hidden', !enabled.has(status) || (hideDone && done));
+          node.classList.toggle('qa-filter-muted', done);
+        });
+      };
+
+      document.addEventListener('change', (event) => {
+        if (event.target.matches('[data-qa-status-filter], #qa-hide-done')) applyFilters();
+        if (event.target.matches('[data-qa-done-checkbox], [data-qa-done-note]')) {
+          const row = event.target.closest('tr[data-qa-task-id]');
+          if (row) {
+            const current = readStore();
+            current[row.dataset.qaTaskId] = {
+              done: Boolean(row.querySelector('[data-qa-done-checkbox]')?.checked),
+              note: row.querySelector('[data-qa-done-note]')?.value || '',
+              updatedAt: new Date().toISOString()
+            };
+            writeStore(current);
+          }
+          applyFilters();
+        }
+      });
+      document.addEventListener('input', (event) => {
+        if (event.target.matches('[data-qa-done-note]')) event.target.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      document.querySelector('#qa-only-fail')?.addEventListener('click', () => {
+        document.querySelectorAll('[data-qa-status-filter]').forEach((input) => { input.checked = input.dataset.qaStatusFilter === 'fail'; });
+        applyFilters();
+      });
+      document.querySelector('#qa-show-all')?.addEventListener('click', () => {
+        document.querySelectorAll('[data-qa-status-filter]').forEach((input) => { input.checked = true; });
+        const hideDone = document.querySelector('#qa-hide-done');
+        if (hideDone) hideDone.checked = false;
+        applyFilters();
+      });
+      applyFilters();
+    })();
+  </script>
+</body>
+</html>
