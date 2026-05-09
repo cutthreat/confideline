@@ -17,6 +17,11 @@
     .qa-done-control input[type="text"]{width:100%;box-sizing:border-box;border:1px solid #cfd8e6;border-radius:6px;padding:8px;font:14px/1.3 Arial,sans-serif}
     .qa-filter-hidden{display:none!important}
     .qa-filter-muted{opacity:.55}
+    .qa-evidence-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+    .qa-evidence-card{background:#fff;border:1px solid #d8e0ec;border-radius:8px;padding:12px}
+    .qa-evidence-card img{width:100%;aspect-ratio:16/10;object-fit:cover;border:1px solid #d8e0ec;border-radius:6px;margin-top:8px;background:#f8fafc}
+    .qa-evidence-card h3{margin:8px 0 6px;font-size:17px}
+    .qa-evidence-card p{margin:0;color:#40516b}
   </style>
 </head>
 <body class="cl-task-standard qa-report-page">
@@ -154,6 +159,51 @@
             </tr>
           </tbody>
         </table>
+      </div>
+    </section>
+
+    <section id="evidence-screenshots" class="qa-section">
+      <h2>Evidence screenshots</h2>
+      <div class="qa-note" style="margin-bottom:12px">
+        <p><strong>Что произошло:</strong> скриншоты не удалялись, они были в отдельных отчетах. В сводной панели их не было видно напрямую. Ниже добавлены быстрые превью ключевых доказательств с фильтрацией по статусу.</p>
+      </div>
+      <div class="qa-evidence-grid">
+        <article class="qa-evidence-card qa-status-card">
+          <span class="qa-badge qa-badge--fail">FAIL</span>
+          <h3>Premium messagesOutPremium</h3>
+          <p>Лимит исходящих сообщений: получатель видит лишние сообщения.</p>
+          <a href="../premium-no-debt-recheck-2026-05-09/"><img src="../premium-no-debt-recheck-2026-05-09/evidence/messageRecipient4.png" alt="Premium messages recipient evidence"></a>
+        </article>
+        <article class="qa-evidence-card qa-status-card">
+          <span class="qa-badge qa-badge--fail">FAIL</span>
+          <h3>Main/profile photo upload</h3>
+          <p>После main photo upload нет корректного photo id, появляется ошибка формы.</p>
+          <a href="../photo-upload-current-2026-05-09/"><img src="../photo-upload-current-2026-05-09/assets/annotated-main-after-next.png" alt="Main photo upload failure evidence"></a>
+        </article>
+        <article class="qa-evidence-card qa-status-card">
+          <span class="qa-badge qa-badge--warn">WARN</span>
+          <h3>Shadow-ban group post baseline</h3>
+          <p>Даже обычный пользователь получает highlightPostId, но feed показывает No posts yet.</p>
+          <a href="../shadow-ban-extended-matrix-2026-05-09/"><img src="../shadow-ban-extended-matrix-2026-05-09/screens/baseline-group-owner-group.png" alt="Group post baseline evidence"></a>
+        </article>
+        <article class="qa-evidence-card qa-status-card">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>Shadow-ban profile hidden</h3>
+          <p>Профиль U1 скрыт от второго пользователя во время shadow-ban.</p>
+          <a href="../shadow-ban-extended-matrix-2026-05-09/"><img src="../shadow-ban-extended-matrix-2026-05-09/screens/profile-during-shadow-hidden.png" alt="Shadow-ban profile hidden evidence"></a>
+        </article>
+        <article class="qa-evidence-card qa-status-card">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>Stories device upload</h3>
+          <p>Device upload проходит cropper/publish и виден пользователю.</p>
+          <a href="../stories-device-upload-cropper-2026-05-09/"><img src="../stories-device-upload-cropper-2026-05-09/assets/author-home-after-publish.png" alt="Stories device upload evidence"></a>
+        </article>
+        <article class="qa-evidence-card qa-status-card">
+          <span class="qa-badge qa-badge--warn">WARN</span>
+          <h3>Admin template URL</h3>
+          <p>Markup debt: в admin surface найден href/текст `{url}`.</p>
+          <a href="../full-site-smoke-2026-05-09/"><img src="../full-site-smoke-2026-05-09/assets/admin-template-url-click-result.png" alt="Admin template URL evidence"></a>
+        </article>
       </div>
     </section>
 
