@@ -1071,3 +1071,32 @@ Raw evidence:
 Остаток:
 
 - WARN: общий interaction smoke не доказал guest visit signal как PASS. Это не новый functional FAIL; при необходимости нужен отдельный guests-focused проход с before/after счетчиками.
+
+## 2026-05-09 Public/Auth + Accessibility
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\public-auth-accessibility-2026-05-09\index.html`
+
+Raw evidence:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\public-auth-accessibility-2026-05-09\raw\signup-happy-path.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\public-auth-accessibility-2026-05-09\raw\public-accessibility-audit.json`
+- Screenshots: `H:\GPT-Codex\Confideline\web\qa-reports\public-auth-accessibility-2026-05-09\assets\*.png`
+
+Что исправлено в тестовом контуре:
+
+- Signup-тест больше не делает ложный FAIL, если не выставлены `Country/City`: добавлена работа с Yii2/selectize через `select.selectize`, before-submit проверка значений формы и устойчивый `requestSubmit()`.
+- Загрузка `/en/signup` переведена на `waitUntil: commit` + bounded `domcontentloaded`, чтобы долгие ассеты не зависали и не ломали прогон.
+
+Результат:
+
+- Общий статус: `FAIL`, потому что accessibility-дефекты подтверждены.
+- PASS: `/en/signup` happy path. Новый пользователь `QASignup20260509174136` создан; сервер показал `Your account has been created`, validation errors нет.
+- FAIL: `/en` accessibility. `button[data-dismiss="alert"]` без доступного имени, weak contrast, `select-name`, `meta-viewport`.
+- FAIL: `/en/login` accessibility. Weak contrast у ссылок/кнопки и `meta-viewport`.
+- FAIL: `/en/signup` accessibility. Sex radio inputs без корректных labels, terms/privacy/cookie links отличаются только цветом, weak contrast, `meta-viewport`.
+
+Действие для Игоря:
+
+- Чинить в Yii2 PHP views/CSS публичных страниц: alert close button accessible name, signup sex radio labels, dob select names, link contrast, non-color-only link affordance, meta viewport zoom.
