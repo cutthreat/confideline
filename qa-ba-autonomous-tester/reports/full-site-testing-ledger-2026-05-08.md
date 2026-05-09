@@ -1133,3 +1133,32 @@ Raw evidence:
 BA / рекомендации для Алексея:
 
 - `Важно, но не срочно`: discovery-поверхности нужно продолжать оценивать как продуктовый сценарий, а не route inventory. HTTP 200 не доказывает пользовательскую ценность; в следующих слоях фиксировать, что пользователь увидел и какое следующее действие доступно.
+
+## 2026-05-10 Detail surfaces QA
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\detail-surfaces-2026-05-10\index.html`
+
+Raw evidence:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\detail-surfaces-2026-05-10\raw\detail-surfaces.json`
+- Screenshots: `H:\GPT-Codex\Confideline\web\qa-reports\detail-surfaces-2026-05-10\assets\*.png`
+
+Что исправлено в тестовом контуре:
+
+- Detail-тест больше не считает невидимые/шаблонные href пользовательским дефектом: собираются только visible links с DOM box, className и HTML-фрагментом.
+- Group detail matcher приведен к фактическому Yii2 route `groups/<alias>`, а не к guessed route `/group/<id>`.
+- Контентные вопросы EN-разделов выводятся в BA-матрицу для Алексея, а не в доску Игоря как неподтвержденный дефект.
+
+Результат:
+
+- Общий статус: `PASS`.
+- PASS: видимая ссылка профиля открывает `/en/profile`, h1 `Kaelir Tamm`, 200.
+- PASS: `/en/country/armenia`, `/en/country/estonia`, `/en/country/azerbaijan` открываются с корректными h1 и без 404/login redirect.
+- PASS: `/en/groups/pogoda-na-gorizonte`, `/en/groups/gruppa-dla-sbora-deneg`, `/en/groups/test` открываются из карточек групп и не дают 404/login redirect.
+- Для Игоря новых подтвержденных дефектов нет.
+
+BA / рекомендации для Алексея:
+
+- `Важно, но не срочно`: на `/en/countries`, `/en/profile` и части `/en/groups/...` заметен русский контент. Нужно product decision: EN-контур сейчас технически рабочий, но контентно не готов, либо заводить отдельную задачу на разделение контента по языкам.
