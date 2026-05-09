@@ -1043,3 +1043,31 @@ Raw evidence:
 - PASS: cleanup, после теста `active_ban_id=false`.
 - WARN: baseline gift до shadow-ban не дал сильного recipient-side evidence по уникальному сообщению.
 - WARN: group post publication gap: обычный пользователь до shadow-ban получает `highlightPostId`, но owner-side feed показывает `No posts yet`; поэтому shadow group-post нельзя считать отдельным shadow-ban багом без фикса/решения по group posts.
+
+## 2026-05-09 New pages QA pass
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\new-pages-pass-2026-05-09\index.html`
+
+Raw evidence:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\new-pages-pass-2026-05-09\raw\profile\profile-settings-scenario.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\new-pages-pass-2026-05-09\raw\interactions\user-interactions-scenario.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\new-pages-pass-2026-05-09\raw\gift\gift-send-scenario.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\new-pages-pass-2026-05-09\raw\photoAccess\photo-access-request-scenario.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\new-pages-pass-2026-05-09\raw\groups\group-lifecycle-scenario.json`
+
+Покрытие:
+
+- PASS: `/en/settings/profile`, `/en/settings/photos`, `/en/settings/upload`, `/en/settings/access-requests`, `/en/settings/notifications`, `/en/settings/verification`, `/en/appearance`, `/en/settings/account`, `/en/settings/networks`, `/en/settings/blocked-users`, `/en/settings/data` открываются без 404.
+- PASS: profile description save/readback и rollback.
+- PASS: notifications checkbox save/readback и rollback.
+- PASS: like U167 -> U168 виден recipient-side.
+- PASS: gift send и recipient-side evidence.
+- PASS: photo access request и owner-side evidence.
+- PASS: group lifecycle: create, management flags, post pending, admin pending queue, approve, viewer group visibility, viewer post visibility after approve, members page.
+
+Остаток:
+
+- WARN: общий interaction smoke не доказал guest visit signal как PASS. Это не новый functional FAIL; при необходимости нужен отдельный guests-focused проход с before/after счетчиками.
