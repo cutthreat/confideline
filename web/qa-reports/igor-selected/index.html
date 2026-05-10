@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline QA | Задачи для Игоря</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+</head>
+<body class="cl-task-standard qa-report-page qa-handoff-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">QA handoff · Igor view · 2026-05-10</p>
+      <h1>Задачи для Игоря</h1>
+      <p>На этой странице показываются только те результаты тестирования, которые Алексей выбрал для передачи Игорю. PASS-контекст не попадает сюда, если Алексей не включил его вручную.</p>
+      <div class="tp-actions" style="margin-top:16px">
+        <a class="tp-btn tp-btn--primary" href="../alexey-igor-handoff/">Выбор Алексея</a>
+        <a class="tp-btn" href="../qa-control-center-2026-05-07/">QA Control Center</a>
+        <a class="tp-btn" href="../">Все QA reports</a>
+      </div>
+    </header>
+
+    <section class="qa-summary">
+      <div class="qa-metric"><span>Выведено задач</span><strong data-count>0</strong></div>
+      <div class="qa-metric"><span>P0</span><strong data-p0>0</strong></div>
+      <div class="qa-metric"><span>P1</span><strong data-p1>0</strong></div>
+      <div class="qa-metric"><span>PASS-контекст</span><strong data-pass>0</strong></div>
+    </section>
+
+    <section class="qa-toolbar" aria-label="Фильтры страницы Игоря">
+      <div class="qa-toolbar-row">
+        <span class="qa-toolbar-title">Фильтр:</span>
+        <label class="qa-filter-pill"><input type="checkbox" data-status-filter="FAIL" checked> FAIL</label>
+        <label class="qa-filter-pill"><input type="checkbox" data-status-filter="WARN" checked> WARN</label>
+        <label class="qa-filter-pill"><input type="checkbox" data-status-filter="PASS" checked> PASS</label>
+        <label class="qa-filter-pill"><input type="checkbox" id="hide-done"> скрыть выполненные</label>
+        <button class="tp-btn" type="button" data-action="only-fail">Только FAIL</button>
+        <button class="tp-btn" type="button" data-action="show-all">Показать все</button>
+      </div>
+      <p class="qa-help">Поле “выполнено” сохраняется локально в браузере Игоря. Для общего статуса Алексей потом переносит результат в отчет/коммит.</p>
+    </section>
+
+    <section class="qa-section">
+      <div class="qa-note">
+        <p><strong>Источник выбора:</strong> если в URL есть параметр <code>#sel=...</code>, страница использует выбор Алексея из ссылки. Если параметра нет, используется дефолтный curated список из <code>qa-handoff-data.js</code>.</p>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Выбранные пункты</h2>
+      <div class="qa-handoff-list" data-items></div>
+    </section>
+
+    <footer class="tp-footer">
+      <a href="../alexey-igor-handoff/">Выбор Алексея</a> · <a href="../qa-control-center-2026-05-07/">QA Control Center</a>
+    </footer>
+  </main>
+  <script src="../qa-handoff-data.js"></script>
+  <script>
+    (() => {
+      const items = window.CONFIDELINE_QA_HANDOFF_ITEMS || [];
+      const doneKey = 'confideline.qa.igor.done.v1';
+      const list = document.querySelector('[data-items]');
+      const selectedIds = new Set(readSelectedIds());
+      const doneStore = readDoneStore();
+
+      function readSelectedIds() {
+        const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
+        const encoded = hash.get('sel');
+        if (encoded) {
+          try {
+            const normalized = encoded.replace(/-/g, '+').replace(/_/g, '/');
+            const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=');
+            const json = decodeURIComponent(escape(atob(padded)));
+            const parsed = JSON.parse(json);
+            if (Array.isArray(parsed)) return parsed;
+          } catch {}
+        }
+        return items.filter((item) => item.defaultForIgor).map((item) => item.id);
+      }
+
+      function readDoneStore() {
+        try { return JSON.parse(localStorage.getItem(doneKey) || '{}'); } catch { return {}; }
+      }
+
+      function saveDoneStore() {
+        localStorage.setItem(doneKey, JSON.stringify(doneStore));
+      }
+
+      function statusClass(status) {
+        if (status === 'FAIL') return 'qa-badge--fail';
+        if (status === 'WARN') return 'qa-badge--warn';
+        if (status === 'PASS') return 'qa-badge--pass';
+        return 'qa-badge--info';
+      }
+
+      function selectedItems() {
+        return items.filter((item) => selectedIds.has(item.id));
+      }
+
+      function render() {
+        const enabledStatuses = new Set([...document.querySelectorAll('[data-status-filter]')]
+          .filter((input) => input.checked)
+          .map((input) => input.dataset.statusFilter));
+        const hideDone = document.querySelector('#hide-done')?.checked;
+        const rows = selectedItems();
+        list.innerHTML = rows.map((item) => {
+          const done = doneStore[item.id]?.done;
+          const note = doneStore[item.id]?.note || '';
+          const hidden = !enabledStatuses.has(item.status) || (hideDone && done) ? ' qa-filter-hidden' : '';
+          const muted = done ? ' qa-filter-muted' : '';
+          return `
+            <article class="qa-handoff-card${hidden}${muted}" data-id="${item.id}" data-status="${item.status}">
+              <div class="qa-handoff-card__top">
+                <span class="qa-badge ${statusClass(item.status)}">${item.status}</span>
+                <span class="qa-badge qa-badge--info">${item.priority}</span>
+                <span class="qa-handoff-area">${item.area}</span>
+              </div>
+              <h3>${item.title}</h3>
+              <p>${item.summary}</p>
+              <div class="qa-mini-grid">
+                <div><strong>Что ожидалось</strong><span>${item.expected}</span></div>
+                <div><strong>Как найти баг</strong><span>${item.findBug}</span></div>
+                <div><strong>Где смотреть</strong><span>${item.codeArea}</span></div>
+              </div>
+              <div class="qa-igor-actions">
+                <a class="tp-btn tp-btn--primary" href="${item.sourceUrl}">Открыть evidence</a>
+                <label class="qa-igor-toggle"><input type="checkbox" data-done-id="${item.id}" ${done ? 'checked' : ''}> выполнено</label>
+                <input type="text" data-note-id="${item.id}" value="${String(note).replace(/"/g, '&quot;')}" placeholder="Комментарий Игоря для Алексея">
+              </div>
+            </article>
+          `;
+        }).join('') || '<div class="qa-note"><p>Нет выбранных пунктов. Вернись на страницу выбора Алексея и сформируй ссылку для Игоря.</p></div>';
+        updateStats(rows);
+      }
+
+      function updateStats(rows) {
+        document.querySelector('[data-count]').textContent = String(rows.length);
+        document.querySelector('[data-p0]').textContent = String(rows.filter((item) => item.priority === 'P0').length);
+        document.querySelector('[data-p1]').textContent = String(rows.filter((item) => item.priority === 'P1').length);
+        document.querySelector('[data-pass]').textContent = String(rows.filter((item) => item.status === 'PASS').length);
+      }
+
+      document.addEventListener('change', (event) => {
+        if (event.target.matches('[data-status-filter], #hide-done')) render();
+        if (event.target.matches('[data-done-id]')) {
+          const id = event.target.dataset.doneId;
+          doneStore[id] = doneStore[id] || {};
+          doneStore[id].done = Boolean(event.target.checked);
+          doneStore[id].updatedAt = new Date().toISOString();
+          saveDoneStore();
+          render();
+        }
+      });
+
+      document.addEventListener('input', (event) => {
+        if (event.target.matches('[data-note-id]')) {
+          const id = event.target.dataset.noteId;
+          doneStore[id] = doneStore[id] || {};
+          doneStore[id].note = event.target.value;
+          doneStore[id].updatedAt = new Date().toISOString();
+          saveDoneStore();
+        }
+      });
+
+      document.addEventListener('click', (event) => {
+        const action = event.target.dataset.action;
+        if (action === 'only-fail') {
+          document.querySelectorAll('[data-status-filter]').forEach((input) => { input.checked = input.dataset.statusFilter === 'FAIL'; });
+          render();
+        }
+        if (action === 'show-all') {
+          document.querySelectorAll('[data-status-filter]').forEach((input) => { input.checked = true; });
+          const hideDone = document.querySelector('#hide-done');
+          if (hideDone) hideDone.checked = false;
+          render();
+        }
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

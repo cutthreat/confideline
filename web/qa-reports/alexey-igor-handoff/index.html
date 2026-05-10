@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline QA | Выбор для Игоря</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+</head>
+<body class="cl-task-standard qa-report-page qa-handoff-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">QA handoff · Alexey control · 2026-05-10</p>
+      <h1>Что показывать Игорю</h1>
+      <p>Это рабочая панель Алексея: здесь виден полный список актуальных результатов тестирования, а чекбоксом выбирается, что попадет на отдельную страницу Игоря.</p>
+      <div class="tp-actions" style="margin-top:16px">
+        <a class="tp-btn tp-btn--primary" href="../igor-selected/">Страница Игоря</a>
+        <a class="tp-btn" href="../qa-control-center-2026-05-07/">QA Control Center</a>
+        <a class="tp-btn" href="../">Все QA reports</a>
+      </div>
+    </header>
+
+    <section class="qa-summary">
+      <div class="qa-metric"><span>Всего пунктов</span><strong data-total>0</strong></div>
+      <div class="qa-metric"><span>Выбрано для Игоря</span><strong data-selected>0</strong></div>
+      <div class="qa-metric"><span>FAIL/WARN выбрано</span><strong data-risk-selected>0</strong></div>
+      <div class="qa-metric"><span>PASS выбрано</span><strong data-pass-selected>0</strong></div>
+    </section>
+
+    <section class="qa-section">
+      <div class="qa-note">
+        <p><strong>Как это работает:</strong> выбор сохраняется в этом браузере Алексея. Чтобы Игорь увидел ровно выбранный набор в другом браузере, нажми “Сформировать ссылку для Игоря” и отправь ему полученную ссылку. В ссылке зашиты ID выбранных пунктов.</p>
+        <p><strong>Правило:</strong> по умолчанию Игорю показываем только actionable FAIL/WARN и один смешанный WARN, где важно не сломать рабочий happy path. PASS можно включать вручную, если нужно дать контекст “это уже работает”.</p>
+      </div>
+    </section>
+
+    <section class="qa-toolbar qa-handoff-toolbar" aria-label="Управление выбором для Игоря">
+      <div class="qa-toolbar-row">
+        <span class="qa-toolbar-title">Фильтр:</span>
+        <label class="qa-filter-pill"><input type="checkbox" data-status-filter="FAIL" checked> FAIL</label>
+        <label class="qa-filter-pill"><input type="checkbox" data-status-filter="WARN" checked> WARN</label>
+        <label class="qa-filter-pill"><input type="checkbox" data-status-filter="PASS" checked> PASS</label>
+        <button class="tp-btn" type="button" data-action="only-risk">Только FAIL/WARN</button>
+        <button class="tp-btn" type="button" data-action="show-all">Показать все</button>
+      </div>
+      <div class="qa-toolbar-row" style="margin-top:10px">
+        <button class="tp-btn tp-btn--primary" type="button" data-action="select-default">Выбрать дефолт для Игоря</button>
+        <button class="tp-btn" type="button" data-action="select-risk">Выбрать все FAIL/WARN</button>
+        <button class="tp-btn" type="button" data-action="clear-pass">Убрать PASS</button>
+        <button class="tp-btn" type="button" data-action="clear-all">Очистить выбор</button>
+      </div>
+      <div class="qa-share-box">
+        <button class="tp-btn tp-btn--primary" type="button" data-action="build-link">Сформировать ссылку для Игоря</button>
+        <input type="text" data-share-url readonly aria-label="Ссылка для Игоря" placeholder="После формирования здесь появится ссылка">
+        <button class="tp-btn" type="button" data-action="copy-link">Копировать</button>
+      </div>
+      <p class="qa-help">Если ссылку не сформировать, страница Игоря покажет дефолтный набор из реестра. Для постоянного изменения дефолта нужен коммит в <code>qa-handoff-data.js</code>.</p>
+    </section>
+
+    <section class="qa-section">
+      <h2>Полный список результатов</h2>
+      <div class="qa-handoff-list" data-items></div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Мелочи механизма</h2>
+      <div class="qa-table-wrap">
+        <table class="qa-table">
+          <thead><tr><th>Ситуация</th><th>Как решено</th></tr></thead>
+          <tbody>
+            <tr><td>Алексей хочет скрыть PASS от Игоря</td><td>PASS не выбран по умолчанию. Его можно включить вручную как контекст.</td></tr>
+            <tr><td>Игорь открывает ссылку на другом устройстве</td><td>Выбор передается через URL hash, а не через localStorage Алексея.</td></tr>
+            <tr><td>Нужно быстро вернуть рабочий набор</td><td>Кнопка “Выбрать дефолт для Игоря” берет curated список из реестра.</td></tr>
+            <tr><td>Нужно не потерять историю</td><td>Старые отчеты остаются в общем каталоге; страница Игоря только фильтрует текущую выдачу.</td></tr>
+            <tr><td>Нужно понять, где искать баг</td><td>Каждая карточка содержит блок “Как найти” и “Зона кода/логики”.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="tp-footer">
+      <a href="../igor-selected/">Страница Игоря</a> · <a href="../qa-control-center-2026-05-07/">QA Control Center</a>
+    </footer>
+  </main>
+  <script src="../qa-handoff-data.js"></script>
+  <script>
+    (() => {
+      const items = window.CONFIDELINE_QA_HANDOFF_ITEMS || [];
+      const storageKey = 'confideline.qa.alexey.igorSelection.v1';
+      const selected = new Set(readSelection());
+      const list = document.querySelector('[data-items]');
+      const shareInput = document.querySelector('[data-share-url]');
+
+      function readSelection() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(storageKey) || 'null');
+          if (Array.isArray(saved)) return saved;
+        } catch {}
+        return items.filter((item) => item.defaultForIgor).map((item) => item.id);
+      }
+
+      function saveSelection() {
+        localStorage.setItem(storageKey, JSON.stringify([...selected]));
+      }
+
+      function statusClass(status) {
+        if (status === 'FAIL') return 'qa-badge--fail';
+        if (status === 'WARN') return 'qa-badge--warn';
+        if (status === 'PASS') return 'qa-badge--pass';
+        return 'qa-badge--info';
+      }
+
+      function encodeSelection(ids) {
+        const json = JSON.stringify(ids);
+        return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+      }
+
+      function buildIgorUrl() {
+        const base = new URL('../igor-selected/', location.href);
+        base.hash = `sel=${encodeSelection([...selected])}`;
+        return base.href;
+      }
+
+      function render() {
+        const enabledStatuses = new Set([...document.querySelectorAll('[data-status-filter]')]
+          .filter((input) => input.checked)
+          .map((input) => input.dataset.statusFilter));
+        list.innerHTML = items.map((item) => {
+          const hidden = enabledStatuses.has(item.status) ? '' : ' qa-filter-hidden';
+          const checked = selected.has(item.id) ? ' checked' : '';
+          return `
+            <article class="qa-handoff-card${hidden}" data-id="${item.id}" data-status="${item.status}">
+              <div class="qa-handoff-card__top">
+                <label class="qa-igor-toggle">
+                  <input type="checkbox" data-select-id="${item.id}"${checked}>
+                  <span>Показывать Игорю</span>
+                </label>
+                <span class="qa-badge ${statusClass(item.status)}">${item.status}</span>
+                <span class="qa-badge qa-badge--info">${item.priority}</span>
+              </div>
+              <h3>${item.title}</h3>
+              <p><strong>Зона:</strong> ${item.area}</p>
+              <p>${item.summary}</p>
+              <div class="qa-mini-grid">
+                <div><strong>Ожидание</strong><span>${item.expected}</span></div>
+                <div><strong>Как найти</strong><span>${item.findBug}</span></div>
+                <div><strong>Где смотреть</strong><span>${item.codeArea}</span></div>
+              </div>
+              <a class="tp-btn" href="${item.sourceUrl}">${item.sourceLabel}</a>
+            </article>
+          `;
+        }).join('');
+        updateStats();
+      }
+
+      function updateStats() {
+        const selectedItems = items.filter((item) => selected.has(item.id));
+        document.querySelector('[data-total]').textContent = String(items.length);
+        document.querySelector('[data-selected]').textContent = String(selectedItems.length);
+        document.querySelector('[data-risk-selected]').textContent = String(selectedItems.filter((item) => item.status !== 'PASS').length);
+        document.querySelector('[data-pass-selected]').textContent = String(selectedItems.filter((item) => item.status === 'PASS').length);
+      }
+
+      document.addEventListener('change', (event) => {
+        if (event.target.matches('[data-select-id]')) {
+          if (event.target.checked) selected.add(event.target.dataset.selectId);
+          else selected.delete(event.target.dataset.selectId);
+          saveSelection();
+          updateStats();
+        }
+        if (event.target.matches('[data-status-filter]')) render();
+      });
+
+      document.addEventListener('click', async (event) => {
+        const action = event.target.dataset.action;
+        if (!action) return;
+        if (action === 'select-default') {
+          selected.clear();
+          items.filter((item) => item.defaultForIgor).forEach((item) => selected.add(item.id));
+          saveSelection();
+          render();
+        }
+        if (action === 'select-risk') {
+          items.filter((item) => item.status !== 'PASS').forEach((item) => selected.add(item.id));
+          saveSelection();
+          render();
+        }
+        if (action === 'clear-pass') {
+          items.filter((item) => item.status === 'PASS').forEach((item) => selected.delete(item.id));
+          saveSelection();
+          render();
+        }
+        if (action === 'clear-all') {
+          selected.clear();
+          saveSelection();
+          render();
+        }
+        if (action === 'only-risk') {
+          document.querySelectorAll('[data-status-filter]').forEach((input) => { input.checked = input.dataset.statusFilter !== 'PASS'; });
+          render();
+        }
+        if (action === 'show-all') {
+          document.querySelectorAll('[data-status-filter]').forEach((input) => { input.checked = true; });
+          render();
+        }
+        if (action === 'build-link') {
+          shareInput.value = buildIgorUrl();
+          shareInput.focus();
+          shareInput.select();
+        }
+        if (action === 'copy-link') {
+          if (!shareInput.value) shareInput.value = buildIgorUrl();
+          shareInput.focus();
+          shareInput.select();
+          try { await navigator.clipboard.writeText(shareInput.value); } catch { document.execCommand('copy'); }
+        }
+      });
+
+      render();
+      shareInput.value = buildIgorUrl();
+    })();
+  </script>
+</body>
+</html>

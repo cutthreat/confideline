@@ -27,6 +27,8 @@
 | Public QA reports | `H:\GPT-Codex\Confideline\web\qa-reports` | Удобные HTML-отчеты для Игоря, Алексея и истории тестирования. |
 | QA report index | `H:\GPT-Codex\Confideline\web\qa-reports\index.html` | Внешний каталог актуальных и архивных QA-отчетов. |
 | QA control center | `H:\GPT-Codex\Confideline\web\qa-reports\qa-control-center-2026-05-07\index.html` | Рабочая панель: FAIL/WARN/PASS, фильтры, поле `выполнено` для Игоря. |
+| Alexey -> Igor handoff | `H:\GPT-Codex\Confideline\web\qa-reports\alexey-igor-handoff\index.html` и `...\igor-selected\index.html` | Алексей выбирает, какие QA-пункты показывать Игорю; Игорь получает отдельную страницу только с выбранными пунктами. |
+| QA handoff data | `H:\GPT-Codex\Confideline\web\qa-reports\qa-handoff-data.js` | Общий реестр задач/результатов для handoff-страниц: статус, приоритет, как найти баг, ссылка на evidence, дефолтная видимость для Игоря. |
 | Deploy manifest | `H:\GPT-Codex\Confideline\deploy\pages-manifest.json` | Проверка публичных GitHub Pages URL и обязательного текста на страницах. |
 
 ## Yii2 entry points для тестировщика
@@ -68,6 +70,7 @@
 | Отчет | Статус | URL/путь |
 |---|---|---|
 | QA Control Center | Рабочая панель для Игоря и Алексея | `H:\GPT-Codex\Confideline\web\qa-reports\qa-control-center-2026-05-07\index.html` |
+| Alexey -> Igor selection | Управляемый handoff: Алексей отмечает видимость, Игорь открывает отдельную страницу выбранных пунктов | `H:\GPT-Codex\Confideline\web\qa-reports\alexey-igor-handoff\index.html` и `H:\GPT-Codex\Confideline\web\qa-reports\igor-selected\index.html` |
 | User interactions | Актуальный PASS по likes/favorites/visits/profile actions | `H:\GPT-Codex\Confideline\web\qa-reports\user-interactions-2026-05-10\index.html` |
 | Connections mutual likes | Актуальный PASS: clean baseline, one-way like, recipient-side incoming like, mutual у обоих, rollback | `H:\GPT-Codex\Confideline\web\qa-reports\connections-mutual-likes-2026-05-10\index.html` |
 | Photo access actions | Актуальный FAIL: approve/reject happy path PASS, но action без request возвращает false `success=true` | `H:\GPT-Codex\Confideline\web\qa-reports\photo-access-actions-2026-05-10\index.html` |
