@@ -1511,3 +1511,32 @@ BA / рекомендации для Алексея:
 
 - `Срочно и важно`: endpoint action говорит “успех” там, где действие не применено. Это снижает доверие к админским и пользовательским действиям.
 - `Важно, но не срочно`: для private photo access нужен clean fixture/cleanup helper, потому что старые requests остаются в очереди и мешают строгому baseline.
+
+## 2026-05-10 Gift send + balance recheck
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\gift-send-balance-2026-05-10\index.html`
+
+Raw evidence:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\gift-send-balance-2026-05-10\gift-send-scenario.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\gift-send-balance-2026-05-10\gift-send-scenario.md`
+- Screenshots: `H:\GPT-Codex\Confideline\web\qa-reports\gift-send-balance-2026-05-10\*.png`
+
+Результат:
+
+- Общий статус: `PASS`.
+- PASS: U184 -> U166 gift send через `/en/gift/send`, выбран `giftItemId=120`.
+- PASS: сервер вернул `success=true`, `message="Gift has been sent"`, `balance="165"`.
+- PASS: before-state на профиле U166 под U184 показывал баланс `180`; значит списание составило 15 credits.
+- PASS: U166 видит `Orion Esposito sent you a gift` в `/en/notifications` и gift от Orion на профиле.
+
+Действие для Игоря:
+
+- Функционального дефекта в базовом gift flow не найдено. При регрессии смотреть `GiftController::actionSend()`, `GiftForm::validateUserBalance()`, `GiftManager::sendGift()`, `BalanceManager::decrease()`, notification `GiftReceived`.
+
+BA / рекомендации для Алексея:
+
+- `Управленческий PASS`: базовая отправка paid gift работает и доказана с двух сторон.
+- `Важно, но не срочно`: для будущих прогонов нужен helper выбора еще не отправленного gift item или cleanup/fixture strategy, потому что gift duplicate rule не позволяет бесконечно повторять один и тот же giftItemId на одной паре.

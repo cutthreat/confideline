@@ -40,7 +40,7 @@
 
     <section class="qa-summary">
       <div class="qa-metric"><span>Решение</span><strong>FAIL</strong></div>
-      <div class="qa-metric"><span>Актуальных отчетов</span><strong>22</strong></div>
+      <div class="qa-metric"><span>Актуальных отчетов</span><strong>23</strong></div>
       <div class="qa-metric"><span>Архив</span><strong>1</strong></div>
       <div class="qa-metric"><span>Публичная проверка</span><strong>OK</strong></div>
     </section>
@@ -294,6 +294,12 @@
           <p>U184 отсутствует в access requests U166, но invalid photo-access-action возвращает success=true.</p>
           <a href="../photo-access-actions-2026-05-10/"><img src="../photo-access-actions-2026-05-10/no-request-owner-before.png" alt="Photo access no request evidence"></a>
         </article>
+        <article class="qa-evidence-card qa-status-card">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>Gift send + balance</h3>
+          <p>U184 отправил gift U166, balance снизился с 180 до 165, U166 видит gift notification.</p>
+          <a href="../gift-send-balance-2026-05-10/"><img src="../gift-send-balance-2026-05-10/recipient-en-notifications.png" alt="Gift recipient notification evidence"></a>
+        </article>
       </div>
     </section>
 
@@ -376,6 +382,12 @@
               <td><a href="../photo-access-actions-2026-05-10/#alexey">Photo access actions</a></td>
             </tr>
             <tr>
+              <td>Gifts/balance</td>
+              <td>U184 отправил подарок U166: <code>/en/gift/send</code> вернул success, баланс снизился с 180 до 165, U166 видит уведомление о подарке.</td>
+              <td>Закрыт базовый paid gift flow. Дальше по gifts надо проверять duplicate rule, недостаточный баланс, private gift visibility и shadow-ban.</td>
+              <td><a href="../gift-send-balance-2026-05-10/#alexey">Gift send + balance</a></td>
+            </tr>
+            <tr>
               <td>Premium reports</td>
               <td>Новый premium/free отчет содержит rollback, recipient-side evidence и пути воспроизведения по лимитам.</td>
               <td>Его можно использовать как источник постановки задач, а старый отчет держать только как архив.</td>
@@ -440,6 +452,13 @@
               <td>Happy path approve/reject работает; дополнительно найден false-success для action без существующего request.</td>
               <td>Негативный кейс проверяет API-level edge case, а не обычный UI happy path.</td>
               <td>Использовать как текущий источник по private photo access actions.</td>
+            </tr>
+            <tr>
+              <td><a href="../gift-send-balance-2026-05-10/">Gift send + balance QA</a></td>
+              <td><span class="qa-badge qa-badge--pass">АКТУАЛЕН</span></td>
+              <td>Проверены sender response, balance delta и recipient-side notification/profile evidence.</td>
+              <td>Это happy path; edge cases gifts остаются отдельными сценариями.</td>
+              <td>Использовать как текущий источник по базовой отправке gifts.</td>
             </tr>
             <tr>
               <td><a href="../premium-free-2026-05-05/">Premium / Free Settings QA</a></td>

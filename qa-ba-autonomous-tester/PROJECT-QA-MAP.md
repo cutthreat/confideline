@@ -63,7 +63,7 @@
 
 ## Актуальные источники правды
 
-Состояние на момент карты: в `web\qa-reports\index.html` есть 21 актуальный отчет в QA Control Center, плюс архив. Агрегатный статус QA Control Center остается `FAIL`, потому что premium messagesOut, stories existing-photo, group report-post и accessibility еще требуют исправлений.
+Состояние на момент карты: в `web\qa-reports\index.html` есть 23 актуальных отчета в QA Control Center, плюс архив. Агрегатный статус QA Control Center остается `FAIL`, потому что premium messagesOut, stories existing-photo, group report-post и accessibility еще требуют исправлений.
 
 | Отчет | Статус | URL/путь |
 |---|---|---|
@@ -71,6 +71,7 @@
 | User interactions | Актуальный PASS по likes/favorites/visits/profile actions | `H:\GPT-Codex\Confideline\web\qa-reports\user-interactions-2026-05-10\index.html` |
 | Connections mutual likes | Актуальный PASS: clean baseline, one-way like, recipient-side incoming like, mutual у обоих, rollback | `H:\GPT-Codex\Confideline\web\qa-reports\connections-mutual-likes-2026-05-10\index.html` |
 | Photo access actions | Актуальный FAIL: approve/reject happy path PASS, но action без request возвращает false `success=true` | `H:\GPT-Codex\Confideline\web\qa-reports\photo-access-actions-2026-05-10\index.html` |
+| Gift send + balance | Актуальный PASS: paid gift U184 -> U166, баланс 180 -> 165, доказаны server response, уведомление и профиль получателя | `H:\GPT-Codex\Confideline\web\qa-reports\gift-send-balance-2026-05-10\index.html` |
 | Detail surfaces | Актуальный PASS по detail surfaces с BA-замечанием по EN-content | `H:\GPT-Codex\Confideline\web\qa-reports\detail-surfaces-2026-05-10\index.html` |
 | Discovery surfaces | Актуальный PASS по dashboard/browse/encounters | `H:\GPT-Codex\Confideline\web\qa-reports\discovery-surfaces-2026-05-09\index.html` |
 | Public/Auth + Accessibility | Актуальный FAIL по accessibility при рабочем signup path | `H:\GPT-Codex\Confideline\web\qa-reports\public-auth-accessibility-2026-05-09\index.html` |
@@ -96,6 +97,7 @@
 | P1 | `Photo access actions` | Action без существующего request возвращает `success=true`; нужен controller-level отказ. |
 | P1 | `Public/Auth + Accessibility` | Signup path работает, но accessibility FAIL остается задачей для UI/верстки. |
 | P1 | `Bans / SHADOW-RELEASE-001` | После снятия shadow/full ban нужно доказывать восстановление видимости и новых действий. |
+| P2 | `Gifts edge cases` | Happy path закрыт PASS; отдельно проверить duplicate gift, insufficient balance, private gift и shadow-ban влияние. |
 | P2 | `Full-site smoke` admin href `{url}` | Проверить админский шаблон/ссылку как отдельный route/UI bug. |
 
 ### Гигиена отчетов и скриптов
