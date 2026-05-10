@@ -1227,3 +1227,28 @@ BA / рекомендации для Алексея:
 
 - `Срочно и важно`: premium message limits сейчас нельзя считать рабочей бизнес-логикой, потому что сверхлимитное сообщение реально доставляется получателю.
 - `Важно, но не срочно`: для group posts нужно подтвердить, требуется ли администратору reopen hidden post; если да, это отдельная задача Игорю.
+
+## 2026-05-10 Stories existing-photo retest
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\stories-existing-photo-retest-2026-05-10\index.html`
+
+Raw evidence:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\stories-existing-photo-retest-2026-05-10\raw\stories-current-publish-scenario.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\stories-existing-photo-retest-2026-05-10\raw\stories-current-publish-scenario.md`
+- Screenshots: `H:\GPT-Codex\Confideline\web\qa-reports\stories-existing-photo-retest-2026-05-10\assets\*.png`
+
+Результат:
+
+- Общий статус: `FAIL`.
+- PASS: stories settings прочитаны: `storiesOn=true`, `storiesMode=postmoderation`, `allowedTimeNextStory=1`.
+- PASS: в stories modal есть existing-photo radio inputs, фото выбирается, `Next` становится доступным.
+- FAIL: после выбора existing photo и клика `Next` modal закрывается, S3 image fetch возвращает `200`, но cropper/preview не открывается.
+- INVALID: author/viewer visibility не оценивается, потому что новая story не была создана; старые carousel cards не являются proof новой публикации.
+
+BA / рекомендации для Алексея:
+
+- `Срочно и важно`: stories из existing photo не публикуются, хотя device upload ранее проходил. Это отдельный дефект publish flow.
+- `Важно, но не срочно`: сохранить правило тестирования stories: сначала доказать создание/publish новой story, только потом проверять author/viewer visibility.
