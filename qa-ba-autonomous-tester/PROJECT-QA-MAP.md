@@ -63,12 +63,13 @@
 
 ## Актуальные источники правды
 
-Состояние на момент карты: в `web\qa-reports\index.html` есть 17 активных карточек, из них 4 `FAIL`, 6 `PASS`, остальные `WARN/RECHECK/HANDOFF/UX/UI/CONTROL`, плюс архив. Агрегатный статус QA Control Center остается `FAIL`.
+Состояние на момент карты: в `web\qa-reports\index.html` есть 21 актуальный отчет в QA Control Center, плюс архив. Агрегатный статус QA Control Center остается `FAIL`, потому что premium messagesOut, stories existing-photo, group report-post и accessibility еще требуют исправлений.
 
 | Отчет | Статус | URL/путь |
 |---|---|---|
 | QA Control Center | Рабочая панель для Игоря и Алексея | `H:\GPT-Codex\Confideline\web\qa-reports\qa-control-center-2026-05-07\index.html` |
 | User interactions | Актуальный PASS по likes/favorites/visits/profile actions | `H:\GPT-Codex\Confideline\web\qa-reports\user-interactions-2026-05-10\index.html` |
+| Connections mutual likes | Актуальный PASS: clean baseline, one-way like, recipient-side incoming like, mutual у обоих, rollback | `H:\GPT-Codex\Confideline\web\qa-reports\connections-mutual-likes-2026-05-10\index.html` |
 | Detail surfaces | Актуальный PASS по detail surfaces с BA-замечанием по EN-content | `H:\GPT-Codex\Confideline\web\qa-reports\detail-surfaces-2026-05-10\index.html` |
 | Discovery surfaces | Актуальный PASS по dashboard/browse/encounters | `H:\GPT-Codex\Confideline\web\qa-reports\discovery-surfaces-2026-05-09\index.html` |
 | Public/Auth + Accessibility | Актуальный FAIL по accessibility при рабочем signup path | `H:\GPT-Codex\Confideline\web\qa-reports\public-auth-accessibility-2026-05-09\index.html` |
@@ -153,7 +154,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File H:\GPT-Codex\Confideline\qa-
 | P0 | Chat premium/free limits | Базовый thread lifecycle закрыт PASS; premium messagesOut fresh FAIL подтвержден 10/10 доставкой | После фикса: при лимите 1 первая отправка проходит, попытки 2-10 не доставляются получателям, rollback clean. |
 | P0 | Stories existing-photo publish | Fresh FAIL локализован: existing-photo path ломается, device-upload path PASS | После фикса: existing-photo открывает cropper/preview, публикуется, автор и viewer видят новую story. |
 | P0 | Group posts lifecycle | Hide/reopen/delete закрыты; report-post FAIL | Реализовать/ретестить report-post owner/viewer/admin flow. |
-| P1 | Connections deep mutual | Нужно углубить mutual match, incoming/outgoing, premium gates | U1/U2 matrix до/после mutual и rollback. |
+| P1 | Connections premium/shadow gates | Базовый mutual flow закрыт PASS; нужно проверить влияние premium incoming lock и shadow-ban | U1/U2 matrix: likes/mutual до/во время/после premium gate или shadow-ban, sender + recipient proof, rollback. |
 | P1 | Premium controls remaining | Проверить edit/timer/swipe/country price и checkbox features | Каждая настройка имеет реальный user-side proof или оформленный product decision. |
 | P1 | Bans extended paid/content actions | Shadow ban должен покрывать gifts/photo access/groups/posts/stories/messages | До/во время/после снятия бана, U1 illusion + U2 absence + admin history. |
 | P2 | Admin settings smoke | Убедиться, что админские формы не ломают Yii2 CSRF/AJAX/rollback | Все ключевые settings сохраняются, отображаются и откатываются. |

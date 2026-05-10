@@ -1452,3 +1452,33 @@ BA / рекомендации для Алексея:
 
 - `Срочно и важно`: stories existing-photo publish выглядит доступным пользователю, но бесшумно обрывается после `Next`.
 - `Важно, но не срочно`: device-upload stories action списывает credits; для QA-контуров нужен fixture-баланс или явное правило компенсации/фиксации intentional credit spend.
+
+## 2026-05-10 Connections mutual likes recheck
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\connections-mutual-likes-2026-05-10\index.html`
+
+Raw evidence:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\connections-mutual-likes-2026-05-10\connections-mutual-likes.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\connections-mutual-likes-2026-05-10\connections-mutual-likes.md`
+- Screenshots: `H:\GPT-Codex\Confideline\web\qa-reports\connections-mutual-likes-2026-05-10\*.png`
+
+Результат:
+
+- Общий статус: `PASS`.
+- PASS: baseline пары U182/U184 очищен перед тестом; mutual и входящие списки для пары пустые.
+- PASS: U182 -> U184 через `/en/connections/toggle-like?toUserId=184` вернул `success=true`, `liked=true`.
+- PASS: U184 видит U182 во входящих лайках; mutual у обоих еще пустой после одного лайка.
+- PASS: U184 -> U182 вернул `success=true`, `liked=true`; mutual виден у U182 и у U184.
+- PASS: rollback выполнен; оба тестовых лайка сняты, mutual после cleanup пустой.
+
+Действие для Игоря:
+
+- Функционального дефекта в базовом likes/mutual flow не найдено. При регрессии смотреть `ConnectionsController::actionToggleLike()`, `LikeManager::toggleLike()`, `LikeManager::TYPE_MUTUAL` и страницы `/connections/likes/from-you|to-you|mutual`.
+
+Harness / правила:
+
+- `toggle-like` является переключателем. Перед любым тестом likes/matches обязателен clean baseline, иначе тестировщик может снять уже существующий лайк и получить ложный результат.
+- Для admin login-as добавлен retry в новый сценарий, потому что один короткий login-as вызов временно не нашел ссылку. Это считается укреплением тестового контура, а не продуктовым багом.
