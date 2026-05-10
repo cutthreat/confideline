@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | Group Posts Delete and Report 2026-05-10</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+  <script src="../qa-report-controls.js" defer></script>
+</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">Confideline QA/BA</p>
+      <h1>Group posts delete/report recheck</h1>
+      <p>Дата прохода: 2026-05-10. Проверен остаток group posts lifecycle после hide/reopen: owner delete и report post endpoint.</p>
+      <div class="qa-summary-grid">
+        <div class="qa-metric"><span>Итог</span><strong>FAIL</strong></div>
+        <div class="qa-metric"><span>Delete</span><strong>PASS</strong></div>
+        <div class="qa-metric"><span>Report</span><strong>FAIL</strong></div>
+      </div>
+    </header>
+
+    <section class="qa-section" id="summary">
+      <h2>Короткий вывод</h2>
+      <table class="qa-table">
+        <thead><tr><th>Статус</th><th>Проверка</th><th>Что получили</th><th>Вывод</th></tr></thead>
+        <tbody>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Delete post</td><td>Owner U184 удалил post ID 26 через реальную ссылку `/en/group/delete-post?alias=...&postId=26`; JSON вернул `success=true`.</td><td>Удаление собственного поста работает.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Visibility after delete</td><td>После удаления owner и viewer U166 не видят текст поста; admin row также отсутствует.</td><td>Delete удаляет пост из пользовательской и админской видимости.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--fail">FAIL</span></td><td>Report post</td><td>`/en/group/report-post?alias=...&postId=26` на GET и POST возвращает пустой `200` без JSON, flash, формы, записи жалобы или видимого результата.</td><td>Report post endpoint фактически не реализован.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="igor">
+      <h2>Для Игоря</h2>
+      <div class="qa-status-grid">
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--fail">FAIL</span>
+          <h3>GROUP-POST-REPORT-EMPTY-ACTION</h3>
+          <p><strong>Факт:</strong> live endpoint `/en/group/report-post?alias=qa-group-hide-visibility-20260510-071523-group&amp;postId=26` отвечает `200`, но тело пустое и результата для пользователя/админки не видно.</p>
+          <p><strong>Ожидание:</strong> report post должен давать понятный результат: форма/CSRF или AJAX, запись жалобы, flash/JSON и дальнейшая обработка в админке.</p>
+          <p><strong>Где смотреть:</strong> `application/controllers/GroupController.php`, метод `actionReportPost($alias)` сейчас пустой в локальной копии.</p>
+          <p><strong>Ретест:</strong> открыть пост другим пользователем, отправить report, проверить ответ, уведомление пользователю и появление записи жалобы/модерации в админке.</p>
+        </article>
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>Delete post работает</h3>
+          <p><strong>Факт:</strong> owner delete через DOM href с `data-type=post` вернул `success=true`; owner, viewer и admin больше не видят post ID 26.</p>
+          <p><strong>Примечание:</strong> post ID 26 был намеренно удален тестом как часть проверки delete flow.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="qa-section" id="evidence">
+      <h2>Evidence screenshots</h2>
+      <div class="qa-shot-grid">
+        <figure class="qa-shot qa-shot--pass"><figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Viewer видит пост до delete</span></span></figcaption><img src="./assets/01-viewer-before-delete.png" alt="Viewer before delete"></figure>
+        <figure class="qa-shot qa-shot--pass"><figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Admin видит Active row до delete</span></span></figcaption><img src="./assets/02-admin-row-before-delete.png" alt="Admin before delete"></figure>
+        <figure class="qa-shot qa-shot--fail"><figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--fail">FAIL</span><span>Report endpoint пустой, delete action найден</span></span></figcaption><img src="./assets/03-owner-post-actions.png" alt="Owner actions"></figure>
+        <figure class="qa-shot qa-shot--pass"><figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Owner не видит пост после delete</span></span></figcaption><img src="./assets/04-owner-after-delete.png" alt="Owner after delete"></figure>
+        <figure class="qa-shot qa-shot--pass"><figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Viewer не видит пост после delete</span></span></figcaption><img src="./assets/05-viewer-after-delete.png" alt="Viewer after delete"></figure>
+        <figure class="qa-shot qa-shot--pass"><figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Admin row отсутствует после delete</span></span></figcaption><img src="./assets/06-admin-after-delete.png" alt="Admin after delete"></figure>
+      </div>
+    </section>
+
+    <section class="qa-section" id="alexey">
+      <h2>Матрица Алексея</h2>
+      <table class="qa-table">
+        <thead><tr><th>Квадрант</th><th>Наблюдение</th><th>Совет</th><th>Как проверить готовность</th></tr></thead>
+        <tbody>
+          <tr><td>Срочно и важно</td><td>Жалоба на пост группы не работает как продуктовая функция: endpoint пустой.</td><td>Считать это дефектом group moderation/reporting, если жалобы пользователей на посты входят в acceptance scope.</td><td>Пользователь отправляет жалобу, получает понятный результат, а админ видит запись жалобы и может модерировать пост.</td></tr>
+          <tr><td>Важно, но не срочно</td><td>Delete работает, но удаляет пост из admin list без отдельной истории.</td><td>Если важна история модерации, решить продуктово: пользовательское delete должно физически удалять или оставлять audit trail.</td><td>После delete в админке есть история действия или это явно описано как физическое удаление.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="raw">
+      <h2>Raw evidence</h2>
+      <div class="qa-raw-links">
+        <a class="tp-btn" href="./raw/group-posts-delete-report.json">group-posts-delete-report.json</a>
+        <a class="tp-btn" href="./raw/group-posts-delete-report.md">group-posts-delete-report.md</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
