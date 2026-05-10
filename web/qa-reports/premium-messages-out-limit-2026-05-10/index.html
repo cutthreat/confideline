@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | Premium Messages Out Limit 2026-05-10</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+  <script src="../qa-report-controls.js" defer></script>
+  <style>
+    .qa-shot{position:relative;overflow:hidden}
+    .qa-shot img{display:block;width:100%}
+    .qa-mark{position:absolute;border:3px solid #e03131;border-radius:6px;pointer-events:none}
+    .qa-arrow{position:absolute;width:100px;height:3px;background:#e03131;transform:rotate(24deg);transform-origin:left center;pointer-events:none}
+    .qa-arrow:after{content:"";position:absolute;right:-2px;top:-5px;border-left:12px solid #e03131;border-top:6px solid transparent;border-bottom:6px solid transparent}
+    .qa-note-overlay{position:absolute;left:12px;right:12px;bottom:12px;background:rgba(255,255,255,.94);border:1px solid #d8e0ec;border-radius:6px;padding:8px;font-weight:700;color:#15233b}
+    .mark-admin{left:28%;top:18%;width:42%;height:34%}
+    .arrow-admin{left:55%;top:42%}
+    .mark-list{left:8%;top:18%;width:42%;height:52%}
+    .arrow-list{left:46%;top:28%}
+  </style>
+</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">Confideline QA/BA · Premium/free limits · 2026-05-10</p>
+      <h1>Premium messagesOut limit: 10 попыток</h1>
+      <p>Свежий live-проход по исходящим сообщениям premium-пользователя. В админке выставлен лимит <code>messagesOutPremiumMen=1</code>, <code>messagesOutPremiumWomen=1</code>, <code>messagesOutPeriod=1</code>. Затем U182 отправил 10 сообщений сверх лимита двум получателям, и все 10 точных текстов были найдены у получателей.</p>
+      <div class="qa-summary-grid">
+        <div class="qa-metric"><span>Итог</span><strong>FAIL</strong></div>
+        <div class="qa-metric"><span>Лимит</span><strong>1</strong></div>
+        <div class="qa-metric"><span>Отправка</span><strong>10/10 success</strong></div>
+        <div class="qa-metric"><span>Получатели</span><strong>10/10 visible</strong></div>
+        <div class="qa-metric"><span>Rollback</span><strong>PASS</strong></div>
+      </div>
+    </header>
+
+    <section class="qa-section" id="summary">
+      <h2>Короткий вывод</h2>
+      <table class="qa-table">
+        <thead><tr><th>Статус</th><th>Проверка</th><th>Факт</th><th>Вывод</th></tr></thead>
+        <tbody>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Настройки применились</td><td>Readback в админке: <code>messagesOutPremiumMen=1</code>, <code>messagesOutPremiumWomen=1</code>, <code>messagesOutPeriod=1</code>.</td><td>Тест действительно шел с маленьким лимитом.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--fail">FAIL</span></td><td>Блокировка сверх лимита</td><td>U182 отправил 10/10 сообщений, каждый ответ <code>/en/messages/create</code> вернул <code>success=true</code> и новый <code>messageId</code> 248-257.</td><td>Лимит исходящих premium-сообщений не блокирует лишние отправки.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--fail">FAIL</span></td><td>Сторона получателя</td><td>U6 и U10 увидели все 10 точных QA-текстов у себя в <code>/en/messages</code>.</td><td>Это не только UI-успех отправителя: сообщения реально доставлены.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Rollback</td><td>После теста настройки premium messagesOut возвращены к baseline, diff пустой.</td><td>Состояние админки восстановлено.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="igor">
+      <h2>Для Игоря</h2>
+      <div class="qa-status-grid">
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--fail">FAIL</span>
+          <h3>PREMIUM-MESSAGES-OUT-LIMIT-BYPASS-DELIVERED-TO-RECIPIENTS</h3>
+          <p><strong>Факт:</strong> при лимите исходящих premium-сообщений <code>1</code> пользователь U182 смог отправить 10 сообщений подряд. Все 10 ответов API успешные, и все 10 текстов видны у получателей U6/U10.</p>
+          <p><strong>Ожидание:</strong> после исчерпания лимита система должна заблокировать лишнюю отправку или не доставлять сообщение получателю, показывая понятное состояние отправителю.</p>
+          <p><strong>Как воспроизвести:</strong> в <code>/en/admin/settings/premium</code> поставить <code>messagesOutPremiumMen=1</code>, <code>messagesOutPremiumWomen=1</code>, <code>messagesOutPeriod=1</code>; зайти как U182; отправить 10 уникальных сообщений U6/U10; зайти получателем и найти точные тексты.</p>
+          <p><strong>Где смотреть:</strong> <code>MessagesController::actionCreate()</code>, <code>MessageForm</code>, premium/limit service, проверка лимита до <code>messageManager->createMessage()</code>. Также проверить, не применяется ли лимит только на UI, а не в серверном POST.</p>
+          <p><strong>Ретест после фикса:</strong> при лимите 1 первая отправка может пройти, попытки 2-10 должны получить отказ и не появиться у U6/U10.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="qa-section" id="attempts">
+      <h2>10 попыток</h2>
+      <table class="qa-table">
+        <thead><tr><th>#</th><th>Получатель</th><th>messageId</th><th>Sender response</th><th>Recipient proof</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>U6</td><td>248</td><td><span class="qa-badge qa-badge--fail">success</span></td><td><span class="qa-badge qa-badge--fail">точный текст виден</span></td></tr>
+          <tr><td>2</td><td>U10</td><td>249</td><td><span class="qa-badge qa-badge--fail">success</span></td><td><span class="qa-badge qa-badge--fail">точный текст виден</span></td></tr>
+          <tr><td>3</td><td>U6</td><td>250</td><td><span class="qa-badge qa-badge--fail">success</span></td><td><span class="qa-badge qa-badge--fail">точный текст виден</span></td></tr>
+          <tr><td>4</td><td>U10</td><td>251</td><td><span class="qa-badge qa-badge--fail">success</span></td><td><span class="qa-badge qa-badge--fail">точный текст виден</span></td></tr>
+          <tr><td>5</td><td>U6</td><td>252</td><td><span class="qa-badge qa-badge--fail">success</span></td><td><span class="qa-badge qa-badge--fail">точный текст виден</span></td></tr>
+          <tr><td>6</td><td>U10</td><td>253</td><td><span class="qa-badge qa-badge--fail">success</span></td><td><span class="qa-badge qa-badge--fail">точный текст виден</span></td></tr>
+          <tr><td>7</td><td>U6</td><td>254</td><td><span class="qa-badge qa-badge--fail">success</span></td><td><span class="qa-badge qa-badge--fail">точный текст виден</span></td></tr>
+          <tr><td>8</td><td>U10</td><td>255</td><td><span class="qa-badge qa-badge--fail">success</span></td><td><span class="qa-badge qa-badge--fail">точный текст виден</span></td></tr>
+          <tr><td>9</td><td>U6</td><td>256</td><td><span class="qa-badge qa-badge--fail">success</span></td><td><span class="qa-badge qa-badge--fail">точный текст виден</span></td></tr>
+          <tr><td>10</td><td>U10</td><td>257</td><td><span class="qa-badge qa-badge--fail">success</span></td><td><span class="qa-badge qa-badge--fail">точный текст виден</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="alexey">
+      <h2>Для Алексея</h2>
+      <table class="qa-table">
+        <thead><tr><th>Квадрант</th><th>Наблюдение</th><th>Совет</th><th>Как проверить готовность</th></tr></thead>
+        <tbody>
+          <tr><td>Срочно и важно</td><td>Premium limit не работает как ограничитель: при лимите 1 прошло и доставилось 10 сообщений.</td><td>Считать это релизным дефектом premium/free logic, потому что админская настройка не управляет реальным поведением.</td><td>После фикса при лимите 1 первая отправка проходит, 2-10 не создают доставленные сообщения у получателей.</td></tr>
+          <tr><td>Важно, но не срочно</td><td>Сейчас в UI/ответе API нет понятного limit state для отправителя в этом сценарии.</td><td>После серверного фикса описать продуктовый текст отказа: почему нельзя отправить, когда лимит обновится, нужен ли premium/credits.</td><td>Отправитель видит понятное сообщение, а API возвращает предсказуемый JSON с причиной.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="evidence">
+      <h2>Evidence screenshots</h2>
+      <div class="qa-shot-grid">
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Настройки лимита сохранены как 1/1/1</span></span></figcaption>
+          <img src="./assets/admin-recipient-delivery-mutated.png" alt="Premium settings mutated">
+          <span class="qa-mark mark-admin"></span><span class="qa-arrow arrow-admin"></span>
+          <span class="qa-note-overlay">Админка прочитала лимиты как 1: тест шел с нужными настройками.</span>
+        </figure>
+        <figure class="qa-shot qa-shot--fail">
+          <figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--fail">FAIL</span><span>Попытка 1: U6 видит текст</span></span></figcaption>
+          <img src="./assets/recipient-attempt-1-user-6.png" alt="Recipient attempt 1">
+          <span class="qa-mark mark-list"></span><span class="qa-arrow arrow-list"></span>
+          <span class="qa-note-overlay">Получатель U6 видит точный QA-текст после успешной отправки.</span>
+        </figure>
+        <figure class="qa-shot qa-shot--fail">
+          <figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--fail">FAIL</span><span>Попытка 5: U6 снова видит текст</span></span></figcaption>
+          <img src="./assets/recipient-attempt-5-user-6.png" alt="Recipient attempt 5">
+          <span class="qa-mark mark-list"></span><span class="qa-arrow arrow-list"></span>
+          <span class="qa-note-overlay">Пятая попытка тоже доставлена, хотя лимит был 1.</span>
+        </figure>
+        <figure class="qa-shot qa-shot--fail">
+          <figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--fail">FAIL</span><span>Попытка 10: U10 видит текст</span></span></figcaption>
+          <img src="./assets/recipient-attempt-10-user-10.png" alt="Recipient attempt 10">
+          <span class="qa-mark mark-list"></span><span class="qa-arrow arrow-list"></span>
+          <span class="qa-note-overlay">Десятая попытка также доставлена получателю U10.</span>
+        </figure>
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Rollback настроек выполнен</span></span></figcaption>
+          <img src="./assets/admin-recipient-delivery-rollback.png" alt="Premium settings rollback">
+          <span class="qa-mark mark-admin"></span><span class="qa-arrow arrow-admin"></span>
+          <span class="qa-note-overlay">После теста premium settings возвращены к baseline, diff пустой.</span>
+        </figure>
+      </div>
+    </section>
+
+    <section class="qa-section" id="raw">
+      <h2>Raw evidence</h2>
+      <div class="qa-raw-links">
+        <a class="tp-btn" href="./raw/premium-messages-recipient-delivery-audit.json">premium-messages-recipient-delivery-audit.json</a>
+        <a class="tp-btn" href="./raw/premium-messages-recipient-delivery-audit.md">premium-messages-recipient-delivery-audit.md</a>
+      </div>
+      <p class="qa-help">Все 35 PNG-скриншотов прогона сохранены в <code>assets/</code>: admin baseline/mutated/rollback, sender attempts 1-10, recipient attempts 1-10 и login-state screenshots.</p>
+    </section>
+  </main>
+</body>
+</html>
