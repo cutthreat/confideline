@@ -1310,3 +1310,25 @@ Raw evidence:
 BA / рекомендации для Алексея:
 
 - `Важно, но не срочно`: функционального дефекта reopen не осталось; `Approve post` фактически работает как reopen. UX-рекомендация: на hidden row переименовать действие в `Reopen` / `Показать снова`, если модератору нужно явное название.
+
+## 2026-05-10 QA reports public availability and schema audit
+
+Raw evidence:
+
+- `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\report-schema-audit-20260510\report-schema-audit-after-public.json`
+
+Результат:
+
+- Общий статус: `PASS`.
+- PASS: все 25 локальных страниц `web\qa-reports\*\index.html` открываются извне по `https://cutthreat.github.io/confideline/web/qa-reports/<slug>/`.
+- PASS: все 25 страниц подключают `task-panel-standard.css`.
+- PASS: все 25 страниц подключают `qa-report.css`.
+- PASS: все 25 страниц имеют единый фильтр статусов через `qa-report-controls.js`.
+- PASS: стандартный `deploy\Test-ConfidelinePages.ps1 -CheckPublic` также прошел.
+
+Что изменено:
+
+- Добавлен общий `web\qa-reports\qa-report-controls.js`.
+- В `web\qa-reports\qa-report.css` добавлены стили общего sticky-фильтра.
+- Старые компактные отчеты приведены к общей схеме: общий CSS, `qa-report-page`, статусные фильтры, поле `Выполнено / комментарий Игоря`.
+- Недостающие локальные отчеты опубликованы в Pages-ветку.
