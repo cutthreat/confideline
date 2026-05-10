@@ -1332,3 +1332,34 @@ Raw evidence:
 - В `web\qa-reports\qa-report.css` добавлены стили общего sticky-фильтра.
 - Старые компактные отчеты приведены к общей схеме: общий CSS, `qa-report-page`, статусные фильтры, поле `Выполнено / комментарий Игоря`.
 - Недостающие локальные отчеты опубликованы в Pages-ветку.
+
+## 2026-05-10 Group posts delete/report recheck
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\group-posts-delete-report-2026-05-10\index.html`
+
+Raw evidence:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\group-posts-delete-report-2026-05-10\raw\group-posts-delete-report.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\group-posts-delete-report-2026-05-10\raw\group-posts-delete-report.md`
+- Screenshots: `H:\GPT-Codex\Confideline\web\qa-reports\group-posts-delete-report-2026-05-10\assets\*.png`
+
+Результат:
+
+- Общий статус: `FAIL`.
+- PASS: до delete viewer U166 видел post ID 26.
+- PASS: до delete admin видел post ID 26 как `Active`.
+- FAIL: `/en/group/report-post?alias=...&postId=26` на GET/POST возвращает пустой `200` без JSON, flash, формы, записи жалобы или видимого результата.
+- PASS: owner delete через реальный DOM href `/en/group/delete-post?alias=...&postId=26` вернул `success=true`.
+- PASS: после delete owner и viewer не видят текст post ID 26.
+- PASS: после delete admin row post ID 26 отсутствует.
+
+Действие для Игоря:
+
+- Реализовать `GroupController::actionReportPost($alias)`: form/CSRF или AJAX, запись жалобы, понятный ответ пользователю, admin queue/notification.
+
+BA / рекомендации для Алексея:
+
+- `Срочно и важно`: если жалобы на посты входят в acceptance scope групповой модерации, текущий report-post является релизным дефектом.
+- `Важно, но не срочно`: решить, должно ли пользовательское delete физически удалять пост из admin list или оставлять audit trail.
