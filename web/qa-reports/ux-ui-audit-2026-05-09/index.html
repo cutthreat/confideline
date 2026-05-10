@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confideline QA UX/UI audit - 2026-05-09</title>
+  <style>
+    body{margin:0;background:#f5f7fb;color:#162033;font:15px/1.5 Arial,sans-serif}
+    main{max-width:1180px;margin:auto;padding:28px}
+    .hero,.card{background:#fff;border:1px solid #dce3ee;border-radius:8px;padding:18px;margin-bottom:16px;box-shadow:0 8px 22px rgba(16,30,54,.06)}
+    h1,h2{margin:0 0 10px}
+    .badge{display:inline-flex;align-items:center;max-width:100%;border-radius:999px;padding:4px 9px;font-weight:700;font-size:12px;overflow-wrap:anywhere}
+    .pass{border-color:#2f9e44}.fail{border-color:#e03131}.warn{border-color:#f59f00}
+    .pass .badge{background:#dcfce7;color:#166534}.fail .badge{background:#fee2e2;color:#991b1b}.warn .badge{background:#fef3c7;color:#92400e}
+    table{width:100%;border-collapse:collapse;background:#fff}
+    th,td{border-bottom:1px solid #e5eaf1;padding:10px;text-align:left;vertical-align:top}
+    code{background:#eef2f7;border-radius:4px;padding:1px 4px}
+  </style>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">`r`n  <script src="../qa-report-controls.js" defer></script>`r`n</head>
+<body class="qa-report-page">
+<main>
+  <section class="hero warn">
+    <span class="badge">UX/UI AUDIT</span>
+    <h1>Аудит интерфейса QA-отчетов</h1>
+    <p>Цель: сделать контур отчетов удобным для двух ролей. Алексею нужен быстрый управленческий статус PASS/FAIL/WARN. Игорю нужны точные дефекты, воспроизведение, code pointers и понятный источник правды.</p>
+  </section>
+
+  <section class="card pass">
+    <span class="badge">PASS</span>
+    <h2>Что уже хорошо</h2>
+    <table>
+      <thead><tr><th>Область</th><th>Оценка</th><th>Значение</th></tr></thead>
+      <tbody>
+        <tr><td>Публичный каталог</td><td>Есть единая точка входа <code>web/qa-reports/index.html</code>.</td><td>Отчеты можно передавать ссылкой без объяснения структуры папок.</td></tr>
+        <tr><td>Разделение ролей</td><td>В актуальных отчетах есть блоки для Игоря и доказательные PASS для постановщика.</td><td>Баги и подтвержденные проверки не смешиваются в один текстовый поток.</td></tr>
+        <tr><td>Evidence</td><td>У свежих прогонов есть raw JSON, screenshots и описание что тестировалось.</td><td>Можно перепроверить вывод без доверия к словам тестировщика.</td></tr>
+        <tr><td>Методическая коррекция</td><td>Ошибочные/старые выводы по stories/group/premium заменены свежими current-pass/current-fail.</td><td>Снижен риск передать Игорю ложный баг.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card warn">
+    <span class="badge">WARN</span>
+    <h2>Что исправлено сейчас</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Проблема</th><th>Сделано</th></tr></thead>
+      <tbody>
+        <tr><td>QA-UX-INDEX-001</td><td>В основном каталоге рядом с актуальными отчетами висели старые активные карточки <code>FAIL</code> за 2026-05-07/05-06.</td><td>Старые Bans/Moderation/Premium full reports перенесены в архивный блок с явной пометкой, чем они заменены.</td></tr>
+        <tr><td>QA-UX-BADGE-001</td><td>Длинные статусы/подписи могли визуально ломаться, как ранее с <code>PARTIAL</code>.</td><td>В общий <code>qa-report.css</code> добавлены переносы/ограничения для badge/topline/screenshot status.</td></tr>
+        <tr><td>QA-UX-PREMIUM-001</td><td>В premium report остался противоречивый текст: карточка FAIL, но строка "настройка влияет".</td><td>Текст заменен: настройка не меняет проверенные price/title nodes; прежний PASS был методической ошибкой.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card fail">
+    <span class="badge">FAIL</span>
+    <h2>Что еще плохо для работы Игоря</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Проблема</th><th>Почему мешает</th><th>Действие</th></tr></thead>
+      <tbody>
+        <tr><td>QA-UX-INLINE-CSS-001</td><td>Новые generated reports используют разный inline CSS.</td><td>Одни отчеты хорошо переносят длинный текст, другие могут ломать таблицы на мобильном или узком окне.</td><td>Сделать единый шаблон генерации отчета: общий CSS, table wrapper, word-break for IDs/paths, одинаковые секции.</td></tr>
+        <tr><td>QA-UX-SCREENSHOT-ANNOTATION-001</td><td>Не все свежие evidence screenshots имеют стрелки/рамки прямо на изображении.</td><td>Игорю приходится читать текст и самому искать нужную область на скрине.</td><td>Добавить обязательный annotation pass для финальных FAIL/WARN screenshots: красная рамка/стрелка + короткая подпись.</td></tr>
+        <tr><td>QA-UX-SOURCE-OF-TRUTH-001</td><td>История отчетов накопилась, и без каталога легко открыть устаревший вывод.</td><td>Повторяется риск ложного handoff.</td><td>В каждом старом отчете добавить верхний banner "ARCHIVE / replaced by ..." или генерировать manifest актуальности.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>Стандарт для следующих отчетов</h2>
+    <table>
+      <thead><tr><th>Секция</th><th>Что должно быть</th></tr></thead>
+      <tbody>
+        <tr><td>Верх</td><td>Один общий статус, дата, ссылка на raw JSON, коротко "что закрыто / что не закрыто".</td></tr>
+        <tr><td>Для Игоря</td><td>ID дефекта, severity, факт, ожидание, воспроизведение, где искать в коде/админке, минимальный ретест после фикса.</td></tr>
+        <tr><td>Для Алексея</td><td>Понятный управленческий вывод: работает / не работает / нужен product decision.</td></tr>
+        <tr><td>Evidence</td><td>Скрин с цветным статусом, стрелкой/рамкой, подписью "что проверял / что получил / почему это доказательство".</td></tr>
+        <tr><td>Методика</td><td>Sender + recipient, owner + viewer, before + after, rollback/cleanup, отдельная пометка INVALID для недоказанных выводов.</td></tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+</body>
+</html>
+

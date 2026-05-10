@@ -1286,3 +1286,27 @@ BA / рекомендации для Алексея:
 
 - `Важно, но не срочно`: принять решение, является ли `Approve post` на hidden row достаточным повторным открытием, или нужна отдельная понятная кнопка `Reopen` / `Показать снова`.
 - `Срочно, но не важно`: если `Approve post` действительно используется как reopen, лучше переименовать/разделить действие в UI, чтобы модератор понимал эффект без знания кода.
+
+## 2026-05-10 Group posts reopen visibility recheck
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\group-posts-reopen-visibility-2026-05-10\index.html`
+
+Raw evidence:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\group-posts-reopen-visibility-2026-05-10\raw\group-posts-reopen-visibility.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\group-posts-reopen-visibility-2026-05-10\raw\group-posts-reopen-visibility.md`
+- Screenshots: `H:\GPT-Codex\Confideline\web\qa-reports\group-posts-reopen-visibility-2026-05-10\assets\*.png`
+
+Результат:
+
+- Общий статус: `PASS`.
+- PASS: до reopen viewer U166 не видит hidden post ID 26.
+- PASS: на hidden row есть `Approve post`.
+- PASS: после `Approve post` post ID 26 становится `Active` в админке.
+- PASS: после reopen viewer U166 снова видит точный текст `QA group hide visibility 20260510-071523 post`.
+
+BA / рекомендации для Алексея:
+
+- `Важно, но не срочно`: функционального дефекта reopen не осталось; `Approve post` фактически работает как reopen. UX-рекомендация: на hidden row переименовать действие в `Reopen` / `Показать снова`, если модератору нужно явное название.

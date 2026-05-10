@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confideline Premium recheck без доказательных долгов</title>
+  <style>
+    body{margin:0;background:#f5f7fb;color:#152238;font:15px/1.5 Arial,sans-serif}
+    main{max-width:1180px;margin:0 auto;padding:28px}
+    h1{font-size:32px;margin:0 0 8px}
+    h2{font-size:22px;margin:28px 0 12px}
+    .hero,.card{background:#fff;border:1px solid #dce3ee;border-radius:8px;padding:18px;margin:0 0 16px;box-shadow:0 8px 22px rgba(16,30,54,.06)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+    .top{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+    .badge{display:inline-block;border-radius:999px;padding:4px 9px;font-weight:700;font-size:12px}
+    .pass{border-color:#2f9e44}.pass .badge{background:#dcfce7;color:#166534}
+    .fail{border-color:#e03131}.fail .badge{background:#fee2e2;color:#991b1b}
+    .warn{border-color:#f59f00}.warn .badge{background:#fef3c7;color:#92400e}
+    img{max-width:100%;border:1px solid #dce3ee;border-radius:6px}
+    figcaption{font-size:12px;color:#516070;margin-top:4px}
+    table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden}
+    th,td{border-bottom:1px solid #e5eaf1;padding:10px;text-align:left;vertical-align:top}
+    code{background:#eef2f7;padding:2px 4px;border-radius:4px}
+    .meta{color:#516070}
+  </style>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">`r`n  <link rel="stylesheet" href="../qa-report.css">`r`n  <script src="../qa-report-controls.js" defer></script>`r`n</head>
+<body class="qa-report-page">
+<main>
+  <section class="hero fail">
+    <div class="top"><span class="badge">FAIL</span><h1>Premium/free recheck без доказательных долгов</h1></div>
+    <p>Актуальный проход по спорным Premium/free настройкам. Цель: заменить старые DATA GAP/NOT PROVEN на проверенные PASS/FAIL/WARN с live evidence, user-side и recipient-side проверками там, где действие влияет на другого пользователя.</p>
+    <p class="meta">Старт: 2026-05-09T08:50:38.016Z. Финиш: 2026-05-09T08:54:00.701Z. Rollback настроек: OK.</p>
+    <p><a href="./raw/premium-no-debt-recheck.json">Raw JSON</a></p>
+  </section>
+  <h2 id="igor">Блок для Игоря</h2>
+  <table>
+    <thead><tr><th>Severity</th><th>ID</th><th>Суть</th><th>Как искать</th></tr></thead>
+    <tbody>
+    <tr class="fail">
+      <td>high</td>
+      <td>PREMIUM-MESSAGES-OUT-LIMIT-001</td>
+      <td>messagesOutPremium при лимите 1 не блокирует лишние отправки/доставку получателям</td>
+      <td>Проверить место применения лимита в /en/messages/create: счетчик должен блокировать sender response и не создавать доставляемое сообщение после лимита.</td>
+    </tr>
+
+    <tr class="fail">
+      <td>high</td>
+      <td>PREMIUM-EDIT-SENT-MESSAGE-001</td>
+      <td>editSentMessageOn включен, но у отправленного сообщения нет edit action</td>
+      <td>Искать в message item view/JS: рядом с исходящим сообщением нет action edit/update; также проверить backend route для редактирования.</td>
+    </tr>
+
+    <tr class="warn">
+      <td>medium</td>
+      <td>PREMIUM-TIMER-IN-MUTUAL-001</td>
+      <td>timerInMutualOn включен, но на mutual likes не найден видимый таймер</td>
+      <td>Проверить /connections/likes/mutual template и логику premium/free timer.</td>
+    </tr>
+    <tr class="warn">
+      <td>medium</td>
+      <td>PREMIUM-COUNTRY-PRICE-001</td>
+      <td>countryPremiumPriceOn не меняет price nodes на /en/balance/services#premium</td>
+      <td>Точный recheck без overlay: при countryPremiumPriceOn=1 и 0 блоки .feature-price/.feature-title одинаковые; rollback OK. См. raw/country-price-precise-recheck.json.</td>
+    </tr></tbody>
+  </table>
+  <h2>Evidence screenshots / доказательства</h2>
+  <div class="grid">
+      <article class="card pass" id="PREMIUM-SETTINGS-FIELDS">
+        <div class="top"><span class="badge">PASS</span><strong>Поля Premium присутствуют в live admin форме</strong></div>
+        <p><b>Что тестировал:</b> Проверка наличия спорных Premium/free полей в live admin DOM.</p>
+        <p><b>Что получил:</b> Поля есть, тестировать можно через реальные form submit.</p>
+        <p><b>Как воспроизвести:</b> Открыть /en/admin/settings/premium и проверить input[name="Settings[...]"].</p>
+        <p><b>Где смотреть Игорю:</b> /en/admin/settings/premium PHP view + model Settings.</p>
+        <figure><img src="evidence/admin-premium-baseline.png" alt="adminBaseline"><figcaption>adminBaseline</figcaption></figure>
+      </article>
+
+      <article class="card pass" id="PREMIUM-SETTINGS-READBACK">
+        <div class="top"><span class="badge">PASS</span><strong>Настройки Premium сохраняются и читаются обратно</strong></div>
+        <p><b>Что тестировал:</b> Yii2 form submit с CSRF: поставить лимит сообщений 1 и включить спорные чекбоксы.</p>
+        <p><b>Что получил:</b> Сохранение настроек подтверждено.</p>
+        <p><b>Как воспроизвести:</b> POST обычной формы /en/admin/settings/premium, затем повторно открыть страницу.</p>
+        <p><b>Где смотреть Игорю:</b> SettingsController action для premium settings и сохранение Settings[*].</p>
+        <figure><img src="evidence/admin-premium-mutated.png" alt="adminMutated"><figcaption>adminMutated</figcaption></figure>
+      </article>
+
+      <article class="card fail" id="PREMIUM-MESSAGES-OUT-RECIPIENT-SIDE">
+        <div class="top"><span class="badge">FAIL</span><strong>Лимит messagesOutPremium проверен со стороны отправителя и получателей</strong></div>
+        <p><b>Что тестировал:</b> Premium user U182, limit=1, 4 попытки отправки разным получателям; затем вход в каждого получателя и поиск точного QA-текста.</p>
+        <p><b>Что получил:</b> Лимит не удержал сценарий: больше 1 сообщения принято и/или доставлено получателям.</p>
+        <p><b>Как воспроизвести:</b> Set messagesOutPremiumMen/Women=1, login-as U182, POST /en/messages/create 4 раза, затем login-as U166/U167/U168/U165 и проверить /en/messages.</p>
+        <p><b>Где смотреть Игорю:</b> /en/messages/create, сервис лимитов messagesOutPremium*, доставка сообщения получателю.</p>
+        <figure><img src="evidence/message-send-1.png" alt="messageSend1"><figcaption>messageSend1</figcaption></figure><figure><img src="evidence/messageRecipient1.png" alt="messageRecipient1"><figcaption>messageRecipient1</figcaption></figure><figure><img src="evidence/message-send-2.png" alt="messageSend2"><figcaption>messageSend2</figcaption></figure><figure><img src="evidence/messageRecipient2.png" alt="messageRecipient2"><figcaption>messageRecipient2</figcaption></figure><figure><img src="evidence/message-send-3.png" alt="messageSend3"><figcaption>messageSend3</figcaption></figure><figure><img src="evidence/messageRecipient3.png" alt="messageRecipient3"><figcaption>messageRecipient3</figcaption></figure><figure><img src="evidence/message-send-4.png" alt="messageSend4"><figcaption>messageSend4</figcaption></figure><figure><img src="evidence/messageRecipient4.png" alt="messageRecipient4"><figcaption>messageRecipient4</figcaption></figure>
+      </article>
+
+      <article class="card fail" id="PREMIUM-EDIT-SENT-MESSAGE-ON">
+        <div class="top"><span class="badge">FAIL</span><strong>editSentMessageOn должен показывать редактирование отправленного сообщения</strong></div>
+        <p><b>Что тестировал:</b> После отправки сообщения и включенного editSentMessageOn ищем редактирование прямо у сообщения отправителя.</p>
+        <p><b>Что получил:</b> Чекбокс включен, но пользователь не получает видимого действия редактирования.</p>
+        <p><b>Как воспроизвести:</b> Set editSentMessageOn=1, отправить сообщение, открыть /en/messages отправителем и искать edit/update/pencil action возле сообщения.</p>
+        <p><b>Где смотреть Игорю:</b> User messages view/controller: должна появиться кнопка/route редактирования отправленного сообщения либо настройку надо убрать/переописать.</p>
+        <figure><img src="evidence/edit-sent-message-sender.png" alt="editSentMessageSender"><figcaption>editSentMessageSender</figcaption></figure>
+      </article>
+
+      <article class="card fail" id="PREMIUM-TIMER-IN-MUTUAL-ON">
+        <div class="top"><span class="badge">FAIL</span><strong>timerInMutualOn должен показывать таймер в mutual likes</strong></div>
+        <p><b>Что тестировал:</b> Создана/обновлена mutual-like пара U182 <-> U184, открыт /en/connections/likes/mutual, проверены timer/expires markers.</p>
+        <p><b>Что получил:</b> Чекбокс включен, но пользовательский таймер в mutual не доказан.</p>
+        <p><b>Как воспроизвести:</b> Set timerInMutualOn=1, выполнить toggle-like в обе стороны, открыть /en/connections/likes/mutual.</p>
+        <p><b>Где смотреть Игорю:</b> Mutual likes view/JS: если настройка должна показывать таймер, его нет на пользовательской странице.</p>
+        <figure><img src="evidence/timer-in-mutual.png" alt="timerInMutual"><figcaption>timerInMutual</figcaption></figure>
+      </article>
+
+      <article class="card pass" id="PREMIUM-SWIPE-BACK-ON">
+        <div class="top"><span class="badge">PASS</span><strong>swipeBackOn показывает back/undo действие в encounters</strong></div>
+        <p><b>Что тестировал:</b> После включения swipeBackOn открыт /en/connections/encounters, в DOM ищется back/previous/undo action.</p>
+        <p><b>Что получил:</b> Back action найден.</p>
+        <p><b>Как воспроизвести:</b> Set swipeBackOn=1, открыть /en/connections/encounters и проверить кнопки/actions.</p>
+        <p><b>Где смотреть Игорю:</b> Encounters view/JS: настройка включена, но back action не появляется или называется иначе без видимого UX.</p>
+        <figure><img src="evidence/swipe-back-surface.png" alt="swipeBackSurface"><figcaption>swipeBackSurface</figcaption></figure>
+      </article>
+
+      <article class="card fail" id="PREMIUM-COUNTRY-PRICE-ON">
+        <div class="top"><span class="badge">FAIL</span><strong>countryPremiumPriceOn не меняет price nodes Premium services</strong></div>
+        <p><b>Что тестировал:</b> Сравнил пользовательскую страницу Premium services при countryPremiumPriceOn=1 и countryPremiumPriceOn=0.</p>
+        <p><b>Что получил:</b> Настройка не меняет проверенные price/title nodes; прежний PASS был методической ошибкой сравнения полного body с QA overlay.</p>
+        <p><b>Как воспроизвести:</b> Переключить countryPremiumPriceOn 1/0, открыть /en/balance/services#premium одним и тем же пользователем и сравнить видимые цены/страны.</p>
+        <p><b>Где смотреть Игорю:</b> Premium services pricing view + country-specific pricing resolver.</p>
+        <figure><img src="evidence/countryPriceOn.png" alt="countryPriceOn"><figcaption>countryPriceOn</figcaption></figure><figure><img src="evidence/countryPriceOff.png" alt="countryPriceOff"><figcaption>countryPriceOff</figcaption></figure>
+      </article></div>
+</main>
+</body>
+</html>
+
+
+
