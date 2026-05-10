@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | Stories Existing Photo vs Device 2026-05-10</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+  <script src="../qa-report-controls.js" defer></script>
+  <style>
+    .qa-shot{position:relative;overflow:hidden}
+    .qa-shot img{display:block;width:100%}
+    .qa-mark{position:absolute;border:3px solid #e03131;border-radius:6px;pointer-events:none}
+    .qa-mark-pass{border-color:#2f9e44}
+    .qa-arrow{position:absolute;width:100px;height:3px;background:#e03131;transform:rotate(25deg);transform-origin:left center;pointer-events:none}
+    .qa-arrow-pass{background:#2f9e44}
+    .qa-arrow:after{content:"";position:absolute;right:-2px;top:-5px;border-left:12px solid #e03131;border-top:6px solid transparent;border-bottom:6px solid transparent}
+    .qa-arrow-pass:after{border-left-color:#2f9e44}
+    .qa-overlay{position:absolute;left:12px;right:12px;bottom:12px;background:rgba(255,255,255,.94);border:1px solid #d8e0ec;border-radius:6px;padding:8px;font-weight:700;color:#15233b}
+    .mark-modal{left:8%;top:14%;width:38%;height:52%}
+    .arrow-modal{left:43%;top:32%}
+    .mark-top{left:2%;top:1%;width:28%;height:9%}
+    .arrow-top{left:27%;top:12%}
+    .mark-carousel{left:8%;top:18%;width:45%;height:45%}
+    .arrow-carousel{left:49%;top:31%}
+  </style>
+</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">Confideline QA/BA · stories · 2026-05-10</p>
+      <h1>Stories: existing photo ломается, device upload работает</h1>
+      <p>Свежий live-проход сравнил два пути публикации stories при текущих настройках: <code>storiesOn=true</code>, <code>storiesModerationMode=postmoderation</code>, <code>allowedTimeNextStory=1</code>. Путь из существующего фото ломается на кнопке Next; путь загрузки с устройства проходит до публикации и видимости у второго пользователя.</p>
+      <div class="qa-summary-grid">
+        <div class="qa-metric"><span>Итог</span><strong>FAIL</strong></div>
+        <div class="qa-metric"><span>Existing photo</span><strong>FAIL</strong></div>
+        <div class="qa-metric"><span>Device upload</span><strong>PASS</strong></div>
+        <div class="qa-metric"><span>Viewer proof</span><strong>PASS для device</strong></div>
+      </div>
+    </header>
+
+    <section class="qa-section" id="summary">
+      <h2>Короткий вывод</h2>
+      <table class="qa-table">
+        <thead><tr><th>Статус</th><th>Проверка</th><th>Факт</th><th>Вывод</th></tr></thead>
+        <tbody>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Настройки stories</td><td>В админке stories включены, режим <code>postmoderation</code>, задержка следующей story <code>1</code>.</td><td>Тест шел при активной stories-функции.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--fail">FAIL</span></td><td>Existing photo → Next</td><td>В modal найдено 2 существующих фото. После выбора radio и клика <code>Next</code> S3 image fetch дает 200, но modal закрывается, <code>cropperOpen=false</code>, <code>previewOpen=false</code>, новая story не создается.</td><td>Ломается именно путь публикации из уже загруженного фото.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Device upload</td><td>Upload с устройства открыл cropper, preview, отправил <code>spotlight-submit</code>, списал 50 credits и показал story автору и viewer U166.</td><td>Stories-модуль в целом рабочий; баг локализован в existing-photo path.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="igor">
+      <h2>Для Игоря</h2>
+      <div class="qa-status-grid">
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--fail">FAIL</span>
+          <h3>STORIES-EXISTING-PHOTO-NEXT-001</h3>
+          <p><strong>Факт:</strong> при выборе существующего фото в stories и клике <code>Next</code> модалка закрывается, но cropper/preview не открывается. В консоли видно <code>Selected photo for crop</code>, S3 image возвращает <code>200</code>, но публикация не продолжается.</p>
+          <p><strong>Ожидание:</strong> existing-photo path должен вести в тот же cropper/preview flow, что и device upload, либо сразу открывать preview с выбранным изображением.</p>
+          <p><strong>Как воспроизвести:</strong> зайти как U184 → главная <code>/en</code> → <code>Add me</code> в stories → выбрать existing photo radio → <code>Next</code>. Проверить, что <code>#modal-inline-cropper</code> или <code>#modal-inline-preview</code> не появились.</p>
+          <p><strong>Где смотреть:</strong> JS обработчик <code>#spotlight-submit-form</code>, ветка existing photo, вызов <code>cropEditor.run(inputEl)</code>, перенос S3 image/blob/file в <code>#general-uploaded-image</code>, события <code>formStoriesMedia afterValidateAttribute</code>.</p>
+          <p><strong>Почему это не общий stories-баг:</strong> device upload в том же режиме postmoderation прошел: cropper ready, preview ready, publish 2xx, story видна автору и второму пользователю.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="qa-section" id="alexey">
+      <h2>Для Алексея</h2>
+      <table class="qa-table">
+        <thead><tr><th>Квадрант</th><th>Наблюдение</th><th>Совет</th><th>Как проверить готовность</th></tr></thead>
+        <tbody>
+          <tr><td>Срочно и важно</td><td>Публикация stories из существующего фото не работает, хотя пользователь видит доступные фото и кнопку Next.</td><td>Считать это дефектом пользовательского stories flow: человек ожидает публикацию, а действие бесшумно обрывается.</td><td>После фикса existing-photo path открывает cropper/preview, story публикуется, автор и второй пользователь видят новую story.</td></tr>
+          <tr><td>Важно, но не срочно</td><td>Device upload списал 50 credits при тесте и показал story автору/viewer.</td><td>Для будущей приемки stories фиксировать баланс до/после и отдельно решить, как QA-тестировщику компенсировать/сбрасывать credits.</td><td>В тестовом контуре есть fixture-баланс или rollback credits для платных stories-действий.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="evidence">
+      <h2>Evidence screenshots</h2>
+      <div class="qa-shot-grid">
+        <figure class="qa-shot qa-shot--fail">
+          <figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--fail">FAIL</span><span>Existing photo modal: фото доступны</span></span></figcaption>
+          <img src="./assets/existing-author-modal-open.png" alt="Existing photo modal open">
+          <span class="qa-mark mark-modal"></span><span class="qa-arrow arrow-modal"></span>
+          <span class="qa-overlay">Модалка открыта, путь existing photo доступен пользователю.</span>
+        </figure>
+        <figure class="qa-shot qa-shot--fail">
+          <figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--fail">FAIL</span><span>Existing photo выбран перед Next</span></span></figcaption>
+          <img src="./assets/existing-author-photo-selected.png" alt="Existing photo selected">
+          <span class="qa-mark mark-modal"></span><span class="qa-arrow arrow-modal"></span>
+          <span class="qa-overlay">Radio existing photo выбран; следующий шаг должен открыть cropper/preview.</span>
+        </figure>
+        <figure class="qa-shot qa-shot--fail">
+          <figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--fail">FAIL</span><span>После Next cropper/preview не открылся</span></span></figcaption>
+          <img src="./assets/existing-author-after-next-click.png" alt="Existing photo after Next">
+          <span class="qa-mark mark-top"></span><span class="qa-arrow arrow-top"></span>
+          <span class="qa-overlay">Модалка закрылась; cropperOpen=false, previewOpen=false. Публикация не дошла до создания story.</span>
+        </figure>
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Device upload открывает cropper</span></span></figcaption>
+          <img src="./assets/device-author-cropper-open.png" alt="Device cropper open">
+          <span class="qa-mark qa-mark-pass mark-top"></span><span class="qa-arrow qa-arrow-pass arrow-top"></span>
+          <span class="qa-overlay">Контрольный путь: device upload открывает cropper и готов к Next.</span>
+        </figure>
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Device upload: preview готов</span></span></figcaption>
+          <img src="./assets/device-author-preview.png" alt="Device preview">
+          <span class="qa-mark qa-mark-pass mark-top"></span><span class="qa-arrow qa-arrow-pass arrow-top"></span>
+          <span class="qa-overlay">Preview открыт, publish доступен, croppedBlobReady=true.</span>
+        </figure>
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Device story видна второму пользователю</span></span></figcaption>
+          <img src="./assets/device-viewer-home-after-publish.png" alt="Device story viewer proof">
+          <span class="qa-mark qa-mark-pass mark-carousel"></span><span class="qa-arrow qa-arrow-pass arrow-carousel"></span>
+          <span class="qa-overlay">Viewer U166 видит story автора в пользовательском carousel.</span>
+        </figure>
+      </div>
+    </section>
+
+    <section class="qa-section" id="raw">
+      <h2>Raw evidence</h2>
+      <div class="qa-raw-links">
+        <a class="tp-btn" href="./raw/stories-current-publish-scenario.json">existing-photo raw JSON</a>
+        <a class="tp-btn" href="./raw/stories-current-publish-scenario.md">existing-photo raw MD</a>
+        <a class="tp-btn" href="./raw/stories-device-upload-cropper-scenario.json">device-upload raw JSON</a>
+        <a class="tp-btn" href="./raw/stories-device-upload-cropper-scenario.md">device-upload raw MD</a>
+      </div>
+      <p class="qa-help">Намеренное изменение live-state: device-upload контрольный тест опубликовал story и списал 50 credits с U184. Это было нужно, чтобы доказать, что общий stories flow работает, а дефект ограничен existing-photo path.</p>
+    </section>
+  </main>
+</body>
+</html>

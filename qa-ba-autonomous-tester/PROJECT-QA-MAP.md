@@ -74,7 +74,7 @@
 | Public/Auth + Accessibility | Актуальный FAIL по accessibility при рабочем signup path | `H:\GPT-Codex\Confideline\web\qa-reports\public-auth-accessibility-2026-05-09\index.html` |
 | Premium no-debt recheck | Актуальный FAIL по premium controls/limits | `H:\GPT-Codex\Confideline\web\qa-reports\premium-no-debt-recheck-2026-05-09\index.html` |
 | Premium messagesOut limit | Актуальный FAIL: при лимите 1 отправлено и доставлено 10/10 сообщений | `H:\GPT-Codex\Confideline\web\qa-reports\premium-messages-out-limit-2026-05-10\index.html` |
-| Stories current publish flow | Актуальный FAIL по stories existing-photo publish | `H:\GPT-Codex\Confideline\web\qa-reports\stories-current-publish-2026-05-09\index.html` |
+| Stories existing photo vs device | Актуальный FAIL: existing-photo не открывает cropper/preview после Next; device upload в тех же settings PASS | `H:\GPT-Codex\Confideline\web\qa-reports\stories-existing-photo-vs-device-2026-05-10\index.html` |
 | Stories device upload cropper | PASS по device upload/cropper | `H:\GPT-Codex\Confideline\web\qa-reports\stories-device-upload-cropper-2026-05-09\index.html` |
 | Photo upload current | Актуальный photo moderation/upload source | `H:\GPT-Codex\Confideline\web\qa-reports\photo-upload-current-2026-05-09\index.html` |
 | Group media moderation modes | Актуальный WARN/PASS mix по avatar/cover modes | `H:\GPT-Codex\Confideline\web\qa-reports\group-media-moderation-modes-2026-05-09\index.html` |
@@ -151,7 +151,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File H:\GPT-Codex\Confideline\qa-
 | Приоритет | Волна | Почему следующая | Done when |
 |---|---|---|---|
 | P0 | Chat premium/free limits | Базовый thread lifecycle закрыт PASS; premium messagesOut fresh FAIL подтвержден 10/10 доставкой | После фикса: при лимите 1 первая отправка проходит, попытки 2-10 не доставляются получателям, rollback clean. |
-| P0 | Stories existing-photo publish | Есть актуальный FAIL; важно для продукта и модерации | Author + second user + admin queue доказаны для pre/post/none. |
+| P0 | Stories existing-photo publish | Fresh FAIL локализован: existing-photo path ломается, device-upload path PASS | После фикса: existing-photo открывает cropper/preview, публикуется, автор и viewer видят новую story. |
 | P0 | Group posts lifecycle | Hide/reopen/delete закрыты; report-post FAIL | Реализовать/ретестить report-post owner/viewer/admin flow. |
 | P1 | Connections deep mutual | Нужно углубить mutual match, incoming/outgoing, premium gates | U1/U2 matrix до/после mutual и rollback. |
 | P1 | Premium controls remaining | Проверить edit/timer/swipe/country price и checkbox features | Каждая настройка имеет реальный user-side proof или оформленный product decision. |

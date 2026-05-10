@@ -1422,3 +1422,33 @@ BA / рекомендации для Алексея:
 
 - `Срочно и важно`: текущая админская настройка premium outgoing limit не управляет реальным поведением, значит acceptance по premium/free limits не закрыт.
 - `Важно, но не срочно`: после серверного фикса определить понятный текст/JSON причины отказа для отправителя.
+
+## 2026-05-10 Stories existing-photo vs device recheck
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\stories-existing-photo-vs-device-2026-05-10\index.html`
+
+Raw evidence:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\stories-existing-photo-vs-device-2026-05-10\raw\stories-current-publish-scenario.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\stories-existing-photo-vs-device-2026-05-10\raw\stories-device-upload-cropper-scenario.json`
+- Screenshots: `H:\GPT-Codex\Confideline\web\qa-reports\stories-existing-photo-vs-device-2026-05-10\assets\*.png`
+
+Результат:
+
+- Общий статус: `FAIL`.
+- PASS: settings stories прочитаны: `storiesOn=true`, `storiesModerationMode=postmoderation`, `allowedTimeNextStory=1`.
+- FAIL: existing-photo path: в modal найдено 2 existing photo radio inputs; после выбора radio и клика `Next` S3 image fetch вернул 200, но `cropperOpen=false`, `previewOpen=false`, `spotlightModalVisible=false`.
+- INVALID: author/viewer visibility для existing-photo не оценивается, потому что flow не дошел до publish; старые карточки не являются доказательством новой story.
+- PASS control: device-upload path в тех же settings открыл cropper, preview, отправил `spotlight-submit`, списал 50 credits, story видна автору и viewer U166.
+
+Действие для Игоря:
+
+- Исправить ветку existing-photo в JS обработчике `#spotlight-submit-form`: после выбора существующего фото должен открываться тот же cropper/preview flow, что и при device upload.
+- Проверить перенос S3 image/blob/file в `#general-uploaded-image`, вызов `cropEditor.run(inputEl)`, события `formStoriesMedia afterValidateAttribute`.
+
+BA / рекомендации для Алексея:
+
+- `Срочно и важно`: stories existing-photo publish выглядит доступным пользователю, но бесшумно обрывается после `Next`.
+- `Важно, но не срочно`: device-upload stories action списывает credits; для QA-контуров нужен fixture-баланс или явное правило компенсации/фиксации intentional credit spend.
