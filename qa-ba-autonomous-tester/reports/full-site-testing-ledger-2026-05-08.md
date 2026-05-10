@@ -1392,3 +1392,33 @@ Raw evidence:
 Harness / правила:
 
 - Диагностический прогон с synthetic PNG дал 500 на upload и не включен как продуктовый bug; для upload QA использовать реальные fixture assets проекта или заранее проверенные изображения.
+
+## 2026-05-10 Premium messagesOut limit 10-attempt recheck
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\premium-messages-out-limit-2026-05-10\index.html`
+
+Raw evidence:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\premium-messages-out-limit-2026-05-10\raw\premium-messages-recipient-delivery-audit.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\premium-messages-out-limit-2026-05-10\raw\premium-messages-recipient-delivery-audit.md`
+- Screenshots: `H:\GPT-Codex\Confideline\web\qa-reports\premium-messages-out-limit-2026-05-10\assets\*.png`
+
+Результат:
+
+- Общий статус: `FAIL_WITH_ROLLBACK`.
+- PASS: settings readback подтвердил `messagesOutPremiumMen=1`, `messagesOutPremiumWomen=1`, `messagesOutPeriod=1`.
+- FAIL: U182 отправил 10/10 сообщений, каждый ответ `/en/messages/create` вернул `success=true`, `messageId=248..257`.
+- FAIL: U6/U10 увидели 10/10 точных QA-текстов в `/en/messages`.
+- PASS: rollback settings выполнен, diff пустой.
+
+Действие для Игоря:
+
+- Исправить серверную проверку premium outgoing message limit до создания сообщения. Проверять `MessagesController::actionCreate()`, `MessageForm`, premium/limit service, и то, что лимит применяется на POST, а не только на UI.
+- Ретест: при лимите 1 первая отправка может пройти, попытки 2-10 должны получить отказ и не появиться у получателей.
+
+BA / рекомендации для Алексея:
+
+- `Срочно и важно`: текущая админская настройка premium outgoing limit не управляет реальным поведением, значит acceptance по premium/free limits не закрыт.
+- `Важно, но не срочно`: после серверного фикса определить понятный текст/JSON причины отказа для отправителя.
