@@ -1252,3 +1252,37 @@ BA / рекомендации для Алексея:
 
 - `Срочно и важно`: stories из existing photo не публикуются, хотя device upload ранее проходил. Это отдельный дефект publish flow.
 - `Важно, но не срочно`: сохранить правило тестирования stories: сначала доказать создание/publish новой story, только потом проверять author/viewer visibility.
+
+## 2026-05-10 Group posts hide visibility recheck
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\group-posts-hide-visibility-2026-05-10\index.html`
+
+Raw evidence:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\group-posts-hide-visibility-2026-05-10\raw\group-posts-hide-visibility.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\group-posts-hide-visibility-2026-05-10\raw\group-posts-hide-visibility.md`
+- Screenshots: `H:\GPT-Codex\Confideline\web\qa-reports\group-posts-hide-visibility-2026-05-10\assets\*.png`
+
+Что исправлено в тестовом контуре:
+
+- Старый `PASS_WITH_GAPS` по group posts заменен отдельным полным сценарием на свежем объекте.
+- Проверка больше не использует старый active post: создается новая visible group, новый post, затем admin approve/hide и viewer-side proof.
+- Для вывода о hide используется точный уникальный marker текущего прогона, а не совпадение по старым названиям.
+
+Результат:
+
+- Общий статус: `WARN`.
+- PASS: owner U184 создал visible group `QA group hide visibility 20260510-071523 group`.
+- PASS: owner создал post ID 26, post попал в admin queue как `Pending moderation`.
+- PASS: admin approve перевел post ID 26 в `Active`.
+- PASS: viewer U166 видел точный текст approved post.
+- PASS: admin hide перевел post ID 26 в `Hidden`, moderation reason сохранен, post не удален физически.
+- PASS: viewer U166 после hide больше не видит точный текст hidden post.
+- WARN: на hidden row не найдено явное действие `reopen/show/restore`; при этом есть кнопка `Approve post`.
+
+BA / рекомендации для Алексея:
+
+- `Важно, но не срочно`: принять решение, является ли `Approve post` на hidden row достаточным повторным открытием, или нужна отдельная понятная кнопка `Reopen` / `Показать снова`.
+- `Срочно, но не важно`: если `Approve post` действительно используется как reopen, лучше переименовать/разделить действие в UI, чтобы модератор понимал эффект без знания кода.

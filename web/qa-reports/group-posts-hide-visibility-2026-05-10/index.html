@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | Group Posts Hide Visibility 2026-05-10</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+  <style>
+    .qa-proof-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
+    .qa-proof-card{border:1px solid #d7e0ec;border-radius:8px;background:#fff;overflow:hidden}
+    .qa-proof-card img{display:block;width:100%;height:auto}
+    .qa-proof-body{padding:14px}
+    .qa-proof-body p{margin:8px 0 0}
+    .qa-raw-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+  </style>
+</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">Confideline QA/BA</p>
+      <h1>Group posts hide visibility recheck</h1>
+      <p>Дата прохода: 2026-05-10. Проверен полный цикл на свежем тестовом объекте: owner создает группу и пост, admin одобряет, viewer видит пост, admin скрывает, viewer больше не видит пост.</p>
+      <div class="qa-summary-grid">
+        <div class="qa-metric"><span>Итог</span><strong>WARN</strong></div>
+        <div class="qa-metric"><span>Group</span><strong>#26 post</strong></div>
+        <div class="qa-metric"><span>Viewer proof</span><strong>PASS</strong></div>
+      </div>
+    </header>
+
+    <section class="qa-section" id="summary">
+      <h2>Короткий вывод</h2>
+      <table class="qa-table">
+        <thead>
+          <tr>
+            <th>Статус</th>
+            <th>Проверка</th>
+            <th>Что получили</th>
+            <th>Вывод</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+            <td>Создание группы и поста</td>
+            <td>Owner U184 создал группу `QA group hide visibility 20260510-071523 group`, пост получил ID 26 и попал в Pending moderation.</td>
+            <td>Базовый объект чистый, это не старый пост из прошлых прогонов.</td>
+          </tr>
+          <tr>
+            <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+            <td>Approve и viewer-side visibility</td>
+            <td>Admin перевел пост в Active, viewer U166 увидел точный текст `QA group hide visibility 20260510-071523 post`.</td>
+            <td>Публикация после approve доказана со стороны второго пользователя.</td>
+          </tr>
+          <tr>
+            <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+            <td>Hide post</td>
+            <td>Admin скрыл пост; запись осталась в списке, получила статус Hidden и moderation reason. Viewer U166 после hide больше не видит текст поста.</td>
+            <td>Основная логика скрытия работает корректно: пост не удаляется физически и скрывается user-side.</td>
+          </tr>
+          <tr>
+            <td><span class="qa-badge qa-badge--warn">WARN</span></td>
+            <td>Reopen/show hidden post</td>
+            <td>На hidden row не найдено явное действие `reopen/show/restore`. При этом видна кнопка `Approve post`.</td>
+            <td>Нужно product/dev решение: считать ли `Approve post` повторным открытием hidden post или добавить отдельную понятную кнопку reopen.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="igor">
+      <h2>Для Игоря</h2>
+      <div class="qa-status-grid">
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>Group post hide работает</h3>
+          <p><strong>Факт:</strong> post ID 26 после Hide остается в admin list, статус `Hidden`, moderation reason сохранен, viewer U166 не видит текст поста на странице группы.</p>
+          <p><strong>Ожидание:</strong> посты не удаляются физически, а скрываются, с сохранением причины модерации. Это подтверждено.</p>
+          <p><strong>Как воспроизвести:</strong> создать visible group, отправить post, открыть `/en/admin/group/posts`, approve post, проверить viewer, затем Hide post и снова проверить viewer.</p>
+        </article>
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--warn">WARN</span>
+          <h3>GROUP-POST-REOPEN-ACTION-MISSING</h3>
+          <p><strong>Факт:</strong> на hidden post row не найдено явное действие `reopen/show/restore`; в actions есть `Approve post`, `Block sender`, `Ban in group`.</p>
+          <p><strong>Ожидание по ТЗ:</strong> админке нужны инструменты для одобрения, скрытия и повторного открытия контента.</p>
+          <p><strong>Где смотреть:</strong> live `/en/admin/group/posts`, admin group posts view/actions, controller actions вокруг `approve-post`, `hide-post-modal`, `delete-post`.</p>
+          <p><strong>Ретест:</strong> после решения нажать reopen/approve на hidden post и доказать, что viewer снова видит тот же текст.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="qa-section" id="evidence">
+      <h2>Evidence screenshots</h2>
+      <div class="qa-proof-grid">
+        <article class="qa-proof-card">
+          <img src="./assets/01-owner-create-form.png" alt="Owner create group form">
+          <div class="qa-proof-body">
+            <span class="qa-badge qa-badge--pass">PASS</span>
+            <h3>Owner создает группу</h3>
+            <p>Что тестировал: старт чистого сценария. Что получил: форма создания группы открыта под U184.</p>
+          </div>
+        </article>
+        <article class="qa-proof-card">
+          <img src="./assets/03-owner-post-submitted.png" alt="Owner submitted group post">
+          <div class="qa-proof-body">
+            <span class="qa-badge qa-badge--pass">PASS</span>
+            <h3>Пост отправлен</h3>
+            <p>Что тестировал: создание group post через реальную форму. Что получил: postId=26 после submit.</p>
+          </div>
+        </article>
+        <article class="qa-proof-card">
+          <img src="./assets/04-admin-post-pending.png" alt="Admin sees pending post">
+          <div class="qa-proof-body">
+            <span class="qa-badge qa-badge--pass">PASS</span>
+            <h3>Admin видит Pending</h3>
+            <p>Что тестировал: попал ли новый пост в админскую очередь. Что получил: row с точным marker и статусом Pending moderation.</p>
+          </div>
+        </article>
+        <article class="qa-proof-card">
+          <img src="./assets/05-admin-post-approved.png" alt="Admin approved post">
+          <div class="qa-proof-body">
+            <span class="qa-badge qa-badge--pass">PASS</span>
+            <h3>Admin approve</h3>
+            <p>Что тестировал: можно ли одобрить пост. Что получил: row с тем же post ID перешел в Active.</p>
+          </div>
+        </article>
+        <article class="qa-proof-card">
+          <img src="./assets/06-viewer-sees-approved-post.png" alt="Viewer sees approved post">
+          <div class="qa-proof-body">
+            <span class="qa-badge qa-badge--pass">PASS</span>
+            <h3>Viewer видит Active</h3>
+            <p>Что тестировал: видимость одобренного поста вторым пользователем. Что получил: U166 видит точный текст поста.</p>
+          </div>
+        </article>
+        <article class="qa-proof-card">
+          <img src="./assets/07-admin-post-hidden.png" alt="Admin hidden post">
+          <div class="qa-proof-body">
+            <span class="qa-badge qa-badge--warn">WARN</span>
+            <h3>Hidden без явного reopen</h3>
+            <p>Что тестировал: скрытие и доступные actions после hide. Что получил: статус Hidden и reason есть, но явного reopen/show/restore нет.</p>
+          </div>
+        </article>
+        <article class="qa-proof-card">
+          <img src="./assets/08-viewer-after-hide.png" alt="Viewer after hide does not see post">
+          <div class="qa-proof-body">
+            <span class="qa-badge qa-badge--pass">PASS</span>
+            <h3>Viewer не видит Hidden</h3>
+            <p>Что тестировал: скрывается ли post user-side. Что получил: U166 больше не видит точный текст скрытого поста.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="qa-section" id="alexey">
+      <h2>Матрица Алексея</h2>
+      <table class="qa-table">
+        <thead>
+          <tr>
+            <th>Квадрант</th>
+            <th>Наблюдение</th>
+            <th>Совет</th>
+            <th>Как проверить готовность</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Важно, но не срочно</td>
+            <td>Hide для group posts работает и доказан со стороны viewer, но повторное открытие неочевидно.</td>
+            <td>Принять решение: нужна отдельная кнопка `Повторно открыть` или достаточно существующего `Approve post` на hidden row.</td>
+            <td>В отчете после ретеста будет PASS: hidden -> reopened -> viewer снова видит тот же пост.</td>
+          </tr>
+          <tr>
+            <td>Срочно, но не важно</td>
+            <td>В админке действие называется `Approve post`, даже когда пост уже был скрыт.</td>
+            <td>Если это и есть reopen, лучше назвать действие понятнее для модератора: `Reopen` / `Показать снова`.</td>
+            <td>Модератор без знания кода понимает, что кнопка вернет скрытый пост в публичную ленту.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="raw">
+      <h2>Raw evidence</h2>
+      <div class="qa-raw-links">
+        <a class="tp-btn" href="./raw/group-posts-hide-visibility.json">group-posts-hide-visibility.json</a>
+        <a class="tp-btn" href="./raw/group-posts-hide-visibility.md">group-posts-hide-visibility.md</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
