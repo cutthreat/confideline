@@ -40,7 +40,7 @@
 
     <section class="qa-summary">
       <div class="qa-metric"><span>Решение</span><strong>FAIL</strong></div>
-      <div class="qa-metric"><span>Актуальных отчетов</span><strong>17</strong></div>
+      <div class="qa-metric"><span>Актуальных отчетов</span><strong>18</strong></div>
       <div class="qa-metric"><span>Архив</span><strong>1</strong></div>
       <div class="qa-metric"><span>Публичная проверка</span><strong>OK</strong></div>
     </section>
@@ -142,6 +142,13 @@
               <td>Hide и reopen закрыты доказательно: hide скрывает post ID 26 от viewer U166, а <code>Approve post</code> на hidden row возвращает post в Active и снова показывает его viewer.</td>
               <td>Функционального дефекта не осталось. UX-рекомендация: если нужно снизить путаницу модератора, переименовать <code>Approve post</code> на hidden row в <code>Reopen</code> / <code>Показать снова</code>.</td>
               <td><a href="../group-posts-reopen-visibility-2026-05-10/#igor">Group posts reopen visibility</a></td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+              <td>Messages thread lifecycle</td>
+              <td>Базовый chat lifecycle закрыт: create, recipient delivery, read-conversation, image upload и sender-side delete работают на паре U167 → U168.</td>
+              <td>Функционального дефекта нет. Для следующих тестов использовать этот сценарий как baseline, а отдельно проверять premium limits, shadow-ban delivery и mobile UI.</td>
+              <td><a href="../messages-thread-lifecycle-2026-05-10/#igor">Messages thread lifecycle</a></td>
             </tr>
             <tr>
               <td><span class="qa-badge qa-badge--fail">P1</span></td>
@@ -330,6 +337,12 @@
               <td>На чистой паре U166 -> U168 профильный визит появился у получателя в Guests, а like появился у получателя в People who likes you.</td>
               <td>Закрыт старый WARN по guest visit: теперь есть before-state без actor и after-state с actor. Favorite, gift и photo access surfaces найдены как следующие отдельные сценарии.</td>
               <td><a href="../user-interactions-2026-05-10/#alexey">User interactions report</a></td>
+            </tr>
+            <tr>
+              <td>Messages/chat</td>
+              <td>U167 отправил текст U168, U168 увидел точный текст, read endpoint вернул success, image upload принят, sender-side delete скрыл текст только у отправителя.</td>
+              <td>Закрыт базовый chat lifecycle. Дальше по чату надо тестировать не базовую отправку, а лимиты premium/free, bans/shadow-ban и UX/mobile.</td>
+              <td><a href="../messages-thread-lifecycle-2026-05-10/#alexey">Messages thread lifecycle</a></td>
             </tr>
             <tr>
               <td>Premium reports</td>

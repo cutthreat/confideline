@@ -1,0 +1,984 @@
+{
+  "runId": "messages-thread-lifecycle-2026-05-10T11-14-05-209Z",
+  "startedAt": "2026-05-10T11:14:05.210Z",
+  "finishedAt": "2026-05-10T11:15:04.769Z",
+  "baseURL": "https://confideline.com",
+  "users": {
+    "senderId": 167,
+    "recipientId": 168
+  },
+  "messages": {
+    "textMessage": "QA chat lifecycle text 2026-05-10T11-14-05-209Z sender 167 recipient 168",
+    "attachmentMessage": "QA chat lifecycle image 2026-05-10T11-14-05-209Z"
+  },
+  "status": "PASS",
+  "verdicts": [
+    {
+      "id": "CHAT-TEXT-SEND",
+      "status": "PASS",
+      "title": "Отправка текстового сообщения",
+      "actual": "POST /en/messages/create вернул success=true, messageId=243.",
+      "expected": "Сообщение создается без UI/HTTP ошибки."
+    },
+    {
+      "id": "CHAT-RECIPIENT-DELIVERY",
+      "status": "PASS",
+      "title": "Доставка получателю",
+      "actual": "Получатель U2 видит точный текст в /en/messages/messages.",
+      "expected": "После успешной отправки U2 должен видеть новое сообщение."
+    },
+    {
+      "id": "CHAT-READ-CONVERSATION",
+      "status": "PASS",
+      "title": "Read conversation endpoint",
+      "actual": "POST /en/messages/read-conversation вернул {\"success\":true,\"newMessagesCount\":[],\"message\":\"Updated\"}.",
+      "expected": "Endpoint должен успешно пометить диалог прочитанным и сбросить счетчики."
+    },
+    {
+      "id": "CHAT-IMAGE-UPLOAD",
+      "status": "PASS",
+      "title": "Загрузка изображения в чат",
+      "actual": "upload-images вернул success=true; recipient thread содержит признаки attachment=true.",
+      "expected": "Изображение должно создаться как сообщение-вложение и быть видно получателю."
+    },
+    {
+      "id": "CHAT-SENDER-DELETE",
+      "status": "PASS",
+      "title": "Удаление сообщения отправителем",
+      "actual": "delete success=true; sender sees deleted text=false; recipient sees deleted text=true.",
+      "expected": "По коду Yii2 deleteMessages удаляет сообщение только для текущей стороны; у отправителя текст должен исчезнуть, у получателя может остаться."
+    }
+  ],
+  "evidence": {
+    "senderLogin": {
+      "label": "sender",
+      "userId": 167,
+      "loginAsLink": {
+        "href": "https://confideline.com/en/admin/partner/login-as-user?id=167",
+        "text": "Login as user",
+        "method": "post"
+      },
+      "loginResult": {
+        "status": 0,
+        "url": "https://confideline.com/en/admin/partner/login-as-user?id=167",
+        "location": ""
+      },
+      "identity": {
+        "url": "https://confideline.com/en/messages",
+        "title": "Messages",
+        "bodyText": "Serenity hassir taken posseson of mying entire 0 Kaelir Tamm KaelirTamm Dashboard Browse Groups Connections Messages 3 Countries Loading messages... About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)",
+        "adminLinkSeen": false
+      },
+      "screenshot": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\messages-thread-lifecycle-2026-05-10T11-14-05-209Z\\sender-messages-home.png"
+    },
+    "senderTextFound": true,
+    "recipientLogin": {
+      "label": "recipient",
+      "userId": 168,
+      "loginAsLink": {
+        "href": "https://confideline.com/en/admin/partner/login-as-user?id=168",
+        "text": "Login as user",
+        "method": "post"
+      },
+      "loginResult": {
+        "status": 0,
+        "url": "https://confideline.com/en/admin/partner/login-as-user?id=168",
+        "location": ""
+      },
+      "identity": {
+        "url": "https://confideline.com/en/messages",
+        "title": "Messages",
+        "bodyText": "Serenity hassir taken posseson of mying entire 0 Caelum Rast Nielsen CaelumRastNielsen Dashboard Browse Groups Connections Messages 2 Countries Omkar Tiwari QA premium no-debt 20260509-085038 msg 3 to 168 Kaelir Tamm QA chat lifecycle text 2026-05-10T11-14-05-209Z sender 167 recipient 168 2 Zephyron Kael Hoffmann QA pre-shadow inbound 2026-05-06T23-09-25-695Z: CaelumRastNielsen to ZephyronKaelHoffmann Kaelaris Dorn Schwarz QA full post-release inbound 2026-05-02T23-08-33-706Z: CaelumRastNielsen to KaelarisDornSchwarz About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)",
+        "adminLinkSeen": false
+      },
+      "screenshot": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\messages-thread-lifecycle-2026-05-10T11-14-05-209Z\\recipient-messages-home.png"
+    },
+    "recipientTextFoundBeforeRead": true,
+    "uploadAccepted": true,
+    "attachmentSeenByRecipient": true,
+    "senderStillSeesDeletedText": false,
+    "recipientStillSeesDeletedText": true
+  },
+  "screenshots": {
+    "senderAfterSend": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\messages-thread-lifecycle-2026-05-10T11-14-05-209Z\\sender-after-text-send.png",
+    "recipientBeforeRead": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\messages-thread-lifecycle-2026-05-10T11-14-05-209Z\\recipient-before-read.png",
+    "recipientAfterUpload": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\messages-thread-lifecycle-2026-05-10T11-14-05-209Z\\recipient-after-image-upload.png",
+    "senderAfterDelete": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\messages-thread-lifecycle-2026-05-10T11-14-05-209Z\\sender-after-delete.png",
+    "recipientAfterSenderDelete": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\messages-thread-lifecycle-2026-05-10T11-14-05-209Z\\recipient-after-sender-delete.png"
+  },
+  "raw": {
+    "sendText": {
+      "ok": true,
+      "status": 200,
+      "url": "https://confideline.com/en/messages/create",
+      "contentType": "application/json; charset=UTF-8",
+      "text": "{\"success\":true,\"message\":\"Message has been sent\",\"messageId\":\"243\",\"pendingMessageId\":0}",
+      "json": {
+        "success": true,
+        "message": "Message has been sent",
+        "messageId": "243",
+        "pendingMessageId": 0
+      }
+    },
+    "senderThreadAfterSend": {
+      "ok": true,
+      "status": 200,
+      "url": "https://confideline.com/en/messages/messages?contactId=168",
+      "contentType": "application/json; charset=UTF-8",
+      "text": "{\"success\":true,\"contact\":{\"id\":168,\"username\":\"CaelumRastNielsen\",\"full_name\":\"Caelum Rast Nielsen\",\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_eheeRcIXm8RaNezn16BLLoG3K62YSgMn.webp\",\"url\":\"/en/profile/CaelumRastNielsen\",\"online\":false,\"verified\":false,\"incognito\":false},\"messages\":{\"243\":{\"id\":\"243\",\"contact_id\":\"168\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-10 11:14:36\",\"type\":\"sent\",\"text\":\"QA chat lifecycle text 2026-05-10T11-14-05-209Z sender 167 recipient 168\",\"is_new\":true,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"full_name\":\"Kaelir Tamm\",\"online\":false,\"verified\":0},\"attachments\":[]},\"242\":{\"id\":\"242\",\"contact_id\":\"168\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-10 11:13:13\",\"type\":\"sent\",\"text\":null,\"is_new\":true,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"full_name\":\"Kaelir Tamm\",\"online\":false,\"verified\":0},\"attachments\":[]},\"240\":{\"id\":\"240\",\"contact_id\":\"168\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-10 11:11:46\",\"type\":\"sent\",\"text\":\"QA chat lifecycle text 2026-05-10T11-10-00-391Z sender 167 recipient 168\",\"is_new\":true,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"full_name\":\"Kaelir Tamm\",\"online\":false,\"verified\":0},\"attachments\":[]},\"234\":{\"id\":\"234\",\"contact_id\":\"168\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-09 10:07:21\",\"type\":\"sent\",\"text\":\"QA full-site recipient proof 20260509-100617 from 167 to 168\",\"is_new\":true,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"full_name\":\"Kaelir Tamm\",\"online\":false,\"verified\":0},\"attachments\":[]},\"222\":{\"id\":\"222\",\"con",
+      "json": {
+        "success": true,
+        "contact": {
+          "id": 168,
+          "username": "CaelumRastNielsen",
+          "full_name": "Caelum Rast Nielsen",
+          "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_eheeRcIXm8RaNezn16BLLoG3K62YSgMn.webp",
+          "url": "/en/profile/CaelumRastNielsen",
+          "online": false,
+          "verified": false,
+          "incognito": false
+        },
+        "messages": {
+          "221": {
+            "id": "221",
+            "contact_id": "168",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-08 21:41:19",
+            "type": "sent",
+            "text": "QA full-site recipient proof 20260508-214020 from 167 to 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "222": {
+            "id": "222",
+            "contact_id": "168",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-09 08:12:09",
+            "type": "sent",
+            "text": "QA full-site recipient proof 20260509-081059 from 167 to 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "234": {
+            "id": "234",
+            "contact_id": "168",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-09 10:07:21",
+            "type": "sent",
+            "text": "QA full-site recipient proof 20260509-100617 from 167 to 168",
+            "is_new": true,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "240": {
+            "id": "240",
+            "contact_id": "168",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:11:46",
+            "type": "sent",
+            "text": "QA chat lifecycle text 2026-05-10T11-10-00-391Z sender 167 recipient 168",
+            "is_new": true,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "242": {
+            "id": "242",
+            "contact_id": "168",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:13:13",
+            "type": "sent",
+            "text": null,
+            "is_new": true,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "243": {
+            "id": "243",
+            "contact_id": "168",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:14:36",
+            "type": "sent",
+            "text": "QA chat lifecycle text 2026-05-10T11-14-05-209Z sender 167 recipient 168",
+            "is_new": true,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          }
+        },
+        "modalPremiumTitle": "Get premium",
+        "modalPremiumAlert": "You have new messages from users, but the incoming message limit has been reached. Connect Premium to receive all letters without restrictions!"
+      }
+    },
+    "countersBeforeRead": {
+      "ok": true,
+      "status": 200,
+      "url": "https://confideline.com/en/messages/new-messages-counters",
+      "contentType": "application/json; charset=UTF-8",
+      "text": "{\"167\":{\"contact_id\":\"167\",\"new_messages_count\":\"2\"}}",
+      "json": {
+        "167": {
+          "contact_id": "167",
+          "new_messages_count": "2"
+        }
+      }
+    },
+    "recipientThreadBeforeRead": {
+      "ok": true,
+      "status": 200,
+      "url": "https://confideline.com/en/messages/messages?contactId=167",
+      "contentType": "application/json; charset=UTF-8",
+      "text": "{\"success\":true,\"contact\":{\"id\":167,\"username\":\"KaelirTamm\",\"full_name\":\"Kaelir Tamm\",\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"url\":\"/en/profile/KaelirTamm\",\"online\":false,\"verified\":false,\"incognito\":false},\"messages\":{\"243\":{\"id\":\"243\",\"contact_id\":\"167\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-10 11:14:36\",\"type\":\"inbox\",\"text\":\"QA chat lifecycle text 2026-05-10T11-14-05-209Z sender 167 recipient 168\",\"is_new\":true,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"full_name\":\"Kaelir Tamm\",\"online\":false,\"verified\":0},\"attachments\":[]},\"242\":{\"id\":\"242\",\"contact_id\":\"167\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-10 11:13:13\",\"type\":\"inbox\",\"text\":null,\"is_new\":true,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"full_name\":\"Kaelir Tamm\",\"online\":false,\"verified\":0},\"attachments\":[]},\"241\":{\"id\":\"241\",\"contact_id\":\"167\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-10 11:12:24\",\"type\":\"inbox\",\"text\":\"QA chat lifecycle text 2026-05-10T11-11-59-669Z sender 167 recipient 168\",\"is_new\":false,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"full_name\":\"Kaelir Tamm\",\"online\":false,\"verified\":0},\"attachments\":[]},\"240\":{\"id\":\"240\",\"contact_id\":\"167\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-10 11:11:46\",\"type\":\"inbox\",\"text\":\"QA chat lifecycle text 2026-05-10T11-10-00-391Z sender 167 recipient 168\",\"is_new\":false,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"full_name\":\"Kaelir Tamm\",\"online\":false,\"verified\":0},\"attachments\":[]},\"234\":{\"id\":\"234\",\"contact",
+      "json": {
+        "success": true,
+        "contact": {
+          "id": 167,
+          "username": "KaelirTamm",
+          "full_name": "Kaelir Tamm",
+          "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+          "url": "/en/profile/KaelirTamm",
+          "online": false,
+          "verified": false,
+          "incognito": false
+        },
+        "messages": {
+          "221": {
+            "id": "221",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-08 21:41:19",
+            "type": "inbox",
+            "text": "QA full-site recipient proof 20260508-214020 from 167 to 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "222": {
+            "id": "222",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-09 08:12:09",
+            "type": "inbox",
+            "text": "QA full-site recipient proof 20260509-081059 from 167 to 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "234": {
+            "id": "234",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-09 10:07:21",
+            "type": "inbox",
+            "text": "QA full-site recipient proof 20260509-100617 from 167 to 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "240": {
+            "id": "240",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:11:46",
+            "type": "inbox",
+            "text": "QA chat lifecycle text 2026-05-10T11-10-00-391Z sender 167 recipient 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "241": {
+            "id": "241",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:12:24",
+            "type": "inbox",
+            "text": "QA chat lifecycle text 2026-05-10T11-11-59-669Z sender 167 recipient 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "242": {
+            "id": "242",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:13:13",
+            "type": "inbox",
+            "text": null,
+            "is_new": true,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "243": {
+            "id": "243",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:14:36",
+            "type": "inbox",
+            "text": "QA chat lifecycle text 2026-05-10T11-14-05-209Z sender 167 recipient 168",
+            "is_new": true,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          }
+        },
+        "modalPremiumTitle": "Get premium",
+        "modalPremiumAlert": "You have new messages from users, but the incoming message limit has been reached. Connect Premium to receive all letters without restrictions!"
+      }
+    },
+    "readResponse": {
+      "ok": true,
+      "status": 200,
+      "url": "https://confideline.com/en/messages/read-conversation",
+      "contentType": "application/json; charset=UTF-8",
+      "text": "{\"success\":true,\"newMessagesCount\":[],\"message\":\"Updated\"}",
+      "json": {
+        "success": true,
+        "newMessagesCount": [],
+        "message": "Updated"
+      }
+    },
+    "countersAfterRead": {
+      "ok": true,
+      "status": 200,
+      "url": "https://confideline.com/en/messages/new-messages-counters",
+      "contentType": "application/json; charset=UTF-8",
+      "text": "[]",
+      "json": []
+    },
+    "uploadResponse": {
+      "ok": true,
+      "status": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "text": "{\"success\":true}",
+      "json": {
+        "success": true
+      }
+    },
+    "recipientThreadAfterUpload": {
+      "ok": true,
+      "status": 200,
+      "url": "https://confideline.com/en/messages/messages?contactId=167",
+      "contentType": "application/json; charset=UTF-8",
+      "text": "{\"success\":true,\"contact\":{\"id\":167,\"username\":\"KaelirTamm\",\"full_name\":\"Kaelir Tamm\",\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"url\":\"/en/profile/KaelirTamm\",\"online\":false,\"verified\":false,\"incognito\":false},\"messages\":{\"244\":{\"id\":\"244\",\"contact_id\":\"167\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-10 11:15:08\",\"type\":\"inbox\",\"text\":null,\"is_new\":true,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"full_name\":\"Kaelir Tamm\",\"online\":false,\"verified\":0},\"attachments\":[{\"id\":24,\"type\":\"image\",\"url\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/DEPWwsgmThtAtLswkamOlCt6JxygWI34.webp\",\"thumbnail\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_DEPWwsgmThtAtLswkamOlCt6JxygWI34.webp\"}]},\"243\":{\"id\":\"243\",\"contact_id\":\"167\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-10 11:14:36\",\"type\":\"inbox\",\"text\":\"QA chat lifecycle text 2026-05-10T11-14-05-209Z sender 167 recipient 168\",\"is_new\":false,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"full_name\":\"Kaelir Tamm\",\"online\":false,\"verified\":0},\"attachments\":[]},\"242\":{\"id\":\"242\",\"contact_id\":\"167\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-10 11:13:13\",\"type\":\"inbox\",\"text\":null,\"is_new\":false,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"full_name\":\"Kaelir Tamm\",\"online\":false,\"verified\":0},\"attachments\":[]},\"241\":{\"id\":\"241\",\"contact_id\":\"167\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-10 11:12:24\",\"type\":\"inbox\",\"text\":\"QA chat lifecycle text 2026-05-10T11-11-59-669Z sender 167 recipient 168\",\"is_new\":false,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.amazon",
+      "json": {
+        "success": true,
+        "contact": {
+          "id": 167,
+          "username": "KaelirTamm",
+          "full_name": "Kaelir Tamm",
+          "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+          "url": "/en/profile/KaelirTamm",
+          "online": false,
+          "verified": false,
+          "incognito": false
+        },
+        "messages": {
+          "221": {
+            "id": "221",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-08 21:41:19",
+            "type": "inbox",
+            "text": "QA full-site recipient proof 20260508-214020 from 167 to 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "222": {
+            "id": "222",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-09 08:12:09",
+            "type": "inbox",
+            "text": "QA full-site recipient proof 20260509-081059 from 167 to 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "234": {
+            "id": "234",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-09 10:07:21",
+            "type": "inbox",
+            "text": "QA full-site recipient proof 20260509-100617 from 167 to 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "240": {
+            "id": "240",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:11:46",
+            "type": "inbox",
+            "text": "QA chat lifecycle text 2026-05-10T11-10-00-391Z sender 167 recipient 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "241": {
+            "id": "241",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:12:24",
+            "type": "inbox",
+            "text": "QA chat lifecycle text 2026-05-10T11-11-59-669Z sender 167 recipient 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "242": {
+            "id": "242",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:13:13",
+            "type": "inbox",
+            "text": null,
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "243": {
+            "id": "243",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:14:36",
+            "type": "inbox",
+            "text": "QA chat lifecycle text 2026-05-10T11-14-05-209Z sender 167 recipient 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "244": {
+            "id": "244",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:15:08",
+            "type": "inbox",
+            "text": null,
+            "is_new": true,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": [
+              {
+                "id": 24,
+                "type": "image",
+                "url": "https://hugs-project.s3.amazonaws.com/content/photos/1/DEPWwsgmThtAtLswkamOlCt6JxygWI34.webp",
+                "thumbnail": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_DEPWwsgmThtAtLswkamOlCt6JxygWI34.webp"
+              }
+            ]
+          }
+        },
+        "modalPremiumTitle": "Get premium",
+        "modalPremiumAlert": "You have new messages from users, but the incoming message limit has been reached. Connect Premium to receive all letters without restrictions!"
+      }
+    },
+    "deleteResponse": {
+      "ok": true,
+      "status": 200,
+      "url": "https://confideline.com/en/messages/delete",
+      "contentType": "application/json; charset=UTF-8",
+      "text": "{\"success\":true,\"message\":\"Selected messages has been deleted\",\"count\":1}",
+      "json": {
+        "success": true,
+        "message": "Selected messages has been deleted",
+        "count": 1
+      }
+    },
+    "senderThreadAfterDelete": {
+      "ok": true,
+      "status": 200,
+      "url": "https://confideline.com/en/messages/messages?contactId=168",
+      "contentType": "application/json; charset=UTF-8",
+      "text": "{\"success\":true,\"contact\":{\"id\":168,\"username\":\"CaelumRastNielsen\",\"full_name\":\"Caelum Rast Nielsen\",\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_eheeRcIXm8RaNezn16BLLoG3K62YSgMn.webp\",\"url\":\"/en/profile/CaelumRastNielsen\",\"online\":false,\"verified\":false,\"incognito\":false},\"messages\":{\"244\":{\"id\":\"244\",\"contact_id\":\"168\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-10 11:15:08\",\"type\":\"sent\",\"text\":null,\"is_new\":true,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"full_name\":\"Kaelir Tamm\",\"online\":false,\"verified\":0},\"attachments\":[{\"id\":24,\"type\":\"image\",\"url\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/DEPWwsgmThtAtLswkamOlCt6JxygWI34.webp\",\"thumbnail\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_DEPWwsgmThtAtLswkamOlCt6JxygWI34.webp\"}]},\"242\":{\"id\":\"242\",\"contact_id\":\"168\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-10 11:13:13\",\"type\":\"sent\",\"text\":null,\"is_new\":true,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"full_name\":\"Kaelir Tamm\",\"online\":false,\"verified\":0},\"attachments\":[]},\"240\":{\"id\":\"240\",\"contact_id\":\"168\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-10 11:11:46\",\"type\":\"sent\",\"text\":\"QA chat lifecycle text 2026-05-10T11-10-00-391Z sender 167 recipient 168\",\"is_new\":true,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"full_name\":\"Kaelir Tamm\",\"online\":false,\"verified\":0},\"attachments\":[]},\"234\":{\"id\":\"234\",\"contact_id\":\"168\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-09 10:07:21\",\"type\":\"sent\",\"text\":\"QA full-site recipient proof 20260509-100617 from 167 to 168\",\"is_new\":true,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.ama",
+      "json": {
+        "success": true,
+        "contact": {
+          "id": 168,
+          "username": "CaelumRastNielsen",
+          "full_name": "Caelum Rast Nielsen",
+          "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_eheeRcIXm8RaNezn16BLLoG3K62YSgMn.webp",
+          "url": "/en/profile/CaelumRastNielsen",
+          "online": false,
+          "verified": false,
+          "incognito": false
+        },
+        "messages": {
+          "221": {
+            "id": "221",
+            "contact_id": "168",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-08 21:41:19",
+            "type": "sent",
+            "text": "QA full-site recipient proof 20260508-214020 from 167 to 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "222": {
+            "id": "222",
+            "contact_id": "168",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-09 08:12:09",
+            "type": "sent",
+            "text": "QA full-site recipient proof 20260509-081059 from 167 to 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "234": {
+            "id": "234",
+            "contact_id": "168",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-09 10:07:21",
+            "type": "sent",
+            "text": "QA full-site recipient proof 20260509-100617 from 167 to 168",
+            "is_new": true,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "240": {
+            "id": "240",
+            "contact_id": "168",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:11:46",
+            "type": "sent",
+            "text": "QA chat lifecycle text 2026-05-10T11-10-00-391Z sender 167 recipient 168",
+            "is_new": true,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "242": {
+            "id": "242",
+            "contact_id": "168",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:13:13",
+            "type": "sent",
+            "text": null,
+            "is_new": true,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "244": {
+            "id": "244",
+            "contact_id": "168",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:15:08",
+            "type": "sent",
+            "text": null,
+            "is_new": true,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": [
+              {
+                "id": 24,
+                "type": "image",
+                "url": "https://hugs-project.s3.amazonaws.com/content/photos/1/DEPWwsgmThtAtLswkamOlCt6JxygWI34.webp",
+                "thumbnail": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_DEPWwsgmThtAtLswkamOlCt6JxygWI34.webp"
+              }
+            ]
+          }
+        },
+        "modalPremiumTitle": "Get premium",
+        "modalPremiumAlert": "You have new messages from users, but the incoming message limit has been reached. Connect Premium to receive all letters without restrictions!"
+      }
+    },
+    "recipientThreadAfterSenderDelete": {
+      "ok": true,
+      "status": 200,
+      "url": "https://confideline.com/en/messages/messages?contactId=167",
+      "contentType": "application/json; charset=UTF-8",
+      "text": "{\"success\":true,\"contact\":{\"id\":167,\"username\":\"KaelirTamm\",\"full_name\":\"Kaelir Tamm\",\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"url\":\"/en/profile/KaelirTamm\",\"online\":false,\"verified\":false,\"incognito\":false},\"messages\":{\"244\":{\"id\":\"244\",\"contact_id\":\"167\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-10 11:15:08\",\"type\":\"inbox\",\"text\":null,\"is_new\":true,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"full_name\":\"Kaelir Tamm\",\"online\":false,\"verified\":0},\"attachments\":[{\"id\":24,\"type\":\"image\",\"url\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/DEPWwsgmThtAtLswkamOlCt6JxygWI34.webp\",\"thumbnail\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_DEPWwsgmThtAtLswkamOlCt6JxygWI34.webp\"}]},\"243\":{\"id\":\"243\",\"contact_id\":\"167\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-10 11:14:36\",\"type\":\"inbox\",\"text\":\"QA chat lifecycle text 2026-05-10T11-14-05-209Z sender 167 recipient 168\",\"is_new\":false,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"full_name\":\"Kaelir Tamm\",\"online\":false,\"verified\":0},\"attachments\":[]},\"242\":{\"id\":\"242\",\"contact_id\":\"167\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-10 11:13:13\",\"type\":\"inbox\",\"text\":null,\"is_new\":false,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp\",\"full_name\":\"Kaelir Tamm\",\"online\":false,\"verified\":0},\"attachments\":[]},\"241\":{\"id\":\"241\",\"contact_id\":\"167\",\"from_user_id\":167,\"to_user_id\":168,\"datetime\":\"2026-05-10 11:12:24\",\"type\":\"inbox\",\"text\":\"QA chat lifecycle text 2026-05-10T11-11-59-669Z sender 167 recipient 168\",\"is_new\":false,\"is_after_limit\":\"0\",\"user\":{\"id\":167,\"avatar\":\"https://hugs-project.s3.amazon",
+      "json": {
+        "success": true,
+        "contact": {
+          "id": 167,
+          "username": "KaelirTamm",
+          "full_name": "Kaelir Tamm",
+          "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+          "url": "/en/profile/KaelirTamm",
+          "online": false,
+          "verified": false,
+          "incognito": false
+        },
+        "messages": {
+          "221": {
+            "id": "221",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-08 21:41:19",
+            "type": "inbox",
+            "text": "QA full-site recipient proof 20260508-214020 from 167 to 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "222": {
+            "id": "222",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-09 08:12:09",
+            "type": "inbox",
+            "text": "QA full-site recipient proof 20260509-081059 from 167 to 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "234": {
+            "id": "234",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-09 10:07:21",
+            "type": "inbox",
+            "text": "QA full-site recipient proof 20260509-100617 from 167 to 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "240": {
+            "id": "240",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:11:46",
+            "type": "inbox",
+            "text": "QA chat lifecycle text 2026-05-10T11-10-00-391Z sender 167 recipient 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "241": {
+            "id": "241",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:12:24",
+            "type": "inbox",
+            "text": "QA chat lifecycle text 2026-05-10T11-11-59-669Z sender 167 recipient 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "242": {
+            "id": "242",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:13:13",
+            "type": "inbox",
+            "text": null,
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "243": {
+            "id": "243",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:14:36",
+            "type": "inbox",
+            "text": "QA chat lifecycle text 2026-05-10T11-14-05-209Z sender 167 recipient 168",
+            "is_new": false,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": []
+          },
+          "244": {
+            "id": "244",
+            "contact_id": "167",
+            "from_user_id": 167,
+            "to_user_id": 168,
+            "datetime": "2026-05-10 11:15:08",
+            "type": "inbox",
+            "text": null,
+            "is_new": true,
+            "is_after_limit": "0",
+            "user": {
+              "id": 167,
+              "avatar": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_ePCgEr6f0AJqz3DILWep06hHXsws5l9b.webp",
+              "full_name": "Kaelir Tamm",
+              "online": false,
+              "verified": 0
+            },
+            "attachments": [
+              {
+                "id": 24,
+                "type": "image",
+                "url": "https://hugs-project.s3.amazonaws.com/content/photos/1/DEPWwsgmThtAtLswkamOlCt6JxygWI34.webp",
+                "thumbnail": "https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_DEPWwsgmThtAtLswkamOlCt6JxygWI34.webp"
+              }
+            ]
+          }
+        },
+        "modalPremiumTitle": "Get premium",
+        "modalPremiumAlert": "You have new messages from users, but the incoming message limit has been reached. Connect Premium to receive all letters without restrictions!"
+      }
+    }
+  }
+}

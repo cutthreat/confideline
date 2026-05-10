@@ -79,6 +79,7 @@
 | Group media moderation modes | Актуальный WARN/PASS mix по avatar/cover modes | `H:\GPT-Codex\Confideline\web\qa-reports\group-media-moderation-modes-2026-05-09\index.html` |
 | Group posts hide/reopen visibility | Актуальный PASS: approve -> viewer visible, hide -> viewer hidden, approve на hidden row -> viewer visible | `H:\GPT-Codex\Confideline\web\qa-reports\group-posts-reopen-visibility-2026-05-10\index.html` |
 | Group posts delete/report | Актуальный FAIL: delete работает, report-post endpoint пустой | `H:\GPT-Codex\Confideline\web\qa-reports\group-posts-delete-report-2026-05-10\index.html` |
+| Messages thread lifecycle | Актуальный PASS: create, recipient delivery, read, image upload, sender-side delete | `H:\GPT-Codex\Confideline\web\qa-reports\messages-thread-lifecycle-2026-05-10\index.html` |
 | Bans current pass | Актуальный pass по ban UI/current cases | `H:\GPT-Codex\Confideline\web\qa-reports\bans-current-2026-05-09\index.html` |
 | Shadow-ban extended matrix | Актуальный WARN по group-post baseline | `H:\GPT-Codex\Confideline\web\qa-reports\shadow-ban-extended-matrix-2026-05-09\index.html` |
 
@@ -148,7 +149,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File H:\GPT-Codex\Confideline\qa-
 
 | Приоритет | Волна | Почему следующая | Done when |
 |---|---|---|---|
-| P0 | Chat thread/detail + message limits | Уже были FAIL по premium limits; нужен глубокий thread/detail proof | U1 send 3-10 messages, U2 delivery/absence, admin/message state, rollback. |
+| P0 | Chat premium/free limits | Базовый thread lifecycle закрыт PASS; остается лимитная логика premium/free | U1 send 3-10 messages сверх лимита, U2 delivery/absence, admin/message state, rollback. |
 | P0 | Stories existing-photo publish | Есть актуальный FAIL; важно для продукта и модерации | Author + second user + admin queue доказаны для pre/post/none. |
 | P0 | Group posts lifecycle | Hide/reopen/delete закрыты; report-post FAIL | Реализовать/ретестить report-post owner/viewer/admin flow. |
 | P1 | Connections deep mutual | Нужно углубить mutual match, incoming/outgoing, premium gates | U1/U2 matrix до/после mutual и rollback. |
