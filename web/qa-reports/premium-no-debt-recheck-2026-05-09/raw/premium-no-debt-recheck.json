@@ -1,0 +1,1663 @@
+{
+  "startedAt": "2026-05-09T08:50:38.016Z",
+  "finishedAt": "2026-05-09T08:54:00.701Z",
+  "status": "FAIL",
+  "baseURL": "https://confideline.com",
+  "users": {
+    "premium": {
+      "id": 182,
+      "username": "OmkarrTiwari",
+      "label": "U1 premium"
+    },
+    "free": {
+      "id": 184,
+      "username": "OrionEsposito",
+      "label": "U2 free"
+    },
+    "recipientA": {
+      "id": 166,
+      "username": "KaelarisDornSchwarz",
+      "label": "recipient A"
+    },
+    "recipientB": {
+      "id": 167,
+      "username": "KaelirTamm",
+      "label": "recipient B"
+    },
+    "recipientC": {
+      "id": 168,
+      "username": "CaelumRastNielsen",
+      "label": "recipient C"
+    },
+    "recipientD": {
+      "id": 165,
+      "username": "ZephyronKaelHoffmann",
+      "label": "recipient D"
+    }
+  },
+  "reportDir": "H:/GPT-Codex/Confideline/web/qa-reports/premium-no-debt-recheck-2026-05-09",
+  "screenshots": {
+    "adminBaseline": "evidence/admin-premium-baseline.png",
+    "adminMutated": "evidence/admin-premium-mutated.png",
+    "messageSend1": "evidence/message-send-1.png",
+    "messageRecipient1": "evidence/messageRecipient1.png",
+    "messageSend2": "evidence/message-send-2.png",
+    "messageRecipient2": "evidence/messageRecipient2.png",
+    "messageSend3": "evidence/message-send-3.png",
+    "messageRecipient3": "evidence/messageRecipient3.png",
+    "messageSend4": "evidence/message-send-4.png",
+    "messageRecipient4": "evidence/messageRecipient4.png",
+    "editSentMessageSender": "evidence/edit-sent-message-sender.png",
+    "timerInMutual": "evidence/timer-in-mutual.png",
+    "swipeBackSurface": "evidence/swipe-back-surface.png",
+    "countryPriceOn": "evidence/countryPriceOn.png",
+    "countryPriceOff": "evidence/countryPriceOff.png",
+    "adminRollback": "evidence/admin-premium-rollback.png"
+  },
+  "raw": {
+    "settings-baseline": "raw/settings-baseline.json",
+    "settings-mutated": "raw/settings-mutated.json",
+    "messages-attempts": "raw/messages-attempts.json",
+    "edit-sent-message": "raw/edit-sent-message.json",
+    "timer-in-mutual": "raw/timer-in-mutual.json",
+    "swipe-back": "raw/swipe-back.json",
+    "country-price-compare": "raw/country-price-compare.json"
+  },
+  "checks": [
+    {
+      "id": "PREMIUM-SETTINGS-FIELDS",
+      "status": "PASS",
+      "title": "Premium settings fields are present in live admin form",
+      "evidence": {
+        "tested": "Проверка наличия спорных Premium/free полей в live admin DOM.",
+        "actual": "Все спорные поля найдены в /en/admin/settings/premium.",
+        "reproduce": "Открыть /en/admin/settings/premium и проверить input[name=\"Settings[...]\"].",
+        "igor": "/en/admin/settings/premium PHP view + model Settings.",
+        "screenshotKeys": [
+          "adminBaseline"
+        ],
+        "missing": []
+      },
+      "comment": "Поля есть, тестировать можно через реальные form submit."
+    },
+    {
+      "id": "PREMIUM-SETTINGS-READBACK",
+      "status": "PASS",
+      "title": "Premium settings can be changed and read back",
+      "evidence": {
+        "tested": "Yii2 form submit с CSRF: поставить лимит сообщений 1 и включить спорные чекбоксы.",
+        "actual": "Настройки сохранены, значения считаны обратно из live формы.",
+        "reproduce": "POST обычной формы /en/admin/settings/premium, затем повторно открыть страницу.",
+        "igor": "SettingsController action для premium settings и сохранение Settings[*].",
+        "screenshotKeys": [
+          "adminMutated"
+        ]
+      },
+      "comment": "Сохранение настроек подтверждено."
+    },
+    {
+      "id": "PREMIUM-MESSAGES-OUT-RECIPIENT-SIDE",
+      "status": "FAIL",
+      "title": "messagesOutPremium limit checks sender and recipient side",
+      "evidence": {
+        "tested": "Premium user U182, limit=1, 4 попытки отправки разным получателям; затем вход в каждого получателя и поиск точного QA-текста.",
+        "actual": "Accepted=4, recipient visible=4, sender limit blocks=0.",
+        "reproduce": "Set messagesOutPremiumMen/Women=1, login-as U182, POST /en/messages/create 4 раза, затем login-as U166/U167/U168/U165 и проверить /en/messages.",
+        "igor": "/en/messages/create, сервис лимитов messagesOutPremium*, доставка сообщения получателю.",
+        "screenshotKeys": [
+          "messageSend1",
+          "messageRecipient1",
+          "messageSend2",
+          "messageRecipient2",
+          "messageSend3",
+          "messageRecipient3",
+          "messageSend4",
+          "messageRecipient4"
+        ],
+        "attempts": [
+          {
+            "attempt": 1,
+            "targetId": 166,
+            "text": "QA premium no-debt 20260509-085038 msg 1 to 166",
+            "send": {
+              "status": 200,
+              "ok": true,
+              "location": "",
+              "json": {
+                "success": true,
+                "message": "Message has been sent",
+                "messageId": "226",
+                "pendingMessageId": 1778316674533
+              },
+              "text": "{\"success\":true,\"message\":\"Message has been sent\",\"messageId\":\"226\",\"pendingMessageId\":1778316674533}"
+            },
+            "recipient": {
+              "userId": 166,
+              "contains": true,
+              "body": "Serenity hassir taken posseson of mying entire 0 Kaelaris Dorn Schwarz KaelarisDornSchwarz Dashboard Browse Groups Connections Messages 1 Countries Omkar Tiwari QA premium no-debt 20260509-085038 msg 1 to 166 1 Kaelir Tamm QA ban current 20260507-205351 post full release U166 to U2 Caelum Rast Nielsen QA full post-release inbound 2026-05-02T23-08-33-706Z: CaelumRastNielsen to KaelarisDornSchwarz Omkar Tiwari OmkarTiwari 09.05.2026 QA premium no-debt 20260509-085038 msg 1 to 166 8:51 Get premium Your messages can be the first on the list for others. Connect Premium and become more visible! About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+            }
+          },
+          {
+            "attempt": 2,
+            "targetId": 167,
+            "text": "QA premium no-debt 20260509-085038 msg 2 to 167",
+            "send": {
+              "status": 200,
+              "ok": true,
+              "location": "",
+              "json": {
+                "success": true,
+                "message": "Message has been sent",
+                "messageId": "227",
+                "pendingMessageId": 1778316697831
+              },
+              "text": "{\"success\":true,\"message\":\"Message has been sent\",\"messageId\":\"227\",\"pendingMessageId\":1778316697831}"
+            },
+            "recipient": {
+              "userId": 167,
+              "contains": true,
+              "body": "Serenity hassir taken posseson of mying entire 0 Kaelir Tamm KaelirTamm Dashboard Browse Groups Connections Messages 1 Countries Omkar Tiwari QA premium no-debt 20260509-085038 msg 2 to 167 1 Caelum Rast Nielsen QA full-site recipient proof 20260509-081059 from 167 to 168 Kaelaris Dorn Schwarz QA ban current 20260507-205351 post full release U166 to U2 Zephyron Kael Hoffmann QA ban current 20260507-205351 post shadow release U1 to U2 Omkar Tiwari OmkarTiwari 09.05.2026 QA premium no-debt 20260509-085038 msg 2 to 167 8:51 About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+            }
+          },
+          {
+            "attempt": 3,
+            "targetId": 168,
+            "text": "QA premium no-debt 20260509-085038 msg 3 to 168",
+            "send": {
+              "status": 200,
+              "ok": true,
+              "location": "",
+              "json": {
+                "success": true,
+                "message": "Message has been sent",
+                "messageId": "228",
+                "pendingMessageId": 1778316726093
+              },
+              "text": "{\"success\":true,\"message\":\"Message has been sent\",\"messageId\":\"228\",\"pendingMessageId\":1778316726093}"
+            },
+            "recipient": {
+              "userId": 168,
+              "contains": true,
+              "body": "Serenity hassir taken posseson of mying entire 0 Caelum Rast Nielsen CaelumRastNielsen Dashboard Browse Groups Connections Messages 1 Countries Omkar Tiwari QA premium no-debt 20260509-085038 msg 3 to 168 1 Kaelir Tamm QA full-site recipient proof 20260509-081059 from 167 to 168 Zephyron Kael Hoffmann QA pre-shadow inbound 2026-05-06T23-09-25-695Z: CaelumRastNielsen to ZephyronKaelHoffmann Kaelaris Dorn Schwarz QA full post-release inbound 2026-05-02T23-08-33-706Z: CaelumRastNielsen to KaelarisDornSchwarz Omkar Tiwari OmkarTiwari 09.05.2026 QA premium no-debt 20260509-085038 msg 3 to 168 8:52 About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+            }
+          },
+          {
+            "attempt": 4,
+            "targetId": 165,
+            "text": "QA premium no-debt 20260509-085038 msg 4 to 165",
+            "send": {
+              "status": 200,
+              "ok": true,
+              "location": "",
+              "json": {
+                "success": true,
+                "message": "Message has been sent",
+                "messageId": "229",
+                "pendingMessageId": 1778316750547
+              },
+              "text": "{\"success\":true,\"message\":\"Message has been sent\",\"messageId\":\"229\",\"pendingMessageId\":1778316750547}"
+            },
+            "recipient": {
+              "userId": 165,
+              "contains": true,
+              "body": "Serenity hassir taken posseson of mying entire 0 Zephyron Kael Hoffmann ZephyronKaelHoffmann Dashboard Browse Groups Connections Messages 1 Countries Omkar Tiwari QA premium no-debt 20260509-085038 msg 4 to 165 1 Kaelir Tamm QA ban current 20260507-205351 post shadow release U1 to U2 Caelum Rast Nielsen QA pre-shadow inbound 2026-05-06T23-09-25-695Z: CaelumRastNielsen to ZephyronKaelHoffmann Omkar Tiwari OmkarTiwari 09.05.2026 QA premium no-debt 20260509-085038 msg 4 to 165 8:52 Get premium Your messages can be the first on the list for others. Connect Premium and become more visible! About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+            }
+          }
+        ]
+      },
+      "comment": "Лимит не удержал сценарий: больше 1 сообщения принято и/или доставлено получателям."
+    },
+    {
+      "id": "PREMIUM-EDIT-SENT-MESSAGE-ON",
+      "status": "FAIL",
+      "title": "editSentMessageOn exposes edit action for sent message",
+      "evidence": {
+        "tested": "После отправки сообщения и включенного editSentMessageOn ищем редактирование прямо у сообщения отправителя.",
+        "actual": "Точный текст сообщения виден, но edit/update action в DOM не найден.",
+        "reproduce": "Set editSentMessageOn=1, отправить сообщение, открыть /en/messages отправителем и искать edit/update/pencil action возле сообщения.",
+        "igor": "User messages view/controller: должна появиться кнопка/route редактирования отправленного сообщения либо настройку надо убрать/переописать.",
+        "screenshotKeys": [
+          "editSentMessageSender"
+        ]
+      },
+      "comment": "Чекбокс включен, но пользователь не получает видимого действия редактирования."
+    },
+    {
+      "id": "PREMIUM-TIMER-IN-MUTUAL-ON",
+      "status": "FAIL",
+      "title": "timerInMutualOn shows timer/limited mutual signal",
+      "evidence": {
+        "tested": "Создана/обновлена mutual-like пара U182 <-> U184, открыт /en/connections/likes/mutual, проверены timer/expires markers.",
+        "actual": "Mutual page открывается, но явного таймера/ограничения не видно.",
+        "reproduce": "Set timerInMutualOn=1, выполнить toggle-like в обе стороны, открыть /en/connections/likes/mutual.",
+        "igor": "Mutual likes view/JS: если настройка должна показывать таймер, его нет на пользовательской странице.",
+        "screenshotKeys": [
+          "timerInMutual"
+        ]
+      },
+      "comment": "Чекбокс включен, но пользовательский таймер в mutual не доказан."
+    },
+    {
+      "id": "PREMIUM-SWIPE-BACK-ON",
+      "status": "PASS",
+      "title": "swipeBackOn exposes back/undo action in encounters",
+      "evidence": {
+        "tested": "После включения swipeBackOn открыт /en/connections/encounters, в DOM ищется back/previous/undo action.",
+        "actual": "Найдено back actions: 1.",
+        "reproduce": "Set swipeBackOn=1, открыть /en/connections/encounters и проверить кнопки/actions.",
+        "igor": "Encounters view/JS: настройка включена, но back action не появляется или называется иначе без видимого UX.",
+        "screenshotKeys": [
+          "swipeBackSurface"
+        ]
+      },
+      "comment": "Back action найден."
+    },
+    {
+      "id": "PREMIUM-COUNTRY-PRICE-ON",
+      "status": "PASS",
+      "title": "countryPremiumPriceOn changes visible Premium price presentation",
+      "evidence": {
+        "tested": "Сравнил пользовательскую страницу Premium services при countryPremiumPriceOn=1 и countryPremiumPriceOn=0.",
+        "actual": "Пользовательский Premium services экран изменился после переключения checkbox.",
+        "reproduce": "Переключить countryPremiumPriceOn 1/0, открыть /en/balance/services#premium одним и тем же пользователем и сравнить видимые цены/страны.",
+        "igor": "Premium services pricing view + country-specific pricing resolver.",
+        "screenshotKeys": [
+          "countryPriceOn",
+          "countryPriceOff"
+        ]
+      },
+      "comment": "Настройка влияет на пользовательский экран."
+    }
+  ],
+  "findings": [
+    {
+      "id": "PREMIUM-MESSAGES-OUT-LIMIT-001",
+      "severity": "high",
+      "title": "messagesOutPremium при лимите 1 не блокирует лишние отправки/доставку получателям",
+      "evidence": {
+        "accepted": 4,
+        "delivered": 4,
+        "limitBlocks": 0
+      },
+      "igor": "Проверить место применения лимита в /en/messages/create: счетчик должен блокировать sender response и не создавать доставляемое сообщение после лимита."
+    },
+    {
+      "id": "PREMIUM-EDIT-SENT-MESSAGE-001",
+      "severity": "high",
+      "title": "editSentMessageOn включен, но у отправленного сообщения нет edit action",
+      "evidence": {},
+      "igor": "Искать в message item view/JS: рядом с исходящим сообщением нет action edit/update; также проверить backend route для редактирования."
+    },
+    {
+      "id": "PREMIUM-TIMER-IN-MUTUAL-001",
+      "severity": "medium",
+      "title": "timerInMutualOn включен, но на mutual likes не найден видимый таймер",
+      "evidence": {},
+      "igor": "Проверить /connections/likes/mutual template и логику premium/free timer."
+    }
+  ],
+  "settings": {
+    "baseline": {
+      "url": "https://confideline.com/en/admin/settings/premium",
+      "fieldCount": 86,
+      "settings": {
+        "swipeForwardCode": "swipeForward",
+        "profileLikeFreeMen": "999",
+        "profileLikeFreeWomen": "9999",
+        "profileLikePremiumMen": "99",
+        "profileLikePremiumWomen": "99",
+        "profileLikePeriod": "24",
+        "profileLikeCode": "profileLike",
+        "swipeBackCode": "swipeBack",
+        "swipeBackOn": "0",
+        "profileViewFreeMen": "9999",
+        "profileViewFreeWomen": "9999",
+        "profileViewPremiumMen": "99",
+        "profileViewPremiumWomen": "99",
+        "profileViewPeriod": "24",
+        "profileViewCode": "profileView",
+        "messagesInFreeMen": "999",
+        "messagesInFreeWomen": "999",
+        "messagesInPremiumMen": "99",
+        "messagesInPremiumWomen": "99",
+        "messagesInPeriod": "24",
+        "messagesInCode": "messagesIn",
+        "messagesOutFreeMen": "999",
+        "messagesOutFreeWomen": "9999",
+        "messagesOutPremiumMen": "99",
+        "messagesOutPremiumWomen": "99",
+        "messagesOutPeriod": "24",
+        "messagesOutCode": "messagesOut",
+        "writeWithoutMutualFreeMen": "999",
+        "writeWithoutMutualFreeWomen": "999",
+        "writeWithoutMutualPremiumMen": "99",
+        "writeWithoutMutualPremiumWomen": "99",
+        "writeWithoutMutualPeriod": "24",
+        "writeWithoutMutualCode": "writeWithoutMutual",
+        "writeWithoutMutualMenOn": "0",
+        "writeWithoutMutualWomenOn": "0",
+        "seeMessageStatusCode": "messagesOut",
+        "seeMessageStatusOn": "1",
+        "extendedSearchCode": "messagesOut",
+        "extendedSearchOnlineUsersOn": "1",
+        "extendedSearchVerifiedUsersOn": "1",
+        "extendedSearchOnlyWithPhotoOn": "1",
+        "seePrivatePhotoFreeMen": "999",
+        "seePrivatePhotoFreeWomen": "999",
+        "seePrivatePhotoPremiumMen": "99",
+        "seePrivatePhotoPremiumWomen": "99",
+        "seePrivatePhotoPeriod": "24",
+        "seePrivatePhotoCode": "seePrivatePhoto",
+        "seePrivatePhotoOn": "1",
+        "addToFavoriteCode": "addToFavorite",
+        "addToFavoriteOn": "1",
+        "premiumCardCode": "premiumCard",
+        "premiumCardOn": "1",
+        "messagesInTopCode": "messagesInTop",
+        "messagesInTopOn": "1",
+        "displayPremiumFieldCardCode": "displayPremiumFieldCard",
+        "displayPremiumFieldCardOn": "1",
+        "countryPremiumPriceCode": "countryPremiumPrice",
+        "countryPremiumPriceOn": "1",
+        "noAdsCode": "noAds",
+        "noAdsOn": "1",
+        "editSentMessageCode": "editSentMessage",
+        "editSentMessageOn": "1",
+        "timerInMutualFreeMen": "999",
+        "timerInMutualFreeWomen": "999",
+        "timerInMutualCode": "timerInMutual",
+        "timerInMutualOn": "1",
+        "sitePremiumFeaturesEnabled": "1",
+        "sitePremiumIncomingLikes": "0"
+      },
+      "fields": [
+        {
+          "key": "swipeForwardCode",
+          "id": "settings-swipeforwardcode",
+          "type": "text",
+          "value": "swipeForward",
+          "label": "Code"
+        },
+        {
+          "key": "profileLikeFreeMen",
+          "id": "settings-profilelikefreemen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(M)"
+        },
+        {
+          "key": "profileLikeFreeWomen",
+          "id": "settings-profilelikefreewomen",
+          "type": "text",
+          "value": "9999",
+          "label": "Free plan(W)"
+        },
+        {
+          "key": "profileLikePremiumMen",
+          "id": "settings-profilelikepremiummen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(M)"
+        },
+        {
+          "key": "profileLikePremiumWomen",
+          "id": "settings-profilelikepremiumwomen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(W)"
+        },
+        {
+          "key": "profileLikePeriod",
+          "id": "settings-profilelikeperiod",
+          "type": "select",
+          "value": "24",
+          "label": "Period -- Select -- Hour 12 hours 24 hours"
+        },
+        {
+          "key": "profileLikeCode",
+          "id": "settings-profilelikecode",
+          "type": "text",
+          "value": "profileLike",
+          "label": "Code"
+        },
+        {
+          "key": "swipeBackCode",
+          "id": "settings-swipebackcode",
+          "type": "text",
+          "value": "swipeBack",
+          "label": "Code"
+        },
+        {
+          "key": "swipeBackOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on for swipe back?"
+        },
+        {
+          "key": "swipeBackOn",
+          "id": "settings-swipebackon",
+          "type": "checkbox",
+          "value": "0",
+          "label": "Is turn on for swipe back?"
+        },
+        {
+          "key": "profileViewFreeMen",
+          "id": "settings-profileviewfreemen",
+          "type": "text",
+          "value": "9999",
+          "label": "Free plan(M)"
+        },
+        {
+          "key": "profileViewFreeWomen",
+          "id": "settings-profileviewfreewomen",
+          "type": "text",
+          "value": "9999",
+          "label": "Free plan(W)"
+        },
+        {
+          "key": "profileViewPremiumMen",
+          "id": "settings-profileviewpremiummen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(M)"
+        },
+        {
+          "key": "profileViewPremiumWomen",
+          "id": "settings-profileviewpremiumwomen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(W)"
+        },
+        {
+          "key": "profileViewPeriod",
+          "id": "settings-profileviewperiod",
+          "type": "select",
+          "value": "24",
+          "label": "Period -- Select -- Hour 12 hours 24 hours"
+        },
+        {
+          "key": "profileViewCode",
+          "id": "settings-profileviewcode",
+          "type": "text",
+          "value": "profileView",
+          "label": "Code"
+        },
+        {
+          "key": "messagesInFreeMen",
+          "id": "settings-messagesinfreemen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(M)"
+        },
+        {
+          "key": "messagesInFreeWomen",
+          "id": "settings-messagesinfreewomen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(W)"
+        },
+        {
+          "key": "messagesInPremiumMen",
+          "id": "settings-messagesinpremiummen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(M)"
+        },
+        {
+          "key": "messagesInPremiumWomen",
+          "id": "settings-messagesinpremiumwomen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(W)"
+        },
+        {
+          "key": "messagesInPeriod",
+          "id": "settings-messagesinperiod",
+          "type": "select",
+          "value": "24",
+          "label": "Period -- Select -- Hour 12 hours 24 hours"
+        },
+        {
+          "key": "messagesInCode",
+          "id": "settings-messagesincode",
+          "type": "text",
+          "value": "messagesIn",
+          "label": "Code"
+        },
+        {
+          "key": "messagesOutFreeMen",
+          "id": "settings-messagesoutfreemen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(M)"
+        },
+        {
+          "key": "messagesOutFreeWomen",
+          "id": "settings-messagesoutfreewomen",
+          "type": "text",
+          "value": "9999",
+          "label": "Free plan(W)"
+        },
+        {
+          "key": "messagesOutPremiumMen",
+          "id": "settings-messagesoutpremiummen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(M)"
+        },
+        {
+          "key": "messagesOutPremiumWomen",
+          "id": "settings-messagesoutpremiumwomen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(W)"
+        },
+        {
+          "key": "messagesOutPeriod",
+          "id": "settings-messagesoutperiod",
+          "type": "select",
+          "value": "24",
+          "label": "Period -- Select -- Hour 12 hours 24 hours"
+        },
+        {
+          "key": "messagesOutCode",
+          "id": "settings-messagesoutcode",
+          "type": "text",
+          "value": "messagesOut",
+          "label": "Code"
+        },
+        {
+          "key": "writeWithoutMutualFreeMen",
+          "id": "settings-writewithoutmutualfreemen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(M)"
+        },
+        {
+          "key": "writeWithoutMutualFreeWomen",
+          "id": "settings-writewithoutmutualfreewomen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(W)"
+        },
+        {
+          "key": "writeWithoutMutualPremiumMen",
+          "id": "settings-writewithoutmutualpremiummen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(M)"
+        },
+        {
+          "key": "writeWithoutMutualPremiumWomen",
+          "id": "settings-writewithoutmutualpremiumwomen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(W)"
+        },
+        {
+          "key": "writeWithoutMutualPeriod",
+          "id": "settings-writewithoutmutualperiod",
+          "type": "select",
+          "value": "24",
+          "label": "Period -- Select -- Hour 12 hours 24 hours"
+        },
+        {
+          "key": "writeWithoutMutualCode",
+          "id": "settings-writewithoutmutualcode",
+          "type": "text",
+          "value": "writeWithoutMutual",
+          "label": "Code"
+        },
+        {
+          "key": "writeWithoutMutualMenOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on for men?"
+        },
+        {
+          "key": "writeWithoutMutualMenOn",
+          "id": "settings-writewithoutmutualmenon",
+          "type": "checkbox",
+          "value": "0",
+          "label": "Is turn on for men?"
+        },
+        {
+          "key": "writeWithoutMutualWomenOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on for women?"
+        },
+        {
+          "key": "writeWithoutMutualWomenOn",
+          "id": "settings-writewithoutmutualwomenon",
+          "type": "checkbox",
+          "value": "0",
+          "label": "Is turn on for women?"
+        },
+        {
+          "key": "seeMessageStatusCode",
+          "id": "settings-seemessagestatuscode",
+          "type": "text",
+          "value": "messagesOut",
+          "label": "Code"
+        },
+        {
+          "key": "seeMessageStatusOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "seeMessageStatusOn",
+          "id": "settings-seemessagestatuson",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "extendedSearchCode",
+          "id": "settings-extendedsearchcode",
+          "type": "text",
+          "value": "messagesOut",
+          "label": "Code"
+        },
+        {
+          "key": "extendedSearchOnlineUsersOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Online users"
+        },
+        {
+          "key": "extendedSearchOnlineUsersOn",
+          "id": "settings-extendedsearchonlineuserson",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Online users"
+        },
+        {
+          "key": "extendedSearchVerifiedUsersOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Verified users"
+        },
+        {
+          "key": "extendedSearchVerifiedUsersOn",
+          "id": "settings-extendedsearchverifieduserson",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Verified users"
+        },
+        {
+          "key": "extendedSearchOnlyWithPhotoOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "With photo"
+        },
+        {
+          "key": "extendedSearchOnlyWithPhotoOn",
+          "id": "settings-extendedsearchonlywithphotoon",
+          "type": "checkbox",
+          "value": "1",
+          "label": "With photo"
+        },
+        {
+          "key": "seePrivatePhotoFreeMen",
+          "id": "settings-seeprivatephotofreemen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(M)"
+        },
+        {
+          "key": "seePrivatePhotoFreeWomen",
+          "id": "settings-seeprivatephotofreewomen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(W)"
+        },
+        {
+          "key": "seePrivatePhotoPremiumMen",
+          "id": "settings-seeprivatephotopremiummen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(M)"
+        },
+        {
+          "key": "seePrivatePhotoPremiumWomen",
+          "id": "settings-seeprivatephotopremiumwomen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(W)"
+        },
+        {
+          "key": "seePrivatePhotoPeriod",
+          "id": "settings-seeprivatephotoperiod",
+          "type": "select",
+          "value": "24",
+          "label": "Period -- Select -- Hour 12 hours 24 hours"
+        },
+        {
+          "key": "seePrivatePhotoCode",
+          "id": "settings-seeprivatephotocode",
+          "type": "text",
+          "value": "seePrivatePhoto",
+          "label": "Code"
+        },
+        {
+          "key": "seePrivatePhotoOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "seePrivatePhotoOn",
+          "id": "settings-seeprivatephotoon",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "addToFavoriteCode",
+          "id": "settings-addtofavoritecode",
+          "type": "text",
+          "value": "addToFavorite",
+          "label": "Code"
+        },
+        {
+          "key": "addToFavoriteOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "addToFavoriteOn",
+          "id": "settings-addtofavoriteon",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "premiumCardCode",
+          "id": "settings-premiumcardcode",
+          "type": "text",
+          "value": "premiumCard",
+          "label": "Code"
+        },
+        {
+          "key": "premiumCardOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "premiumCardOn",
+          "id": "settings-premiumcardon",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "messagesInTopCode",
+          "id": "settings-messagesintopcode",
+          "type": "text",
+          "value": "messagesInTop",
+          "label": "Code"
+        },
+        {
+          "key": "messagesInTopOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "messagesInTopOn",
+          "id": "settings-messagesintopon",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "displayPremiumFieldCardCode",
+          "id": "settings-displaypremiumfieldcardcode",
+          "type": "text",
+          "value": "displayPremiumFieldCard",
+          "label": "Code"
+        },
+        {
+          "key": "displayPremiumFieldCardOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "displayPremiumFieldCardOn",
+          "id": "settings-displaypremiumfieldcardon",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "countryPremiumPriceCode",
+          "id": "settings-countrypremiumpricecode",
+          "type": "text",
+          "value": "countryPremiumPrice",
+          "label": "Code"
+        },
+        {
+          "key": "countryPremiumPriceOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "countryPremiumPriceOn",
+          "id": "settings-countrypremiumpriceon",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "noAdsCode",
+          "id": "settings-noadscode",
+          "type": "text",
+          "value": "noAds",
+          "label": "Code"
+        },
+        {
+          "key": "noAdsOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "noAdsOn",
+          "id": "settings-noadson",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "editSentMessageCode",
+          "id": "settings-editsentmessagecode",
+          "type": "text",
+          "value": "editSentMessage",
+          "label": "Code"
+        },
+        {
+          "key": "editSentMessageOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "editSentMessageOn",
+          "id": "settings-editsentmessageon",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "timerInMutualFreeMen",
+          "id": "settings-timerinmutualfreemen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(M)"
+        },
+        {
+          "key": "timerInMutualFreeWomen",
+          "id": "settings-timerinmutualfreewomen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(W)"
+        },
+        {
+          "key": "timerInMutualCode",
+          "id": "settings-timerinmutualcode",
+          "type": "text",
+          "value": "timerInMutual",
+          "label": "Code"
+        },
+        {
+          "key": "timerInMutualOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "timerInMutualOn",
+          "id": "settings-timerinmutualon",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "sitePremiumFeaturesEnabled",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Enable premium features and balance"
+        },
+        {
+          "key": "sitePremiumFeaturesEnabled",
+          "id": "settings-sitepremiumfeaturesenabled",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Enable premium features and balance"
+        },
+        {
+          "key": "sitePremiumIncomingLikes",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Show incoming likes for premium users only"
+        },
+        {
+          "key": "sitePremiumIncomingLikes",
+          "id": "settings-sitepremiumincominglikes",
+          "type": "checkbox",
+          "value": "0",
+          "label": "Show incoming likes for premium users only"
+        }
+      ]
+    },
+    "mutated": {
+      "url": "https://confideline.com/en/admin/settings/premium",
+      "fieldCount": 86,
+      "settings": {
+        "swipeForwardCode": "swipeForward",
+        "profileLikeFreeMen": "999",
+        "profileLikeFreeWomen": "9999",
+        "profileLikePremiumMen": "99",
+        "profileLikePremiumWomen": "99",
+        "profileLikePeriod": "24",
+        "profileLikeCode": "profileLike",
+        "swipeBackCode": "swipeBack",
+        "swipeBackOn": "1",
+        "profileViewFreeMen": "9999",
+        "profileViewFreeWomen": "9999",
+        "profileViewPremiumMen": "99",
+        "profileViewPremiumWomen": "99",
+        "profileViewPeriod": "24",
+        "profileViewCode": "profileView",
+        "messagesInFreeMen": "999",
+        "messagesInFreeWomen": "999",
+        "messagesInPremiumMen": "99",
+        "messagesInPremiumWomen": "99",
+        "messagesInPeriod": "24",
+        "messagesInCode": "messagesIn",
+        "messagesOutFreeMen": "999",
+        "messagesOutFreeWomen": "9999",
+        "messagesOutPremiumMen": "1",
+        "messagesOutPremiumWomen": "1",
+        "messagesOutPeriod": "1",
+        "messagesOutCode": "messagesOut",
+        "writeWithoutMutualFreeMen": "999",
+        "writeWithoutMutualFreeWomen": "999",
+        "writeWithoutMutualPremiumMen": "99",
+        "writeWithoutMutualPremiumWomen": "99",
+        "writeWithoutMutualPeriod": "24",
+        "writeWithoutMutualCode": "writeWithoutMutual",
+        "writeWithoutMutualMenOn": "0",
+        "writeWithoutMutualWomenOn": "0",
+        "seeMessageStatusCode": "messagesOut",
+        "seeMessageStatusOn": "1",
+        "extendedSearchCode": "messagesOut",
+        "extendedSearchOnlineUsersOn": "1",
+        "extendedSearchVerifiedUsersOn": "1",
+        "extendedSearchOnlyWithPhotoOn": "1",
+        "seePrivatePhotoFreeMen": "999",
+        "seePrivatePhotoFreeWomen": "999",
+        "seePrivatePhotoPremiumMen": "99",
+        "seePrivatePhotoPremiumWomen": "99",
+        "seePrivatePhotoPeriod": "24",
+        "seePrivatePhotoCode": "seePrivatePhoto",
+        "seePrivatePhotoOn": "1",
+        "addToFavoriteCode": "addToFavorite",
+        "addToFavoriteOn": "1",
+        "premiumCardCode": "premiumCard",
+        "premiumCardOn": "1",
+        "messagesInTopCode": "messagesInTop",
+        "messagesInTopOn": "1",
+        "displayPremiumFieldCardCode": "displayPremiumFieldCard",
+        "displayPremiumFieldCardOn": "1",
+        "countryPremiumPriceCode": "countryPremiumPrice",
+        "countryPremiumPriceOn": "1",
+        "noAdsCode": "noAds",
+        "noAdsOn": "1",
+        "editSentMessageCode": "editSentMessage",
+        "editSentMessageOn": "1",
+        "timerInMutualFreeMen": "999",
+        "timerInMutualFreeWomen": "999",
+        "timerInMutualCode": "timerInMutual",
+        "timerInMutualOn": "1",
+        "sitePremiumFeaturesEnabled": "1",
+        "sitePremiumIncomingLikes": "0"
+      },
+      "fields": [
+        {
+          "key": "swipeForwardCode",
+          "id": "settings-swipeforwardcode",
+          "type": "text",
+          "value": "swipeForward",
+          "label": "Code"
+        },
+        {
+          "key": "profileLikeFreeMen",
+          "id": "settings-profilelikefreemen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(M)"
+        },
+        {
+          "key": "profileLikeFreeWomen",
+          "id": "settings-profilelikefreewomen",
+          "type": "text",
+          "value": "9999",
+          "label": "Free plan(W)"
+        },
+        {
+          "key": "profileLikePremiumMen",
+          "id": "settings-profilelikepremiummen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(M)"
+        },
+        {
+          "key": "profileLikePremiumWomen",
+          "id": "settings-profilelikepremiumwomen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(W)"
+        },
+        {
+          "key": "profileLikePeriod",
+          "id": "settings-profilelikeperiod",
+          "type": "select",
+          "value": "24",
+          "label": "Period -- Select -- Hour 12 hours 24 hours"
+        },
+        {
+          "key": "profileLikeCode",
+          "id": "settings-profilelikecode",
+          "type": "text",
+          "value": "profileLike",
+          "label": "Code"
+        },
+        {
+          "key": "swipeBackCode",
+          "id": "settings-swipebackcode",
+          "type": "text",
+          "value": "swipeBack",
+          "label": "Code"
+        },
+        {
+          "key": "swipeBackOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on for swipe back?"
+        },
+        {
+          "key": "swipeBackOn",
+          "id": "settings-swipebackon",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on for swipe back?"
+        },
+        {
+          "key": "profileViewFreeMen",
+          "id": "settings-profileviewfreemen",
+          "type": "text",
+          "value": "9999",
+          "label": "Free plan(M)"
+        },
+        {
+          "key": "profileViewFreeWomen",
+          "id": "settings-profileviewfreewomen",
+          "type": "text",
+          "value": "9999",
+          "label": "Free plan(W)"
+        },
+        {
+          "key": "profileViewPremiumMen",
+          "id": "settings-profileviewpremiummen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(M)"
+        },
+        {
+          "key": "profileViewPremiumWomen",
+          "id": "settings-profileviewpremiumwomen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(W)"
+        },
+        {
+          "key": "profileViewPeriod",
+          "id": "settings-profileviewperiod",
+          "type": "select",
+          "value": "24",
+          "label": "Period -- Select -- Hour 12 hours 24 hours"
+        },
+        {
+          "key": "profileViewCode",
+          "id": "settings-profileviewcode",
+          "type": "text",
+          "value": "profileView",
+          "label": "Code"
+        },
+        {
+          "key": "messagesInFreeMen",
+          "id": "settings-messagesinfreemen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(M)"
+        },
+        {
+          "key": "messagesInFreeWomen",
+          "id": "settings-messagesinfreewomen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(W)"
+        },
+        {
+          "key": "messagesInPremiumMen",
+          "id": "settings-messagesinpremiummen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(M)"
+        },
+        {
+          "key": "messagesInPremiumWomen",
+          "id": "settings-messagesinpremiumwomen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(W)"
+        },
+        {
+          "key": "messagesInPeriod",
+          "id": "settings-messagesinperiod",
+          "type": "select",
+          "value": "24",
+          "label": "Period -- Select -- Hour 12 hours 24 hours"
+        },
+        {
+          "key": "messagesInCode",
+          "id": "settings-messagesincode",
+          "type": "text",
+          "value": "messagesIn",
+          "label": "Code"
+        },
+        {
+          "key": "messagesOutFreeMen",
+          "id": "settings-messagesoutfreemen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(M)"
+        },
+        {
+          "key": "messagesOutFreeWomen",
+          "id": "settings-messagesoutfreewomen",
+          "type": "text",
+          "value": "9999",
+          "label": "Free plan(W)"
+        },
+        {
+          "key": "messagesOutPremiumMen",
+          "id": "settings-messagesoutpremiummen",
+          "type": "text",
+          "value": "1",
+          "label": "Premium(M)"
+        },
+        {
+          "key": "messagesOutPremiumWomen",
+          "id": "settings-messagesoutpremiumwomen",
+          "type": "text",
+          "value": "1",
+          "label": "Premium(W)"
+        },
+        {
+          "key": "messagesOutPeriod",
+          "id": "settings-messagesoutperiod",
+          "type": "select",
+          "value": "1",
+          "label": "Period -- Select -- Hour 12 hours 24 hours"
+        },
+        {
+          "key": "messagesOutCode",
+          "id": "settings-messagesoutcode",
+          "type": "text",
+          "value": "messagesOut",
+          "label": "Code"
+        },
+        {
+          "key": "writeWithoutMutualFreeMen",
+          "id": "settings-writewithoutmutualfreemen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(M)"
+        },
+        {
+          "key": "writeWithoutMutualFreeWomen",
+          "id": "settings-writewithoutmutualfreewomen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(W)"
+        },
+        {
+          "key": "writeWithoutMutualPremiumMen",
+          "id": "settings-writewithoutmutualpremiummen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(M)"
+        },
+        {
+          "key": "writeWithoutMutualPremiumWomen",
+          "id": "settings-writewithoutmutualpremiumwomen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(W)"
+        },
+        {
+          "key": "writeWithoutMutualPeriod",
+          "id": "settings-writewithoutmutualperiod",
+          "type": "select",
+          "value": "24",
+          "label": "Period -- Select -- Hour 12 hours 24 hours"
+        },
+        {
+          "key": "writeWithoutMutualCode",
+          "id": "settings-writewithoutmutualcode",
+          "type": "text",
+          "value": "writeWithoutMutual",
+          "label": "Code"
+        },
+        {
+          "key": "writeWithoutMutualMenOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on for men?"
+        },
+        {
+          "key": "writeWithoutMutualMenOn",
+          "id": "settings-writewithoutmutualmenon",
+          "type": "checkbox",
+          "value": "0",
+          "label": "Is turn on for men?"
+        },
+        {
+          "key": "writeWithoutMutualWomenOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on for women?"
+        },
+        {
+          "key": "writeWithoutMutualWomenOn",
+          "id": "settings-writewithoutmutualwomenon",
+          "type": "checkbox",
+          "value": "0",
+          "label": "Is turn on for women?"
+        },
+        {
+          "key": "seeMessageStatusCode",
+          "id": "settings-seemessagestatuscode",
+          "type": "text",
+          "value": "messagesOut",
+          "label": "Code"
+        },
+        {
+          "key": "seeMessageStatusOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "seeMessageStatusOn",
+          "id": "settings-seemessagestatuson",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "extendedSearchCode",
+          "id": "settings-extendedsearchcode",
+          "type": "text",
+          "value": "messagesOut",
+          "label": "Code"
+        },
+        {
+          "key": "extendedSearchOnlineUsersOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Online users"
+        },
+        {
+          "key": "extendedSearchOnlineUsersOn",
+          "id": "settings-extendedsearchonlineuserson",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Online users"
+        },
+        {
+          "key": "extendedSearchVerifiedUsersOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Verified users"
+        },
+        {
+          "key": "extendedSearchVerifiedUsersOn",
+          "id": "settings-extendedsearchverifieduserson",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Verified users"
+        },
+        {
+          "key": "extendedSearchOnlyWithPhotoOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "With photo"
+        },
+        {
+          "key": "extendedSearchOnlyWithPhotoOn",
+          "id": "settings-extendedsearchonlywithphotoon",
+          "type": "checkbox",
+          "value": "1",
+          "label": "With photo"
+        },
+        {
+          "key": "seePrivatePhotoFreeMen",
+          "id": "settings-seeprivatephotofreemen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(M)"
+        },
+        {
+          "key": "seePrivatePhotoFreeWomen",
+          "id": "settings-seeprivatephotofreewomen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(W)"
+        },
+        {
+          "key": "seePrivatePhotoPremiumMen",
+          "id": "settings-seeprivatephotopremiummen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(M)"
+        },
+        {
+          "key": "seePrivatePhotoPremiumWomen",
+          "id": "settings-seeprivatephotopremiumwomen",
+          "type": "text",
+          "value": "99",
+          "label": "Premium(W)"
+        },
+        {
+          "key": "seePrivatePhotoPeriod",
+          "id": "settings-seeprivatephotoperiod",
+          "type": "select",
+          "value": "24",
+          "label": "Period -- Select -- Hour 12 hours 24 hours"
+        },
+        {
+          "key": "seePrivatePhotoCode",
+          "id": "settings-seeprivatephotocode",
+          "type": "text",
+          "value": "seePrivatePhoto",
+          "label": "Code"
+        },
+        {
+          "key": "seePrivatePhotoOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "seePrivatePhotoOn",
+          "id": "settings-seeprivatephotoon",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "addToFavoriteCode",
+          "id": "settings-addtofavoritecode",
+          "type": "text",
+          "value": "addToFavorite",
+          "label": "Code"
+        },
+        {
+          "key": "addToFavoriteOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "addToFavoriteOn",
+          "id": "settings-addtofavoriteon",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "premiumCardCode",
+          "id": "settings-premiumcardcode",
+          "type": "text",
+          "value": "premiumCard",
+          "label": "Code"
+        },
+        {
+          "key": "premiumCardOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "premiumCardOn",
+          "id": "settings-premiumcardon",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "messagesInTopCode",
+          "id": "settings-messagesintopcode",
+          "type": "text",
+          "value": "messagesInTop",
+          "label": "Code"
+        },
+        {
+          "key": "messagesInTopOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "messagesInTopOn",
+          "id": "settings-messagesintopon",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "displayPremiumFieldCardCode",
+          "id": "settings-displaypremiumfieldcardcode",
+          "type": "text",
+          "value": "displayPremiumFieldCard",
+          "label": "Code"
+        },
+        {
+          "key": "displayPremiumFieldCardOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "displayPremiumFieldCardOn",
+          "id": "settings-displaypremiumfieldcardon",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "countryPremiumPriceCode",
+          "id": "settings-countrypremiumpricecode",
+          "type": "text",
+          "value": "countryPremiumPrice",
+          "label": "Code"
+        },
+        {
+          "key": "countryPremiumPriceOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "countryPremiumPriceOn",
+          "id": "settings-countrypremiumpriceon",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "noAdsCode",
+          "id": "settings-noadscode",
+          "type": "text",
+          "value": "noAds",
+          "label": "Code"
+        },
+        {
+          "key": "noAdsOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "noAdsOn",
+          "id": "settings-noadson",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "editSentMessageCode",
+          "id": "settings-editsentmessagecode",
+          "type": "text",
+          "value": "editSentMessage",
+          "label": "Code"
+        },
+        {
+          "key": "editSentMessageOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "editSentMessageOn",
+          "id": "settings-editsentmessageon",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "timerInMutualFreeMen",
+          "id": "settings-timerinmutualfreemen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(M)"
+        },
+        {
+          "key": "timerInMutualFreeWomen",
+          "id": "settings-timerinmutualfreewomen",
+          "type": "text",
+          "value": "999",
+          "label": "Free plan(W)"
+        },
+        {
+          "key": "timerInMutualCode",
+          "id": "settings-timerinmutualcode",
+          "type": "text",
+          "value": "timerInMutual",
+          "label": "Code"
+        },
+        {
+          "key": "timerInMutualOn",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "timerInMutualOn",
+          "id": "settings-timerinmutualon",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Is turn on?"
+        },
+        {
+          "key": "sitePremiumFeaturesEnabled",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Enable premium features and balance"
+        },
+        {
+          "key": "sitePremiumFeaturesEnabled",
+          "id": "settings-sitepremiumfeaturesenabled",
+          "type": "checkbox",
+          "value": "1",
+          "label": "Enable premium features and balance"
+        },
+        {
+          "key": "sitePremiumIncomingLikes",
+          "id": "",
+          "type": "hidden",
+          "value": "0",
+          "label": "Show incoming likes for premium users only"
+        },
+        {
+          "key": "sitePremiumIncomingLikes",
+          "id": "settings-sitepremiumincominglikes",
+          "type": "checkbox",
+          "value": "0",
+          "label": "Show incoming likes for premium users only"
+        }
+      ]
+    },
+    "rollback": {
+      "attempted": true,
+      "ok": true,
+      "diff": []
+    }
+  },
+  "errors": []
+}

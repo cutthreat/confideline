@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | Group Posts Reopen Visibility 2026-05-10</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+  <script src="../qa-report-controls.js" defer></script>
+</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">Confideline QA/BA</p>
+      <h1>Group posts reopen visibility recheck</h1>
+      <p>Дата прохода: 2026-05-10. Проверен остаточный WARN из предыдущего отчета: является ли `Approve post` на hidden row фактическим повторным открытием поста.</p>
+      <div class="qa-summary-grid">
+        <div class="qa-metric"><span>Итог</span><strong>PASS</strong></div>
+        <div class="qa-metric"><span>Post</span><strong>ID 26</strong></div>
+        <div class="qa-metric"><span>Viewer proof</span><strong>PASS</strong></div>
+      </div>
+    </header>
+
+    <section class="qa-section" id="summary">
+      <h2>Короткий вывод</h2>
+      <table class="qa-table">
+        <thead><tr><th>Статус</th><th>Проверка</th><th>Что получили</th><th>Вывод</th></tr></thead>
+        <tbody>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Before reopen</td><td>Viewer U166 до reopen не видит hidden post ID 26.</td><td>Исходное состояние корректное: пост действительно скрыт.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Admin action</td><td>На hidden row есть `Approve post`; POST по action прошел.</td><td>`Approve post` доступен для скрытого поста.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Admin state</td><td>После `Approve post` row post ID 26 стала `Active`.</td><td>С точки зрения админки действие работает как reopen.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Viewer state</td><td>После reopen viewer U166 снова видит точный текст `QA group hide visibility 20260510-071523 post`.</td><td>Повторное открытие доказано user-side.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="igor">
+      <h2>Для Игоря</h2>
+      <div class="qa-status-grid">
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>GROUP-POST-REOPEN-IS-APPROVE</h3>
+          <p><strong>Факт:</strong> `Approve post` на hidden row переводит post ID 26 в Active, после чего второй пользователь снова видит тот же пост.</p>
+          <p><strong>Вывод:</strong> функционального дефекта reopen не подтверждено. Остался UX-вопрос по названию кнопки.</p>
+          <p><strong>Где смотреть:</strong> `/en/admin/group/posts`, action `/en/admin/group/approve-post?id=26`, viewer page `/en/groups/qa-group-hide-visibility-20260510-071523-group`.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="qa-section" id="evidence">
+      <h2>Evidence screenshots</h2>
+      <div class="qa-shot-grid">
+        <figure class="qa-shot qa-shot--pass"><figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>До reopen viewer не видит hidden post</span></span></figcaption><img src="./assets/01-viewer-before-reopen.png" alt="Viewer before reopen"></figure>
+        <figure class="qa-shot qa-shot--pass"><figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Admin видит hidden row с Approve post</span></span></figcaption><img src="./assets/02-admin-hidden-row-before-reopen.png" alt="Admin hidden row before reopen"></figure>
+        <figure class="qa-shot qa-shot--pass"><figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>После Approve post статус Active</span></span></figcaption><img src="./assets/03-admin-row-after-approve-reopen.png" alt="Admin active row after reopen"></figure>
+        <figure class="qa-shot qa-shot--pass"><figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>После reopen viewer снова видит пост</span></span></figcaption><img src="./assets/04-viewer-after-reopen.png" alt="Viewer after reopen"></figure>
+      </div>
+    </section>
+
+    <section class="qa-section" id="alexey">
+      <h2>Матрица Алексея</h2>
+      <table class="qa-table">
+        <thead><tr><th>Квадрант</th><th>Наблюдение</th><th>Совет</th><th>Как проверить готовность</th></tr></thead>
+        <tbody>
+          <tr><td>Важно, но не срочно</td><td>Функционально reopen работает через `Approve post`, но название кнопки неочевидно для hidden-состояния.</td><td>Если модератор должен понимать действие без знания кода, переименовать кнопку на hidden row в `Reopen` / `Показать снова`.</td><td>Модератор открывает hidden row и сразу понимает, что кнопка вернет пост в публичную ленту.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="raw">
+      <h2>Raw evidence</h2>
+      <div class="qa-raw-links">
+        <a class="tp-btn" href="./raw/group-posts-reopen-visibility.json">group-posts-reopen-visibility.json</a>
+        <a class="tp-btn" href="./raw/group-posts-reopen-visibility.md">group-posts-reopen-visibility.md</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
+

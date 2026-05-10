@@ -77,7 +77,7 @@
 | Stories device upload cropper | PASS по device upload/cropper | `H:\GPT-Codex\Confideline\web\qa-reports\stories-device-upload-cropper-2026-05-09\index.html` |
 | Photo upload current | Актуальный photo moderation/upload source | `H:\GPT-Codex\Confideline\web\qa-reports\photo-upload-current-2026-05-09\index.html` |
 | Group media moderation modes | Актуальный WARN/PASS mix по avatar/cover modes | `H:\GPT-Codex\Confideline\web\qa-reports\group-media-moderation-modes-2026-05-09\index.html` |
-| Group posts hide visibility | Актуальный WARN по reopen/show, PASS по approve -> viewer visible и hide -> viewer hidden | `H:\GPT-Codex\Confideline\web\qa-reports\group-posts-hide-visibility-2026-05-10\index.html` |
+| Group posts hide/reopen visibility | Актуальный PASS: approve -> viewer visible, hide -> viewer hidden, approve на hidden row -> viewer visible | `H:\GPT-Codex\Confideline\web\qa-reports\group-posts-reopen-visibility-2026-05-10\index.html` |
 | Bans current pass | Актуальный pass по ban UI/current cases | `H:\GPT-Codex\Confideline\web\qa-reports\bans-current-2026-05-09\index.html` |
 | Shadow-ban extended matrix | Актуальный WARN по group-post baseline | `H:\GPT-Codex\Confideline\web\qa-reports\shadow-ban-extended-matrix-2026-05-09\index.html` |
 
@@ -149,7 +149,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File H:\GPT-Codex\Confideline\qa-
 |---|---|---|---|
 | P0 | Chat thread/detail + message limits | Уже были FAIL по premium limits; нужен глубокий thread/detail proof | U1 send 3-10 messages, U2 delivery/absence, admin/message state, rollback. |
 | P0 | Stories existing-photo publish | Есть актуальный FAIL; важно для продукта и модерации | Author + second user + admin queue доказаны для pre/post/none. |
-| P0 | Group posts lifecycle | Hide/visibility закрыты свежим проходом; остались reopen/delete/report | Reopen/delete/report проверены owner/viewer/admin или оформлены как product/dev decision. |
+| P0 | Group posts lifecycle | Hide/reopen visibility закрыты свежими проходами; остались delete/report | Delete/report проверены owner/viewer/admin или оформлены как product/dev decision. |
 | P1 | Connections deep mutual | Нужно углубить mutual match, incoming/outgoing, premium gates | U1/U2 matrix до/после mutual и rollback. |
 | P1 | Premium controls remaining | Проверить edit/timer/swipe/country price и checkbox features | Каждая настройка имеет реальный user-side proof или оформленный product decision. |
 | P1 | Bans extended paid/content actions | Shadow ban должен покрывать gifts/photo access/groups/posts/stories/messages | До/во время/после снятия бана, U1 illusion + U2 absence + admin history. |

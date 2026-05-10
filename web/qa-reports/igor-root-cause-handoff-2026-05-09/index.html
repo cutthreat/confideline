@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confideline QA handoff for Igor - 2026-05-09</title>
+  <style>
+    body{margin:0;background:#f5f7fb;color:#162033;font:15px/1.5 Arial,sans-serif}
+    main{max-width:1180px;margin:auto;padding:28px}
+    .hero,.card{background:#fff;border:1px solid #dce3ee;border-radius:8px;padding:18px;margin-bottom:16px;box-shadow:0 8px 22px rgba(16,30,54,.06)}
+    h1,h2{margin:0 0 10px}
+    .badge{display:inline-block;border-radius:999px;padding:4px 9px;font-weight:700;font-size:12px}
+    .fail .badge,.badge.fail{background:#fee2e2;color:#991b1b}
+    .warn .badge,.badge.warn{background:#fef3c7;color:#92400e}
+    .pass .badge,.badge.pass{background:#dcfce7;color:#166534}
+    table{width:100%;border-collapse:collapse;background:#fff}
+    th,td{border-bottom:1px solid #e5eaf1;padding:10px;text-align:left;vertical-align:top}
+    code{background:#eef2f7;border-radius:4px;padding:1px 4px}
+    .small{color:#516070;font-size:13px}
+  </style>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">`r`n  <link rel="stylesheet" href="../qa-report.css">`r`n  <script src="../qa-report-controls.js" defer></script>`r`n</head>
+<body class="qa-report-page">
+<main>
+  <section class="hero warn">
+    <span class="badge">HANDOFF</span>
+    <h1>Техническая сводка для Игоря</h1>
+    <p>Это не новый функциональный прогон, а разбор подтвержденных QA-находок с указанием, где искать причину в Yii2/PHP views/assets/actions. Факты ниже взяты из live-браузерных проходов, code pointers - из локального исходника <code>Chat/youdate-2.0.2-yii2/Source/youdate_extracted</code>. Если live-код уже отличается от этого слепка, использовать pointers как направление поиска, а не как абсолютную строку фикса.</p>
+  </section>
+
+  <section class="card fail">
+    <span class="badge">FAIL</span>
+    <h2>PREMIUM-MESSAGES-OUT-LIMIT-001</h2>
+    <p><strong>Что доказано:</strong> при <code>messagesOutPremiumMen/Women=1</code> premium user U182 отправил 4 из 4 сообщений, и все 4 точных текста видны у получателей U166/U167/U168/U165.</p>
+    <p><strong>Где смотреть:</strong> live endpoint <code>/en/messages/create</code>. В локальном источнике цепочка выглядит как <code>application/controllers/MessagesController.php:165</code> -> <code>application/managers/MessageManager.php:238</code>. В найденном локальном коде создание сообщения не содержит проверки <code>messagesOutPremium*</code> перед <code>$message->save()</code>.</p>
+    <p><strong>Как воспроизвести:</strong> поставить лимит 1, отправить 4 сообщения premium-пользователем, затем зайти каждым получателем и найти точный QA-текст. Баг считается исправленным только если лишние попытки не доставляются получателю.</p>
+    <p><strong>Evidence:</strong> <a href="../premium-no-debt-recheck-2026-05-09/">premium-no-debt-recheck-2026-05-09</a></p>
+  </section>
+
+  <section class="card fail">
+    <span class="badge">FAIL</span>
+    <h2>PREMIUM-EDIT-SENT-MESSAGE-001</h2>
+    <p><strong>Что доказано:</strong> <code>editSentMessageOn=1</code> сохраняется, но рядом с отправленным сообщением нет edit/update/pencil action.</p>
+    <p><strong>Где смотреть:</strong> пользовательский chat UI: <code>content/themes/youdate/static/js/messages.js</code> и views <code>content/themes/youdate/views/messages/*</code>. В текущем JS найден только create flow, но не найден edit flow для отправленного сообщения.</p>
+    <p><strong>Как воспроизвести:</strong> включить <code>editSentMessageOn</code>, отправить сообщение, открыть чат отправителем, проверить action у конкретного исходящего сообщения.</p>
+    <p><strong>Evidence:</strong> <a href="../premium-no-debt-recheck-2026-05-09/">premium-no-debt-recheck-2026-05-09</a></p>
+  </section>
+
+  <section class="card fail">
+    <span class="badge">FAIL</span>
+    <h2>PREMIUM-TIMER-IN-MUTUAL-001</h2>
+    <p><strong>Что доказано:</strong> <code>timerInMutualOn=1</code> сохраняется, mutual-like пара создана, страница <code>/en/connections/likes/mutual</code> открывается, но видимый timer/expires marker не найден.</p>
+    <p><strong>Где смотреть:</strong> <code>content/themes/youdate/views/connections/likes.php</code>, <code>_item.php</code>, <code>_layout.php</code> и backend provider для mutual likes. Нужна явная привязка настройки <code>timerInMutualOn</code> к UI и данным.</p>
+    <p><strong>Как воспроизвести:</strong> включить настройку, сделать mutual match U1/U2, открыть mutual likes и проверить визуальный таймер/срок.</p>
+    <p><strong>Evidence:</strong> <a href="../premium-no-debt-recheck-2026-05-09/">premium-no-debt-recheck-2026-05-09</a></p>
+  </section>
+
+  <section class="card fail">
+    <span class="badge">FAIL</span>
+    <h2>PREMIUM-COUNTRY-PRICE-001</h2>
+    <p><strong>Что доказано:</strong> точный recheck сравнил <code>.feature-price</code>/<code>.feature-title</code> при <code>countryPremiumPriceOn=1</code> и <code>countryPremiumPriceOn=0</code>; видимые price nodes одинаковые. Rollback прошел.</p>
+    <p><strong>Где смотреть:</strong> <code>application/managers/BalanceManager.php</code> и <code>content/themes/youdate/views/balance/services.php</code>. В локальном коде <code>BalanceManager::getPremiumPrice()</code> возвращает общий <code>common.pricePremium</code>; отдельный resolver страны в найденном слепке не обнаружен.</p>
+    <p><strong>Как воспроизвести:</strong> одним пользователем открыть <code>/en/balance/services#premium</code>, переключить настройку 1/0, сравнить только price/title nodes, без QA overlay и полного body.</p>
+    <p><strong>Evidence:</strong> <a href="../premium-no-debt-recheck-2026-05-09/raw/country-price-precise-recheck.json">country-price-precise-recheck.json</a></p>
+  </section>
+
+  <section class="card fail">
+    <span class="badge">FAIL</span>
+    <h2>MAIN-PHOTO-UPLOAD-CREATED-ID-001</h2>
+    <p><strong>Что доказано:</strong> main/profile upload открывает cropper и preview, но hidden input <code>form#formCropMainPhoto input[name="photo"]</code> остается пустым; после <code>Set main</code> UI показывает <code>From Photo Id must be an integer</code>; новый photo ID не создан.</p>
+    <p><strong>Где смотреть:</strong> live HTML формы показывает два поля с одним именем <code>photo</code>: hidden и file input. В JS <code>cropEditor.setPostParams({ fromPhotoId: $(input).data('photo-id') })</code>. При новой загрузке файла <code>data('photo-id')</code> нет, поэтому <code>fromPhotoId</code> уходит пустым/undefined.</p>
+    <p><strong>Как воспроизвести:</strong> открыть <code>/en/settings/photos</code>, загрузить новую main photo, нажать Next, перед Set main проверить hidden <code>photo</code>, затем нажать Set main.</p>
+    <p><strong>Evidence:</strong> <a href="../photo-upload-current-2026-05-09/">photo-upload-current-2026-05-09</a></p>
+  </section>
+
+  <section class="card fail">
+    <span class="badge">FAIL</span>
+    <h2>STORIES-EXISTING-PHOTO-NEXT-001</h2>
+    <p><strong>Что доказано:</strong> в stories modal есть existing-photo radio, после выбора и Next modal закрывается, S3 image fetch возвращает 200, но cropper/preview не открывается. Visibility owner/viewer помечена INVALID, потому что новая story не была опубликована.</p>
+    <p><strong>Где смотреть:</strong> live widget <code>#spotlight-submit-form</code>, <code>#general-uploaded-image</code>, <code>formStoriesMedia afterValidateAttribute</code>, <code>cropEditor.run(inputEl)</code>. Локальный <code>content/themes/youdate/widgets/views/spotlight/submit.php</code> показывает submit-flow формы; live HTML содержит кастомный existing-photo -> file/cropper flow, поэтому проверить актуальный AssetBundle/JS на сервере.</p>
+    <p><strong>Как воспроизвести:</strong> автор открывает home, Add story, выбирает существующее фото, Next. Исправление доказано только если после Next открывается preview/cropper, затем publish возвращает 2xx и новая story видна автору и второму пользователю.</p>
+    <p><strong>Evidence:</strong> <a href="../stories-current-publish-2026-05-09/">stories-current-publish-2026-05-09</a></p>
+  </section>
+
+  <section class="card warn">
+    <span class="badge">WARN</span>
+    <h2>GROUP-MEDIA-NONE-STILL-IN-QUEUE</h2>
+    <p><strong>Что доказано:</strong> group avatar/cover в режимах premoderation/postmoderation/none сейчас ведут себя по пользовательской видимости ожидаемо. Остался не функциональный FAIL, а product/UI вопрос: при режиме no moderation записи все равно остаются в admin media approvals.</p>
+    <p><strong>Решение для продукта:</strong> если это история аудита, нужно переименовать/отфильтровать очередь. Если это именно очередь ручной проверки, то для no moderation такие записи не должны требовать внимания администратора.</p>
+    <p><strong>Evidence:</strong> <a href="../group-media-moderation-modes-2026-05-09/">group-media-moderation-modes-2026-05-09</a></p>
+  </section>
+
+  <section class="card warn">
+    <span class="badge">WARN</span>
+    <h2>ADMIN-TEMPLATE-URL</h2>
+    <p><strong>Что доказано:</strong> full-site smoke нашел admin-ссылку с буквальным <code>{url}</code> в href. Это markup debt, не подтвержденный функциональный блокер.</p>
+    <p><strong>Где смотреть:</strong> админские шаблоны/таблицы с action links. Нужно найти место генерации href и убрать незамененный placeholder.</p>
+    <p><strong>Evidence:</strong> <a href="../full-site-smoke-2026-05-09/">full-site-smoke-2026-05-09</a></p>
+  </section>
+
+  <section class="card">
+    <h2>Правило ретеста после фикса</h2>
+    <table>
+      <thead><tr><th>Блок</th><th>Минимальный честный ретест</th></tr></thead>
+      <tbody>
+        <tr><td>Premium messages</td><td>sender + каждый recipient; 3-10 попыток; лишние сообщения не должны доходить.</td></tr>
+        <tr><td>Premium UI actions</td><td>настройка сохранена, действие видно в UI, действие реально работает.</td></tr>
+        <tr><td>Photo/Stories</td><td>upload/publish завершен 2xx, новый ID/новая карточка доказаны, автор и второй пользователь проверены.</td></tr>
+        <tr><td>Groups</td><td>owner + viewer visibility, admin action proof, rollback или явная фиксация состояния.</td></tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+</body>
+</html>
+

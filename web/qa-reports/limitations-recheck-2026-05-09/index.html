@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline QA | Recheck старых ограничений</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+  <script src="../qa-report-controls.js" defer></script>`r`n</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">QA report · limitations recheck · 2026-05-09</p>
+      <h1>Перепроверка старых ограничений тестирования</h1>
+      <p>Цель прохода: найти места, где в прошлых отчетах были формулировки “не доказано”, “частично”, “нужен второй пользователь”, “ограничение”, и перевести их в честный статус: PASS, FAIL, WARN или отдельный технический долг тестового контура.</p>
+      <div class="tp-actions" style="margin-top:16px">
+        <a class="tp-btn tp-btn--primary" href="#igor">Блок для Игоря</a>
+        <a class="tp-btn" href="../">Все QA reports</a>
+      </div>
+    </header>
+
+    <section class="qa-summary">
+      <div class="qa-metric"><span>Перепроверено зон</span><strong>6</strong></div>
+      <div class="qa-metric"><span>Закрыто как PASS</span><strong>2</strong></div>
+      <div class="qa-metric"><span>Подтверждено FAIL</span><strong>2</strong></div>
+      <div class="qa-metric"><span>Осталось WARN/GAP</span><strong>2</strong></div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Правило после аудита</h2>
+      <div class="qa-note">
+        <p><strong>Теперь любой “не доказано / не смог / limitation” не считается финальным результатом.</strong> Он должен попасть в debt-list, получить владельца проверки и быть перепроверен live-сценарием: правильный Yii2 POST/AJAX, CSRF, реальный DOM/action, состояние до/после, авторская сторона и второй пользователь там, где это важно.</p>
+      </div>
+    </section>
+
+    <section id="igor" class="qa-section">
+      <h2>Сводка для Игоря</h2>
+      <div class="qa-table-wrap">
+        <table class="qa-table">
+          <thead>
+            <tr>
+              <th>Статус</th>
+              <th>Зона</th>
+              <th>Что было ограничением</th>
+              <th>Что перепроверено сейчас</th>
+              <th>Вывод</th>
+              <th>Артефакт</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+              <td>Stories device upload</td>
+              <td>Ранее казалось, что cropper/headless ограничивает тест.</td>
+              <td>U182 загрузил новую JPG, cropper открылся, blob создан, <code>spotlight-submit</code> 2xx, баланс 200 -> 150, story видит U182 и U166.</td>
+              <td>Ограничение снято. Cropper тестируется автоматически через readiness markers.</td>
+              <td><a href="../stories-device-upload-cropper-2026-05-09/">Stories cropper report</a></td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+              <td>Gallery photo postmoderation</td>
+              <td>Был только admin queue факт по photo ID 846; не было author/viewer visibility.</td>
+              <td>Конкретный upload token найден у автора в settings/photos, у автора в профиле и у второго пользователя U166 в профиле автора.</td>
+              <td>Postmoderation gallery-фото реально видно пользователям. Старое ограничение закрыто.</td>
+              <td><code>photo-gallery-visibility-recheck-20260509-081438</code></td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">FAIL</span></td>
+              <td>Premium messagesOutPremium</td>
+              <td>Раньше часть доставок была не доказана со стороны получателя.</td>
+              <td>Лимит поставлен 1, 3 отправки приняты, 2 из 3 точных текста найдены у получателей, settings rollback OK.</td>
+              <td>Баг подтвержден повторно: лимит не блокирует лишние отправки; recipient-side proof есть минимум по 2 доставкам.</td>
+              <td><code>premium-messages-recipient-delivery-audit-20260509-081438</code></td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">FAIL</span></td>
+              <td>Stories existing photo</td>
+              <td>Не считать visibility bug, пока story не создается.</td>
+              <td>После отдельного PASS по device upload осталось точное разделение: existing-photo flow все еще отдельный баг publish-flow.</td>
+              <td>Игорю чинить existing-photo submit chain: после выбора radio и Next должен открыться cropper/preview.</td>
+              <td><a href="../stories-current-publish-2026-05-09/">Existing photo report</a></td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--warn">WARN</span></td>
+              <td>Group posts reopen</td>
+              <td>Было <code>NOT_PROVEN</code>: скрытие есть, reopen/show action не найден.</td>
+              <td>Свежий проход подтвердил: hide переводит пост в Hidden; в строке Hidden reopen/show action не найден. Пост восстановлен через admin POST approve.</td>
+              <td>Это уже не “я не смог”, а продуктовый/UI gap: нужна явная кнопка повторного открытия или подтверждение, что approve-post является восстановлением.</td>
+              <td><code>group-posts-moderation-audit-20260509-081059</code></td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--warn">WARN</span></td>
+              <td>Admin template href</td>
+              <td>В route inventory был <code>{url}</code>; не было доказательства кликабельного бага.</td>
+              <td>Свежий scenario pass снова нашел шаблонный href, но клик не доказал переход в 404.</td>
+              <td>Не блокер пользователя, но разметочный долг: безопаснее убрать <code>href="{url}"</code> или заменить на non-navigation toggle.</td>
+              <td><code>full-site-scenario-pass-20260509-081059</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Инфраструктурные исправления</h2>
+      <div class="qa-note">
+        <p>Убрана причина ложных запусковых блокеров: несколько старых скриптов по умолчанию искали storage state в <code>../secrets</code> и писали отчеты в <code>../reports</code>. Дефолты приведены к текущему контуру <code>./secrets</code> и <code>./reports</code>.</p>
+        <p>Проверено синтаксически: <code>full-site-scenario-pass-audit.mjs</code>, <code>group-posts-moderation-audit.mjs</code>, <code>premium-messages-recipient-delivery-audit.mjs</code>.</p>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Артефакты</h2>
+      <div class="qa-note">
+        <p><strong>Full-site fresh pass:</strong> <code>H:\GPT-Codex\Confideline\reports\full-site-scenario-pass-20260509-081059</code></p>
+        <p><strong>Group posts fresh pass:</strong> <code>H:\GPT-Codex\Confideline\reports\group-posts-moderation-audit-20260509-081059</code></p>
+        <p><strong>Premium messages fresh pass:</strong> <code>H:\GPT-Codex\Confideline\reports\premium-messages-recipient-delivery-audit-20260509-081438</code></p>
+        <p><strong>Gallery visibility recheck:</strong> <code>H:\GPT-Codex\Confideline\reports\photo-gallery-visibility-recheck-20260509-081438</code></p>
+      </div>
+    </section>
+
+    <footer class="tp-footer">
+      <a href="../">Назад к QA reports</a>
+    </footer>
+  </main>
+</body>
+</html>
+

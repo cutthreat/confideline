@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline QA | Stories device upload cropper</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+  <style>
+    .qa-proof { position: relative; overflow: hidden; border-radius: 8px; border: 1px solid #d7dee8; background: #f8fafc; }
+    .qa-proof img { display: block; width: 100%; }
+    .qa-proof-mark { position: absolute; border: 4px solid #e11d48; box-shadow: 0 0 0 9999px rgba(15,23,42,.08); pointer-events: none; }
+    .qa-proof-arrow { position: absolute; width: 120px; height: 4px; background: #e11d48; transform-origin: right center; pointer-events: none; }
+    .qa-proof-arrow::after { content: ""; position: absolute; right: -2px; top: -7px; border-left: 16px solid #e11d48; border-top: 9px solid transparent; border-bottom: 9px solid transparent; }
+    .mark-cropper { left: 16%; top: 16%; width: 67%; height: 70%; }
+    .arrow-cropper { left: 4%; top: 18%; transform: rotate(25deg); }
+    .mark-publish { left: 37%; top: 33%; width: 26%; height: 14%; }
+    .arrow-publish { left: 20%; top: 30%; transform: rotate(18deg); }
+    .mark-carousel { left: 5%; top: 24%; width: 76%; height: 26%; }
+    .arrow-carousel { left: 2%; top: 14%; transform: rotate(35deg); }
+    .mark-viewer { left: 13%; top: 12%; width: 70%; height: 35%; }
+    .arrow-viewer { left: 5%; top: 8%; transform: rotate(30deg); }
+    .qa-word { overflow-wrap: anywhere; }
+  </style>
+  <script src="../qa-report-controls.js" defer></script>`r`n</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">QA report · live Confideline · 2026-05-09</p>
+      <h1>Stories: device upload через cropper</h1>
+      <p>Актуальный честный проход после снятия тестового блокера. Проверялся не admin media queue, а пользовательский сценарий: загрузить новую картинку, обрезать ее в cropper, опубликовать story и проверить видимость у автора и второго пользователя.</p>
+      <div class="tp-actions" style="margin-top:16px">
+        <a class="tp-btn tp-btn--primary" href="#igor">Блок для Игоря</a>
+        <a class="tp-btn" href="../">Все QA reports</a>
+      </div>
+    </header>
+
+    <section class="qa-summary">
+      <div class="qa-metric"><span>Итог</span><strong>PASS</strong></div>
+      <div class="qa-metric"><span>Проверки</span><strong>6</strong></div>
+      <div class="qa-metric"><span>PASS</span><strong>6</strong></div>
+      <div class="qa-metric"><span>FAIL</span><strong>0</strong></div>
+    </section>
+
+    <section class="qa-section">
+      <div class="qa-note qa-word">
+        <p><strong>Факт:</strong> текущие настройки stories: <code>storiesOn=true</code>, <code>storiesModerationMode=postmoderation</code>, <code>allowedTimeNextStory=1</code>.</p>
+        <p><strong>Что снято как ограничение теста:</strong> у U184 был реальный cooldown после уже опубликованной story. Для повторного доказательства использован U182 OmkarTiwari: баланс 200, cooldown пустой, Add me открывает <code>#spotlight-submit</code>.</p>
+        <p><strong>Вывод:</strong> cropper можно тестировать автоматически. Предыдущее ограничение было не в сайте и не в браузере, а в неправильном ожидании момента готовности cropper и в повторной попытке под пользователем с cooldown.</p>
+      </div>
+    </section>
+
+    <section id="igor" class="qa-section">
+      <h2>Сводка для Игоря</h2>
+      <div class="qa-table-wrap">
+        <table class="qa-table">
+          <thead>
+            <tr>
+              <th>Статус</th>
+              <th>Зона</th>
+              <th>Что проверялось</th>
+              <th>Факт</th>
+              <th>Как найти / воспроизвести</th>
+              <th>Куда смотреть</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+              <td>Stories settings</td>
+              <td>Конфигурация перед запуском.</td>
+              <td><code>postmoderation</code> включен, сторис включены, лимит между публикациями равен 1 часу.</td>
+              <td>Открыть <code>/en/admin/settings/stories</code>.</td>
+              <td><code>#settings-onstories</code>, <code>#settings-storiesmoderationmode</code>, <code>#settings-allowedtimenextstory</code>.</td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+              <td>Device upload</td>
+              <td>Открывается ли cropper после выбора новой картинки.</td>
+              <td>Cropper открылся, <code>window.cropEditor._cropper</code> стал готов.</td>
+              <td>Под U182: <code>/en</code> -> <code>Add me</code> -> загрузить JPG.</td>
+              <td><code>#modal-inline-cropper</code>, <code>window.cropEditor._cropper</code>.</td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+              <td>Crop action</td>
+              <td>Создается ли cropped blob после кнопки <code>Next</code>.</td>
+              <td><code>window.cropEditor._croppedBlob</code> создан. Preview-modal визуально не обязателен для доказательства, так как blob готов и upload проходит.</td>
+              <td>В cropper нажать <code>Next</code>.</td>
+              <td>Обработчик <code>#crop</code> в live <code>cropper.js</code>.</td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+              <td>Publish</td>
+              <td>Отправляется ли story на сервер.</td>
+              <td><code>/en/balance/spotlight-submit</code> вернул 2xx. Баланс U182 изменился <code>200 -> 150</code>.</td>
+              <td>После crop нажать publish в preview.</td>
+              <td>Network response <code>spotlight-submit</code>, баланс пользователя.</td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+              <td>Author visibility</td>
+              <td>Видит ли автор опубликованную story.</td>
+              <td>U182 видит карточку Omkar Tiwari в горизонтальной ленте stories.</td>
+              <td>Обновить <code>/en</code> под U182 после публикации.</td>
+              <td><code>#pjax-spotlight-horizontal</code>, карточка Omkar Tiwari.</td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+              <td>Viewer visibility</td>
+              <td>Видит ли story другой пользователь.</td>
+              <td>U166 видит опубликованную story Omkar Tiwari в своей ленте stories.</td>
+              <td>Login-as U166, открыть <code>/en</code>.</td>
+              <td><code>#pjax-spotlight-horizontal</code>, карточка Omkar Tiwari.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Доказательства</h2>
+      <div class="qa-shot-grid">
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Cropper открыт</span></strong>Что тестировал: device upload новой картинки в stories. Что получил: cropper открылся, значит сценарий можно проверять без ручного ограничения.</figcaption>
+          <div class="qa-proof"><img src="./assets/author-cropper-open.png" alt="Stories cropper opened"><span class="qa-proof-mark mark-cropper"></span><span class="qa-proof-arrow arrow-cropper"></span></div>
+        </figure>
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Publish прошел</span></strong>Что тестировал: создание blob и отправку story на сервер. Что получил: upload <code>spotlight-submit</code> успешен, баланс списался <code>200 -> 150</code>.</figcaption>
+          <div class="qa-proof"><img src="./assets/author-after-publish.png" alt="Stories published"><span class="qa-proof-mark mark-publish"></span><span class="qa-proof-arrow arrow-publish"></span></div>
+        </figure>
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Автор видит story</span></strong>Что тестировал: пользовательскую ленту автора после публикации. Что получил: карточка Omkar Tiwari отображается у U182.</figcaption>
+          <div class="qa-proof"><img src="./assets/author-home-after-publish.png" alt="Author sees own story"><span class="qa-proof-mark mark-carousel"></span><span class="qa-proof-arrow arrow-carousel"></span></div>
+        </figure>
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><strong class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Второй пользователь видит story</span></strong>Что тестировал: видимость опубликованной story у другого аккаунта. Что получил: U166 видит карточку Omkar Tiwari.</figcaption>
+          <div class="qa-proof"><img src="./assets/viewer-home-after-publish.png" alt="Viewer sees story"><span class="qa-proof-mark mark-viewer"></span><span class="qa-proof-arrow arrow-viewer"></span></div>
+        </figure>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Артефакты</h2>
+      <div class="qa-note qa-word">
+        <p><strong>Локальный JSON:</strong> <code>H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\stories-device-upload-cropper-scenario-20260509-074434\stories-device-upload-cropper-scenario.json</code></p>
+        <p><strong>Локальный Markdown:</strong> <code>H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\stories-device-upload-cropper-scenario-20260509-074434\stories-device-upload-cropper-scenario.md</code></p>
+        <p><strong>Команда:</strong> <code>$env:STORIES_AUTHOR_ID='182'; $env:STORIES_AUTHOR_DISPLAY_NAME='Omkar Tiwari'; $env:STORIES_AUTHOR_USERNAME='OmkarTiwari'; node .\playwright\scripts\stories-device-upload-cropper-scenario-audit.mjs</code></p>
+      </div>
+    </section>
+
+    <footer class="tp-footer">
+      <a href="../">Назад к QA reports</a>
+    </footer>
+  </main>
+</body>
+</html>
+

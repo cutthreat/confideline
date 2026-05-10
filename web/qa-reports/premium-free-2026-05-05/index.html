@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline QA | Premium / Free Settings</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+  <script src="../qa-report-controls.js" defer></script>`r`n</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">QA report · live Confideline</p>
+      <h1>Premium / Free Settings: полный отчет тестирования</h1>
+      <p>Проверка настроек premium/free на live test-сайте Confideline: активация premium test user, снижение лимитов до единиц, сравнение premium и free поведения, фиксация дефектов для Игоря и rollback admin settings.</p>
+      <div class="tp-actions" style="margin-top:16px">
+        <a class="tp-btn tp-btn--primary" href="../premium-controls-full-2026-05-06/">Открыть актуальный отчет</a>
+        <a class="tp-btn" href="../">Все QA reports</a>
+      </div>
+    </header>
+
+    <section class="qa-summary">
+      <div class="qa-metric"><span>Итог</span><strong>FAIL</strong></div>
+      <div class="qa-metric"><span>Проверок</span><strong>16</strong></div>
+      <div class="qa-metric"><span>Дефектов</span><strong>3+2</strong></div>
+      <div class="qa-metric"><span>Rollback</span><strong>OK</strong></div>
+    </section>
+
+    <section class="qa-section">
+      <div class="qa-note">
+        <p><strong>Статус:</strong> архивный отчет. Не использовать как основной source of truth для Игоря. Актуальная версия: <a href="../premium-controls-full-2026-05-06/">Premium/free controls full audit от 2026-05-06</a>, где добавлены recipient-side proof, единый формат подписей и пути воспроизведения.</p>
+        <p><strong>Критичный факт:</strong> premium user <strong>182 / Omkar Tiwari</strong> активирован до <strong>Jun 4, 2026</strong>, баланс после активации <strong>250 credits</strong>. Free control user: <strong>184 / Orion Esposito</strong>. Admin premium settings после теста восстановлены, diff пустой.</p>
+      </div>
+    </section>
+
+    <section id="igor" class="qa-section">
+      <h2>Архивная: Сводка для Игоря</h2>
+      <div class="qa-table-wrap">
+        <table class="qa-table">
+          <thead>
+            <tr>
+              <th>Приоритет</th>
+              <th>Блок</th>
+              <th>Факт</th>
+              <th>Ожидание</th>
+              <th>Куда смотреть</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">P0</span></td>
+              <td><code>messagesOutFree*</code> и <code>messagesOutPremium*</code></td>
+              <td>Лимиты исходящих сообщений не применяются. Free user ранее отправил 3 сообщения при limit=1; premium user 182 отправил 3 сообщения подряд, затем дополнительные попытки 4-9 тоже ушли успешно. Попытка 10 дала <code>404 Contact not found</code>, это не limit block.</td>
+              <td>После первого разрешенного действия второе/третье сообщение должно блокироваться или возвращать action-specific limit response.</td>
+              <td><code>/en/messages/create</code>, <code>MessagesController::actionCreate()</code>, <code>MessageManager::createMessage()</code>, premium/free limit event chain.</td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">P1</span></td>
+              <td><code>profileViewPremium*</code></td>
+              <td>При premium limit=1 user 182 открыл два профиля: <code>LingWong</code> и <code>Gin001</code>, блокировки не было.</td>
+              <td>Второй профиль должен блокироваться или показывать limit modal для premium лимита.</td>
+              <td>Profile view route, счетчик просмотров, premium profile-view limit tracking.</td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--warn">P2</span></td>
+              <td><code>profileLikePremium*</code></td>
+              <td>Лимит сработал, но premium user получил текст/modal <code>Get Premium / You have exceeded the limit</code>.</td>
+              <td>Для premium user нужен текст про исчерпанный premium limit, не upsell на premium.</td>
+              <td>Premium limit copy/messages for encounter like.</td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--warn">P2</span></td>
+              <td><code>swipeBackOn</code></td>
+              <td>Не доказано: у premium click не сработал в текущем carousel state, у free previous сработал без premium CTA.</td>
+              <td>Premium должен возвращаться назад, free должен видеть premium gate/CTA, если опция включена.</td>
+              <td>Encounters carousel, Angular <code>prev()</code>, premium gate.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Матрица проверок</h2>
+      <div class="qa-table-wrap">
+        <table class="qa-table">
+          <thead>
+            <tr>
+              <th>Опция</th>
+              <th>Status</th>
+              <th>Premium result</th>
+              <th>Free result</th>
+              <th>Комментарий</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>sitePremiumIncomingLikes</code></td>
+              <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+              <td>Premium видит страницу входящих лайков.</td>
+              <td>Free получает lock: “You need premium account to unlock this page”.</td>
+              <td>Рабочая premium/free развилка.</td>
+            </tr>
+            <tr>
+              <td><code>extendedSearch*</code></td>
+              <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+              <td><code>premiumOnlyCount=0</code>.</td>
+              <td><code>premiumOnlyCount=8</code>.</td>
+              <td>Технически разделение есть; точная семантика toggles требует продуктовой фиксации.</td>
+            </tr>
+            <tr>
+              <td><code>noAdsOn</code></td>
+              <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+              <td>Sidebar ad отсутствует.</td>
+              <td>Sidebar ad виден.</td>
+              <td>Работает.</td>
+            </tr>
+            <tr>
+              <td><code>addToFavoriteOn</code></td>
+              <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+              <td>Favorite action проходит.</td>
+              <td>Response содержит premium CTA: “Only Premium can mark profiles as favorites...”.</td>
+              <td>Raw success=true, но payload явно premium-gated.</td>
+            </tr>
+            <tr>
+              <td><code>profileLikePremium*</code></td>
+              <td><span class="qa-badge qa-badge--warn">PASS + UX BUG</span></td>
+              <td>Premium limit сработал.</td>
+              <td>Free limit ранее также срабатывал.</td>
+              <td>Нужно заменить copy для premium user.</td>
+            </tr>
+            <tr>
+              <td><code>messagesOutPremium*</code></td>
+              <td><span class="qa-badge qa-badge--fail">FAIL</span></td>
+              <td>Попытки 1-9: сообщения отправлены, все доступные responses <code>success=true</code>. Попытка 10: <code>404 Contact not found</code>, не лимит.</td>
+              <td>Free ветка ранее дала такой же FAIL.</td>
+              <td>Общий backend defect outgoing messages.</td>
+            </tr>
+            <tr>
+              <td><code>profileViewPremium*</code></td>
+              <td><span class="qa-badge qa-badge--fail">FAIL</span></td>
+              <td>Второй профиль открылся без блока.</td>
+              <td>Free ветка ранее блокировалась корректно.</td>
+              <td>Похоже на дефект именно premium ветки tracking/limit.</td>
+            </tr>
+            <tr>
+              <td><code>swipeBackOn</code></td>
+              <td><span class="qa-badge qa-badge--warn">NOT PROVEN</span></td>
+              <td>Click не сработал в текущем состоянии.</td>
+              <td>Free previous сработал без premium CTA.</td>
+              <td>Нужен отдельный узкий тест carousel state.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Повторная проверка messagesOutPremium: попытки 4-10</h2>
+      <p>После замечания дополнительно проверено поведение при тех же лимитах: <code>messagesOutPremiumMen=1</code>, <code>messagesOutPremiumWomen=1</code>, <code>messagesOutPeriod=1</code>. Цель: понять, появится ли блокировка не на 2-3 сообщении, а позже.</p>
+      <div class="qa-table-wrap">
+        <table class="qa-table">
+          <thead>
+            <tr>
+              <th>Попытка</th>
+              <th>Target user</th>
+              <th>Ответ системы</th>
+              <th>Вывод</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>4</td><td>17</td><td><code>success=true</code>, <code>messageId=185</code></td><td>Лимит не сработал.</td></tr>
+            <tr><td>5</td><td>43</td><td><code>success=true</code>, <code>messageId=186</code></td><td>Лимит не сработал.</td></tr>
+            <tr><td>6</td><td>51</td><td><code>success=true</code>, <code>messageId=187</code></td><td>Лимит не сработал.</td></tr>
+            <tr><td>7</td><td>180</td><td><code>success=true</code>, <code>messageId=188</code></td><td>Лимит не сработал.</td></tr>
+            <tr><td>8</td><td>181</td><td><code>success=true</code>, <code>messageId=189</code></td><td>Лимит не сработал.</td></tr>
+            <tr><td>9</td><td>184</td><td><code>success=true</code>, <code>messageId=190</code></td><td>Лимит не сработал.</td></tr>
+            <tr><td>10</td><td>186</td><td><code>404 Contact not found</code></td><td>Это не блокировка лимита, а недоступный контакт.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Архивные доказательства со скриншотами</h2>
+      <div class="qa-shot-grid">
+        <figure class="qa-shot">
+          <figcaption><span class="qa-badge qa-badge--info">АРХИВ</span> Проверка: user 182 действительно premium. Факт: premium активен до Jun 4, 2026, баланс 250 credits. Значение: исторический контекст активации. Актуальный source: отчет от 2026-05-06.</figcaption>
+          <img src="./assets/premiumUserAfterActivation-services.png" alt="Premium active services page">
+        </figure>
+        <figure class="qa-shot">
+          <figcaption><span class="qa-badge qa-badge--info">АРХИВ</span> Проверка: откат временно сниженных premium settings. Факт: rollback успешен, diff пустой. Значение: исторический прогон не оставил настройки измененными.</figcaption>
+          <img src="./assets/admin-premium-final-rollback.png" alt="Admin rollback settings">
+        </figure>
+        <figure class="qa-shot">
+          <figcaption><span class="qa-badge qa-badge--fail">FAIL</span> Проверка: третье исходящее сообщение при premium лимите 1. Факт: сообщение отправлено, блокировки нет. Значение: дефект подтвержден сильнее в актуальном отчете recipient-side проверкой.</figcaption>
+          <img src="./assets/premium-messages-out-attempt-3.png" alt="Premium messages out attempt 3">
+        </figure>
+        <figure class="qa-shot">
+          <figcaption><span class="qa-badge qa-badge--fail">FAIL</span> Проверка: второй просмотр профиля при premium profile-view лимите 1. Факт: второй профиль открылся без limit modal. Значение: premium profile-view limit требует исправления.</figcaption>
+          <img src="./assets/premium-profileView-attempt-2.png" alt="Premium profile view second profile">
+        </figure>
+        <figure class="qa-shot">
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Проверка: входящие лайки при включенном premium-only доступе. Факт: premium user видит страницу без lock. Значение: premium ветка работала в историческом прогоне.</figcaption>
+          <img src="./assets/premium-incoming-likes.png" alt="Premium incoming likes">
+        </figure>
+        <figure class="qa-shot">
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Проверка: incoming likes на free control user. Факт: free user видит premium lock. Значение: free/premium разделение работало в историческом прогоне.</figcaption>
+          <img src="./assets/free-incoming-likes.png" alt="Free incoming likes lock">
+        </figure>
+        <figure class="qa-shot">
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Проверка: показ рекламы на profile page у premium. Факт: sidebar ad отсутствует. Значение: no-ads поведение подтверждено исторически.</figcaption>
+          <img src="./assets/premiumNoAdsProfile.png" alt="Premium profile without ads">
+        </figure>
+        <figure class="qa-shot">
+          <figcaption><span class="qa-badge qa-badge--pass">PASS</span> Проверка: контроль рекламы на profile page у free user. Факт: sidebar ad отображается. Значение: отличие premium/free подтверждено исторически.</figcaption>
+          <img src="./assets/freeNoAdsProfileControl.png" alt="Free profile with sidebar ad">
+        </figure>
+        <figure class="qa-shot">
+          <figcaption><span class="qa-badge qa-badge--fail">FAIL</span> Проверка: попытка 9 отправки сообщения при premium outgoing limit=1. Факт: сообщение отправлено, <code>messageId=190</code>. Значение: лимит не сработал.</figcaption>
+          <img src="./assets/premium-messages-out-attempt-9.png" alt="Premium messages out attempt 9">
+        </figure>
+        <figure class="qa-shot">
+          <figcaption><span class="qa-badge qa-badge--warn">DATA</span> Проверка: попытка 10 при тех же лимитах. Факт: <code>404 Contact not found</code>. Значение: это ошибка контакта, не premium limit block.</figcaption>
+          <img src="./assets/premium-messages-out-attempt-10.png" alt="Premium messages out attempt 10">
+        </figure>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Правило публикации следующих QA-задач</h2>
+      <div class="qa-note">
+        <p>Каждая новая задача тестирования должна публиковаться как отдельная страница в <code>/web/qa-reports/&lt;slug&gt;/</code>, добавляться в каталог <code>/web/qa-reports/</code> и проходить public check перед передачей программисту. Минимальный состав: verdict, scope, checks table, defects for Igor, screenshots, rollback/state notes, public URL.</p>
+      </div>
+    </section>
+
+    <footer class="tp-footer">
+      <a href="../">Все QA reports</a> · <a href="../../index.html">Handoff catalog</a>
+    </footer>
+  </main>
+</body>
+</html>
+

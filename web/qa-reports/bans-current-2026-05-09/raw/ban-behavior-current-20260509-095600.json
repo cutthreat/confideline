@@ -1,0 +1,747 @@
+{
+  "startedAt": "2026-05-09T09:56:00.552Z",
+  "finishedAt": "2026-05-09T10:03:50.094Z",
+  "status": "PASS",
+  "baseURL": "https://confideline.com",
+  "outDir": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\ban-behavior-current-20260509-095600",
+  "users": {
+    "shadow": {
+      "id": 165,
+      "username": "ZephyronKaelHoffmann",
+      "name": "Zephyron Kael Hoffmann"
+    },
+    "full": {
+      "id": 166,
+      "username": "KaelarisDornSchwarz",
+      "name": "Kaelaris Dorn Schwarz"
+    },
+    "recipient": {
+      "id": 167,
+      "username": "KaelirTamm",
+      "name": "Kaelir Tamm"
+    },
+    "sender": {
+      "id": 168,
+      "username": "CaelumRastNielsen",
+      "name": "Caelum Rast Nielsen"
+    }
+  },
+  "checks": [
+    {
+      "id": "preflight-clean",
+      "status": "PASS",
+      "title": "Перед тестом у всех QA-пользователей нет активного бана",
+      "evidence": {
+        "ZephyronKaelHoffmann": {
+          "status": 200,
+          "json": {
+            "user_id": 165,
+            "username": "ZephyronKaelHoffmann",
+            "display_name": "Zephyron Kael Hoffmann",
+            "email": "ZephyronKaelHoffmann@confideline.com",
+            "ip": "91.207.88.208",
+            "cookie_token": "0M6gCSJfr4nn3gyknfZl2EVVPZpmgHrU",
+            "profile_url": "/en/admin/user/info?id=165",
+            "active_ban_id": false,
+            "shadow_allowed": true,
+            "shadow_block_reason": null,
+            "shadow_role_labels": []
+          }
+        },
+        "KaelarisDornSchwarz": {
+          "status": 200,
+          "json": {
+            "user_id": 166,
+            "username": "KaelarisDornSchwarz",
+            "display_name": "Kaelaris Dorn Schwarz",
+            "email": "KaelarisDornSchwarz@confideline.com",
+            "ip": "91.207.88.208",
+            "cookie_token": "0G7LK9Nd1-rjc4OQxG0IVU0zc_3Y54L5",
+            "profile_url": "/en/admin/user/info?id=166",
+            "active_ban_id": false,
+            "shadow_allowed": true,
+            "shadow_block_reason": null,
+            "shadow_role_labels": []
+          }
+        },
+        "KaelirTamm": {
+          "status": 200,
+          "json": {
+            "user_id": 167,
+            "username": "KaelirTamm",
+            "display_name": "Kaelir Tamm",
+            "email": "KaelirTamm@confideline.com",
+            "ip": "91.207.88.208",
+            "cookie_token": "5MOZ5Bru8bZvAnAX6Npy25UdzUUYnS0I",
+            "profile_url": "/en/admin/user/info?id=167",
+            "active_ban_id": false,
+            "shadow_allowed": true,
+            "shadow_block_reason": null,
+            "shadow_role_labels": []
+          }
+        },
+        "CaelumRastNielsen": {
+          "status": 200,
+          "json": {
+            "user_id": 168,
+            "username": "CaelumRastNielsen",
+            "display_name": "Caelum Rast Nielsen",
+            "email": "CaelumRastNielsen@confideline.com",
+            "ip": "91.207.88.208",
+            "cookie_token": "HvpCmjv6KGVJ1BYj6RyoQCo8JhpNCXMY",
+            "profile_url": "/en/admin/user/info?id=168",
+            "active_ban_id": false,
+            "shadow_allowed": true,
+            "shadow_block_reason": null,
+            "shadow_role_labels": []
+          }
+        }
+      }
+    },
+    {
+      "id": "pre-shadow-message-delivery",
+      "status": "PASS",
+      "title": "До shadow-бана U2 получает сообщение от U1",
+      "evidence": {
+        "send": {
+          "status": 200,
+          "ok": true,
+          "json": {
+            "success": true,
+            "message": "Message has been sent",
+            "messageId": "230",
+            "pendingMessageId": 1778320597535
+          },
+          "raw": "{\"success\":true,\"message\":\"Message has been sent\",\"messageId\":\"230\",\"pendingMessageId\":1778320597535}"
+        },
+        "recipientContains": true
+      }
+    },
+    {
+      "id": "create-shadow",
+      "status": "PASS",
+      "title": "shadow-бан создан и подтвержден active_ban_id",
+      "evidence": {
+        "userId": 165,
+        "activeBanId": 21,
+        "dataAfter": {
+          "status": 200,
+          "json": {
+            "user_id": 165,
+            "username": "ZephyronKaelHoffmann",
+            "display_name": "Zephyron Kael Hoffmann",
+            "email": "ZephyronKaelHoffmann@confideline.com",
+            "ip": "91.207.88.208",
+            "cookie_token": "0M6gCSJfr4nn3gyknfZl2EVVPZpmgHrU",
+            "profile_url": "/en/admin/user/info?id=165",
+            "active_ban_id": "21",
+            "shadow_allowed": true,
+            "shadow_block_reason": null,
+            "shadow_role_labels": []
+          }
+        }
+      }
+    },
+    {
+      "id": "shadow-user-can-use-site",
+      "status": "PASS",
+      "title": "Shadow-пользователь не видит явного бана и может открыть основные страницы",
+      "evidence": {
+        "userId": 165,
+        "username": "ZephyronKaelHoffmann",
+        "pages": [
+          {
+            "route": "/en",
+            "url": "https://confideline.com/en",
+            "blockedMarker": false,
+            "loginMarker": false,
+            "text": "Serenity hassir taken posseson of mying entire 0 Zephyron Kael Hoffmann ZephyronKaelHoffmann Dashboard Browse Groups Connections Messages Countries Add me Omkar Tiwari, 57 India, Haridwar Orion Esposito, 57 Republic of Italy, Palermo Switzerland, Basel Go to profile × Header Ad Encounters asd · 22 Austria, Leutasch Sex: Woman Status: Not set I am looking for: Not set Aged: Not set Description: Play now Your Matches Users not found Seems like you have no mutual likes yet View all New members Users not found About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+          },
+          {
+            "route": "/en/messages",
+            "url": "https://confideline.com/en/messages",
+            "blockedMarker": false,
+            "loginMarker": false,
+            "text": "Serenity hassir taken posseson of mying entire 0 Zephyron Kael Hoffmann ZephyronKaelHoffmann Dashboard Browse Groups Connections Messages Countries Omkar Tiwari QA premium no-debt 20260509-085038 msg 4 to 165 Kaelir Tamm QA ban current 20260509-095600 pre outbound U1 to U2 Caelum Rast Nielsen QA pre-shadow inbound 2026-05-06T23-09-25-695Z: CaelumRastNielsen to ZephyronKaelHoffmann About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+          },
+          {
+            "route": "/en/settings/profile",
+            "url": "https://confideline.com/en/settings/profile",
+            "blockedMarker": false,
+            "loginMarker": false,
+            "text": "Serenity hassir taken posseson of mying entire 0 Zephyron Kael Hoffmann ZephyronKaelHoffmann Dashboard Browse Groups Connections Messages Countries Settings Profile Photos Access requests Notifications Verification Appearance new Account Networks Blocked users Your data Profile settings Name Description Date of birth Country Switzerland City Basel Status Not set Single Seeing someone Married Open relationship Sex Not set Man Woman Looking for Men Women From To Save About me Семейное положение -- Select -- Женат / замужем В разводе / холост В отношениях Все сложно Дети -- Select -- Нет детей Есть дети Есть дети, но не живу с ними Есть дети, живем вместе Вредные привычки -- Select -- Нет вредных привычек Курю Пью алкоголь Курю и пью алкоголь Употребляю наркотики Имеются другие вредные привычки Любимые напитки Save Экспертиза Направления ТарологЭкстрасенсЯсновидящийДуховный практикИнтуитивный консультант Специализация Романтические отношенияРасставания и разводСовместимость партнёровБизнес и проекты Мои языки EnglishGerman Save Опыт эксперта Количество консультаций -- Select -- Более 10 консультаций Более 50 консультаций Более 100 консультаций Более 250 консультаций Более 500 консульт"
+          }
+        ]
+      }
+    },
+    {
+      "id": "shadow-outbound-hidden-during-ban",
+      "status": "PASS",
+      "title": "U2 не получает новое сообщение U1 во время shadow-бана",
+      "evidence": {
+        "send": {
+          "status": 200,
+          "ok": true,
+          "json": {
+            "success": true,
+            "message": "Message has been sent",
+            "messageId": "231",
+            "pendingMessageId": 1778320685230
+          },
+          "raw": "{\"success\":true,\"message\":\"Message has been sent\",\"messageId\":\"231\",\"pendingMessageId\":1778320685230}"
+        },
+        "senderSeesOwn": true,
+        "recipientContains": false
+      }
+    },
+    {
+      "id": "shadow-inbound-hidden-during-ban",
+      "status": "PASS",
+      "title": "U1 под shadow-баном не видит новое входящее сообщение от U3",
+      "evidence": {
+        "send": {
+          "status": 404,
+          "ok": false,
+          "json": null,
+          "raw": "Not Found (#404): Contact not found"
+        },
+        "shadowContains": false
+      }
+    },
+    {
+      "id": "shadow-like-hidden-from-recipient",
+      "status": "PASS",
+      "title": "Лайк U1 во время shadow-бана не появляется у U2 во входящих лайках",
+      "evidence": {
+        "like": {
+          "status": 200,
+          "ok": true,
+          "json": {
+            "success": true,
+            "liked": false
+          },
+          "raw": "{\"success\":true,\"liked\":false}"
+        },
+        "recipientContains": false
+      }
+    },
+    {
+      "id": "shadow-release-clean",
+      "status": "PASS",
+      "title": "Shadow-бан снят, active_ban_id=false",
+      "evidence": {
+        "status": 200,
+        "json": {
+          "user_id": 165,
+          "username": "ZephyronKaelHoffmann",
+          "display_name": "Zephyron Kael Hoffmann",
+          "email": "ZephyronKaelHoffmann@confideline.com",
+          "ip": "91.207.88.208",
+          "cookie_token": "0M6gCSJfr4nn3gyknfZl2EVVPZpmgHrU",
+          "profile_url": "/en/admin/user/info?id=165",
+          "active_ban_id": false,
+          "shadow_allowed": true,
+          "shadow_block_reason": null,
+          "shadow_role_labels": []
+        }
+      }
+    },
+    {
+      "id": "shadow-during-message-stays-hidden-after-release",
+      "status": "PASS",
+      "title": "Сообщение, отправленное во время shadow-бана, не должно появляться у U2 после снятия бана",
+      "evidence": {
+        "recipientContains": false
+      }
+    },
+    {
+      "id": "post-shadow-release-message-delivery",
+      "status": "PASS",
+      "title": "После снятия shadow-бана новые сообщения U1->U2 снова доставляются",
+      "evidence": {
+        "send": {
+          "status": 200,
+          "ok": true,
+          "json": {
+            "success": true,
+            "message": "Message has been sent",
+            "messageId": "232",
+            "pendingMessageId": 1778320851652
+          },
+          "raw": "{\"success\":true,\"message\":\"Message has been sent\",\"messageId\":\"232\",\"pendingMessageId\":1778320851652}"
+        },
+        "recipientContains": true
+      }
+    },
+    {
+      "id": "create-full",
+      "status": "PASS",
+      "title": "full-бан создан и подтвержден active_ban_id",
+      "evidence": {
+        "userId": 166,
+        "activeBanId": 22,
+        "dataAfter": {
+          "status": 200,
+          "json": {
+            "user_id": 166,
+            "username": "KaelarisDornSchwarz",
+            "display_name": "Kaelaris Dorn Schwarz",
+            "email": "KaelarisDornSchwarz@confideline.com",
+            "ip": "91.207.88.208",
+            "cookie_token": "0G7LK9Nd1-rjc4OQxG0IVU0zc_3Y54L5",
+            "profile_url": "/en/admin/user/info?id=166",
+            "active_ban_id": "22",
+            "shadow_allowed": true,
+            "shadow_block_reason": null,
+            "shadow_role_labels": []
+          }
+        }
+      }
+    },
+    {
+      "id": "full-ban-blocks-user-surface",
+      "status": "PASS",
+      "title": "Full-ban должен явно ограничить вход/основные пользовательские страницы",
+      "evidence": {
+        "userId": 166,
+        "username": "KaelarisDornSchwarz",
+        "pages": [
+          {
+            "route": "/en",
+            "url": "https://confideline.com/en",
+            "blockedMarker": true,
+            "loginMarker": false,
+            "text": "Forbidden Your IP address has been blocked You have no access to the requested page"
+          },
+          {
+            "route": "/en/messages",
+            "url": "https://confideline.com/en/messages",
+            "blockedMarker": true,
+            "loginMarker": false,
+            "text": "Forbidden Your IP address has been blocked You have no access to the requested page"
+          },
+          {
+            "route": "/en/settings/profile",
+            "url": "https://confideline.com/en/settings/profile",
+            "blockedMarker": true,
+            "loginMarker": false,
+            "text": "Forbidden Your IP address has been blocked You have no access to the requested page"
+          }
+        ]
+      }
+    },
+    {
+      "id": "full-ban-message-not-delivered",
+      "status": "PASS",
+      "title": "Сообщение full-banned пользователя не доставляется U2",
+      "evidence": {
+        "send": {
+          "status": 403,
+          "ok": false,
+          "json": null,
+          "raw": "Forbidden (#403): "
+        },
+        "recipientContains": false
+      }
+    },
+    {
+      "id": "full-release-clean",
+      "status": "PASS",
+      "title": "Full-бан снят, active_ban_id=false",
+      "evidence": {
+        "status": 200,
+        "json": {
+          "user_id": 166,
+          "username": "KaelarisDornSchwarz",
+          "display_name": "Kaelaris Dorn Schwarz",
+          "email": "KaelarisDornSchwarz@confideline.com",
+          "ip": "91.207.88.208",
+          "cookie_token": "0G7LK9Nd1-rjc4OQxG0IVU0zc_3Y54L5",
+          "profile_url": "/en/admin/user/info?id=166",
+          "active_ban_id": false,
+          "shadow_allowed": true,
+          "shadow_block_reason": null,
+          "shadow_role_labels": []
+        }
+      }
+    },
+    {
+      "id": "post-full-release-message-delivery",
+      "status": "PASS",
+      "title": "После снятия full-бана новые сообщения U166->U2 доставляются",
+      "evidence": {
+        "send": {
+          "status": 200,
+          "ok": true,
+          "json": {
+            "success": true,
+            "message": "Message has been sent",
+            "messageId": "233",
+            "pendingMessageId": 1778320967464
+          },
+          "raw": "{\"success\":true,\"message\":\"Message has been sent\",\"messageId\":\"233\",\"pendingMessageId\":1778320967464}"
+        },
+        "recipientContains": true
+      }
+    }
+  ],
+  "findings": [],
+  "screenshots": {
+    "sender-165-to-167-ban current ": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\ban-behavior-current-20260509-095600\\sender-165-to-167-1778320854879.png",
+    "pre-shadow-recipient-visible": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\ban-behavior-current-20260509-095600\\pre-shadow-recipient-visible.png",
+    "admin-create-shadow": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\ban-behavior-current-20260509-095600\\admin-create-shadow.png",
+    "admin-active-shadow": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\ban-behavior-current-20260509-095600\\admin-active-shadow.png",
+    "shadow-user-perspective-active": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\ban-behavior-current-20260509-095600\\shadow-user-perspective-active.png",
+    "shadow-recipient-during-hidden": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\ban-behavior-current-20260509-095600\\shadow-recipient-during-hidden.png",
+    "sender-168-to-165-ban current ": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\ban-behavior-current-20260509-095600\\sender-168-to-165-1778320728795.png",
+    "shadow-inbound-during-hidden": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\ban-behavior-current-20260509-095600\\shadow-inbound-during-hidden.png",
+    "like-165-to-167": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\ban-behavior-current-20260509-095600\\like-165-to-167.png",
+    "incoming-likes-167": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\ban-behavior-current-20260509-095600\\incoming-likes-167.png",
+    "shadow-recipient-after-release-still-hidden": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\ban-behavior-current-20260509-095600\\shadow-recipient-after-release-still-hidden.png",
+    "post-shadow-release-recipient-visible": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\ban-behavior-current-20260509-095600\\post-shadow-release-recipient-visible.png",
+    "admin-create-full": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\ban-behavior-current-20260509-095600\\admin-create-full.png",
+    "admin-active-full": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\ban-behavior-current-20260509-095600\\admin-active-full.png",
+    "full-user-perspective-active": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\ban-behavior-current-20260509-095600\\full-user-perspective-active.png",
+    "sender-166-to-167-ban current ": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\ban-behavior-current-20260509-095600\\sender-166-to-167-1778320970653.png",
+    "full-ban-recipient-during-hidden": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\ban-behavior-current-20260509-095600\\full-ban-recipient-during-hidden.png",
+    "post-full-release-recipient-visible": "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\ban-behavior-current-20260509-095600\\post-full-release-recipient-visible.png"
+  },
+  "cleanup": [
+    {
+      "banId": 21,
+      "reason": "release shadow after active checks",
+      "post": {
+        "status": 0,
+        "location": "",
+        "text": ""
+      }
+    },
+    {
+      "banId": 22,
+      "reason": "release full after active checks",
+      "post": {
+        "status": 0,
+        "location": "",
+        "text": ""
+      }
+    }
+  ],
+  "errors": [],
+  "shadowPreOutboundSend": {
+    "sender": 165,
+    "recipient": 167,
+    "text": "QA ban current 20260509-095600 pre outbound U1 to U2",
+    "response": {
+      "status": 200,
+      "ok": true,
+      "json": {
+        "success": true,
+        "message": "Message has been sent",
+        "messageId": "230",
+        "pendingMessageId": 1778320597535
+      },
+      "raw": "{\"success\":true,\"message\":\"Message has been sent\",\"messageId\":\"230\",\"pendingMessageId\":1778320597535}"
+    },
+    "senderSeesExactText": false,
+    "senderBody": "Serenity hassir taken posseson of mying entire 0 Zephyron Kael Hoffmann ZephyronKaelHoffmann Dashboard Browse Groups Connections Messages Countries Loading messages... About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+  },
+  "shadowPreOutboundRecipient": {
+    "userId": 167,
+    "username": "KaelirTamm",
+    "text": "QA ban current 20260509-095600 pre outbound U1 to U2",
+    "contains": true,
+    "body": "Serenity hassir taken posseson of mying entire 0 Kaelir Tamm KaelirTamm Dashboard Browse Groups Connections Messages 1 Countries Omkar Tiwari QA premium no-debt 20260509-085038 msg 2 to 167 Zephyron Kael Hoffmann QA ban current 20260509-095600 pre outbound U1 to U2 1 Caelum Rast Nielsen QA full-site recipient proof 20260509-081059 from 167 to 168 Kaelaris Dorn Schwarz QA ban current 20260507-205351 post full release U166 to U2 Omkar Tiwari OmkarTiwari 09.05.2026 QA premium no-debt 20260509-085038 msg 2 to 167 8:51 About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+  },
+  "shadowCreate": {
+    "banId": 21,
+    "dataBefore": {
+      "status": 200,
+      "json": {
+        "user_id": 165,
+        "username": "ZephyronKaelHoffmann",
+        "display_name": "Zephyron Kael Hoffmann",
+        "email": "ZephyronKaelHoffmann@confideline.com",
+        "ip": "91.207.88.208",
+        "cookie_token": "0M6gCSJfr4nn3gyknfZl2EVVPZpmgHrU",
+        "profile_url": "/en/admin/user/info?id=165",
+        "active_ban_id": false,
+        "shadow_allowed": true,
+        "shadow_block_reason": null,
+        "shadow_role_labels": []
+      }
+    },
+    "dataAfter": {
+      "status": 200,
+      "json": {
+        "user_id": 165,
+        "username": "ZephyronKaelHoffmann",
+        "display_name": "Zephyron Kael Hoffmann",
+        "email": "ZephyronKaelHoffmann@confideline.com",
+        "ip": "91.207.88.208",
+        "cookie_token": "0M6gCSJfr4nn3gyknfZl2EVVPZpmgHrU",
+        "profile_url": "/en/admin/user/info?id=165",
+        "active_ban_id": "21",
+        "shadow_allowed": true,
+        "shadow_block_reason": null,
+        "shadow_role_labels": []
+      }
+    }
+  },
+  "shadowPerspective": {
+    "userId": 165,
+    "username": "ZephyronKaelHoffmann",
+    "pages": [
+      {
+        "route": "/en",
+        "url": "https://confideline.com/en",
+        "blockedMarker": false,
+        "loginMarker": false,
+        "text": "Serenity hassir taken posseson of mying entire 0 Zephyron Kael Hoffmann ZephyronKaelHoffmann Dashboard Browse Groups Connections Messages Countries Add me Omkar Tiwari, 57 India, Haridwar Orion Esposito, 57 Republic of Italy, Palermo Switzerland, Basel Go to profile × Header Ad Encounters asd · 22 Austria, Leutasch Sex: Woman Status: Not set I am looking for: Not set Aged: Not set Description: Play now Your Matches Users not found Seems like you have no mutual likes yet View all New members Users not found About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+      },
+      {
+        "route": "/en/messages",
+        "url": "https://confideline.com/en/messages",
+        "blockedMarker": false,
+        "loginMarker": false,
+        "text": "Serenity hassir taken posseson of mying entire 0 Zephyron Kael Hoffmann ZephyronKaelHoffmann Dashboard Browse Groups Connections Messages Countries Omkar Tiwari QA premium no-debt 20260509-085038 msg 4 to 165 Kaelir Tamm QA ban current 20260509-095600 pre outbound U1 to U2 Caelum Rast Nielsen QA pre-shadow inbound 2026-05-06T23-09-25-695Z: CaelumRastNielsen to ZephyronKaelHoffmann About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+      },
+      {
+        "route": "/en/settings/profile",
+        "url": "https://confideline.com/en/settings/profile",
+        "blockedMarker": false,
+        "loginMarker": false,
+        "text": "Serenity hassir taken posseson of mying entire 0 Zephyron Kael Hoffmann ZephyronKaelHoffmann Dashboard Browse Groups Connections Messages Countries Settings Profile Photos Access requests Notifications Verification Appearance new Account Networks Blocked users Your data Profile settings Name Description Date of birth Country Switzerland City Basel Status Not set Single Seeing someone Married Open relationship Sex Not set Man Woman Looking for Men Women From To Save About me Семейное положение -- Select -- Женат / замужем В разводе / холост В отношениях Все сложно Дети -- Select -- Нет детей Есть дети Есть дети, но не живу с ними Есть дети, живем вместе Вредные привычки -- Select -- Нет вредных привычек Курю Пью алкоголь Курю и пью алкоголь Употребляю наркотики Имеются другие вредные привычки Любимые напитки Save Экспертиза Направления ТарологЭкстрасенсЯсновидящийДуховный практикИнтуитивный консультант Специализация Романтические отношенияРасставания и разводСовместимость партнёровБизнес и проекты Мои языки EnglishGerman Save Опыт эксперта Количество консультаций -- Select -- Более 10 консультаций Более 50 консультаций Более 100 консультаций Более 250 консультаций Более 500 консульт"
+      }
+    ]
+  },
+  "shadowOutboundSend": {
+    "sender": 165,
+    "recipient": 167,
+    "text": "QA ban current 20260509-095600 active shadow outbound U1 to U2",
+    "response": {
+      "status": 200,
+      "ok": true,
+      "json": {
+        "success": true,
+        "message": "Message has been sent",
+        "messageId": "231",
+        "pendingMessageId": 1778320685230
+      },
+      "raw": "{\"success\":true,\"message\":\"Message has been sent\",\"messageId\":\"231\",\"pendingMessageId\":1778320685230}"
+    },
+    "senderSeesExactText": true,
+    "senderBody": "Serenity hassir taken posseson of mying entire 0 Zephyron Kael Hoffmann ZephyronKaelHoffmann Dashboard Browse Groups Connections Messages Countries Omkar Tiwari QA premium no-debt 20260509-085038 msg 4 to 165 Kaelir Tamm QA ban current 20260509-095600 active shadow outbound U1 to U2 Caelum Rast Nielsen QA pre-shadow inbound 2026-05-06T23-09-25-695Z: CaelumRastNielsen to ZephyronKaelHoffmann About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+  },
+  "shadowSenderSeesOwn": true,
+  "shadowRecipientDuring": {
+    "userId": 167,
+    "username": "KaelirTamm",
+    "text": "QA ban current 20260509-095600 active shadow outbound U1 to U2",
+    "contains": false,
+    "body": "Serenity hassir taken posseson of mying entire 0 Kaelir Tamm KaelirTamm Dashboard Browse Groups Connections Messages Countries Omkar Tiwari QA premium no-debt 20260509-085038 msg 2 to 167 Caelum Rast Nielsen QA full-site recipient proof 20260509-081059 from 167 to 168 Kaelaris Dorn Schwarz QA ban current 20260507-205351 post full release U166 to U2 Omkar Tiwari OmkarTiwari 09.05.2026 QA premium no-debt 20260509-085038 msg 2 to 167 8:51 About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+  },
+  "inboundToShadowSend": {
+    "sender": 168,
+    "recipient": 165,
+    "text": "QA ban current 20260509-095600 inbound U3 to shadow U1",
+    "response": {
+      "status": 404,
+      "ok": false,
+      "json": null,
+      "raw": "Not Found (#404): Contact not found"
+    },
+    "senderSeesExactText": false,
+    "senderBody": "Serenity hassir taken posseson of mying entire 0 Caelum Rast Nielsen CaelumRastNielsen Dashboard Browse Groups Connections Messages 1 Countries Omkar Tiwari QA premium no-debt 20260509-085038 msg 3 to 168 Kaelir Tamm QA full-site recipient proof 20260509-081059 from 167 to 168 Kaelaris Dorn Schwarz QA full post-release inbound 2026-05-02T23-08-33-706Z: CaelumRastNielsen to KaelarisDornSchwarz About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+  },
+  "shadowSeesInboundDuring": {
+    "userId": 165,
+    "username": "ZephyronKaelHoffmann",
+    "text": "QA ban current 20260509-095600 inbound U3 to shadow U1",
+    "contains": false,
+    "body": "Serenity hassir taken posseson of mying entire 0 Zephyron Kael Hoffmann ZephyronKaelHoffmann Dashboard Browse Groups Connections Messages Countries Omkar Tiwari QA premium no-debt 20260509-085038 msg 4 to 165 Kaelir Tamm QA ban current 20260509-095600 active shadow outbound U1 to U2 Caelum Rast Nielsen QA pre-shadow inbound 2026-05-06T23-09-25-695Z: CaelumRastNielsen to ZephyronKaelHoffmann Omkar Tiwari OmkarTiwari 09.05.2026 QA premium no-debt 20260509-085038 msg 4 to 165 8:52 About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+  },
+  "shadowLike": {
+    "status": 200,
+    "ok": true,
+    "json": {
+      "success": true,
+      "liked": false
+    },
+    "raw": "{\"success\":true,\"liked\":false}"
+  },
+  "recipientIncomingLikes": {
+    "contains": false,
+    "body": "Bad Request (#400) The above error occurred while the Web server was processing your request. Please contact us if you think this is a server error. Thank you."
+  },
+  "shadowAfterReleaseData": {
+    "status": 200,
+    "json": {
+      "user_id": 165,
+      "username": "ZephyronKaelHoffmann",
+      "display_name": "Zephyron Kael Hoffmann",
+      "email": "ZephyronKaelHoffmann@confideline.com",
+      "ip": "91.207.88.208",
+      "cookie_token": "0M6gCSJfr4nn3gyknfZl2EVVPZpmgHrU",
+      "profile_url": "/en/admin/user/info?id=165",
+      "active_ban_id": false,
+      "shadow_allowed": true,
+      "shadow_block_reason": null,
+      "shadow_role_labels": []
+    }
+  },
+  "shadowRecipientAfterRelease": {
+    "userId": 167,
+    "username": "KaelirTamm",
+    "text": "QA ban current 20260509-095600 active shadow outbound U1 to U2",
+    "contains": false,
+    "body": "Serenity hassir taken posseson of mying entire 0 Kaelir Tamm KaelirTamm Dashboard Browse Groups Connections Messages 1 Countries Omkar Tiwari QA premium no-debt 20260509-085038 msg 2 to 167 Zephyron Kael Hoffmann QA ban current 20260509-095600 pre outbound U1 to U2 1 Caelum Rast Nielsen QA full-site recipient proof 20260509-081059 from 167 to 168 Kaelaris Dorn Schwarz QA ban current 20260507-205351 post full release U166 to U2 Omkar Tiwari OmkarTiwari 09.05.2026 QA premium no-debt 20260509-085038 msg 2 to 167 8:51 About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+  },
+  "postShadowSend": {
+    "sender": 165,
+    "recipient": 167,
+    "text": "QA ban current 20260509-095600 post shadow release U1 to U2",
+    "response": {
+      "status": 200,
+      "ok": true,
+      "json": {
+        "success": true,
+        "message": "Message has been sent",
+        "messageId": "232",
+        "pendingMessageId": 1778320851652
+      },
+      "raw": "{\"success\":true,\"message\":\"Message has been sent\",\"messageId\":\"232\",\"pendingMessageId\":1778320851652}"
+    },
+    "senderSeesExactText": true,
+    "senderBody": "Serenity hassir taken posseson of mying entire 0 Zephyron Kael Hoffmann ZephyronKaelHoffmann Dashboard Browse Groups Connections Messages Countries Omkar Tiwari QA premium no-debt 20260509-085038 msg 4 to 165 Kaelir Tamm QA ban current 20260509-095600 post shadow release U1 to U2 Caelum Rast Nielsen QA pre-shadow inbound 2026-05-06T23-09-25-695Z: CaelumRastNielsen to ZephyronKaelHoffmann About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+  },
+  "postShadowRecipient": {
+    "userId": 167,
+    "username": "KaelirTamm",
+    "text": "QA ban current 20260509-095600 post shadow release U1 to U2",
+    "contains": true,
+    "body": "Serenity hassir taken posseson of mying entire 0 Kaelir Tamm KaelirTamm Dashboard Browse Groups Connections Messages 2 Countries Omkar Tiwari QA premium no-debt 20260509-085038 msg 2 to 167 Zephyron Kael Hoffmann QA ban current 20260509-095600 post shadow release U1 to U2 2 Caelum Rast Nielsen QA full-site recipient proof 20260509-081059 from 167 to 168 Kaelaris Dorn Schwarz QA ban current 20260507-205351 post full release U166 to U2 Omkar Tiwari OmkarTiwari 09.05.2026 QA premium no-debt 20260509-085038 msg 2 to 167 8:51 About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+  },
+  "fullCreate": {
+    "banId": 22,
+    "dataBefore": {
+      "status": 200,
+      "json": {
+        "user_id": 166,
+        "username": "KaelarisDornSchwarz",
+        "display_name": "Kaelaris Dorn Schwarz",
+        "email": "KaelarisDornSchwarz@confideline.com",
+        "ip": "91.207.88.208",
+        "cookie_token": "0G7LK9Nd1-rjc4OQxG0IVU0zc_3Y54L5",
+        "profile_url": "/en/admin/user/info?id=166",
+        "active_ban_id": false,
+        "shadow_allowed": true,
+        "shadow_block_reason": null,
+        "shadow_role_labels": []
+      }
+    },
+    "dataAfter": {
+      "status": 200,
+      "json": {
+        "user_id": 166,
+        "username": "KaelarisDornSchwarz",
+        "display_name": "Kaelaris Dorn Schwarz",
+        "email": "KaelarisDornSchwarz@confideline.com",
+        "ip": "91.207.88.208",
+        "cookie_token": "0G7LK9Nd1-rjc4OQxG0IVU0zc_3Y54L5",
+        "profile_url": "/en/admin/user/info?id=166",
+        "active_ban_id": "22",
+        "shadow_allowed": true,
+        "shadow_block_reason": null,
+        "shadow_role_labels": []
+      }
+    }
+  },
+  "fullPerspective": {
+    "userId": 166,
+    "username": "KaelarisDornSchwarz",
+    "pages": [
+      {
+        "route": "/en",
+        "url": "https://confideline.com/en",
+        "blockedMarker": true,
+        "loginMarker": false,
+        "text": "Forbidden Your IP address has been blocked You have no access to the requested page"
+      },
+      {
+        "route": "/en/messages",
+        "url": "https://confideline.com/en/messages",
+        "blockedMarker": true,
+        "loginMarker": false,
+        "text": "Forbidden Your IP address has been blocked You have no access to the requested page"
+      },
+      {
+        "route": "/en/settings/profile",
+        "url": "https://confideline.com/en/settings/profile",
+        "blockedMarker": true,
+        "loginMarker": false,
+        "text": "Forbidden Your IP address has been blocked You have no access to the requested page"
+      }
+    ]
+  },
+  "fullAttemptSend": {
+    "sender": 166,
+    "recipient": 167,
+    "text": "QA ban current 20260509-095600 full banned U166 attempt to U2",
+    "response": {
+      "status": 403,
+      "ok": false,
+      "json": null,
+      "raw": "Forbidden (#403): "
+    },
+    "senderSeesExactText": false,
+    "senderBody": "Forbidden Your IP address has been blocked You have no access to the requested page"
+  },
+  "fullRecipientDuring": {
+    "userId": 167,
+    "username": "KaelirTamm",
+    "text": "QA ban current 20260509-095600 full banned U166 attempt to U2",
+    "contains": false,
+    "body": "Serenity hassir taken posseson of mying entire 0 Kaelir Tamm KaelirTamm Dashboard Browse Groups Connections Messages 2 Countries Omkar Tiwari QA premium no-debt 20260509-085038 msg 2 to 167 Zephyron Kael Hoffmann QA ban current 20260509-095600 post shadow release U1 to U2 2 Caelum Rast Nielsen QA full-site recipient proof 20260509-081059 from 167 to 168 Kaelaris Dorn Schwarz QA ban current 20260507-205351 post full release U166 to U2 Omkar Tiwari OmkarTiwari 09.05.2026 QA premium no-debt 20260509-085038 msg 2 to 167 8:51 About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+  },
+  "fullAfterReleaseData": {
+    "status": 200,
+    "json": {
+      "user_id": 166,
+      "username": "KaelarisDornSchwarz",
+      "display_name": "Kaelaris Dorn Schwarz",
+      "email": "KaelarisDornSchwarz@confideline.com",
+      "ip": "91.207.88.208",
+      "cookie_token": "0G7LK9Nd1-rjc4OQxG0IVU0zc_3Y54L5",
+      "profile_url": "/en/admin/user/info?id=166",
+      "active_ban_id": false,
+      "shadow_allowed": true,
+      "shadow_block_reason": null,
+      "shadow_role_labels": []
+    }
+  },
+  "postFullSend": {
+    "sender": 166,
+    "recipient": 167,
+    "text": "QA ban current 20260509-095600 post full release U166 to U2",
+    "response": {
+      "status": 200,
+      "ok": true,
+      "json": {
+        "success": true,
+        "message": "Message has been sent",
+        "messageId": "233",
+        "pendingMessageId": 1778320967464
+      },
+      "raw": "{\"success\":true,\"message\":\"Message has been sent\",\"messageId\":\"233\",\"pendingMessageId\":1778320967464}"
+    },
+    "senderSeesExactText": true,
+    "senderBody": "Serenity hassir taken posseson of mying entire 0 Kaelaris Dorn Schwarz KaelarisDornSchwarz Dashboard Browse Groups Connections Messages Countries Omkar Tiwari QA premium no-debt 20260509-085038 msg 1 to 166 Kaelir Tamm QA ban current 20260509-095600 post full release U166 to U2 Caelum Rast Nielsen QA full post-release inbound 2026-05-02T23-08-33-706Z: CaelumRastNielsen to KaelarisDornSchwarz About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+  },
+  "postFullRecipient": {
+    "userId": 167,
+    "username": "KaelirTamm",
+    "text": "QA ban current 20260509-095600 post full release U166 to U2",
+    "contains": true,
+    "body": "Serenity hassir taken posseson of mying entire 0 Kaelir Tamm KaelirTamm Dashboard Browse Groups Connections Messages 3 Countries Omkar Tiwari QA premium no-debt 20260509-085038 msg 2 to 167 Kaelaris Dorn Schwarz QA ban current 20260509-095600 post full release U166 to U2 1 Zephyron Kael Hoffmann QA ban current 20260509-095600 post shadow release U1 to U2 2 Caelum Rast Nielsen QA full-site recipient proof 20260509-081059 from 167 to 168 Omkar Tiwari OmkarTiwari 09.05.2026 QA premium no-debt 20260509-085038 msg 2 to 167 8:51 About News Terms Privacy Cookie Policy Facebook Twitter YouDate © 2026 English (US)"
+  }
+}
