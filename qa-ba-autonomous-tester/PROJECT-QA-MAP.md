@@ -70,6 +70,7 @@
 | QA Control Center | Рабочая панель для Игоря и Алексея | `H:\GPT-Codex\Confideline\web\qa-reports\qa-control-center-2026-05-07\index.html` |
 | User interactions | Актуальный PASS по likes/favorites/visits/profile actions | `H:\GPT-Codex\Confideline\web\qa-reports\user-interactions-2026-05-10\index.html` |
 | Connections mutual likes | Актуальный PASS: clean baseline, one-way like, recipient-side incoming like, mutual у обоих, rollback | `H:\GPT-Codex\Confideline\web\qa-reports\connections-mutual-likes-2026-05-10\index.html` |
+| Photo access actions | Актуальный FAIL: approve/reject happy path PASS, но action без request возвращает false `success=true` | `H:\GPT-Codex\Confideline\web\qa-reports\photo-access-actions-2026-05-10\index.html` |
 | Detail surfaces | Актуальный PASS по detail surfaces с BA-замечанием по EN-content | `H:\GPT-Codex\Confideline\web\qa-reports\detail-surfaces-2026-05-10\index.html` |
 | Discovery surfaces | Актуальный PASS по dashboard/browse/encounters | `H:\GPT-Codex\Confideline\web\qa-reports\discovery-surfaces-2026-05-09\index.html` |
 | Public/Auth + Accessibility | Актуальный FAIL по accessibility при рабочем signup path | `H:\GPT-Codex\Confideline\web\qa-reports\public-auth-accessibility-2026-05-09\index.html` |
@@ -92,6 +93,7 @@
 | P0 | `Premium no-debt recheck` / `messagesOutPremium` | Лимиты сообщений должны проверяться 3-10 попытками и обязательно со стороны получателя. |
 | P0 | `Stories current publish flow` | Нужен полный author + viewer + admin proof для existing-photo publish. |
 | P1 | `Photo upload current settings` | Main/profile photo остается отдельной зоной от gallery и требует user-side visibility. |
+| P1 | `Photo access actions` | Action без существующего request возвращает `success=true`; нужен controller-level отказ. |
 | P1 | `Public/Auth + Accessibility` | Signup path работает, но accessibility FAIL остается задачей для UI/верстки. |
 | P1 | `Bans / SHADOW-RELEASE-001` | После снятия shadow/full ban нужно доказывать восстановление видимости и новых действий. |
 | P2 | `Full-site smoke` admin href `{url}` | Проверить админский шаблон/ссылку как отдельный route/UI bug. |

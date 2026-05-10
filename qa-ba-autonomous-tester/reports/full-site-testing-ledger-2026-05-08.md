@@ -1482,3 +1482,32 @@ Harness / правила:
 
 - `toggle-like` является переключателем. Перед любым тестом likes/matches обязателен clean baseline, иначе тестировщик может снять уже существующий лайк и получить ложный результат.
 - Для admin login-as добавлен retry в новый сценарий, потому что один короткий login-as вызов временно не нашел ссылку. Это считается укреплением тестового контура, а не продуктовым багом.
+
+## 2026-05-10 Photo access actions recheck
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\photo-access-actions-2026-05-10\index.html`
+
+Raw evidence:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\photo-access-actions-2026-05-10\photo-access-action-scenario.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\photo-access-actions-2026-05-10\photo-access-action-scenario.md`
+- Screenshots: `H:\GPT-Codex\Confideline\web\qa-reports\photo-access-actions-2026-05-10\*.png`
+
+Результат:
+
+- Общий статус: `FAIL`.
+- PASS: U182 запросил доступ к приватным фото U166; U166 approve вернул `success=true`, actor-side evidence сохранен.
+- PASS: U168 запросил доступ к приватным фото U166; U166 reject вернул `success=true`, actor-side evidence сохранен.
+- FAIL: U184 отсутствовал в списке access requests U166, но POST `/en/settings/photo-access-action?fromUserId=184&action=1` вернул `success=true`.
+
+Действие для Игоря:
+
+- Исправить false-success edge case: в `SettingsController::actionPhotoAccessAction()` учитывать boolean результат `PhotoManager::approveOrRejectPhotoAccess()`. Если request не найден, возвращать отказ/404/validation JSON, а не `success=true`.
+- Ретест: approve/reject для существующего request остаются PASS; action без request возвращает ошибку и не сообщает пользователю ложный успех.
+
+BA / рекомендации для Алексея:
+
+- `Срочно и важно`: endpoint action говорит “успех” там, где действие не применено. Это снижает доверие к админским и пользовательским действиям.
+- `Важно, но не срочно`: для private photo access нужен clean fixture/cleanup helper, потому что старые requests остаются в очереди и мешают строгому baseline.

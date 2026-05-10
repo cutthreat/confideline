@@ -40,7 +40,7 @@
 
     <section class="qa-summary">
       <div class="qa-metric"><span>Решение</span><strong>FAIL</strong></div>
-      <div class="qa-metric"><span>Актуальных отчетов</span><strong>21</strong></div>
+      <div class="qa-metric"><span>Актуальных отчетов</span><strong>22</strong></div>
       <div class="qa-metric"><span>Архив</span><strong>1</strong></div>
       <div class="qa-metric"><span>Публичная проверка</span><strong>OK</strong></div>
     </section>
@@ -135,6 +135,13 @@
               <td>Публикация stories из уже загруженного фото ломается: existing photo выбирается, S3 image fetch дает <code>200</code>, но после <code>Next</code> modal закрывается, cropper/preview не открывается. Контрольный device-upload в тех же настройках работает.</td>
               <td>U184 -> <code>/en</code> -> stories <code>Add me</code> -> выбрать existing photo -> <code>Next</code>. Проверить <code>cropperOpen=false</code>, <code>previewOpen=false</code>. Для сравнения загрузить с устройства: cropper/preview/publish должны пройти.</td>
               <td><a href="../stories-existing-photo-vs-device-2026-05-10/#igor">Stories existing photo vs device</a></td>
+            </tr>
+            <tr>
+              <td><span class="qa-badge qa-badge--fail">P1</span></td>
+              <td>Photo access API</td>
+              <td><code>/en/settings/photo-access-action</code> возвращает <code>success=true</code> для пользователя без существующего photo access request.</td>
+              <td>Войти как U166, убедиться что U184 отсутствует в <code>/en/settings/access-requests</code>, затем POST <code>/en/settings/photo-access-action?fromUserId=184&amp;action=1</code>. В коде смотреть <code>SettingsController::actionPhotoAccessAction()</code>: результат <code>PhotoManager::approveOrRejectPhotoAccess()</code> сейчас игнорируется.</td>
+              <td><a href="../photo-access-actions-2026-05-10/#igor">Photo access actions</a></td>
             </tr>
             <tr>
               <td><span class="qa-badge qa-badge--pass">PASS</span></td>
@@ -281,6 +288,12 @@
           <p>U182/U184: one-way like виден получателю, mutual появляется только после встречного лайка и виден обоим.</p>
           <a href="../connections-mutual-likes-2026-05-10/"><img src="../connections-mutual-likes-2026-05-10/after-b-like-a-mutual.png" alt="Connections mutual likes evidence"></a>
         </article>
+        <article class="qa-evidence-card qa-status-card">
+          <span class="qa-badge qa-badge--fail">FAIL</span>
+          <h3>Photo access no-request success</h3>
+          <p>U184 отсутствует в access requests U166, но invalid photo-access-action возвращает success=true.</p>
+          <a href="../photo-access-actions-2026-05-10/"><img src="../photo-access-actions-2026-05-10/no-request-owner-before.png" alt="Photo access no request evidence"></a>
+        </article>
       </div>
     </section>
 
@@ -357,6 +370,12 @@
               <td><a href="../connections-mutual-likes-2026-05-10/#alexey">Connections mutual likes</a></td>
             </tr>
             <tr>
+              <td>Photo access happy path</td>
+              <td>Approve и reject для существующих private photo access requests работают: owner action возвращает success, actor-side evidence сохранен.</td>
+              <td>Базовый механизм не нужно возвращать Игорю как сломанный целиком; чинить надо только false-success edge case без request.</td>
+              <td><a href="../photo-access-actions-2026-05-10/#alexey">Photo access actions</a></td>
+            </tr>
+            <tr>
               <td>Premium reports</td>
               <td>Новый premium/free отчет содержит rollback, recipient-side evidence и пути воспроизведения по лимитам.</td>
               <td>Его можно использовать как источник постановки задач, а старый отчет держать только как архив.</td>
@@ -414,6 +433,13 @@
               <td>Доказан полный цикл mutual: чистый baseline, U182 -> U184, проверка входящего у U184, U184 -> U182, mutual у обоих.</td>
               <td>Проверка относится к базовым likes/matches; premium incoming likes lock и shadow-ban likes остаются отдельными сценариями.</td>
               <td>Использовать как текущий источник по mutual likes regression.</td>
+            </tr>
+            <tr>
+              <td><a href="../photo-access-actions-2026-05-10/">Photo access actions QA</a></td>
+              <td><span class="qa-badge qa-badge--fail">АКТУАЛЕН / FAIL</span></td>
+              <td>Happy path approve/reject работает; дополнительно найден false-success для action без существующего request.</td>
+              <td>Негативный кейс проверяет API-level edge case, а не обычный UI happy path.</td>
+              <td>Использовать как текущий источник по private photo access actions.</td>
             </tr>
             <tr>
               <td><a href="../premium-free-2026-05-05/">Premium / Free Settings QA</a></td>
