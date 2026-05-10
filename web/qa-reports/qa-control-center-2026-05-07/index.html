@@ -40,7 +40,7 @@
 
     <section class="qa-summary">
       <div class="qa-metric"><span>Решение</span><strong>FAIL</strong></div>
-      <div class="qa-metric"><span>Актуальных отчетов</span><strong>14</strong></div>
+      <div class="qa-metric"><span>Актуальных отчетов</span><strong>15</strong></div>
       <div class="qa-metric"><span>Архив</span><strong>1</strong></div>
       <div class="qa-metric"><span>Публичная проверка</span><strong>OK</strong></div>
     </section>
@@ -132,9 +132,9 @@
             <tr>
               <td><span class="qa-badge qa-badge--warn">P1</span></td>
               <td>Group posts moderation</td>
-              <td>Hide post работает и сохраняет причину, но для hidden post не найдено действие reopen/show/restore.</td>
-              <td>Открыть <code>/en/admin/group/posts?groupId=10</code>, скрыть active post через modal, затем в hidden filter проверить наличие действия повторного открытия.</td>
-              <td><a href="../continued-testing-2026-05-10/#igor">Continued QA</a></td>
+              <td>Hide post работает: post ID 26 остается в админке как <code>Hidden</code>, reason сохранен, viewer U166 больше не видит пост. Но для hidden post не найдено явное действие reopen/show/restore.</td>
+              <td>Открыть <code>/en/admin/group/posts</code>, найти hidden post ID 26 или создать новый такой же цикл, проверить actions. Решить, является ли <code>Approve post</code> повторным открытием, или нужна отдельная кнопка reopen/show.</td>
+              <td><a href="../group-posts-hide-visibility-2026-05-10/#igor">Group posts hide visibility</a></td>
             </tr>
             <tr>
               <td><span class="qa-badge qa-badge--fail">P1</span></td>
@@ -189,6 +189,12 @@
         <p><strong>Что произошло:</strong> скриншоты не удалялись, они были в отдельных отчетах. В сводной панели их не было видно напрямую. Ниже добавлены быстрые превью ключевых доказательств с фильтрацией по статусу.</p>
       </div>
       <div class="qa-evidence-grid">
+        <article class="qa-evidence-card qa-status-card">
+          <span class="qa-badge qa-badge--warn">WARN</span>
+          <h3>Group post hide visibility</h3>
+          <p>Hide скрывает approved post от второго пользователя, но явного reopen/show/restore action не найдено.</p>
+          <a href="../group-posts-hide-visibility-2026-05-10/"><img src="../group-posts-hide-visibility-2026-05-10/assets/07-admin-post-hidden.png" alt="Group post hide visibility evidence"></a>
+        </article>
         <article class="qa-evidence-card qa-status-card">
           <span class="qa-badge qa-badge--fail">FAIL</span>
           <h3>Premium messagesOutPremium</h3>
