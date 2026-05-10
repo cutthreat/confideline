@@ -1363,3 +1363,32 @@ BA / рекомендации для Алексея:
 
 - `Срочно и важно`: если жалобы на посты входят в acceptance scope групповой модерации, текущий report-post является релизным дефектом.
 - `Важно, но не срочно`: решить, должно ли пользовательское delete физически удалять пост из admin list или оставлять audit trail.
+
+## 2026-05-10 Messages thread lifecycle recheck
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\messages-thread-lifecycle-2026-05-10\index.html`
+
+Raw evidence:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\messages-thread-lifecycle-2026-05-10\raw\messages-thread-lifecycle-recheck.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\messages-thread-lifecycle-2026-05-10\raw\messages-thread-lifecycle-recheck.md`
+- Screenshots: `H:\GPT-Codex\Confideline\web\qa-reports\messages-thread-lifecycle-2026-05-10\assets\*.png`
+
+Результат:
+
+- Общий статус: `PASS`.
+- PASS: U167 -> U168 text message через `/en/messages/create`, `messageId=243`.
+- PASS: получатель U168 видит точный QA-текст в `/en/messages/messages?contactId=167`.
+- PASS: `/en/messages/read-conversation` вернул `success=true`, `message=Updated`.
+- PASS: `/en/messages/upload-images` с валидным PNG asset проекта вернул `success=true`, thread получателя содержит attachment.
+- PASS: `/en/messages/delete` работает как sender-side delete: U167 больше не видит точный QA-текст, U168 продолжает видеть его.
+
+Действие для Игоря:
+
+- Функционального дефекта в базовом chat lifecycle не найдено. Следующие проверки по чату должны идти в зонах premium/free limits, bans/shadow-ban delivery и mobile/UX.
+
+Harness / правила:
+
+- Диагностический прогон с synthetic PNG дал 500 на upload и не включен как продуктовый bug; для upload QA использовать реальные fixture assets проекта или заранее проверенные изображения.

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | Messages Thread Lifecycle 2026-05-10</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+  <script src="../qa-report-controls.js" defer></script>
+  <style>
+    .qa-shot{position:relative;overflow:hidden}
+    .qa-shot img{display:block;width:100%}
+    .qa-mark{position:absolute;border:3px solid #e03131;border-radius:6px;box-shadow:0 0 0 999px rgba(255,255,255,.02);pointer-events:none}
+    .qa-arrow{position:absolute;width:90px;height:3px;background:#e03131;transform:rotate(28deg);transform-origin:left center;pointer-events:none}
+    .qa-arrow:after{content:"";position:absolute;right:-2px;top:-5px;border-left:12px solid #e03131;border-top:6px solid transparent;border-bottom:6px solid transparent}
+    .qa-shot-note{position:absolute;left:14px;bottom:14px;right:14px;background:rgba(255,255,255,.92);border:1px solid #d8e0ec;border-radius:6px;padding:8px;font-weight:700;color:#16233a}
+    .mark-sidebar{left:7%;top:18%;width:34%;height:42%}
+    .arrow-sidebar{left:43%;top:28%}
+    .mark-thread{left:5%;top:18%;width:47%;height:52%}
+    .arrow-thread{left:54%;top:31%}
+  </style>
+</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">Confideline QA/BA · live chat · 2026-05-10</p>
+      <h1>Messages thread lifecycle</h1>
+      <p>Проверен базовый жизненный цикл чата на live-сайте в изолированном браузере: отправка текста, доставка получателю, read conversation, загрузка изображения, удаление сообщения отправителем.</p>
+      <div class="qa-summary-grid">
+        <div class="qa-metric"><span>Итог</span><strong>PASS</strong></div>
+        <div class="qa-metric"><span>Пользователи</span><strong>U167 → U168</strong></div>
+        <div class="qa-metric"><span>Сообщение</span><strong>ID 243</strong></div>
+        <div class="qa-metric"><span>Сторона получателя</span><strong>Проверена</strong></div>
+      </div>
+    </header>
+
+    <section class="qa-section" id="summary">
+      <h2>Короткий вывод</h2>
+      <table class="qa-table">
+        <thead><tr><th>Статус</th><th>Проверка</th><th>Что получили</th><th>Вывод</th></tr></thead>
+        <tbody>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Текст U167 → U168</td><td><code>/en/messages/create</code> вернул <code>success=true</code>, <code>messageId=243</code>.</td><td>Создание текстового сообщения работает.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Доставка получателю</td><td>U168 видит точный QA-текст в <code>/en/messages/messages?contactId=167</code>.</td><td>Проверена не только отправка, но и сторона получателя.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Read conversation</td><td><code>/en/messages/read-conversation</code> вернул <code>success=true</code>, <code>message="Updated"</code>.</td><td>Endpoint чтения диалога отвечает корректно.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Image upload</td><td><code>/en/messages/upload-images</code> вернул <code>success=true</code>; thread получателя содержит attachment.</td><td>Загрузка изображения в чат работает при валидном PNG asset.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Delete sender-side</td><td>После <code>/en/messages/delete</code> отправитель не видит QA-текст, получатель продолжает видеть его.</td><td>Это соответствует текущему Yii2-коду: удаление сообщения работает “для текущей стороны”.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="igor">
+      <h2>Для Игоря</h2>
+      <div class="qa-status-grid">
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>CHAT-THREAD-LIFECYCLE-BASE</h3>
+          <p><strong>Факт:</strong> базовый lifecycle чата закрыт без дефектов: create, recipient delivery, read, image upload и sender-side delete работают.</p>
+          <p><strong>Где смотреть:</strong> <code>application/controllers/MessagesController.php</code>, методы <code>actionCreate</code>, <code>actionMessages</code>, <code>actionUploadImages</code>, <code>actionDelete</code>, <code>actionReadConversation</code>.</p>
+          <p><strong>Как ретестить:</strong> U1 отправляет уникальный текст U2, U2 проверяет thread по точному тексту, затем U2 вызывает read, U1 загружает валидное изображение, U1 удаляет свое текстовое сообщение.</p>
+        </article>
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--warn">HARNESS NOTE</span>
+          <h3>Фиксация тестового контура</h3>
+          <p><strong>Что исправлено:</strong> первый диагностический прогон использовал synthetic PNG и получил 500 на upload; он не считается продуктовым багом. Для финального доказательства использован реальный PNG из проекта <code>web/YouDate-last/img/members/01.png</code>.</p>
+          <p><strong>Правило дальше:</strong> для chat/photo/group upload использовать реальные fixture assets проекта или заранее проверенные изображения, а не случайную base64-заглушку.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="qa-section" id="alexey">
+      <h2>Для Алексея</h2>
+      <table class="qa-table">
+        <thead><tr><th>Категория</th><th>Вывод</th><th>Что это значит</th></tr></thead>
+        <tbody>
+          <tr><td>Управленческий PASS</td><td>Базовые сообщения между пользователями работают и доказаны с двух сторон.</td><td>Эту часть не нужно возвращать Игорю как дефект; дальше надо углублять premium limits, bans/shadow-ban, attachments edge cases и мобильный UI.</td></tr>
+          <tr><td>Нюанс продукта</td><td>Удаление отправителем скрывает сообщение только у отправителя, у получателя оно остается.</td><td>Это похоже на текущую задуманную Yii2-логику “delete for me”. Если бизнес хочет “delete for everyone”, нужно отдельное ТЗ.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="evidence">
+      <h2>Evidence screenshots</h2>
+      <div class="qa-shot-grid">
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>U167 отправил текст; диалог открыт без admin-ссылок</span></span></figcaption>
+          <img src="./assets/sender-after-text-send.png" alt="Sender after text send">
+          <span class="qa-mark mark-sidebar"></span><span class="qa-arrow arrow-sidebar"></span>
+          <span class="qa-shot-note">Смотреть левую колонку сообщений: QA-диалог присутствует у отправителя.</span>
+        </figure>
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>U168 видит точный QA-текст до read</span></span></figcaption>
+          <img src="./assets/recipient-before-read.png" alt="Recipient before read">
+          <span class="qa-mark mark-sidebar"></span><span class="qa-arrow arrow-sidebar"></span>
+          <span class="qa-shot-note">Это proof получателя: сообщение реально отображается в его списке.</span>
+        </figure>
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Image upload принят и виден в thread получателя</span></span></figcaption>
+          <img src="./assets/recipient-after-image-upload.png" alt="Recipient after image upload">
+          <span class="qa-mark mark-sidebar"></span><span class="qa-arrow arrow-sidebar"></span>
+          <span class="qa-shot-note">Raw JSON подтверждает attachment=true; скрин фиксирует пользовательский surface.</span>
+        </figure>
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>После delete отправитель не видит QA-текст</span></span></figcaption>
+          <img src="./assets/sender-after-delete.png" alt="Sender after delete">
+          <span class="qa-mark mark-sidebar"></span><span class="qa-arrow arrow-sidebar"></span>
+          <span class="qa-shot-note">Sender-side delete: exact text отсутствует у U167 после удаления.</span>
+        </figure>
+        <figure class="qa-shot qa-shot--pass">
+          <figcaption><span class="qa-shot-status"><span class="qa-badge qa-badge--pass">PASS</span><span>Получатель продолжает видеть удаленный отправителем текст</span></span></figcaption>
+          <img src="./assets/recipient-after-sender-delete.png" alt="Recipient after sender delete">
+          <span class="qa-mark mark-sidebar"></span><span class="qa-arrow arrow-sidebar"></span>
+          <span class="qa-shot-note">Это не баг в текущей реализации: Yii2 удаляет сообщение только для текущего пользователя.</span>
+        </figure>
+      </div>
+    </section>
+
+    <section class="qa-section" id="raw">
+      <h2>Raw evidence</h2>
+      <div class="qa-raw-links">
+        <a class="tp-btn" href="./raw/messages-thread-lifecycle-recheck.json">messages-thread-lifecycle-recheck.json</a>
+        <a class="tp-btn" href="./raw/messages-thread-lifecycle-recheck.md">messages-thread-lifecycle-recheck.md</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
