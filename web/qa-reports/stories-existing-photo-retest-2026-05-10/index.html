@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | Stories Existing Photo Retest 2026-05-10</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+  <style>
+    .qa-proof-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
+    .qa-proof-card{border:1px solid #d7e0ec;border-radius:8px;background:#fff;overflow:hidden}
+    .qa-proof-card img{display:block;width:100%;height:auto}
+    .qa-proof-body{padding:14px}
+    .qa-proof-body p{margin:8px 0 0}
+    .qa-raw-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+  </style>
+</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">Confideline QA/BA · Stories</p>
+      <h1>Stories existing-photo publish retest</h1>
+      <p>Свежий проход 2026-05-10 по сценарию “опубликовать сторис из уже загруженного фото”. Проверка выполнена в изолированном Chromium, автор U184, viewer U166.</p>
+      <div class="qa-summary-grid">
+        <div class="qa-metric"><span>Итог</span><strong>FAIL</strong></div>
+        <div class="qa-metric"><span>Settings</span><strong>postmoderation</strong></div>
+        <div class="qa-metric"><span>Author/viewer proof</span><strong>INVALID</strong></div>
+      </div>
+    </header>
+
+    <section class="qa-section" id="summary">
+      <h2>Короткий вывод</h2>
+      <table class="qa-table">
+        <thead>
+          <tr>
+            <th>Статус</th>
+            <th>Проверка</th>
+            <th>Факт</th>
+            <th>Вывод</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+            <td>Stories settings</td>
+            <td>`storiesOn=true`, `storiesMode=postmoderation`, `allowedTimeNextStory=1`.</td>
+            <td>Настройка stories включена, тест шел в актуальном режиме.</td>
+          </tr>
+          <tr>
+            <td><span class="qa-badge qa-badge--pass">PASS</span></td>
+            <td>Existing photo modal</td>
+            <td>В modal найдено 2 existing-photo radio inputs, фото выбирается, кнопка `Next` становится доступной.</td>
+            <td>Тест не уперся в отсутствие фото или fixture.</td>
+          </tr>
+          <tr>
+            <td><span class="qa-badge qa-badge--fail">FAIL</span></td>
+            <td>Next after existing photo</td>
+            <td>После выбора фото и клика `Next` modal закрывается, S3 image fetch возвращает 200, но cropper/preview не открывается.</td>
+            <td>Публикация сторис из existing photo не доходит до crop/publish шага.</td>
+          </tr>
+          <tr>
+            <td><span class="qa-badge qa-badge--warn">INVALID</span></td>
+            <td>Author/viewer visibility</td>
+            <td>Новая story не была создана, поэтому карточки в carousel после попытки нельзя использовать как proof новой публикации.</td>
+            <td>Visibility честно не оценивается до фикса existing-photo publish flow.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="igor">
+      <h2>Для Игоря</h2>
+      <div class="qa-status-grid">
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--fail">FAIL</span>
+          <h3>STORIES-EXISTING-PHOTO-NEXT-001</h3>
+          <p><strong>Факт:</strong> пользователь U184 выбирает существующее фото в stories modal, нажимает `Next`, после чего modal закрывается. `cropperOpen=false`, `previewOpen=false`, `spotlightModalVisible=false`.</p>
+          <p><strong>Ожидание:</strong> после `Next` должен открыться cropper или preview, чтобы пользователь мог завершить публикацию story.</p>
+          <p><strong>Где смотреть:</strong> JS обработчик `#spotlight-submit-form submit`, `formStoriesMedia afterValidateAttribute`, `cropEditor.run(inputEl)`, работа с `#general-uploaded-image` после `fetch(imageUrl)=200`.</p>
+          <p><strong>Как воспроизвести:</strong> U184 -> `/en` -> `Add me` в stories -> выбрать existing photo -> `Next` -> проверить, что появляется cropper/preview. Сейчас не появляется.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="qa-section" id="evidence">
+      <h2>Evidence screenshots</h2>
+      <div class="qa-proof-grid">
+        <article class="qa-proof-card">
+          <img src="./assets/author-modal-open-annotated.png" alt="Stories modal with existing photos">
+          <div class="qa-proof-body">
+            <span class="qa-badge qa-badge--pass">PASS</span>
+            <h3>Existing photos доступны</h3>
+            <p>Что тестировал: есть ли фото для сценария existing-photo story. Что получил: в modal есть 2 radio inputs.</p>
+          </div>
+        </article>
+        <article class="qa-proof-card">
+          <img src="./assets/author-photo-selected-annotated.png" alt="Existing photo selected">
+          <div class="qa-proof-body">
+            <span class="qa-badge qa-badge--pass">PASS</span>
+            <h3>Фото выбрано</h3>
+            <p>Что тестировал: выбирается ли existing photo. Что получил: radio выбран, `Next` активен.</p>
+          </div>
+        </article>
+        <article class="qa-proof-card">
+          <img src="./assets/author-after-next-click-annotated.png" alt="After Next no cropper">
+          <div class="qa-proof-body">
+            <span class="qa-badge qa-badge--fail">FAIL</span>
+            <h3>После Next нет cropper/preview</h3>
+            <p>Что тестировал: открывается ли следующий шаг публикации. Что получил: modal закрылся, cropper и preview не появились.</p>
+          </div>
+        </article>
+        <article class="qa-proof-card">
+          <img src="./assets/author-after-home-reload-annotated.png" alt="Author visibility invalid">
+          <div class="qa-proof-body">
+            <span class="qa-badge qa-badge--warn">INVALID</span>
+            <h3>Author visibility не является proof</h3>
+            <p>Так как publish не произошел, карточки в carousel после reload не доказывают новую story.</p>
+          </div>
+        </article>
+        <article class="qa-proof-card">
+          <img src="./assets/viewer-after-author-attempt-annotated.png" alt="Viewer visibility invalid">
+          <div class="qa-proof-body">
+            <span class="qa-badge qa-badge--warn">INVALID</span>
+            <h3>Viewer visibility не оценивается</h3>
+            <p>Второй пользователь проверен, но вывод о видимости нельзя делать, потому что новая story не создана.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="qa-section" id="alexey">
+      <h2>Матрица Алексея</h2>
+      <table class="qa-table">
+        <thead><tr><th>Квадрант</th><th>Наблюдение</th><th>Совет</th><th>Готово когда</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Срочно и важно</td>
+            <td>Stories из existing photo не публикуются, хотя device upload ранее проходил.</td>
+            <td>Считать это отдельным дефектом story publishing flow, а не общим дефектом stories.</td>
+            <td>После выбора existing photo открывается cropper/preview, publish создает новую story, автор и второй пользователь видят ее по правилам moderation mode.</td>
+          </tr>
+          <tr>
+            <td>Важно, но не срочно</td>
+            <td>Если publish не дошел до создания контента, проверка author/viewer visibility должна быть `INVALID`, не `FAIL`.</td>
+            <td>Сохранить это правило в стандарте тестирования stories: сначала доказать создание story, затем visibility.</td>
+            <td>Все будущие stories-отчеты явно разделяют create/publish proof и visibility proof.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="raw">
+      <h2>Raw evidence</h2>
+      <div class="qa-raw-links">
+        <a class="tp-btn" href="./raw/stories-current-publish-scenario.json">JSON</a>
+        <a class="tp-btn" href="./raw/stories-current-publish-scenario.md">Markdown</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
