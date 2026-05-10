@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | Connections mutual likes 2026-05-10</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+  <script src="../qa-report-controls.js" defer></script>
+  <style>
+    .qa-shot{position:relative;overflow:hidden}
+    .qa-shot img{display:block;width:100%;border:1px solid #d8e0ec;border-radius:6px}
+    .qa-mark{position:absolute;border:3px solid #198754;border-radius:6px;box-shadow:0 0 0 999px rgba(255,255,255,.02);pointer-events:none}
+    .qa-arrow{position:absolute;width:92px;height:3px;background:#198754;transform:rotate(22deg);transform-origin:left center;pointer-events:none}
+    .qa-arrow:after{content:"";position:absolute;right:-2px;top:-5px;border-left:12px solid #198754;border-top:6px solid transparent;border-bottom:6px solid transparent}
+    .qa-shot-note{position:absolute;left:14px;bottom:14px;right:14px;background:rgba(255,255,255,.94);border:1px solid #d8e0ec;border-radius:6px;padding:8px;font-weight:700;color:#16233a}
+    .mark-list{left:8%;top:18%;width:55%;height:48%}
+    .arrow-list{left:64%;top:31%}
+    .mark-empty{left:10%;top:25%;width:48%;height:32%}
+    .arrow-empty{left:58%;top:36%}
+  </style>
+</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">Confideline QA/BA · live connections · 2026-05-10</p>
+      <h1>Connections: mutual likes</h1>
+      <p>Проверен live-сценарий лайков между двумя пользователями: чистый baseline, односторонний лайк, проверка у получателя, встречный лайк, mutual у обоих, rollback тестового состояния.</p>
+      <div class="qa-summary-grid">
+        <div class="qa-metric"><span>Итог</span><strong>PASS</strong></div>
+        <div class="qa-metric"><span>Пара</span><strong>U182 ↔ U184</strong></div>
+        <div class="qa-metric"><span>Стороны</span><strong>Обе проверены</strong></div>
+        <div class="qa-metric"><span>Rollback</span><strong>Выполнен</strong></div>
+      </div>
+    </header>
+
+    <section class="qa-section" id="summary">
+      <h2>Короткий вывод</h2>
+      <table class="qa-table">
+        <thead><tr><th>Статус</th><th>Проверка</th><th>Что получили</th><th>Вывод</th></tr></thead>
+        <tbody>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Baseline</td><td>Перед тестом пара очищена: mutual и входящие списки пустые для этой пары.</td><td>Тест стартовал не на загрязненном состоянии.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>U182 лайкает U184</td><td><code>/en/connections/toggle-like?toUserId=184</code> вернул <code>liked=true</code>; U184 видит U182 во входящих.</td><td>Лайк доставляется получателю.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Mutual до встречного лайка</td><td>После первого лайка mutual у U182 и U184 еще пустой.</td><td>Система не делает match раньше встречного действия.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>U184 лайкает U182</td><td><code>/en/connections/toggle-like?toUserId=182</code> вернул <code>liked=true</code>; mutual виден у обоих.</td><td>Mutual likes работают с двух сторон.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Rollback</td><td>Оба тестовых лайка сняты, mutual после rollback не отображается.</td><td>Тестовое состояние убрано.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="igor">
+      <h2>Для Игоря</h2>
+      <div class="qa-status-grid">
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>CONNECTIONS-MUTUAL-BOTH-SIDES</h3>
+          <p><strong>Факт:</strong> подтвержден полный цикл лайков: one-way like появляется у получателя, mutual появляется только после встречного лайка и виден обоим пользователям.</p>
+          <p><strong>Где смотреть при регрессии:</strong> <code>ConnectionsController::actionToggleLike()</code>, <code>LikeManager::toggleLike()</code>, <code>LikeManager::TYPE_MUTUAL</code>, страницы <code>/connections/likes/from-you</code>, <code>/to-you</code>, <code>/mutual</code>.</p>
+          <p><strong>Как воспроизвести:</strong> взять чистую пару U-A/U-B, убедиться что mutual пустой, сделать U-A -> U-B, проверить входящие у U-B, затем U-B -> U-A и проверить mutual у обоих.</p>
+        </article>
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--pass">NO DEFECT</span>
+          <h3>Новых багов не найдено</h3>
+          <p><strong>Действие:</strong> чинить по этому блоку сейчас нечего. Если после будущих правок появится жалоба на matches/mutual, этот отчет можно использовать как эталонный regression-test.</p>
+          <p><strong>Важно:</strong> action является toggle. Нельзя тестировать нажатием на загрязненной паре без baseline, потому что повторный вызов снимет уже существующий лайк.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="qa-section" id="alexey">
+      <h2>Для Алексея</h2>
+      <table class="qa-table">
+        <thead><tr><th>Категория</th><th>Вывод</th><th>Что это значит</th></tr></thead>
+        <tbody>
+          <tr><td>Управленческий PASS</td><td>Mutual likes/matches в базовом сценарии работают.</td><td>Эту часть можно считать закрытой на текущем live-состоянии; дальше важнее проверять premium-locks, bans/shadow-ban и UX.</td></tr>
+          <tr><td>Правило тестирования</td><td>Для toggle-действий всегда нужен clean baseline и rollback.</td><td>Иначе тестировщик может сам удалить существующий лайк и получить ложный баг.</td></tr>
+          <tr><td>Улучшение контура</td><td>В script добавлен retry для admin login-as, потому что один из коротких login-as вызовов временно не нашел ссылку.</td><td>Это не продуктовый дефект, но полезная защита тестового контура от случайных инфраструктурных сбоев.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="evidence">
+      <h2>Evidence screenshots</h2>
+      <div class="qa-evidence-grid">
+        <article class="qa-evidence-card" data-qa-status="pass">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>Baseline: mutual пустой</h3>
+          <p>Что тестировал: перед действиями U182 не должен видеть U184 в mutual. Что получил: выбранная пара очищена перед проверкой.</p>
+          <div class="qa-shot">
+            <img src="./baseline-a-mutual.png" alt="Baseline mutual empty">
+            <span class="qa-mark mark-empty"></span><span class="qa-arrow arrow-empty"></span>
+            <span class="qa-shot-note">На этом экране доказываем отсутствие mutual до действий.</span>
+          </div>
+        </article>
+        <article class="qa-evidence-card" data-qa-status="pass">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>Односторонний лайк дошел U184</h3>
+          <p>Что тестировал: после лайка U182 -> U184 получатель должен видеть U182 во входящих лайках. Что получил: U184 видит Omkar Tiwari.</p>
+          <div class="qa-shot">
+            <img src="./after-a-like-b-to-you.png" alt="U184 incoming like from U182">
+            <span class="qa-mark mark-list"></span><span class="qa-arrow arrow-list"></span>
+            <span class="qa-shot-note">Это сторона получателя, а не только ответ отправителя.</span>
+          </div>
+        </article>
+        <article class="qa-evidence-card" data-qa-status="pass">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>Mutual не появился раньше времени</h3>
+          <p>Что тестировал: после одного лайка match еще не должен появляться. Что получил: mutual у U182 остается пустым.</p>
+          <div class="qa-shot">
+            <img src="./after-a-like-a-mutual.png" alt="No mutual after one-way like">
+            <span class="qa-mark mark-empty"></span><span class="qa-arrow arrow-empty"></span>
+            <span class="qa-shot-note">Одного лайка недостаточно для mutual.</span>
+          </div>
+        </article>
+        <article class="qa-evidence-card" data-qa-status="pass">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>Mutual виден U182</h3>
+          <p>Что тестировал: после встречного лайка U182 должен видеть U184 в mutual. Что получил: Orion Esposito отображается у U182.</p>
+          <div class="qa-shot">
+            <img src="./after-b-like-a-mutual.png" alt="U182 mutual contains U184">
+            <span class="qa-mark mark-list"></span><span class="qa-arrow arrow-list"></span>
+            <span class="qa-shot-note">Доказательство mutual со стороны U182.</span>
+          </div>
+        </article>
+        <article class="qa-evidence-card" data-qa-status="pass">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>Mutual виден U184</h3>
+          <p>Что тестировал: U184 тоже должен видеть U182 в mutual. Что получил: Omkar Tiwari отображается у U184.</p>
+          <div class="qa-shot">
+            <img src="./after-b-like-b-mutual.png" alt="U184 mutual contains U182">
+            <span class="qa-mark mark-list"></span><span class="qa-arrow arrow-list"></span>
+            <span class="qa-shot-note">Доказательство mutual со стороны U184.</span>
+          </div>
+        </article>
+        <article class="qa-evidence-card" data-qa-status="pass">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>Rollback выполнен</h3>
+          <p>Что тестировал: после снятия тестовых лайков mutual должен исчезнуть. Что получил: U182 больше не видит U184 в mutual.</p>
+          <div class="qa-shot">
+            <img src="./rollback-a-mutual.png" alt="Rollback mutual empty">
+            <span class="qa-mark mark-empty"></span><span class="qa-arrow arrow-empty"></span>
+            <span class="qa-shot-note">Тестовое состояние очищено после доказательства.</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="qa-section" id="raw">
+      <h2>Raw evidence</h2>
+      <ul class="qa-list">
+        <li><a href="./connections-mutual-likes.json">connections-mutual-likes.json</a></li>
+        <li><a href="./connections-mutual-likes.md">connections-mutual-likes.md</a></li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
