@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | Gift send + balance 2026-05-10</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+  <script src="../qa-report-controls.js" defer></script>
+  <style>
+    .qa-shot{position:relative;overflow:hidden}
+    .qa-shot img{display:block;width:100%;border:1px solid #d8e0ec;border-radius:6px}
+    .qa-mark{position:absolute;border:3px solid #198754;border-radius:6px;pointer-events:none}
+    .qa-arrow{position:absolute;width:96px;height:3px;background:#198754;transform:rotate(22deg);transform-origin:left center;pointer-events:none}
+    .qa-arrow:after{content:"";position:absolute;right:-2px;top:-5px;border-left:12px solid #198754;border-top:6px solid transparent;border-bottom:6px solid transparent}
+    .qa-shot-note{position:absolute;left:14px;bottom:14px;right:14px;background:rgba(255,255,255,.94);border:1px solid #d8e0ec;border-radius:6px;padding:8px;font-weight:700;color:#16233a}
+    .mark-balance{left:7%;top:9%;width:28%;height:9%}
+    .arrow-balance{left:36%;top:13%}
+    .mark-gift{left:8%;top:58%;width:56%;height:22%}
+    .arrow-gift{left:66%;top:66%}
+    .mark-notify{left:8%;top:24%;width:70%;height:16%}
+    .arrow-notify{left:77%;top:31%}
+  </style>
+</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">Confideline QA/BA · gifts/balance · 2026-05-10</p>
+      <h1>Gift send + balance</h1>
+      <p>Проверен live-сценарий подарка: U184 отправляет gift U166, сервер возвращает успешный ответ, баланс отправителя уменьшается с 180 до 165, получатель видит событие в notifications.</p>
+      <div class="qa-summary-grid">
+        <div class="qa-metric"><span>Итог</span><strong>PASS</strong></div>
+        <div class="qa-metric"><span>Пара</span><strong>U184 → U166</strong></div>
+        <div class="qa-metric"><span>Gift item</span><strong>120</strong></div>
+        <div class="qa-metric"><span>Баланс</span><strong>180 → 165</strong></div>
+      </div>
+    </header>
+
+    <section class="qa-section" id="summary">
+      <h2>Короткий вывод</h2>
+      <table class="qa-table">
+        <thead><tr><th>Статус</th><th>Проверка</th><th>Что получили</th><th>Вывод</th></tr></thead>
+        <tbody>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Отправка подарка</td><td><code>/en/gift/send</code> вернул <code>{"success":true,"message":"Gift has been sent","balance":"165"}</code>.</td><td>Gift API создает подарок и возвращает актуальный баланс.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Списание credits</td><td>До отправки в header было <code>180</code>; после отправки сервер вернул <code>165</code>.</td><td>Для выбранного giftItemId=120 списано 15 credits.</td></tr>
+          <tr><td><span class="qa-badge qa-badge--pass">PASS</span></td><td>Получатель</td><td>U166 видит в notifications: <code>Orion Esposito sent you a gift</code>.</td><td>Проверена не только сторона отправителя, но и фактический recipient-side эффект.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="igor">
+      <h2>Для Игоря</h2>
+      <div class="qa-status-grid">
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>GIFT-SEND-BALANCE-RECIPIENT</h3>
+          <p><strong>Факт:</strong> базовый paid gift flow работает: подарок отправлен, баланс отправителя уменьшился, получатель видит gift notification.</p>
+          <p><strong>Где смотреть при регрессии:</strong> <code>GiftController::actionSend()</code>, <code>GiftForm::validateUserBalance()</code>, <code>GiftManager::sendGift()</code>, <code>BalanceManager::decrease()</code>, notification <code>GiftReceived</code>.</p>
+          <p><strong>Как ретестить:</strong> взять отправителя с достаточным балансом, выбрать еще не отправленный <code>giftItemId</code>, POST <code>/en/gift/send</code>, проверить JSON balance и notifications получателя.</p>
+        </article>
+        <article class="qa-status-card">
+          <span class="qa-badge qa-badge--pass">NO DEFECT</span>
+          <h3>Новых багов нет</h3>
+          <p>В этом проходе не найден дефект для исправления. Следующие проверки gift-зоны: duplicate gift validation, недостаточный баланс, private gift visibility и shadow-ban влияние на gift delivery.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="qa-section" id="alexey">
+      <h2>Для Алексея</h2>
+      <table class="qa-table">
+        <thead><tr><th>Квадрант</th><th>Зона</th><th>Наблюдение</th><th>Совет</th></tr></thead>
+        <tbody>
+          <tr><td>Управленческий PASS</td><td>Gifts/balance</td><td>Базовый paid gift flow работает и доказан с двух сторон.</td><td>Эту часть можно не возвращать Игорю как дефект; дальше ценнее проверить edge cases и bans/shadow-ban.</td></tr>
+          <tr><td>Важно, но не срочно</td><td>Тестовый контур</td><td>Gift нельзя бесконечно повторять на одном giftItemId, потому что есть duplicate rule.</td><td>Для будущих прогонов нужен helper выбора еще не отправленного gift item или cleanup/fixture strategy.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="qa-section" id="evidence">
+      <h2>Evidence screenshots</h2>
+      <div class="qa-evidence-grid">
+        <article class="qa-evidence-card" data-qa-status="pass">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>До отправки: баланс 180</h3>
+          <p>Что тестировал: у отправителя должен быть баланс перед paid action. Что получил: header U184 показывает 180 credits.</p>
+          <div class="qa-shot"><img src="./gift-profile-before.png" alt="Gift before send"><span class="qa-mark mark-balance"></span><span class="qa-arrow arrow-balance"></span><span class="qa-shot-note">Before-state: баланс отправителя 180.</span></div>
+        </article>
+        <article class="qa-evidence-card" data-qa-status="pass">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>После отправки: API balance 165</h3>
+          <p>Что тестировал: сервер должен отправить подарок и вернуть новый баланс. Что получил: raw JSON содержит <code>balance=165</code>.</p>
+          <div class="qa-shot"><img src="./gift-profile-after-send.png" alt="Gift after send"><span class="qa-mark mark-balance"></span><span class="qa-arrow arrow-balance"></span><span class="qa-shot-note">After-state: сервер вернул balance=165.</span></div>
+        </article>
+        <article class="qa-evidence-card" data-qa-status="pass">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>Получатель видит уведомление</h3>
+          <p>Что тестировал: U166 должен увидеть gift event после отправки U184. Что получил: notifications содержит “Orion Esposito sent you a gift”.</p>
+          <div class="qa-shot"><img src="./recipient-en-notifications.png" alt="Recipient notifications"><span class="qa-mark mark-notify"></span><span class="qa-arrow arrow-notify"></span><span class="qa-shot-note">Recipient-side proof: gift notification у U166.</span></div>
+        </article>
+        <article class="qa-evidence-card" data-qa-status="pass">
+          <span class="qa-badge qa-badge--pass">PASS</span>
+          <h3>Профиль получателя содержит gifts</h3>
+          <p>Что тестировал: подарок должен быть виден на профильной стороне получателя. Что получил: профиль U166 содержит gifts от Orion Esposito.</p>
+          <div class="qa-shot"><img src="./recipient-en-profile-kaelarisdornschwarz.png" alt="Recipient profile gifts"><span class="qa-mark mark-gift"></span><span class="qa-arrow arrow-gift"></span><span class="qa-shot-note">Profile-side evidence: gifts от отправителя отображаются.</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="qa-section" id="raw">
+      <h2>Raw evidence</h2>
+      <ul class="qa-list">
+        <li><a href="./gift-send-scenario.json">gift-send-scenario.json</a></li>
+        <li><a href="./gift-send-scenario.md">gift-send-scenario.md</a></li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
