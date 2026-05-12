@@ -5,6 +5,7 @@ This folder contains competitor training-video analysis artifacts for the Confid
 ## Primary Synthesis
 
 - `INSIGHTORBA_COMPETITOR_WORKFLOW_FULL_DOCUMENTATION_RU.md` - complete Russian-language synthesis with evidence levels, confirmed rules, uncertain points, recommended data contracts, and product conclusions.
+- `HANDOFF_TO_CODEX_RU.md` - Russian-language handoff for continuing this work in Codex on another machine.
 
 ## Per-Video Analysis
 
