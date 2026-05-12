@@ -1028,8 +1028,9 @@
       });
       item.querySelectorAll('.conv-unread').forEach((unread) => {
         const value = unread.textContent.trim();
-        const isFresh = value === '!' || (Number(value) || 0) > 0;
-        unread.setAttribute('title', isFresh ? 'Новое непрочитанное сообщение или свежий сигнал' : 'Нет новых непрочитанных сообщений');
+        const hasUnread = value === '!' || (Number(value) || 0) > 0;
+        const isNewDialog = item.dataset.newDialog === 'true' || item.classList.contains('is-new-dialog');
+        unread.setAttribute('title', isNewDialog && hasUnread ? 'Новый недавний диалог с непрочитанными сообщениями' : hasUnread ? 'Есть непрочитанные сообщения' : 'Нет новых непрочитанных сообщений');
       });
       item.querySelectorAll('.conv-pill').forEach((pill) => {
         const hint = queueHintByLabel[pill.textContent.trim().toLowerCase()];
@@ -1037,6 +1038,106 @@
           pill.setAttribute('title', hint);
         }
       });
+    });
+  };
+
+  const setHint = (node, text, force = false) => {
+    if (!node || !text) {
+      return;
+    }
+    if (force || !node.getAttribute('title')) {
+      node.setAttribute('title', text);
+    }
+    if (node.matches?.('button, [role="button"], input, textarea')) {
+      if (force || !node.getAttribute('aria-label')) {
+        node.setAttribute('aria-label', text);
+      }
+    }
+  };
+
+  // Общий слой русских подсказок: покрывает правый контекст и служебные кнопки, где текст слишком короткий.
+  const syncGlobalTooltips = (root = document) => {
+    const scope = root.querySelector ? root : document;
+    const fixedHints = [
+      ['.left-collapse-rail', 'Открыть левую очередь чатов'],
+      ['.left-collapse-btn', 'Свернуть левую очередь чатов'],
+      ['.right-collapse-rail', 'Открыть правый контекст клиента'],
+      ['.right-collapse-btn', 'Свернуть правый контекст клиента'],
+      ['#btnRefreshChat', 'Обновить рабочую очередь и состояние подключения'],
+      ['[data-mock-open="#modalReportProblem"]', 'Сообщить о проблеме в админ-интерфейсе'],
+      ['.js-chat-search-toggle', 'Поиск внутри текущего диалога'],
+      ['.js-chat-jump-up', 'Перейти к предыдущим сообщениям'],
+      ['.js-chat-jump-down', 'Перейти к следующим сообщениям'],
+      ['.js-chat-font-minus', 'Уменьшить размер текста в чате'],
+      ['.js-chat-font-plus', 'Увеличить размер текста в чате'],
+      ['.js-close-pinned-messages', 'Закрыть панель закрепленных сообщений'],
+      ['#btnPinClear', 'Снять текущий фильтр закрепленных сообщений'],
+      ['.composer-mode-toggle', 'Переключить быстрые ответы и рабочие действия чата'],
+      ['.js-quick-scroll[data-direction="-1"]', 'Прокрутить быстрые ответы влево'],
+      ['.js-quick-scroll[data-direction="1"]', 'Прокрутить быстрые ответы вправо'],
+      ['[data-prototype-action="need-data"]', 'Подготовить сообщение с просьбой уточнить данные клиента'],
+      ['[data-prototype-action="resolve-dialog"]', 'Отметить диалог как решенный'],
+      ['#attachmentPreviewClear', 'Убрать выбранное вложение'],
+      ['.js-composer-attach-toggle', 'Прикрепить файл или изображение'],
+      ['#btnEmoji', 'Открыть выбор эмодзи'],
+      ['#btnSendMessage', 'Отправить сообщение клиенту'],
+      ['#btnVoiceMessage', 'Записать голосовое сообщение'],
+      ['[data-prototype-action="insert-ai-draft"]', 'Вставить AI-черновик в поле ответа'],
+      ['[data-prototype-action="save-note"]', 'Сохранить внутреннюю заметку по клиенту'],
+      ['[data-prototype-action="clear-note"]', 'Очистить черновик заметки'],
+      ['[data-prototype-action="open-follow-up"]', 'Запланировать следующее касание клиента'],
+      ['[data-prototype-action="open-handoff"]', 'Передать диалог другому эксперту или старшему смены'],
+      ['[data-prototype-action="open-compensation"]', 'Создать запрос на компенсацию для проверки'],
+      ['[data-offer-action="top-up"]', 'Вставить предложение пополнить минуты'],
+      ['[data-offer-action="package"]', 'Отправить ссылку на пакет продолжения'],
+      ['[data-offer-action="deep-reading"]', 'Предложить глубокий платный разбор'],
+      ['[data-offer-action="start-paid"]', 'Пригласить лида начать платный чат']
+    ];
+
+    fixedHints.forEach(([selector, hint]) => {
+      scope.querySelectorAll(selector).forEach((node) => setHint(node, hint, true));
+    });
+
+    scope.querySelectorAll('[ng-click="copyMessage(item)"], .btn .fa-copy').forEach((node) => {
+      const target = node.closest('button') || node;
+      setHint(target, 'Скопировать сообщение', true);
+    });
+    scope.querySelectorAll('[ng-click="pinMessage(item)"], .btn .fa-thumb-tack').forEach((node) => {
+      const target = node.closest('button') || node;
+      setHint(target, 'Закрепить сообщение как важное', true);
+    });
+    scope.querySelectorAll('.audio-play-btn, .voice-note-play').forEach((node) => {
+      setHint(node, 'Прослушать аудио или голосовое сообщение', true);
+    });
+
+    scope.querySelectorAll('.context-section-title').forEach((node) => {
+      setHint(node, `Раздел правого контекста: ${node.textContent.trim().replace(/\s+/g, ' ')}`);
+    });
+    scope.querySelectorAll('.context-chip').forEach((node) => {
+      setHint(node, `Контекстный признак клиента: ${node.textContent.trim()}`);
+    });
+    scope.querySelectorAll('.context-kpi, .context-line, .context-data-row').forEach((node) => {
+      const label = node.querySelector('span')?.textContent.trim();
+      const value = node.querySelector('strong')?.textContent.trim();
+      if (label && value) {
+        setHint(node, `${label}: ${value}`);
+      }
+    });
+    scope.querySelectorAll('.flag-row').forEach((node) => {
+      const label = node.querySelector('strong')?.textContent.trim();
+      const value = node.querySelector('span')?.textContent.trim();
+      if (label && value) {
+        setHint(node, `Подготовка к сессии — ${label}: ${value}`);
+      }
+    });
+    scope.querySelectorAll('.context-checkline').forEach((node) => {
+      setHint(node, `Проверка качества: ${node.textContent.trim().replace(/\s+/g, ' ')}`);
+    });
+    scope.querySelectorAll('.context-note-item').forEach((node) => {
+      setHint(node, `Внутренняя заметка: ${node.textContent.trim().replace(/\s+/g, ' ')}`);
+    });
+    scope.querySelectorAll('.context-accordion-head').forEach((node) => {
+      setHint(node, `Открыть или закрыть блок: ${node.textContent.trim().replace(/\s+/g, ' ')}`);
     });
   };
 
@@ -1065,7 +1166,9 @@
       const isFavorite = item.dataset.favorite === 'true' || item.querySelector('.conv-favorite.is-favorite');
       const unread = item.querySelector('.conv-unread');
       const unreadValue = unread?.textContent.trim() || '0';
-      unread?.classList.toggle('is-fresh', unreadValue === '!' || (Number(unreadValue) || 0) > 0);
+      const hasUnread = unreadValue === '!' || (Number(unreadValue) || 0) > 0;
+      const isNewDialog = item.dataset.newDialog === 'true' || item.classList.contains('is-new-dialog');
+      unread?.classList.toggle('is-fresh', isNewDialog && hasUnread);
       const matchesQuery = !query || text.includes(query);
       const matchesUser = !payload.selected_user_id
         || item.dataset.senderUserId === payload.selected_user_id
@@ -3967,6 +4070,8 @@
       if (initialQueueList) {
         sortQueueCardsByPriority(initialQueueList);
       }
+      syncQueueCardHints(document);
+      syncGlobalTooltips(document);
       bindQueueTabs();
       bindOperationalPrototype();
     });
