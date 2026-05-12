@@ -8,10 +8,9 @@ Source reference: `J:\Codex Base J\Users\alexe\Downloads\admin-chat-stage1`
 
 Stage 1 was converted into a role-aware operator workspace for paid esoteric minute consultations.
 
-The mockup now separates:
-- active dialogs;
+- chats, meaning real active dialogs between a client and an expert identity;
 - pings, meaning pre-chat interest signals from expert profile views;
-- paid-session timing and top-up workflow;
+- paid-session timing and sell workflow;
 - focus mode for paid/risk conversations;
 - client language as operational context;
 - clickable prototype actions for agent work simulation;
@@ -30,49 +29,44 @@ The mockup now separates:
 ## Main queue model
 
 Top workload switch:
-- `All`: active chats plus pings that may require action.
-- `Active chats`: real dialogs only.
-- `Pings`: profile-interest leads before a chat starts.
+- `Chats`: all created real dialogs between a client and expert.
+- `Pings`: potential clients who viewed or interacted with the expert profile before starting a chat.
 
 Do not treat pings as normal unread chats. A ping has no incoming message and no reply SLA until the platform/operator starts outreach or the client opens chat.
+If `Chats` is empty, `Pings` gives the expert a warm sales queue: these users already showed interest in the exact expert profile, so the expert can start a soft dialogue instead of waiting passively.
 
 Queue cards are auto-sorted by operational urgency:
-1. `Paid active`
-2. `Top-up needed` / low balance
-3. `Overdue`
-4. `Needs reply`
-5. `New ping`
-6. `Follow-up due`
-7. `Waiting client`
+1. `Live`
+2. `SLA`
+3. `Reply`
+4. `PP`
+5. `Sell`
+6. `NEW`
+7. `Follow-up due`
+8. `Waiting client`
 
 Do not add these as primary tabs. They are priority states and filters, not separate workspaces.
 
 ## Active chat filters
 
 Recommended quick filters:
-- `Needs reply`
-- `Paid live`
-- `Low balance`
-- `Top-up needed`
-- `Overdue`
-- `Waiting client`
-- `Follow-up`
-- `Escalated`
-- `Hot`
-- `Refund risk`
-- `Do not push`
+- `Reply`
+- `SLA`
+- `Live`
+- `PP`
+- `Sell`
+- `Favorite`
+- `Archive`
 
 ## Ping filters
 
 Recommended quick filters:
-- `New ping`
-- `High intent`
-- `Repeat view`
-- `Uncontacted`
-- `Contacted`
-- `Expiring`
-- `Has credits`
-- `Paid before`
+- `NEW`
+- `No contact`
+- `Credits`
+- `Intent`
+- `Favorite`
+- `Archive`
 
 Client language:
 - show compactly in the conversation header and right context;
@@ -84,12 +78,13 @@ Client language:
 Flags must have a source and an action.
 
 System flags:
-- `Needs reply`
-- `Paid live`
-- `Low balance`
-- `Overdue`
-- `New ping`
-- `High intent`
+- `Reply`
+- `Live`
+- `SLA`
+- `PP`
+- `Sell`
+- `NEW`
+- `Intent`
 - `Policy risk`
 
 Supervisor flags:
@@ -106,7 +101,7 @@ Supervisor flag behavior:
 
 Operator flags:
 - `Need data`
-- `Top-up script prepared`
+- `Sell script prepared`
 - `Follow-up`
 - `Waiting client`
 - `Resolved`
@@ -118,16 +113,16 @@ Card rule: show no more than 3-4 visible flags in the queue card. Full flag deta
 The paid session panel is not just billing data. It is a sales pacing tool.
 
 Compact state should show:
-- session state;
+- `My session` state;
 - credits;
 - approximate paid time left;
-- used time;
-- warning threshold;
-- top-up action.
+- translation direction;
+- sell window;
+- sell action.
 
 Expanded/side context should support:
-- top-up link;
-- insert top-up script;
+- sell link;
+- insert sell script;
 - no-push state;
 - package selection;
 - deep reading package;
@@ -141,12 +136,12 @@ Normal agents should use `Request compensation` with a reason and audit trail. D
 Focus mode is a visual attention state, not a queue segment.
 
 It can be enabled manually or automatically for:
-- `Paid active`;
+- `Live`;
 - `High LTV`;
 - `Refund risk`;
 - `Complaint risk`;
 - `Long wait`;
-- `Top-up needed`.
+- `Sell`.
 
 When focus mode is active:
 - keep the current paid/risk conversation visually prominent;
@@ -162,7 +157,7 @@ The standalone mockup now imitates the agent tool instead of staying static.
 
 Clickable actions include:
 - queue selection and priority sorting;
-- working area tabs that visibly filter the queue: `All`, `Active chats`, `Pings`;
+- working area tabs that visibly filter the queue: `Chats`, `Pings`;
 - right-panel tabs and accordions;
 - `Offer` menu with composer draft insertion;
 - `Request compensation` modal with audited request result;
@@ -216,7 +211,7 @@ Remove public-profile navigation from this menu. Public expert profile editing s
 
 - Queue cards now support `data-workload-type="active_chat"` and `data-workload-type="ping"`.
 - Queue cards now support `data-priority` for demo urgency sorting.
-- Demo filtering was updated for UI labels `All / Active chats / Pings`; backend preset keys remain `all_workload`, `active_chats`, and `pings`.
+- Demo filtering was updated for UI labels `Chats / Pings`; backend preset keys remain `active_chats` and `pings`.
 - Demo business actions are bound through `data-prototype-action` and `data-offer-action`.
 - Header was reduced to the minimum launch signals to avoid duplicate flags and indicator noise.
 - The mockup remains a standalone handoff artifact. It is not yet Yii2-integrated runtime code.

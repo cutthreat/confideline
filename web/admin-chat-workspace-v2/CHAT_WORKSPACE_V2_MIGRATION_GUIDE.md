@@ -23,7 +23,7 @@ The mockup is split into independent working areas. Each area below describes:
 
 1. The client always sees the expert profile, not the internal agent/operator.
 2. The agent works only with assigned expert profiles. For the agent role, `Mine` is not a useful visible flag because every visible item is already inside the agent's assigned workspace.
-3. `All / Active chats / Pings` are workload modes, not CRM segments.
+3. `Chats / Pings` are workload modes, not CRM segments.
 4. Paid and low-balance dialogs outrank ordinary waiting dialogs.
 5. Pings are pre-chat leads. They do not have reply SLA until the client answers or a chat starts.
 6. Supervisor flags are limited to operational control signals: `Hot`, `Refund risk`, `Do not push`, `Handoff`.
@@ -71,9 +71,8 @@ Selector:
 - JS: `bindQueueTabs()`, `applyDemoQueueState()`
 
 Visible modes:
-- `All`: active chats plus pings that can require action;
-- `Active chats`: real client-expert dialogs;
-- `Pings`: profile-interest leads before chat start.
+- `Chats`: all created active dialogs between a client and the expert identity the client sees;
+- `Pings`: potential clients who viewed/interacted with that expert profile before starting a chat.
 
 Data needed on queue cards:
 - `data-workload-type="active_chat | ping"`;
@@ -99,10 +98,15 @@ Selectors:
 - filter button/menu: `.queue-search-filters`
 
 Recommended filter groups:
-- `Urgency`: `Needs action`, `Overdue`;
-- `Chats`: `Needs reply`, `Paid live`, `Low balance`, `Top-up needed`, `Waiting client`, `Follow-up`, `Escalated`;
-- `Pings`: `New ping`, `High intent`, `Uncontacted`, `Contacted`, `Expiring`, `Has credits`;
-- `Supervisor`: `Hot`, `Refund risk`, `Do not push`.
+- `Chats / Status`: `Reply`, `SLA`;
+- `Chats / Billing`: `Live`, `PP`, `Sell`;
+- `Pings / Status`: `NEW`, `No contact`;
+- `Pings / Lead quality`: `Credits`, `Intent`;
+- `Shared`: `Favorite`, `Archive`.
+
+Business logic:
+- `Chats` filters help the agent choose the next real dialogue by KPI: reply obligation, SLA breach, active paid session, unfinished payment, or sell moment.
+- `Pings` filters help the agent warm up leads when the chat queue is empty or there is spare capacity. These leads already showed interest in a specific expert profile, so outreach is not random cold traffic.
 
 Behavior:
 - search, expert selector, quick filters, and workload mode are independent zones;
@@ -127,15 +131,11 @@ Card should show:
 - up to 3 visible operational chips.
 
 Good visible chips:
-- `Needs reply`;
-- `Paid live`;
-- `Low balance soon`;
-- `Payment pending`;
-- `Top-up needed`;
-- `Hot`;
-- `Follow-up`;
-- `Need birth time`;
-- `Escalated`.
+- `Reply`;
+- `SLA`;
+- `Live`;
+- `PP`;
+- `Sell`.
 
 Do not show:
 - `Mine`;
@@ -144,13 +144,14 @@ Do not show:
 - internal agent name.
 
 Sort priority:
-1. paid live;
-2. low balance / top-up needed;
-3. overdue;
-4. needs reply;
-5. new ping;
-6. follow-up;
-7. waiting client.
+1. Live;
+2. SLA;
+3. Reply;
+4. PP;
+5. Sell;
+6. NEW;
+7. follow-up;
+8. waiting client.
 
 ## Area 5: Ping Queue Card
 
@@ -165,10 +166,10 @@ Card should show:
 - whether this lead is high intent.
 
 Good visible chips:
-- `New ping`;
-- `High intent`;
-- `Has credits`;
-- `Uncontacted`;
+- `NEW`;
+- `Intent`;
+- `Credits`;
+- `No contact`;
 - `Contacted`;
 - `Template sent`;
 - `Awaiting reply`.
@@ -176,7 +177,8 @@ Good visible chips:
 Business meaning:
 - a ping is a lead, not a conversation;
 - no SLA clock starts until the client replies;
-- the agent can send one soft template, invite to paid chat, mark no-push, or schedule follow-up.
+- the agent can send one soft template, invite to paid chat, mark no-push, or schedule follow-up;
+- pings are useful when `Chats` is empty because they let the expert start a warm sales dialogue with people who already viewed the expert profile.
 
 ## Area 6: Conversation Header
 
@@ -196,7 +198,7 @@ Visible signals:
 - arrow;
 - expert avatar/name;
 - compact language badge, for example `RU`;
-- up to 4 critical chips: `Paid live`, `Needs reply`, `Low balance soon`, `Need birth time`;
+- only immediate state that is needed to avoid interrupting the active dialogue, for example `Live` or `PP`;
 - conversation reference and last activity/wait state.
 
 Do not duplicate:
@@ -211,18 +213,18 @@ Selector:
 - `#billingPanel`
 
 Visible when:
-- selected active chat has `Paid live`, `Low balance`, `Payment pending`, or `Top-up needed`.
+- selected active chat has a real active paid session, marked as `Live`.
 
 Shows:
-- live paid session state;
+- current expert's paid session state;
 - credits;
 - estimated minutes left;
-- used minutes;
-- next top-up timing;
+- translation direction;
+- next sell timing;
 - one short sales timing hint.
 
 Actions:
-- `Offer`: sends top-up/package/deep-reading scripts into composer;
+- `Offer`: sends sell/package/deep-reading scripts into composer;
 - `No push`: sets a do-not-push control flag;
 - `Request compensation`: opens audited compensation request.
 
@@ -296,7 +298,7 @@ More menu:
 - `Mark do not push`.
 
 Do not overload:
-- keep compensation and top-up in the paid panel;
+- keep compensation and sell actions in the paid panel;
 - keep ping outreach in the ping panel;
 - keep full moderator tooling outside this launch chat.
 
@@ -305,14 +307,24 @@ Do not overload:
 Selector:
 - right pane tabs and context sections.
 
-Should contain internal context that should not crowd the header:
-- real operator/agent;
-- expert identity seen by client;
-- client language;
-- billing/LTV/risk details;
-- supervisor flags and notes;
-- reply quality checks;
-- action log.
+Right panel principle:
+- this is the detail layer, not the KPI queue;
+- do not duplicate `Live` if it is already visible in the center header or paid-session panel;
+- keep slow-reading details here, including birth data, notes, audit, billing history, AI help, and quality checks.
+
+Tab logic:
+- `Client`: full client passport. Shows identity, timezone, language, credits, profile expert, real operator, date of birth and birth time/timezone. Birth time is important for esoteric readings, but it is not a left-queue KPI unless missing data blocks the current answer.
+- `AI`: summary and draft help. Useful when the agent needs a quick recap or wording support; it should not replace the actual dialogue history.
+- `Pay`: billing context, LTV, credits, payment events, used time, sell timing, and allowed paid actions. Useful for sales and compensation decisions; not all of it belongs in the central paid panel.
+- `Notes`: private team memory about the client. Useful for continuity between shifts and experts.
+- `Follow`: planned next contact. Useful when the client pauses or does not buy now.
+- `Prep`: session preparation details such as missing birth time, timezone, previous templates, and internal readiness notes.
+- `Quality`: guardrails and checks. `QC watch` means quality control attention is needed, for example a paying client waited too long or the answer has policy/sales risk.
+
+Safety rules:
+- shown as `Safety rules`;
+- used while drafting an answer;
+- prevents guarantees, medical/legal/financial promises, and external-link leakage.
 
 Rules:
 - queue/header show only immediate action signals;

@@ -1008,10 +1008,11 @@
   // Русские подсказки для левой очереди: объясняют смысл коротких чипов без добавления лишнего текста в карточку.
   const queueHintByLabel = {
     reply: 'Клиент ждет ответа агента',
-    'paid live': 'Идет активная оплаченная сессия',
-    'pay pending': 'Клиент открыл оплату, но платеж еще не завершен',
-    'top-up': 'Нужно мягко довести клиента до пополнения',
-    'new ping': 'Новый сигнал интереса до начала чата',
+    sla: 'Клиент слишком долго ждет реакции; влияет на SLA',
+    live: 'Идет активная платная сессия',
+    pp: 'Клиент открыл оплату, но платеж еще не завершен',
+    sell: 'Нужно довести клиента до покупки продолжения или дополнительных минут',
+    new: 'Новый сигнал интереса до начала чата',
     intent: 'Клиент проявил сильный интерес',
     credits: 'У клиента есть кредиты для старта платного общения'
   };
@@ -1088,7 +1089,7 @@
       ['[data-prototype-action="open-follow-up"]', 'Запланировать следующее касание клиента'],
       ['[data-prototype-action="open-handoff"]', 'Передать диалог другому эксперту или старшему смены'],
       ['[data-prototype-action="open-compensation"]', 'Создать запрос на компенсацию для проверки'],
-      ['[data-offer-action="top-up"]', 'Вставить предложение пополнить минуты'],
+      ['[data-offer-action="sell"]', 'Вставить предложение продать продолжение или минуты'],
       ['[data-offer-action="package"]', 'Отправить ссылку на пакет продолжения'],
       ['[data-offer-action="deep-reading"]', 'Предложить глубокий платный разбор'],
       ['[data-offer-action="start-paid"]', 'Пригласить лида начать платный чат']
@@ -1141,6 +1142,24 @@
     });
   };
 
+  const syncQuickFilterVisibility = (root) => {
+    const activeTab = root.querySelector('.js-queue-tab.active')?.dataset.tab || 'active_chats';
+    const modeGroup = activeTab === 'pings' ? 'ping' : 'chat';
+    root.querySelectorAll('.queue-search-filters .filter-choice').forEach((label) => {
+      const input = label.querySelector('input');
+      const group = input?.dataset.group || '';
+      const visible = group === 'control' || group === modeGroup;
+      label.hidden = !visible;
+      if (!visible && input?.checked) {
+        input.checked = false;
+      }
+    });
+    root.querySelectorAll('.queue-search-filters .filter-line').forEach((line) => {
+      const choices = Array.from(line.querySelectorAll('.filter-choice'));
+      line.hidden = choices.length > 0 && choices.every((choice) => choice.hidden);
+    });
+  };
+
   // Основная логика левой области: фильтруем рабочую очередь, архив показываем только по фильтру Archive.
   const applyDemoQueueState = (root, payload) => {
     const list = root.querySelector('.conv-list');
@@ -1182,10 +1201,11 @@
         if (value === 'archive') return isArchived;
         if (value === 'favorite') return isFavorite;
         if (value === 'needs_reply') return labels.some((label) => label === 'reply' || label.includes('needs reply'));
-        if (value === 'paid_live') return labels.some((label) => label.includes('paid live'));
-        if (value === 'new_paid') return labels.some((label) => label.includes('new paid') || label.includes('paid live'));
-        if (value === 'top_up_needed') return labels.some((label) => label.includes('top-up') || label.includes('pay pending') || label.includes('payment pending') || label.includes('low balance'));
-        if (value === 'new_ping') return workloadType === 'ping' && labels.some((label) => label.includes('new ping'));
+        if (value === 'sla') return labels.some((label) => label === 'sla');
+        if (value === 'paid_live') return labels.some((label) => label === 'live');
+        if (value === 'payment_pending') return labels.some((label) => label === 'pp');
+        if (value === 'sell') return labels.some((label) => label === 'sell');
+        if (value === 'new_ping') return workloadType === 'ping' && labels.some((label) => label === 'new');
         if (value === 'high_intent') return workloadType === 'ping' && labels.some((label) => label === 'intent' || label.includes('high intent'));
         if (value === 'uncontacted') return workloadType === 'ping' && (item.dataset.pingState === 'uncontacted' || labels.some((label) => label.includes('no contact') || label.includes('uncontacted')));
         if (value === 'has_credits' || value === 'has_balance') return workloadType === 'ping' && labels.some((label) => label === 'credits' || label.includes('has credits') || label.includes('has balance'));
@@ -3155,6 +3175,7 @@
       window.addEventListener('scroll', positionMenu, true);
 
     const syncState = () => {
+      syncQuickFilterVisibility(root);
       let count = 0;
       labels.forEach((label) => {
         const input = label.querySelector('input');
@@ -3314,6 +3335,7 @@
           item.setAttribute('aria-pressed', active ? 'true' : 'false');
         });
         resetQueueFilterZones(root, 'quick_preset');
+        syncQuickFilterVisibility(root);
         runQueueStateUpdate(root, 'quick_preset', 'quick_preset');
       });
     });
@@ -3389,12 +3411,12 @@
       root.dataset.workloadType = payload.workload_type || 'active_chat';
       const labelsLower = (payload.labels || []).map((label) => String(label).toLowerCase());
       const isPing = payload.workload_type === 'ping' || String(payload.conversation_id || '').startsWith('p');
-      const hasPaidLive = labelsLower.some((label) => label.includes('paid live'));
-      const hasPaymentOpened = labelsLower.some((label) => label.includes('pay pending') || label.includes('payment pending'));
-      const hasTopUp = labelsLower.some((label) => label.includes('top-up'));
+      const hasPaidLive = labelsLower.some((label) => label === 'live');
+      const hasPaymentOpened = labelsLower.some((label) => label === 'pp');
+      const hasSell = labelsLower.some((label) => label === 'sell');
       // Нижняя панель сессии открывается только для реально запущенной платной сессии, а не для платежных ожиданий.
       const isBillable = !isPing && hasPaidLive;
-      const isFocus = !isPing && labelsLower.some((label) => /paid live|low balance|refund risk|hot/.test(label));
+      const isFocus = !isPing && labelsLower.some((label) => ['live', 'sla', 'pp', 'sell'].includes(label) || /refund risk|hot/.test(label));
 
       const contactDuo = root.querySelector('.chat-identity .contact-duo');
       const avatars = contactDuo ? Array.from(contactDuo.querySelectorAll('.contact-avatar')) : [];
@@ -3426,17 +3448,16 @@
           metaChips.push({ label: 'Ping lead', className: 'dialog-chip-info', title: 'Это лид до начала полноценного чата' });
           metaChips.push({ label: 'No chat yet', className: 'dialog-chip-info', title: 'Диалог с клиентом еще не начат' });
         } else if (hasPaidLive) {
-          const expertName = (payload.recipient_name || 'expert').split(/\s+/)[0];
           metaChips.push({
-            label: `Paid with ${expertName}`,
+            label: 'Live',
             className: 'dialog-chip-success',
-            title: 'Клиент уже в платной сессии с этим экспертом; другому эксперту лучше не перебивать'
+            title: 'Клиент сейчас находится в активной платной сессии; другому эксперту лучше не перебивать'
           });
         } else if (hasPaymentOpened) {
           metaChips.push({ label: 'Payment opened', className: 'dialog-chip-warning', title: 'Клиент открыл оплату, но платная сессия еще не стартовала' });
           metaChips.push({ label: 'No live session', className: 'dialog-chip-info', title: 'Сейчас нет активной платной сессии' });
-        } else if (hasTopUp) {
-          metaChips.push({ label: 'Top-up sent', className: 'dialog-chip-info', title: 'Ссылка на пополнение уже отправлена клиенту' });
+        } else if (hasSell) {
+          metaChips.push({ label: 'Sell sent', className: 'dialog-chip-info', title: 'Предложение продления уже отправлено клиенту' });
         } else {
           metaChips.push({ label: 'Active dialog', className: 'dialog-chip-info', title: 'Открыт обычный рабочий диалог без активной платной сессии' });
         }
@@ -3459,9 +3480,6 @@
           if (isPing) {
             waitState.textContent = `Signal ${lastTime}`;
             waitState.setAttribute('title', 'Когда был последний сигнал интереса по этому лиду');
-          } else if (hasPaidLive && payload.unread_count > 0) {
-            waitState.textContent = `Client waits · last ${lastTime}`;
-            waitState.setAttribute('title', 'Клиент ждет ответ в активной платной сессии');
           } else {
             waitState.textContent = `Last activity ${lastTime}`;
             waitState.setAttribute('title', 'Время последней активности в открытом диалоге');
@@ -3596,7 +3614,7 @@
           });
 
           if (buttons[0]) {
-            buttons[0].innerHTML = 'Active chats <span class="badge" id="badgeNeedsReply">3</span>';
+            buttons[0].innerHTML = 'Chats <span class="badge" id="badgeNeedsReply">3</span>';
             buttons[0].dataset.tab = 'active_chats';
             buttons[0].classList.add('active');
           }
@@ -3769,14 +3787,14 @@
 
     const offerDrafts = {
       'start-paid': 'Я могу начать платную сессию и разобрать ваш вопрос глубже. Если готовы, нажмите кнопку начала чата, и мы продолжим без потери контекста.',
-      'top-up': 'У нас осталось немного оплаченного времени. Чтобы я спокойно завершила разбор и дала следующий шаг, лучше пополнить минуты сейчас.',
+      sell: 'У нас осталось немного оплаченного времени. Чтобы я спокойно завершила разбор и дала следующий шаг, лучше продлить сессию сейчас.',
       package: 'Для вашей ситуации подойдет пакет продолжения: мы сможем разобрать вопрос глубже и сохранить весь контекст этого диалога.',
       'deep-reading': 'Здесь уже видно несколько важных слоев. Я могу предложить глубокий разбор, чтобы не ограничиваться коротким ответом.'
     };
 
     const offerLabels = {
       'start-paid': 'Start paid chat',
-      'top-up': 'Top-up offer',
+      sell: 'Sell',
       package: 'Package link',
       'deep-reading': 'Deep reading'
     };
@@ -3784,7 +3802,7 @@
     const applyOffer = (type) => {
       const label = offerLabels[type] || 'Offer';
       setComposerText(offerDrafts[type] || offerDrafts.package);
-      addCardPill(label, type === 'top-up' ? 'conv-pill-warning' : 'conv-pill-neutral');
+      addCardPill(label, type === 'sell' ? 'conv-pill-warning' : 'conv-pill-neutral');
       logAction('Offer prepared:', label);
       showToast(`${label} inserted into composer`, 'success');
     };
@@ -3836,8 +3854,8 @@
           logAction('Need data draft prepared');
           showToast('Need data draft inserted', 'success');
           break;
-        case 'insert-topup-script':
-          applyOffer('top-up');
+        case 'insert-sell-script':
+          applyOffer('sell');
           break;
         case 'insert-ping-template':
           setComposerText('Здравствуйте. Вы смотрели мой профиль, и по вашему вопросу можно аккуратно начать с короткого разбора. Если хотите, напишите, что сейчас волнует больше всего.');

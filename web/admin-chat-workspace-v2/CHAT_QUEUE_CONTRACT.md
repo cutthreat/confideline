@@ -72,7 +72,7 @@ Current payload shape:
   "active_filter_zone": "none | quick_preset | search | user_select | quick_filters",
   "query": "maya",
   "selected_user_id": "799",
-  "quick_preset": "all_workload | active_chats | pings",
+  "quick_preset": "active_chats | pings",
   "active_filters": [
     { "group": "status", "value": "unread" },
     { "group": "status", "value": "overdue" }
@@ -126,7 +126,6 @@ Expected response options:
 {
   "html": "<a class=\"conv-item\" data-conversation-id=\"c2\">...</a>",
   "counters": {
-    "all": 12,
     "active_chats": 3,
     "pings": 2
   }
@@ -146,14 +145,13 @@ or:
       "recipient_name": "Orion Esposito",
       "last_message_preview": "Need a quick confirmation...",
       "last_message_time": "8:17 AM",
-      "labels": ["Needs reply", "Paid live"],
+      "labels": ["Reply", "Live"],
       "unread_count": 3,
       "is_pinned": true,
       "is_online": true
     }
   ],
   "counters": {
-    "all": 12,
     "active_chats": 3,
     "pings": 2
   }
@@ -169,15 +167,16 @@ Current demo behavior:
 
 Priority sort order for launch:
 
-1. Paid active
-2. Top-up needed / low balance
-3. Overdue
-4. Needs reply
-5. New ping
-6. Follow-up due
-7. Waiting client
+1. Live
+2. SLA
+3. Reply
+4. PP
+5. Sell
+6. NEW
+7. Follow-up due
+8. Waiting client
 
-Primary UI labels stay `All / Active chats / Pings`; priority states are sorting inputs and quick filters.
+Primary UI labels stay `Chats / Pings`; priority states are sorting inputs and quick filters.
 
 ## Quick Preset Rules
 
@@ -188,9 +187,8 @@ Current v2 workload presets:
 
 | UI label | Preset | Meaning | Demo rule |
 | --- | --- | --- | --- |
-| `All` | `all_workload` | Show chats and pings that can require action. | Show all cards. |
-| `Active chats` | `active_chats` | Show real dialogs only. | Show `data-workload-type="active_chat"`. |
-| `Pings` | `pings` | Show pre-chat interest signals only. | Show `data-workload-type="ping"`. |
+| `Chats` | `active_chats` | Show all created active dialogs between client and expert. | Show `data-workload-type="active_chat"`. |
+| `Pings` | `pings` | Show warm leads who viewed or interacted with the expert profile before chat start. | Show `data-workload-type="ping"`. |
 
 Rules:
 
@@ -199,6 +197,13 @@ Rules:
 - Clicking a quick preset clears user select.
 - Clicking a quick preset clears all quick filter checkboxes.
 - Backend can treat `quick_preset` as a saved filter bundle.
+
+Quick filter split:
+
+| Workload | Filters | Business use |
+| --- | --- | --- |
+| `Chats` | `Reply`, `SLA`, `Live`, `PP`, `Sell`, `Favorite`, `Archive` | Work the real dialogue queue by KPI: who needs an answer, who is breaching SLA, where a paid session is live, where payment is pending, or where a sell action is needed. |
+| `Pings` | `NEW`, `No contact`, `Credits`, `Intent`, `Favorite`, `Archive` | Warm up potential clients who already showed interest in the expert profile. Useful when `Chats` is empty or the agent has time to start soft sales outreach. |
 
 ## Independent Filter Zone Rules
 
@@ -241,7 +246,7 @@ Current switch payload:
   "unread_count": 3,
   "is_pinned": true,
   "workload_type": "active_chat",
-  "labels": ["Needs reply", "Paid live", "Low balance soon"],
+  "labels": ["Reply", "Live", "SLA"],
   "last_message_preview": "Need a quick confirmation...",
   "last_message_time": "8:17 AM"
 }
@@ -265,7 +270,7 @@ Expected response can include:
 - `offer_actions`: allowed upsell actions for this role/conversation.
 - `compensation_policy`: whether the agent can issue or only request compensation.
 
-If `workload_type="ping"`, the center workspace should show `#pingLeadPanel` and hide the paid session panel. A ping is a lead, not an active chat, so no reply SLA starts until the client replies.
+If `workload_type="ping"`, the center workspace should show `#pingLeadPanel` and hide the paid session panel. A ping is a warm lead, not an active chat, so no reply SLA starts until the client replies or a real chat starts.
 
 ## Standalone Prototype Action Rules
 
@@ -331,7 +336,7 @@ Rule: new queue code should use these functions instead of directly duplicating 
 | 2026-04-28 | Documented conversation switching payload and expected server response. |
 | 2026-04-28 | Updated queue tabs as standalone quick presets that reset other queue filters. |
 | 2026-04-28 | Updated queue filters as 4 independent zones: quick preset, search, user select, quick filters. |
-| 2026-05-12 | Added v2 workload split with UI labels `All / Active chats / Pings`, backend presets `all_workload`, `active_chats`, `pings`, and `data-workload-type` for cards. |
+| 2026-05-12 | Added v2 workload split with UI labels `Chats / Pings`, backend presets `active_chats`, `pings`, and `data-workload-type` for cards. |
 | 2026-05-12 | Added launch-focused BA refinement: `data-priority` urgency sorting, client language context, Focus mode, grouped `Offer` actions, and audited compensation request. |
 | 2026-05-12 | Added standalone clickable prototype layer with offer drafts, compensation/handoff/follow-up modals, focus toggle, flags, action log, and toasts. |
 | 2026-05-12 | Fixed tab filtering visibility and simplified duplicated header indicators. Queue tabs now hide irrelevant cards in the standalone prototype. |
