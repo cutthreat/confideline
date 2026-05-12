@@ -4,6 +4,7 @@ This folder contains competitor training-video analysis artifacts for the Confid
 
 ## Primary Synthesis
 
+- `FINAL_CODEX_TRANSFER_PACKAGE_RU.md` - final transfer package for continuing the whole video-analysis and `admin-chat-workspace-v2` work in Codex on another machine.
 - `INSIGHTORBA_COMPETITOR_WORKFLOW_FULL_DOCUMENTATION_RU.md` - complete Russian-language synthesis with evidence levels, confirmed rules, uncertain points, recommended data contracts, and product conclusions.
 - `HANDOFF_TO_CODEX_RU.md` - Russian-language handoff for continuing this work in Codex on another machine.
 - `CONVERSATION_STATE_MACHINE_RU.md` - target conversation lifecycle, states, transitions, events, queue mapping, and MVP implementation layers.
