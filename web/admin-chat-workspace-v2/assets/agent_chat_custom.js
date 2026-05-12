@@ -1125,11 +1125,6 @@
       'Follow-up scenario': 'План следующего касания, если клиент не продолжил сейчас',
       'Soft touch': 'Мягкий текст для возвращения клиента в диалог',
       'Internal notes': 'Приватные заметки команды по клиенту',
-      'Session prep details': 'Второстепенные данные для подготовки к сессии',
-      'Prep actions': 'Действия для уточнения данных или передачи диалога',
-      Rule: 'Правило, почему этот блок не выносится в очередь',
-      'Reply quality checks': 'Проверки ответа перед отправкой клиенту',
-      'Supervisor notes': 'Замечания старшего смены или контроля качества',
       'Action log': 'Локальный журнал действий в прототипе'
     };
     scope.querySelectorAll('.context-section-title').forEach((node) => {
@@ -3792,7 +3787,7 @@
         return log;
       }
 
-      const flagsPane = root.querySelector('#tab-signals') || root.querySelector('#tab-flags');
+      const flagsPane = root.querySelector('#tab-notes') || root.querySelector('#tab-ai');
       const section = document.createElement('div');
       section.className = 'context-section prototype-action-section';
       section.innerHTML = `
