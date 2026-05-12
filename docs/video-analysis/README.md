@@ -10,6 +10,14 @@ This folder contains competitor training-video analysis artifacts for the Confid
 - `EXPERT_QA_CHECKLIST_RU.md` - expert quality checklist for free reading, Book Now, objections, paid sessions, reactivation, safety, and cabinet usage.
 - `ADMIN_WORKSPACE_BACKLOG_RU.md` - product backlog for `admin-chat-workspace-v2` based on the competitor video analysis.
 
+## Implementation Artifacts
+
+- `DATA_DICTIONARY_RU.md` - target data fields for conversations, clients, free trial, Book Now, paid sessions, objections, coupons, reactivation, safety, pings, experts, and draft provenance.
+- `EVENT_TAXONOMY_RU.md` - event taxonomy for funnel analytics, QA timeline, Pings, payment/session events, objections, safety, and workforce events.
+- `USER_STORIES_ACCEPTANCE_CRITERIA_RU.md` - user stories and acceptance criteria for experts, mentors, managers, support, analysts, and business owners.
+- `UI_BLUEPRINT_RU.md` - functional UI blueprint for queues, Pings, chat header, timeline, composer, Book Now, paid session blocks, right panel, dashboard, and onboarding.
+- `RISK_REGISTER_RU.md` - revenue, conversion, safety, operational, and data risks with controls and ownership.
+
 ## Per-Video Analysis
 
 | Day | Part | Manual analysis |
