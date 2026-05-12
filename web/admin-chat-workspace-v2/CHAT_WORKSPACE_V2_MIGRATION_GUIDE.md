@@ -102,7 +102,8 @@ Recommended filter groups:
 - `Chats / Billing`: `Live`, `PP`, `Sell`;
 - `Pings / Status`: `NEW`;
 - `Pings / Lead quality`: `Credits`, `Intent`;
-- `Shared`: `Favorite`, `Archive`.
+- `Shared`: `Favorite`.
+- `Chats only`: `Archive`.
 
 Business logic:
 - `Chats` filters help the agent choose the next real dialogue by KPI: reply obligation, SLA breach, active paid session, unfinished payment, or sell moment.

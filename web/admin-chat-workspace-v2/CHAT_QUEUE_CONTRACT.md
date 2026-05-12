@@ -203,7 +203,7 @@ Quick filter split:
 | Workload | Filters | Business use |
 | --- | --- | --- |
 | `Chats` | `Reply`, `SLA`, `Live`, `PP`, `Sell`, `Favorite`, `Archive` | Work the real dialogue queue by KPI: who needs an answer, who is breaching SLA, where a paid session is live, where payment is pending, or where a sell action is needed. |
-| `Pings` | `NEW`, `Credits`, `Intent`, `Favorite`, `Archive` | Warm up potential clients who already showed interest in the expert profile. Useful when `Chats` is empty or the agent has time to start soft sales outreach. |
+| `Pings` | `NEW`, `Credits`, `Intent`, `Favorite` | Warm up potential clients who already showed interest in the expert profile. Useful when `Chats` is empty or the agent has time to start soft sales outreach. |
 
 ## Independent Filter Zone Rules
 

@@ -1148,7 +1148,7 @@
     root.querySelectorAll('.queue-search-filters .filter-choice').forEach((label) => {
       const input = label.querySelector('input');
       const group = input?.dataset.group || '';
-      const visible = group === 'control' || group === modeGroup;
+      const visible = group === 'shared' || group === modeGroup;
       label.hidden = !visible;
       if (!visible && input?.checked) {
         input.checked = false;

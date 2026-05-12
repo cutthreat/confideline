@@ -65,7 +65,6 @@ Recommended quick filters:
 - `Credits`
 - `Intent`
 - `Favorite`
-- `Archive`
 
 Client language:
 - show compactly in the conversation header and right context;
