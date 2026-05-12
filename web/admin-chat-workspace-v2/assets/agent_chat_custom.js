@@ -1087,6 +1087,8 @@
       ['[data-prototype-action="save-note"]', 'Сохранить внутреннюю заметку по клиенту'],
       ['[data-prototype-action="clear-note"]', 'Очистить черновик заметки'],
       ['[data-prototype-action="open-follow-up"]', 'Запланировать следующее касание клиента'],
+      ['[data-prototype-action="favorite-ping"]', 'Добавить выбранный ping в избранное'],
+      ['[data-prototype-action="dismiss-ping"]', 'Убрать выбранный ping из рабочей очереди'],
       ['[data-prototype-action="open-handoff"]', 'Передать диалог другому эксперту или старшему смены'],
       ['[data-prototype-action="open-compensation"]', 'Создать запрос на компенсацию для проверки'],
       ['[data-offer-action="sell"]', 'Вставить предложение продать продолжение или минуты'],
@@ -1136,6 +1138,7 @@
     const contextChipHints = {
       '50 credits': 'Баланс клиента для продолжения платной сессии',
       'language RU': 'Клиент пишет на русском; шаблоны и перевод должны учитывать RU',
+      NEW: 'Новый актуальный сигнал интереса по выбранному эксперту',
       'Без гарантий': 'Не обещать точный результат или гарантированное событие',
       'Без мед/юр/фин советов': 'Не давать юридические, медицинские или финансовые советы',
       'Не уводить внешне': 'Не уводить клиента во внешние каналы без разрешенного сценария',
@@ -3553,16 +3556,14 @@
         const chips = Array.from(labelHost.querySelectorAll('.dialog-chip'));
         chips.forEach((chip) => chip.remove());
         const metaChips = [];
-        if (isPing) {
-          metaChips.push({ label: 'Ping lead', className: 'dialog-chip-info', title: 'Это лид до начала полноценного чата' });
-        } else if (hasPaidLive) {
+        if (!isPing && hasPaidLive) {
           metaChips.push({
             label: 'Live',
             className: 'dialog-chip-success',
             title: 'Клиент сейчас находится в активной платной сессии; другому эксперту лучше не перебивать'
           });
         } else if (hasPaymentOpened) {
-          metaChips.push({ label: 'Payment opened', className: 'dialog-chip-warning', title: 'Клиент открыл оплату, но платная сессия еще не стартовала' });
+          metaChips.push({ label: 'PP', className: 'dialog-chip-warning', title: 'Клиент открыл оплату по текущему контексту, но платеж еще не завершен' });
         } else if (hasSell) {
           metaChips.push({ label: 'Sell sent', className: 'dialog-chip-info', title: 'Предложение продления уже отправлено клиенту' });
         }
@@ -4023,6 +4024,39 @@
           logAction('Dialog archived');
           showToast('Dialog moved to Archive', 'success');
           runQueueStateUpdate(root, 'archive_dialog');
+          break;
+        }
+        case 'favorite-ping': {
+          const card = getActiveCard();
+          if (!card) {
+            showToast('Select a ping before adding Favorite', 'warn');
+            break;
+          }
+          card.dataset.favorite = 'true';
+          card.classList.add('is-favorite');
+          const favorite = card.querySelector('.js-conv-favorite');
+          favorite?.classList.add('is-favorite');
+          favorite?.setAttribute('aria-pressed', 'true');
+          favorite?.setAttribute('title', 'Убрать ping из избранного');
+          const icon = favorite?.querySelector('.fa');
+          icon?.classList.add('fa-star');
+          icon?.classList.remove('fa-star-o');
+          logAction('Ping added to Favorite');
+          showToast('Ping added to Favorite', 'success');
+          runQueueStateUpdate(root, 'favorite_ping');
+          break;
+        }
+        case 'dismiss-ping': {
+          const card = getActiveCard();
+          if (!card) {
+            showToast('Select a ping before dismissing', 'warn');
+            break;
+          }
+          card.dataset.archived = 'true';
+          card.classList.add('is-archived');
+          logAction('Ping dismissed');
+          showToast('Ping dismissed from queue', 'success');
+          runQueueStateUpdate(root, 'dismiss_ping');
           break;
         }
         case 'toggle-focus':
