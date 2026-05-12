@@ -64,12 +64,14 @@ git pull origin codex/confideline-translator-preview
 
 1. `docs/video-analysis/FINAL_CODEX_TRANSFER_PACKAGE_RU.md`
 2. `docs/video-analysis/README.md`
-3. `docs/video-analysis/INSIGHTORBA_COMPETITOR_WORKFLOW_FULL_DOCUMENTATION_RU.md`
-4. `docs/video-analysis/IMPLEMENTATION_MAPPING_RU.md`
-5. `docs/video-analysis/ADMIN_WORKSPACE_BACKLOG_RU.md`
-6. `web/admin-chat-workspace-v2/WORKSPACE_V2_HANDOFF.md`
-7. `web/admin-chat-workspace-v2/CHAT_QUEUE_CONTRACT.md`
-8. `web/admin-chat-workspace-v2/CHAT_MESSAGE_DATA_CONTRACT.md`
+3. `docs/video-analysis/VIDEO_ANALYSIS_QUALITY_REPORT_RU.md`
+4. `docs/video-analysis/EVIDENCE_MATRIX_RU.md`
+5. `docs/video-analysis/INSIGHTORBA_COMPETITOR_WORKFLOW_FULL_DOCUMENTATION_RU.md`
+6. `docs/video-analysis/IMPLEMENTATION_MAPPING_RU.md`
+7. `docs/video-analysis/ADMIN_WORKSPACE_BACKLOG_RU.md`
+8. `web/admin-chat-workspace-v2/WORKSPACE_V2_HANDOFF.md`
+9. `web/admin-chat-workspace-v2/CHAT_QUEUE_CONTRACT.md`
+10. `web/admin-chat-workspace-v2/CHAT_MESSAGE_DATA_CONTRACT.md`
 
 ## 5. Основные документы по смысловым блокам
 
@@ -108,6 +110,14 @@ git pull origin codex/confideline-translator-preview
 - `EXPERT_DASHBOARD_SCREEN_MAP_RU.md` - карта страниц и экранов.
 - `EXPERT_METRICS_AND_FORMULAS_RU.md` - метрики, возможные формулы, confidence.
 - `EXPERT_WORKMODE_ONBOARDING_POLICY_RU.md` - online/offline/break, schedule, training, questionnaire, first shift.
+
+### Verification pack 9/10
+
+- `EVIDENCE_MATRIX_RU.md` - claim-by-claim доказательная матрица с video/timecode, confidence и product implication.
+- `COMPETITOR_UI_SCREEN_INVENTORY_RU.md` - инвентаризация экранов и UI-блоков конкурента.
+- `METRICS_VERIFICATION_RU.md` - проверка метрик, формул и dashboard/workmode confidence.
+- `TIMECODED_FUNCTIONAL_WALKTHROUGH_RU.md` - timecoded walkthrough по ключевым функциональным фрагментам Day 1-7.
+- `VIDEO_ANALYSIS_QUALITY_REPORT_RU.md` - отчет о текущем качестве анализа, оставшихся неизвестных и условиях для true 10/10.
 
 ### UI, риски, AI
 
@@ -279,11 +289,13 @@ Branch: codex/confideline-translator-preview
 Сначала прочитай:
 1. docs/video-analysis/FINAL_CODEX_TRANSFER_PACKAGE_RU.md
 2. docs/video-analysis/README.md
-3. docs/video-analysis/INSIGHTORBA_COMPETITOR_WORKFLOW_FULL_DOCUMENTATION_RU.md
-4. docs/video-analysis/IMPLEMENTATION_MAPPING_RU.md
-5. web/admin-chat-workspace-v2/WORKSPACE_V2_HANDOFF.md
-6. web/admin-chat-workspace-v2/CHAT_QUEUE_CONTRACT.md
-7. web/admin-chat-workspace-v2/CHAT_MESSAGE_DATA_CONTRACT.md
+3. docs/video-analysis/VIDEO_ANALYSIS_QUALITY_REPORT_RU.md
+4. docs/video-analysis/EVIDENCE_MATRIX_RU.md
+5. docs/video-analysis/INSIGHTORBA_COMPETITOR_WORKFLOW_FULL_DOCUMENTATION_RU.md
+6. docs/video-analysis/IMPLEMENTATION_MAPPING_RU.md
+7. web/admin-chat-workspace-v2/WORKSPACE_V2_HANDOFF.md
+8. web/admin-chat-workspace-v2/CHAT_QUEUE_CONTRACT.md
+9. web/admin-chat-workspace-v2/CHAT_MESSAGE_DATA_CONTRACT.md
 
 Контекст:
 На основании 14 обучающих видео конкурента InsightOrba восстановлены регламент эксперта, бизнес-процессы, dashboard/analytics/workmode, UI личного кабинета и product requirements для Confideline admin-chat-workspace-v2.

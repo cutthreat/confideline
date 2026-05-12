@@ -35,6 +35,14 @@ This folder contains competitor training-video analysis artifacts for the Confid
 - `EXPERT_METRICS_AND_FORMULAS_RU.md` - metric dictionary with possible formulas, data sources, confidence levels, MVP cards, red flags, and open questions.
 - `EXPERT_WORKMODE_ONBOARDING_POLICY_RU.md` - policy-style reconstruction for expert availability, online/offline/break, schedule, training, questionnaire, first shift, handoff, and role visibility.
 
+## 9/10 Verification Pack
+
+- `EVIDENCE_MATRIX_RU.md` - claim-by-claim evidence matrix with video/timecode references, confidence levels, and product implications.
+- `COMPETITOR_UI_SCREEN_INVENTORY_RU.md` - screen inventory for chat workspace, right panel, Dashboard, Statistic page, My Schedule, Questionnaire, Favorites, Notes, support, and mentor/manager views.
+- `METRICS_VERIFICATION_RU.md` - verification sheet for training hours, active work, paid sessions, message density, dashboard values, efficiency, pay, bonus, schedule, and onboarding metrics.
+- `TIMECODED_FUNCTIONAL_WALKTHROUGH_RU.md` - timecoded functional walkthrough across Day 1-7 for key product and operations findings.
+- `VIDEO_ANALYSIS_QUALITY_REPORT_RU.md` - quality report with before/after confidence scores, remaining unknowns, and what would be needed for a true 10/10 pass.
+
 ## Per-Video Analysis
 
 | Day | Part | Manual analysis |
