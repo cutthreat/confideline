@@ -25,7 +25,6 @@
     }
 
     topbar.style.display = 'none';
-    topbar.closest('.box.box-solid')?.classList.add('header-tools-source-box');
   }
 
   function bindUserMenuDropdown() {
@@ -84,9 +83,9 @@
       });
       if (dot) {
         dot.classList.remove('conn-green', 'conn-yellow', 'conn-red');
-        if (status === 'Available' || status === 'Online' || status === 'On shift') {
+        if (status === 'Online') {
           dot.classList.add('conn-green');
-        } else if (status === 'Busy' || status === 'Break' || status === 'Paused') {
+        } else if (status === 'Busy') {
           dot.classList.add('conn-yellow');
         } else {
           dot.classList.add('conn-red');
@@ -232,7 +231,7 @@
       event.preventDefault();
       const button = event.currentTarget;
       const modal = button.closest('.global-modal-backdrop');
-      const reason = modal?.querySelector('input[name="busyReason"]:checked')?.value || 'Paused';
+      const reason = modal?.querySelector('input[name="busyReason"]:checked')?.value || 'Busy';
       const comment = modal?.querySelector('#busyComment')?.value.trim() || '';
 
       /*
@@ -250,7 +249,7 @@
 
       const label = document.querySelector('#operatorStatusLabel');
       const dot = document.querySelector('#connDot');
-      if (label) label.textContent = 'Paused';
+      if (label) label.textContent = 'Busy';
       if (dot) {
         dot.classList.remove('conn-green', 'conn-red');
         dot.classList.add('conn-yellow');
@@ -281,7 +280,7 @@
         const dot = document.querySelector('#connDot');
         if (dot) {
           dot.classList.remove('conn-green', 'conn-yellow', 'conn-red');
-          dot.classList.add((status === 'Available' || status === 'Online' || status === 'On shift') ? 'conn-green' : (status === 'Busy' || status === 'Break' || status === 'Paused') ? 'conn-yellow' : 'conn-red');
+          dot.classList.add(status === 'Online' ? 'conn-green' : status === 'Busy' ? 'conn-yellow' : 'conn-red');
         }
         menu.querySelectorAll('.admin-status-pill').forEach((pill) => pill.classList.toggle('active', pill === button));
       });

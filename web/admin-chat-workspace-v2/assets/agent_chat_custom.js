@@ -1136,10 +1136,9 @@
     const contextChipHints = {
       '50 credits': 'Баланс клиента для продолжения платной сессии',
       'language RU': 'Клиент пишет на русском; шаблоны и перевод должны учитывать RU',
-      'No guarantees': 'Не обещать точный результат или гарантированное событие',
-      'No legal/health': 'Не давать юридические, медицинские или финансовые советы',
-      'No external links': 'Не уводить клиента во внешние каналы без разрешенного сценария',
-      'No active chat': 'Пинг еще не стал полноценным диалогом',
+      'Без гарантий': 'Не обещать точный результат или гарантированное событие',
+      'Без мед/юр/фин советов': 'Не давать юридические, медицинские или финансовые советы',
+      'Не уводить внешне': 'Не уводить клиента во внешние каналы без разрешенного сценария',
       Intent: 'Клиент проявил заметный интерес к эксперту',
       Credits: 'У клиента есть кредиты для старта платного общения'
     };
@@ -1574,15 +1573,16 @@
       const setSessionButtonState = (running) => {
         button.classList.toggle('is-live', running);
         button.classList.toggle('is-panel-open', running);
+        button.innerHTML = running ? '<i class="fa fa-stop"></i><span>Стоп</span>' : '<i class="fa fa-play"></i>';
         button.setAttribute(
           'title',
           running
-            ? 'Платная сессия запущена; открыта панель управления сессией'
+            ? 'Остановить платную сессию и закрыть панель управления'
             : 'Запустить платную сессию и открыть панель управления'
         );
         button.setAttribute(
           'aria-label',
-          running ? 'Платная сессия запущена' : 'Запустить платную сессию'
+          running ? 'Остановить платную сессию' : 'Запустить платную сессию'
         );
       };
 
@@ -1631,10 +1631,24 @@
         syncGlobalTooltips(root);
       };
 
-      setSessionButtonState(Boolean(panel && !panel.hidden && panel.classList.contains('is-open')));
+      const stopPaidSession = () => {
+        if (panel) {
+          panel.hidden = true;
+          panel.classList.remove('is-open');
+        }
+        root.dataset.sessionState = '';
+        setSessionButtonState(false);
+        syncGlobalTooltips(root);
+      };
+
+      stopPaidSession();
       button.dataset.sessionToggleBound = '1';
       button.addEventListener('click', (event) => {
         event.preventDefault();
+        if (root?.dataset.sessionState === 'live') {
+          stopPaidSession();
+          return;
+        }
         startPaidSession();
       });
     }
@@ -3499,6 +3513,10 @@
     };
 
     const applyDemoConversationSwitch = (payload) => {
+      const previousConversationId = root.dataset.conversationId;
+      if (previousConversationId && previousConversationId !== payload.conversation_id) {
+        root.dataset.sessionState = '';
+      }
       root.dataset.conversationId = payload.conversation_id;
       root.dataset.workloadType = payload.workload_type || 'active_chat';
       const labelsLower = (payload.labels || []).map((label) => String(label).toLowerCase());
@@ -3506,8 +3524,7 @@
       const hasPaidLive = labelsLower.some((label) => label === 'live');
       const hasPaymentOpened = labelsLower.some((label) => label === 'pp');
       const hasSell = labelsLower.some((label) => label === 'sell');
-      // Нижняя панель сессии открывается только для реально запущенной платной сессии, а не для платежных ожиданий.
-      const isBillable = !isPing && hasPaidLive;
+      // Нижняя панель сессии открывается только после ручного старта текущим оператором.
       const isFocus = !isPing && labelsLower.some((label) => ['live', 'sla', 'pp', 'sell'].includes(label) || /refund risk|hot/.test(label));
 
       const contactDuo = root.querySelector('.chat-identity .contact-duo');
@@ -3538,7 +3555,6 @@
         const metaChips = [];
         if (isPing) {
           metaChips.push({ label: 'Ping lead', className: 'dialog-chip-info', title: 'Это лид до начала полноценного чата' });
-          metaChips.push({ label: 'No chat yet', className: 'dialog-chip-info', title: 'Диалог с клиентом еще не начат' });
         } else if (hasPaidLive) {
           metaChips.push({
             label: 'Live',
@@ -3547,11 +3563,8 @@
           });
         } else if (hasPaymentOpened) {
           metaChips.push({ label: 'Payment opened', className: 'dialog-chip-warning', title: 'Клиент открыл оплату, но платная сессия еще не стартовала' });
-          metaChips.push({ label: 'No live session', className: 'dialog-chip-info', title: 'Сейчас нет активной платной сессии' });
         } else if (hasSell) {
           metaChips.push({ label: 'Sell sent', className: 'dialog-chip-info', title: 'Предложение продления уже отправлено клиенту' });
-        } else {
-          metaChips.push({ label: 'Active dialog', className: 'dialog-chip-info', title: 'Открыт обычный рабочий диалог без активной платной сессии' });
         }
         const waitState = labelHost.querySelector('.dialog-wait-state');
         metaChips.forEach(({ label, className, title }) => {
@@ -3583,26 +3596,29 @@
       const pingPanel = root.querySelector('#pingLeadPanel');
       const focusStrip = root.querySelector('#focusModeStrip');
       if (billingPanel) {
-        billingPanel.hidden = !isBillable;
-        billingPanel.classList.toggle('is-open', isBillable);
+        const mySessionIsLive = root.dataset.sessionState === 'live' && !isPing;
+        billingPanel.hidden = !mySessionIsLive;
+        billingPanel.classList.toggle('is-open', mySessionIsLive);
       }
       const sessionButton = root.querySelector('.js-session-toggle');
       if (sessionButton) {
         const canStartSession = !isPing;
+        const mySessionIsLive = root.dataset.sessionState === 'live' && canStartSession;
         sessionButton.disabled = !canStartSession;
-        sessionButton.classList.toggle('is-live', isBillable);
-        sessionButton.classList.toggle('is-panel-open', isBillable);
+        sessionButton.classList.toggle('is-live', mySessionIsLive);
+        sessionButton.classList.toggle('is-panel-open', mySessionIsLive);
+        sessionButton.innerHTML = mySessionIsLive ? '<i class="fa fa-stop"></i><span>Стоп</span>' : '<i class="fa fa-play"></i>';
         sessionButton.setAttribute(
           'title',
           isPing
             ? 'Пинг еще не является чатом; сначала пригласите клиента начать диалог'
-            : isBillable
-              ? 'Платная сессия запущена; открыта панель управления сессией'
+            : mySessionIsLive
+              ? 'Остановить платную сессию и закрыть панель управления'
               : 'Запустить платную сессию и открыть панель управления'
         );
         sessionButton.setAttribute(
           'aria-label',
-          isPing ? 'Платная сессия недоступна для пинга' : isBillable ? 'Платная сессия запущена' : 'Запустить платную сессию'
+          isPing ? 'Платная сессия недоступна для пинга' : mySessionIsLive ? 'Остановить платную сессию' : 'Запустить платную сессию'
         );
       }
       if (pingPanel) {
