@@ -104,6 +104,7 @@
       const copyStatus = document.querySelector('[data-copy-status]');
       const feedbackSection = document.querySelector('[data-feedback-section]');
       const feedbackList = document.querySelector('[data-feedback-items]');
+      let feedbackData = readFeedbackFromUrl();
 
       function encodePayload(value) {
         const json = JSON.stringify(value);
@@ -130,6 +131,17 @@
           if (Array.isArray(saved)) return saved;
         } catch {}
         return items.filter((item) => item.defaultForIgor).map((item) => item.id);
+      }
+
+      function readFeedbackFromUrl() {
+        const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
+        const encoded = hash.get('fb');
+        if (!encoded) return {};
+        try {
+          return decodePayload(encoded) || {};
+        } catch {
+          return { __readError: true };
+        }
       }
 
       function saveSelection() {
@@ -160,6 +172,10 @@
         list.innerHTML = items.map((item) => {
           const hidden = enabledStatuses.has(item.status) ? '' : ' qa-filter-hidden';
           const checked = selected.has(item.id) ? ' checked' : '';
+          const feedback = feedbackData[item.id] || {};
+          const feedbackState = feedback.done ? 'Выполнено' : (feedback.note ? 'Есть комментарий' : 'Нет ответа');
+          const feedbackBadge = feedback.done ? 'qa-badge--pass' : (feedback.note ? 'qa-badge--warn' : 'qa-badge--info');
+          const feedbackNote = feedback.note ? String(feedback.note).replace(/[<>&]/g, (char) => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[char])) : 'Игорь еще не передал комментарий по этой карточке.';
           return `
             <article class="qa-handoff-card${hidden}" data-id="${item.id}" data-status="${item.status}">
               <div class="qa-handoff-card__top">
@@ -173,6 +189,13 @@
               <h3>${item.title}</h3>
               <p><strong>Зона:</strong> ${item.area}</p>
               <p>${item.summary}</p>
+              <div class="qa-feedback-note qa-feedback-note--inline">
+                <div class="qa-feedback-note__top">
+                  <strong>Статус Игоря</strong>
+                  <span class="qa-badge ${feedbackBadge}">${feedbackState}</span>
+                </div>
+                <span>${feedbackNote}</span>
+              </div>
               <div class="qa-mini-grid">
                 <div><strong>Ожидание</strong><span>${item.expected}</span></div>
                 <div><strong>Как найти</strong><span>${item.findBug}</span></div>
@@ -194,18 +217,13 @@
       }
 
       function renderFeedback() {
-        const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
-        const encoded = hash.get('fb');
-        if (!encoded) return;
-        let feedback = {};
-        try {
-          feedback = decodePayload(encoded) || {};
-        } catch {
+        if (!Object.keys(feedbackData).length) return;
+        if (feedbackData.__readError) {
           feedbackSection.classList.remove('qa-filter-hidden');
           feedbackList.innerHTML = '<div class="qa-note"><p>Ссылка содержит блок комментариев, но его не удалось прочитать. Попроси Игоря сформировать ссылку заново.</p></div>';
           return;
         }
-        const rows = Object.entries(feedback).map(([id, value]) => {
+        const rows = Object.entries(feedbackData).map(([id, value]) => {
           const item = items.find((candidate) => candidate.id === id);
           if (!item) return '';
           return `
