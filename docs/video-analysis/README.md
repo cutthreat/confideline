@@ -18,6 +18,14 @@ This folder contains competitor training-video analysis artifacts for the Confid
 - `USER_STORIES_ACCEPTANCE_CRITERIA_RU.md` - user stories and acceptance criteria for experts, mentors, managers, support, analysts, and business owners.
 - `UI_BLUEPRINT_RU.md` - functional UI blueprint for queues, Pings, chat header, timeline, composer, Book Now, paid session blocks, right panel, dashboard, and onboarding.
 - `RISK_REGISTER_RU.md` - revenue, conversion, safety, operational, and data risks with controls and ownership.
+- `SHIFT_SOP_RU.md` - short shift SOP for daily expert work: queue priorities, paid sessions, Pings, reactivation, technical issues, and end-of-shift checks.
+- `MESSAGE_TEMPLATES_RU.md` - safe message frameworks for free reading, intrigue, Book Now, objections, paid sessions, reactivation, technical issues, and safety boundaries.
+- `EXPERT_TRAINING_PROGRAM_RU.md` - 7-day expert training program based on the reconstructed competitor workflow.
+- `EXPERT_CERTIFICATION_RU.md` - expert certification structure, scoring, critical errors, cases, and pass/supervision rules.
+- `STAGE_ACTION_UI_MATRIX_RU.md` - matrix connecting conversation stages to expert actions, UI support, events, queue badges, and risks.
+- `CONVERSATION_EXAMPLES_RU.md` - good and bad conversation examples for free reading, Book Now, objections, paid sessions, future gating, reactivation, safety, and technical issues.
+- `AI_ASSISTANT_PROMPT_PACK_RU.md` - prompt pack and guardrails for a future AI composer/helper.
+- `IMPLEMENTATION_MAPPING_RU.md` - mapping from the video-analysis product requirements to current `web/admin-chat-workspace-v2` files, contracts, JS functions, UI zones, and implementation milestones.
 
 ## Per-Video Analysis
 
