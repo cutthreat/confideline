@@ -213,6 +213,11 @@ Selector:
 Visible when:
 - selected active chat has a real active paid session, marked as `Live`.
 
+Start behavior:
+- the header play button `.js-session-toggle` starts the paid session for the selected `Chats` item;
+- after start, the UI adds/keeps `Live`, opens `#billingPanel`, and marks the button as active;
+- the button is disabled for `Pings` because a ping must first become a real chat.
+
 Shows:
 - current expert's paid session state;
 - credits;
@@ -284,7 +289,7 @@ Selectors:
 
 Primary buttons:
 - search in conversation;
-- paid session timer;
+- paid session start/control;
 - more actions.
 
 More menu:

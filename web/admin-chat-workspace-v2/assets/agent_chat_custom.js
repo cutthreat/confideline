@@ -1532,17 +1532,78 @@
     }
 
     function bindSessionToggle() {
-      const button = document.querySelector('#admin-agent-chat .js-session-toggle');
-      const panel = document.querySelector('#admin-agent-chat #billingPanel');
+      const root = document.querySelector('#admin-agent-chat');
+      const button = root?.querySelector('.js-session-toggle');
+      const panel = root?.querySelector('#billingPanel');
       if (!button || button.dataset.sessionToggleBound === '1') {
         return;
       }
 
+      const setSessionButtonState = (running) => {
+        button.classList.toggle('is-live', running);
+        button.classList.toggle('is-panel-open', running);
+        button.setAttribute(
+          'title',
+          running
+            ? 'Платная сессия запущена; открыта панель управления сессией'
+            : 'Запустить платную сессию и открыть панель управления'
+        );
+        button.setAttribute(
+          'aria-label',
+          running ? 'Платная сессия запущена' : 'Запустить платную сессию'
+        );
+      };
+
+      const ensurePill = (host, label, className, title) => {
+        if (!host || Array.from(host.querySelectorAll('.conv-pill, .dialog-chip')).some((pill) => pill.textContent.trim() === label)) {
+          return;
+        }
+        const pill = document.createElement('span');
+        pill.className = className;
+        pill.textContent = label;
+        if (title) {
+          pill.setAttribute('title', title);
+        }
+        host.appendChild(pill);
+      };
+
+      const startPaidSession = () => {
+        if (!root || root.dataset.workloadType === 'ping') {
+          return;
+        }
+        if (panel) {
+          panel.hidden = false;
+          panel.classList.add('is-open');
+        }
+        root.dataset.sessionState = 'live';
+        setSessionButtonState(true);
+
+        const activeCard = root.querySelector('.conv-list .conv-item.active, .conv-list .list-group-item.active');
+        ensurePill(
+          activeCard?.querySelector('.conv-line-labels'),
+          'Live',
+          'conv-pill conv-pill-success',
+          'Идет активная платная сессия'
+        );
+
+        const labelHost = root.querySelector('.dialog-meta-labels');
+        if (labelHost && !Array.from(labelHost.querySelectorAll('.dialog-chip')).some((chip) => chip.textContent.trim() === 'Live')) {
+          labelHost.querySelectorAll('.dialog-chip').forEach((chip) => chip.remove());
+          const chip = document.createElement('span');
+          chip.className = 'dialog-chip dialog-chip-success';
+          chip.textContent = 'Live';
+          chip.setAttribute('title', 'Клиент сейчас находится в активной платной сессии; другому эксперту лучше не перебивать');
+          labelHost.insertBefore(chip, labelHost.firstChild);
+        }
+        syncQueueCardHints(root);
+        syncGlobalTooltips(root);
+      };
+
+      setSessionButtonState(Boolean(panel && !panel.hidden && panel.classList.contains('is-open')));
       button.dataset.sessionToggleBound = '1';
       button.addEventListener('click', (event) => {
         event.preventDefault();
-        const isOpen = panel?.classList.toggle('is-open');
-        button.classList.toggle('is-panel-open', !!isOpen);
+        startPaidSession();
       });
     }
 
@@ -3492,6 +3553,25 @@
       if (billingPanel) {
         billingPanel.hidden = !isBillable;
         billingPanel.classList.toggle('is-open', isBillable);
+      }
+      const sessionButton = root.querySelector('.js-session-toggle');
+      if (sessionButton) {
+        const canStartSession = !isPing;
+        sessionButton.disabled = !canStartSession;
+        sessionButton.classList.toggle('is-live', isBillable);
+        sessionButton.classList.toggle('is-panel-open', isBillable);
+        sessionButton.setAttribute(
+          'title',
+          isPing
+            ? 'Пинг еще не является чатом; сначала пригласите клиента начать диалог'
+            : isBillable
+              ? 'Платная сессия запущена; открыта панель управления сессией'
+              : 'Запустить платную сессию и открыть панель управления'
+        );
+        sessionButton.setAttribute(
+          'aria-label',
+          isPing ? 'Платная сессия недоступна для пинга' : isBillable ? 'Платная сессия запущена' : 'Запустить платную сессию'
+        );
       }
       if (pingPanel) {
         pingPanel.hidden = !isPing;

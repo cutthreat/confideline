@@ -111,6 +111,8 @@ Card rule: show no more than 3-4 visible flags in the queue card. Full flag deta
 
 The paid session panel is not just billing data. It is a sales pacing tool.
 
+The header play button starts the paid session for the selected chat. After the click, `Live` is applied and the paid session panel opens. The same button is disabled for pings because pings are leads, not active paid chats.
+
 Compact state should show:
 - `My session` state;
 - credits;
