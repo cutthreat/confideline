@@ -27,6 +27,13 @@ This folder contains competitor training-video analysis artifacts for the Confid
 - `AI_ASSISTANT_PROMPT_PACK_RU.md` - prompt pack and guardrails for a future AI composer/helper.
 - `IMPLEMENTATION_MAPPING_RU.md` - mapping from the video-analysis product requirements to current `web/admin-chat-workspace-v2` files, contracts, JS functions, UI zones, and implementation milestones.
 
+## Expert Dashboard, Analytics, And Workmode
+
+- `EXPERT_DASHBOARD_ANALYTICS_WORKMODE_RU.md` - complete synthesis of expert dashboards, statistics, workmode, schedule, onboarding, manager/mentor analytics, confidence levels, and MVP recommendations.
+- `EXPERT_DASHBOARD_SCREEN_MAP_RU.md` - reconstructed screen map for dashboard, statistics, schedule, profile, questionnaire, sessions, favorites, notes, mentor and manager views.
+- `EXPERT_METRICS_AND_FORMULAS_RU.md` - metric dictionary with possible formulas, data sources, confidence levels, MVP cards, red flags, and open questions.
+- `EXPERT_WORKMODE_ONBOARDING_POLICY_RU.md` - policy-style reconstruction for expert availability, online/offline/break, schedule, training, questionnaire, first shift, handoff, and role visibility.
+
 ## Per-Video Analysis
 
 | Day | Part | Manual analysis |
