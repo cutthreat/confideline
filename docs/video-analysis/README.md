@@ -8,6 +8,7 @@ This folder contains competitor training-video analysis artifacts for the Confid
 - `HANDOFF_TO_CODEX_RU.md` - Russian-language handoff for continuing this work in Codex on another machine.
 - `CONVERSATION_STATE_MACHINE_RU.md` - target conversation lifecycle, states, transitions, events, queue mapping, and MVP implementation layers.
 - `EXPERT_QA_CHECKLIST_RU.md` - expert quality checklist for free reading, Book Now, objections, paid sessions, reactivation, safety, and cabinet usage.
+- `EXPERT_WORK_REGULATION_RU.md` - operational expert work regulation for shifts, chats, free reading, Book Now, paid sessions, objections, reactivation, safety, and handoff.
 - `ADMIN_WORKSPACE_BACKLOG_RU.md` - product backlog for `admin-chat-workspace-v2` based on the competitor video analysis.
 
 ## Implementation Artifacts
