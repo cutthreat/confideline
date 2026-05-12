@@ -43,6 +43,7 @@
         <input type="text" data-feedback-url readonly aria-label="Ссылка с комментариями Игоря" placeholder="После формирования здесь появится ссылка для Алексея">
         <button class="tp-btn" type="button" data-action="copy-feedback-link">Копировать</button>
       </div>
+      <p class="qa-help" data-copy-status aria-live="polite"></p>
       <p class="qa-help">Эта ссылка передает Алексею только ID задач, отметки `выполнено` и комментарии. Пароли, cookies и localStorage не передаются.</p>
     </section>
 
@@ -68,6 +69,7 @@
       const doneKey = 'confideline.qa.igor.done.v1';
       const list = document.querySelector('[data-items]');
       const feedbackInput = document.querySelector('[data-feedback-url]');
+      const copyStatus = document.querySelector('[data-copy-status]');
       const selectedIds = new Set(readSelectedIds());
       const doneStore = readDoneStore();
 
@@ -107,6 +109,10 @@
         if (status === 'WARN') return 'qa-badge--warn';
         if (status === 'PASS') return 'qa-badge--pass';
         return 'qa-badge--info';
+      }
+
+      function escapeAttr(value) {
+        return String(value || '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
       }
 
       function selectedItems() {
@@ -162,7 +168,7 @@
               <div class="qa-igor-actions">
                 <a class="tp-btn tp-btn--primary" href="${item.sourceUrl}">Открыть evidence</a>
                 <label class="qa-igor-toggle"><input type="checkbox" data-done-id="${item.id}" ${done ? 'checked' : ''}> выполнено</label>
-                <input type="text" data-note-id="${item.id}" value="${String(note).replace(/"/g, '&quot;')}" placeholder="Комментарий Игоря для Алексея">
+                <input type="text" data-note-id="${item.id}" value="${escapeAttr(note)}" placeholder="Комментарий Игоря для Алексея">
               </div>
             </article>
           `;
@@ -217,12 +223,14 @@
           feedbackInput.value = buildFeedbackUrl();
           feedbackInput.focus();
           feedbackInput.select();
+          copyStatus.textContent = 'Ссылка с комментариями сформирована. Ее можно отправить Алексею.';
         }
         if (action === 'copy-feedback-link') {
           if (!feedbackInput.value) feedbackInput.value = buildFeedbackUrl();
           feedbackInput.focus();
           feedbackInput.select();
           try { await navigator.clipboard.writeText(feedbackInput.value); } catch { document.execCommand('copy'); }
+          copyStatus.textContent = 'Ссылка скопирована.';
         }
       });
 
