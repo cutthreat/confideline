@@ -62,7 +62,6 @@ Recommended quick filters:
 
 Recommended quick filters:
 - `NEW`
-- `No contact`
 - `Credits`
 - `Intent`
 - `Favorite`

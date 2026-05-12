@@ -100,7 +100,7 @@ Selectors:
 Recommended filter groups:
 - `Chats / Status`: `Reply`, `SLA`;
 - `Chats / Billing`: `Live`, `PP`, `Sell`;
-- `Pings / Status`: `NEW`, `No contact`;
+- `Pings / Status`: `NEW`;
 - `Pings / Lead quality`: `Credits`, `Intent`;
 - `Shared`: `Favorite`, `Archive`.
 
@@ -169,8 +169,6 @@ Good visible chips:
 - `NEW`;
 - `Intent`;
 - `Credits`;
-- `No contact`;
-- `Contacted`;
 - `Template sent`;
 - `Awaiting reply`.
 

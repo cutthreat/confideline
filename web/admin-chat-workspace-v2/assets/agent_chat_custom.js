@@ -1207,7 +1207,6 @@
         if (value === 'sell') return labels.some((label) => label === 'sell');
         if (value === 'new_ping') return workloadType === 'ping' && labels.some((label) => label === 'new');
         if (value === 'high_intent') return workloadType === 'ping' && labels.some((label) => label === 'intent' || label.includes('high intent'));
-        if (value === 'uncontacted') return workloadType === 'ping' && (item.dataset.pingState === 'uncontacted' || labels.some((label) => label.includes('no contact') || label.includes('uncontacted')));
         if (value === 'has_credits' || value === 'has_balance') return workloadType === 'ping' && labels.some((label) => label === 'credits' || label.includes('has credits') || label.includes('has balance'));
         return !value || labels.some((label) => label.replace(/\s+/g, '_').includes(value) || label.includes(value.replace(/_/g, ' ')));
       });
