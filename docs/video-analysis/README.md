@@ -6,6 +6,9 @@ This folder contains competitor training-video analysis artifacts for the Confid
 
 - `INSIGHTORBA_COMPETITOR_WORKFLOW_FULL_DOCUMENTATION_RU.md` - complete Russian-language synthesis with evidence levels, confirmed rules, uncertain points, recommended data contracts, and product conclusions.
 - `HANDOFF_TO_CODEX_RU.md` - Russian-language handoff for continuing this work in Codex on another machine.
+- `CONVERSATION_STATE_MACHINE_RU.md` - target conversation lifecycle, states, transitions, events, queue mapping, and MVP implementation layers.
+- `EXPERT_QA_CHECKLIST_RU.md` - expert quality checklist for free reading, Book Now, objections, paid sessions, reactivation, safety, and cabinet usage.
+- `ADMIN_WORKSPACE_BACKLOG_RU.md` - product backlog for `admin-chat-workspace-v2` based on the competitor video analysis.
 
 ## Per-Video Analysis
 
