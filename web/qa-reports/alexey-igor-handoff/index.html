@@ -30,8 +30,17 @@
     <section class="qa-section">
       <div class="qa-note">
         <p><strong>Как это работает:</strong> выбор сохраняется в этом браузере Алексея. Чтобы Игорь увидел ровно выбранный набор в другом браузере, нажми “Сформировать ссылку для Игоря” и отправь ему полученную ссылку. В ссылке зашиты ID выбранных пунктов.</p>
+        <p><strong>Как смотреть комментарии Игоря:</strong> Игорь на своей странице нажимает “Сформировать ссылку с комментариями” и отправляет ее тебе. Если открыть такую ссылку здесь, ниже появится блок “Ответ Игоря” с отметками и комментариями.</p>
         <p><strong>Правило:</strong> по умолчанию Игорю показываем только actionable FAIL/WARN и один смешанный WARN, где важно не сломать рабочий happy path. PASS можно включать вручную, если нужно дать контекст “это уже работает”.</p>
       </div>
+    </section>
+
+    <section class="qa-section qa-filter-hidden" data-feedback-section>
+      <h2>Ответ Игоря</h2>
+      <div class="qa-note">
+        <p><strong>Источник:</strong> данные ниже пришли из ссылки Игоря. Это не общий серверный статус; чтобы закрепить их для всех, нужно перенести итог в отчет или коммит.</p>
+      </div>
+      <div class="qa-handoff-list" data-feedback-items></div>
     </section>
 
     <section class="qa-toolbar qa-handoff-toolbar" aria-label="Управление выбором для Игоря">
@@ -90,8 +99,29 @@
       const selected = new Set(readSelection());
       const list = document.querySelector('[data-items]');
       const shareInput = document.querySelector('[data-share-url]');
+      const feedbackSection = document.querySelector('[data-feedback-section]');
+      const feedbackList = document.querySelector('[data-feedback-items]');
+
+      function encodePayload(value) {
+        const json = JSON.stringify(value);
+        return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+      }
+
+      function decodePayload(value) {
+        const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
+        const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=');
+        return JSON.parse(decodeURIComponent(escape(atob(padded))));
+      }
 
       function readSelection() {
+        const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
+        const encoded = hash.get('sel');
+        if (encoded) {
+          try {
+            const parsed = decodePayload(encoded);
+            if (Array.isArray(parsed)) return parsed;
+          } catch {}
+        }
         try {
           const saved = JSON.parse(localStorage.getItem(storageKey) || 'null');
           if (Array.isArray(saved)) return saved;
@@ -111,8 +141,7 @@
       }
 
       function encodeSelection(ids) {
-        const json = JSON.stringify(ids);
-        return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+        return encodePayload(ids);
       }
 
       function buildIgorUrl() {
@@ -159,6 +188,43 @@
         document.querySelector('[data-selected]').textContent = String(selectedItems.length);
         document.querySelector('[data-risk-selected]').textContent = String(selectedItems.filter((item) => item.status !== 'PASS').length);
         document.querySelector('[data-pass-selected]').textContent = String(selectedItems.filter((item) => item.status === 'PASS').length);
+      }
+
+      function renderFeedback() {
+        const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
+        const encoded = hash.get('fb');
+        if (!encoded) return;
+        let feedback = {};
+        try {
+          feedback = decodePayload(encoded) || {};
+        } catch {
+          feedbackSection.classList.remove('qa-filter-hidden');
+          feedbackList.innerHTML = '<div class="qa-note"><p>Ссылка содержит блок комментариев, но его не удалось прочитать. Попроси Игоря сформировать ссылку заново.</p></div>';
+          return;
+        }
+        const rows = Object.entries(feedback).map(([id, value]) => {
+          const item = items.find((candidate) => candidate.id === id);
+          if (!item) return '';
+          return `
+            <article class="qa-handoff-card" data-id="${item.id}">
+              <div class="qa-handoff-card__top">
+                <span class="qa-badge ${statusClass(item.status)}">${item.status}</span>
+                <span class="qa-badge qa-badge--info">${item.priority}</span>
+                <span class="qa-badge ${value.done ? 'qa-badge--pass' : 'qa-badge--warn'}">${value.done ? 'Выполнено' : 'Комментарий'}</span>
+              </div>
+              <h3>${item.title}</h3>
+              <p><strong>Зона:</strong> ${item.area}</p>
+              <div class="qa-feedback-note">
+                <strong>Комментарий Игоря</strong>
+                <span>${String(value.note || 'Без текстового комментария.').replace(/[<>&]/g, (char) => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[char]))}</span>
+              </div>
+              <p><strong>Обновлено:</strong> ${value.updatedAt || 'не указано'}</p>
+              <a class="tp-btn" href="${item.sourceUrl}">${item.sourceLabel}</a>
+            </article>
+          `;
+        }).filter(Boolean);
+        feedbackSection.classList.remove('qa-filter-hidden');
+        feedbackList.innerHTML = rows.join('') || '<div class="qa-note"><p>В ссылке нет читаемых комментариев по текущему реестру задач.</p></div>';
       }
 
       document.addEventListener('change', (event) => {
@@ -217,6 +283,7 @@
       });
 
       render();
+      renderFeedback();
       shareInput.value = buildIgorUrl();
     })();
   </script>
