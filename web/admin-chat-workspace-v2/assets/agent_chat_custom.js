@@ -1111,11 +1111,48 @@
       setHint(node, 'Прослушать аудио или голосовое сообщение', true);
     });
 
+    const sectionTitleHints = {
+      'Dialog summary': 'Краткая выжимка по открытому диалогу для быстрого входа в контекст',
+      'Next best action': 'Рекомендуемый следующий шаг по текущей ситуации',
+      'Reply draft': 'Черновик ответа, который можно вставить и отредактировать',
+      'Client loss risk': 'Оценка риска потери клиента из-за ожидания или слабой продажи',
+      'Personal data': 'Данные клиента и партнера для подготовки расклада',
+      'Partner': 'Данные второго человека, если расклад связан с отношениями',
+      'Support info': 'Техническая информация для поддержки и аудита',
+      'Billing state': 'Оплата, баланс и коммерческие ограничения по клиенту',
+      'Recommended offer': 'Разрешенное предложение продолжения или пакета',
+      'Payment events': 'История платежных событий по диалогу',
+      'Follow-up scenario': 'План следующего касания, если клиент не продолжил сейчас',
+      'Soft touch': 'Мягкий текст для возвращения клиента в диалог',
+      'Internal notes': 'Приватные заметки команды по клиенту',
+      'Session prep details': 'Второстепенные данные для подготовки к сессии',
+      'Prep actions': 'Действия для уточнения данных или передачи диалога',
+      Rule: 'Правило, почему этот блок не выносится в очередь',
+      'Reply quality checks': 'Проверки ответа перед отправкой клиенту',
+      'Supervisor notes': 'Замечания старшего смены или контроля качества',
+      'Action log': 'Локальный журнал действий в прототипе'
+    };
     scope.querySelectorAll('.context-section-title').forEach((node) => {
-      setHint(node, `Раздел правого контекста: ${node.textContent.trim().replace(/\s+/g, ' ')}`);
+      const text = node.textContent.trim().replace(/\s+/g, ' ');
+      if (sectionTitleHints[text]) {
+        setHint(node, sectionTitleHints[text]);
+      }
     });
+    const contextChipHints = {
+      '50 credits': 'Баланс клиента для продолжения платной сессии',
+      'language RU': 'Клиент пишет на русском; шаблоны и перевод должны учитывать RU',
+      'No guarantees': 'Не обещать точный результат или гарантированное событие',
+      'No legal/health': 'Не давать юридические, медицинские или финансовые советы',
+      'No external links': 'Не уводить клиента во внешние каналы без разрешенного сценария',
+      'No active chat': 'Пинг еще не стал полноценным диалогом',
+      Intent: 'Клиент проявил заметный интерес к эксперту',
+      Credits: 'У клиента есть кредиты для старта платного общения'
+    };
     scope.querySelectorAll('.context-chip').forEach((node) => {
-      setHint(node, `Контекстный признак клиента: ${node.textContent.trim()}`);
+      const text = node.textContent.trim().replace(/\s+/g, ' ');
+      if (contextChipHints[text]) {
+        setHint(node, contextChipHints[text]);
+      }
     });
     scope.querySelectorAll('.context-kpi, .context-line, .context-data-row').forEach((node) => {
       const label = node.querySelector('span')?.textContent.trim();
