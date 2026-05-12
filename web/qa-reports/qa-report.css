@@ -136,12 +136,14 @@
 
 .qa-share-box input {
   width: 100%;
+  min-width: 0;
   box-sizing: border-box;
   border: 1px solid #cfd8e6;
   border-radius: 6px;
   padding: 9px 10px;
   color: #22344d;
   font: 13px/1.35 Arial, sans-serif;
+  text-overflow: ellipsis;
 }
 
 .qa-handoff-list {
@@ -239,6 +241,7 @@
 .qa-igor-actions input[type="text"] {
   flex: 1 1 260px;
   min-width: min(100%, 220px);
+  box-sizing: border-box;
   border: 1px solid #cfd8e6;
   border-radius: 6px;
   padding: 9px 10px;
@@ -283,7 +286,7 @@
 
 .qa-summary {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
   padding: 16px 24px 0;
 }
@@ -608,5 +611,37 @@
 
   .qa-share-box {
     grid-template-columns: 1fr;
+  }
+
+  .qa-toolbar {
+    position: static;
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+}
+
+@media (max-width: 560px) {
+  .qa-summary,
+  .qa-section {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .qa-handoff-card {
+    padding: 12px;
+  }
+
+  .qa-igor-actions .tp-btn,
+  .qa-igor-actions .qa-igor-toggle,
+  .qa-igor-actions input[type="text"],
+  .qa-share-box .tp-btn {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .qa-filter-pill {
+    flex: 1 1 calc(50% - 8px);
+    justify-content: center;
+    text-align: center;
   }
 }

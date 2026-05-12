@@ -1581,3 +1581,22 @@ BA / правило:
 
 - Для статического GitHub Pages это честный механизм обмена: комментарии не синхронизируются сами между браузерами, но передаются через URL hash без backend и без доступа к cookies/localStorage.
 - Если комментарии Игоря нужно закрепить для всех, Алексей переносит итог в QA report/ledger отдельным коммитом.
+
+## 2026-05-13 QA panel UX/UI repair
+
+Проверенные страницы:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\index.html`
+- `H:\GPT-Codex\Confideline\web\qa-reports\qa-control-center-2026-05-07\index.html`
+- `H:\GPT-Codex\Confideline\web\qa-reports\alexey-igor-handoff\index.html`
+- `H:\GPT-Codex\Confideline\web\qa-reports\igor-selected\index.html`
+
+Результат:
+
+- Подтверждены UX-риски в общей панели: длинные русские CTA могли переноситься неаккуратно, mobile sticky toolbar мог занимать слишком много экрана, summary grid был рассчитан на 4 метрики при появлении 5-й метрики, длинные share URL могли растягивать сетку.
+- Исправлены общие стили `tp-btn/tp-pill`, mobile behavior toolbar, адаптивный `qa-summary`, share input, handoff actions и copy-status.
+- Inline JS handoff-страниц проверен через syntax extraction, `deploy\Test-ConfidelinePages.ps1` прошел локально.
+
+BA / правило:
+
+- Для QA-панели нельзя добавлять новые статусы/кнопки только в HTML: каждый новый control должен пройти mobile/desktop sanity в общем CSS, иначе панель быстро становится неудобной для Игоря и Алексея.

@@ -25,6 +25,7 @@
       <div class="qa-metric"><span>Выбрано для Игоря</span><strong data-selected>0</strong></div>
       <div class="qa-metric"><span>FAIL/WARN выбрано</span><strong data-risk-selected>0</strong></div>
       <div class="qa-metric"><span>PASS выбрано</span><strong data-pass-selected>0</strong></div>
+      <div class="qa-metric"><span>Ответов Игоря</span><strong data-feedback-count>0</strong></div>
     </section>
 
     <section class="qa-section">
@@ -63,6 +64,7 @@
         <input type="text" data-share-url readonly aria-label="Ссылка для Игоря" placeholder="После формирования здесь появится ссылка">
         <button class="tp-btn" type="button" data-action="copy-link">Копировать</button>
       </div>
+      <p class="qa-help" data-copy-status aria-live="polite"></p>
       <p class="qa-help">Если ссылку не сформировать, страница Игоря покажет дефолтный набор из реестра. Для постоянного изменения дефолта нужен коммит в <code>qa-handoff-data.js</code>.</p>
     </section>
 
@@ -99,6 +101,7 @@
       const selected = new Set(readSelection());
       const list = document.querySelector('[data-items]');
       const shareInput = document.querySelector('[data-share-url]');
+      const copyStatus = document.querySelector('[data-copy-status]');
       const feedbackSection = document.querySelector('[data-feedback-section]');
       const feedbackList = document.querySelector('[data-feedback-items]');
 
@@ -225,6 +228,7 @@
         }).filter(Boolean);
         feedbackSection.classList.remove('qa-filter-hidden');
         feedbackList.innerHTML = rows.join('') || '<div class="qa-note"><p>В ссылке нет читаемых комментариев по текущему реестру задач.</p></div>';
+        document.querySelector('[data-feedback-count]').textContent = String(rows.length);
       }
 
       document.addEventListener('change', (event) => {
@@ -273,12 +277,14 @@
           shareInput.value = buildIgorUrl();
           shareInput.focus();
           shareInput.select();
+          copyStatus.textContent = 'Ссылка для Игоря сформирована.';
         }
         if (action === 'copy-link') {
           if (!shareInput.value) shareInput.value = buildIgorUrl();
           shareInput.focus();
           shareInput.select();
           try { await navigator.clipboard.writeText(shareInput.value); } catch { document.execCommand('copy'); }
+          copyStatus.textContent = 'Ссылка скопирована.';
         }
       });
 
