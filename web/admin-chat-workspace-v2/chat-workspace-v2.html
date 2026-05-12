@@ -208,7 +208,7 @@
                 <button class="left-collapse-rail js-left-panel-open" type="button" title="Open conversations" aria-expanded="true">
                     <i class="fa fa-comments-o"></i>
                     <span class="left-rail-text">Chats</span>
-                    <span class="left-mini-badge">5</span>
+                    <span class="left-mini-badge">3</span>
                 </button>
                 <!-- Keep server-side conversation partial rendering if present -->
                 <div class="pane-head">
@@ -216,10 +216,10 @@
         <i class="fa fa-angle-left"></i>
     </button>
     <div class="left-controls">
+        <!-- Левая область: рабочая очередь. Здесь оставляем только два типа нагрузки: реальные чаты и лиды до начала чата. -->
         <div class="queue-tabs-row">
-            <button class="btn btn-default btn-sm active js-left-tab js-queue-tab" data-tab="all_workload">All <span class="badge" id="badgeAll">5</span></button>
-            <button class="btn btn-default btn-sm js-left-tab js-queue-tab" data-tab="active_chats">Active chats <span class="badge" id="badgeNeedsReply">3</span></button>
-            <button class="btn btn-default btn-sm js-left-tab js-queue-tab" data-tab="pings">Pings <span class="badge" id="badgePings">2</span></button>
+            <button class="btn btn-default btn-sm active js-left-tab js-queue-tab" data-tab="active_chats" title="Реальные диалоги, где уже идет общение с клиентом" aria-label="Показать активные чаты">Active chats <span class="badge" id="badgeNeedsReply">3</span></button>
+            <button class="btn btn-default btn-sm js-left-tab js-queue-tab" data-tab="pings" title="Лиды и сигналы интереса до начала полноценного чата" aria-label="Показать пинги">Pings <span class="badge" id="badgePings">2</span></button>
         </div>
 
     </div>
@@ -230,15 +230,15 @@
         <!-- Bind search to controller model and trigger search on change (debounced) -->
         <div class="queue-search-group">
             <div class="input-group queue-search-input-group">
-                <input type="text" class="form-control ng-pristine ng-untouched ng-valid ng-empty" id="conversationsSearch" ng-model="conversationsQuery" ng-change="getConversations()" ng-model-options="{ debounce: 400 }" placeholder="Search workload">
+                <input type="text" class="form-control ng-pristine ng-untouched ng-valid ng-empty" id="conversationsSearch" ng-model="conversationsQuery" ng-change="getConversations()" ng-model-options="{ debounce: 400 }" placeholder="Search workload" title="Поиск по клиенту, эксперту, тексту последнего сообщения и меткам">
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" id="btnSearchConversations" title="Search"><i class="fa fa-search"></i></button>
+                    <button class="btn btn-primary" id="btnSearchConversations" title="Найти в рабочей очереди" aria-label="Найти в рабочей очереди"><i class="fa fa-search"></i></button>
                 </span>
             </div>
             <div class="searchable-selectbox queue-user-select">
-                <input class="form-control input-sm searchable-selectbox-trigger js-queue-user-input" id="queueUserSelect" type="search" placeholder="Expert profile" aria-label="Select expert profile or client" aria-expanded="false" autocomplete="off">
+                <input class="form-control input-sm searchable-selectbox-trigger js-queue-user-input" id="queueUserSelect" type="search" placeholder="Expert profile" title="Фильтр по эксперту или клиенту" aria-label="Выбрать эксперта или клиента" aria-expanded="false" autocomplete="off">
                 <span class="searchable-selectbox-caret"></span>
-                <button class="searchable-selectbox-clear js-queue-user-clear" type="button" title="Clear user" aria-label="Clear selected user"></button>
+                <button class="searchable-selectbox-clear js-queue-user-clear" type="button" title="Сбросить выбранного пользователя" aria-label="Сбросить выбранного пользователя"></button>
                 <div class="searchable-selectbox-menu" role="listbox" aria-label="Conversation users">
                     <button type="button" class="searchable-selectbox-option" data-user-id="792" data-value="Elena Park" data-code="[EX-792]">Elena Park · relationship</button>
                     <button type="button" class="searchable-selectbox-option" data-user-id="800" data-value="Orion Esposito" data-code="[EX-800]">Orion Esposito · tarot</button>
@@ -250,67 +250,45 @@
                 </div>
             </div>
             <div class="filter-pop queue-search-filters">
-                <button class="btn btn-default btn-sm js-queue-filter-toggle" type="button" title="Quick filters" aria-label="Quick filters">
+                <button class="btn btn-default btn-sm js-queue-filter-toggle" type="button" title="Быстрые фильтры по статусу, оплате и ручным флагам" aria-label="Быстрые фильтры">
                     <svg class="queue-filter-svg" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
                         <path d="M2 3h12l-4.7 5.2v3.4L6.7 13V8.2L2 3z"></path>
                     </svg>
                     <span class="badge js-filter-count">0</span>
                 </button>
+                <!-- Быстрые фильтры: не дублируют все данные клиента, а помогают быстро собрать нужный рабочий срез. -->
                 <div class="filter-menu">
                     <div class="filter-line" data-filter-scope="all">
-                        <div class="filter-line-title">Urgency</div>
+                        <div class="filter-line-title" title="Операционное состояние: кому нужно действие сейчас">Status</div>
                         <div class="filter-line-options">
-                            <label class="filter-choice"><input type="checkbox" data-group="action" value="needs_action">Needs action</label>
-                            <label class="filter-choice"><input type="checkbox" data-group="action" value="overdue">Overdue</label>
-                        </div>
-                    </div>
-                    <div class="filter-line" data-filter-scope="active_chats">
-                        <div class="filter-line-title">Chats</div>
-                        <div class="filter-line-options">
-                            <label class="filter-choice"><input type="checkbox" data-group="chat" value="needs_reply">Needs reply</label>
-                            <label class="filter-choice"><input type="checkbox" data-group="chat" value="paid_live">Paid live</label>
-                            <label class="filter-choice"><input type="checkbox" data-group="chat" value="low_balance">Low balance</label>
-                            <label class="filter-choice"><input type="checkbox" data-group="chat" value="top_up_needed">Top-up needed</label>
-                            <label class="filter-choice"><input type="checkbox" data-group="chat" value="waiting_client">Waiting client</label>
-                            <label class="filter-choice"><input type="checkbox" data-group="chat" value="follow_up">Follow-up</label>
-                            <label class="filter-choice"><input type="checkbox" data-group="chat" value="escalated">Escalated</label>
-                        </div>
-                    </div>
-                    <div class="filter-line" data-filter-scope="pings">
-                        <div class="filter-line-title">Pings</div>
-                        <div class="filter-line-options">
-                            <label class="filter-choice"><input type="checkbox" data-group="ping" value="new_ping">New ping</label>
-                            <label class="filter-choice"><input type="checkbox" data-group="ping" value="high_intent">High intent</label>
-                            <label class="filter-choice"><input type="checkbox" data-group="ping" value="uncontacted">Uncontacted</label>
-                            <label class="filter-choice"><input type="checkbox" data-group="ping" value="contacted">Contacted</label>
-                            <label class="filter-choice"><input type="checkbox" data-group="ping" value="expiring">Expiring</label>
-                            <label class="filter-choice"><input type="checkbox" data-group="ping" value="has_credits">Has credits</label>
+                            <label class="filter-choice" title="Клиент ждет ответа агента"><input type="checkbox" data-group="chat" value="needs_reply">Reply</label>
+                            <label class="filter-choice" title="Новый сигнал интереса до начала чата"><input type="checkbox" data-group="ping" value="new_ping">New ping</label>
+                            <label class="filter-choice" title="Лид еще не получил первое касание"><input type="checkbox" data-group="ping" value="uncontacted">No contact</label>
+                            <label class="filter-choice" title="Показать чаты, убранные из рабочей очереди"><input type="checkbox" data-group="control" value="archive">Archive</label>
                         </div>
                     </div>
                     <div class="filter-line" data-filter-scope="all">
-                        <div class="filter-line-title">Supervisor</div>
+                        <div class="filter-line-title" title="Денежные состояния, которые влияют на приоритет и продажу">Billing</div>
                         <div class="filter-line-options">
-                            <label class="filter-choice"><input type="checkbox" data-group="control" value="hot">Hot</label>
-                            <label class="filter-choice"><input type="checkbox" data-group="control" value="refund_risk">Refund risk</label>
-                            <label class="filter-choice"><input type="checkbox" data-group="control" value="do_not_push">Do not push</label>
+                            <label class="filter-choice" title="Сейчас идет активная оплаченная сессия"><input type="checkbox" data-group="chat" value="paid_live">Paid live</label>
+                            <label class="filter-choice" title="Клиент недавно оплатил, важно быстро удержать момент"><input type="checkbox" data-group="chat" value="new_paid">New paid</label>
+                            <label class="filter-choice" title="Нужно мягко довести клиента до пополнения"><input type="checkbox" data-group="chat" value="top_up_needed">Top-up</label>
+                            <label class="filter-choice" title="У лида есть кредиты, его проще конвертировать в чат"><input type="checkbox" data-group="ping" value="has_credits">Credits</label>
+                        </div>
+                    </div>
+                    <div class="filter-line" data-filter-scope="all">
+                        <div class="filter-line-title" title="Ручные или качественные признаки, которые помогают агенту расставить приоритет">Flags</div>
+                        <div class="filter-line-options">
+                            <label class="filter-choice" title="Клиент проявляет сильный интерес, но чат еще не начат"><input type="checkbox" data-group="ping" value="high_intent">Intent</label>
+                            <label class="filter-choice" title="Чаты, которые агент вручную отметил звездочкой"><input type="checkbox" data-group="control" value="favorite">Favorite</label>
                         </div>
                     </div>
                     <div class="filter-actions">
-                        <button class="btn btn-default btn-sm js-qf-reset" type="button">Reset</button>
-                        <button class="btn btn-primary btn-sm js-qf-apply" type="button">Apply</button>
+                        <button class="btn btn-default btn-sm js-qf-reset" type="button" title="Очистить выбранные фильтры">Reset</button>
+                        <button class="btn btn-primary btn-sm js-qf-apply" type="button" title="Применить выбранные фильтры">Apply</button>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="queue-summary queue-summary-v2">
-        <div class="queue-summary-main">
-            <div class="queue-summary-title">Priority first</div>
-            <div class="queue-summary-note">Paid, low balance and SLA items stay above routine waiting chats.</div>
-        </div>
-        <div class="queue-summary-metrics">
-            <span class="queue-summary-pill is-hot">2 action now</span>
-            <span class="queue-summary-pill">1 low balance</span>
         </div>
     </div>
     <div class="list-group conv-list">
@@ -332,14 +310,14 @@
             <div class="conv-line conv-line-message">
                 <div class="conv-snippet">Paid relationship reading is live. Client is waiting for the next answer.</div>
                 <div class="conv-tools">
+                    <span class="conv-favorite js-conv-favorite" role="button" tabindex="0" aria-pressed="false" title="Добавить чат в избранное" aria-label="Добавить чат в избранное"><i class="fa fa-star-o"></i></span>
                     <span class="conv-pin"><i class="fa fa-thumb-tack"></i></span>
-                    <span class="conv-unread">3</span>
+                    <span class="conv-unread is-fresh">3</span>
                 </div>
             </div>
             <div class="conv-line conv-line-labels">
-                <span class="conv-pill conv-pill-danger">Needs reply</span>
+                <span class="conv-pill conv-pill-danger">Reply</span>
                 <span class="conv-pill conv-pill-success">Paid live</span>
-                <span class="conv-pill conv-pill-warning">Low balance soon</span>
             </div>
         </a>
         <a href="#" class="list-group-item conv-item" data-priority="40" data-workload-type="active_chat" data-conversation-id="c3" data-sender-user-id="799" data-recipient-user-id="800" data-sender-name="Maya Bennett" data-recipient-name="Orion Esposito" data-sender-avatar="https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_OraGJPMgdK6RaWdgh_BQNxnMTT18IiHa.webp" data-recipient-avatar="https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_CLUre-mRxp6ZnPZmK2odQwqPmK3ktQI8.webp" data-display-contact-name="Maya Bennett">
@@ -360,12 +338,12 @@
             <div class="conv-line conv-line-message">
                 <div class="conv-snippet">Client gave DOB but not birth time. Needs soft clarification before paid depth.</div>
                 <div class="conv-tools">
-                    <span class="conv-unread">1</span>
+                    <span class="conv-favorite js-conv-favorite" role="button" tabindex="0" aria-pressed="false" title="Добавить чат в избранное" aria-label="Добавить чат в избранное"><i class="fa fa-star-o"></i></span>
+                    <span class="conv-unread is-fresh">1</span>
                 </div>
             </div>
             <div class="conv-line conv-line-labels">
-                <span class="conv-pill conv-pill-danger">Needs reply</span>
-                <span class="conv-pill conv-pill-info">Need birth time</span>
+                <span class="conv-pill conv-pill-danger">Reply</span>
             </div>
         </a>
         <a href="#" class="list-group-item conv-item" data-priority="20" data-workload-type="active_chat" data-conversation-id="c4" data-sender-user-id="835" data-recipient-user-id="836" data-sender-name="Liam Carter" data-recipient-name="Sophia Reed" data-sender-avatar="https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_OraGJPMgdK6RaWdgh_BQNxnMTT18IiHa.webp" data-recipient-avatar="https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_CLUre-mRxp6ZnPZmK2odQwqPmK3ktQI8.webp" data-display-contact-name="Liam Carter">
@@ -386,18 +364,17 @@
             <div class="conv-line conv-line-message">
                 <div class="conv-snippet">Top-up link sent, client opened payment but did not complete yet.</div>
                 <div class="conv-tools">
+                    <span class="conv-favorite js-conv-favorite" role="button" tabindex="0" aria-pressed="false" title="Добавить чат в избранное" aria-label="Добавить чат в избранное"><i class="fa fa-star-o"></i></span>
                     <span class="conv-pin"><i class="fa fa-thumb-tack"></i></span>
-                    <span class="conv-unread">4</span>
+                    <span class="conv-unread is-fresh">4</span>
                 </div>
             </div>
             <div class="conv-line conv-line-labels">
-                <span class="conv-pill conv-pill-warning">Payment pending</span>
-                <span class="conv-pill conv-pill-warning">Top-up needed</span>
-                <span class="conv-pill conv-pill-danger">Hot</span>
-                <span class="conv-pill conv-pill-neutral">Follow-up</span>
+                <span class="conv-pill conv-pill-warning">Pay pending</span>
+                <span class="conv-pill conv-pill-warning">Top-up</span>
             </div>
         </a>
-        <a href="#" class="list-group-item conv-item conv-item-ping" data-priority="50" data-workload-type="ping" data-conversation-id="p5" data-sender-user-id="837" data-recipient-user-id="838" data-sender-name="Sofia Alvarez" data-recipient-name="Mila Stone" data-sender-avatar="https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_OraGJPMgdK6RaWdgh_BQNxnMTT18IiHa.webp" data-recipient-avatar="https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_CLUre-mRxp6ZnPZmK2odQwqPmK3ktQI8.webp" data-display-contact-name="Sofia Alvarez">
+        <a href="#" class="list-group-item conv-item conv-item-ping" hidden data-priority="50" data-workload-type="ping" data-ping-state="uncontacted" data-conversation-id="p5" data-sender-user-id="837" data-recipient-user-id="838" data-sender-name="Sofia Alvarez" data-recipient-name="Mila Stone" data-sender-avatar="https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_OraGJPMgdK6RaWdgh_BQNxnMTT18IiHa.webp" data-recipient-avatar="https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_CLUre-mRxp6ZnPZmK2odQwqPmK3ktQI8.webp" data-display-contact-name="Sofia Alvarez">
             <div class="conv-line conv-line-head">
                 <div class="conv-people conv-people-overlap" data-display-contact-name="Sofia Alvarez">
                     <span class="conv-person">
@@ -415,17 +392,17 @@
             <div class="conv-line conv-line-message">
                 <div class="conv-snippet">Viewed expert card twice in 9 minutes. No chat yet, has credits.</div>
                 <div class="conv-tools">
-                    <span class="conv-unread">!</span>
+                    <span class="conv-favorite js-conv-favorite" role="button" tabindex="0" aria-pressed="false" title="Добавить чат в избранное" aria-label="Добавить чат в избранное"><i class="fa fa-star-o"></i></span>
+                    <span class="conv-unread is-fresh">!</span>
                 </div>
             </div>
             <div class="conv-line conv-line-labels">
                 <span class="conv-pill conv-pill-danger">New ping</span>
-                <span class="conv-pill conv-pill-success">High intent</span>
-                <span class="conv-pill conv-pill-success">Has credits</span>
-                <span class="conv-pill conv-pill-neutral">Uncontacted</span>
+                <span class="conv-pill conv-pill-success">Intent</span>
+                <span class="conv-pill conv-pill-success">Credits</span>
             </div>
         </a>
-        <a href="#" class="list-group-item conv-item conv-item-ping" data-priority="70" data-workload-type="ping" data-conversation-id="p6" data-sender-user-id="838" data-recipient-user-id="839" data-sender-name="Noah Reed" data-recipient-name="Elena Park" data-sender-avatar="https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_OraGJPMgdK6RaWdgh_BQNxnMTT18IiHa.webp" data-recipient-avatar="https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_CLUre-mRxp6ZnPZmK2odQwqPmK3ktQI8.webp" data-display-contact-name="Noah Reed">
+        <a href="#" class="list-group-item conv-item conv-item-ping" hidden data-priority="70" data-workload-type="ping" data-ping-state="contacted" data-conversation-id="p6" data-sender-user-id="838" data-recipient-user-id="839" data-sender-name="Noah Reed" data-recipient-name="Elena Park" data-sender-avatar="https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_OraGJPMgdK6RaWdgh_BQNxnMTT18IiHa.webp" data-recipient-avatar="https://hugs-project.s3.amazonaws.com/content/photos/1/thumb_CLUre-mRxp6ZnPZmK2odQwqPmK3ktQI8.webp" data-display-contact-name="Noah Reed">
             <div class="conv-line conv-line-head">
                 <div class="conv-people conv-people-overlap" data-display-contact-name="Noah Reed">
                     <span class="conv-person">
@@ -443,15 +420,12 @@
             <div class="conv-line conv-line-message">
                 <div class="conv-snippet">Template sent from Elena Park. Waiting for first client reply.</div>
                 <div class="conv-tools">
+                    <span class="conv-favorite js-conv-favorite" role="button" tabindex="0" aria-pressed="false" title="Добавить чат в избранное" aria-label="Добавить чат в избранное"><i class="fa fa-star-o"></i></span>
                     <span class="conv-pin"><i class="fa fa-thumb-tack"></i></span>
                     <span class="conv-unread">0</span>
                 </div>
             </div>
-            <div class="conv-line conv-line-labels">
-                <span class="conv-pill conv-pill-warning">Contacted</span>
-                <span class="conv-pill conv-pill-neutral">Template sent</span>
-                <span class="conv-pill conv-pill-info">Awaiting reply</span>
-            </div>
+            <div class="conv-line conv-line-labels"></div>
         </a>
     </div>
 </div><!-- end ngIf: conversations -->
@@ -494,17 +468,17 @@
             <button class="btn btn-default btn-sm chat-action-btn js-chat-search-toggle" type="button" title="Search in conversation">
                 <i class="fa fa-search"></i>
             </button>
-            <button class="btn btn-default btn-sm chat-action-btn session-toggle is-live js-session-toggle" type="button" title="Paid session timer">
+            <button class="btn btn-default btn-sm chat-action-btn session-toggle is-live js-session-toggle" type="button" title="Таймер активной платной сессии">
                 <i class="fa fa-play"></i>
             </button>
             <div class="btn-group chat-more-menu">
-                <button class="btn btn-default btn-sm dropdown-toggle chat-action-btn" type="button" data-toggle="dropdown" title="More actions">
+                <button class="btn btn-default btn-sm dropdown-toggle chat-action-btn" type="button" data-toggle="dropdown" title="Дополнительные действия с диалогом">
                     <i class="fa fa-ellipsis-h"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right">
-                    <li><a href="https://confideline.com/en/admin/message/chat#" data-prototype-action="toggle-hot"><i class="fa fa-star-o"></i> Mark hot client</a></li>
-                    <li><a href="https://confideline.com/en/admin/message/chat#" data-prototype-action="toggle-pinned"><i class="fa fa-thumb-tack"></i> Pin dialog</a></li>
-                    <li><a href="https://confideline.com/en/admin/message/chat#" data-prototype-action="open-handoff"><i class="fa fa-random"></i> Request handoff</a></li>
+                    <li><a href="https://confideline.com/en/admin/message/chat#" data-prototype-action="toggle-pinned" title="Закрепить важный диалог для быстрого возврата"><i class="fa fa-thumb-tack"></i> Pin dialog</a></li>
+                    <li><a href="https://confideline.com/en/admin/message/chat#" data-prototype-action="archive-dialog" title="Убрать диалог из рабочей очереди, не удаляя историю"><i class="fa fa-archive"></i> Archive dialog</a></li>
+                    <li><a href="https://confideline.com/en/admin/message/chat#" data-prototype-action="open-handoff" title="Передать диалог другому эксперту или старшему смены"><i class="fa fa-random"></i> Request handoff</a></li>
                     <li class="divider"></li>
                     <li class="chat-menu-control">
                         <span class="chat-menu-control-label"><i class="fa fa-location-arrow"></i> Jump to</span>
@@ -520,24 +494,18 @@
                             <button class="btn btn-default btn-xs js-chat-font-plus" type="button" title="Increase font">+</button>
                         </span>
                     </li>
-                    <li class="divider"></li>
-                    <li><a href="https://confideline.com/en/admin/message/chat#" data-prototype-action="open-flags"><i class="fa fa-flag"></i> Add control flag</a></li>
-                    <li><a href="https://confideline.com/en/admin/message/chat#" data-prototype-action="toggle-no-push"><i class="fa fa-ban"></i> Mark do not push</a></li>
                 </ul>
             </div>
         </div>
         </div>
         <div class="contact-subline dialog-meta">
+            <!-- Центральная шапка: состояние открытого диалога. Не повторяем слева KPI-метки, показываем занятость клиента/эксперта. -->
             <div class="dialog-meta-labels">
-                <span class="dialog-chip dialog-chip-success">Paid live</span>
-                <span class="dialog-chip dialog-chip-warning">Needs reply</span>
-                <span class="dialog-chip dialog-chip-danger">Low balance soon</span>
-                <span class="dialog-chip dialog-chip-info">Need birth time</span>
-                <span class="dialog-conversation-ref">Conversation <span class="ng-binding">2</span></span>
-                <span class="dialog-wait-state">Client waiting 18m</span>
+                <span class="dialog-chip dialog-chip-success" title="Клиент сейчас в платной сессии с этим экспертом; другому эксперту лучше не перебивать">Paid with Elena</span>
+                <span class="dialog-wait-state" title="Сколько клиент ждет реакции в открытом диалоге">Client waits 18m</span>
             </div>
             <div class="dialog-meta-actions">
-                <button class="btn btn-default btn-xs dialog-pinned-btn js-open-pinned-messages" type="button" title="Pinned messages">
+                <button class="btn btn-default btn-xs dialog-pinned-btn js-open-pinned-messages" type="button" title="Открыть закрепленные сообщения по текущему диалогу">
                     <span class="dialog-pinned-mark" aria-hidden="true"></span>
                     <span>Pinned</span>
                 </button>
@@ -545,63 +513,55 @@
         </div>
     </div>
 </div>
-<div class="focus-mode-strip" id="focusModeStrip">
-    <div class="focus-mode-main">
-        <strong>Focus</strong>
-        <span>Paid + low balance. Only paid, SLA and risk alerts stay active.</span>
-    </div>
-    <button class="btn btn-default btn-xs" type="button" data-prototype-action="toggle-focus">Exit focus</button>
-</div>
+<!-- Панель платной сессии: рабочий пульт эксперта, который ведет сессию прямо сейчас. -->
 <div class="billing-panel billing-panel-v2 is-open" id="billingPanel">
     <div class="billing-panel-left">
-        <span class="billing-pill billing-live"><i class="fa fa-play"></i> Live paid session</span>
-        <span class="billing-pill">50 credits</span>
-        <span class="billing-pill">~14 min left</span>
-        <span class="billing-pill">6 min used</span>
-        <span class="billing-pill billing-warning">Offer in 4 min</span>
+        <span class="billing-pill billing-live" title="Эта платная сессия ведется текущим экспертом"><i class="fa fa-play"></i> My session</span>
+        <span class="billing-pill billing-live" title="Остаток оплаченного времени, по которому эксперт планирует глубину ответа"><i class="fa fa-clock-o"></i> 14m paid left</span>
+        <span class="billing-pill" title="Сколько оплаченного времени уже использовано">6m used</span>
+        <span class="billing-pill" title="Текущая тема сессии; новую тему лучше открывать после top-up">Topic: Relationship</span>
+        <span class="billing-pill" title="Направление перевода для текущего диалога">RU -> EN</span>
+        <span class="billing-pill billing-warning" title="Через сколько минут уместно мягко готовить предложение продления">Top-up window 4m</span>
     </div>
-    <div class="billing-panel-guidance">
-        <strong>Sales timing</strong>
-        <span>Answer the core question now. Prepare top-up before opening a new topic.</span>
+    <div class="billing-panel-guidance" title="Короткая подсказка эксперту, как вести сессию и продажу в текущей ситуации">
+        <strong>Sales cue</strong>
+        <span>Finish the core answer first. If the client asks for a new angle, offer top-up before continuing.</span>
     </div>
     <div class="billing-panel-actions">
         <div class="btn-group offer-menu">
-            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">Offer <span class="caret"></span></button>
+            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" title="Открыть варианты предложения продления">Top-up <span class="caret"></span></button>
             <ul class="dropdown-menu">
-                <li><a href="#" data-offer-action="top-up">Send top-up</a></li>
-                <li><a href="#" data-offer-action="package">Package link</a></li>
-                <li><a href="#" data-offer-action="deep-reading">Deep reading package</a></li>
+                <li><a href="#" data-offer-action="top-up" title="Вставить мягкое предложение пополнить минуты">Send top-up</a></li>
+                <li><a href="#" data-offer-action="package" title="Предложить пакет продолжения">Package link</a></li>
+                <li><a href="#" data-offer-action="deep-reading" title="Предложить глубокий разбор как следующий платный шаг">Deep reading package</a></li>
             </ul>
         </div>
-        <button class="btn btn-default btn-sm" type="button" data-prototype-action="toggle-no-push">No push</button>
-        <button class="btn btn-default btn-sm" type="button" title="Creates an audited compensation request" data-prototype-action="open-compensation">Request compensation</button>
+        <button class="btn btn-default btn-sm" type="button" title="Создать запрос на компенсацию, если платная сессия требует ручной проверки" data-prototype-action="open-compensation">Comp request</button>
     </div>
 </div>
 <div class="billing-panel billing-panel-v2 ping-lead-panel is-open" id="pingLeadPanel" hidden>
     <div class="billing-panel-left">
-        <span class="billing-pill ping-lead-live"><i class="fa fa-bolt"></i> Ping lead</span>
-        <span class="billing-pill">No active chat</span>
-        <span class="billing-pill">High intent</span>
-        <span class="billing-pill">Has credits</span>
+        <span class="billing-pill ping-lead-live" title="Это не чат, а сигнал интереса до начала общения"><i class="fa fa-bolt"></i> Ping lead</span>
+        <span class="billing-pill" title="Полноценный диалог еще не начат">No active chat</span>
+        <span class="billing-pill" title="Клиент проявил сильный интерес">Intent</span>
+        <span class="billing-pill" title="У клиента есть кредиты для старта платного общения">Credits</span>
     </div>
-    <div class="billing-panel-guidance">
+    <div class="billing-panel-guidance" title="Подсказка, как аккуратно обработать лид без давления">
         <strong>Outreach timing</strong>
         <span>One soft touch from the selected expert. No reply SLA starts until the client answers.</span>
     </div>
     <div class="billing-panel-actions">
-        <button class="btn btn-primary btn-sm" type="button" data-prototype-action="insert-ping-template">Send template</button>
+        <button class="btn btn-primary btn-sm" type="button" data-prototype-action="insert-ping-template" title="Вставить мягкий шаблон первого касания">Send template</button>
         <div class="btn-group offer-menu">
-            <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown">Invite <span class="caret"></span></button>
+            <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" title="Варианты приглашения лида в платный чат">Invite <span class="caret"></span></button>
             <ul class="dropdown-menu">
                 <li><a href="#" data-offer-action="start-paid">Start paid chat</a></li>
                 <li><a href="#" data-offer-action="package">Package link</a></li>
             </ul>
         </div>
-        <button class="btn btn-default btn-sm" type="button" data-prototype-action="toggle-no-push">No push</button>
-        <button class="btn btn-default btn-sm" type="button" data-prototype-action="open-follow-up">Follow-up</button>
     </div>
 </div>
-<div class="pinned-drawer" id="pinnedMessagesDrawer" hidden aria-label="Pinned messages panel">
+<div class="pinned-drawer" id="pinnedMessagesDrawer" hidden aria-label="Панель закрепленных сообщений">
     <div class="pinned-drawer-head">
         <div>
             <div class="pinned-drawer-title">Pinned messages</div>
@@ -1285,7 +1245,6 @@
                     <li><a href="#" data-offer-action="deep-reading">Deep reading package</a></li>
                 </ul>
             </div>
-            <button class="btn btn-default btn-xs js-chat-control" type="button" data-prototype-action="toggle-no-push">No push</button>
             <button class="btn btn-default btn-xs js-chat-control" type="button" data-prototype-action="open-compensation">Comp request</button>
             <button class="btn btn-default btn-xs js-chat-control" type="button" data-prototype-action="resolve-dialog">Resolve</button>
         </div>
@@ -1362,14 +1321,15 @@
                             <div class="sub">CRM, AI and quality layer</div>
                         </div>
                     </div>
+                    <!-- Правая область: подробный контекст клиента. Все второстепенное уводим сюда, чтобы не перегружать очередь и центр. -->
                     <div class="right-tabs right-tabs-refined">
-                        <button class="btn btn-default btn-sm right-tab active" data-tab="client" type="button">Client</button>
-                        <button class="btn btn-default btn-sm right-tab" data-tab="ai" type="button">AI</button>
-                        <button class="btn btn-default btn-sm right-tab" data-tab="pay" type="button">Pay</button>
-                        <button class="btn btn-default btn-sm right-tab" data-tab="notes" type="button">Notes</button>
-                        <button class="btn btn-default btn-sm right-tab" data-tab="follow" type="button">Follow</button>
-                        <button class="btn btn-default btn-sm right-tab" data-tab="flags" type="button">Flags</button>
-                        <button class="btn btn-default btn-sm right-tab" data-tab="quality" type="button">Quality</button>
+                        <button class="btn btn-default btn-sm right-tab active" data-tab="client" type="button" title="Паспорт клиента: профиль, язык, тема, устройство, базовые данные">Client</button>
+                        <button class="btn btn-default btn-sm right-tab" data-tab="ai" type="button" title="AI-помощник для черновика ответа и подсказок">AI</button>
+                        <button class="btn btn-default btn-sm right-tab" data-tab="pay" type="button" title="Оплата, кредиты, история платежей и top-up">Pay</button>
+                        <button class="btn btn-default btn-sm right-tab" data-tab="notes" type="button" title="Внутренние заметки команды по клиенту">Notes</button>
+                        <button class="btn btn-default btn-sm right-tab" data-tab="follow" type="button" title="План последующего касания или переноса">Follow</button>
+                        <button class="btn btn-default btn-sm right-tab" data-tab="signals" type="button" title="Подготовка к сессии: недостающие данные, история касаний, внутренние сигналы">Prep</button>
+                        <button class="btn btn-default btn-sm right-tab" data-tab="quality" type="button" title="Проверки качества ответа, SLA и риски">Quality</button>
                     </div>
                 </div>
                 <div class="pane-body pane-scroll right-context-body" style="flex:1;">
@@ -1379,8 +1339,8 @@
                             <div class="context-summary-list">
                                 <div><span>Client</span><strong>Alla · RU/EN</strong></div>
                                 <div><span>Topic</span><strong>Relationship reading</strong></div>
-                                <div><span>Money</span><strong>Live paid session · 50 credits</strong></div>
-                                <div><span>State</span><strong>Waiting 18m · needs reply</strong></div>
+                            <div><span>Money</span><strong>Paid live · 50 credits</strong></div>
+                            <div><span>State</span><strong>Waiting 18m · reply</strong></div>
                                 <div class="is-recommendation"><span>Recommendation</span><strong>Answer briefly, confirm New York time, then offer paid continuation.</strong></div>
                             </div>
                         </div>
@@ -1495,7 +1455,7 @@
                                         <div class="context-line"><span>Conversation</span><strong>c2</strong></div>
                                         <div class="context-line"><span>User</span><strong>U-9002</strong></div>
                                         <div class="context-line"><span>Assigned</span><strong>Alex / Elena Park</strong></div>
-                                <div class="context-line"><span>Status</span><strong>needs_reply</strong></div>
+                        <div class="context-line"><span>Status</span><strong>Reply</strong></div>
                                 <div class="context-line"><span>Unread</span><strong>2</strong></div>
                                 <div class="context-line"><span>Language</span><strong>RU → EN templates</strong></div>
                                 <div class="context-line"><span>Payment method</span><strong>STRIPE</strong></div>
@@ -1550,7 +1510,7 @@
                         </div>
                         <div class="context-actions context-actions-single">
                             <button class="btn btn-primary btn-xs" type="button" data-offer-action="package"><i class="fa fa-link"></i> Send package link</button>
-                            <button class="btn btn-default btn-xs" type="button" data-prototype-action="open-compensation"><i class="fa fa-ticket"></i> Request compensation</button>
+                            <button class="btn btn-default btn-xs" type="button" data-prototype-action="open-compensation"><i class="fa fa-ticket"></i> Comp request</button>
                         </div>
                     </div>
 
@@ -1586,29 +1546,25 @@
                         </div>
                     </div>
 
-                    <div class="right-pane" id="tab-flags">
+                    <div class="right-pane" id="tab-signals">
                         <div class="context-section">
-                            <div class="context-section-title">Active flags</div>
+                            <div class="context-section-title">Session prep details</div>
                             <div class="flag-stack">
-                                <div class="flag-row system"><strong>System</strong><span>Paid live · Low balance soon · Long wait</span></div>
-                                <div class="flag-row supervisor"><strong>Supervisor</strong><span>Hot client · Refund risk · Do not push</span></div>
-                                <div class="flag-row operator"><strong>Operator</strong><span>Need birth time · Top-up prepared · Follow-up</span></div>
-                                <div class="flag-row effect"><strong>Effect</strong><span>Indicator flags highlight. Routing-impact flags raise priority or redistribute workload.</span></div>
+                                <div class="flag-row system"><strong>Data</strong><span>Birth time / TZ missing</span></div>
+                                <div class="flag-row supervisor"><strong>History</strong><span>Contacted / wait reply / template</span></div>
+                                <div class="flag-row operator"><strong>Notes</strong><span>Top-up ready / note exists</span></div>
                             </div>
                         </div>
                         <div class="context-section">
-                            <div class="context-section-title">Allowed actions</div>
+                            <div class="context-section-title">Prep actions</div>
                             <div class="context-actions context-actions-split">
-                                <button class="btn btn-default btn-xs" type="button" data-prototype-action="toggle-hot">Mark hot</button>
-                                <button class="btn btn-default btn-xs" type="button" data-prototype-action="toggle-no-push">Do not push</button>
                                 <button class="btn btn-default btn-xs" type="button" data-prototype-action="open-handoff">Handoff</button>
-                                <button class="btn btn-default btn-xs" type="button" data-prototype-action="open-follow-up">Follow-up</button>
-                                <button class="btn btn-default btn-xs" type="button" data-prototype-action="toggle-focus">Focus</button>
+                                <button class="btn btn-default btn-xs" type="button" data-prototype-action="need-data">Need data</button>
                             </div>
                         </div>
                         <div class="context-section context-note-card">
-                            <div class="context-section-title">Routing note</div>
-                            <p>Indicator flags only highlight and shape scripts. Routing-impact flags can raise priority or trigger redistribution. Client still sees replies from Elena Park.</p>
+                            <div class="context-section-title">Rule</div>
+                            <p>These signals explain context, but they are not urgent enough to occupy the left queue card.</p>
                         </div>
                     </div>
 
@@ -1830,7 +1786,7 @@
 <div class="global-modal-backdrop prototype-modal" id="modalCompensationRequest" hidden>
     <div class="global-modal-dialog global-modal-dialog-sm" role="dialog" aria-modal="true" aria-labelledby="modalCompensationTitle">
         <div class="global-modal-header">
-            <h4 class="global-modal-title" id="modalCompensationTitle">Request compensation</h4>
+                <h4 class="global-modal-title" id="modalCompensationTitle">Comp request</h4>
             <button class="global-modal-close" type="button" data-dismiss="modal" aria-label="Close">&times;</button>
         </div>
         <div class="global-modal-body">

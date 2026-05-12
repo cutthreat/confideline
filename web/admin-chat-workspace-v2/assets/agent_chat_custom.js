@@ -1005,6 +1005,42 @@
       .forEach((item) => list.appendChild(item));
   };
 
+  // Русские подсказки для левой очереди: объясняют смысл коротких чипов без добавления лишнего текста в карточку.
+  const queueHintByLabel = {
+    reply: 'Клиент ждет ответа агента',
+    'paid live': 'Идет активная оплаченная сессия',
+    'pay pending': 'Клиент открыл оплату, но платеж еще не завершен',
+    'top-up': 'Нужно мягко довести клиента до пополнения',
+    'new ping': 'Новый сигнал интереса до начала чата',
+    intent: 'Клиент проявил сильный интерес',
+    credits: 'У клиента есть кредиты для старта платного общения'
+  };
+
+  const syncQueueCardHints = (root) => {
+    root.querySelectorAll('.conv-item, .list-group-item').forEach((item) => {
+      item.querySelectorAll('.js-conv-favorite').forEach((favorite) => {
+        const active = favorite.classList.contains('is-favorite') || item.dataset.favorite === 'true';
+        favorite.setAttribute('title', active ? 'Убрать чат из избранного' : 'Добавить чат в избранное');
+        favorite.setAttribute('aria-label', active ? 'Убрать чат из избранного' : 'Добавить чат в избранное');
+      });
+      item.querySelectorAll('.conv-pin').forEach((pin) => {
+        pin.setAttribute('title', 'Диалог закреплен или содержит закрепленные важные сообщения');
+      });
+      item.querySelectorAll('.conv-unread').forEach((unread) => {
+        const value = unread.textContent.trim();
+        const isFresh = value === '!' || (Number(value) || 0) > 0;
+        unread.setAttribute('title', isFresh ? 'Новое непрочитанное сообщение или свежий сигнал' : 'Нет новых непрочитанных сообщений');
+      });
+      item.querySelectorAll('.conv-pill').forEach((pill) => {
+        const hint = queueHintByLabel[pill.textContent.trim().toLowerCase()];
+        if (hint) {
+          pill.setAttribute('title', hint);
+        }
+      });
+    });
+  };
+
+  // Основная логика левой области: фильтруем рабочую очередь, архив показываем только по фильтру Archive.
   const applyDemoQueueState = (root, payload) => {
     const list = root.querySelector('.conv-list');
     if (!list) {
@@ -1012,53 +1048,47 @@
     }
 
     sortQueueCardsByPriority(list);
+    syncQueueCardHints(root);
 
     const query = payload.query.toLowerCase();
     const quickPreset = payload.quick_preset || '';
     const filters = payload.active_filters || [];
+    const filterValues = filters.map((filter) => String(filter.value || '').toLowerCase());
+    const wantsArchive = filterValues.includes('archive');
     let visibleCount = 0;
 
     list.querySelectorAll('.conv-item, .list-group-item').forEach((item) => {
       const text = getQueueCardSearchText(item);
       const labels = Array.from(item.querySelectorAll('.conv-pill')).map((pill) => pill.textContent.trim().toLowerCase());
-      const unreadCount = Number(item.querySelector('.conv-unread')?.textContent.trim()) || 0;
       const workloadType = item.dataset.workloadType || 'active_chat';
+      const isArchived = item.dataset.archived === 'true' || item.classList.contains('is-archived');
+      const isFavorite = item.dataset.favorite === 'true' || item.querySelector('.conv-favorite.is-favorite');
+      const unread = item.querySelector('.conv-unread');
+      const unreadValue = unread?.textContent.trim() || '0';
+      unread?.classList.toggle('is-fresh', unreadValue === '!' || (Number(unreadValue) || 0) > 0);
       const matchesQuery = !query || text.includes(query);
       const matchesUser = !payload.selected_user_id
         || item.dataset.senderUserId === payload.selected_user_id
         || item.dataset.recipientUserId === payload.selected_user_id;
-      const matchesPreset = !quickPreset
-        || quickPreset === 'all'
-        || quickPreset === 'all_workload'
+      const matchesPreset = wantsArchive
+        || !quickPreset
         || (quickPreset === 'active_chats' && workloadType === 'active_chat')
-        || (quickPreset === 'pings' && workloadType === 'ping')
-        || (quickPreset === 'needs_reply' && labels.some((label) => label.includes('needs reply')));
+        || (quickPreset === 'pings' && workloadType === 'ping');
       const matchesFilters = filters.every((filter) => {
         const value = String(filter.value || '').toLowerCase();
-        if (value === 'unread') return unreadCount > 0;
-        if (value === 'unanswered') return labels.some((label) => label.includes('needs reply'));
-        if (value === 'overdue') return labels.some((label) => label.includes('overdue'));
-        if (value === 'needs_action') return labels.some((label) => /needs reply|new ping|uncontacted|low balance|payment pending|overdue/.test(label));
+        if (value === 'archive') return isArchived;
+        if (value === 'favorite') return isFavorite;
+        if (value === 'needs_reply') return labels.some((label) => label === 'reply' || label.includes('needs reply'));
         if (value === 'paid_live') return labels.some((label) => label.includes('paid live'));
-        if (value === 'low_balance') return labels.some((label) => label.includes('low balance'));
-        if (value === 'top_up_needed') return labels.some((label) => label.includes('top-up needed') || label.includes('payment pending') || label.includes('low balance'));
-        if (value === 'waiting_client') return labels.some((label) => label.includes('waiting') || label.includes('contacted'));
-        if (value === 'follow_up') return labels.some((label) => label.includes('follow-up'));
-        if (value === 'escalated') return labels.some((label) => label.includes('escalated') || label.includes('handoff'));
+        if (value === 'new_paid') return labels.some((label) => label.includes('new paid') || label.includes('paid live'));
+        if (value === 'top_up_needed') return labels.some((label) => label.includes('top-up') || label.includes('pay pending') || label.includes('payment pending') || label.includes('low balance'));
         if (value === 'new_ping') return workloadType === 'ping' && labels.some((label) => label.includes('new ping'));
-        if (value === 'high_intent') return workloadType === 'ping' && labels.some((label) => label.includes('high intent'));
-        if (value === 'uncontacted') return workloadType === 'ping' && labels.some((label) => label.includes('uncontacted'));
-        if (value === 'contacted') return workloadType === 'ping' && labels.some((label) => label.includes('contacted') || label.includes('template sent'));
-        if (value === 'expiring') return workloadType === 'ping' && labels.some((label) => label.includes('expiring'));
-        if (value === 'has_credits' || value === 'has_balance') return workloadType === 'ping' && labels.some((label) => label.includes('has credits') || label.includes('has balance'));
-        if (value === 'hot') return labels.some((label) => label.includes('hot') || label.includes('high intent'));
-        if (value === 'policy_risk') return labels.some((label) => label.includes('policy risk'));
-        if (value === 'quality_watch') return labels.some((label) => label.includes('quality watch'));
-        if (value === 'refund_risk') return labels.some((label) => label.includes('refund risk') || label.includes('high risk') || label.includes('complaint'));
-        if (value === 'do_not_push') return labels.some((label) => label.includes('do not push'));
+        if (value === 'high_intent') return workloadType === 'ping' && labels.some((label) => label === 'intent' || label.includes('high intent'));
+        if (value === 'uncontacted') return workloadType === 'ping' && (item.dataset.pingState === 'uncontacted' || labels.some((label) => label.includes('no contact') || label.includes('uncontacted')));
+        if (value === 'has_credits' || value === 'has_balance') return workloadType === 'ping' && labels.some((label) => label === 'credits' || label.includes('has credits') || label.includes('has balance'));
         return !value || labels.some((label) => label.replace(/\s+/g, '_').includes(value) || label.includes(value.replace(/_/g, ' ')));
       });
-      const visible = matchesQuery && matchesUser && matchesPreset && matchesFilters;
+      const visible = matchesQuery && matchesUser && matchesPreset && matchesFilters && (wantsArchive ? isArchived : !isArchived);
 
       item.hidden = !visible;
       item.classList.toggle('is-search-hidden', !visible);
@@ -3256,7 +3286,11 @@
       root.dataset.workloadType = payload.workload_type || 'active_chat';
       const labelsLower = (payload.labels || []).map((label) => String(label).toLowerCase());
       const isPing = payload.workload_type === 'ping' || String(payload.conversation_id || '').startsWith('p');
-      const isBillable = !isPing && labelsLower.some((label) => /paid live|low balance|payment pending|top-up needed/.test(label));
+      const hasPaidLive = labelsLower.some((label) => label.includes('paid live'));
+      const hasPaymentOpened = labelsLower.some((label) => label.includes('pay pending') || label.includes('payment pending'));
+      const hasTopUp = labelsLower.some((label) => label.includes('top-up'));
+      // Нижняя панель сессии открывается только для реально запущенной платной сессии, а не для платежных ожиданий.
+      const isBillable = !isPing && hasPaidLive;
       const isFocus = !isPing && labelsLower.some((label) => /paid live|low balance|refund risk|hot/.test(label));
 
       const contactDuo = root.querySelector('.chat-identity .contact-duo');
@@ -3284,20 +3318,51 @@
       if (labelHost) {
         const chips = Array.from(labelHost.querySelectorAll('.dialog-chip'));
         chips.forEach((chip) => chip.remove());
-        (payload.labels || []).slice(0, 3).forEach((label) => {
+        const metaChips = [];
+        if (isPing) {
+          metaChips.push({ label: 'Ping lead', className: 'dialog-chip-info', title: 'Это лид до начала полноценного чата' });
+          metaChips.push({ label: 'No chat yet', className: 'dialog-chip-info', title: 'Диалог с клиентом еще не начат' });
+        } else if (hasPaidLive) {
+          const expertName = (payload.recipient_name || 'expert').split(/\s+/)[0];
+          metaChips.push({
+            label: `Paid with ${expertName}`,
+            className: 'dialog-chip-success',
+            title: 'Клиент уже в платной сессии с этим экспертом; другому эксперту лучше не перебивать'
+          });
+        } else if (hasPaymentOpened) {
+          metaChips.push({ label: 'Payment opened', className: 'dialog-chip-warning', title: 'Клиент открыл оплату, но платная сессия еще не стартовала' });
+          metaChips.push({ label: 'No live session', className: 'dialog-chip-info', title: 'Сейчас нет активной платной сессии' });
+        } else if (hasTopUp) {
+          metaChips.push({ label: 'Top-up sent', className: 'dialog-chip-info', title: 'Ссылка на пополнение уже отправлена клиенту' });
+        } else {
+          metaChips.push({ label: 'Active dialog', className: 'dialog-chip-info', title: 'Открыт обычный рабочий диалог без активной платной сессии' });
+        }
+        const waitState = labelHost.querySelector('.dialog-wait-state');
+        metaChips.forEach(({ label, className, title }) => {
           const chip = document.createElement('span');
-          const normalized = String(label).toLowerCase();
-          chip.className = `dialog-chip ${/paid|has credits/.test(normalized) ? 'dialog-chip-success' : /low balance|payment|contacted/.test(normalized) ? 'dialog-chip-danger' : /needs|new ping|high intent/.test(normalized) ? 'dialog-chip-warning' : 'dialog-chip-info'}`;
+          chip.className = `dialog-chip ${className}`;
           chip.textContent = label;
-          labelHost.insertBefore(chip, labelHost.firstChild);
+          if (title) {
+            chip.setAttribute('title', title);
+          }
+          labelHost.insertBefore(chip, waitState || null);
         });
         const conversationNumber = labelHost.querySelector('.dialog-conversation-ref .ng-binding');
         if (conversationNumber) {
           conversationNumber.textContent = payload.conversation_id || '—';
         }
-        const waitState = labelHost.querySelector('.dialog-wait-state');
         if (waitState) {
-          waitState.textContent = isPing ? `Ping · ${payload.last_message_time || 'no chat yet'}` : `Last activity ${payload.last_message_time || 'now'}`;
+          const lastTime = payload.last_message_time || 'now';
+          if (isPing) {
+            waitState.textContent = `Signal ${lastTime}`;
+            waitState.setAttribute('title', 'Когда был последний сигнал интереса по этому лиду');
+          } else if (hasPaidLive && payload.unread_count > 0) {
+            waitState.textContent = `Client waits · last ${lastTime}`;
+            waitState.setAttribute('title', 'Клиент ждет ответ в активной платной сессии');
+          } else {
+            waitState.textContent = `Last activity ${lastTime}`;
+            waitState.setAttribute('title', 'Время последней активности в открытом диалоге');
+          }
         }
       }
 
@@ -3331,7 +3396,31 @@
       });
     };
 
+    syncQueueCardHints(root);
+
     list.addEventListener('click', (event) => {
+      const favorite = event.target.closest('.js-conv-favorite');
+      if (favorite && list.contains(favorite)) {
+        event.preventDefault();
+        event.stopPropagation();
+        const item = favorite.closest('.conv-item, .list-group-item');
+        const nextFavorite = !favorite.classList.contains('is-favorite');
+        favorite.classList.toggle('is-favorite', nextFavorite);
+        favorite.setAttribute('aria-pressed', nextFavorite ? 'true' : 'false');
+        favorite.setAttribute('title', nextFavorite ? 'Убрать чат из избранного' : 'Добавить чат в избранное');
+        favorite.setAttribute('aria-label', nextFavorite ? 'Убрать чат из избранного' : 'Добавить чат в избранное');
+        const icon = favorite.querySelector('.fa');
+        icon?.classList.toggle('fa-star', nextFavorite);
+        icon?.classList.toggle('fa-star-o', !nextFavorite);
+        if (item) {
+          item.dataset.favorite = nextFavorite ? 'true' : 'false';
+          item.classList.toggle('is-favorite', nextFavorite);
+        }
+        // Избранное остается ручным флагом агента и доступно через фильтр Favorite.
+        runQueueStateUpdate(root, 'favorite_toggle');
+        return;
+      }
+
       const item = event.target.closest('.conv-item, .list-group-item');
       if (!item || !list.contains(item)) {
         return;
@@ -3359,6 +3448,15 @@
         .finally(() => {
           root.classList.remove('is-switching-conversation');
         });
+    });
+
+    list.addEventListener('keydown', (event) => {
+      const favorite = event.target.closest('.js-conv-favorite');
+      if (!favorite || !list.contains(favorite) || !['Enter', ' '].includes(event.key)) {
+        return;
+      }
+      event.preventDefault();
+      favorite.click();
     });
   }
 
@@ -3395,27 +3493,19 @@
           });
 
           if (buttons[0]) {
-            buttons[0].innerHTML = 'All <span class="badge" id="badgeAll">5</span>';
-            buttons[0].dataset.tab = 'all_workload';
+            buttons[0].innerHTML = 'Active chats <span class="badge" id="badgeNeedsReply">3</span>';
+            buttons[0].dataset.tab = 'active_chats';
             buttons[0].classList.add('active');
           }
 
           if (buttons[1]) {
-            buttons[1].innerHTML = 'Active chats <span class="badge" id="badgeNeedsReply">3</span>';
-            buttons[1].dataset.tab = 'active_chats';
+            buttons[1].innerHTML = 'Pings <span class="badge" id="badgePings">2</span>';
+            buttons[1].dataset.tab = 'pings';
             buttons[1].classList.remove('active');
           }
 
           if (buttons[2]) {
-            buttons[2].innerHTML = 'Pings <span class="badge" id="badgePings">2</span>';
-            buttons[2].dataset.tab = 'pings';
-            buttons[2].classList.remove('active');
-          } else if (!tabsRow.querySelector('[data-tab="pings"]')) {
-            const pingsBtn = document.createElement('button');
-            pingsBtn.className = 'btn btn-default btn-sm js-queue-tab';
-            pingsBtn.dataset.tab = 'pings';
-            pingsBtn.innerHTML = 'Pings <span class="badge">2</span>';
-            tabsRow.appendChild(pingsBtn);
+            buttons[2].remove();
           }
         }
         if (filtersRow) {
@@ -3465,7 +3555,7 @@
         return log;
       }
 
-      const flagsPane = root.querySelector('#tab-flags');
+      const flagsPane = root.querySelector('#tab-signals') || root.querySelector('#tab-flags');
       const section = document.createElement('div');
       section.className = 'context-section prototype-action-section';
       section.innerHTML = `
@@ -3671,6 +3761,20 @@
           const pinned = card?.classList.contains('is-pinned-demo');
           logAction(pinned ? 'Dialog pinned' : 'Dialog unpinned');
           showToast(pinned ? 'Dialog pinned' : 'Dialog unpinned');
+          break;
+        }
+        case 'archive-dialog': {
+          const card = getActiveCard();
+          if (!card) {
+            showToast('Select a dialog before archiving', 'warn');
+            break;
+          }
+          card.dataset.archived = 'true';
+          card.classList.add('is-archived');
+          // Архив убирает диалог из рабочей очереди, но не удаляет историю; найти его можно фильтром Archive.
+          logAction('Dialog archived');
+          showToast('Dialog moved to Archive', 'success');
+          runQueueStateUpdate(root, 'archive_dialog');
           break;
         }
         case 'toggle-focus':

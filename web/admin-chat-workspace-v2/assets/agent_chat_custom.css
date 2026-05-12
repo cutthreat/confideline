@@ -1295,7 +1295,8 @@
   min-height: 18px;
 }
 
-#admin-agent-chat .conv-pin {
+#admin-agent-chat .conv-pin,
+#admin-agent-chat .conv-favorite {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1306,7 +1307,31 @@
   line-height: 18px;
 }
 
-#admin-agent-chat .conv-pin .fa {
+/* Левая очередь: звездочка является ручным флагом агента, а не KPI-меткой. */
+#admin-agent-chat .conv-favorite {
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease, transform 0.16s ease;
+}
+
+#admin-agent-chat .conv-favorite:hover,
+#admin-agent-chat .conv-favorite:focus {
+  background: #fff4cc;
+  color: #b26b00;
+  outline: none;
+}
+
+#admin-agent-chat .conv-favorite.is-favorite {
+  background: #fff0b8;
+  color: #a15c00;
+}
+
+#admin-agent-chat .conv-favorite.is-favorite .fa {
+  transform: scale(1.02);
+}
+
+#admin-agent-chat .conv-pin .fa,
+#admin-agent-chat .conv-favorite .fa {
   line-height: 1;
   transform: translateY(1px);
 }
@@ -1323,6 +1348,18 @@
   font-size: 10px;
   font-weight: 800;
   padding: 0;
+}
+
+/* Свежие сообщения подсвечиваем самим счетчиком unread, чтобы не добавлять лишний тег New. */
+#admin-agent-chat .conv-unread.is-fresh {
+  background: #ff3d57;
+  color: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 61, 87, 0.16), 0 4px 10px rgba(185, 28, 28, 0.22);
+}
+
+/* Архивные карточки не участвуют в обычной очереди и показываются только через фильтр Archive. */
+#admin-agent-chat .conv-item.is-archived {
+  opacity: 0.72;
 }
 
 #admin-agent-chat .conv-labels {
@@ -1449,6 +1486,25 @@
   background: rgba(255, 255, 255, 0.14) !important;
   color: #fff !important;
   border: 1px solid rgba(255, 255, 255, 0.24) !important;
+}
+
+#admin-agent-chat .conv-list > .list-group-item.active .conv-unread.is-fresh,
+#admin-agent-chat .conv-list > .conv-item.active .conv-unread.is-fresh {
+  background: #ff3d57 !important;
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 0 0 3px rgba(255, 61, 87, 0.2), 0 5px 12px rgba(0, 0, 0, 0.18) !important;
+}
+
+#admin-agent-chat .conv-list > .list-group-item.active .conv-favorite,
+#admin-agent-chat .conv-list > .conv-item.active .conv-favorite {
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+
+#admin-agent-chat .conv-list > .list-group-item.active .conv-favorite.is-favorite,
+#admin-agent-chat .conv-list > .conv-item.active .conv-favorite.is-favorite {
+  background: rgba(255, 198, 41, 0.2) !important;
+  color: #ffd166 !important;
 }
 
 #admin-agent-chat .conv-list > .list-group-item.active .conv-line-labels .conv-pill,
@@ -5732,6 +5788,7 @@
 }
 
 #admin-agent-chat .conv-line-message .conv-pin,
+#admin-agent-chat .conv-line-message .conv-favorite,
 #admin-agent-chat .conv-line-message .conv-unread {
   margin-top: 0;
   line-height: 1;
@@ -7311,6 +7368,7 @@
   white-space: nowrap;
 }
 
+/* Центральная панель платной сессии: короткий рабочий пульт эксперта, без дублирования левой очереди. */
 #admin-agent-chat .billing-panel-v2 {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
