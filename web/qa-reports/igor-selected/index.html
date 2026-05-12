@@ -38,6 +38,12 @@
         <button class="tp-btn" type="button" data-action="show-all">Показать все</button>
       </div>
       <p class="qa-help">Поле “выполнено” сохраняется локально в браузере Игоря. Для общего статуса Алексей потом переносит результат в отчет/коммит.</p>
+      <div class="qa-share-box">
+        <button class="tp-btn tp-btn--primary" type="button" data-action="build-feedback-link">Сформировать ссылку с комментариями</button>
+        <input type="text" data-feedback-url readonly aria-label="Ссылка с комментариями Игоря" placeholder="После формирования здесь появится ссылка для Алексея">
+        <button class="tp-btn" type="button" data-action="copy-feedback-link">Копировать</button>
+      </div>
+      <p class="qa-help">Эта ссылка передает Алексею только ID задач, отметки `выполнено` и комментарии. Пароли, cookies и localStorage не передаются.</p>
     </section>
 
     <section class="qa-section">
@@ -61,18 +67,27 @@
       const items = window.CONFIDELINE_QA_HANDOFF_ITEMS || [];
       const doneKey = 'confideline.qa.igor.done.v1';
       const list = document.querySelector('[data-items]');
+      const feedbackInput = document.querySelector('[data-feedback-url]');
       const selectedIds = new Set(readSelectedIds());
       const doneStore = readDoneStore();
+
+      function encodePayload(value) {
+        const json = JSON.stringify(value);
+        return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+      }
+
+      function decodePayload(value) {
+        const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
+        const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=');
+        return JSON.parse(decodeURIComponent(escape(atob(padded))));
+      }
 
       function readSelectedIds() {
         const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
         const encoded = hash.get('sel');
         if (encoded) {
           try {
-            const normalized = encoded.replace(/-/g, '+').replace(/_/g, '/');
-            const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=');
-            const json = decodeURIComponent(escape(atob(padded)));
-            const parsed = JSON.parse(json);
+            const parsed = decodePayload(encoded);
             if (Array.isArray(parsed)) return parsed;
           } catch {}
         }
@@ -96,6 +111,27 @@
 
       function selectedItems() {
         return items.filter((item) => selectedIds.has(item.id));
+      }
+
+      function buildFeedbackUrl() {
+        const selected = [...selectedIds];
+        const feedback = {};
+        selected.forEach((id) => {
+          const row = doneStore[id] || {};
+          if (row.done || row.note) {
+            feedback[id] = {
+              done: Boolean(row.done),
+              note: String(row.note || ''),
+              updatedAt: row.updatedAt || new Date().toISOString()
+            };
+          }
+        });
+        const base = new URL('../alexey-igor-handoff/', location.href);
+        const hash = new URLSearchParams();
+        hash.set('sel', encodePayload(selected));
+        hash.set('fb', encodePayload(feedback));
+        base.hash = hash.toString();
+        return base.href;
       }
 
       function render() {
@@ -149,6 +185,7 @@
           doneStore[id].done = Boolean(event.target.checked);
           doneStore[id].updatedAt = new Date().toISOString();
           saveDoneStore();
+          feedbackInput.value = buildFeedbackUrl();
           render();
         }
       });
@@ -160,10 +197,11 @@
           doneStore[id].note = event.target.value;
           doneStore[id].updatedAt = new Date().toISOString();
           saveDoneStore();
+          feedbackInput.value = buildFeedbackUrl();
         }
       });
 
-      document.addEventListener('click', (event) => {
+      document.addEventListener('click', async (event) => {
         const action = event.target.dataset.action;
         if (action === 'only-fail') {
           document.querySelectorAll('[data-status-filter]').forEach((input) => { input.checked = input.dataset.statusFilter === 'FAIL'; });
@@ -175,9 +213,21 @@
           if (hideDone) hideDone.checked = false;
           render();
         }
+        if (action === 'build-feedback-link') {
+          feedbackInput.value = buildFeedbackUrl();
+          feedbackInput.focus();
+          feedbackInput.select();
+        }
+        if (action === 'copy-feedback-link') {
+          if (!feedbackInput.value) feedbackInput.value = buildFeedbackUrl();
+          feedbackInput.focus();
+          feedbackInput.select();
+          try { await navigator.clipboard.writeText(feedbackInput.value); } catch { document.execCommand('copy'); }
+        }
       });
 
       render();
+      feedbackInput.value = buildFeedbackUrl();
     })();
   </script>
 </body>
