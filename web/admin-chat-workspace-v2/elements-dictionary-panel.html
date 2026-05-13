@@ -179,87 +179,6 @@
       margin-bottom: 12px;
     }
 
-    .dictionary-brief {
-      display: grid;
-      gap: 14px;
-    }
-
-    .brief-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(180px, 1fr));
-      gap: 10px;
-    }
-
-    .brief-card,
-    .brief-matrix,
-    .technical-dictionary {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-
-    .brief-card {
-      padding: 14px;
-    }
-
-    .brief-card strong {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 14px;
-    }
-
-    .brief-card span {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
-    }
-
-    .brief-matrix,
-    .technical-dictionary {
-      overflow: hidden;
-    }
-
-    .brief-matrix table {
-      min-width: 760px;
-      box-shadow: none;
-    }
-
-    .brief-matrix th,
-    .brief-matrix td {
-      vertical-align: top;
-    }
-
-    .technical-dictionary summary {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 14px 16px;
-      cursor: pointer;
-      font-weight: 800;
-      list-style: none;
-      background: #fbfdff;
-      border-bottom: 1px solid transparent;
-    }
-
-    .technical-dictionary summary::-webkit-details-marker { display: none; }
-
-    .technical-dictionary summary span {
-      color: var(--muted);
-      font-weight: 400;
-      font-size: 13px;
-      line-height: 1.35;
-    }
-
-    .technical-dictionary[open] summary {
-      border-bottom-color: var(--line);
-    }
-
-    .technical-dictionary-body {
-      padding: 14px;
-    }
-
     .pill {
       display: inline-flex;
       align-items: center;
@@ -343,6 +262,21 @@
     .tag-moderator { background: #fff1f0; color: var(--red); border-color: #ffccc7; }
     .tag-billing { background: #e6f7f0; color: var(--green); border-color: #b7e4cf; }
     .tag-workflow { background: var(--violet-soft); color: var(--violet); border-color: #d8c7ff; }
+
+    .cell-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .cell-layer {
+      display: block;
+      flex-basis: 100%;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.25;
+    }
 
     .orientation-strip {
       display: grid;
@@ -1206,16 +1140,10 @@
       .filters {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
-      .brief-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
     }
 
     @media (max-width: 940px) {
       .filters {
-        grid-template-columns: 1fr;
-      }
-      .brief-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -1269,163 +1197,98 @@
     </nav>
 
     <section class="tab-panel is-active" id="panel-dictionary">
-      <div class="dictionary-brief">
-        <div class="brief-grid">
-          <div class="brief-card">
-            <strong>Левая область: выбрать кейс</strong>
-            <span>Режим Chats/Pings, поиск, фильтры и карточки отвечают только за выбор следующего объекта работы.</span>
-          </div>
-          <div class="brief-card">
-            <strong>Центр: выполнить действие</strong>
-            <span>Шапка, paid session, история и composer помогают ответить, продать, продлить или перевести Ping в Chat.</span>
-          </div>
-          <div class="brief-card">
-            <strong>Правая область: понять причину</strong>
-            <span>Клиент, сценарий, деньги, заметки и риски объясняют, почему действие допустимо или заблокировано.</span>
-          </div>
-          <div class="brief-card">
-            <strong>Источник обязателен</strong>
-            <span>Система, биллинг, workflow, модератор и экспертские private-флаги не смешиваются в один тип сигнала.</span>
-          </div>
+      <div class="filters">
+        <div class="field">
+          <label for="searchBox">Поиск</label>
+          <input id="searchBox" type="search" placeholder="Например: Reply, Live, Favorite, coupon, paid_session">
         </div>
+        <div class="field">
+          <label for="areaFilter">Область</label>
+          <select id="areaFilter">
+            <option value="">Все области</option>
+            <option value="Левая">Левая</option>
+            <option value="Центральная">Центральная</option>
+            <option value="Правая">Правая</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="scenarioFilter">Сценарий</label>
+          <select id="scenarioFilter">
+            <option value="">Chats и Pings</option>
+            <option value="Chats">Chats</option>
+            <option value="Pings">Pings</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="layerFilter">Рабочий слой</label>
+          <select id="layerFilter">
+            <option value="">Все слои</option>
+            <option value="Queue mode">Режим очереди</option>
+            <option value="Queue filters">Фильтры очереди</option>
+            <option value="Queue card tags">Карточки очереди</option>
+            <option value="Header indicators">Индикаторы header</option>
+            <option value="Paid session">Платная сессия</option>
+            <option value="Message stream">История сообщений</option>
+            <option value="Composer templates|Composer actions|Ping actions">Composer и действия</option>
+            <option value="Composer templates">Шаблоны composer</option>
+            <option value="Composer actions">Действия composer</option>
+            <option value="Ping actions">Действия Pings</option>
+            <option value="Client profile">Профиль клиента</option>
+            <option value="Workflow fields|Pay fields">Workflow + деньги</option>
+            <option value="Workflow fields">Поля workflow</option>
+            <option value="Pay fields">Денежные поля</option>
+            <option value="Pay fields|Notes and flags">Деньги + заметки</option>
+            <option value="Notes and flags">Заметки и флаги</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="sourceFilter">Источник</label>
+          <select id="sourceFilter">
+            <option value="">Все источники</option>
+            <option value="System">Система</option>
+            <option value="Workflow">Сценарный движок</option>
+            <option value="Billing">Биллинг</option>
+            <option value="Expert">Эксперт</option>
+            <option value="Moderator">Модератор</option>
+            <option value="UI">Интерфейс</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="typeFilter">Тип</label>
+          <select id="typeFilter">
+            <option value="">Все типы</option>
+            <option value="Control">Управление</option>
+            <option value="Filter">Фильтр</option>
+            <option value="Indicator">Индикатор</option>
+            <option value="State">Состояние</option>
+            <option value="Action">Действие</option>
+            <option value="Variable">Поле данных</option>
+            <option value="Guardrail">Ограничение</option>
+            <option value="Note">Заметка</option>
+          </select>
+        </div>
+      </div>
 
-        <div class="brief-matrix table-scroll">
-          <table aria-label="Короткая карта областей">
+      <div class="summary-strip" id="summaryStrip"></div>
+
+      <div class="table-card">
+        <div class="table-scroll">
+          <table aria-label="Словарь элементов">
             <thead>
               <tr>
+                <th>ID / переменная</th>
                 <th>Область</th>
-                <th>Секции</th>
-                <th>Что решает</th>
-                <th>Зачем это нужно</th>
+                <th>Сценарий</th>
+                <th>Тип / источник</th>
+                <th>Когда появляется</th>
+                <th>Что делает</th>
+                <th>Зачем</th>
+                <th>UI-якорь</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td><strong>Левая</strong></td>
-                <td>Chats/Pings, поиск, эксперт, фильтр, активная карточка, очередь ниже</td>
-                <td>Какой Chat или Ping открыть следующим и почему он важнее остальных.</td>
-                <td>Быстро выбрать, что открыть следующим, без просмотра всей истории.</td>
-              </tr>
-              <tr>
-                <td><strong>Центральная</strong></td>
-                <td>Шапка, paid session, поток сообщений, composer, действия</td>
-                <td>Что эксперт делает прямо сейчас: отвечает, ведет paid session, продает, продлевает или закрывает.</td>
-                <td>Сделать корректный ответ или коммерческий шаг в текущем кейсе.</td>
-              </tr>
-              <tr>
-                <td><strong>Правая</strong></td>
-                <td>Клиент, сценарий, деньги, заметки, аудит</td>
-                <td>Почему действие допустимо, ограничено или должно быть остановлено.</td>
-                <td>Проверить основание действия: кто клиент, можно ли продавать, нет ли риска.</td>
-              </tr>
-            </tbody>
+            <tbody id="dictionaryRows"></tbody>
           </table>
         </div>
-
-        <details class="technical-dictionary">
-          <summary>
-            Полный технический словарь элементов
-            <span>Открывайте, когда нужно проверить конкретную переменную, источник, сценарий или UI-якорь.</span>
-          </summary>
-          <div class="technical-dictionary-body">
-            <div class="filters">
-              <div class="field">
-                <label for="searchBox">Поиск</label>
-                <input id="searchBox" type="search" placeholder="Например: paid_session, Reply, Coupon, Workflow">
-              </div>
-              <div class="field">
-                <label for="areaFilter">Область</label>
-                <select id="areaFilter">
-                  <option value="">Все области</option>
-                  <option value="Левая">Левая</option>
-                  <option value="Центральная">Центральная</option>
-                  <option value="Правая">Правая</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="scenarioFilter">Сценарий</label>
-                <select id="scenarioFilter">
-                  <option value="">Chats и Pings</option>
-                  <option value="Chats">Chats</option>
-                  <option value="Pings">Pings</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="layerFilter">Рабочий слой</label>
-                <select id="layerFilter">
-                  <option value="">Все слои</option>
-                  <option value="Queue mode">Режим очереди</option>
-                  <option value="Queue filters">Фильтры очереди</option>
-                  <option value="Queue card tags">Карточки очереди</option>
-                  <option value="Header indicators">Индикаторы header</option>
-                  <option value="Paid session">Платная сессия</option>
-                  <option value="Message stream">История сообщений</option>
-                  <option value="Composer templates|Composer actions|Ping actions">Composer и действия</option>
-                  <option value="Composer templates">Шаблоны composer</option>
-                  <option value="Composer actions">Действия composer</option>
-                  <option value="Ping actions">Действия Pings</option>
-                  <option value="Client profile">Профиль клиента</option>
-                  <option value="Workflow fields|Pay fields">Workflow + деньги</option>
-                  <option value="Workflow fields">Поля workflow</option>
-                  <option value="Pay fields">Денежные поля</option>
-                  <option value="Pay fields|Notes and flags">Деньги + заметки</option>
-                  <option value="Notes and flags">Заметки и флаги</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="sourceFilter">Источник</label>
-                <select id="sourceFilter">
-                  <option value="">Все источники</option>
-                  <option value="System">Система</option>
-                  <option value="Workflow">Сценарный движок</option>
-                  <option value="Billing">Биллинг</option>
-                  <option value="Expert">Эксперт</option>
-                  <option value="Moderator">Модератор</option>
-                  <option value="UI">Интерфейс</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="typeFilter">Тип</label>
-                <select id="typeFilter">
-                  <option value="">Все типы</option>
-                  <option value="Control">Управление</option>
-                  <option value="Filter">Фильтр</option>
-                  <option value="Indicator">Индикатор</option>
-                  <option value="State">Состояние</option>
-                  <option value="Action">Действие</option>
-                  <option value="Variable">Поле данных</option>
-                  <option value="Guardrail">Ограничение</option>
-                  <option value="Note">Заметка</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="summary-strip" id="summaryStrip"></div>
-
-            <div class="table-card">
-              <div class="table-scroll">
-                <table aria-label="Словарь элементов">
-                  <thead>
-                    <tr>
-                      <th>ID / переменная</th>
-                      <th>Область</th>
-                      <th>Сценарий</th>
-                      <th>Рабочий слой</th>
-                      <th>Тип</th>
-                      <th>Источник</th>
-                      <th>Кем вызывается</th>
-                      <th>Когда появляется</th>
-                      <th>За что отвечает</th>
-                      <th>Зачем используется</th>
-                      <th>UI-якорь</th>
-                    </tr>
-                  </thead>
-                  <tbody id="dictionaryRows"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </details>
       </div>
     </section>
 
@@ -2344,16 +2207,13 @@
           <td class="col-id">${row.id}</td>
           <td>${tag(row.area, areaClass[row.area])}</td>
           <td>${tag(row.scenario, scenarioClass[row.scenario])}</td>
-          <td>${readableLayer(getLayer(row))}</td>
-          <td>${typeLabel[row.type] || row.type}</td>
-          <td>${tag(sourceLabel[row.source] || row.source, sourceClass[row.source])}</td>
-          <td>${readableText(row.caller)}</td>
+          <td><div class="cell-stack">${tag(typeLabel[row.type] || row.type, '')}${tag(sourceLabel[row.source] || row.source, sourceClass[row.source])}<span class="cell-layer">Слой: ${readableLayer(getLayer(row))}</span><span class="cell-layer">Вызов: ${readableText(row.caller)}</span></div></td>
           <td>${readableText(row.when)}</td>
           <td>${readableText(row.responsibility)}</td>
           <td>${readableText(row.purpose)}</td>
           <td>${readableText(row.anchor)}</td>
         </tr>
-      `).join('') || `<tr><td colspan="11"><div class="empty">Ничего не найдено по текущим фильтрам.</div></td></tr>`;
+      `).join('') || `<tr><td colspan="8"><div class="empty">Ничего не найдено по текущим фильтрам.</div></td></tr>`;
 
       const chats = filtered.filter(row => row.scenario === 'Chats').length;
       const pings = filtered.filter(row => row.scenario === 'Pings').length;
