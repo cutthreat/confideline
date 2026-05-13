@@ -193,6 +193,42 @@
       font-size: 13px;
     }
 
+    .multi-filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 36px;
+      align-items: center;
+      padding: 5px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    .multi-filter-button {
+      border: 1px solid #d5dfed;
+      border-radius: 999px;
+      background: #f8fafc;
+      color: var(--muted);
+      padding: 5px 8px;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.1;
+      cursor: pointer;
+    }
+
+    .multi-filter-button.is-active {
+      border-color: #7cb5ff;
+      background: #eaf4ff;
+      color: var(--blue);
+    }
+
+    .multi-filter-button[data-value=""].is-active {
+      border-color: #d5dfed;
+      background: #eef3f8;
+      color: var(--text);
+    }
+
     .summary-strip {
       display: flex;
       gap: 8px;
@@ -525,20 +561,20 @@
     .sector-center.is-active { background: rgba(179, 92, 0, 0.18); }
     .sector-right.is-active { background: rgba(111, 66, 193, 0.18); }
 
-    .sector-left-workload { left: 18.2%; top: 12.7%; width: 24.3%; height: 6.8%; }
-    .sector-left-search { left: 18.2%; top: 19.8%; width: 24.3%; height: 7.4%; }
-    .sector-left-active-card { left: 18.2%; top: 27.6%; width: 24.3%; height: 12%; }
-    .sector-left-card-badges { left: 18.2%; top: 39.8%; width: 24.3%; height: 5.7%; }
-    .sector-left-card-list { left: 18.2%; top: 45.9%; width: 24.3%; height: 48.2%; }
-    .sector-center-header { left: 42.9%; top: 12.7%; width: 34.6%; height: 7%; }
-    .sector-center-session { left: 42.9%; top: 19.9%; width: 34.6%; height: 8.1%; }
-    .sector-center-stream { left: 42.9%; top: 28.3%; width: 34.6%; height: 55%; }
-    .sector-center-composer { left: 42.9%; top: 83.8%; width: 34.6%; height: 10.3%; }
-    .sector-right-tabs { right: 1.35%; top: 12.7%; width: 20.3%; height: 8.3%; }
-    .sector-right-client { right: 1.35%; top: 21.3%; width: 20.3%; height: 38%; }
-    .sector-right-workflow { right: 1.35%; top: 59.7%; width: 20.3%; height: 12.6%; }
-    .sector-right-pay { right: 1.35%; top: 72.7%; width: 20.3%; height: 10.8%; }
-    .sector-right-notes { right: 1.35%; top: 83.9%; width: 20.3%; height: 10.2%; }
+    .sector-left-workload { left: 18.6%; top: 13%; width: 23.3%; height: 4.9%; }
+    .sector-left-search { left: 18.6%; top: 18.6%; width: 23.3%; height: 5.2%; }
+    .sector-left-active-card { left: 18.6%; top: 24.1%; width: 23.3%; height: 11.2%; }
+    .sector-left-card-badges { left: 18.6%; top: 35.4%; width: 23.3%; height: 4.1%; }
+    .sector-left-card-list { left: 18.6%; top: 39.9%; width: 23.3%; height: 54.2%; }
+    .sector-center-header { left: 42.4%; top: 13%; width: 35.2%; height: 7.3%; }
+    .sector-center-session { left: 42.4%; top: 20.6%; width: 35.2%; height: 8.8%; }
+    .sector-center-stream { left: 42.4%; top: 29.8%; width: 35.2%; height: 52.8%; }
+    .sector-center-composer { left: 42.4%; top: 82.9%; width: 35.2%; height: 11.2%; }
+    .sector-right-tabs { right: 1.55%; top: 13%; width: 20%; height: 8.7%; }
+    .sector-right-client { right: 1.55%; top: 22.2%; width: 20%; height: 37.2%; }
+    .sector-right-workflow { right: 1.55%; top: 59.8%; width: 20%; height: 12.8%; }
+    .sector-right-pay { right: 1.55%; top: 73%; width: 20%; height: 10.6%; }
+    .sector-right-notes { right: 1.55%; top: 83.9%; width: 20%; height: 10.2%; }
 
     .sector-guide {
       display: grid;
@@ -1001,6 +1037,44 @@
       margin-bottom: 9px;
     }
 
+    .map-scenario-switch {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      padding: 8px;
+      margin: 0 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+
+    .map-scenario-switch span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-right: 2px;
+    }
+
+    .map-scenario-button {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .map-scenario-button.is-active {
+      border-color: #7cb5ff;
+      background: #eaf4ff;
+      color: var(--blue);
+    }
+
     .detail-box p {
       margin: 0 0 8px;
       color: var(--muted);
@@ -1341,47 +1415,47 @@
           <input id="searchBox" type="search" placeholder="Например: Reply, Live, Favorite, coupon, paid_session">
         </div>
         <div class="field">
-          <label for="areaFilter">Область</label>
-          <select id="areaFilter">
-            <option value="">Все области</option>
-            <option value="Левая">Левая</option>
-            <option value="Центральная">Центральная</option>
-            <option value="Правая">Правая</option>
-          </select>
+          <label id="areaFilterLabel">Область</label>
+          <div class="multi-filter" id="areaFilter" role="group" aria-labelledby="areaFilterLabel" data-multi-filter>
+            <button class="multi-filter-button is-active" type="button" data-value="">Все</button>
+            <button class="multi-filter-button" type="button" data-value="Левая">Левая</button>
+            <button class="multi-filter-button" type="button" data-value="Центральная">Центр</button>
+            <button class="multi-filter-button" type="button" data-value="Правая">Правая</button>
+          </div>
         </div>
         <div class="field">
-          <label for="scenarioFilter">Сценарий</label>
-          <select id="scenarioFilter">
-            <option value="">Chats и Pings</option>
-            <option value="Chats">Chats</option>
-            <option value="Pings">Pings</option>
-          </select>
+          <label id="scenarioFilterLabel">Сценарий</label>
+          <div class="multi-filter" id="scenarioFilter" role="group" aria-labelledby="scenarioFilterLabel" data-multi-filter>
+            <button class="multi-filter-button is-active" type="button" data-value="">Все</button>
+            <button class="multi-filter-button" type="button" data-value="Chats">Chats</button>
+            <button class="multi-filter-button" type="button" data-value="Pings">Pings</button>
+          </div>
         </div>
         <div class="field">
-          <label for="sourceFilter">Источник</label>
-          <select id="sourceFilter">
-            <option value="">Все источники</option>
-            <option value="System">Система</option>
-            <option value="Workflow">Сценарный движок</option>
-            <option value="Billing">Биллинг</option>
-            <option value="Expert">Эксперт</option>
-            <option value="Moderator">Модератор</option>
-            <option value="UI">Интерфейс</option>
-          </select>
+          <label id="sourceFilterLabel">Источник</label>
+          <div class="multi-filter" id="sourceFilter" role="group" aria-labelledby="sourceFilterLabel" data-multi-filter>
+            <button class="multi-filter-button is-active" type="button" data-value="">Все</button>
+            <button class="multi-filter-button" type="button" data-value="System">Система</button>
+            <button class="multi-filter-button" type="button" data-value="Workflow">Сценарий</button>
+            <button class="multi-filter-button" type="button" data-value="Billing">Биллинг</button>
+            <button class="multi-filter-button" type="button" data-value="Expert">Эксперт</button>
+            <button class="multi-filter-button" type="button" data-value="Moderator">Модератор</button>
+            <button class="multi-filter-button" type="button" data-value="UI">UI</button>
+          </div>
         </div>
         <div class="field">
-          <label for="typeFilter">Тип</label>
-          <select id="typeFilter">
-            <option value="">Все типы</option>
-            <option value="Control">Управление</option>
-            <option value="Filter">Фильтр</option>
-            <option value="Indicator">Индикатор</option>
-            <option value="State">Состояние</option>
-            <option value="Action">Действие</option>
-            <option value="Variable">Поле данных</option>
-            <option value="Guardrail">Ограничение</option>
-            <option value="Note">Заметка</option>
-          </select>
+          <label id="typeFilterLabel">Тип</label>
+          <div class="multi-filter" id="typeFilter" role="group" aria-labelledby="typeFilterLabel" data-multi-filter>
+            <button class="multi-filter-button is-active" type="button" data-value="">Все</button>
+            <button class="multi-filter-button" type="button" data-value="Control">Управление</button>
+            <button class="multi-filter-button" type="button" data-value="Filter">Фильтр</button>
+            <button class="multi-filter-button" type="button" data-value="Indicator">Индикатор</button>
+            <button class="multi-filter-button" type="button" data-value="State">Состояние</button>
+            <button class="multi-filter-button" type="button" data-value="Action">Действие</button>
+            <button class="multi-filter-button" type="button" data-value="Variable">Данные</button>
+            <button class="multi-filter-button" type="button" data-value="Guardrail">Ограничение</button>
+            <button class="multi-filter-button" type="button" data-value="Note">Заметка</button>
+          </div>
         </div>
         <div class="filter-presets">
           <button class="btn btn-toggle" type="button" id="productLogicPreset" aria-pressed="false">Только продуктовая логика эксперта</button>
@@ -1904,7 +1978,7 @@
         layer: 'Queue mode',
         scenarios: ['Chats', 'Pings'],
         purpose: 'Сектор определяет тип рабочей очереди. Эксперт сначала выбирает, работает он с реальными диалогами Chats или с pre-chat сигналами Pings.',
-        role: 'Это главный разворот логики: Chats ведут к ответу, paid session и продаже; Pings ведут к мягкому контакту и переводу в Chat.',
+        role: 'В этой зоне находятся две кнопки режима и счетчики нагрузки. Пользователь видит, в каком типе работы находится очередь сейчас: обычные диалоги Chats или сигналы Pings до начала полноценного чата.',
         includes: [
           ['Chats tab', 'Открывает сквозные диалоги с free, Book Now, paid session и objection внутри одной истории.'],
           ['Pings tab', 'Открывает сигналы интереса до полноценного чата. Ping не получает Chat SLA до ответа клиента.'],
@@ -1921,7 +1995,7 @@
         layer: 'Queue filters',
         scenarios: ['Chats', 'Pings'],
         purpose: 'Сектор сужает очередь до кейсов, которые реально нужно обработать: по поиску, клиенту, эксперту и рабочему фильтру.',
-        role: 'Фильтр отвечает не за stage внутри кейса, а за отбор списка. Поэтому Chats и Pings имеют разные наборы фильтров.',
+        role: 'В этой зоне находятся поиск по очереди, выбор клиента или экспертного профиля и меню быстрых фильтров. Пользователь сначала ограничивает список до нужных диалогов или pings, а уже затем открывает конкретную карточку.',
         includes: [
           ['Search', 'Ищет по клиенту, эксперту, id, preview и stage внутри выбранного режима.'],
           ['User/expert select', 'Помогает быстро найти конкретного клиента или профиль эксперта.'],
@@ -1946,7 +2020,7 @@
         layer: 'Queue card tags',
         scenarios: ['Chats', 'Pings'],
         purpose: 'Активная карточка показывает, какой кейс открыт сейчас и почему он выбран из очереди.',
-        role: 'Это верх активной карточки: кто клиент, какой экспертный профиль, когда было последнее событие и какой короткий preview объясняет выбор. Строка бейджей вынесена в отдельный сектор 4.',
+        role: 'В этой зоне находится открытая карточка из очереди: связка клиент -> экспертный профиль, время последнего события, короткий preview, непрочитанные и личная отметка эксперта.',
         includes: [
           ['Client -> expert', 'Система показывает клиента и видимый экспертный профиль, чтобы не ответить от неправильного образа.'],
           ['Last activity', 'Система показывает время последнего события. Нужен для оценки свежести и срочности.'],
@@ -1966,7 +2040,7 @@
         layer: 'Queue card tags',
         scenarios: ['Chats', 'Pings'],
         purpose: 'Отдельная строка бейджей отвечает на вопрос: почему именно эта карточка срочная, денежная или сценарно важная до чтения правой панели.',
-        role: 'Это короткая операционная маркировка карточки, а не кнопки действий. Бейджи ставятся системой, биллингом или сценарным движком; эксперт вручную ставит только свои личные флаги вроде Favorite.',
+        role: 'В этой зоне находится строка коротких индикаторов карточки. По ним пользователь понимает срочность, оплату, ожидание ответа, риск SLA или причину Ping без открытия правой панели.',
         includes: [
           ['Paid Live', 'Chats. Сценарий или движок сессий ставит при активной платной сессии. Означает, что эксперт уже исполняет оплаченное обещание и задержка критична.'],
           ['Reply', 'Chats. Система ставит, когда клиент ждет ответа агента или эксперта. Это следующий ход за нами.'],
@@ -1988,7 +2062,7 @@
         layer: 'Queue card tags',
         scenarios: ['Chats', 'Pings'],
         purpose: 'Список ниже активной карточки показывает следующие возможные кейсы без перегруза деталями.',
-        role: 'Каждая строка должна объяснять только причину потенциального выбора. Подробный сценарий появляется после открытия карточки.',
+        role: 'В этой зоне находится оставшаяся очередь. Карточки показывают только достаточно данных для сравнения: кто пишет, что произошло, насколько свежий кейс и какие короткие индикаторы есть.',
         includes: [
           ['Неактивные карточки', 'Система показывает клиента, preview, last activity и короткие бейджи. Этого достаточно для сравнения очереди.'],
           ['Слабая визуальная плотность', 'Неактивные карточки не должны спорить с открытым кейсом: меньше контраста, меньше бейджей, только важное.'],
@@ -2006,7 +2080,7 @@
         layer: 'Header indicators',
         scenarios: ['Chats', 'Pings'],
         purpose: 'Шапка подтверждает, какой клиент и какой экспертный профиль сейчас открыт, и показывает краткие статусы, влияющие на ответ.',
-        role: 'Перед отправкой эксперт должен видеть stage, Live/PP или ping reason, чтобы не ответить не в тот сценарий.',
+        role: 'В этой зоне находится паспорт открытого кейса: клиент, экспертный профиль, текущая стадия и краткие статусы. Она удерживает пользователя в правильном сценарии перед ответом.',
         includes: [
           ['Client -> expert profile', 'Система подтверждает, какой клиент и какой видимый экспертный профиль открыт. Это защита от ответа не от того образа.'],
           ['Stage chip', 'Workflow показывает текущую стадию: free, Book Now, objection, paid, Ping stage. Это ориентир ответа, не фильтр очереди.'],
@@ -2025,7 +2099,7 @@
         layer: 'Paid session',
         scenarios: ['Chats'],
         purpose: 'Сектор показывает, есть ли оплаченная сессия, кто ее ведет и сколько времени осталось.',
-        role: 'Это рабочий блок исполнения обязательства. Он нужен только в Chats, потому что Ping еще не является активным платным диалогом.',
+        role: 'В этой зоне находится управление оплаченной сессией: старт, стоп, владелец сессии, остаток времени и окно продления. Для Pings этот блок не используется, потому что Ping еще не является чатом.',
         includes: [
           ['Start paid session', 'Эксперт запускает оплаченный интервал, когда оплата есть и delivery можно начинать.'],
           ['Stop paid session', 'Эксперт завершает оплаченный интервал, когда консультация закончена или время отработано.'],
@@ -2044,7 +2118,7 @@
         layer: 'Message stream',
         scenarios: ['Chats', 'Pings'],
         purpose: 'Сектор показывает контекст общения. Для Chats это непрерывная история free -> Book Now -> paid -> objection; для Pings это причина сигнала и предыдущие касания.',
-        role: 'Это доказательная база ответа: эксперт не должен писать без понимания последнего события и контекста.',
+        role: 'В этой зоне находится история общения или контекст Ping. Пользователь видит, что уже было сказано, на каком этапе находится клиент и откуда берется следующий шаг.',
         includes: [
           ['Message stream', 'Все сообщения и события текущего Chat в одной линии.'],
           ['Ping context', 'Причина pre-chat сигнала и история касаний до перехода в Chat.'],
@@ -2061,7 +2135,7 @@
         layer: 'Composer templates|Composer actions|Ping actions',
         scenarios: ['Chats', 'Pings'],
         purpose: 'Поле ответа превращает понимание стадии в действие: ответ, предложение оплаты, приглашение из Ping в Chat, запрос компенсации, закрытие чата или снятие Ping из очереди.',
-        role: 'Сектор должен помогать выполнить следующий шаг, но не заменять экспертное решение и не давить на клиента.',
+        role: 'В этой зоне находится поле ответа и рабочие действия: шаблоны, отправка, коммерческое предложение, приглашение, компенсация, закрытие Chat или снятие Ping из очереди.',
         includes: [
           ['Сценарная подсказка', 'Короткое объяснение следующего действия и предупреждения.'],
           ['Шаблоны', 'Сценарные заготовки без универсального мусора.'],
@@ -2078,7 +2152,7 @@
         layer: '',
         scenarios: ['Chats', 'Pings'],
         purpose: 'Вкладки разделяют причины: клиент, сценарий, деньги и заметки. Это защищает правую область от одной длинной свалки данных.',
-        role: 'Эксперт открывает нужный контекст только когда он нужен для решения: кто клиент, что говорит workflow, что с деньгами, какие есть notes.',
+        role: 'В этой зоне находятся вкладки правого инспектора. Они разделяют контекст на профиль клиента, сценарий, деньги и заметки, чтобы пользователь не искал все в одном длинном блоке.',
         includes: [
           ['Клиент', 'Паспорт клиента и роль эксперта.'],
           ['Сценарий', 'Stage, next action, boundary, objection и risk.'],
@@ -2096,7 +2170,7 @@
         layer: 'Client profile',
         scenarios: ['Chats', 'Pings'],
         purpose: 'Профиль клиента дает минимальный паспорт, без которого легко ошибиться в языке, timezone, birth data или видимом экспертном образе.',
-        role: 'Используется перед содержательным ответом или первым касанием, когда важны персональные данные и контекст роли.',
+        role: 'В этой зоне находится профиль клиента: язык, timezone, birth data, видимый экспертный профиль, реальный оператор и базовая клиентская информация для корректного ответа.',
         includes: [
           ['Language/timezone', 'Правильный язык и время контакта.'],
           ['Birth data', 'База для консультации, если она нужна.'],
@@ -2113,7 +2187,7 @@
         layer: 'Workflow fields',
         scenarios: ['Chats', 'Pings'],
         purpose: 'Сектор объясняет, почему система предлагает текущий следующий шаг: стадия, граница бесплатного ответа, Book Now, paid session, возражение, Ping reason и risk.',
-        role: 'Это не место отправки действия. Это логическое основание для header, composer и фильтров очереди.',
+        role: 'В этой зоне находится объяснение сценария: текущая стадия, следующий шаг, предупреждения, граница бесплатной ценности, платная сессия, возражение или причина Ping.',
         includes: [
           ['Stage', 'Workflow показывает текущую стадию: free, Book Now, paid, objection, reactivation или Ping stage. Нужна для выбора правильного шаблона.'],
           ['Next action', 'Workflow предлагает следующий шаг: запросить данные, дать ответ, предложить оплату, обработать возражение, пригласить из Ping в Chat.'],
@@ -2133,7 +2207,7 @@
         layer: 'Pay fields',
         scenarios: ['Chats', 'Pings'],
         purpose: 'Сектор хранит денежный контекст отдельно от текста ответа: баланс, paid history, coupon rule, compensation и payment events.',
-        role: 'Эксперт должен видеть финансовое основание, но не должен вручную менять деньги или выдавать компенсации.',
+        role: 'В этой зоне находится платежный контекст: баланс, статус оплаты, история платных сессий, купоны, компенсации и ограничения по продаже или продлению.',
         includes: [
           ['Balance', 'Биллинг показывает кредиты или платежную готовность. В Pings это помогает выбрать приглашение вместо холодного касания.'],
           ['Paid history', 'Биллинг показывает прошлые покупки. Нужна для previous buyer логики и запрета нового полного бесплатного чтения.'],
@@ -2152,7 +2226,7 @@
         layer: 'Notes and flags',
         scenarios: ['Chats', 'Pings'],
         purpose: 'Сектор разделяет личную память эксперта, командные заметки, модераторские ограничения и QA/audit след.',
-        role: 'Заметки полезны только если понятны owner и visibility. Личный флаг эксперта не должен становиться командным routing-сигналом.',
+        role: 'В этой зоне находятся заметки и флаги с разной видимостью: личные заметки эксперта, командный контекст, модераторские ограничения и QA/audit след.',
         includes: [
           ['Expert private note', 'Эксперт пишет для себя. Видит только он. Не влияет на глобальный приоритет и не виден модератору как обязательная инструкция.'],
           ['Favorite', 'Эксперт ставит личный флаг на Chat или Ping. Это private shortcut, а не системный приоритет.'],
@@ -2256,6 +2330,49 @@
     const productLogicPreset = document.getElementById('productLogicPreset');
     const summaryStrip = document.getElementById('summaryStrip');
     let productLogicOnly = false;
+
+    function selectedValues(filter) {
+      return Array.from(filter.querySelectorAll('.multi-filter-button.is-active'))
+        .map(button => button.dataset.value)
+        .filter(Boolean);
+    }
+
+    function resetMultiFilter(filter) {
+      filter.querySelectorAll('.multi-filter-button').forEach(button => {
+        const active = button.dataset.value === '';
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+    }
+
+    function setMultiFilter(filter, values = []) {
+      const wanted = new Set(values.filter(Boolean));
+      filter.querySelectorAll('.multi-filter-button').forEach(button => {
+        const active = wanted.size ? wanted.has(button.dataset.value) : button.dataset.value === '';
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+    }
+
+    function toggleMultiFilter(button) {
+      const filter = button.closest('[data-multi-filter]');
+      const value = button.dataset.value;
+
+      if (!value) {
+        resetMultiFilter(filter);
+        return;
+      }
+
+      const allButton = filter.querySelector('.multi-filter-button[data-value=""]');
+      allButton.classList.remove('is-active');
+      allButton.setAttribute('aria-pressed', 'false');
+      button.classList.toggle('is-active');
+      button.setAttribute('aria-pressed', button.classList.contains('is-active') ? 'true' : 'false');
+
+      if (!selectedValues(filter).length) {
+        resetMultiFilter(filter);
+      }
+    }
 
     function tag(label, className) {
       return `<span class="tag ${className || ''}">${label}</span>`;
@@ -2419,12 +2536,16 @@
     function matches(row) {
       const q = searchBox.value.trim().toLowerCase();
       const haystack = Object.values(row).join(' ').toLowerCase();
+      const areas = selectedValues(areaFilter);
+      const scenarios = selectedValues(scenarioFilter);
+      const sources = selectedValues(sourceFilter);
+      const types = selectedValues(typeFilter);
       return (!productLogicOnly || isExpertProductLogic(row)) &&
         (!q || haystack.includes(q)) &&
-        (!areaFilter.value || row.area === areaFilter.value) &&
-        (!scenarioFilter.value || row.scenario === scenarioFilter.value) &&
-        (!sourceFilter.value || row.source === sourceFilter.value) &&
-        (!typeFilter.value || row.type === typeFilter.value);
+        (!areas.length || areas.includes(row.area)) &&
+        (!scenarios.length || scenarios.includes(row.scenario)) &&
+        (!sources.length || sources.includes(row.source)) &&
+        (!types.length || types.includes(row.type));
     }
 
     function renderRows() {
@@ -2461,6 +2582,8 @@
       productLogicPreset.setAttribute('aria-pressed', productLogicOnly ? 'true' : 'false');
     }
 
+    let selectedMapScenario = 'Chats';
+
     function relatedRowsFor(detail, sectorKey) {
       if (sectorKey) {
         if (sectorKey === 'left-card-list') {
@@ -2475,9 +2598,28 @@
       );
     }
 
+    function filterRowsByMapScenario(rows) {
+      return rows.filter(row => row.scenario === selectedMapScenario);
+    }
+
+    function renderScenarioSwitch(detail) {
+      const scenarios = ['Chats', 'Pings'];
+      const supported = new Set(detail.scenarios);
+      return `
+        <div class="map-scenario-switch" aria-label="Фильтр сценария вкладки 2">
+          <span>Сценарий</span>
+          ${scenarios.map(scenario => `
+            <button class="map-scenario-button ${selectedMapScenario === scenario ? 'is-active' : ''}" type="button" data-map-scenario="${scenario}" aria-pressed="${selectedMapScenario === scenario ? 'true' : 'false'}">
+              ${scenario}${supported.has(scenario) ? '' : ' · нет в зоне'}
+            </button>
+          `).join('')}
+        </div>
+      `;
+    }
+
     function renderSectorDictionaryRows(relatedRows) {
       if (!relatedRows.length) {
-        return '<div class="empty">Для этого сектора пока нет строк словаря. Это ошибка покрытия, сектор нужно дополнить.</div>';
+        return `<div class="empty">Для выбранного сценария ${selectedMapScenario} в этом секторе нет элементов. Это значит, что блок не используется в этом сценарии или его нужно отдельно добавить в продуктовую логику.</div>`;
       }
 
       return relatedRows.map(row => `
@@ -2501,9 +2643,10 @@
 
     function renderInspector(detail, sectorKey = '') {
       const inspector = document.getElementById('areaInspector');
-      const relatedRows = relatedRowsFor(detail, sectorKey);
-      const chatsCount = relatedRows.filter(row => row.scenario === 'Chats').length;
-      const pingsCount = relatedRows.filter(row => row.scenario === 'Pings').length;
+      const allRelatedRows = relatedRowsFor(detail, sectorKey);
+      const relatedRows = filterRowsByMapScenario(allRelatedRows);
+      const chatsCount = allRelatedRows.filter(row => row.scenario === 'Chats').length;
+      const pingsCount = allRelatedRows.filter(row => row.scenario === 'Pings').length;
       inspector.innerHTML = `
         <div class="area-inspector-head">
           <div>
@@ -2512,9 +2655,10 @@
           </div>
           ${tag(detail.area, areaClass[detail.area])}
         </div>
+        ${renderScenarioSwitch(detail)}
         <div class="detail-meta">
-          ${detail.scenarios.map(scenario => tag(scenario, scenarioClass[scenario])).join('')}
-          <span class="pill"><strong>${relatedRows.length}</strong> строк словаря</span>
+          ${tag(`Показан сценарий: ${selectedMapScenario}`, scenarioClass[selectedMapScenario])}
+          <span class="pill"><strong>${relatedRows.length}</strong> строк в выбранном сценарии</span>
           <span class="pill pill-chats"><strong>${chatsCount}</strong> Chats</span>
           <span class="pill pill-pings"><strong>${pingsCount}</strong> Pings</span>
         </div>
@@ -2543,16 +2687,21 @@
       renderInspector(sectorDetails[sectorKey] || sectorDetails['left-workload'], sectorKey);
     }
 
-    [searchBox, areaFilter, scenarioFilter, sourceFilter, typeFilter].forEach(el => el.addEventListener('input', renderRows));
+    searchBox.addEventListener('input', renderRows);
+
+    document.querySelectorAll('[data-multi-filter] .multi-filter-button').forEach(button => {
+      button.setAttribute('aria-pressed', button.classList.contains('is-active') ? 'true' : 'false');
+      button.addEventListener('click', () => {
+        toggleMultiFilter(button);
+        renderRows();
+      });
+    });
 
     productLogicPreset.addEventListener('click', () => {
       productLogicOnly = !productLogicOnly;
       if (productLogicOnly) {
         searchBox.value = '';
-        areaFilter.value = '';
-        scenarioFilter.value = '';
-        sourceFilter.value = '';
-        typeFilter.value = '';
+        [areaFilter, scenarioFilter, sourceFilter, typeFilter].forEach(resetMultiFilter);
       }
       renderRows();
     });
@@ -2595,6 +2744,7 @@
       document.querySelectorAll('.sector-trigger').forEach(item => {
         item.classList.toggle('is-active', item.dataset.sector === sectorKey);
       });
+      syncHotspotBounds(sectorKey);
       renderSectorInspector(sectorKey);
     }
 
@@ -2612,24 +2762,177 @@
     });
 
     document.addEventListener('click', event => {
+      const button = event.target.closest('[data-map-scenario]');
+      if (!button) {
+        return;
+      }
+
+      selectedMapScenario = button.dataset.mapScenario;
+      activateSector(currentSectorKey());
+    });
+
+    document.addEventListener('click', event => {
       const button = event.target.closest('[data-show-dictionary-area]');
       if (!button) {
         return;
       }
       document.querySelector('[data-panel="dictionary"]').click();
-      areaFilter.value = button.dataset.showDictionaryArea;
-      scenarioFilter.value = '';
-      sourceFilter.value = '';
-      typeFilter.value = '';
+      setMultiFilter(areaFilter, [button.dataset.showDictionaryArea]);
+      setMultiFilter(scenarioFilter, [selectedMapScenario]);
+      resetMultiFilter(sourceFilter);
+      resetMultiFilter(typeFilter);
       searchBox.value = '';
       renderRows();
     });
 
     let mockupFrameLoaded = false;
 
+    const sectorTargetSelectors = {
+      'left-workload': ['.pane-left .pane-head .queue-tabs-row'],
+      'left-search': ['.pane-left .pane-scroll.ng-scope > .queue-search-row'],
+      'left-active-card': [
+        '.pane-left .conv-list > .conv-item.active .conv-line-head',
+        '.pane-left .conv-list > .conv-item.active .conv-line-message'
+      ],
+      'left-card-badges': ['.pane-left .conv-list > .conv-item.active .conv-line-labels'],
+      'left-card-list': ['.pane-left .conv-list > .conv-item:not(.active):not([hidden])'],
+      'center-header': ['.pane-center .conversation-header'],
+      'center-session': ['.pane-center .billing-panel.is-open:not([hidden])'],
+      'center-stream': ['.pane-center .chat-body'],
+      'center-composer': ['.pane-center .composer'],
+      'right-tabs': ['.pane-right .right-tabs-refined'],
+      'right-client': ['.pane-right #tab-client.right-pane.active'],
+      'right-workflow': ['.pane-right #tab-ai.right-pane.active'],
+      'right-pay': ['.pane-right #tab-pay.right-pane.active'],
+      'right-notes': ['.pane-right #tab-notes.right-pane.active']
+    };
+
+    const sectorRightTab = {
+      'right-client': 'client',
+      'right-workflow': 'ai',
+      'right-pay': 'pay',
+      'right-notes': 'notes'
+    };
+
+    function syncMockupScenario() {
+      const mockupDoc = getMockupDocument();
+      if (!mockupDoc) {
+        return;
+      }
+
+      const targetTab = selectedMapScenario === 'Pings' ? 'pings' : 'active_chats';
+      const tabButton = mockupDoc.querySelector(`.pane-left .js-queue-tab[data-tab="${targetTab}"]`);
+      if (tabButton) {
+        tabButton.click();
+      }
+    }
+
+    function getMockupDocument() {
+      const iframe = document.getElementById('mockupIframe');
+      try {
+        return iframe && iframe.contentDocument ? iframe.contentDocument : null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function currentSectorKey() {
+      const active = document.querySelector('.sector-hotspot.is-active');
+      return active ? active.dataset.sector : 'left-workload';
+    }
+
+    function selectMockupRightTab(sectorKey) {
+      const tabName = sectorRightTab[sectorKey];
+      const mockupDoc = getMockupDocument();
+      if (!tabName || !mockupDoc) {
+        return;
+      }
+
+      mockupDoc.querySelectorAll('.pane-right .right-tab').forEach(button => {
+        button.classList.toggle('active', button.dataset.tab === tabName);
+      });
+      mockupDoc.querySelectorAll('.pane-right .right-pane').forEach(pane => {
+        pane.classList.toggle('active', pane.id === `tab-${tabName}`);
+      });
+    }
+
+    function visibleRectForSelectors(mockupDoc, selectors) {
+      const rects = [];
+      selectors.forEach(selector => {
+        mockupDoc.querySelectorAll(selector).forEach(element => {
+          const style = mockupDoc.defaultView.getComputedStyle(element);
+          const rect = element.getBoundingClientRect();
+          if (
+            rect.width > 0 &&
+            rect.height > 0 &&
+            style.display !== 'none' &&
+            style.visibility !== 'hidden'
+          ) {
+            rects.push(rect);
+          }
+        });
+      });
+
+      if (!rects.length) {
+        return null;
+      }
+
+      return rects.reduce((acc, rect) => ({
+        left: Math.min(acc.left, rect.left),
+        top: Math.min(acc.top, rect.top),
+        right: Math.max(acc.right, rect.right),
+        bottom: Math.max(acc.bottom, rect.bottom)
+      }), {
+        left: rects[0].left,
+        top: rects[0].top,
+        right: rects[0].right,
+        bottom: rects[0].bottom
+      });
+    }
+
+    function applyHotspotRect(sectorKey, rect, mockupDoc) {
+      const hotspot = document.querySelector(`.sector-hotspot[data-sector="${sectorKey}"]`);
+      if (!hotspot || !rect || !mockupDoc.defaultView) {
+        return;
+      }
+
+      const viewportWidth = mockupDoc.defaultView.innerWidth || 1440;
+      const viewportHeight = mockupDoc.defaultView.innerHeight || 820;
+      const padding = 2;
+      const left = Math.max(0, rect.left - padding);
+      const top = Math.max(0, rect.top - padding);
+      const right = Math.min(viewportWidth, rect.right + padding);
+      const bottom = Math.min(viewportHeight, rect.bottom + padding);
+
+      hotspot.style.left = `${(left / viewportWidth) * 100}%`;
+      hotspot.style.top = `${(top / viewportHeight) * 100}%`;
+      hotspot.style.width = `${((right - left) / viewportWidth) * 100}%`;
+      hotspot.style.height = `${((bottom - top) / viewportHeight) * 100}%`;
+      hotspot.style.right = 'auto';
+    }
+
+    function syncHotspotBounds(sectorKey = currentSectorKey()) {
+      const mockupDoc = getMockupDocument();
+      if (!mockupDoc) {
+        return;
+      }
+
+      syncMockupScenario();
+      selectMockupRightTab(sectorKey);
+      window.requestAnimationFrame(() => {
+        Object.entries(sectorTargetSelectors).forEach(([key, selectors]) => {
+          const rect = visibleRectForSelectors(mockupDoc, selectors);
+          if (rect) {
+            applyHotspotRect(key, rect, mockupDoc);
+          }
+        });
+      });
+    }
+
     async function loadMockupFrame() {
       const iframe = document.getElementById('mockupIframe');
       if (!iframe || mockupFrameLoaded) {
+        syncHotspotBounds();
         return;
       }
 
@@ -2676,9 +2979,17 @@
       frame.style.setProperty('--mockup-frame-width', `${Math.ceil(designWidth * scale)}px`);
       frame.style.setProperty('--mockup-frame-height', `${Math.ceil(designHeight * scale)}px`);
       stage.style.transform = `scale(${scale})`;
+      syncHotspotBounds();
     }
 
     window.addEventListener('resize', fitMockupStage);
+
+    const mockupIframe = document.getElementById('mockupIframe');
+    if (mockupIframe) {
+      mockupIframe.addEventListener('load', () => {
+        syncHotspotBounds();
+      });
+    }
 
     document.getElementById('copyCurrentView').addEventListener('click', async () => {
       try {
