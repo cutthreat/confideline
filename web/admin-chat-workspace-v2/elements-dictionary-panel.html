@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin Chat Workspace V2 - словарь элементов</title>
+  <title>Админ-панель чата V2 - словарь элементов</title>
   <style>
     :root {
       --bg: #f4f6f8;
@@ -1090,7 +1090,6 @@
     }
 
     @media (max-width: 1180px) {
-      .filters,
       .orientation-strip,
       .mockup-review-grid,
       .screen-walkthrough,
@@ -1118,13 +1117,25 @@
       .flow-step { min-height: auto; }
       .flow-step::after { display: none; }
     }
+
+    @media (max-width: 1180px) {
+      .filters {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 940px) {
+      .filters {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
   <main class="page">
     <header class="topbar">
       <div class="title-block">
-        <h1>Admin Chat Workspace V2: словарь элементов, карта областей и Expert Flow</h1>
+        <h1>Админ-панель чата V2: словарь элементов, карта областей и путь эксперта</h1>
         <p>
           Панель для передачи разработчику: каждая переменная привязана к области экрана, сценарию Chats или Pings, источнику,
           моменту появления и действию. Общие механики продублированы отдельными строками для Chats и Pings, чтобы не было
@@ -1141,11 +1152,11 @@
     <section class="verdict-grid" aria-label="Проверка модели">
       <div class="verdict-card">
         <strong>Модель подтверждена</strong>
-        <span>Сквозной Chat хранит free, Book Now, paid session и objection в одном диалоге.</span>
+        <span>Сквозной Chat хранит бесплатный этап, Book Now, платную сессию и возражения в одном диалоге.</span>
       </div>
       <div class="verdict-card">
-        <strong>Stage не фильтр</strong>
-        <span>Stage ведет сценарий ответа. Фильтры только отбирают очередь.</span>
+        <strong>Стадия не фильтр</strong>
+        <span>Стадия ведет сценарий ответа. Фильтры только отбирают очередь.</span>
       </div>
       <div class="verdict-card">
         <strong>Pings отдельно</strong>
@@ -1153,18 +1164,18 @@
       </div>
       <div class="verdict-card">
         <strong>Источник обязателен</strong>
-        <span>System, Billing, Workflow, Moderator и Expert-private не смешиваются.</span>
+        <span>Система, биллинг, сценарный движок, модератор и личные флаги эксперта не смешиваются.</span>
       </div>
       <div class="verdict-card">
         <strong>Без слабых метрик</strong>
-        <span>Нет fake risk %, точного LTV без формулы и generic quick replies.</span>
+        <span>Нет неподтвержденных процентов риска, точного LTV без формулы и универсальных шаблонов без сценария.</span>
       </div>
     </section>
 
     <nav class="tabs" aria-label="Разделы панели">
       <button class="tab is-active" type="button" data-panel="dictionary">1. Общая таблица-словарь</button>
       <button class="tab" type="button" data-panel="map">2. Области и указания</button>
-      <button class="tab" type="button" data-panel="flow">3. Expert Flow</button>
+      <button class="tab" type="button" data-panel="flow">3. Путь эксперта</button>
     </nav>
 
     <section class="tab-panel is-active" id="panel-dictionary">
@@ -1194,48 +1205,48 @@
           <label for="layerFilter">Рабочий слой</label>
           <select id="layerFilter">
             <option value="">Все слои</option>
-            <option value="Queue mode">Queue mode</option>
-            <option value="Queue filters">Queue filters</option>
-            <option value="Queue card tags">Queue card tags</option>
-            <option value="Header indicators">Header indicators</option>
-            <option value="Paid session">Paid session</option>
-            <option value="Message stream">Message stream</option>
-            <option value="Composer templates|Composer actions|Ping actions">Composer and actions</option>
-            <option value="Composer templates">Composer templates</option>
-            <option value="Composer actions">Composer actions</option>
-            <option value="Ping actions">Ping actions</option>
-            <option value="Client profile">Client profile</option>
-            <option value="Workflow fields|Pay fields">Workflow + Pay</option>
-            <option value="Workflow fields">Workflow fields</option>
-            <option value="Pay fields">Pay fields</option>
-            <option value="Pay fields|Notes and flags">Pay + Notes</option>
-            <option value="Notes and flags">Notes and flags</option>
+            <option value="Queue mode">Режим очереди</option>
+            <option value="Queue filters">Фильтры очереди</option>
+            <option value="Queue card tags">Карточки очереди</option>
+            <option value="Header indicators">Индикаторы header</option>
+            <option value="Paid session">Платная сессия</option>
+            <option value="Message stream">История сообщений</option>
+            <option value="Composer templates|Composer actions|Ping actions">Composer и действия</option>
+            <option value="Composer templates">Шаблоны composer</option>
+            <option value="Composer actions">Действия composer</option>
+            <option value="Ping actions">Действия Pings</option>
+            <option value="Client profile">Профиль клиента</option>
+            <option value="Workflow fields|Pay fields">Workflow + деньги</option>
+            <option value="Workflow fields">Поля workflow</option>
+            <option value="Pay fields">Денежные поля</option>
+            <option value="Pay fields|Notes and flags">Деньги + заметки</option>
+            <option value="Notes and flags">Заметки и флаги</option>
           </select>
         </div>
         <div class="field">
           <label for="sourceFilter">Источник</label>
           <select id="sourceFilter">
             <option value="">Все источники</option>
-            <option value="System">System</option>
-            <option value="Workflow">Workflow</option>
-            <option value="Billing">Billing</option>
-            <option value="Expert">Expert</option>
-            <option value="Moderator">Moderator</option>
-            <option value="UI">UI</option>
+            <option value="System">Система</option>
+            <option value="Workflow">Сценарный движок</option>
+            <option value="Billing">Биллинг</option>
+            <option value="Expert">Эксперт</option>
+            <option value="Moderator">Модератор</option>
+            <option value="UI">Интерфейс</option>
           </select>
         </div>
         <div class="field">
           <label for="typeFilter">Тип</label>
           <select id="typeFilter">
             <option value="">Все типы</option>
-            <option value="Control">Control</option>
-            <option value="Filter">Filter</option>
-            <option value="Indicator">Indicator</option>
-            <option value="State">State</option>
-            <option value="Action">Action</option>
-            <option value="Variable">Variable</option>
-            <option value="Guardrail">Guardrail</option>
-            <option value="Note">Note</option>
+            <option value="Control">Управление</option>
+            <option value="Filter">Фильтр</option>
+            <option value="Indicator">Индикатор</option>
+            <option value="State">Состояние</option>
+            <option value="Action">Действие</option>
+            <option value="Variable">Поле данных</option>
+            <option value="Guardrail">Ограничение</option>
+            <option value="Note">Заметка</option>
           </select>
         </div>
       </div>
@@ -1303,35 +1314,35 @@
             <div class="sector-guide-group">
               <div class="sector-guide-title"><span>Центральная область</span><span>Действие</span></div>
               <div class="sector-guide-list">
-                <button class="sector-guide-button sector-trigger" type="button" data-sector="center-header"><strong>4</strong><span>Header и статусы</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="center-header"><strong>4</strong><span>Шапка и статусы</span></button>
                 <button class="sector-guide-button sector-trigger" type="button" data-sector="center-stream"><strong>5</strong><span>История сообщений</span></button>
-                <button class="sector-guide-button sector-trigger" type="button" data-sector="center-composer"><strong>6</strong><span>Composer и действия</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="center-composer"><strong>6</strong><span>Поле ответа и действия</span></button>
               </div>
             </div>
             <div class="sector-guide-group">
               <div class="sector-guide-title"><span>Правая область</span><span>Причина</span></div>
               <div class="sector-guide-list">
                 <button class="sector-guide-button sector-trigger" type="button" data-sector="right-tabs"><strong>7</strong><span>Вкладки контекста</span></button>
-                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-client"><strong>8</strong><span>Client profile</span></button>
-                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-workflow"><strong>9</strong><span>Workflow / Pay</span></button>
-                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-paynotes"><strong>10</strong><span>Pay details / Notes</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-client"><strong>8</strong><span>Профиль клиента</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-workflow"><strong>9</strong><span>Сценарий и деньги</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-paynotes"><strong>10</strong><span>Деньги, заметки, аудит</span></button>
               </div>
             </div>
           </div>
           <div class="mockup-frame">
             <div class="mockup-scale-stage" id="mockupScaleStage">
-              <iframe src="./index.html" title="Admin Chat Workspace V2 mockup"></iframe>
+              <iframe src="./index.html" title="Макет админ-панели чата V2"></iframe>
               <div class="mockup-overlay" aria-label="Кликабельные сектора макета">
                 <button class="sector-hotspot sector-trigger sector-left sector-left-workload is-active" type="button" data-sector="left-workload" aria-label="1. Режим Chats или Pings"><span>1</span></button>
                 <button class="sector-hotspot sector-trigger sector-left sector-left-search" type="button" data-sector="left-search" aria-label="2. Поиск и фильтры очереди"><span>2</span></button>
                 <button class="sector-hotspot sector-trigger sector-left sector-left-cards" type="button" data-sector="left-cards" aria-label="3. Карточки очереди"><span>3</span></button>
-                <button class="sector-hotspot sector-trigger sector-center sector-center-header" type="button" data-sector="center-header" aria-label="4. Header и статусы"><span>4</span></button>
+                <button class="sector-hotspot sector-trigger sector-center sector-center-header" type="button" data-sector="center-header" aria-label="4. Шапка и статусы"><span>4</span></button>
                 <button class="sector-hotspot sector-trigger sector-center sector-center-stream" type="button" data-sector="center-stream" aria-label="5. История сообщений"><span>5</span></button>
-                <button class="sector-hotspot sector-trigger sector-center sector-center-composer" type="button" data-sector="center-composer" aria-label="6. Composer и действия"><span>6</span></button>
+                <button class="sector-hotspot sector-trigger sector-center sector-center-composer" type="button" data-sector="center-composer" aria-label="6. Поле ответа и действия"><span>6</span></button>
                 <button class="sector-hotspot sector-trigger sector-right sector-right-tabs" type="button" data-sector="right-tabs" aria-label="7. Вкладки контекста"><span>7</span></button>
-                <button class="sector-hotspot sector-trigger sector-right sector-right-client" type="button" data-sector="right-client" aria-label="8. Client profile"><span>8</span></button>
-                <button class="sector-hotspot sector-trigger sector-right sector-right-workflow" type="button" data-sector="right-workflow" aria-label="9. Workflow и Pay"><span>9</span></button>
-                <button class="sector-hotspot sector-trigger sector-right sector-right-paynotes" type="button" data-sector="right-paynotes" aria-label="10. Pay details и Notes"><span>10</span></button>
+                <button class="sector-hotspot sector-trigger sector-right sector-right-client" type="button" data-sector="right-client" aria-label="8. Профиль клиента"><span>8</span></button>
+                <button class="sector-hotspot sector-trigger sector-right sector-right-workflow" type="button" data-sector="right-workflow" aria-label="9. Сценарий и деньги"><span>9</span></button>
+                <button class="sector-hotspot sector-trigger sector-right sector-right-paynotes" type="button" data-sector="right-paynotes" aria-label="10. Деньги, заметки и аудит"><span>10</span></button>
               </div>
             </div>
           </div>
@@ -1345,14 +1356,14 @@
       <div class="flow-shell">
         <div class="flow-head">
           <div>
-            <h2>Expert Flow: путь от сигнала к бизнес-результату</h2>
+            <h2>Путь эксперта: от сигнала к бизнес-результату</h2>
             <p>
-              Вкладка показывает не экранные элементы по отдельности, а рабочую последовательность эксперта:
-              что он видит, почему индикатор нужен, какое действие выполняет и какой результат должен получить.
+              Вкладка показывает рабочую последовательность: что эксперт видит, почему индикатор нужен,
+              какое действие выполняет и какой бизнес-результат должен получить.
             </p>
           </div>
-          <div class="flow-switch" role="tablist" aria-label="Сценарии User Flow">
-            <button class="flow-nav-button is-active" type="button" data-flow="chats">Chats: продажа paid chat</button>
+          <div class="flow-switch" role="tablist" aria-label="Сценарии пути эксперта">
+            <button class="flow-nav-button is-active" type="button" data-flow="chats">Chats: продажа платного чата</button>
             <button class="flow-nav-button" type="button" data-flow="pings">Pings: перевод в Chats</button>
           </div>
         </div>
@@ -1361,9 +1372,9 @@
           <div class="flow-goal flow-goal--chats">
             <div>
               <span>Итог сценария Chats</span>
-              <strong>Клиент получает релевантный ответ, понимает границу free value и покупает или продлевает paid chat.</strong>
+              <strong>Клиент получает релевантный ответ, понимает границу бесплатной ценности и покупает или продлевает платный чат.</strong>
             </div>
-            <p>Сквозной чат не дробится: free trial, Book Now, payment pending, paid session, objection и extend живут в одной истории.</p>
+            <p>Сквозной чат не дробится: бесплатный этап, Book Now, ожидание оплаты, платная сессия, возражение и продление живут в одной истории.</p>
           </div>
 
           <div class="flow-layout">
@@ -1381,48 +1392,48 @@
               <article class="flow-step">
                 <span class="step-kicker">Центр</span>
                 <h3>2. Понять stage и следующий безопасный шаг</h3>
-                <p>Header и workflow hint фиксируют стадию: free boundary, Book Now, objection, paid live, extend window.</p>
+                <p>Шапка чата и сценарная подсказка фиксируют стадию: границу бесплатного ответа, Book Now, возражение, активную оплату или окно продления.</p>
                 <div class="flow-tags">
-                  <span>Stage chip</span>
-                  <span>Workflow warning</span>
+                  <span>Стадия</span>
+                  <span>Сценарное предупреждение</span>
                   <span>Live / PP</span>
                 </div>
               </article>
               <article class="flow-step">
                 <span class="step-kicker">Центр</span>
                 <h3>3. Дать value без нарушения free boundary</h3>
-                <p>Эксперт отвечает по сути, но не отдает полный продукт бесплатно. Composer подсказывает шаблон: need data, Book Now, objection или paid topic.</p>
+                <p>Эксперт отвечает по сути, но не отдает полный продукт бесплатно. Поле ответа подсказывает сценарий: запрос данных, Book Now, обработку возражения или платную тему.</p>
                 <div class="flow-tags">
-                  <span>Quick reply</span>
-                  <span>Composer guardrail</span>
-                  <span>Attachments</span>
+                  <span>Сценарный шаблон</span>
+                  <span>Ограничение ответа</span>
+                  <span>Вложения</span>
                 </div>
               </article>
               <article class="flow-step">
-                <span class="step-kicker">Центр + Pay</span>
+                <span class="step-kicker">Центр + деньги</span>
                 <h3>4. Предложить оплату или продление в уместный момент</h3>
-                <p>Offer используется только когда stage и контекст это оправдывают. При active paid session важнее доставка, при low time - extend.</p>
+                <p>Коммерческое предложение используется только когда стадия и контекст это оправдывают. При активной платной сессии важнее качественная доставка, при малом остатке времени - продление.</p>
                 <div class="flow-tags">
-                  <span>Offer</span>
-                  <span>Start / Stop</span>
-                  <span>Timer / Extend</span>
+                  <span>Предложение</span>
+                  <span>Старт / стоп сессии</span>
+                  <span>Таймер / продление</span>
                 </div>
               </article>
               <article class="flow-step flow-step--result">
                 <span class="step-kicker">Результат</span>
-                <h3>5. Paid chat продан, продлен или корректно закрыт</h3>
-                <p>Итог фиксируется через payment/session events, resolve или objection state. Если нужна компенсация, эксперт создает request, а не меняет деньги вручную.</p>
+                <h3>5. Платный чат продан, продлен или корректно закрыт</h3>
+                <p>Итог фиксируется через события оплаты/сессии, закрытие кейса или состояние возражения. Если нужна компенсация, эксперт создает заявку, а не меняет деньги вручную.</p>
               </article>
             </div>
 
             <aside class="flow-side">
               <h3>Зачем здесь индикаторы</h3>
               <div class="flow-reason-list">
-                <div><strong>System</strong><span>Reply, SLA, unread, last activity показывают операционную срочность.</span></div>
-                <div><strong>Billing</strong><span>Live, PP, balance, paid status показывают денежное обязательство и шанс оплаты.</span></div>
-                <div><strong>Workflow</strong><span>Stage, next action, warning и objection защищают сценарий от хаотичных ответов.</span></div>
-                <div><strong>Moderator</strong><span>Риски и team notes ограничивают pushy sales, safety и quality ошибки.</span></div>
-                <div><strong>Expert-private</strong><span>Favorite/private note помогают самому эксперту вернуться к кейсу, но не маршрутизируют команду.</span></div>
+                <div><strong>Система</strong><span>Reply, SLA, непрочитанные и последняя активность показывают операционную срочность.</span></div>
+                <div><strong>Биллинг</strong><span>Live, PP, баланс и статус оплаты показывают денежное обязательство и шанс оплаты.</span></div>
+                <div><strong>Сценарный движок</strong><span>Стадия, следующий шаг, предупреждение и возражение защищают сценарий от хаотичных ответов.</span></div>
+                <div><strong>Модератор</strong><span>Риски и командные заметки ограничивают давление в продаже, safety и quality ошибки.</span></div>
+                <div><strong>Личное эксперта</strong><span>Favorite и private note помогают эксперту вернуться к кейсу, но не маршрутизируют команду.</span></div>
               </div>
             </aside>
           </div>
@@ -1452,48 +1463,48 @@
               <article class="flow-step">
                 <span class="step-kicker">Правая область</span>
                 <h3>2. Проверить причину контакта</h3>
-                <p>Workflow и Client объясняют, почему ping возник: интерес к эксперту, reactivation, кредиты, предыдущая покупка или future paid reminder.</p>
+                <p>Сценарий и профиль клиента объясняют, почему возник Ping: интерес к эксперту, реактивация, кредиты, предыдущая покупка или напоминание о будущей платной сессии.</p>
                 <div class="flow-tags">
-                  <span>Ping reason</span>
-                  <span>Client context</span>
-                  <span>Moderator note</span>
+                  <span>Причина Ping</span>
+                  <span>Контекст клиента</span>
+                  <span>Заметка модератора</span>
                 </div>
               </article>
               <article class="flow-step">
                 <span class="step-kicker">Центр</span>
                 <h3>3. Выбрать мягкое первое действие</h3>
-                <p>Send template используется для аккуратного касания. Invite используется, когда есть реальный intent или платежная готовность.</p>
+                <p>Шаблон первого сообщения используется для аккуратного касания. Приглашение используется, когда есть реальный интерес или платежная готовность.</p>
                 <div class="flow-tags">
-                  <span>Send template</span>
-                  <span>Invite</span>
-                  <span>Favorite / Dismiss</span>
+                  <span>Шаблон сообщения</span>
+                  <span>Приглашение</span>
+                  <span>Favorite / закрыть</span>
                 </div>
               </article>
               <article class="flow-step">
                 <span class="step-kicker">Переход</span>
                 <h3>4. Клиент отвечает или принимает invite</h3>
-                <p>После ответа ping перестает быть pre-chat сигналом и становится обычным сквозным Chat с историей, stage и дальнейшей продажей paid chat.</p>
+                <p>После ответа Ping перестает быть pre-chat сигналом и становится обычным сквозным Chat с историей, стадией и дальнейшей продажей платного чата.</p>
                 <div class="flow-tags">
-                  <span>Create/open Chat</span>
-                  <span>Attach ping context</span>
-                  <span>Start Chat flow</span>
+                  <span>Создать / открыть Chat</span>
+                  <span>Перенести контекст Ping</span>
+                  <span>Запустить сценарий Chat</span>
                 </div>
               </article>
               <article class="flow-step flow-step--result">
                 <span class="step-kicker">Результат</span>
                 <h3>5. Ping переведен в Chat или закрыт</h3>
-                <p>Если клиент не отвечает или повод слабый, ping закрывается через Dismiss. Если есть потенциал, эксперт может оставить personal Favorite/private note.</p>
+                <p>Если клиент не отвечает или повод слабый, Ping закрывается через Dismiss. Если есть потенциал, эксперт может оставить личный Favorite или private note.</p>
               </article>
             </div>
 
             <aside class="flow-side">
               <h3>Почему Pings отделены от Chats</h3>
               <div class="flow-reason-list">
-                <div><strong>Нет reply SLA</strong><span>До ответа клиента это не активный диалог, а сигнал интереса.</span></div>
-                <div><strong>Нет paid delivery</strong><span>Start/Stop paid session появляется только в Chat, не в ping-сигнале.</span></div>
-                <div><strong>Нужен повод</strong><span>Intent, Credits и ping reason защищают от случайного массового outreach.</span></div>
+                <div><strong>Нет SLA ответа</strong><span>До ответа клиента это не активный диалог, а сигнал интереса.</span></div>
+                <div><strong>Нет оплаченной доставки</strong><span>Start/Stop платной сессии появляется только в Chat, не в Ping-сигнале.</span></div>
+                <div><strong>Нужен повод</strong><span>Intent, Credits и причина Ping защищают от случайного массового первого касания.</span></div>
                 <div><strong>Конверсия</strong><span>Цель Pings - не ответить ради ответа, а перевести подходящий сигнал в Chat.</span></div>
-                <div><strong>Личная память</strong><span>Favorite/private note помогают эксперту, но не создают глобальный приоритет.</span></div>
+                <div><strong>Личная память</strong><span>Личный Favorite и private note помогают эксперту, но не создают глобальный приоритет.</span></div>
               </div>
             </aside>
           </div>
@@ -1620,11 +1631,11 @@
         purpose: 'Это диспетчерская очередь. Она отвечает не за подробный разбор клиента, а за быстрый выбор следующего объекта работы.',
         role: 'Эксперт должен за 3-5 секунд понять: это реальный Chat или Ping, насколько кейс срочный, есть ли деньги/риски, и почему его стоит открыть.',
         includes: [
-          ['Workload mode', 'Chats показывает реальные диалоги, Pings показывает pre-chat сигналы интереса.'],
-          ['Search / user select', 'Ручной поиск по клиенту, экспертному профилю, id, preview и stage.'],
-          ['Queue filters', 'Chats: Reply, SLA, Live, PP, Sell, Favorite, Archive. Pings: NEW, Intent, Credits, Favorite.'],
-          ['Queue card tags', 'Один stage badge и до 3-4 рабочих индикаторов, которые реально меняют приоритет.'],
-          ['Preview / last activity / unread', 'Короткий смысл, свежесть и объем внимания без раскрытия всей истории.']
+          ['Режим очереди', 'Chats показывает реальные диалоги, Pings показывает pre-chat сигналы интереса.'],
+          ['Поиск и выбор участника', 'Ручной поиск по клиенту, экспертному профилю, id, preview и stage.'],
+          ['Фильтры очереди', 'Chats: Reply, SLA, Live, PP, Sell, Favorite, Archive. Pings: NEW, Intent, Credits, Favorite.'],
+          ['Метки карточки', 'Один stage badge и до 3-4 рабочих индикаторов, которые реально меняют приоритет.'],
+          ['Превью / активность / непрочитанное', 'Короткий смысл, свежесть и объем внимания без раскрытия всей истории.']
         ],
         variables: [
           'workload_mode',
@@ -1638,10 +1649,10 @@
           'favorite_private_flag'
         ],
         triggers: [
-          'System ставит Reply, SLA, NEW, Intent и unread.',
-          'Billing ставит Live, PP и Credits.',
-          'Workflow ставит stage badge: Paid Live, Book soon, Objection, Lift Due, Future Paid.',
-          'Expert ставит только личные Favorite/Pin, они не становятся глобальной правдой.'
+          'Система ставит Reply, SLA, NEW, Intent и unread.',
+          'Биллинг ставит Live, PP и Credits.',
+          'Сценарный движок ставит stage badge: Paid Live, Book soon, Objection, Lift Due, Future Paid.',
+          'Эксперт ставит только личные Favorite/Pin, они не становятся глобальной правдой.'
         ],
         notHere: [
           'Полная история платежей.',
@@ -1658,11 +1669,11 @@
         purpose: 'Это рабочее место открытого кейса. Здесь эксперт отвечает, запускает paid session, обрабатывает Book Now/objection, делает invite или закрывает кейс.',
         role: 'Центр должен отвечать на вопрос: какое действие эксперт выполняет прямо сейчас и что нельзя нарушить перед отправкой сообщения.',
         includes: [
-          ['Header', 'Показывает client -> expert profile, stage chip, Live/PP и last activity.'],
-          ['Paid session controls', 'Start/Stop, My session, timer, sell window и paid delivery status внутри сквозного чата.'],
-          ['Message stream', 'Сквозная история общения: free, Book Now, objection и paid не дробятся на отдельные чаты.'],
-          ['Composer templates', 'Need data, Book Now, Objection, Paid topic, Extend, Safety route.'],
-          ['Actions', 'Chats: Offer, Comp request, Resolve. Pings: Send template, Invite, Favorite, Dismiss.']
+          ['Шапка кейса', 'Показывает client -> expert profile, stage chip, Live/PP и последнюю активность.'],
+          ['Управление платной сессией', 'Start/Stop, My session, timer, sell window и статус доставки внутри сквозного чата.'],
+          ['История сообщений', 'Сквозная история общения: бесплатный этап, Book Now, возражение и платная сессия не дробятся на отдельные чаты.'],
+          ['Шаблоны ответа', 'Запрос данных, Book Now, возражение, платная тема, продление и safety route.'],
+          ['Действия', 'Chats: Offer, Comp request, Resolve. Pings: Send template, Invite, Favorite, Dismiss.']
         ],
         variables: [
           'active_conversation_id',
@@ -1675,9 +1686,9 @@
           'next_action'
         ],
         triggers: [
-          'Expert запускает Start/Stop, Offer, Comp request, Resolve, Send template, Invite, Dismiss.',
-          'Workflow обновляет hint, stage и warning при выборе карточки.',
-          'Billing/session engine обновляет Live, My session, timer и sell window.',
+          'Эксперт запускает Start/Stop, Offer, Comp request, Resolve, Send template, Invite, Dismiss.',
+          'Сценарный движок обновляет hint, stage и warning при выборе карточки.',
+          'Биллинг/session engine обновляет Live, My session, timer и sell window.',
           'Safety/moderator signals могут подавлять sales push или требовать осторожную формулировку.'
         ],
         notHere: [
@@ -1695,11 +1706,11 @@
         purpose: 'Это инспектор деталей. Он объясняет, почему система предлагает именно такой следующий шаг, и хранит контекст, который не должен засорять очередь и центр.',
         role: 'Правая область нужна, когда эксперт или разработчик должен понять причину: клиент, workflow, деньги, риски, заметки и источники флагов.',
         includes: [
-          ['Client', 'Язык, timezone, birth data, visible expert, real operator, device/platform.'],
-          ['Workflow', 'Stage, next action, warning, free boundary, Book Now, paid session, objection, ping/lift, risk.'],
-          ['Pay', 'Balance, status, paid history, coupon rule, extend window, used time, compensation, payment events.'],
-          ['Notes', 'Expert-private, team и moderator notes с понятной видимостью и источником.'],
-          ['Action log', 'Только prototype/QA след действий, не production source of truth.']
+          ['Клиент', 'Язык, timezone, birth data, visible expert, real operator, device/platform.'],
+          ['Сценарий', 'Stage, next action, warning, free boundary, Book Now, paid session, objection, ping/lift, risk.'],
+          ['Деньги', 'Balance, status, paid history, coupon rule, extend window, used time, compensation, payment events.'],
+          ['Заметки', 'Expert-private, team и moderator notes с понятной видимостью и источником.'],
+          ['Журнал действий', 'Только prototype/QA след действий, не production source of truth.']
         ],
         variables: [
           'client_language',
@@ -1716,11 +1727,11 @@
           'note_visibility'
         ],
         triggers: [
-          'System/Profile заполняет Client.',
-          'Workflow engine заполняет Workflow fields.',
-          'Billing/business rules заполняют Pay fields.',
-          'Expert, team и moderator создают notes с разной видимостью.',
-          'Moderator/system risk flags могут влиять на warning и sales suppression.'
+          'Система/Profile заполняет данные клиента.',
+          'Сценарный движок заполняет workflow fields.',
+          'Биллинг/business rules заполняют денежные поля.',
+          'Эксперт, команда и модератор создают notes с разной видимостью.',
+          'Moderator/system risk flags могут влиять на warning и suppression продажи.'
         ],
         notHere: [
           'Новые действия, которые должны быть в центре.',
@@ -1786,15 +1797,15 @@
         dictionary: { area: 'Левая', layer: 'Queue card tags' }
       },
       'center-header': {
-        title: 'Центр / header открытого кейса',
+        title: 'Центр / шапка открытого кейса',
         area: 'Центральная',
         layer: 'Header indicators',
         scenarios: ['Chats', 'Pings'],
-        purpose: 'Header подтверждает, какой клиент и какой экспертный профиль сейчас открыт, и показывает краткие статусы, влияющие на ответ.',
+        purpose: 'Шапка подтверждает, какой клиент и какой экспертный профиль сейчас открыт, и показывает краткие статусы, влияющие на ответ.',
         role: 'Перед отправкой эксперт должен видеть stage, Live/PP или ping reason, чтобы не ответить не в тот сценарий.',
         includes: [
-          ['Identity', 'Client -> expert profile для контроля роли.'],
-          ['Stage chip', 'Текущая стадия сценария.'],
+          ['Идентичность', 'Client -> expert profile для контроля роли.'],
+          ['Стадия', 'Текущая стадия сценария.'],
           ['Live / PP / NEW / Intent / Credits', 'Краткие системные и billing-индикаторы, которые меняют приоритет.']
         ],
         variables: ['active_conversation_id', 'conversation_stage', 'paid_session_status', 'payment_pending_status', 'ping_reason'],
@@ -1820,16 +1831,16 @@
         dictionary: { area: 'Центральная', layer: 'Message stream' }
       },
       'center-composer': {
-        title: 'Центр / composer, шаблоны и действия',
+        title: 'Центр / поле ответа, шаблоны и действия',
         area: 'Центральная',
         layer: 'Composer templates|Composer actions|Ping actions',
         scenarios: ['Chats', 'Pings'],
-        purpose: 'Composer превращает понимание stage в действие: ответ, offer, invite, compensation request, resolve или dismiss.',
+        purpose: 'Поле ответа превращает понимание stage в действие: ответ, offer, invite, compensation request, resolve или dismiss.',
         role: 'Сектор должен помогать выполнить следующий шаг, но не заменять экспертное решение и не давить на клиента.',
         includes: [
-          ['Workflow hint', 'Короткое объяснение next action и warning.'],
-          ['Quick replies', 'Сценарные заготовки без generic-мусора.'],
-          ['Actions', 'Chats: Offer, Comp request, Resolve. Pings: Send template, Invite, Dismiss.']
+          ['Сценарная подсказка', 'Короткое объяснение next action и warning.'],
+          ['Шаблоны', 'Сценарные заготовки без универсального мусора.'],
+          ['Действия', 'Chats: Offer, Comp request, Resolve. Pings: Send template, Invite, Dismiss.']
         ],
         variables: ['composer_mode', 'draft_text', 'next_action', 'workflow_warning', 'offer_type', 'invite_type'],
         triggers: ['Expert выбирает шаблон или действие.', 'Workflow ограничивает действие через warning.', 'Billing/session state влияет на Offer/Extend/Start/Stop.'],
@@ -1841,13 +1852,13 @@
         area: 'Правая',
         layer: '',
         scenarios: ['Chats', 'Pings'],
-        purpose: 'Вкладки разделяют причины: Client, Workflow, Pay и Notes. Это защищает правую область от одной длинной свалки данных.',
+        purpose: 'Вкладки разделяют причины: клиент, сценарий, деньги и заметки. Это защищает правую область от одной длинной свалки данных.',
         role: 'Эксперт открывает нужный контекст только когда он нужен для решения: кто клиент, что говорит workflow, что с деньгами, какие есть notes.',
         includes: [
-          ['Client', 'Паспорт клиента и роль эксперта.'],
-          ['Workflow', 'Stage, next action, boundary, objection и risk.'],
-          ['Pay', 'Balance, paid history, coupon и compensation.'],
-          ['Notes', 'Expert-private, team и moderator notes.']
+          ['Клиент', 'Паспорт клиента и роль эксперта.'],
+          ['Сценарий', 'Stage, next action, boundary, objection и risk.'],
+          ['Деньги', 'Balance, paid history, coupon и compensation.'],
+          ['Заметки', 'Expert-private, team и moderator notes.']
         ],
         variables: ['active_context_tab', 'client_id', 'workflow_stage', 'pay_status', 'note_visibility'],
         triggers: ['Expert переключает вкладку.', 'System показывает relevant tab при выборе кейса.', 'Moderator/risk может подсветить Workflow или Notes.'],
@@ -1855,11 +1866,11 @@
         dictionary: { area: 'Правая', layer: '' }
       },
       'right-client': {
-        title: 'Правая / Client profile',
+        title: 'Правая / профиль клиента',
         area: 'Правая',
         layer: 'Client profile',
         scenarios: ['Chats', 'Pings'],
-        purpose: 'Client profile дает минимальный паспорт клиента, без которого легко ошибиться в языке, timezone, birth data или видимом экспертном образе.',
+        purpose: 'Профиль клиента дает минимальный паспорт, без которого легко ошибиться в языке, timezone, birth data или видимом экспертном образе.',
         role: 'Используется перед содержательным ответом или первым outreach, когда важны персональные данные и контекст роли.',
         includes: [
           ['Language/timezone', 'Правильный язык и время контакта.'],
@@ -1872,16 +1883,16 @@
         dictionary: { area: 'Правая', layer: 'Client profile' }
       },
       'right-workflow': {
-        title: 'Правая / Workflow и Pay rationale',
+        title: 'Правая / логика сценария и денег',
         area: 'Правая',
         layer: 'Workflow fields|Pay fields',
         scenarios: ['Chats', 'Pings'],
         purpose: 'Сектор объясняет, почему система предлагает текущий next action: stage, free boundary, Book Now, paid session, objection, risk и деньги.',
         role: 'Это не кнопки действия, а логическое основание. Разработчику важно видеть, какие поля питают header, composer и фильтры.',
         includes: [
-          ['Workflow fields', 'Stage, next action, free boundary, Book Now, objection, ping/lift, risk.'],
-          ['Pay fields', 'Balance, paid history, coupon rule, extend window, compensation.'],
-          ['Guardrails', 'Ограничения, которые подавляют неправильный sales push.']
+          ['Поля сценария', 'Stage, next action, free boundary, Book Now, objection, ping/lift, risk.'],
+          ['Денежные поля', 'Balance, paid history, coupon rule, extend window, compensation.'],
+          ['Ограничения', 'Ограничения, которые подавляют неправильное давление в продаже.']
         ],
         variables: ['workflow_stage', 'next_action', 'free_boundary', 'book_now_status', 'paid_session_status', 'objection_state', 'risk_flags', 'balance', 'coupon_rule'],
         triggers: ['Workflow engine обновляет stage и next action.', 'Billing обновляет paid/balance/coupon.', 'Moderator/System ставят risk flags.'],
@@ -1889,17 +1900,17 @@
         dictionary: { area: 'Правая', layer: 'Workflow fields|Pay fields' }
       },
       'right-paynotes': {
-        title: 'Правая / Pay details, notes и audit trail',
+        title: 'Правая / деньги, заметки и аудит',
         area: 'Правая',
         layer: 'Pay fields|Notes and flags',
         scenarios: ['Chats', 'Pings'],
         purpose: 'Сектор хранит денежные детали и заметки с понятной видимостью: что видит команда, что видит модератор, что видит только эксперт.',
         role: 'Нужен для разборов, передачи смены, компенсаций и личной памяти эксперта без смешения private-флагов с глобальными решениями.',
         includes: [
-          ['Pay fields', 'Balance, paid history, coupon eligibility, compensation request.'],
-          ['Expert-private note', 'Видит только эксперт, не влияет на routing.'],
-          ['Moderator note', 'Командное ограничение, QA или safety context.'],
-          ['Action log', 'След действий прототипа для QA, не production source of truth.']
+          ['Денежные поля', 'Balance, paid history, coupon eligibility, compensation request.'],
+          ['Личная заметка эксперта', 'Видит только эксперт, не влияет на routing.'],
+          ['Заметка модератора', 'Командное ограничение, QA или safety context.'],
+          ['Журнал действий', 'След действий прототипа для QA, не production source of truth.']
         ],
         variables: ['balance', 'paid_history', 'coupon_rule', 'compensation_status', 'expert_private_note', 'moderator_note', 'note_visibility', 'action_log'],
         triggers: ['Billing обновляет деньги.', 'Expert создает private note или compensation request.', 'Moderator/QA добавляет ограничения.', 'Prototype пишет local action log.'],
@@ -1954,6 +1965,39 @@
     const areaClass = { 'Левая': 'tag-left', 'Центральная': 'tag-center', 'Правая': 'tag-right' };
     const scenarioClass = { Chats: 'tag-chats', Pings: 'tag-pings' };
     const sourceClass = { System: 'tag-system', UI: 'tag-system', Expert: 'tag-expert', Moderator: 'tag-moderator', Billing: 'tag-billing', Workflow: 'tag-workflow' };
+    const sourceLabel = {
+      System: 'Система',
+      UI: 'Интерфейс',
+      Expert: 'Эксперт',
+      Moderator: 'Модератор',
+      Billing: 'Биллинг',
+      Workflow: 'Сценарный движок'
+    };
+    const typeLabel = {
+      Control: 'Управление',
+      Filter: 'Фильтр',
+      Indicator: 'Индикатор',
+      State: 'Состояние',
+      Action: 'Действие',
+      Variable: 'Поле данных',
+      Guardrail: 'Ограничение',
+      Note: 'Заметка'
+    };
+    const layerLabel = {
+      'Queue mode': 'Режим очереди',
+      'Queue filters': 'Фильтры очереди',
+      'Queue card tags': 'Карточки очереди',
+      'Header indicators': 'Индикаторы шапки',
+      'Paid session': 'Платная сессия',
+      'Message stream': 'История сообщений',
+      'Composer templates': 'Шаблоны ответа',
+      'Composer actions': 'Действия ответа',
+      'Ping actions': 'Действия Pings',
+      'Client profile': 'Профиль клиента',
+      'Workflow fields': 'Поля сценария',
+      'Pay fields': 'Денежные поля',
+      'Notes and flags': 'Заметки и флаги'
+    };
     const rows = document.getElementById('dictionaryRows');
     const searchBox = document.getElementById('searchBox');
     const areaFilter = document.getElementById('areaFilter');
@@ -1965,6 +2009,71 @@
 
     function tag(label, className) {
       return `<span class="tag ${className || ''}">${label}</span>`;
+    }
+
+    function readableLayer(value) {
+      if (!value) {
+        return 'Все слои области';
+      }
+      return value.split('|').map(item => layerLabel[item] || item).join(' + ');
+    }
+
+    function readableText(value) {
+      return String(value)
+        .replace(/\bPayment system\b/g, 'платежная система')
+        .replace(/\bSession engine\b/g, 'движок сессий')
+        .replace(/\bWorkflow engine\b/g, 'сценарный движок')
+        .replace(/\bBusiness rules\b/g, 'бизнес-правила')
+        .replace(/\bSystem\/Moderator\b/g, 'система/модератор')
+        .replace(/\bModerator\/QA\b/g, 'модератор/QA')
+        .replace(/\bWorkflow\/Session\b/g, 'сценарий/сессия')
+        .replace(/\bWorkflow\/Payment\b/g, 'сценарий/оплата')
+        .replace(/\bWorkflow\/Expert\b/g, 'сценарий/эксперт')
+        .replace(/\bSystem\/Analytics\b/g, 'система/аналитика')
+        .replace(/\bSystem\/Profile\b/g, 'система/профиль')
+        .replace(/\bClient\/Profile\b/g, 'клиент/профиль')
+        .replace(/\bExpert\/System\b/g, 'эксперт/система')
+        .replace(/\bSystem\b/g, 'система')
+        .replace(/\bBilling\b/g, 'биллинг')
+        .replace(/\bWorkflow\b/g, 'сценарий')
+        .replace(/\bExpert\b/g, 'эксперт')
+        .replace(/\bModerator\b/g, 'модератор')
+        .replace(/\bProfile\b/g, 'профиль')
+        .replace(/\bPrototype\b/g, 'прототип')
+        .replace(/\bUI\b/g, 'интерфейс')
+        .replace(/\bPayment pending\b/g, 'ожидание оплаты')
+        .replace(/\bpaid session\b/g, 'платная сессия')
+        .replace(/\bPaid session\b/g, 'Платная сессия')
+        .replace(/\bpaid delivery\b/g, 'доставка оплаченной услуги')
+        .replace(/\bdelivery obligation\b/g, 'обязательство по оплаченной услуге')
+        .replace(/\bpayment flow\b/g, 'процесс оплаты')
+        .replace(/\bpayment issue\b/g, 'проблема оплаты')
+        .replace(/\bpayment hesitation\b/g, 'сомнение перед оплатой')
+        .replace(/\bpaid next step\b/g, 'следующий платный шаг')
+        .replace(/\bfree value\b/g, 'бесплатная ценность')
+        .replace(/\bfull free reading\b/g, 'полный бесплатный разбор')
+        .replace(/\bstarts soon\b/g, 'скоро начинается')
+        .replace(/\bfuture paid\b/g, 'будущая платная сессия')
+        .replace(/\bprevious buyer\b/g, 'предыдущий покупатель')
+        .replace(/\bBuyer\b/g, 'Покупатель')
+        .replace(/\bbuyer\b/g, 'покупатель')
+        .replace(/\bfree\b/g, 'бесплатный этап')
+        .replace(/\bstage\b/g, 'стадия')
+        .replace(/\bnext action\b/g, 'следующий шаг')
+        .replace(/\bwarning\b/g, 'предупреждение')
+        .replace(/\brisk\b/g, 'риск')
+        .replace(/\bnotes\b/g, 'заметки')
+        .replace(/\bnote\b/g, 'заметка')
+        .replace(/\brouting\b/g, 'маршрутизация')
+        .replace(/\bguardrail\b/g, 'ограничение')
+        .replace(/\bguardrails\b/g, 'ограничения')
+        .replace(/\boutreach\b/g, 'первое касание')
+        .replace(/\binvite\b/g, 'приглашение')
+        .replace(/\bcredits\b/g, 'кредиты')
+        .replace(/\bstatus\b/g, 'статус')
+        .replace(/\battempts\b/g, 'попытки')
+        .replace(/\brequest only\b/g, 'только заявка')
+        .replace(/\bsource of truth\b/g, 'источник истины');
     }
 
     function getLayer(row) {
@@ -2006,14 +2115,14 @@
           <td class="col-id">${row.id}</td>
           <td>${tag(row.area, areaClass[row.area])}</td>
           <td>${tag(row.scenario, scenarioClass[row.scenario])}</td>
-          <td>${getLayer(row)}</td>
-          <td>${row.type}</td>
-          <td>${tag(row.source, sourceClass[row.source])}</td>
-          <td>${row.caller}</td>
-          <td>${row.when}</td>
-          <td>${row.responsibility}</td>
-          <td>${row.purpose}</td>
-          <td>${row.anchor}</td>
+          <td>${readableLayer(getLayer(row))}</td>
+          <td>${typeLabel[row.type] || row.type}</td>
+          <td>${tag(sourceLabel[row.source] || row.source, sourceClass[row.source])}</td>
+          <td>${readableText(row.caller)}</td>
+          <td>${readableText(row.when)}</td>
+          <td>${readableText(row.responsibility)}</td>
+          <td>${readableText(row.purpose)}</td>
+          <td>${readableText(row.anchor)}</td>
         </tr>
       `).join('') || `<tr><td colspan="11"><div class="empty">Ничего не найдено по текущим фильтрам.</div></td></tr>`;
 
@@ -2046,7 +2155,7 @@
       const relatedRows = relatedRowsFor(detail);
       const chatsCount = relatedRows.filter(row => row.scenario === 'Chats').length;
       const pingsCount = relatedRows.filter(row => row.scenario === 'Pings').length;
-      const layerLabel = detail.dictionary.layer || 'Все слои области';
+      const readableLayerLabel = readableLayer(detail.dictionary.layer);
       inspector.innerHTML = `
         <div class="area-inspector-head">
           <div>
@@ -2060,7 +2169,7 @@
           <span class="pill"><strong>${relatedRows.length}</strong> строк словаря</span>
           <span class="pill pill-chats"><strong>${chatsCount}</strong> Chats</span>
           <span class="pill pill-pings"><strong>${pingsCount}</strong> Pings</span>
-          <span class="pill"><strong>${layerLabel}</strong></span>
+          <span class="pill"><strong>${readableLayerLabel}</strong></span>
         </div>
         <div class="inspector-section">
           <h3>Смысл области</h3>
@@ -2087,7 +2196,7 @@
           <ul>${detail.notHere.map(item => `<li>${item}</li>`).join('')}</ul>
         </div>
         <div class="inspector-actions">
-          <button class="btn btn-primary" type="button" data-show-dictionary-area="${detail.dictionary.area}" data-show-dictionary-layer="${detail.dictionary.layer}">Показать строки словаря по области</button>
+          <button class="btn btn-primary" type="button" data-show-dictionary-area="${detail.dictionary.area}" data-show-dictionary-layer="${detail.dictionary.layer}">Показать связанные строки в словаре</button>
           <a class="btn" href="./index.html" target="_blank" rel="noopener">Открыть макет отдельно</a>
         </div>
       `;
