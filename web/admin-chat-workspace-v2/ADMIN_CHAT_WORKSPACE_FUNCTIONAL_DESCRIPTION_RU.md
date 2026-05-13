@@ -28,7 +28,7 @@
 
 | Источник | Кто/что ставит | Видимость | Примеры | Правило |
 |---|---|---|---|---|
-| System/site | Сайт, backend, платежи, аналитика, SLA, workflow engine | Видят эксперт, поддержка, модератор по роли | `Reply`, `SLA`, `Live`, `PP`, `NEW`, `Intent`, `Credits`, `Paid Live`, `Future Paid`, `Safety` | Нельзя скрывать от эксперта, если сигнал влияет на действие сейчас |
+| System/site | Сайт, backend, платежи, аналитика, SLA, workflow engine | Видят эксперт, поддержка, модератор по роли | `Reply`, `SLA`, `Live`, `PP`, `Fire`, `Hot`, `NEW`, `Paid`, `Paid Live`, `Future Paid`, `Safety` | Нельзя скрывать от эксперта, если сигнал влияет на действие сейчас |
 | Moderator/supervisor | Модератор, старший смены, QA, support | Видят роли, которым нужен контроль; часть сигналов может влиять на маршрутизацию | `Quality watch`, `Do not push`, `Needs handoff`, `Complaint risk`, `Retention risk`, `Hot client` | Должно быть понятно, это рекомендация или routing-impact |
 | Expert-private | Сам эксперт/оператор | По умолчанию видит только этот эксперт; команда видит только если продуктово решено расшарить | `Favorite`, личный `Pin`, личный `Follow-up`, личная заметка/черновой маркер | Не использовать как глобальную правду и не маршрутизировать других экспертов по личному флагу |
 
@@ -64,6 +64,8 @@
 
 `Pings` не являются обычными чатами. У них нет reply SLA до ответа клиента или старта чата.
 
+Сортировка Pings по умолчанию: `Fire = 0`, `Hot = 10`, `NEW = 30`, `NeedR/WaitR = 40`, старый сигнал без freshness = `70`. Меньше число означает выше в очереди. `Fire` заменяет `Hot`, потому что это не просто свежесть, а сильный интерес к конкретному эксперту.
+
 ## 5. Поиск и зоны фильтрации
 
 Текущая логика: есть 4 независимые зоны. Активируется одна зона, остальные сбрасываются.
@@ -95,9 +97,10 @@
 
 | Фильтр | Источник | Когда карточка попадает | Что показывает | Зачем нужен | Оставляем? |
 |---|---|---|---|---|---|
-| `NEW` | System | Новый необработанный ping | Свежий интерес | Быстро обработать горячий лид | Да |
-| `Intent` | System/analytics | Клиент проявил интерес к конкретному эксперту | Expert-specific interest | Отличает теплый лид от случайного трафика | Да |
-| `Credits` | System/billing | У клиента есть кредиты | Готовность к paid start | Выше шанс конверсии | Да |
+| `Fire` | System/analytics | Сильный интерес к конкретному эксперту: повторные просмотры профиля, favorite/expert interest, возврат к теме, chat/payment path | Супер-горячий expert-specific interest | Поднять лид выше Hot; при Fire Hot не показываем | Да |
+| `Hot` | System | 0-4 часа после значимого ping-сигнала, если Ping не закрыт, не перешел в Chat и нет Fire | Горячий интерес | Быстро обработать актуальный лид без дубля Fire | Да |
+| `NEW` | System | 4-24 часа после значимого ping-сигнала, если Ping не закрыт и не перешел в Chat | Новый, но уже не горячий интерес | Держать лид в работе до конца первых суток | Да |
+| `Paid` | System/payment | У клиента есть credits, баланс или другой paid-сигнал | Готовность к paid start | Выше шанс конверсии | Да |
 | `Favorite` | Expert-private | Эксперт сохранил ping | Личный перспективный лид | Вернуться позже | Да, private |
 
 Не добавлять на запуск как quick filters:
@@ -148,9 +151,10 @@
 | `Live` | Активная paid session | Приоритизирует и предупреждает не перебивать | Деньги и обязательство delivery |
 | `PP` | Payment pending | Сигнал завершить оплату | Прямой revenue recovery |
 | `Sell` | Есть sell window/offer moment | Подсказывает коммерческий шаг | Продление/пакет без хаоса |
-| `NEW` | Новый ping | Поднимает свежий лид | Теплый outreach вовремя |
-| `Intent` | Expert-specific интерес | Отличает теплого лида | Outreach не выглядит случайным |
-| `Credits` | Есть кредиты | Повышает вероятность конверсии | Приоритизация лидов |
+| `Fire` | Супер-горячий expert-specific интерес | Ставит лид выше Hot и скрывает Hot | Outreach основан на сильном персональном поводе |
+| `Hot` | Ping 0-4 часа без Fire | Поднимает срочный лид | Теплый outreach вовремя |
+| `NEW` | Ping 4-24 часа | Держит свежий лид в работе ниже Hot | Не терять сигнал после горячего окна |
+| `Paid` | Есть credits/баланс/paid-сигнал | Повышает вероятность конверсии | Приоритизация лидов |
 | `Paid starts soon` | Будущая paid session скоро начнется | Готовит эксперта к старту | Не сорвать оплаченный слот |
 | `Paid idle` | В paid session мало активности/долгое молчание | Warning в composer/right panel | Refund/support risk |
 | `Free ending` | Free value почти исчерпан | Подсказывает переход к Book Now | Не отдавать весь продукт бесплатно |
@@ -289,14 +293,14 @@ Right panel - это место для деталей. Оно не должно 
 
 | Элемент | Источник | Когда важен | Что делает |
 |---|---|---|---|
-| Balance | Billing | Всегда | Оценка возможности paid start/extension |
-| Status | Billing/session | Paid/payment states | Показывает live/pending/future |
-| Paid history | Billing/analytics | Для buyer/new lead routing | Показывает, был ли уже оплаченный опыт |
-| Coupon rule | Billing/rules | Objection/payment issues | Показывает, что eligibility надо проверить, не выдает купон сам |
+| Balance | System/payment | Всегда | Оценка возможности paid start/extension |
+| Status | System/session | Paid/payment states | Показывает live/pending/future |
+| Paid history | System/analytics | Для buyer/new lead routing | Показывает, был ли уже оплаченный опыт |
+| Coupon rule | System/rules | Objection/payment issues | Показывает, что eligibility надо проверить, не выдает купон сам |
 | Extend window | Workflow/session | Paid session/low time | Подсказывает, когда offer уместен |
 | Used time | Session | Active paid | Контроль delivery |
 | Compensation | Support/rules | Сбой/спор | Request only для обычного эксперта |
-| Payment events | Billing | После free/pay/sell событий | Аудит действий клиента |
+| Payment events | System/payment | После free/pay/sell событий | Аудит действий клиента |
 
 ## 20. Notes tab
 
@@ -324,8 +328,8 @@ Right panel - это место для деталей. Оно не должно 
 
 - `Chats/Pings`;
 - Search + quick filters;
-- filters: `Reply`, `SLA`, `Live`, `PP`, `Sell`, `NEW`, `Intent`, `Credits`, `Favorite`, `Archive`;
-- system indicators: `Reply`, `SLA`, `Live`, `PP`, `Sell`, `NEW`, `Intent`, `Credits`;
+- filters: `Reply`, `SLA`, `Live`, `PP`, `Sell`, `Fire`, `Hot`, `NEW`, `Paid`, `Favorite`, `Archive`;
+- system indicators: `Reply`, `SLA`, `Live`, `PP`, `Sell`, `Fire`, `Hot`, `NEW`, `Paid`;
 - stage badges: `Book soon`, `Book Now`, `Objection`, `Future Paid`, `Paid Live`, `Lift Due`, `Safety`;
 - composer workflow hint;
 - 6 workflow templates в composer вместо длинного набора generic chips;
