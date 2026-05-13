@@ -217,4 +217,5 @@ Remove public-profile navigation from this menu. Public expert profile editing s
 - The mockup remains a standalone handoff artifact. It is not yet Yii2-integrated runtime code.
 - Public migration map: `CHAT_WORKSPACE_V2_MIGRATION_GUIDE.md`.
 - Product discussion document: `ADMIN_CHAT_WORKSPACE_FUNCTIONAL_DESCRIPTION_RU.md`.
+- Developer-facing element dictionary panel: `elements-dictionary-panel.html`.
 - Public Pages package target: `web/admin-chat-workspace-v2/`.

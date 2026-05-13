@@ -1,0 +1,962 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Chat Workspace V2 - словарь элементов</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --panel-soft: #f8fafc;
+      --line: #d8dee8;
+      --line-strong: #aab4c4;
+      --text: #17202f;
+      --muted: #667085;
+      --soft: #eef2f7;
+      --primary: #1f6feb;
+      --primary-soft: #e8f1ff;
+      --green: #087f5b;
+      --green-soft: #e6f7f0;
+      --orange: #b35c00;
+      --orange-soft: #fff3df;
+      --red: #b42318;
+      --red-soft: #fff1f0;
+      --violet: #6f42c1;
+      --violet-soft: #f1ebff;
+      --radius: 8px;
+      --shadow: 0 12px 28px rgba(16, 24, 40, 0.08);
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .page {
+      max-width: 1680px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .title-block h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .title-block p {
+      margin: 0;
+      max-width: 980px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      min-width: 260px;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 9px 12px;
+      font-size: 13px;
+      line-height: 1;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn:hover { border-color: var(--line-strong); }
+    .btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tab {
+      border: 0;
+      border-bottom: 3px solid transparent;
+      background: transparent;
+      padding: 12px 14px 10px;
+      color: var(--muted);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .tab.is-active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.is-active { display: block; }
+
+    .verdict-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(160px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .verdict-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .verdict-card strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 13px;
+    }
+
+    .verdict-card span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 1.5fr repeat(4, minmax(150px, 0.75fr));
+      gap: 10px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 0 10px;
+      background: #fff;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .summary-strip {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 26px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .pill strong { color: var(--text); }
+    .pill-chats { background: var(--primary-soft); color: #174ea6; border-color: #b8d4ff; }
+    .pill-pings { background: var(--green-soft); color: var(--green); border-color: #b7e4cf; }
+    .pill-risk { background: var(--orange-soft); color: var(--orange); border-color: #ffd8a8; }
+
+    .table-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .table-scroll {
+      overflow: auto;
+      max-height: 72vh;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 1320px;
+    }
+
+    th,
+    td {
+      padding: 10px 11px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+      font-size: 12.5px;
+      line-height: 1.42;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #f9fbfd;
+      color: #475467;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    tbody tr:hover td { background: #fbfdff; }
+    .col-id { font-family: Consolas, Monaco, monospace; font-size: 12px; white-space: nowrap; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+    .tag-left { background: var(--primary-soft); color: #174ea6; border-color: #cfe1ff; }
+    .tag-center { background: var(--orange-soft); color: var(--orange); border-color: #ffd8a8; }
+    .tag-right { background: var(--violet-soft); color: var(--violet); border-color: #d8c7ff; }
+    .tag-chats { background: #edf4ff; color: #0b57d0; border-color: #c7dcff; }
+    .tag-pings { background: var(--green-soft); color: var(--green); border-color: #c5ebd8; }
+    .tag-system { background: #eef2f7; color: #344054; border-color: #d0d5dd; }
+    .tag-expert { background: #fff6e6; color: #9a5200; border-color: #ffdca8; }
+    .tag-moderator { background: #fff1f0; color: var(--red); border-color: #ffccc7; }
+    .tag-billing { background: #e6f7f0; color: var(--green); border-color: #b7e4cf; }
+    .tag-workflow { background: var(--violet-soft); color: var(--violet); border-color: #d8c7ff; }
+
+    .map-layout {
+      display: grid;
+      grid-template-columns: 1.05fr 1.7fr 1.15fr;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .area-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      min-height: 640px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .area-head {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #f9fbfd;
+    }
+
+    .area-head h2 {
+      margin: 0 0 5px;
+      font-size: 16px;
+    }
+
+    .area-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .area-body {
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .mock-row {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--panel-soft);
+      padding: 10px;
+    }
+
+    .mock-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #344054;
+    }
+
+    .anchor-grid {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .anchor {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .anchor:hover,
+    .anchor.is-active {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      color: #174ea6;
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .guide-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .guide-card h3 {
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+
+    .guide-card p,
+    .guide-card li {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .guide-card ul,
+    .guide-card ol {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .detail-box {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 12px;
+      min-height: 190px;
+    }
+
+    .detail-box h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .detail-meta {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 9px;
+    }
+
+    .detail-box p {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .empty {
+      padding: 28px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 1180px) {
+      .verdict-grid,
+      .filters,
+      .map-layout,
+      .guide-grid {
+        grid-template-columns: 1fr;
+      }
+      .topbar { flex-direction: column; }
+      .top-actions { justify-content: flex-start; }
+      .area-panel { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="title-block">
+        <h1>Admin Chat Workspace V2: словарь элементов и карта областей</h1>
+        <p>
+          Панель для передачи разработчику: каждая переменная привязана к области экрана, сценарию Chats или Pings, источнику,
+          моменту появления и действию. Общие механики продублированы отдельными строками для Chats и Pings, чтобы не было
+          неоднозначных формулировок.
+        </p>
+      </div>
+      <div class="top-actions">
+        <a class="btn" href="./index.html" target="_blank" rel="noopener">Открыть макет</a>
+        <a class="btn" href="./ADMIN_CHAT_WORKSPACE_FUNCTIONAL_DESCRIPTION_RU.md" target="_blank" rel="noopener">Функциональное описание</a>
+        <button class="btn btn-primary" id="copyCurrentView" type="button">Скопировать текущую ссылку</button>
+      </div>
+    </header>
+
+    <section class="verdict-grid" aria-label="Проверка модели">
+      <div class="verdict-card">
+        <strong>Модель подтверждена</strong>
+        <span>Сквозной Chat хранит free, Book Now, paid session и objection в одном диалоге.</span>
+      </div>
+      <div class="verdict-card">
+        <strong>Stage не фильтр</strong>
+        <span>Stage ведет сценарий ответа. Фильтры только отбирают очередь.</span>
+      </div>
+      <div class="verdict-card">
+        <strong>Pings отдельно</strong>
+        <span>Ping остается pre-chat сигналом и не получает reply SLA до старта общения.</span>
+      </div>
+      <div class="verdict-card">
+        <strong>Источник обязателен</strong>
+        <span>System, Billing, Workflow, Moderator и Expert-private не смешиваются.</span>
+      </div>
+      <div class="verdict-card">
+        <strong>Без слабых метрик</strong>
+        <span>Нет fake risk %, точного LTV без формулы и generic quick replies.</span>
+      </div>
+    </section>
+
+    <nav class="tabs" aria-label="Разделы панели">
+      <button class="tab is-active" type="button" data-panel="dictionary">1. Общая таблица-словарь</button>
+      <button class="tab" type="button" data-panel="map">2. Области и указания</button>
+    </nav>
+
+    <section class="tab-panel is-active" id="panel-dictionary">
+      <div class="filters">
+        <div class="field">
+          <label for="searchBox">Поиск</label>
+          <input id="searchBox" type="search" placeholder="Например: paid_session, Reply, Coupon, Workflow">
+        </div>
+        <div class="field">
+          <label for="areaFilter">Область</label>
+          <select id="areaFilter">
+            <option value="">Все области</option>
+            <option value="Левая">Левая</option>
+            <option value="Центральная">Центральная</option>
+            <option value="Правая">Правая</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="scenarioFilter">Сценарий</label>
+          <select id="scenarioFilter">
+            <option value="">Chats и Pings</option>
+            <option value="Chats">Chats</option>
+            <option value="Pings">Pings</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="sourceFilter">Источник</label>
+          <select id="sourceFilter">
+            <option value="">Все источники</option>
+            <option value="System">System</option>
+            <option value="Workflow">Workflow</option>
+            <option value="Billing">Billing</option>
+            <option value="Expert">Expert</option>
+            <option value="Moderator">Moderator</option>
+            <option value="UI">UI</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="typeFilter">Тип</label>
+          <select id="typeFilter">
+            <option value="">Все типы</option>
+            <option value="Control">Control</option>
+            <option value="Filter">Filter</option>
+            <option value="Indicator">Indicator</option>
+            <option value="State">State</option>
+            <option value="Action">Action</option>
+            <option value="Variable">Variable</option>
+            <option value="Guardrail">Guardrail</option>
+            <option value="Note">Note</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="summary-strip" id="summaryStrip"></div>
+
+      <div class="table-card">
+        <div class="table-scroll">
+          <table aria-label="Словарь элементов">
+            <thead>
+              <tr>
+                <th>ID / переменная</th>
+                <th>Область</th>
+                <th>Сценарий</th>
+                <th>Тип</th>
+                <th>Источник</th>
+                <th>Кем вызывается</th>
+                <th>Когда появляется</th>
+                <th>За что отвечает</th>
+                <th>Зачем используется</th>
+                <th>UI-якорь</th>
+              </tr>
+            </thead>
+            <tbody id="dictionaryRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="panel-map">
+      <div class="map-layout" aria-label="HTML-схема областей">
+        <article class="area-panel">
+          <div class="area-head">
+            <h2>Левая область</h2>
+            <p>Очередь и приоритет. Здесь решается, что открыть следующим.</p>
+          </div>
+          <div class="area-body">
+            <div class="mock-row">
+              <div class="mock-title"><span>Workload</span><span>Chats / Pings</span></div>
+              <div class="anchor-grid">
+                <button class="anchor" data-anchor="left-chats-tab">Chats tab</button>
+                <button class="anchor" data-anchor="left-pings-tab">Pings tab</button>
+              </div>
+            </div>
+            <div class="mock-row">
+              <div class="mock-title"><span>Search & filters</span><span>ручной triage</span></div>
+              <div class="anchor-grid">
+                <button class="anchor" data-anchor="left-search">Search</button>
+                <button class="anchor" data-anchor="left-user-select">User select</button>
+                <button class="anchor" data-anchor="left-chat-filters">Chats filters</button>
+                <button class="anchor" data-anchor="left-ping-filters">Pings filters</button>
+              </div>
+            </div>
+            <div class="mock-row">
+              <div class="mock-title"><span>Queue card</span><span>короткий смысл</span></div>
+              <div class="anchor-grid">
+                <button class="anchor" data-anchor="left-card-identity">Client -> Expert</button>
+                <button class="anchor" data-anchor="left-card-stage">Stage badge</button>
+                <button class="anchor" data-anchor="left-card-preview">Preview</button>
+                <button class="anchor" data-anchor="left-card-unread">Unread</button>
+                <button class="anchor" data-anchor="left-card-favorite">Favorite</button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="area-panel">
+          <div class="area-head">
+            <h2>Центральная область</h2>
+            <p>Рабочее действие: ответ, paid session, Book Now, objection, resolve.</p>
+          </div>
+          <div class="area-body">
+            <div class="mock-row">
+              <div class="mock-title"><span>Header</span><span>текущий кейс</span></div>
+              <div class="anchor-grid">
+                <button class="anchor" data-anchor="center-header">Client -> Expert</button>
+                <button class="anchor" data-anchor="center-stage-chip">Stage chip</button>
+                <button class="anchor" data-anchor="center-live-pp">Live / PP</button>
+                <button class="anchor" data-anchor="center-last-activity">Last activity</button>
+              </div>
+            </div>
+            <div class="mock-row">
+              <div class="mock-title"><span>Session block</span><span>деньги и время</span></div>
+              <div class="anchor-grid">
+                <button class="anchor" data-anchor="center-start-stop">Start / Stop</button>
+                <button class="anchor" data-anchor="center-my-session">My session</button>
+                <button class="anchor" data-anchor="center-timer">Timer</button>
+                <button class="anchor" data-anchor="center-sell-window">Sell window</button>
+              </div>
+            </div>
+            <div class="mock-row">
+              <div class="mock-title"><span>Composer</span><span>ответ эксперта</span></div>
+              <div class="anchor-grid">
+                <button class="anchor" data-anchor="center-workflow-hint">Workflow hint</button>
+                <button class="anchor" data-anchor="center-quick-replies">Quick replies</button>
+                <button class="anchor" data-anchor="center-offer">Offer</button>
+                <button class="anchor" data-anchor="center-comp-resolve">Comp / Resolve</button>
+                <button class="anchor" data-anchor="center-attachments">Attachments</button>
+              </div>
+            </div>
+            <div class="mock-row">
+              <div class="mock-title"><span>Pings actions</span><span>pre-chat</span></div>
+              <div class="anchor-grid">
+                <button class="anchor" data-anchor="center-send-template">Send template</button>
+                <button class="anchor" data-anchor="center-invite">Invite</button>
+                <button class="anchor" data-anchor="center-dismiss">Dismiss</button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="area-panel">
+          <div class="area-head">
+            <h2>Правая область</h2>
+            <p>Детали и объяснение. Здесь видно, почему следующий шаг именно такой.</p>
+          </div>
+          <div class="area-body">
+            <div class="mock-row">
+              <div class="mock-title"><span>Tabs</span><span>детализация</span></div>
+              <div class="anchor-grid">
+                <button class="anchor" data-anchor="right-client-tab">Client</button>
+                <button class="anchor" data-anchor="right-workflow-tab">Workflow</button>
+                <button class="anchor" data-anchor="right-pay-tab">Pay</button>
+                <button class="anchor" data-anchor="right-notes-tab">Notes</button>
+              </div>
+            </div>
+            <div class="mock-row">
+              <div class="mock-title"><span>Workflow fields</span><span>сценарий</span></div>
+              <div class="anchor-grid">
+                <button class="anchor" data-anchor="right-free-boundary">Free boundary</button>
+                <button class="anchor" data-anchor="right-book-now">Book Now</button>
+                <button class="anchor" data-anchor="right-paid-session">Paid session</button>
+                <button class="anchor" data-anchor="right-objection">Objection</button>
+                <button class="anchor" data-anchor="right-risk">Risk</button>
+              </div>
+            </div>
+            <div class="mock-row">
+              <div class="mock-title"><span>Pay & notes</span><span>коммерция и память</span></div>
+              <div class="anchor-grid">
+                <button class="anchor" data-anchor="right-balance">Balance</button>
+                <button class="anchor" data-anchor="right-coupon-rule">Coupon rule</button>
+                <button class="anchor" data-anchor="right-private-note">Private note</button>
+                <button class="anchor" data-anchor="right-moderator-note">Moderator note</button>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="guide-grid">
+        <div class="guide-card">
+          <h3>Как ориентироваться по проекту</h3>
+          <ol>
+            <li>Начинать с левой области: определить, это Chats или Pings, и почему карточка попала в очередь.</li>
+            <li>Открыть кейс в центре: проверить stage, paid-state, последний event и workflow hint.</li>
+            <li>Если непонятно, почему подсказка такая, открыть правую вкладку Workflow.</li>
+            <li>Если действие связано с деньгами, проверить Pay. Если с контекстом клиента, проверить Client. Если с передачей смены, проверить Notes.</li>
+            <li>Любой новый индикатор добавлять только с source, trigger, visibility и routing impact.</li>
+          </ol>
+        </div>
+        <div class="guide-card">
+          <h3>Выбранная модель</h3>
+          <ul>
+            <li>Chats - сквозной диалог, внутри которого меняется stage.</li>
+            <li>Pings - pre-chat очередь, без обычного reply SLA до ответа клиента.</li>
+            <li>Stage ведет сценарий, но не заменяет фильтр очереди.</li>
+            <li>Right panel хранит детали, left panel не превращается в аналитику.</li>
+            <li>Expert-private флаги не используются как глобальная правда.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="guide-card" style="margin-top:14px;">
+        <div class="detail-box" id="anchorDetail">
+          <h3>Выберите элемент на схеме</h3>
+          <p>Клик по любому якорю покажет, где этот элемент находится, для какого сценария работает, кто его вызывает и почему он нужен.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const dictionary = [
+      { id: 'workload_mode=chats', area: 'Левая', scenario: 'Chats', type: 'Control', source: 'UI', caller: 'Expert', when: 'Эксперт открывает рабочую очередь диалогов', responsibility: 'Переключает список на реальные сквозные чаты', purpose: 'Основной режим ответа, оплаты и paid sessions', anchor: 'Chats tab' },
+      { id: 'workload_mode=pings', area: 'Левая', scenario: 'Pings', type: 'Control', source: 'UI', caller: 'Expert', when: 'Эксперт открывает очередь pre-chat сигналов', responsibility: 'Переключает список на pings', purpose: 'Работа с лидами до полноценного чата', anchor: 'Pings tab' },
+      { id: 'queue_search_chats', area: 'Левая', scenario: 'Chats', type: 'Control', source: 'UI', caller: 'Expert', when: 'Всегда в режиме Chats', responsibility: 'Ищет по клиенту, эксперту, id, preview, stage', purpose: 'Найти конкретный диалог без ручного просмотра очереди', anchor: 'Search' },
+      { id: 'queue_search_pings', area: 'Левая', scenario: 'Pings', type: 'Control', source: 'UI', caller: 'Expert', when: 'Всегда в режиме Pings', responsibility: 'Ищет по клиенту, эксперту, id, preview, stage', purpose: 'Найти конкретный ping или лида', anchor: 'Search' },
+      { id: 'queue_user_select_chats', area: 'Левая', scenario: 'Chats', type: 'Control', source: 'UI', caller: 'Expert', when: 'Нужно найти диалог по участнику', responsibility: 'Фильтрует по client_id или expert_profile_id', purpose: 'Ручная навигация по конкретному клиенту или профилю', anchor: 'User/expert select' },
+      { id: 'queue_user_select_pings', area: 'Левая', scenario: 'Pings', type: 'Control', source: 'UI', caller: 'Expert', when: 'Нужно найти ping по участнику', responsibility: 'Фильтрует по client_id или expert_profile_id', purpose: 'Проверка интереса к конкретному эксперту', anchor: 'User/expert select' },
+      { id: 'filter_reply', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'System', caller: 'System', when: 'Последнее значимое сообщение пришло от клиента, ответа еще нет', responsibility: 'Отбирает чаты, где клиент ждет ответа', purpose: 'Главный рабочий фильтр смены', anchor: 'Reply' },
+      { id: 'filter_sla', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'System', caller: 'System', when: 'Ожидание ответа превысило SLA-порог', responsibility: 'Показывает риск просрочки', purpose: 'Снизить жалобы, возвраты и потери клиента', anchor: 'SLA' },
+      { id: 'filter_live', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'Billing', caller: 'Session engine', when: 'Есть active paid session', responsibility: 'Отбирает оплаченные активные кейсы', purpose: 'Paid delivery выше обычной очереди', anchor: 'Live' },
+      { id: 'filter_payment_pending', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'Billing', caller: 'Payment system', when: 'Клиент начал payment flow, но не завершил оплату', responsibility: 'Показывает PP', purpose: 'Довести почти готовую оплату', anchor: 'PP' },
+      { id: 'filter_sell', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'Workflow', caller: 'Workflow engine', when: 'Есть момент продажи, продления или новая платная тема', responsibility: 'Отбирает коммерческий next step', purpose: 'Не упустить revenue без давления', anchor: 'Sell' },
+      { id: 'filter_archive_chats', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'System', caller: 'Expert/System', when: 'Диалог убран из активной очереди', responsibility: 'Показывает архивные чаты', purpose: 'Проверить обработанные кейсы без смешения с рабочей очередью', anchor: 'Archive' },
+      { id: 'filter_new_ping', area: 'Левая', scenario: 'Pings', type: 'Filter', source: 'System', caller: 'System', when: 'Ping создан недавно и не обработан', responsibility: 'Отбирает свежие pings', purpose: 'Быстро поймать актуальный интерес', anchor: 'NEW' },
+      { id: 'filter_intent_ping', area: 'Левая', scenario: 'Pings', type: 'Filter', source: 'System', caller: 'Analytics', when: 'Клиент проявил интерес к конкретному эксперту', responsibility: 'Отбирает expert-specific interest', purpose: 'Не писать случайному трафику', anchor: 'Intent' },
+      { id: 'filter_credits_ping', area: 'Левая', scenario: 'Pings', type: 'Filter', source: 'Billing', caller: 'Billing', when: 'У клиента есть кредиты', responsibility: 'Отбирает платежеспособных лидов', purpose: 'Повысить шанс paid start', anchor: 'Credits' },
+      { id: 'favorite_chat', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'Expert', caller: 'Expert', when: 'Эксперт отметил чат', responsibility: 'Личный флаг важного диалога', purpose: 'Вернуться к своему кейсу, не маршрутизировать команду', anchor: 'Favorite' },
+      { id: 'favorite_ping', area: 'Левая', scenario: 'Pings', type: 'Indicator', source: 'Expert', caller: 'Expert', when: 'Эксперт отметил ping', responsibility: 'Личный флаг перспективного лида', purpose: 'Вернуться позже, не менять глобальный приоритет', anchor: 'Favorite' },
+      { id: 'queue_card_identity_chats', area: 'Левая', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'System', when: 'Всегда в карточке чата', responsibility: 'Показывает client -> expert profile', purpose: 'Понять, от чьего лица идет диалог', anchor: 'Client -> Expert' },
+      { id: 'queue_card_identity_pings', area: 'Левая', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'System', when: 'Всегда в карточке ping', responsibility: 'Показывает client -> expert profile interest', purpose: 'Привязать касание к конкретному экспертному интересу', anchor: 'Client -> Expert' },
+      { id: 'queue_card_preview_chats', area: 'Левая', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'System', when: 'Всегда в карточке чата', responsibility: 'Кратко объясняет последнее событие', purpose: 'Выбрать кейс без открытия всего чата', anchor: 'Preview' },
+      { id: 'queue_card_preview_pings', area: 'Левая', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'System', when: 'Всегда в карточке ping', responsibility: 'Кратко объясняет причину сигнала', purpose: 'Не писать клиенту вслепую', anchor: 'Preview' },
+      { id: 'last_activity_chats', area: 'Левая', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'System', when: 'Всегда', responsibility: 'Показывает время последнего события', purpose: 'Оценить свежесть и срочность', anchor: 'Last activity' },
+      { id: 'last_activity_pings', area: 'Левая', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'System', when: 'Всегда', responsibility: 'Показывает время последнего ping-сигнала', purpose: 'Не держать старые pings на уровне свежих', anchor: 'Last activity' },
+      { id: 'unread_count_chats', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'System', when: 'Есть непрочитанные или action count', responsibility: 'Показывает объем внимания', purpose: 'Быстрый triage входящих', anchor: 'Unread/action count' },
+      { id: 'attention_mark_pings', area: 'Левая', scenario: 'Pings', type: 'Indicator', source: 'System', caller: 'System', when: 'Ping свежий или не обработан', responsibility: 'Подсвечивает лид, требующий внимания', purpose: 'Не пропустить горячий сигнал', anchor: 'Attention mark' },
+      { id: 'stage_badge_chats', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'conversation_stage определен', responsibility: 'Показывает Paid Live, Book soon, Objection', purpose: 'Понять бизнес-стадию до открытия', anchor: 'Stage badge' },
+      { id: 'stage_badge_pings', area: 'Левая', scenario: 'Pings', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'ping связан со stage', responsibility: 'Показывает Lift Due, Future Paid', purpose: 'Разделить reactivation и future paid reminder', anchor: 'Stage badge' },
+
+      { id: 'chat_header_identity', area: 'Центральная', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'System', when: 'Чат открыт', responsibility: 'Показывает client -> expert profile', purpose: 'Не ответить от неправильного образа', anchor: 'Header' },
+      { id: 'ping_header_identity', area: 'Центральная', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'System', when: 'Ping открыт', responsibility: 'Показывает client -> expert profile interest', purpose: 'Первое касание должно быть персональным', anchor: 'Header' },
+      { id: 'center_stage_chip_chats', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'Чат открыт', responsibility: 'Показывает текущую стадию', purpose: 'Вести free, Book Now, objection, paid внутри одного чата', anchor: 'Stage chip' },
+      { id: 'center_stage_chip_pings', area: 'Центральная', scenario: 'Pings', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'Ping открыт', responsibility: 'Показывает Lift Due, Future Paid или другой ping-stage', purpose: 'Не отправлять одинаковый outreach всем', anchor: 'Stage chip' },
+      { id: 'live_chip_chats', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'Billing', caller: 'Session engine', when: 'Paid session active', responsibility: 'Показывает оплаченный приоритет', purpose: 'Paid delivery нельзя задерживать', anchor: 'Live chip' },
+      { id: 'payment_pending_chip_chats', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'Billing', caller: 'Payment system', when: 'Payment pending связан с текущим кейсом', responsibility: 'Показывает PP', purpose: 'Вернуть клиента к payment', anchor: 'PP chip' },
+      { id: 'new_chip_pings', area: 'Центральная', scenario: 'Pings', type: 'Indicator', source: 'System', caller: 'System', when: 'Ping свежий', responsibility: 'Показывает новый сигнал', purpose: 'Обработать горячий интерес первым', anchor: 'NEW chip' },
+      { id: 'intent_chip_pings', area: 'Центральная', scenario: 'Pings', type: 'Indicator', source: 'System', caller: 'Analytics', when: 'Есть expert-specific interest', responsibility: 'Показывает причину интереса', purpose: 'Использовать персональный повод', anchor: 'Intent chip' },
+      { id: 'credits_chip_pings', area: 'Центральная', scenario: 'Pings', type: 'Indicator', source: 'Billing', caller: 'Billing', when: 'У клиента есть credits', responsibility: 'Показывает платежную готовность', purpose: 'Выбрать invite вместо холодного сообщения', anchor: 'Credits chip' },
+      { id: 'message_stream_chats', area: 'Центральная', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'System', when: 'Чат открыт', responsibility: 'Показывает сквозную историю сообщений', purpose: 'PbExpert-подход: один непрерывный чат', anchor: 'Message stream' },
+      { id: 'ping_context_stream', area: 'Центральная', scenario: 'Pings', type: 'Variable', source: 'Workflow', caller: 'Workflow engine', when: 'Ping открыт', responsibility: 'Показывает причину и историю касаний', purpose: 'Не писать без повода', anchor: 'Ping context' },
+      { id: 'start_paid_session', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Paid session можно начать', responsibility: 'Запускает оплаченный интервал', purpose: 'Фиксирует delivery obligation', anchor: 'Start paid session' },
+      { id: 'stop_paid_session', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Paid session active', responsibility: 'Завершает оплаченный интервал', purpose: 'Закрыть delivery корректно', anchor: 'Stop paid session' },
+      { id: 'my_session', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'Session engine', when: 'Текущий эксперт ведет session', responsibility: 'Показывает ответственность', purpose: 'Не путать свою session с чужим Live', anchor: 'My session' },
+      { id: 'session_timer', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'Session engine', when: 'Paid session active', responsibility: 'Показывает остаток минут', purpose: 'Дозировать глубину ответа', anchor: 'Timer' },
+      { id: 'sell_window', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'Осталось мало времени и offer допустим', responsibility: 'Подсказывает продление', purpose: 'Продажа вовремя, без раннего давления', anchor: 'Sell window' },
+      { id: 'ping_first_touch', area: 'Центральная', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Эксперт еще не писал клиенту', responsibility: 'Разрешает первое касание', purpose: 'Начать мягко и релевантно', anchor: 'First touch' },
+      { id: 'ping_waiting_reply', area: 'Центральная', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Первое касание уже отправлено', responsibility: 'Показывает ожидание ответа', purpose: 'Не спамить повторно', anchor: 'Waiting reply' },
+      { id: 'previous_buyer_ping', area: 'Центральная', scenario: 'Pings', type: 'Guardrail', source: 'Billing', caller: 'Billing/Workflow', when: 'У клиента была оплата', responsibility: 'Запрещает новый full free reading', purpose: 'Buyer ведется через reactivation и Book Now', anchor: 'Previous buyer' },
+      { id: 'workflow_hint_chats', area: 'Центральная', scenario: 'Chats', type: 'Guardrail', source: 'Workflow', caller: 'Workflow engine', when: 'Чат открыт', responsibility: 'Показывает stage, next action, warning', purpose: 'Не ошибиться перед отправкой', anchor: 'Workflow hint' },
+      { id: 'workflow_hint_pings', area: 'Центральная', scenario: 'Pings', type: 'Guardrail', source: 'Workflow', caller: 'Workflow engine', when: 'Ping открыт', responsibility: 'Показывает stage, next action, warning', purpose: 'Outreach без давления и нарушения boundary', anchor: 'Workflow hint' },
+      { id: 'quick_reply_need_data_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'UI', caller: 'Expert', when: 'Не хватает DOB, time, timezone или context', responsibility: 'Вставляет уточнение данных', purpose: 'Корректная консультация', anchor: 'Need data' },
+      { id: 'quick_reply_need_data_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Для первого касания нужен корректный контекст', responsibility: 'Вставляет мягкое уточнение', purpose: 'Не начинать с недостоверного вывода', anchor: 'Need data' },
+      { id: 'quick_reply_book_now_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'UI', caller: 'Expert', when: 'Free/intrigue достаточно прогрели клиента', responsibility: 'Ведет к paid continuation', purpose: 'Конверсия free -> paid', anchor: 'Book Now' },
+      { id: 'quick_reply_book_now_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Ping имеет strong intent или previous buyer', responsibility: 'Вставляет мягкий paid invite', purpose: 'Конвертировать интерес без нового full free', anchor: 'Book Now' },
+      { id: 'quick_reply_objection_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'UI', caller: 'Expert', when: 'Клиент сомневается после Book Now', responsibility: 'Вставляет обработку objection', purpose: 'Вернуть к оплате без давления', anchor: 'Objection' },
+      { id: 'quick_reply_objection_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Ping возник после сомнения или payment hesitation', responsibility: 'Вставляет мягкое объяснение next step', purpose: 'Не повторять offer механически', anchor: 'Objection' },
+      { id: 'quick_reply_paid_topic_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'UI', caller: 'Expert', when: 'Paid session active', responsibility: 'Фокусирует ответ на оплаченном вопросе', purpose: 'Не уходить в новую тему бесплатно', anchor: 'Paid topic' },
+      { id: 'quick_reply_paid_topic_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Ping связан с future paid reminder', responsibility: 'Не раскрывает future paid content', purpose: 'Подтвердить время, не выдать продукт заранее', anchor: 'Paid topic' },
+      { id: 'quick_reply_extend_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'UI', caller: 'Expert', when: 'Low time или новая тема', responsibility: 'Вставляет предложение добавить минуты', purpose: 'Продлить paid session', anchor: 'Extend' },
+      { id: 'quick_reply_extend_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Есть buyer/reactivation reason и paid next step', responsibility: 'Вставляет аккуратное продолжение', purpose: 'Вернуть клиента к paid без спама', anchor: 'Extend' },
+      { id: 'quick_reply_safety_chats', area: 'Центральная', scenario: 'Chats', type: 'Guardrail', source: 'UI', caller: 'Expert', when: 'Есть safety, claim или legal risk', responsibility: 'Смягчает формулировку', purpose: 'Compliance и качество', anchor: 'Safety route' },
+      { id: 'quick_reply_safety_pings', area: 'Центральная', scenario: 'Pings', type: 'Guardrail', source: 'UI', caller: 'Expert', when: 'Outreach может звучать как давление или claim', responsibility: 'Смягчает первое касание', purpose: 'Не нарушить safety и доверие', anchor: 'Safety route' },
+      { id: 'offer_menu_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Stage допускает продажу', responsibility: 'Открывает варианты paid offer', purpose: 'Не сочинять коммерческий сценарий вручную', anchor: 'Offer' },
+      { id: 'invite_menu_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Есть Intent или Credits', responsibility: 'Открывает варианты приглашения', purpose: 'Перевести ping в chat или paid', anchor: 'Invite' },
+      { id: 'comp_request_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Сбой, спор или payment issue', responsibility: 'Создает compensation request', purpose: 'Эксперт не выдает кредиты вручную', anchor: 'Comp request' },
+      { id: 'dismiss_ping', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Ping неактуален или обработан', responsibility: 'Убирает ping из рабочей очереди', purpose: 'Не засорять список', anchor: 'Dismiss' },
+      { id: 'resolve_chat', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Кейс обработан', responsibility: 'Помечает диалог решенным', purpose: 'Очистить активную очередь', anchor: 'Resolve' },
+      { id: 'send_template_ping', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Истории касаний нет', responsibility: 'Вставляет первое сообщение', purpose: 'Быстро начать релевантный outreach', anchor: 'Send template' },
+
+      { id: 'client_language_chats', area: 'Правая', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'Profile', when: 'Client tab открыт', responsibility: 'Показывает язык клиента', purpose: 'Корректный язык ответа', anchor: 'Client language' },
+      { id: 'client_language_pings', area: 'Правая', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'Profile', when: 'Client tab открыт', responsibility: 'Показывает язык лида', purpose: 'Первое касание на правильном языке', anchor: 'Client language' },
+      { id: 'birth_data_chats', area: 'Правая', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'Client/Profile', when: 'Данные есть или нужны', responsibility: 'Показывает дату, время и timezone рождения', purpose: 'Основа эзотерической консультации', anchor: 'Birth data' },
+      { id: 'birth_data_pings', area: 'Правая', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'Client/Profile', when: 'Данные есть или нужны для outreach', responsibility: 'Показывает базу для корректного касания', purpose: 'Не строить сообщение на недостоверности', anchor: 'Birth data' },
+      { id: 'visible_expert_chats', area: 'Правая', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'System', when: 'Всегда', responsibility: 'Показывает экспертный профиль клиента', purpose: 'Сохранить роль и образ', anchor: 'Visible expert' },
+      { id: 'visible_expert_pings', area: 'Правая', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'System/Analytics', when: 'Ping привязан к эксперту', responsibility: 'Показывает профиль интереса', purpose: 'Outreach должен идти от релевантного профиля', anchor: 'Visible expert' },
+      { id: 'workflow_stage_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Workflow tab открыт', responsibility: 'Раскрывает текущий conversation_stage', purpose: 'Объяснить, почему следующий шаг такой', anchor: 'Workflow stage' },
+      { id: 'workflow_stage_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Workflow tab открыт', responsibility: 'Раскрывает ping stage', purpose: 'Отличить Lift Due от Future Paid', anchor: 'Workflow stage' },
+      { id: 'next_action_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Workflow tab открыт', responsibility: 'Показывает next action', purpose: 'Снизить ошибку эксперта', anchor: 'Next action' },
+      { id: 'next_action_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Workflow tab открыт', responsibility: 'Показывает outreach next action', purpose: 'Не писать без сценария', anchor: 'Next action' },
+      { id: 'free_boundary_chats', area: 'Правая', scenario: 'Chats', type: 'Guardrail', source: 'Workflow', caller: 'Workflow engine', when: 'Free или intrigue stage', responsibility: 'Показывает free state и insight count', purpose: 'Не отдавать полный продукт бесплатно', anchor: 'Free boundary' },
+      { id: 'free_boundary_pings', area: 'Правая', scenario: 'Pings', type: 'Guardrail', source: 'Workflow', caller: 'Workflow engine', when: 'Ping относится к lead/free или previous buyer', responsibility: 'Показывает доступность free value', purpose: 'Buyer не получает новый full free reading', anchor: 'Free boundary' },
+      { id: 'book_now_status_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Workflow', caller: 'Workflow/Payment', when: 'Есть переход к paid', responsibility: 'Показывает not sent, sent, clicked, paid', purpose: 'Контроль free -> paid конверсии', anchor: 'Book Now' },
+      { id: 'book_now_status_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow/Payment', when: 'Ping ведет к paid или future paid', responsibility: 'Показывает paid future или not sent', purpose: 'Не раскрыть paid content заранее', anchor: 'Book Now' },
+      { id: 'paid_session_status_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Billing', caller: 'Session engine', when: 'Есть paid state', responsibility: 'Показывает active, pending, future, none', purpose: 'Контроль оплаченной обязанности', anchor: 'Paid session' },
+      { id: 'paid_session_status_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Billing', caller: 'Session engine', when: 'Ping связан с future paid или starts soon', responsibility: 'Показывает future paid state', purpose: 'Подтвердить время без раскрытия content', anchor: 'Paid session' },
+      { id: 'objection_state_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Workflow', caller: 'Workflow/Expert', when: 'Клиент возражает после Book Now', responsibility: 'Показывает objection type и attempts', purpose: 'Не давить бесконечно', anchor: 'Objection' },
+      { id: 'objection_state_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow/Expert', when: 'Ping возник после сомнения или payment hesitation', responsibility: 'Показывает причину мягкого возврата', purpose: 'Не повторять offer механически', anchor: 'Objection' },
+      { id: 'ping_lift_reason_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Всегда для ping', responsibility: 'Показывает reason и due time', purpose: 'Outreach должен иметь причину', anchor: 'Ping / lift' },
+      { id: 'ping_lift_reason_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Chat пришел из reactivation или lift', responsibility: 'Показывает origin reason', purpose: 'Сохранить контекст возврата клиента', anchor: 'Ping / lift' },
+      { id: 'risk_flags_chats', area: 'Правая', scenario: 'Chats', type: 'Guardrail', source: 'Moderator', caller: 'System/Moderator', when: 'Есть safety, claim или complaint risk', responsibility: 'Показывает ограничение', purpose: 'Compliance и качество paid/free ответа', anchor: 'Risk' },
+      { id: 'risk_flags_pings', area: 'Правая', scenario: 'Pings', type: 'Guardrail', source: 'Moderator', caller: 'System/Moderator', when: 'Outreach может нарушить safety или звучать как pressure', responsibility: 'Показывает ограничение', purpose: 'Не провоцировать жалобу и не давить', anchor: 'Risk' },
+      { id: 'balance_chats', area: 'Правая', scenario: 'Chats', type: 'Variable', source: 'Billing', caller: 'Billing', when: 'Pay tab открыт', responsibility: 'Показывает credits/balance', purpose: 'Понять возможность paid start или extension', anchor: 'Balance' },
+      { id: 'balance_pings', area: 'Правая', scenario: 'Pings', type: 'Variable', source: 'Billing', caller: 'Billing', when: 'Pay tab открыт', responsibility: 'Показывает credits', purpose: 'Оценить payment readiness лида', anchor: 'Balance' },
+      { id: 'paid_history_chats', area: 'Правая', scenario: 'Chats', type: 'Variable', source: 'Billing', caller: 'Billing', when: 'Есть платежная история', responsibility: 'Показывает buyer status', purpose: 'Buyer отличается от нового free клиента', anchor: 'Paid history' },
+      { id: 'paid_history_pings', area: 'Правая', scenario: 'Pings', type: 'Variable', source: 'Billing', caller: 'Billing', when: 'Ping от previous buyer', responsibility: 'Показывает buyer status', purpose: 'Выбрать reactivation вместо full free reading', anchor: 'Paid history' },
+      { id: 'coupon_rule_chats', area: 'Правая', scenario: 'Chats', type: 'Guardrail', source: 'Billing', caller: 'Business rules', when: 'Payment issue или objection', responsibility: 'Показывает eligibility check', purpose: 'Эксперт не выдает купон напрямую', anchor: 'Coupon rule' },
+      { id: 'coupon_rule_pings', area: 'Правая', scenario: 'Pings', type: 'Guardrail', source: 'Billing', caller: 'Business rules', when: 'Ping связан с payment hesitation', responsibility: 'Показывает необходимость rule check', purpose: 'Не обещать скидку без права', anchor: 'Coupon rule' },
+      { id: 'extend_window_chats', area: 'Правая', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow/Session', when: 'Low time или новая тема', responsibility: 'Показывает уместность продления', purpose: 'Продать вовремя', anchor: 'Extend window' },
+      { id: 'extend_window_pings', area: 'Правая', scenario: 'Pings', type: 'Indicator', source: 'Workflow', caller: 'Workflow/Session', when: 'Buyer/reactivation reason допускает paid next step', responsibility: 'Показывает уместный paid invite', purpose: 'Вернуть клиента без спама', anchor: 'Extend window' },
+      { id: 'compensation_chats', area: 'Правая', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Сбой, спор, payment/session mismatch', responsibility: 'Создает request only', purpose: 'Аудит вместо ручной компенсации', anchor: 'Compensation' },
+      { id: 'compensation_pings', area: 'Правая', scenario: 'Pings', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Ping связан с payment dispute', responsibility: 'Создает request only', purpose: 'Не решать деньги из outreach-сообщения', anchor: 'Compensation' },
+      { id: 'expert_private_note_chats', area: 'Правая', scenario: 'Chats', type: 'Note', source: 'Expert', caller: 'Expert', when: 'Эксперт сохраняет личный контекст', responsibility: 'Private note', purpose: 'Личная память без влияния на routing команды', anchor: 'Private note' },
+      { id: 'expert_private_note_pings', area: 'Правая', scenario: 'Pings', type: 'Note', source: 'Expert', caller: 'Expert', when: 'Эксперт сохраняет перспективного лида', responsibility: 'Private note', purpose: 'Вернуться позже без глобального приоритета', anchor: 'Private note' },
+      { id: 'moderator_note_chats', area: 'Правая', scenario: 'Chats', type: 'Note', source: 'Moderator', caller: 'Moderator/QA', when: 'Есть контроль качества или ограничение', responsibility: 'Team/moderator note', purpose: 'Передать смене важный guardrail', anchor: 'Moderator note' },
+      { id: 'moderator_note_pings', area: 'Правая', scenario: 'Pings', type: 'Note', source: 'Moderator', caller: 'Moderator/QA', when: 'Outreach требует ограничения', responsibility: 'Team/moderator note', purpose: 'Не писать risky или pushy сообщение', anchor: 'Moderator note' },
+      { id: 'action_log_chats', area: 'Правая', scenario: 'Chats', type: 'Variable', source: 'UI', caller: 'Prototype', when: 'После prototype-действий', responsibility: 'Локально показывает действия', purpose: 'QA прототипа, не production data contract', anchor: 'Action log' },
+      { id: 'action_log_pings', area: 'Правая', scenario: 'Pings', type: 'Variable', source: 'UI', caller: 'Prototype', when: 'После prototype-действий', responsibility: 'Локально показывает действия', purpose: 'QA прототипа, не production data contract', anchor: 'Action log' }
+    ];
+
+    const anchorDetails = {
+      'left-chats-tab': ['Chats tab', 'Левая', 'Chats', 'Открывает реальные сквозные диалоги. Это основной режим ответа, paid delivery и продаж продолжения.'],
+      'left-pings-tab': ['Pings tab', 'Левая', 'Pings', 'Открывает pre-chat сигналы интереса. Ping не равен обычному чату и не получает reply SLA до ответа клиента.'],
+      'left-search': ['Search', 'Левая', 'Chats / Pings', 'Поиск используется в каждой очереди отдельно. В таблице это описано отдельными строками для Chats и Pings.'],
+      'left-user-select': ['User select', 'Левая', 'Chats / Pings', 'Ручной поиск по client_id или expert_profile_id. Нужен для разборов и передачи смены.'],
+      'left-chat-filters': ['Chats filters', 'Левая', 'Chats', 'Reply, SLA, Live, PP, Sell, Favorite, Archive. Это рабочие фильтры реальных диалогов.'],
+      'left-ping-filters': ['Pings filters', 'Левая', 'Pings', 'NEW, Intent, Credits, Favorite. Это фильтры pre-chat сигналов.'],
+      'left-card-identity': ['Client -> Expert', 'Левая', 'Chats / Pings', 'Якорь роли: клиент видит экспертный профиль, а не внутреннего оператора.'],
+      'left-card-stage': ['Stage badge', 'Левая', 'Chats / Pings', 'Один короткий business-stage на карточке. Детали stage уходят в правую Workflow вкладку.'],
+      'left-card-preview': ['Preview', 'Левая', 'Chats / Pings', 'Короткое объяснение последнего события. Не заменяет историю сообщений.'],
+      'left-card-unread': ['Unread / attention', 'Левая', 'Chats / Pings', 'Для Chats это unread/action count. Для Pings это свежий необработанный сигнал.'],
+      'left-card-favorite': ['Favorite', 'Левая', 'Chats / Pings', 'Expert-private флаг. Не использовать как глобальный routing для команды.'],
+      'center-header': ['Header identity', 'Центральная', 'Chats / Pings', 'Подтверждает текущего клиента и экспертный профиль перед ответом или outreach.'],
+      'center-stage-chip': ['Stage chip', 'Центральная', 'Chats / Pings', 'Главный рабочий ориентир. Stage не является фильтром очереди.'],
+      'center-live-pp': ['Live / PP', 'Центральная', 'Chats', 'Live означает active paid delivery. PP означает payment pending.'],
+      'center-last-activity': ['Last activity', 'Центральная', 'Chats', 'Показывает свежесть события и помогает оценить срочность ответа.'],
+      'center-start-stop': ['Start / Stop', 'Центральная', 'Chats', 'Запуск и завершение оплаченного интервала внутри сквозного чата.'],
+      'center-my-session': ['My session', 'Центральная', 'Chats', 'Показывает, что именно текущий эксперт ведет paid session.'],
+      'center-timer': ['Timer', 'Центральная', 'Chats', 'Остаток оплаченного времени. Влияет на глубину ответа и extend window.'],
+      'center-sell-window': ['Sell window', 'Центральная', 'Chats', 'Момент уместного предложения продления. Не должен работать как давление.'],
+      'center-workflow-hint': ['Workflow hint', 'Центральная', 'Chats / Pings', 'Короткая подсказка stage + next action + warning перед отправкой.'],
+      'center-quick-replies': ['Quick replies', 'Центральная', 'Chats / Pings', 'Шесть сценарных шаблонов без generic-мусора. Для общих шаблонов в словаре есть строки Chats и Pings.'],
+      'center-offer': ['Offer', 'Центральная', 'Chats', 'Commercial action для Chats. Для Pings используется Invite.'],
+      'center-comp-resolve': ['Comp / Resolve', 'Центральная', 'Chats', 'Comp request создает заявку. Resolve закрывает рабочий кейс.'],
+      'center-attachments': ['Attachments', 'Центральная', 'Chats', 'Вложения поддерживают консультацию, но не являются приоритетным индикатором очереди.'],
+      'center-send-template': ['Send template', 'Центральная', 'Pings', 'Первое мягкое касание, если истории общения еще нет.'],
+      'center-invite': ['Invite', 'Центральная', 'Pings', 'Приглашение в чат или paid next step при Intent или Credits.'],
+      'center-dismiss': ['Dismiss', 'Центральная', 'Pings', 'Убирает неактуальный ping из рабочей очереди.'],
+      'right-client-tab': ['Client tab', 'Правая', 'Chats / Pings', 'Паспорт клиента: язык, timezone, birth data, visible expert, device.'],
+      'right-workflow-tab': ['Workflow tab', 'Правая', 'Chats / Pings', 'Объясняет stage, next action, boundary, paid state, risk.'],
+      'right-pay-tab': ['Pay tab', 'Правая', 'Chats / Pings', 'Деньги отдельно от текста: balance, status, paid history, coupon rule.'],
+      'right-notes-tab': ['Notes tab', 'Правая', 'Chats / Pings', 'Private/team/moderator notes. Видимость и source обязательны.'],
+      'right-free-boundary': ['Free boundary', 'Правая', 'Chats / Pings', 'Защищает бесплатную часть и не дает отдать полный продукт без оплаты.'],
+      'right-book-now': ['Book Now', 'Правая', 'Chats / Pings', 'Статус перехода к paid. Для future paid дополнительно блокирует content до старта.'],
+      'right-paid-session': ['Paid session', 'Правая', 'Chats / Pings', 'Active/pending/future state и delivery obligation.'],
+      'right-objection': ['Objection', 'Правая', 'Chats / Pings', 'Тип возражения и attempts, чтобы не давить бесконечно.'],
+      'right-risk': ['Risk', 'Правая', 'Chats / Pings', 'Safety, claim, complaint или quality guardrail.'],
+      'right-balance': ['Balance', 'Правая', 'Chats / Pings', 'Кредиты и платежная готовность. Не заменяет workflow decision.'],
+      'right-coupon-rule': ['Coupon rule', 'Правая', 'Chats / Pings', 'Eligibility check. Эксперт не выдает купон напрямую.'],
+      'right-private-note': ['Private note', 'Правая', 'Chats / Pings', 'Личная заметка эксперта. Не влияет на глобальную маршрутизацию.'],
+      'right-moderator-note': ['Moderator note', 'Правая', 'Chats / Pings', 'Контроль качества, ограничение или передача смены с source Moderator.']
+    };
+
+    const areaClass = { 'Левая': 'tag-left', 'Центральная': 'tag-center', 'Правая': 'tag-right' };
+    const scenarioClass = { Chats: 'tag-chats', Pings: 'tag-pings' };
+    const sourceClass = { System: 'tag-system', UI: 'tag-system', Expert: 'tag-expert', Moderator: 'tag-moderator', Billing: 'tag-billing', Workflow: 'tag-workflow' };
+    const rows = document.getElementById('dictionaryRows');
+    const searchBox = document.getElementById('searchBox');
+    const areaFilter = document.getElementById('areaFilter');
+    const scenarioFilter = document.getElementById('scenarioFilter');
+    const sourceFilter = document.getElementById('sourceFilter');
+    const typeFilter = document.getElementById('typeFilter');
+    const summaryStrip = document.getElementById('summaryStrip');
+
+    function tag(label, className) {
+      return `<span class="tag ${className || ''}">${label}</span>`;
+    }
+
+    function matches(row) {
+      const q = searchBox.value.trim().toLowerCase();
+      const haystack = Object.values(row).join(' ').toLowerCase();
+      return (!q || haystack.includes(q)) &&
+        (!areaFilter.value || row.area === areaFilter.value) &&
+        (!scenarioFilter.value || row.scenario === scenarioFilter.value) &&
+        (!sourceFilter.value || row.source === sourceFilter.value) &&
+        (!typeFilter.value || row.type === typeFilter.value);
+    }
+
+    function renderRows() {
+      const filtered = dictionary.filter(matches);
+      rows.innerHTML = filtered.map(row => `
+        <tr>
+          <td class="col-id">${row.id}</td>
+          <td>${tag(row.area, areaClass[row.area])}</td>
+          <td>${tag(row.scenario, scenarioClass[row.scenario])}</td>
+          <td>${row.type}</td>
+          <td>${tag(row.source, sourceClass[row.source])}</td>
+          <td>${row.caller}</td>
+          <td>${row.when}</td>
+          <td>${row.responsibility}</td>
+          <td>${row.purpose}</td>
+          <td>${row.anchor}</td>
+        </tr>
+      `).join('') || `<tr><td colspan="10"><div class="empty">Ничего не найдено по текущим фильтрам.</div></td></tr>`;
+
+      const chats = filtered.filter(row => row.scenario === 'Chats').length;
+      const pings = filtered.filter(row => row.scenario === 'Pings').length;
+      const left = filtered.filter(row => row.area === 'Левая').length;
+      const center = filtered.filter(row => row.area === 'Центральная').length;
+      const right = filtered.filter(row => row.area === 'Правая').length;
+      summaryStrip.innerHTML = `
+        <span class="pill"><strong>${filtered.length}</strong> строк</span>
+        <span class="pill pill-chats"><strong>${chats}</strong> Chats</span>
+        <span class="pill pill-pings"><strong>${pings}</strong> Pings</span>
+        <span class="pill"><strong>${left}</strong> левая</span>
+        <span class="pill"><strong>${center}</strong> центральная</span>
+        <span class="pill"><strong>${right}</strong> правая</span>
+        <span class="pill pill-risk">Общие механики описаны отдельными строками Chats и Pings</span>
+      `;
+    }
+
+    [searchBox, areaFilter, scenarioFilter, sourceFilter, typeFilter].forEach(el => el.addEventListener('input', renderRows));
+
+    document.querySelectorAll('.tab').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('is-active'));
+        document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('is-active'));
+        button.classList.add('is-active');
+        document.getElementById(`panel-${button.dataset.panel}`).classList.add('is-active');
+        const url = new URL(window.location.href);
+        url.searchParams.set('tab', button.dataset.panel);
+        window.history.replaceState(null, '', url);
+      });
+    });
+
+    document.querySelectorAll('.anchor').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.anchor').forEach(anchor => anchor.classList.remove('is-active'));
+        button.classList.add('is-active');
+        const detail = anchorDetails[button.dataset.anchor];
+        const box = document.getElementById('anchorDetail');
+        box.innerHTML = `
+          <h3>${detail[0]}</h3>
+          <div class="detail-meta">
+            ${tag(detail[1], areaClass[detail[1]])}
+            ${detail[2].split(' / ').map(item => scenarioClass[item] ? tag(item, scenarioClass[item]) : tag(item, 'tag-system')).join('')}
+          </div>
+          <p>${detail[3]}</p>
+          <p>Связанные строки можно найти на вкладке словаря через поиск по названию якоря.</p>
+        `;
+      });
+    });
+
+    document.getElementById('copyCurrentView').addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        document.getElementById('copyCurrentView').textContent = 'Ссылка скопирована';
+        setTimeout(() => { document.getElementById('copyCurrentView').textContent = 'Скопировать текущую ссылку'; }, 1600);
+      } catch (error) {
+        window.prompt('Скопируйте ссылку', window.location.href);
+      }
+    });
+
+    const initialTab = new URL(window.location.href).searchParams.get('tab');
+    if (initialTab === 'map') {
+      document.querySelector('[data-panel="map"]').click();
+    }
+    renderRows();
+  </script>
+</body>
+</html>
