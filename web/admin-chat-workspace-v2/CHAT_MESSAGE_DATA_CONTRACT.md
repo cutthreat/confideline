@@ -168,6 +168,7 @@ Current rules:
 - Attachments are not a primary composer mode. They are a secondary payload state that can be combined with `direct` or `reply`.
 - For now, attachments should not be combined with `edit` unless explicitly designed later.
 - Voice recording is also a secondary send type, not a replacement for the primary intent mode.
+- Workflow stage is not a composer mode. It is sent as context with each message payload so backend/QA can audit why the answer was written in that state.
 
 Recommended future frontend attribute:
 Implemented frontend attribute:
@@ -190,6 +191,25 @@ Current integration note:
 - Demo mode emulates successful `direct`/`reply` sending by appending a local message to `#conversationItems`.
 - Demo send supports text-only, attachment-only, and text plus attachment payloads.
 - `edit` uses the optimistic edit flow and PATCH integration point documented below.
+
+Current workflow context in composer payload:
+
+```json
+{
+  "workflow_context": {
+    "conversation_stage": "paid_session_active",
+    "paid_session_status": "active",
+    "book_now_status": "paid",
+    "ping_reason": ""
+  }
+}
+```
+
+Rules:
+
+- `workflow_context` is diagnostic and policy context, not text to send to the client.
+- `book_now_sent`, `post_book_now_objection`, and `paid_session_booked_future` should warn the operator before they reveal more paid value for free.
+- `safety_escalation` suppresses sales hints. Blocking actual send requires a separately approved safety/legal rule.
 
 ## Reply Contract
 
@@ -285,3 +305,4 @@ Rule: new code should call helpers instead of reading `dataset` directly, unless
 | 2026-04-28 | Added `handleComposerSend()` wrapper with commented direct/reply AJAX integration point. |
 | 2026-04-28 | Replaced legacy Angular send dependency for demo direct/reply with custom local message append flow. |
 | 2026-04-28 | Updated demo send readiness so selected attachments can be sent even without text. |
+| 2026-05-13 | Added workflow context payload for stage-aware composer guidance without changing direct/reply/edit modes. |

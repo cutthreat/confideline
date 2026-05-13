@@ -982,6 +982,54 @@
     return window.Promise.resolve({ ok: true, payload });
   };
 
+  const workflowStageMeta = {
+    free_reading: { label: 'Free read', className: 'stage-badge--free', hint: 'Give limited value, keep paid answer unresolved' },
+    intrigue_ready: { label: 'Book soon', className: 'stage-badge--free', hint: 'Create specific intrigue and move to Book Now' },
+    book_now_sent: { label: 'Book Now', className: 'stage-badge--book-now', hint: 'Handle the response without revealing more paid value' },
+    post_book_now_objection: { label: 'Objection', className: 'stage-badge--objection', hint: 'Classify objection, answer it, and return to Book Now' },
+    paid_session_booked_future: { label: 'Future Paid', className: 'stage-badge--future-paid', hint: 'Keep paid content locked until the scheduled session starts' },
+    paid_session_active: { label: 'Paid Live', className: 'stage-badge--paid-live', hint: 'Answer promised topics and watch timer/idle risk' },
+    extension_offer: { label: 'Extend', className: 'stage-badge--book-now', hint: 'Move new topics to another paid slot' },
+    reactivation_due: { label: 'Lift Due', className: 'stage-badge--lift', hint: 'Use reason for return, intrigue, then Book Now' },
+    reactivation_active: { label: 'Lift', className: 'stage-badge--lift', hint: 'Do not repeat hooks; drive to Book Now' },
+    safety_escalation: { label: 'Safety', className: 'stage-badge--safety', hint: 'Use safety path and suppress sales hints' },
+  };
+
+  const pingReasonMeta = {
+    client_waiting: 'Client waiting',
+    paid_session_starts_soon: 'Paid starts soon',
+    paid_session_idle_risk: 'Paid idle',
+    free_trial_ending: 'Free ending',
+    next_day_lift_due: 'Lift due',
+    failed_objection_followup: 'Follow-up',
+    reactivation_due: 'Lift due',
+    safety_escalation: 'Safety',
+    technical_issue: 'Tech issue',
+  };
+
+  const boolFromDataset = (value) => String(value || '').toLowerCase() === 'true';
+  const splitDatasetList = (value) => String(value || '').split(';').map((item) => item.trim()).filter(Boolean);
+  const formatDatasetList = (value, fallback = 'none') => {
+    const list = Array.isArray(value) ? value : splitDatasetList(value);
+    return list.length ? list.join(', ') : fallback;
+  };
+  const getStageMeta = (stage) => workflowStageMeta[stage] || { label: 'Workflow', className: 'stage-badge--neutral', hint: 'Review current context before replying' };
+
+  const setWorkflowText = (root, field, value, fallback = 'none') => {
+    root.querySelectorAll(`[data-workflow-field="${field}"]`).forEach((node) => {
+      node.textContent = value || fallback;
+    });
+  };
+
+  const syncWorkflowBadgeNode = (node, stage, text = '') => {
+    if (!node) return;
+    const meta = getStageMeta(stage);
+    node.className = `stage-badge ${meta.className}`;
+    node.dataset.stage = stage || '';
+    node.textContent = text || meta.label;
+    node.setAttribute('title', meta.hint);
+  };
+
   const getQueueCardSearchText = (item) => [
     item.dataset.conversationId,
     item.dataset.senderUserId,
@@ -989,9 +1037,19 @@
     item.dataset.recipientUserId,
     item.dataset.recipientName,
     item.dataset.displayContactName,
+    item.dataset.conversationStage,
+    item.dataset.paidSessionStatus,
+    item.dataset.bookNowStatus,
+    item.dataset.objectionType,
+    item.dataset.pingReason,
+    item.dataset.reactivationState,
+    item.dataset.safetyFlags,
+    item.dataset.nextAction,
+    item.dataset.workflowWarning,
     item.querySelector('.conv-snippet')?.textContent,
     item.querySelector('.conv-time')?.textContent,
     ...Array.from(item.querySelectorAll('.conv-pill')).map((pill) => pill.textContent),
+    ...Array.from(item.querySelectorAll('.stage-badge')).map((pill) => pill.textContent),
   ].filter(Boolean).join(' ').toLowerCase();
 
   const sortQueueCardsByPriority = (list) => {
@@ -1014,7 +1072,8 @@
     sell: 'Нужно довести клиента до покупки продолжения или дополнительных минут',
     new: 'Новый сигнал интереса до начала чата',
     intent: 'Клиент проявил сильный интерес',
-    credits: 'У клиента есть кредиты для старта платного общения'
+    credits: 'У клиента есть кредиты для старта платного общения',
+    'starts soon': 'Будущая платная сессия скоро начнется'
   };
 
   const syncQueueCardHints = (root) => {
@@ -1038,6 +1097,9 @@
         if (hint) {
           pill.setAttribute('title', hint);
         }
+      });
+      item.querySelectorAll('.stage-badge').forEach((badge) => {
+        syncWorkflowBadgeNode(badge, badge.dataset.stage || item.dataset.conversationStage, badge.textContent.trim());
       });
     });
   };
@@ -2157,6 +2219,12 @@
         const basePayload = {
           conversation_id: root.dataset.conversationId || 'c2',
           text: input?.value.trim() || '',
+          workflow_context: {
+            conversation_stage: root.dataset.conversationStage || '',
+            paid_session_status: root.dataset.paidSessionStatus || 'none',
+            book_now_status: root.dataset.bookNowStatus || 'not_sent',
+            ping_reason: root.dataset.pingReason || '',
+          },
         };
 
         if (attachmentPreview && !attachmentPreview.hidden) {
@@ -3487,6 +3555,48 @@
         labels,
         last_message_preview: item.querySelector('.conv-snippet')?.textContent.trim() || '',
         last_message_time: item.querySelector('.conv-time')?.textContent.trim() || '',
+        conversation_stage: item.dataset.conversationStage || '',
+        stage_changed_at: item.dataset.stageChangedAt || '',
+        client_previous_buyer: boolFromDataset(item.dataset.clientPreviousBuyer),
+        paid_session: {
+          status: item.dataset.paidSessionStatus || 'none',
+          time_left: item.dataset.paidSessionTimeLeft || '',
+          starts_at: item.dataset.paidSessionStartsAt || '',
+          promised_topics: splitDatasetList(item.dataset.paidSessionPromisedTopics),
+          outbound_count: Number(item.dataset.paidSessionOutboundCount || 0),
+          idle_risk: boolFromDataset(item.dataset.paidSessionIdleRisk),
+        },
+        book_now: {
+          status: item.dataset.bookNowStatus || 'not_sent',
+          promised_topics: splitDatasetList(item.dataset.bookNowPromisedTopics),
+        },
+        free_trial: {
+          state: item.dataset.freeTrialState || '',
+          insight_count: Number(item.dataset.freeTrialInsightCount || 0),
+        },
+        objection: {
+          type: item.dataset.objectionType || '',
+          attempts: Number(item.dataset.objectionAttempts || 0),
+        },
+        coupon: {
+          eligible: boolFromDataset(item.dataset.couponEligible),
+          platform: item.dataset.couponPlatform || '',
+        },
+        reactivation: {
+          state: item.dataset.reactivationState || '',
+        },
+        ping: {
+          reason: item.dataset.pingReason || '',
+          due_at: item.dataset.pingDueAt || '',
+        },
+        safety: {
+          flags: splitDatasetList(item.dataset.safetyFlags),
+          claim_risk: item.dataset.claimRisk || '',
+        },
+        workflow: {
+          next_action: item.dataset.nextAction || '',
+          warning: item.dataset.workflowWarning || '',
+        },
       };
     };
 
@@ -3524,6 +3634,9 @@
       root.dataset.workloadType = payload.workload_type || 'active_chat';
       const labelsLower = (payload.labels || []).map((label) => String(label).toLowerCase());
       const isPing = payload.workload_type === 'ping' || String(payload.conversation_id || '').startsWith('p');
+      const stage = payload.conversation_stage || (isPing ? 'reactivation_due' : 'free_reading');
+      const stageMeta = getStageMeta(stage);
+      const pingReasonLabel = pingReasonMeta[payload.ping?.reason] || payload.ping?.reason || 'none';
       const hasPaidLive = labelsLower.some((label) => label === 'live');
       const hasPaymentOpened = labelsLower.some((label) => label === 'pp');
       const hasSell = labelsLower.some((label) => label === 'sell');
@@ -3555,7 +3668,12 @@
       if (labelHost) {
         const chips = Array.from(labelHost.querySelectorAll('.dialog-chip'));
         chips.forEach((chip) => chip.remove());
-        const metaChips = [];
+        const metaChips = [{
+          label: stageMeta.label,
+          className: stage === 'safety_escalation' ? 'dialog-chip-danger' : stage.includes('paid') ? 'dialog-chip-success' : 'dialog-chip-info',
+          title: stageMeta.hint,
+          workflowField: 'header_stage',
+        }];
         if (!isPing && hasPaidLive) {
           metaChips.push({
             label: 'Live',
@@ -3568,10 +3686,13 @@
           metaChips.push({ label: 'Sell sent', className: 'dialog-chip-info', title: 'Предложение продления уже отправлено клиенту' });
         }
         const waitState = labelHost.querySelector('.dialog-wait-state');
-        metaChips.forEach(({ label, className, title }) => {
+        metaChips.forEach(({ label, className, title, workflowField }) => {
           const chip = document.createElement('span');
           chip.className = `dialog-chip ${className}`;
           chip.textContent = label;
+          if (workflowField) {
+            chip.dataset.workflowField = workflowField;
+          }
           if (title) {
             chip.setAttribute('title', title);
           }
@@ -3625,11 +3746,75 @@
       if (pingPanel) {
         pingPanel.hidden = !isPing;
         pingPanel.classList.toggle('is-open', isPing);
+        const pills = pingPanel.querySelectorAll('.billing-pill');
+        if (pills[0]) pills[0].textContent = pingReasonLabel === 'none' ? 'PING' : pingReasonLabel;
+        if (pills[1]) pills[1].textContent = payload.ping?.due_at ? `Due ${payload.ping.due_at}` : stageMeta.label;
+        if (pills[2]) pills[2].textContent = payload.client_previous_buyer ? 'Previous buyer' : 'Lead';
+        const pingTitle = pingPanel.querySelector('.billing-panel-guidance strong');
+        const pingText = pingPanel.querySelector('.billing-panel-guidance span');
+        if (pingTitle) pingTitle.textContent = isPing ? stageMeta.label : 'First touch';
+        if (pingText) pingText.textContent = payload.workflow?.next_action || stageMeta.hint;
       }
       if (focusStrip) {
         focusStrip.hidden = !isFocus;
       }
       root.classList.toggle('is-ping-workload', isPing);
+
+      root.dataset.conversationStage = stage;
+      root.dataset.paidSessionStatus = payload.paid_session?.status || 'none';
+      root.dataset.bookNowStatus = payload.book_now?.status || 'not_sent';
+      root.dataset.pingReason = payload.ping?.reason || '';
+
+      const paidSessionText = [
+        payload.paid_session?.status || 'none',
+        payload.paid_session?.time_left || payload.paid_session?.starts_at || '',
+      ].filter(Boolean).join(' · ');
+      const bookNowText = [
+        payload.book_now?.status || 'not_sent',
+        formatDatasetList(payload.book_now?.promised_topics, ''),
+      ].filter(Boolean).join(' · ');
+      const freeTrialText = [
+        payload.free_trial?.state || 'unknown',
+        payload.free_trial?.insight_count ? `${payload.free_trial.insight_count} insights` : '',
+      ].filter(Boolean).join(' · ');
+      const objectionText = payload.objection?.type
+        ? `${payload.objection.type} · ${payload.objection.attempts || 0} attempts`
+        : 'none';
+      const riskText = [
+        formatDatasetList(payload.safety?.flags, ''),
+        payload.safety?.claim_risk || '',
+      ].filter(Boolean).join(' · ') || 'none';
+
+      setWorkflowText(root, 'header_stage', stageMeta.label);
+      setWorkflowText(root, 'composer_stage', stageMeta.label);
+      setWorkflowText(root, 'composer_next_action', payload.workflow?.next_action || stageMeta.hint);
+      setWorkflowText(root, 'composer_warning', payload.workflow?.warning || '');
+      setWorkflowText(root, 'next_action', payload.workflow?.next_action || stageMeta.hint);
+      setWorkflowText(root, 'workflow_warning', payload.workflow?.warning || 'No extra warning');
+      setWorkflowText(root, 'free_trial', freeTrialText);
+      setWorkflowText(root, 'book_now', bookNowText);
+      setWorkflowText(root, 'paid_session', paidSessionText || 'none');
+      setWorkflowText(root, 'objection', objectionText);
+      setWorkflowText(root, 'ping_reason', pingReasonLabel === 'none' ? 'none' : `${pingReasonLabel}${payload.ping?.due_at ? ` · ${payload.ping.due_at}` : ''}`);
+      setWorkflowText(root, 'risk', riskText);
+
+      syncWorkflowBadgeNode(root.querySelector('[data-workflow-field="stage_badge"]'), stage);
+      const composerHint = root.querySelector('#workflowComposerHint');
+      if (composerHint) {
+        composerHint.hidden = false;
+        composerHint.dataset.stage = stage;
+        composerHint.classList.toggle('is-warning', Boolean(payload.workflow?.warning));
+        composerHint.classList.toggle('is-safety', stage === 'safety_escalation');
+      }
+
+      const aiRecommendation = root.querySelector('.context-ai-summary .is-recommendation strong');
+      if (aiRecommendation) {
+        aiRecommendation.textContent = payload.workflow?.next_action || stageMeta.hint;
+      }
+      const rightSub = root.querySelector('.right-context-title .sub');
+      if (rightSub) {
+        rightSub.textContent = `${stageMeta.label}${payload.client_previous_buyer ? ' · previous buyer' : ''}`;
+      }
 
       const drawerTitle = root.querySelector('.pinned-drawer-sub');
       if (drawerTitle) {
@@ -3644,6 +3829,10 @@
         item.setAttribute('aria-current', active ? 'true' : 'false');
       });
     };
+
+    if (initialActiveItem) {
+      applyDemoConversationSwitch(getConversationSwitchPayload(initialActiveItem));
+    }
 
     syncQueueCardHints(root);
 

@@ -28,12 +28,33 @@ Required attributes:
 | `data-recipient-avatar` | URL | Paired/backend avatar. |
 | `data-display-contact-name` | `Alla` | Name shown in the queue row. Usually the client/front user. |
 
+Workflow attributes added from the video-analysis package:
+
+| Attribute | Example | Meaning |
+| --- | --- | --- |
+| `data-conversation-stage` | `free_reading`, `intrigue_ready`, `book_now_sent`, `post_book_now_objection`, `paid_session_booked_future`, `paid_session_active`, `extension_offer`, `reactivation_due`, `reactivation_active`, `safety_escalation` | Current business stage. It is not a composer mode and must not replace `direct/reply/edit`. |
+| `data-stage-changed-at` | `2026-04-18T18:02:00-04:00` | Last stage transition time for audit/timeline. |
+| `data-client-previous-buyer` | `true` | Returning buyer guard. Previous buyers should not receive a full new free reading. |
+| `data-free-trial-state` / `data-free-trial-insight-count` | `active` / `2` | Free-value boundary and how much limited value was already given. |
+| `data-book-now-status` / `data-book-now-promised-topics` | `clicked` / `career timing;relationship risk` | Book Now transition state and topics promised before the paid boundary. |
+| `data-paid-session-status` | `none`, `pending_payment`, `booked_future`, `active`, `ended` | Paid-session state. Future paid content is locked until start. |
+| `data-paid-session-time-left` / `data-paid-session-starts-at` | `14m left` / `Today 21:00` | Active timer or future start marker. |
+| `data-paid-session-promised-topics` / `data-paid-session-outbound-count` / `data-paid-session-idle-risk` | `relationship outcome;next step` / `6` / `true` | Paid delivery contract and refund/support risk signals. |
+| `data-objection-type` / `data-objection-attempts` | `hidden_price` / `2` | Post-Book-Now objection state. Hidden objections count as objections. |
+| `data-coupon-eligible` / `data-coupon-platform` | `true` / `web` | Coupon decision support. Eligibility remains controlled by backend/business rules. |
+| `data-reactivation-state` | `due` | Reactivation/lift state for returning or strong-intent clients. |
+| `data-ping-reason` / `data-ping-due-at` | `paid_session_starts_soon` / `Today 20:45` | Why a Ping exists and when it needs action. |
+| `data-safety-flags` / `data-claim-risk` | `claim_precision` / `medium` | Safety/compliance signals. Safety escalation suppresses sales hints. |
+| `data-next-action` / `data-workflow-warning` | `Handle objection and return to Book Now` / `Do not reveal more paid value after Book Now` | Short operator guidance for header, right panel, and composer hint. |
+
 Current visual rule:
 
 - Queue row shows two overlapped avatars.
 - Queue row shows only `data-display-contact-name`.
+- Queue row can show one `.stage-badge` before regular KPI chips.
 - Online indicator is shown next to the visible name, not on top of avatars.
 - Technical sender/recipient data must stay in `data-*` even if visually hidden.
+- Full workflow detail belongs in the right panel; the queue card stays dense.
 
 ## Queue Controls
 
@@ -204,6 +225,19 @@ Quick filter split:
 | --- | --- | --- |
 | `Chats` | `Reply`, `SLA`, `Live`, `PP`, `Sell`, `Favorite`, `Archive` | Work the real dialogue queue by KPI: who needs an answer, who is breaching SLA, where a paid session is live, where payment is pending, or where a sell action is needed. |
 | `Pings` | `NEW`, `Credits`, `Intent`, `Favorite` | Warm up potential clients who already showed interest in the expert profile. Useful when `Chats` is empty or the agent has time to start soft sales outreach. |
+
+Ping reason model:
+
+| Reason | UI label | Priority use |
+| --- | --- | --- |
+| `client_waiting` | Client waiting | Fresh warm signal or client reply after outreach. |
+| `paid_session_starts_soon` | Paid starts soon | Future paid session needs confirmation/prep. |
+| `paid_session_idle_risk` | Paid idle | Active paid session has silence/refund risk. |
+| `free_trial_ending` | Free ending | Limited free value is near the Book Now boundary. |
+| `next_day_lift_due` / `reactivation_due` | Lift due | Reactivation should start with reason for return, then intrigue, then Book Now. |
+| `failed_objection_followup` | Follow-up | Objection was not converted and needs one bounded follow-up. |
+| `safety_escalation` | Safety | Sales hints suppressed; use approved safety path. |
+| `technical_issue` | Tech issue | Payment/coupon/session issue needs support path. |
 
 ## Independent Filter Zone Rules
 
