@@ -375,15 +375,15 @@
       position: absolute;
       pointer-events: auto;
       display: flex;
-      align-items: flex-start;
-      justify-content: flex-start;
+      align-items: center;
+      justify-content: center;
       border: 2px solid rgba(31, 111, 235, 0.35);
       background: rgba(31, 111, 235, 0.08);
       color: #0b57d0;
       border-radius: 8px;
-      padding: 8px;
+      padding: 0;
       cursor: pointer;
-      text-align: left;
+      text-align: center;
       font-weight: 800;
       font-size: 12px;
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
@@ -391,23 +391,21 @@
 
     .sector-hotspot span {
       display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
       border-radius: 999px;
       background: #fff;
       border: 1px solid currentColor;
-      padding: 5px 8px;
-      box-shadow: 0 4px 12px rgba(16, 24, 40, 0.12);
+      padding: 0;
+      box-shadow: 0 4px 12px rgba(16, 24, 40, 0.18);
     }
 
     .sector-hotspot {
       border-width: 1px;
-      padding: 5px;
       font-size: 11px;
-      opacity: 0.86;
-    }
-
-    .sector-hotspot span {
-      padding: 4px 7px;
-      box-shadow: 0 3px 8px rgba(16, 24, 40, 0.12);
+      opacity: 0.42;
     }
 
     .sector-hotspot:hover,
@@ -436,23 +434,75 @@
     .sector-right-workflow { right: 1.35%; top: 59.7%; width: 20.3%; height: 17%; }
     .sector-right-paynotes { right: 1.35%; top: 77.2%; width: 20.3%; height: 16.9%; }
 
-    .area-label {
-      position: absolute;
-      z-index: 3;
-      display: inline-flex;
-      border-radius: 999px;
-      background: #fff;
-      border: 1px solid currentColor;
-      padding: 5px 8px;
-      font-size: 11px;
-      font-weight: 800;
-      box-shadow: 0 3px 8px rgba(16, 24, 40, 0.14);
-      pointer-events: none;
+    .sector-guide {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(180px, 1fr));
+      gap: 8px;
+      margin: 12px 0;
     }
 
-    .area-label--left { left: 18.4%; top: 11.8%; color: #0b57d0; }
-    .area-label--center { left: 43.1%; top: 11.8%; color: var(--orange); }
-    .area-label--right { right: 1.5%; top: 11.8%; color: var(--violet); }
+    .sector-guide-group {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-soft);
+      padding: 8px;
+    }
+
+    .sector-guide-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .sector-guide-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .sector-guide-button {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 7px;
+      align-items: center;
+      min-height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      color: var(--text);
+      padding: 5px 7px;
+      font-size: 12px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .sector-guide-button strong {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: var(--soft);
+      font-size: 11px;
+    }
+
+    .sector-guide-button span {
+      min-width: 0;
+      line-height: 1.25;
+    }
+
+    .sector-guide-button:hover,
+    .sector-guide-button.is-active {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      color: #174ea6;
+    }
 
     .inspector-section {
       border-top: 1px solid var(--line);
@@ -1061,6 +1111,7 @@
 
     @media (max-width: 940px) {
       .verdict-grid,
+      .sector-guide,
       .flow-track {
         grid-template-columns: 1fr;
       }
@@ -1236,27 +1287,51 @@
           <div class="real-mockup-head">
             <div>
               <h2>Реальная страница макета</h2>
-              <p>Кликните по подсвеченной зоне поверх живого HTML-макета. Справа откроется описание смысла функционала этой области.</p>
+              <p>Выберите сектор по номеру на макете или в легенде. Справа откроется описание смысла, переменных и связанного словаря.</p>
             </div>
-            <span class="pill pill-risk">Левая / Центр / Правая</span>
+            <span class="pill pill-risk">Выбор только по клику</span>
+          </div>
+          <div class="sector-guide" aria-label="Легенда секторов макета">
+            <div class="sector-guide-group">
+              <div class="sector-guide-title"><span>Левая область</span><span>Очередь</span></div>
+              <div class="sector-guide-list">
+                <button class="sector-guide-button sector-trigger is-active" type="button" data-sector="left-workload"><strong>1</strong><span>Режим Chats / Pings</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="left-search"><strong>2</strong><span>Поиск и фильтры</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="left-cards"><strong>3</strong><span>Карточки очереди</span></button>
+              </div>
+            </div>
+            <div class="sector-guide-group">
+              <div class="sector-guide-title"><span>Центральная область</span><span>Действие</span></div>
+              <div class="sector-guide-list">
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="center-header"><strong>4</strong><span>Header и статусы</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="center-stream"><strong>5</strong><span>История сообщений</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="center-composer"><strong>6</strong><span>Composer и действия</span></button>
+              </div>
+            </div>
+            <div class="sector-guide-group">
+              <div class="sector-guide-title"><span>Правая область</span><span>Причина</span></div>
+              <div class="sector-guide-list">
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-tabs"><strong>7</strong><span>Вкладки контекста</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-client"><strong>8</strong><span>Client profile</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-workflow"><strong>9</strong><span>Workflow / Pay</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-paynotes"><strong>10</strong><span>Pay details / Notes</span></button>
+              </div>
+            </div>
           </div>
           <div class="mockup-frame">
             <div class="mockup-scale-stage" id="mockupScaleStage">
               <iframe src="./index.html" title="Admin Chat Workspace V2 mockup"></iframe>
               <div class="mockup-overlay" aria-label="Кликабельные сектора макета">
-                <span class="area-label area-label--left">Левая</span>
-                <span class="area-label area-label--center">Центр</span>
-                <span class="area-label area-label--right">Правая</span>
-                <button class="sector-hotspot sector-left sector-left-workload is-active" type="button" data-sector="left-workload"><span>Chats / Pings</span></button>
-                <button class="sector-hotspot sector-left sector-left-search" type="button" data-sector="left-search"><span>Search / filters</span></button>
-                <button class="sector-hotspot sector-left sector-left-cards" type="button" data-sector="left-cards"><span>Queue cards</span></button>
-                <button class="sector-hotspot sector-center sector-center-header" type="button" data-sector="center-header"><span>Header</span></button>
-                <button class="sector-hotspot sector-center sector-center-stream" type="button" data-sector="center-stream"><span>Message stream</span></button>
-                <button class="sector-hotspot sector-center sector-center-composer" type="button" data-sector="center-composer"><span>Composer</span></button>
-                <button class="sector-hotspot sector-right sector-right-tabs" type="button" data-sector="right-tabs"><span>Context tabs</span></button>
-                <button class="sector-hotspot sector-right sector-right-client" type="button" data-sector="right-client"><span>Client data</span></button>
-                <button class="sector-hotspot sector-right sector-right-workflow" type="button" data-sector="right-workflow"><span>Workflow / Pay</span></button>
-                <button class="sector-hotspot sector-right sector-right-paynotes" type="button" data-sector="right-paynotes"><span>Notes / audit</span></button>
+                <button class="sector-hotspot sector-trigger sector-left sector-left-workload is-active" type="button" data-sector="left-workload" aria-label="1. Режим Chats или Pings"><span>1</span></button>
+                <button class="sector-hotspot sector-trigger sector-left sector-left-search" type="button" data-sector="left-search" aria-label="2. Поиск и фильтры очереди"><span>2</span></button>
+                <button class="sector-hotspot sector-trigger sector-left sector-left-cards" type="button" data-sector="left-cards" aria-label="3. Карточки очереди"><span>3</span></button>
+                <button class="sector-hotspot sector-trigger sector-center sector-center-header" type="button" data-sector="center-header" aria-label="4. Header и статусы"><span>4</span></button>
+                <button class="sector-hotspot sector-trigger sector-center sector-center-stream" type="button" data-sector="center-stream" aria-label="5. История сообщений"><span>5</span></button>
+                <button class="sector-hotspot sector-trigger sector-center sector-center-composer" type="button" data-sector="center-composer" aria-label="6. Composer и действия"><span>6</span></button>
+                <button class="sector-hotspot sector-trigger sector-right sector-right-tabs" type="button" data-sector="right-tabs" aria-label="7. Вкладки контекста"><span>7</span></button>
+                <button class="sector-hotspot sector-trigger sector-right sector-right-client" type="button" data-sector="right-client" aria-label="8. Client profile"><span>8</span></button>
+                <button class="sector-hotspot sector-trigger sector-right sector-right-workflow" type="button" data-sector="right-workflow" aria-label="9. Workflow и Pay"><span>9</span></button>
+                <button class="sector-hotspot sector-trigger sector-right sector-right-paynotes" type="button" data-sector="right-paynotes" aria-label="10. Pay details и Notes"><span>10</span></button>
               </div>
             </div>
           </div>
@@ -2061,15 +2136,15 @@
       });
     });
 
-    document.querySelectorAll('.sector-hotspot').forEach(button => {
-      const activateSector = () => {
-        document.querySelectorAll('.sector-hotspot').forEach(item => item.classList.remove('is-active'));
-        button.classList.add('is-active');
-        renderSectorInspector(button.dataset.sector);
-      };
-      button.addEventListener('click', activateSector);
-      button.addEventListener('mouseenter', activateSector);
-      button.addEventListener('focus', activateSector);
+    function activateSector(sectorKey) {
+      document.querySelectorAll('.sector-trigger').forEach(item => {
+        item.classList.toggle('is-active', item.dataset.sector === sectorKey);
+      });
+      renderSectorInspector(sectorKey);
+    }
+
+    document.querySelectorAll('.sector-trigger').forEach(button => {
+      button.addEventListener('click', () => activateSector(button.dataset.sector));
     });
 
     document.querySelectorAll('.flow-nav-button').forEach(button => {
