@@ -142,7 +142,7 @@
 
     .filters {
       display: grid;
-      grid-template-columns: 1.45fr repeat(5, minmax(145px, 0.75fr));
+      grid-template-columns: 1.45fr repeat(4, minmax(145px, 0.75fr));
       gap: 10px;
       background: var(--panel);
       border: 1px solid var(--line);
@@ -342,6 +342,27 @@
       color: #344054;
       font-size: 11px;
       font-weight: 800;
+    }
+
+    .purpose-cell {
+      display: grid;
+      gap: 8px;
+    }
+
+    .purpose-cell p {
+      margin: 0;
+    }
+
+    .source-note {
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .source-note strong {
+      color: var(--text);
     }
 
     .orientation-strip {
@@ -1337,29 +1358,6 @@
           </select>
         </div>
         <div class="field">
-          <label for="layerFilter">Рабочий слой</label>
-          <select id="layerFilter">
-            <option value="">Все слои</option>
-            <option value="Queue mode">Режим очереди</option>
-            <option value="Queue filters">Фильтры очереди</option>
-            <option value="Queue card tags">Карточки очереди</option>
-            <option value="Header indicators">Индикаторы header</option>
-            <option value="Paid session">Платная сессия</option>
-            <option value="Message stream">История сообщений</option>
-            <option value="Composer templates|Composer actions|Ping actions">Composer и действия</option>
-            <option value="Composer templates">Шаблоны composer</option>
-            <option value="Composer actions">Действия composer</option>
-            <option value="Ping actions">Действия Pings</option>
-            <option value="Context tabs">Вкладки контекста</option>
-            <option value="Client profile">Профиль клиента</option>
-            <option value="Workflow fields|Pay fields">Workflow + деньги</option>
-            <option value="Workflow fields">Поля workflow</option>
-            <option value="Pay fields">Денежные поля</option>
-            <option value="Pay fields|Notes and flags">Деньги + заметки</option>
-            <option value="Notes and flags">Заметки и флаги</option>
-          </select>
-        </div>
-        <div class="field">
           <label for="sourceFilter">Источник</label>
           <select id="sourceFilter">
             <option value="">Все источники</option>
@@ -2253,7 +2251,6 @@
     const searchBox = document.getElementById('searchBox');
     const areaFilter = document.getElementById('areaFilter');
     const scenarioFilter = document.getElementById('scenarioFilter');
-    const layerFilter = document.getElementById('layerFilter');
     const sourceFilter = document.getElementById('sourceFilter');
     const typeFilter = document.getElementById('typeFilter');
     const productLogicPreset = document.getElementById('productLogicPreset');
@@ -2407,15 +2404,25 @@
       return false;
     }
 
+    function sourceReason(row) {
+      const reasons = {
+        System: 'система ставит или обновляет это автоматически. Эксперт должен воспринимать это как состояние очереди/диалога, а не как ручную отметку.',
+        UI: 'это элемент интерфейса. Его выбирает эксперт, поэтому он должен быть понятным, предсказуемым и не требовать знания внутренней логики.',
+        Workflow: 'сценарный движок назначает это по бизнес-стадии. Это важно, чтобы эксперт не продавал, не отвечал и не раскрывал ценность вне правильного этапа.',
+        Billing: 'биллинг или платежный контур назначает это по деньгам, оплате, кредитам или paid session. Эксперт не должен менять это вручную.',
+        Expert: 'это действие или личная отметка эксперта. Она помогает работать с кейсом, но не должна становиться глобальным системным приоритетом без отдельного правила.',
+        Moderator: 'модератор или QA добавляет это как ограничение качества, safety или передачи смены. Эксперт должен учитывать это перед ответом или продажей.'
+      };
+      return reasons[row.source] || 'источник показывает, кто отвечает за появление элемента и можно ли эксперту управлять им вручную.';
+    }
+
     function matches(row) {
       const q = searchBox.value.trim().toLowerCase();
       const haystack = Object.values(row).join(' ').toLowerCase();
-      const selectedLayers = layerFilter.value ? layerFilter.value.split('|') : [];
       return (!productLogicOnly || isExpertProductLogic(row)) &&
         (!q || haystack.includes(q)) &&
         (!areaFilter.value || row.area === areaFilter.value) &&
         (!scenarioFilter.value || row.scenario === scenarioFilter.value) &&
-        (!selectedLayers.length || selectedLayers.includes(getLayer(row))) &&
         (!sourceFilter.value || row.source === sourceFilter.value) &&
         (!typeFilter.value || row.type === typeFilter.value);
     }
@@ -2427,10 +2434,10 @@
           <td class="col-anchor"><span class="ui-anchor-name">${readableText(row.anchor)}</span><span class="ui-anchor-id">${row.id}</span></td>
           <td>${tag(row.area, areaClass[row.area])}</td>
           <td>${tag(row.scenario, scenarioClass[row.scenario])}</td>
-          <td><div class="cell-stack">${tag(typeLabel[row.type] || row.type, '')}${tag(sourceLabel[row.source] || row.source, sourceClass[row.source])}<span class="cell-layer">Слой: ${readableLayer(getLayer(row))}</span></div></td>
+          <td><div class="cell-stack">${tag(typeLabel[row.type] || row.type, '')}${tag(sourceLabel[row.source] || row.source, sourceClass[row.source])}</div></td>
           <td><div class="when-cell"><span>${readableText(row.when)}</span><span class="caller-chip">Вызов: ${readableText(row.caller)}</span></div></td>
           <td>${readableText(row.responsibility)}</td>
-          <td>${readableText(row.purpose)}</td>
+          <td><div class="purpose-cell"><p>${readableText(row.purpose)}</p><p class="source-note"><strong>Почему источник важен:</strong> ${sourceReason(row)}</p></div></td>
         </tr>
       `).join('') || `<tr><td colspan="7"><div class="empty">Ничего не найдено по текущим фильтрам.</div></td></tr>`;
 
@@ -2570,7 +2577,7 @@
       renderInspector(sectorDetails[sectorKey] || sectorDetails['left-workload'], sectorKey);
     }
 
-    [searchBox, areaFilter, scenarioFilter, layerFilter, sourceFilter, typeFilter].forEach(el => el.addEventListener('input', renderRows));
+    [searchBox, areaFilter, scenarioFilter, sourceFilter, typeFilter].forEach(el => el.addEventListener('input', renderRows));
 
     productLogicPreset.addEventListener('click', () => {
       productLogicOnly = !productLogicOnly;
@@ -2578,7 +2585,6 @@
         searchBox.value = '';
         areaFilter.value = '';
         scenarioFilter.value = '';
-        layerFilter.value = '';
         sourceFilter.value = '';
         typeFilter.value = '';
       }
@@ -2647,7 +2653,6 @@
       document.querySelector('[data-panel="dictionary"]').click();
       areaFilter.value = button.dataset.showDictionaryArea;
       scenarioFilter.value = '';
-      layerFilter.value = button.dataset.showDictionaryLayer || '';
       sourceFilter.value = '';
       typeFilter.value = '';
       searchBox.value = '';
