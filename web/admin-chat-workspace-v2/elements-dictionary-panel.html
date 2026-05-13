@@ -236,7 +236,7 @@
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
-      min-width: 1460px;
+      min-width: 1320px;
     }
 
     th,
@@ -261,7 +261,33 @@
     }
 
     tbody tr:hover td { background: #fbfdff; }
-    .col-id { font-family: Consolas, Monaco, monospace; font-size: 12px; white-space: nowrap; }
+    .col-anchor {
+      min-width: 190px;
+    }
+
+    .ui-anchor-name {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 4px 8px;
+      border-radius: 7px;
+      background: #edf4ff;
+      border: 1px solid #c7dcff;
+      color: #0b57d0;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .ui-anchor-id {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-family: Consolas, Monaco, monospace;
+      font-size: 11px;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
     .tag {
       display: inline-flex;
       align-items: center;
@@ -297,6 +323,25 @@
       color: var(--muted);
       font-size: 11px;
       line-height: 1.25;
+    }
+
+    .when-cell {
+      display: grid;
+      gap: 7px;
+    }
+
+    .caller-chip {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      min-height: 22px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      color: #344054;
+      font-size: 11px;
+      font-weight: 800;
     }
 
     .orientation-strip {
@@ -1353,14 +1398,13 @@
           <table aria-label="Словарь элементов">
             <thead>
               <tr>
-                <th>ID / переменная</th>
+                <th>UI-якорь / переменная</th>
                 <th>Область</th>
                 <th>Сценарий</th>
                 <th>Тип / источник</th>
                 <th>Когда появляется</th>
                 <th>Что делает</th>
                 <th>Зачем</th>
-                <th>UI-якорь</th>
               </tr>
             </thead>
             <tbody id="dictionaryRows"></tbody>
@@ -2380,16 +2424,15 @@
       const filtered = dictionary.filter(matches);
       rows.innerHTML = filtered.map(row => `
         <tr>
-          <td class="col-id">${row.id}</td>
+          <td class="col-anchor"><span class="ui-anchor-name">${readableText(row.anchor)}</span><span class="ui-anchor-id">${row.id}</span></td>
           <td>${tag(row.area, areaClass[row.area])}</td>
           <td>${tag(row.scenario, scenarioClass[row.scenario])}</td>
-          <td><div class="cell-stack">${tag(typeLabel[row.type] || row.type, '')}${tag(sourceLabel[row.source] || row.source, sourceClass[row.source])}<span class="cell-layer">Слой: ${readableLayer(getLayer(row))}</span><span class="cell-layer">Вызов: ${readableText(row.caller)}</span></div></td>
-          <td>${readableText(row.when)}</td>
+          <td><div class="cell-stack">${tag(typeLabel[row.type] || row.type, '')}${tag(sourceLabel[row.source] || row.source, sourceClass[row.source])}<span class="cell-layer">Слой: ${readableLayer(getLayer(row))}</span></div></td>
+          <td><div class="when-cell"><span>${readableText(row.when)}</span><span class="caller-chip">Вызов: ${readableText(row.caller)}</span></div></td>
           <td>${readableText(row.responsibility)}</td>
           <td>${readableText(row.purpose)}</td>
-          <td>${readableText(row.anchor)}</td>
         </tr>
-      `).join('') || `<tr><td colspan="8"><div class="empty">Ничего не найдено по текущим фильтрам.</div></td></tr>`;
+      `).join('') || `<tr><td colspan="7"><div class="empty">Ничего не найдено по текущим фильтрам.</div></td></tr>`;
 
       const chats = filtered.filter(row => row.scenario === 'Chats').length;
       const pings = filtered.filter(row => row.scenario === 'Pings').length;
