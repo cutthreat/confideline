@@ -142,7 +142,7 @@
 
     .filters {
       display: grid;
-      grid-template-columns: 1.5fr repeat(4, minmax(150px, 0.75fr));
+      grid-template-columns: 1.45fr repeat(5, minmax(145px, 0.75fr));
       gap: 10px;
       background: var(--panel);
       border: 1px solid var(--line);
@@ -215,7 +215,7 @@
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
-      min-width: 1320px;
+      min-width: 1460px;
     }
 
     th,
@@ -262,6 +262,185 @@
     .tag-moderator { background: #fff1f0; color: var(--red); border-color: #ffccc7; }
     .tag-billing { background: #e6f7f0; color: var(--green); border-color: #b7e4cf; }
     .tag-workflow { background: var(--violet-soft); color: var(--violet); border-color: #d8c7ff; }
+
+    .orientation-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(220px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .orientation-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 13px;
+      box-shadow: var(--shadow);
+    }
+
+    .orientation-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .orientation-card span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .screen-walkthrough {
+      display: grid;
+      grid-template-columns: minmax(520px, 1.2fr) minmax(360px, 0.8fr);
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .screen-diagram {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+
+    .screen-diagram-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .screen-diagram-head h2,
+    .html-preview-card h2 {
+      margin: 0 0 5px;
+      font-size: 18px;
+    }
+
+    .screen-diagram-head p,
+    .html-preview-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .screen-columns {
+      display: grid;
+      grid-template-columns: 0.9fr 1.45fr 1fr;
+      gap: 10px;
+      min-height: 520px;
+    }
+
+    .screen-column {
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfcfe;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .screen-column--left { border-color: #b8d4ff; }
+    .screen-column--center { border-color: #ffd8a8; }
+    .screen-column--right { border-color: #d8c7ff; }
+
+    .screen-column h3 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .screen-column .subtitle {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      min-height: 34px;
+    }
+
+    .screen-node {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      padding: 9px;
+      cursor: pointer;
+    }
+
+    .screen-node:hover,
+    .screen-node.is-active {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    .screen-node b {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+
+    .screen-node span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .area-rules {
+      display: grid;
+      gap: 10px;
+    }
+
+    .rule-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .rule-card h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+    }
+
+    .rule-card ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .rule-card li {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 3px 0;
+    }
+
+    .html-preview-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      margin-top: 14px;
+    }
+
+    .iframe-shell {
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fff;
+      height: 520px;
+    }
+
+    .iframe-shell iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
 
     .map-layout {
       display: grid;
@@ -415,6 +594,9 @@
     @media (max-width: 1180px) {
       .verdict-grid,
       .filters,
+      .orientation-strip,
+      .screen-walkthrough,
+      .screen-columns,
       .map-layout,
       .guide-grid {
         grid-template-columns: 1fr;
@@ -495,6 +677,24 @@
           </select>
         </div>
         <div class="field">
+          <label for="layerFilter">Рабочий слой</label>
+          <select id="layerFilter">
+            <option value="">Все слои</option>
+            <option value="Queue mode">Queue mode</option>
+            <option value="Queue filters">Queue filters</option>
+            <option value="Queue card tags">Queue card tags</option>
+            <option value="Header indicators">Header indicators</option>
+            <option value="Paid session">Paid session</option>
+            <option value="Composer templates">Composer templates</option>
+            <option value="Composer actions">Composer actions</option>
+            <option value="Ping actions">Ping actions</option>
+            <option value="Client profile">Client profile</option>
+            <option value="Workflow fields">Workflow fields</option>
+            <option value="Pay fields">Pay fields</option>
+            <option value="Notes and flags">Notes and flags</option>
+          </select>
+        </div>
+        <div class="field">
           <label for="sourceFilter">Источник</label>
           <select id="sourceFilter">
             <option value="">Все источники</option>
@@ -532,6 +732,7 @@
                 <th>ID / переменная</th>
                 <th>Область</th>
                 <th>Сценарий</th>
+                <th>Рабочий слой</th>
                 <th>Тип</th>
                 <th>Источник</th>
                 <th>Кем вызывается</th>
@@ -548,152 +749,94 @@
     </section>
 
     <section class="tab-panel" id="panel-map">
-      <div class="map-layout" aria-label="HTML-схема областей">
-        <article class="area-panel">
-          <div class="area-head">
-            <h2>Левая область</h2>
-            <p>Очередь и приоритет. Здесь решается, что открыть следующим.</p>
-          </div>
-          <div class="area-body">
-            <div class="mock-row">
-              <div class="mock-title"><span>Workload</span><span>Chats / Pings</span></div>
-              <div class="anchor-grid">
-                <button class="anchor" data-anchor="left-chats-tab">Chats tab</button>
-                <button class="anchor" data-anchor="left-pings-tab">Pings tab</button>
-              </div>
-            </div>
-            <div class="mock-row">
-              <div class="mock-title"><span>Search & filters</span><span>ручной triage</span></div>
-              <div class="anchor-grid">
-                <button class="anchor" data-anchor="left-search">Search</button>
-                <button class="anchor" data-anchor="left-user-select">User select</button>
-                <button class="anchor" data-anchor="left-chat-filters">Chats filters</button>
-                <button class="anchor" data-anchor="left-ping-filters">Pings filters</button>
-              </div>
-            </div>
-            <div class="mock-row">
-              <div class="mock-title"><span>Queue card</span><span>короткий смысл</span></div>
-              <div class="anchor-grid">
-                <button class="anchor" data-anchor="left-card-identity">Client -> Expert</button>
-                <button class="anchor" data-anchor="left-card-stage">Stage badge</button>
-                <button class="anchor" data-anchor="left-card-preview">Preview</button>
-                <button class="anchor" data-anchor="left-card-unread">Unread</button>
-                <button class="anchor" data-anchor="left-card-favorite">Favorite</button>
-              </div>
-            </div>
-          </div>
-        </article>
-
-        <article class="area-panel">
-          <div class="area-head">
-            <h2>Центральная область</h2>
-            <p>Рабочее действие: ответ, paid session, Book Now, objection, resolve.</p>
-          </div>
-          <div class="area-body">
-            <div class="mock-row">
-              <div class="mock-title"><span>Header</span><span>текущий кейс</span></div>
-              <div class="anchor-grid">
-                <button class="anchor" data-anchor="center-header">Client -> Expert</button>
-                <button class="anchor" data-anchor="center-stage-chip">Stage chip</button>
-                <button class="anchor" data-anchor="center-live-pp">Live / PP</button>
-                <button class="anchor" data-anchor="center-last-activity">Last activity</button>
-              </div>
-            </div>
-            <div class="mock-row">
-              <div class="mock-title"><span>Session block</span><span>деньги и время</span></div>
-              <div class="anchor-grid">
-                <button class="anchor" data-anchor="center-start-stop">Start / Stop</button>
-                <button class="anchor" data-anchor="center-my-session">My session</button>
-                <button class="anchor" data-anchor="center-timer">Timer</button>
-                <button class="anchor" data-anchor="center-sell-window">Sell window</button>
-              </div>
-            </div>
-            <div class="mock-row">
-              <div class="mock-title"><span>Composer</span><span>ответ эксперта</span></div>
-              <div class="anchor-grid">
-                <button class="anchor" data-anchor="center-workflow-hint">Workflow hint</button>
-                <button class="anchor" data-anchor="center-quick-replies">Quick replies</button>
-                <button class="anchor" data-anchor="center-offer">Offer</button>
-                <button class="anchor" data-anchor="center-comp-resolve">Comp / Resolve</button>
-                <button class="anchor" data-anchor="center-attachments">Attachments</button>
-              </div>
-            </div>
-            <div class="mock-row">
-              <div class="mock-title"><span>Pings actions</span><span>pre-chat</span></div>
-              <div class="anchor-grid">
-                <button class="anchor" data-anchor="center-send-template">Send template</button>
-                <button class="anchor" data-anchor="center-invite">Invite</button>
-                <button class="anchor" data-anchor="center-dismiss">Dismiss</button>
-              </div>
-            </div>
-          </div>
-        </article>
-
-        <article class="area-panel">
-          <div class="area-head">
-            <h2>Правая область</h2>
-            <p>Детали и объяснение. Здесь видно, почему следующий шаг именно такой.</p>
-          </div>
-          <div class="area-body">
-            <div class="mock-row">
-              <div class="mock-title"><span>Tabs</span><span>детализация</span></div>
-              <div class="anchor-grid">
-                <button class="anchor" data-anchor="right-client-tab">Client</button>
-                <button class="anchor" data-anchor="right-workflow-tab">Workflow</button>
-                <button class="anchor" data-anchor="right-pay-tab">Pay</button>
-                <button class="anchor" data-anchor="right-notes-tab">Notes</button>
-              </div>
-            </div>
-            <div class="mock-row">
-              <div class="mock-title"><span>Workflow fields</span><span>сценарий</span></div>
-              <div class="anchor-grid">
-                <button class="anchor" data-anchor="right-free-boundary">Free boundary</button>
-                <button class="anchor" data-anchor="right-book-now">Book Now</button>
-                <button class="anchor" data-anchor="right-paid-session">Paid session</button>
-                <button class="anchor" data-anchor="right-objection">Objection</button>
-                <button class="anchor" data-anchor="right-risk">Risk</button>
-              </div>
-            </div>
-            <div class="mock-row">
-              <div class="mock-title"><span>Pay & notes</span><span>коммерция и память</span></div>
-              <div class="anchor-grid">
-                <button class="anchor" data-anchor="right-balance">Balance</button>
-                <button class="anchor" data-anchor="right-coupon-rule">Coupon rule</button>
-                <button class="anchor" data-anchor="right-private-note">Private note</button>
-                <button class="anchor" data-anchor="right-moderator-note">Moderator note</button>
-              </div>
-            </div>
-          </div>
-        </article>
-      </div>
-
-      <div class="guide-grid">
-        <div class="guide-card">
-          <h3>Как ориентироваться по проекту</h3>
-          <ol>
-            <li>Начинать с левой области: определить, это Chats или Pings, и почему карточка попала в очередь.</li>
-            <li>Открыть кейс в центре: проверить stage, paid-state, последний event и workflow hint.</li>
-            <li>Если непонятно, почему подсказка такая, открыть правую вкладку Workflow.</li>
-            <li>Если действие связано с деньгами, проверить Pay. Если с контекстом клиента, проверить Client. Если с передачей смены, проверить Notes.</li>
-            <li>Любой новый индикатор добавлять только с source, trigger, visibility и routing impact.</li>
-          </ol>
+      <div class="orientation-strip">
+        <div class="orientation-card">
+          <strong>1. Сначала очередь</strong>
+          <span>Левая область отвечает только на вопрос: какой Chats или Pings открыть следующим и почему.</span>
         </div>
-        <div class="guide-card">
-          <h3>Выбранная модель</h3>
-          <ul>
-            <li>Chats - сквозной диалог, внутри которого меняется stage.</li>
-            <li>Pings - pre-chat очередь, без обычного reply SLA до ответа клиента.</li>
-            <li>Stage ведет сценарий, но не заменяет фильтр очереди.</li>
-            <li>Right panel хранит детали, left panel не превращается в аналитику.</li>
-            <li>Expert-private флаги не используются как глобальная правда.</li>
-          </ul>
+        <div class="orientation-card">
+          <strong>2. Потом действие</strong>
+          <span>Центр отвечает за фактическую работу: ответ, paid session, Book Now, objection, invite, resolve.</span>
+        </div>
+        <div class="orientation-card">
+          <strong>3. Затем причина</strong>
+          <span>Правая область объясняет stage, деньги, риск, клиента и внутренние заметки.</span>
         </div>
       </div>
 
-      <div class="guide-card" style="margin-top:14px;">
-        <div class="detail-box" id="anchorDetail">
-          <h3>Выберите элемент на схеме</h3>
-          <p>Клик по любому якорю покажет, где этот элемент находится, для какого сценария работает, кто его вызывает и почему он нужен.</p>
+      <div class="screen-walkthrough">
+        <div class="screen-diagram">
+          <div class="screen-diagram-head">
+            <div>
+              <h2>Карта HTML-областей</h2>
+              <p>Это не декоративная схема. Каждый блок соответствует реальному месту на странице чата и связан со строками словаря.</p>
+            </div>
+            <span class="pill pill-risk">Кликните по блоку</span>
+          </div>
+          <div class="screen-columns">
+            <section class="screen-column screen-column--left">
+              <h3>Левая область</h3>
+              <div class="subtitle">Очередь, фильтры, stage badges и короткий смысл карточки.</div>
+              <button class="screen-node" data-anchor="left-chats-tab"><b>Chats tab</b><span>Реальные сквозные диалоги.</span></button>
+              <button class="screen-node" data-anchor="left-pings-tab"><b>Pings tab</b><span>Pre-chat сигналы интереса.</span></button>
+              <button class="screen-node" data-anchor="left-chat-filters"><b>Chats filters</b><span>Reply, SLA, Live, PP, Sell, Favorite, Archive.</span></button>
+              <button class="screen-node" data-anchor="left-ping-filters"><b>Pings filters</b><span>NEW, Intent, Credits, Favorite.</span></button>
+              <button class="screen-node" data-anchor="left-card-stage"><b>Queue card tags</b><span>Paid Live, Book soon, Objection, Lift Due, Future Paid.</span></button>
+            </section>
+
+            <section class="screen-column screen-column--center">
+              <h3>Центральная область</h3>
+              <div class="subtitle">Открытый кейс и все рабочие действия эксперта.</div>
+              <button class="screen-node" data-anchor="center-header"><b>Header</b><span>Кто клиент, какой expert profile видит клиент.</span></button>
+              <button class="screen-node" data-anchor="center-stage-chip"><b>Stage chip</b><span>Текущая стадия: free, Book Now, objection, paid, lift.</span></button>
+              <button class="screen-node" data-anchor="center-start-stop"><b>Paid session controls</b><span>Start, Stop, My session, timer, sell window.</span></button>
+              <button class="screen-node" data-anchor="center-workflow-hint"><b>Workflow hint</b><span>Stage + next action + warning перед отправкой.</span></button>
+              <button class="screen-node" data-anchor="center-quick-replies"><b>Composer templates</b><span>Need data, Book Now, Objection, Paid topic, Extend, Safety route.</span></button>
+              <button class="screen-node" data-anchor="center-send-template"><b>Ping actions</b><span>Send template, Invite, Favorite, Dismiss.</span></button>
+            </section>
+
+            <section class="screen-column screen-column--right">
+              <h3>Правая область</h3>
+              <div class="subtitle">Детали, которые объясняют, но не перегружают очередь.</div>
+              <button class="screen-node" data-anchor="right-client-tab"><b>Client</b><span>Язык, timezone, birth data, visible expert, operator.</span></button>
+              <button class="screen-node" data-anchor="right-workflow-tab"><b>Workflow</b><span>Free boundary, Book Now, paid session, objection, ping/lift, risk.</span></button>
+              <button class="screen-node" data-anchor="right-pay-tab"><b>Pay</b><span>Balance, status, paid history, coupon rule, extend window.</span></button>
+              <button class="screen-node" data-anchor="right-notes-tab"><b>Notes</b><span>Expert-private, team и moderator context.</span></button>
+            </section>
+          </div>
+        </div>
+
+        <aside class="area-rules">
+          <div class="detail-box" id="anchorDetail">
+            <h3>Выберите блок на карте</h3>
+            <p>Здесь появится назначение элемента, сценарий Chats/Pings и причина, почему он находится именно в этой области.</p>
+          </div>
+          <div class="rule-card">
+            <h3>Правило областей</h3>
+            <ul>
+              <li>Если элемент помогает выбрать кейс, он живет слева.</li>
+              <li>Если элемент запускает действие, он живет в центре.</li>
+              <li>Если элемент объясняет причину или хранит детали, он живет справа.</li>
+              <li>Если элемент не отвечает на эти вопросы, он не нужен на основном экране.</li>
+            </ul>
+          </div>
+          <div class="rule-card">
+            <h3>Проверка модели</h3>
+            <ul>
+              <li>Chats - один сквозной диалог, stage меняется внутри него.</li>
+              <li>Pings - отдельная pre-chat очередь, не обычные сообщения.</li>
+              <li>Stage управляет сценарием, а не заменяет фильтр.</li>
+              <li>Expert-private флаги не становятся глобальным routing.</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+
+      <div class="html-preview-card">
+        <h2>Живая HTML-область макета</h2>
+        <p>Ниже встроен текущий HTML-макет страницы чата. Его можно открыть отдельно кнопкой сверху, а здесь он нужен как визуальная привязка к карте и словарю.</p>
+        <div class="iframe-shell">
+          <iframe src="./index.html" title="Admin Chat Workspace V2 mockup"></iframe>
         </div>
       </div>
     </section>
@@ -859,6 +1002,7 @@
     const searchBox = document.getElementById('searchBox');
     const areaFilter = document.getElementById('areaFilter');
     const scenarioFilter = document.getElementById('scenarioFilter');
+    const layerFilter = document.getElementById('layerFilter');
     const sourceFilter = document.getElementById('sourceFilter');
     const typeFilter = document.getElementById('typeFilter');
     const summaryStrip = document.getElementById('summaryStrip');
@@ -867,12 +1011,32 @@
       return `<span class="tag ${className || ''}">${label}</span>`;
     }
 
+    function getLayer(row) {
+      const key = `${row.id} ${row.anchor} ${row.type}`.toLowerCase();
+      if (key.includes('workload_mode')) return 'Queue mode';
+      if (key.includes('filter_')) return 'Queue filters';
+      if (key.includes('queue_card') || key.includes('last_activity') || key.includes('unread') || key.includes('attention') || key.includes('stage_badge') || key.includes('favorite')) return 'Queue card tags';
+      if (key.includes('header') || key.includes('chip') || key.includes('live') || key.includes('payment_pending')) return 'Header indicators';
+      if (key.includes('paid_session') || key.includes('start_paid') || key.includes('stop_paid') || key.includes('my_session') || key.includes('timer') || key.includes('sell_window')) return 'Paid session';
+      if (key.includes('quick_reply') || key.includes('workflow_hint')) return 'Composer templates';
+      if (key.includes('offer') || key.includes('comp_request') || key.includes('resolve') || key.includes('attachment')) return 'Composer actions';
+      if (key.includes('ping_first') || key.includes('ping_waiting') || key.includes('send_template') || key.includes('invite') || key.includes('dismiss') || key.includes('previous_buyer')) return 'Ping actions';
+      if (key.includes('client_language') || key.includes('birth_data') || key.includes('visible_expert')) return 'Client profile';
+      if (key.includes('workflow') || key.includes('next_action') || key.includes('free_boundary') || key.includes('book_now') || key.includes('objection') || key.includes('ping_lift') || key.includes('risk')) return 'Workflow fields';
+      if (key.includes('balance') || key.includes('paid_history') || key.includes('coupon') || key.includes('extend_window') || key.includes('compensation')) return 'Pay fields';
+      if (key.includes('note') || key.includes('action_log')) return 'Notes and flags';
+      if (row.area === 'Правая') return 'Workflow fields';
+      if (row.area === 'Центральная') return 'Composer actions';
+      return 'Queue card tags';
+    }
+
     function matches(row) {
       const q = searchBox.value.trim().toLowerCase();
       const haystack = Object.values(row).join(' ').toLowerCase();
       return (!q || haystack.includes(q)) &&
         (!areaFilter.value || row.area === areaFilter.value) &&
         (!scenarioFilter.value || row.scenario === scenarioFilter.value) &&
+        (!layerFilter.value || getLayer(row) === layerFilter.value) &&
         (!sourceFilter.value || row.source === sourceFilter.value) &&
         (!typeFilter.value || row.type === typeFilter.value);
     }
@@ -884,6 +1048,7 @@
           <td class="col-id">${row.id}</td>
           <td>${tag(row.area, areaClass[row.area])}</td>
           <td>${tag(row.scenario, scenarioClass[row.scenario])}</td>
+          <td>${getLayer(row)}</td>
           <td>${row.type}</td>
           <td>${tag(row.source, sourceClass[row.source])}</td>
           <td>${row.caller}</td>
@@ -892,7 +1057,7 @@
           <td>${row.purpose}</td>
           <td>${row.anchor}</td>
         </tr>
-      `).join('') || `<tr><td colspan="10"><div class="empty">Ничего не найдено по текущим фильтрам.</div></td></tr>`;
+      `).join('') || `<tr><td colspan="11"><div class="empty">Ничего не найдено по текущим фильтрам.</div></td></tr>`;
 
       const chats = filtered.filter(row => row.scenario === 'Chats').length;
       const pings = filtered.filter(row => row.scenario === 'Pings').length;
@@ -910,7 +1075,7 @@
       `;
     }
 
-    [searchBox, areaFilter, scenarioFilter, sourceFilter, typeFilter].forEach(el => el.addEventListener('input', renderRows));
+    [searchBox, areaFilter, scenarioFilter, layerFilter, sourceFilter, typeFilter].forEach(el => el.addEventListener('input', renderRows));
 
     document.querySelectorAll('.tab').forEach(button => {
       button.addEventListener('click', () => {
@@ -924,9 +1089,9 @@
       });
     });
 
-    document.querySelectorAll('.anchor').forEach(button => {
+    document.querySelectorAll('.anchor, .screen-node').forEach(button => {
       button.addEventListener('click', () => {
-        document.querySelectorAll('.anchor').forEach(anchor => anchor.classList.remove('is-active'));
+        document.querySelectorAll('.anchor, .screen-node').forEach(anchor => anchor.classList.remove('is-active'));
         button.classList.add('is-active');
         const detail = anchorDetails[button.dataset.anchor];
         const box = document.getElementById('anchorDetail');
