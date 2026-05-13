@@ -2480,35 +2480,23 @@
         return '<div class="empty">Для этого сектора пока нет строк словаря. Это ошибка покрытия, сектор нужно дополнить.</div>';
       }
 
-      return ['Chats', 'Pings'].map(scenario => {
-        const scenarioRows = relatedRows.filter(row => row.scenario === scenario);
-        if (!scenarioRows.length) {
-          return '';
-        }
-
-        return `
-          <div class="inspector-item">
-            <strong>${scenario}</strong>
-            <span>${scenario === 'Chats' ? 'Режим сквозного диалога: ответ, продажа, paid session, возражение, закрытие.' : 'Режим pre-chat сигнала: повод, первое касание, перевод в Chat или снятие из очереди.'}</span>
+      return relatedRows.map(row => `
+        <div class="sector-dictionary-row">
+          <div class="sector-dictionary-row-title">
+            <strong>${readableText(row.anchor)}</strong>
+            ${tag(row.scenario, scenarioClass[row.scenario])}
           </div>
-          ${scenarioRows.map(row => `
-            <div class="sector-dictionary-row">
-              <div class="sector-dictionary-row-title">
-                <strong>${readableText(row.anchor)}</strong>
-                ${tag(typeLabel[row.type] || row.type, '')}
-              </div>
-              <div class="sector-dictionary-row-meta">
-                ${tag(sourceLabel[row.source] || row.source, sourceClass[row.source])}
-                <span class="tag">Назначает: ${readableText(row.caller)}</span>
-              </div>
-              <p><b>Когда появляется:</b> ${readableText(row.when)}</p>
-              <p><b>Что делает:</b> ${readableText(row.responsibility)}</p>
-              <p><b>Зачем нужен:</b> ${readableText(row.purpose)}</p>
-              <small>Строка словаря: ${row.id}</small>
-            </div>
-          `).join('')}
-        `;
-      }).join('');
+          <div class="sector-dictionary-row-meta">
+            ${tag(typeLabel[row.type] || row.type, '')}
+            ${tag(sourceLabel[row.source] || row.source, sourceClass[row.source])}
+          </div>
+          <p><b>Кто назначает:</b> ${readableText(row.caller)}</p>
+          <p><b>Когда появляется:</b> ${readableText(row.when)}</p>
+          <p><b>Что делает:</b> ${readableText(row.responsibility)}</p>
+          <p><b>Зачем нужен:</b> ${readableText(row.purpose)}</p>
+          <small>Строка словаря: ${row.id}</small>
+        </div>
+      `).join('');
     }
 
     function renderInspector(detail, sectorKey = '') {
@@ -2516,7 +2504,6 @@
       const relatedRows = relatedRowsFor(detail, sectorKey);
       const chatsCount = relatedRows.filter(row => row.scenario === 'Chats').length;
       const pingsCount = relatedRows.filter(row => row.scenario === 'Pings').length;
-      const readableLayerLabel = readableLayer(detail.dictionary.layer);
       inspector.innerHTML = `
         <div class="area-inspector-head">
           <div>
@@ -2530,7 +2517,6 @@
           <span class="pill"><strong>${relatedRows.length}</strong> строк словаря</span>
           <span class="pill pill-chats"><strong>${chatsCount}</strong> Chats</span>
           <span class="pill pill-pings"><strong>${pingsCount}</strong> Pings</span>
-          <span class="pill"><strong>${readableLayerLabel}</strong></span>
         </div>
         <div class="inspector-section">
           <h3>Смысл области</h3>
@@ -2538,29 +2524,9 @@
         </div>
         <div class="inspector-section">
           <h3>Что входит</h3>
-          <div class="inspector-list">
-            ${detail.includes.map(([name, text]) => `<div class="inspector-item"><strong>${readableText(name)}</strong><span>${readableText(text)}</span></div>`).join('')}
-          </div>
-        </div>
-        <div class="inspector-section">
-          <h3>Что здесь есть на макете</h3>
           <div class="sector-dictionary-list">
             ${renderSectorDictionaryRows(relatedRows)}
           </div>
-        </div>
-        <div class="inspector-section">
-          <h3>Данные и состояния, которые нужны</h3>
-          <div class="anchor-grid">
-            ${detail.variables.map(variable => `<span class="anchor">${variable}</span>`).join('')}
-          </div>
-        </div>
-        <div class="inspector-section">
-          <h3>Кем вызывается и когда обновляется</h3>
-          <ul>${detail.triggers.map(item => `<li>${readableText(item)}</li>`).join('')}</ul>
-        </div>
-        <div class="inspector-section">
-          <h3>Что не должно жить в этой области</h3>
-          <ul>${detail.notHere.map(item => `<li>${readableText(item)}</li>`).join('')}</ul>
         </div>
         <div class="inspector-actions">
           <button class="btn btn-primary" type="button" data-show-dictionary-area="${detail.dictionary.area}" data-show-dictionary-layer="${detail.dictionary.layer}">Показать связанные строки в словаре</button>
