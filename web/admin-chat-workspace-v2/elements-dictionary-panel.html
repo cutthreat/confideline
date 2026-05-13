@@ -440,7 +440,8 @@
 
     .sector-left-workload { left: 18.2%; top: 12.7%; width: 24.3%; height: 6.8%; }
     .sector-left-search { left: 18.2%; top: 19.8%; width: 24.3%; height: 7.4%; }
-    .sector-left-active-card { left: 18.2%; top: 27.6%; width: 24.3%; height: 17.9%; }
+    .sector-left-active-card { left: 18.2%; top: 27.6%; width: 24.3%; height: 12%; }
+    .sector-left-card-badges { left: 18.2%; top: 39.8%; width: 24.3%; height: 5.7%; }
     .sector-left-card-list { left: 18.2%; top: 45.9%; width: 24.3%; height: 48.2%; }
     .sector-center-header { left: 42.9%; top: 12.7%; width: 34.6%; height: 7%; }
     .sector-center-session { left: 42.9%; top: 19.9%; width: 34.6%; height: 8.1%; }
@@ -573,6 +574,56 @@
       color: var(--muted);
       font-size: 12px;
       line-height: 1.4;
+    }
+
+    .sector-dictionary-list {
+      display: grid;
+      gap: 6px;
+      max-height: 360px;
+      overflow: auto;
+      padding-right: 3px;
+    }
+
+    .sector-dictionary-row {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      padding: 8px;
+    }
+
+    .sector-dictionary-row-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+
+    .sector-dictionary-row-title strong {
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .sector-dictionary-row-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 5px;
+    }
+
+    .sector-dictionary-row p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .sector-dictionary-row small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      overflow-wrap: anywhere;
     }
 
     .inspector-actions {
@@ -1233,6 +1284,7 @@
             <option value="Composer templates">Шаблоны composer</option>
             <option value="Composer actions">Действия composer</option>
             <option value="Ping actions">Действия Pings</option>
+            <option value="Context tabs">Вкладки контекста</option>
             <option value="Client profile">Профиль клиента</option>
             <option value="Workflow fields|Pay fields">Workflow + деньги</option>
             <option value="Workflow fields">Поля workflow</option>
@@ -1313,9 +1365,9 @@
           <div class="real-mockup-head">
             <div>
               <h2>Реальная страница макета</h2>
-              <p>Выберите сектор по номеру на макете или в легенде. Справа откроется описание смысла, переменных и связанного словаря.</p>
+              <p>Наведите или нажмите на номер сектора. Справа откроется расшифровка того, что видит эксперт в этом месте: какие элементы есть, кто их назначает и зачем они нужны.</p>
             </div>
-            <span class="pill pill-risk">Выбор только по клику</span>
+            <span class="pill pill-risk">Наведение или клик</span>
           </div>
           <div class="sector-guide" aria-label="Легенда секторов макета">
             <div class="sector-guide-group">
@@ -1324,26 +1376,27 @@
                 <button class="sector-guide-button sector-trigger is-active" type="button" data-sector="left-workload"><strong>1</strong><span>Режим Chats / Pings</span></button>
                 <button class="sector-guide-button sector-trigger" type="button" data-sector="left-search"><strong>2</strong><span>Поиск и фильтры</span></button>
                 <button class="sector-guide-button sector-trigger" type="button" data-sector="left-active-card"><strong>3</strong><span>Активная карточка</span></button>
-                <button class="sector-guide-button sector-trigger" type="button" data-sector="left-card-list"><strong>4</strong><span>Остальная очередь</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="left-card-badges"><strong>4</strong><span>Индикаторы карточки</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="left-card-list"><strong>5</strong><span>Остальная очередь</span></button>
               </div>
             </div>
             <div class="sector-guide-group">
               <div class="sector-guide-title"><span>Центральная область</span><span>Действие</span></div>
               <div class="sector-guide-list">
-                <button class="sector-guide-button sector-trigger" type="button" data-sector="center-header"><strong>5</strong><span>Шапка и статусы</span></button>
-                <button class="sector-guide-button sector-trigger" type="button" data-sector="center-session"><strong>6</strong><span>Paid session</span></button>
-                <button class="sector-guide-button sector-trigger" type="button" data-sector="center-stream"><strong>7</strong><span>История сообщений</span></button>
-                <button class="sector-guide-button sector-trigger" type="button" data-sector="center-composer"><strong>8</strong><span>Поле ответа и действия</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="center-header"><strong>6</strong><span>Шапка и статусы</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="center-session"><strong>7</strong><span>Paid session</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="center-stream"><strong>8</strong><span>История сообщений</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="center-composer"><strong>9</strong><span>Поле ответа и действия</span></button>
               </div>
             </div>
             <div class="sector-guide-group">
               <div class="sector-guide-title"><span>Правая область</span><span>Причина</span></div>
               <div class="sector-guide-list">
-                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-tabs"><strong>9</strong><span>Вкладки контекста</span></button>
-                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-client"><strong>10</strong><span>Профиль клиента</span></button>
-                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-workflow"><strong>11</strong><span>Сценарий</span></button>
-                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-pay"><strong>12</strong><span>Деньги</span></button>
-                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-notes"><strong>13</strong><span>Заметки и аудит</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-tabs"><strong>10</strong><span>Вкладки контекста</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-client"><strong>11</strong><span>Профиль клиента</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-workflow"><strong>12</strong><span>Сценарий</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-pay"><strong>13</strong><span>Деньги</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="right-notes"><strong>14</strong><span>Заметки и аудит</span></button>
               </div>
             </div>
           </div>
@@ -1354,16 +1407,17 @@
                 <button class="sector-hotspot sector-trigger sector-left sector-left-workload is-active" type="button" data-sector="left-workload" aria-label="1. Режим Chats или Pings"><span>1</span></button>
                 <button class="sector-hotspot sector-trigger sector-left sector-left-search" type="button" data-sector="left-search" aria-label="2. Поиск и фильтры очереди"><span>2</span></button>
                 <button class="sector-hotspot sector-trigger sector-left sector-left-active-card" type="button" data-sector="left-active-card" aria-label="3. Активная карточка очереди"><span>3</span></button>
-                <button class="sector-hotspot sector-trigger sector-left sector-left-card-list" type="button" data-sector="left-card-list" aria-label="4. Остальная очередь"><span>4</span></button>
-                <button class="sector-hotspot sector-trigger sector-center sector-center-header" type="button" data-sector="center-header" aria-label="5. Шапка и статусы"><span>5</span></button>
-                <button class="sector-hotspot sector-trigger sector-center sector-center-session" type="button" data-sector="center-session" aria-label="6. Paid session"><span>6</span></button>
-                <button class="sector-hotspot sector-trigger sector-center sector-center-stream" type="button" data-sector="center-stream" aria-label="7. История сообщений"><span>7</span></button>
-                <button class="sector-hotspot sector-trigger sector-center sector-center-composer" type="button" data-sector="center-composer" aria-label="8. Поле ответа и действия"><span>8</span></button>
-                <button class="sector-hotspot sector-trigger sector-right sector-right-tabs" type="button" data-sector="right-tabs" aria-label="9. Вкладки контекста"><span>9</span></button>
-                <button class="sector-hotspot sector-trigger sector-right sector-right-client" type="button" data-sector="right-client" aria-label="10. Профиль клиента"><span>10</span></button>
-                <button class="sector-hotspot sector-trigger sector-right sector-right-workflow" type="button" data-sector="right-workflow" aria-label="11. Сценарий"><span>11</span></button>
-                <button class="sector-hotspot sector-trigger sector-right sector-right-pay" type="button" data-sector="right-pay" aria-label="12. Деньги"><span>12</span></button>
-                <button class="sector-hotspot sector-trigger sector-right sector-right-notes" type="button" data-sector="right-notes" aria-label="13. Заметки и аудит"><span>13</span></button>
+                <button class="sector-hotspot sector-trigger sector-left sector-left-card-badges" type="button" data-sector="left-card-badges" aria-label="4. Индикаторы карточки"><span>4</span></button>
+                <button class="sector-hotspot sector-trigger sector-left sector-left-card-list" type="button" data-sector="left-card-list" aria-label="5. Остальная очередь"><span>5</span></button>
+                <button class="sector-hotspot sector-trigger sector-center sector-center-header" type="button" data-sector="center-header" aria-label="6. Шапка и статусы"><span>6</span></button>
+                <button class="sector-hotspot sector-trigger sector-center sector-center-session" type="button" data-sector="center-session" aria-label="7. Paid session"><span>7</span></button>
+                <button class="sector-hotspot sector-trigger sector-center sector-center-stream" type="button" data-sector="center-stream" aria-label="8. История сообщений"><span>8</span></button>
+                <button class="sector-hotspot sector-trigger sector-center sector-center-composer" type="button" data-sector="center-composer" aria-label="9. Поле ответа и действия"><span>9</span></button>
+                <button class="sector-hotspot sector-trigger sector-right sector-right-tabs" type="button" data-sector="right-tabs" aria-label="10. Вкладки контекста"><span>10</span></button>
+                <button class="sector-hotspot sector-trigger sector-right sector-right-client" type="button" data-sector="right-client" aria-label="11. Профиль клиента"><span>11</span></button>
+                <button class="sector-hotspot sector-trigger sector-right sector-right-workflow" type="button" data-sector="right-workflow" aria-label="12. Сценарий"><span>12</span></button>
+                <button class="sector-hotspot sector-trigger sector-right sector-right-pay" type="button" data-sector="right-pay" aria-label="13. Деньги"><span>13</span></button>
+                <button class="sector-hotspot sector-trigger sector-right sector-right-notes" type="button" data-sector="right-notes" aria-label="14. Заметки и аудит"><span>14</span></button>
               </div>
             </div>
           </div>
@@ -1551,6 +1605,10 @@
       { id: 'filter_new_ping', area: 'Левая', scenario: 'Pings', type: 'Filter', source: 'System', caller: 'System', when: 'Ping создан недавно и не обработан', responsibility: 'Отбирает свежие pings', purpose: 'Быстро поймать актуальный интерес', anchor: 'NEW' },
       { id: 'filter_intent_ping', area: 'Левая', scenario: 'Pings', type: 'Filter', source: 'System', caller: 'Analytics', when: 'Клиент проявил интерес к конкретному эксперту', responsibility: 'Отбирает expert-specific interest', purpose: 'Не писать случайному трафику', anchor: 'Intent' },
       { id: 'filter_credits_ping', area: 'Левая', scenario: 'Pings', type: 'Filter', source: 'Billing', caller: 'Billing', when: 'У клиента есть кредиты', responsibility: 'Отбирает платежеспособных лидов', purpose: 'Повысить шанс paid start', anchor: 'Credits' },
+      { id: 'card_badge_paid_live_chats', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow/Session', when: 'conversation_stage=paid_session_active внутри карточки', responsibility: 'Показывает Paid Live в строке индикаторов карточки', purpose: 'Сразу понять, что это оплаченный кейс с обязательством ответить по обещанной теме', anchor: 'Paid Live badge' },
+      { id: 'card_pill_reply_chats', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'System', when: 'Клиент ждет ответа агента или эксперта', responsibility: 'Показывает Reply в строке индикаторов карточки', purpose: 'Не потерять диалог, где следующий ход за нами', anchor: 'Reply pill' },
+      { id: 'card_pill_live_chats', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'Billing', caller: 'Session engine', when: 'Идет активная платная сессия', responsibility: 'Показывает Live в строке индикаторов карточки', purpose: 'Отделить оплаченный live-диалог от обычного ожидания ответа', anchor: 'Live pill' },
+      { id: 'card_pill_sla_chats', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'SLA monitor', when: 'Клиент слишком долго ждет реакции', responsibility: 'Показывает SLA в строке индикаторов карточки', purpose: 'Поднять кейс выше обычной очереди из-за риска жалобы, возврата и потери доверия', anchor: 'SLA pill' },
       { id: 'favorite_chat', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'Expert', caller: 'Expert', when: 'Эксперт отметил чат', responsibility: 'Личный флаг важного диалога', purpose: 'Вернуться к своему кейсу, не маршрутизировать команду', anchor: 'Favorite' },
       { id: 'favorite_ping', area: 'Левая', scenario: 'Pings', type: 'Indicator', source: 'Expert', caller: 'Expert', when: 'Эксперт отметил ping', responsibility: 'Личный флаг перспективного лида', purpose: 'Вернуться позже, не менять глобальный приоритет', anchor: 'Favorite' },
       { id: 'queue_card_identity_chats', area: 'Левая', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'System', when: 'Всегда в карточке чата', responsibility: 'Показывает client -> expert profile', purpose: 'Понять, от чьего лица идет диалог', anchor: 'Client -> Expert' },
@@ -1604,6 +1662,14 @@
       { id: 'resolve_chat', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Кейс обработан', responsibility: 'Помечает диалог решенным', purpose: 'Очистить активную очередь', anchor: 'Resolve' },
       { id: 'send_template_ping', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Истории касаний нет', responsibility: 'Вставляет первое сообщение', purpose: 'Быстро начать релевантное первое касание', anchor: 'Send template' },
 
+      { id: 'right_tab_client_chats', area: 'Правая', scenario: 'Chats', type: 'Control', source: 'UI', caller: 'Expert', when: 'Нужно проверить паспорт клиента перед ответом', responsibility: 'Открывает Client tab для Chat', purpose: 'Проверить язык, birth data и видимый экспертный профиль без ухода из чата', anchor: 'Client tab' },
+      { id: 'right_tab_client_pings', area: 'Правая', scenario: 'Pings', type: 'Control', source: 'UI', caller: 'Expert', when: 'Нужно проверить лида перед первым касанием', responsibility: 'Открывает Client tab для Ping', purpose: 'Не отправлять первое сообщение без языка, контекста и экспертного профиля', anchor: 'Client tab' },
+      { id: 'right_tab_workflow_chats', area: 'Правая', scenario: 'Chats', type: 'Control', source: 'UI', caller: 'Expert/System', when: 'Нужно понять stage и next action в Chat', responsibility: 'Открывает Workflow tab для Chat', purpose: 'Объяснить, почему сейчас Reply, Book Now, paid delivery, objection или risk', anchor: 'Workflow tab' },
+      { id: 'right_tab_workflow_pings', area: 'Правая', scenario: 'Pings', type: 'Control', source: 'UI', caller: 'Expert/System', when: 'Нужно понять причину Ping и следующий шаг', responsibility: 'Открывает Workflow tab для Ping', purpose: 'Отличить NEW, Intent, Lift Due, Future Paid и не писать без повода', anchor: 'Workflow tab' },
+      { id: 'right_tab_pay_chats', area: 'Правая', scenario: 'Chats', type: 'Control', source: 'UI', caller: 'Expert', when: 'Нужно проверить оплату, credits, paid history или coupon rule', responsibility: 'Открывает Pay tab для Chat', purpose: 'Не смешивать текст ответа с платежным состоянием и не обещать деньги вручную', anchor: 'Pay tab' },
+      { id: 'right_tab_pay_pings', area: 'Правая', scenario: 'Pings', type: 'Control', source: 'UI', caller: 'Expert', when: 'Нужно проверить credits или payment readiness лида', responsibility: 'Открывает Pay tab для Ping', purpose: 'Выбрать мягкое приглашение в Chat или paid step на основании платежной готовности', anchor: 'Pay tab' },
+      { id: 'right_tab_notes_chats', area: 'Правая', scenario: 'Chats', type: 'Control', source: 'UI', caller: 'Expert/Moderator', when: 'Нужно проверить private, team или moderator notes', responsibility: 'Открывает Notes tab для Chat', purpose: 'Разделить личную память эксперта, командный контекст и модераторские ограничения', anchor: 'Notes tab' },
+      { id: 'right_tab_notes_pings', area: 'Правая', scenario: 'Pings', type: 'Control', source: 'UI', caller: 'Expert/Moderator', when: 'Нужно проверить notes перед outreach', responsibility: 'Открывает Notes tab для Ping', purpose: 'Не писать повторно, рискованно или вопреки модераторскому ограничению', anchor: 'Notes tab' },
       { id: 'client_language_chats', area: 'Правая', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'Profile', when: 'Client tab открыт', responsibility: 'Показывает язык клиента', purpose: 'Корректный язык ответа', anchor: 'Client language' },
       { id: 'client_language_pings', area: 'Правая', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'Profile', when: 'Client tab открыт', responsibility: 'Показывает язык лида', purpose: 'Первое касание на правильном языке', anchor: 'Client language' },
       { id: 'birth_data_chats', area: 'Правая', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'Client/Profile', when: 'Данные есть или нужны', responsibility: 'Показывает дату, время и timezone рождения', purpose: 'Основа эзотерической консультации', anchor: 'Birth data' },
@@ -1813,18 +1879,40 @@
         layer: 'Queue card tags',
         scenarios: ['Chats', 'Pings'],
         purpose: 'Активная карточка показывает, какой кейс открыт сейчас и почему он выбран из очереди.',
-        role: 'Это не мини-чат и не правая панель. Здесь нужны только быстрые признаки: кто клиент, что случилось, насколько срочно, какая стадия и есть ли личная отметка эксперта.',
+        role: 'Это верх активной карточки: кто клиент, какой экспертный профиль, когда было последнее событие и какой короткий preview объясняет выбор. Строка бейджей вынесена в отдельный сектор 4.',
         includes: [
           ['Client -> expert', 'Система показывает клиента и видимый экспертный профиль, чтобы не ответить от неправильного образа.'],
           ['Last activity', 'Система показывает время последнего события. Нужен для оценки свежести и срочности.'],
           ['Preview', 'Система показывает последнее значимое событие или причину Ping. Это повод открыть карточку, не полный контекст.'],
-          ['Stage badges', 'Workflow/Billing ставят Reply, Live, SLA, PP, Sell, NEW, Intent, Credits или похожий короткий статус. Детали раскрываются справа.'],
           ['Unread/action count', 'Система показывает количество непрочитанных или action-сигналов. Нужен для triage, но не заменяет stage.'],
-          ['Favorite', 'Эксперт ставит личный флаг. Его видит только этот эксперт; команда и модератор не должны использовать его как глобальный приоритет.']
+          ['Favorite', 'Эксперт ставит личный флаг. Его видит только этот эксперт; команда и модератор не должны использовать его как глобальный приоритет.'],
+          ['Индикаторы карточки', 'Paid Live, Reply, Live, SLA, PP, Sell, NEW, Intent, Credits выделены отдельным сектором ниже, чтобы их нельзя было пропустить в разборе.']
         ],
         variables: ['conversation_id', 'client_id', 'expert_profile_id', 'last_activity_at', 'unread_count', 'conversation_stage', 'favorite_private_flag'],
-        triggers: ['System обновляет preview, last activity и unread.', 'Workflow ставит stage badge.', 'Expert ставит Favorite только для себя.'],
+        triggers: ['System обновляет preview, last activity и unread.', 'Expert ставит Favorite только для себя.', 'Клик по карточке открывает этот кейс в центре и справа.'],
         notHere: ['Полный workflow.', 'Длинные заметки.', 'Payment history.'],
+        dictionary: { area: 'Левая', layer: 'Queue card tags' }
+      },
+      'left-card-badges': {
+        title: 'Левая / индикаторы активной карточки',
+        area: 'Левая',
+        layer: 'Queue card tags',
+        scenarios: ['Chats', 'Pings'],
+        purpose: 'Отдельная строка бейджей отвечает на вопрос: почему именно эта карточка срочная, денежная или сценарно важная до чтения правой панели.',
+        role: 'Это короткая операционная маркировка карточки, а не кнопки действий. Бейджи ставятся системой, биллингом или сценарным движком; эксперт вручную ставит только свои личные флаги вроде Favorite.',
+        includes: [
+          ['Paid Live', 'Chats. Сценарий или движок сессий ставит при активной платной сессии. Означает, что эксперт уже исполняет оплаченное обещание и задержка критична.'],
+          ['Reply', 'Chats. Система ставит, когда клиент ждет ответа агента или эксперта. Это следующий ход за нами.'],
+          ['Live', 'Chats. Биллинг или движок сессий ставит при активной платной сессии. Это денежный приоритет выше обычного ожидания.'],
+          ['SLA', 'Chats. SLA-монитор ставит, когда клиент слишком долго ждет реакции. Это риск жалобы, возврата и падения качества.'],
+          ['PP', 'Chats. Платежная система ставит, когда клиент начал оплату, но не завершил ее. Нужно вернуть к завершению оплаты, не писать как будто деньги уже пришли.'],
+          ['Sell', 'Chats. Сценарный движок ставит, когда есть уместный коммерческий следующий шаг: Book Now, продление или новая платная тема.'],
+          ['NEW / Intent / Credits', 'Pings. NEW ставит система, Intent ставит аналитика или сценарный движок, Credits ставит биллинг. Они показывают свежесть, повод и платежную готовность для перевода в Chat.'],
+          ['Favorite/star', 'Эксперт ставит вручную и видит только свои флаги. Это личная навигация, не глобальный приоритет очереди.']
+        ],
+        variables: ['conversation_stage', 'paid_session_status', 'reply_required', 'sla_state', 'payment_pending_status', 'sell_window', 'ping_status', 'favorite_private_flag'],
+        triggers: ['Workflow/session engine ставит Paid Live и Sell.', 'System/SLA monitor ставят Reply и SLA.', 'Billing/session engine ставят Live, PP и Credits.', 'Analytics/workflow ставят Intent.', 'Expert вручную ставит только личный Favorite.'],
+        notHere: ['Полная платежная история.', 'Полные заметки.', 'Кнопки ответа.', 'Подробное объяснение next action - оно находится справа в Workflow.'],
         dictionary: { area: 'Левая', layer: 'Queue card tags' }
       },
       'left-card-list': {
@@ -1933,7 +2021,7 @@
         variables: ['active_context_tab', 'client_id', 'workflow_stage', 'pay_status', 'note_visibility'],
         triggers: ['Expert переключает вкладку.', 'System показывает relevant tab при выборе кейса.', 'Moderator/risk может подсветить Workflow или Notes.'],
         notHere: ['Новые действия отправки.', 'Очередные фильтры.', 'Дублирование message stream.'],
-        dictionary: { area: 'Правая', layer: '' }
+        dictionary: { area: 'Правая', layer: 'Context tabs' }
       },
       'right-client': {
         title: 'Правая / профиль клиента',
@@ -2086,6 +2174,7 @@
       'Composer templates': 'Шаблоны ответа',
       'Composer actions': 'Действия ответа',
       'Ping actions': 'Действия Pings',
+      'Context tabs': 'Вкладки контекста',
       'Client profile': 'Профиль клиента',
       'Workflow fields': 'Поля сценария',
       'Pay fields': 'Денежные поля',
@@ -2126,6 +2215,11 @@
         .replace(/\bSystem\/Profile\b/g, 'система/профиль')
         .replace(/\bClient\/Profile\b/g, 'клиент/профиль')
         .replace(/\bExpert\/System\b/g, 'эксперт/система')
+        .replace(/\bsession engine\b/g, 'движок сессий')
+        .replace(/\bworkflow\b/g, 'сценарный движок')
+        .replace(/\bPayment system\b/g, 'платежная система')
+        .replace(/\bpayment system\b/g, 'платежная система')
+        .replace(/\bSLA monitor\b/g, 'SLA-монитор')
         .replace(/\bSystem\b/g, 'система')
         .replace(/\bBilling\b/g, 'биллинг')
         .replace(/\bWorkflow\b/g, 'сценарий')
@@ -2135,6 +2229,7 @@
         .replace(/\bPrototype\b/g, 'прототип')
         .replace(/\bUI\b/g, 'интерфейс')
         .replace(/\bPayment pending\b/g, 'ожидание оплаты')
+        .replace(/\bactive paid session\b/g, 'активная платная сессия')
         .replace(/\bpaid session\b/g, 'платная сессия')
         .replace(/\bPaid session\b/g, 'Платная сессия')
         .replace(/\bpaid delivery\b/g, 'доставка оплаченной услуги')
@@ -2172,13 +2267,14 @@
       const key = `${row.id} ${row.anchor} ${row.type}`.toLowerCase();
       if (key.includes('workload_mode')) return 'Queue mode';
       if (key.includes('filter_')) return 'Queue filters';
-      if (key.includes('queue_card') || key.includes('last_activity') || key.includes('unread') || key.includes('attention') || key.includes('stage_badge') || key.includes('favorite')) return 'Queue card tags';
+      if (key.includes('queue_card') || key.includes('last_activity') || key.includes('unread') || key.includes('attention') || key.includes('stage_badge') || key.includes('card_badge') || key.includes('card_pill') || key.includes('favorite')) return 'Queue card tags';
       if (key.includes('header') || key.includes('chip') || key.includes('live') || key.includes('payment_pending')) return 'Header indicators';
       if (key.includes('paid_session') || key.includes('start_paid') || key.includes('stop_paid') || key.includes('my_session') || key.includes('timer') || key.includes('sell_window')) return 'Paid session';
       if (key.includes('message_stream') || key.includes('ping_context')) return 'Message stream';
       if (key.includes('quick_reply') || key.includes('workflow_hint')) return 'Composer templates';
       if (key.includes('offer') || key.includes('comp_request') || key.includes('resolve') || key.includes('attachment')) return 'Composer actions';
       if (key.includes('ping_first') || key.includes('ping_waiting') || key.includes('send_template') || key.includes('invite') || key.includes('dismiss') || key.includes('previous_buyer')) return 'Ping actions';
+      if (key.includes('right_tab')) return 'Context tabs';
       if (key.includes('client_language') || key.includes('birth_data') || key.includes('visible_expert')) return 'Client profile';
       if (key.includes('workflow') || key.includes('next_action') || key.includes('free_boundary') || key.includes('book_now') || key.includes('objection') || key.includes('ping_lift') || key.includes('risk')) return 'Workflow fields';
       if (key.includes('balance') || key.includes('paid_history') || key.includes('coupon') || key.includes('extend_window') || key.includes('compensation')) return 'Pay fields';
@@ -2186,6 +2282,35 @@
       if (row.area === 'Правая') return 'Workflow fields';
       if (row.area === 'Центральная') return 'Composer actions';
       return 'Queue card tags';
+    }
+
+    function sectorForRow(row) {
+      const key = `${row.id} ${row.anchor} ${row.type}`.toLowerCase();
+      const layer = getLayer(row);
+
+      if (row.area === 'Левая') {
+        if (layer === 'Queue mode') return 'left-workload';
+        if (layer === 'Queue filters') return 'left-search';
+        if (key.includes('queue_card_identity') || key.includes('queue_card_preview') || key.includes('last_activity')) return 'left-active-card';
+        return 'left-card-badges';
+      }
+
+      if (row.area === 'Центральная') {
+        if (layer === 'Header indicators') return 'center-header';
+        if (layer === 'Paid session') return 'center-session';
+        if (layer === 'Message stream') return 'center-stream';
+        return 'center-composer';
+      }
+
+      if (row.area === 'Правая') {
+        if (layer === 'Context tabs') return 'right-tabs';
+        if (layer === 'Client profile') return 'right-client';
+        if (layer === 'Pay fields') return 'right-pay';
+        if (layer === 'Notes and flags') return 'right-notes';
+        return 'right-workflow';
+      }
+
+      return 'left-active-card';
     }
 
     function matches(row) {
@@ -2231,7 +2356,13 @@
       `;
     }
 
-    function relatedRowsFor(detail) {
+    function relatedRowsFor(detail, sectorKey) {
+      if (sectorKey) {
+        if (sectorKey === 'left-card-list') {
+          return dictionary.filter(row => row.area === 'Левая' && getLayer(row) === 'Queue card tags');
+        }
+        return dictionary.filter(row => sectorForRow(row) === sectorKey);
+      }
       const selectedLayers = detail.dictionary.layer ? detail.dictionary.layer.split('|') : [];
       return dictionary.filter(row =>
         row.area === detail.dictionary.area &&
@@ -2239,9 +2370,45 @@
       );
     }
 
-    function renderInspector(detail) {
+    function renderSectorDictionaryRows(relatedRows) {
+      if (!relatedRows.length) {
+        return '<div class="empty">Для этого сектора пока нет строк словаря. Это ошибка покрытия, сектор нужно дополнить.</div>';
+      }
+
+      return ['Chats', 'Pings'].map(scenario => {
+        const scenarioRows = relatedRows.filter(row => row.scenario === scenario);
+        if (!scenarioRows.length) {
+          return '';
+        }
+
+        return `
+          <div class="inspector-item">
+            <strong>${scenario}</strong>
+            <span>${scenario === 'Chats' ? 'Режим сквозного диалога: ответ, продажа, paid session, возражение, закрытие.' : 'Режим pre-chat сигнала: повод, первое касание, перевод в Chat или снятие из очереди.'}</span>
+          </div>
+          ${scenarioRows.map(row => `
+            <div class="sector-dictionary-row">
+              <div class="sector-dictionary-row-title">
+                <strong>${readableText(row.anchor)}</strong>
+                ${tag(typeLabel[row.type] || row.type, '')}
+              </div>
+              <div class="sector-dictionary-row-meta">
+                ${tag(sourceLabel[row.source] || row.source, sourceClass[row.source])}
+                <span class="tag">Назначает: ${readableText(row.caller)}</span>
+              </div>
+              <p><b>Когда появляется:</b> ${readableText(row.when)}</p>
+              <p><b>Что делает:</b> ${readableText(row.responsibility)}</p>
+              <p><b>Зачем нужен:</b> ${readableText(row.purpose)}</p>
+              <small>Строка словаря: ${row.id}</small>
+            </div>
+          `).join('')}
+        `;
+      }).join('');
+    }
+
+    function renderInspector(detail, sectorKey = '') {
       const inspector = document.getElementById('areaInspector');
-      const relatedRows = relatedRowsFor(detail);
+      const relatedRows = relatedRowsFor(detail, sectorKey);
       const chatsCount = relatedRows.filter(row => row.scenario === 'Chats').length;
       const pingsCount = relatedRows.filter(row => row.scenario === 'Pings').length;
       const readableLayerLabel = readableLayer(detail.dictionary.layer);
@@ -2262,27 +2429,33 @@
         </div>
         <div class="inspector-section">
           <h3>Смысл области</h3>
-          <p>${detail.role}</p>
+          <p>${readableText(detail.role)}</p>
         </div>
         <div class="inspector-section">
           <h3>Что входит</h3>
           <div class="inspector-list">
-            ${detail.includes.map(([name, text]) => `<div class="inspector-item"><strong>${name}</strong><span>${text}</span></div>`).join('')}
+            ${detail.includes.map(([name, text]) => `<div class="inspector-item"><strong>${readableText(name)}</strong><span>${readableText(text)}</span></div>`).join('')}
           </div>
         </div>
         <div class="inspector-section">
-          <h3>Ключевые переменные</h3>
+          <h3>Что здесь есть на макете</h3>
+          <div class="sector-dictionary-list">
+            ${renderSectorDictionaryRows(relatedRows)}
+          </div>
+        </div>
+        <div class="inspector-section">
+          <h3>Данные и состояния, которые нужны</h3>
           <div class="anchor-grid">
             ${detail.variables.map(variable => `<span class="anchor">${variable}</span>`).join('')}
           </div>
         </div>
         <div class="inspector-section">
           <h3>Кем вызывается и когда обновляется</h3>
-          <ul>${detail.triggers.map(item => `<li>${item}</li>`).join('')}</ul>
+          <ul>${detail.triggers.map(item => `<li>${readableText(item)}</li>`).join('')}</ul>
         </div>
         <div class="inspector-section">
           <h3>Что не должно жить в этой области</h3>
-          <ul>${detail.notHere.map(item => `<li>${item}</li>`).join('')}</ul>
+          <ul>${detail.notHere.map(item => `<li>${readableText(item)}</li>`).join('')}</ul>
         </div>
         <div class="inspector-actions">
           <button class="btn btn-primary" type="button" data-show-dictionary-area="${detail.dictionary.area}" data-show-dictionary-layer="${detail.dictionary.layer}">Показать связанные строки в словаре</button>
@@ -2296,7 +2469,7 @@
     }
 
     function renderSectorInspector(sectorKey) {
-      renderInspector(sectorDetails[sectorKey] || sectorDetails['left-workload']);
+      renderInspector(sectorDetails[sectorKey] || sectorDetails['left-workload'], sectorKey);
     }
 
     [searchBox, areaFilter, scenarioFilter, layerFilter, sourceFilter, typeFilter].forEach(el => el.addEventListener('input', renderRows));
@@ -2344,6 +2517,7 @@
 
     document.querySelectorAll('.sector-trigger').forEach(button => {
       button.addEventListener('click', () => activateSector(button.dataset.sector));
+      button.addEventListener('mouseenter', () => activateSector(button.dataset.sector));
     });
 
     document.querySelectorAll('.flow-nav-button').forEach(button => {
