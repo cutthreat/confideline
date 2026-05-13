@@ -1285,7 +1285,7 @@
         </div>
         <div class="orientation-card">
           <strong>2. Потом действие</strong>
-          <span>Центр отвечает за фактическую работу: ответ, paid session, Book Now, objection, invite, resolve.</span>
+          <span>Центр отвечает за фактическую работу: ответ, paid session, Book Now, возражение, приглашение и закрытие кейса.</span>
         </div>
         <div class="orientation-card">
           <strong>3. Затем причина</strong>
@@ -1331,7 +1331,7 @@
           </div>
           <div class="mockup-frame">
             <div class="mockup-scale-stage" id="mockupScaleStage">
-              <iframe src="./index.html" title="Макет админ-панели чата V2"></iframe>
+              <iframe id="mockupIframe" data-src="./index.html" title="Макет админ-панели чата V2" srcdoc="<p style=&quot;font:14px Arial;padding:16px;color:#667085&quot;>Загрузка макета...</p>"></iframe>
               <div class="mockup-overlay" aria-label="Кликабельные сектора макета">
                 <button class="sector-hotspot sector-trigger sector-left sector-left-workload is-active" type="button" data-sector="left-workload" aria-label="1. Режим Chats или Pings"><span>1</span></button>
                 <button class="sector-hotspot sector-trigger sector-left sector-left-search" type="button" data-sector="left-search" aria-label="2. Поиск и фильтры очереди"><span>2</span></button>
@@ -1482,7 +1482,7 @@
               </article>
               <article class="flow-step">
                 <span class="step-kicker">Переход</span>
-                <h3>4. Клиент отвечает или принимает invite</h3>
+                <h3>4. Клиент отвечает или принимает приглашение</h3>
                 <p>После ответа Ping перестает быть pre-chat сигналом и становится обычным сквозным Chat с историей, стадией и дальнейшей продажей платного чата.</p>
                 <div class="flow-tags">
                   <span>Создать / открыть Chat</span>
@@ -1493,7 +1493,7 @@
               <article class="flow-step flow-step--result">
                 <span class="step-kicker">Результат</span>
                 <h3>5. Ping переведен в Chat или закрыт</h3>
-                <p>Если клиент не отвечает или повод слабый, Ping закрывается через Dismiss. Если есть потенциал, эксперт может оставить личный Favorite или private note.</p>
+                <p>Если клиент не отвечает или повод слабый, Ping снимается из очереди. Если есть потенциал, эксперт может оставить личный Favorite или private note.</p>
               </article>
             </div>
 
@@ -1523,7 +1523,7 @@
       { id: 'queue_user_select_pings', area: 'Левая', scenario: 'Pings', type: 'Control', source: 'UI', caller: 'Expert', when: 'Нужно найти ping по участнику', responsibility: 'Фильтрует по client_id или expert_profile_id', purpose: 'Проверка интереса к конкретному эксперту', anchor: 'User/expert select' },
       { id: 'filter_reply', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'System', caller: 'System', when: 'Последнее значимое сообщение пришло от клиента, ответа еще нет', responsibility: 'Отбирает чаты, где клиент ждет ответа', purpose: 'Главный рабочий фильтр смены', anchor: 'Reply' },
       { id: 'filter_sla', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'System', caller: 'System', when: 'Ожидание ответа превысило SLA-порог', responsibility: 'Показывает риск просрочки', purpose: 'Снизить жалобы, возвраты и потери клиента', anchor: 'SLA' },
-      { id: 'filter_live', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'Billing', caller: 'Session engine', when: 'Есть active paid session', responsibility: 'Отбирает оплаченные активные кейсы', purpose: 'Paid delivery выше обычной очереди', anchor: 'Live' },
+      { id: 'filter_live', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'Billing', caller: 'Session engine', when: 'Есть активная paid session', responsibility: 'Отбирает оплаченные активные кейсы', purpose: 'Оплаченная доставка важнее обычной очереди', anchor: 'Live' },
       { id: 'filter_payment_pending', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'Billing', caller: 'Payment system', when: 'Клиент начал payment flow, но не завершил оплату', responsibility: 'Показывает PP', purpose: 'Довести почти готовую оплату', anchor: 'PP' },
       { id: 'filter_sell', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'Workflow', caller: 'Workflow engine', when: 'Есть момент продажи, продления или новая платная тема', responsibility: 'Отбирает коммерческий next step', purpose: 'Не упустить revenue без давления', anchor: 'Sell' },
       { id: 'filter_archive_chats', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'System', caller: 'Expert/System', when: 'Диалог убран из активной очереди', responsibility: 'Показывает архивные чаты', purpose: 'Проверить обработанные кейсы без смешения с рабочей очередью', anchor: 'Archive' },
@@ -1541,24 +1541,24 @@
       { id: 'unread_count_chats', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'System', when: 'Есть непрочитанные или action count', responsibility: 'Показывает объем внимания', purpose: 'Быстрый triage входящих', anchor: 'Unread/action count' },
       { id: 'attention_mark_pings', area: 'Левая', scenario: 'Pings', type: 'Indicator', source: 'System', caller: 'System', when: 'Ping свежий или не обработан', responsibility: 'Подсвечивает лид, требующий внимания', purpose: 'Не пропустить горячий сигнал', anchor: 'Attention mark' },
       { id: 'stage_badge_chats', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'conversation_stage определен', responsibility: 'Показывает Paid Live, Book soon, Objection', purpose: 'Понять бизнес-стадию до открытия', anchor: 'Stage badge' },
-      { id: 'stage_badge_pings', area: 'Левая', scenario: 'Pings', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'ping связан со stage', responsibility: 'Показывает Lift Due, Future Paid', purpose: 'Разделить reactivation и future paid reminder', anchor: 'Stage badge' },
+      { id: 'stage_badge_pings', area: 'Левая', scenario: 'Pings', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'Ping связан со стадией', responsibility: 'Показывает Lift Due, Future Paid', purpose: 'Разделить реактивацию и напоминание о будущей оплате', anchor: 'Stage badge' },
 
       { id: 'chat_header_identity', area: 'Центральная', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'System', when: 'Чат открыт', responsibility: 'Показывает client -> expert profile', purpose: 'Не ответить от неправильного образа', anchor: 'Header' },
       { id: 'ping_header_identity', area: 'Центральная', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'System', when: 'Ping открыт', responsibility: 'Показывает client -> expert profile interest', purpose: 'Первое касание должно быть персональным', anchor: 'Header' },
       { id: 'center_stage_chip_chats', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'Чат открыт', responsibility: 'Показывает текущую стадию', purpose: 'Вести free, Book Now, objection, paid внутри одного чата', anchor: 'Stage chip' },
-      { id: 'center_stage_chip_pings', area: 'Центральная', scenario: 'Pings', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'Ping открыт', responsibility: 'Показывает Lift Due, Future Paid или другой ping-stage', purpose: 'Не отправлять одинаковый outreach всем', anchor: 'Stage chip' },
+      { id: 'center_stage_chip_pings', area: 'Центральная', scenario: 'Pings', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'Ping открыт', responsibility: 'Показывает Lift Due, Future Paid или другую стадию Ping', purpose: 'Не отправлять одинаковое первое касание всем', anchor: 'Stage chip' },
       { id: 'live_chip_chats', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'Billing', caller: 'Session engine', when: 'Paid session active', responsibility: 'Показывает оплаченный приоритет', purpose: 'Paid delivery нельзя задерживать', anchor: 'Live chip' },
       { id: 'payment_pending_chip_chats', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'Billing', caller: 'Payment system', when: 'Payment pending связан с текущим кейсом', responsibility: 'Показывает PP', purpose: 'Вернуть клиента к payment', anchor: 'PP chip' },
       { id: 'new_chip_pings', area: 'Центральная', scenario: 'Pings', type: 'Indicator', source: 'System', caller: 'System', when: 'Ping свежий', responsibility: 'Показывает новый сигнал', purpose: 'Обработать горячий интерес первым', anchor: 'NEW chip' },
       { id: 'intent_chip_pings', area: 'Центральная', scenario: 'Pings', type: 'Indicator', source: 'System', caller: 'Analytics', when: 'Есть expert-specific interest', responsibility: 'Показывает причину интереса', purpose: 'Использовать персональный повод', anchor: 'Intent chip' },
-      { id: 'credits_chip_pings', area: 'Центральная', scenario: 'Pings', type: 'Indicator', source: 'Billing', caller: 'Billing', when: 'У клиента есть credits', responsibility: 'Показывает платежную готовность', purpose: 'Выбрать invite вместо холодного сообщения', anchor: 'Credits chip' },
+      { id: 'credits_chip_pings', area: 'Центральная', scenario: 'Pings', type: 'Indicator', source: 'Billing', caller: 'Billing', when: 'У клиента есть credits', responsibility: 'Показывает платежную готовность', purpose: 'Выбрать приглашение вместо холодного сообщения', anchor: 'Credits chip' },
       { id: 'message_stream_chats', area: 'Центральная', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'System', when: 'Чат открыт', responsibility: 'Показывает сквозную историю сообщений', purpose: 'PbExpert-подход: один непрерывный чат', anchor: 'Message stream' },
       { id: 'ping_context_stream', area: 'Центральная', scenario: 'Pings', type: 'Variable', source: 'Workflow', caller: 'Workflow engine', when: 'Ping открыт', responsibility: 'Показывает причину и историю касаний', purpose: 'Не писать без повода', anchor: 'Ping context' },
-      { id: 'start_paid_session', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Paid session можно начать', responsibility: 'Запускает оплаченный интервал', purpose: 'Фиксирует delivery obligation', anchor: 'Start paid session' },
+      { id: 'start_paid_session', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Paid session можно начать', responsibility: 'Запускает оплаченный интервал', purpose: 'Фиксирует обязательство по оплаченной доставке', anchor: 'Start paid session' },
       { id: 'stop_paid_session', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Paid session active', responsibility: 'Завершает оплаченный интервал', purpose: 'Закрыть delivery корректно', anchor: 'Stop paid session' },
       { id: 'my_session', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'Session engine', when: 'Текущий эксперт ведет session', responsibility: 'Показывает ответственность', purpose: 'Не путать свою session с чужим Live', anchor: 'My session' },
       { id: 'session_timer', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'Session engine', when: 'Paid session active', responsibility: 'Показывает остаток минут', purpose: 'Дозировать глубину ответа', anchor: 'Timer' },
-      { id: 'sell_window', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'Осталось мало времени и offer допустим', responsibility: 'Подсказывает продление', purpose: 'Продажа вовремя, без раннего давления', anchor: 'Sell window' },
+      { id: 'sell_window', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'Осталось мало времени и предложение допустимо', responsibility: 'Подсказывает продление', purpose: 'Продажа вовремя, без раннего давления', anchor: 'Sell window' },
       { id: 'ping_first_touch', area: 'Центральная', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Эксперт еще не писал клиенту', responsibility: 'Разрешает первое касание', purpose: 'Начать мягко и релевантно', anchor: 'First touch' },
       { id: 'ping_waiting_reply', area: 'Центральная', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Первое касание уже отправлено', responsibility: 'Показывает ожидание ответа', purpose: 'Не спамить повторно', anchor: 'Waiting reply' },
       { id: 'previous_buyer_ping', area: 'Центральная', scenario: 'Pings', type: 'Guardrail', source: 'Billing', caller: 'Billing/Workflow', when: 'У клиента была оплата', responsibility: 'Запрещает новый full free reading', purpose: 'Buyer ведется через reactivation и Book Now', anchor: 'Previous buyer' },
@@ -1567,40 +1567,40 @@
       { id: 'quick_reply_need_data_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'UI', caller: 'Expert', when: 'Не хватает DOB, time, timezone или context', responsibility: 'Вставляет уточнение данных', purpose: 'Корректная консультация', anchor: 'Need data' },
       { id: 'quick_reply_need_data_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Для первого касания нужен корректный контекст', responsibility: 'Вставляет мягкое уточнение', purpose: 'Не начинать с недостоверного вывода', anchor: 'Need data' },
       { id: 'quick_reply_book_now_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'UI', caller: 'Expert', when: 'Free/intrigue достаточно прогрели клиента', responsibility: 'Ведет к paid continuation', purpose: 'Конверсия free -> paid', anchor: 'Book Now' },
-      { id: 'quick_reply_book_now_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Ping имеет strong intent или previous buyer', responsibility: 'Вставляет мягкий paid invite', purpose: 'Конвертировать интерес без нового full free', anchor: 'Book Now' },
+      { id: 'quick_reply_book_now_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Ping имеет strong intent или previous buyer', responsibility: 'Вставляет мягкое платное приглашение', purpose: 'Конвертировать интерес без нового полного бесплатного чтения', anchor: 'Book Now' },
       { id: 'quick_reply_objection_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'UI', caller: 'Expert', when: 'Клиент сомневается после Book Now', responsibility: 'Вставляет обработку objection', purpose: 'Вернуть к оплате без давления', anchor: 'Objection' },
-      { id: 'quick_reply_objection_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Ping возник после сомнения или payment hesitation', responsibility: 'Вставляет мягкое объяснение next step', purpose: 'Не повторять offer механически', anchor: 'Objection' },
+      { id: 'quick_reply_objection_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Ping возник после сомнения или payment hesitation', responsibility: 'Вставляет мягкое объяснение следующего шага', purpose: 'Не повторять предложение оплаты механически', anchor: 'Objection' },
       { id: 'quick_reply_paid_topic_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'UI', caller: 'Expert', when: 'Paid session active', responsibility: 'Фокусирует ответ на оплаченном вопросе', purpose: 'Не уходить в новую тему бесплатно', anchor: 'Paid topic' },
       { id: 'quick_reply_paid_topic_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Ping связан с future paid reminder', responsibility: 'Не раскрывает future paid content', purpose: 'Подтвердить время, не выдать продукт заранее', anchor: 'Paid topic' },
       { id: 'quick_reply_extend_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'UI', caller: 'Expert', when: 'Low time или новая тема', responsibility: 'Вставляет предложение добавить минуты', purpose: 'Продлить paid session', anchor: 'Extend' },
       { id: 'quick_reply_extend_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Есть buyer/reactivation reason и paid next step', responsibility: 'Вставляет аккуратное продолжение', purpose: 'Вернуть клиента к paid без спама', anchor: 'Extend' },
       { id: 'quick_reply_safety_chats', area: 'Центральная', scenario: 'Chats', type: 'Guardrail', source: 'UI', caller: 'Expert', when: 'Есть safety, claim или legal risk', responsibility: 'Смягчает формулировку', purpose: 'Compliance и качество', anchor: 'Safety route' },
       { id: 'quick_reply_safety_pings', area: 'Центральная', scenario: 'Pings', type: 'Guardrail', source: 'UI', caller: 'Expert', when: 'Outreach может звучать как давление или claim', responsibility: 'Смягчает первое касание', purpose: 'Не нарушить safety и доверие', anchor: 'Safety route' },
-      { id: 'offer_menu_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Stage допускает продажу', responsibility: 'Открывает варианты paid offer', purpose: 'Не сочинять коммерческий сценарий вручную', anchor: 'Offer' },
+      { id: 'offer_menu_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Стадия допускает продажу', responsibility: 'Открывает варианты платного предложения', purpose: 'Не сочинять коммерческий сценарий вручную', anchor: 'Offer' },
       { id: 'invite_menu_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Есть Intent или Credits', responsibility: 'Открывает варианты приглашения', purpose: 'Перевести ping в chat или paid', anchor: 'Invite' },
-      { id: 'comp_request_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Сбой, спор или payment issue', responsibility: 'Создает compensation request', purpose: 'Эксперт не выдает кредиты вручную', anchor: 'Comp request' },
+      { id: 'comp_request_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Сбой, спор или payment issue', responsibility: 'Создает запрос компенсации', purpose: 'Эксперт не выдает кредиты вручную', anchor: 'Comp request' },
       { id: 'dismiss_ping', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Ping неактуален или обработан', responsibility: 'Убирает ping из рабочей очереди', purpose: 'Не засорять список', anchor: 'Dismiss' },
       { id: 'resolve_chat', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Кейс обработан', responsibility: 'Помечает диалог решенным', purpose: 'Очистить активную очередь', anchor: 'Resolve' },
-      { id: 'send_template_ping', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Истории касаний нет', responsibility: 'Вставляет первое сообщение', purpose: 'Быстро начать релевантный outreach', anchor: 'Send template' },
+      { id: 'send_template_ping', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Истории касаний нет', responsibility: 'Вставляет первое сообщение', purpose: 'Быстро начать релевантное первое касание', anchor: 'Send template' },
 
       { id: 'client_language_chats', area: 'Правая', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'Profile', when: 'Client tab открыт', responsibility: 'Показывает язык клиента', purpose: 'Корректный язык ответа', anchor: 'Client language' },
       { id: 'client_language_pings', area: 'Правая', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'Profile', when: 'Client tab открыт', responsibility: 'Показывает язык лида', purpose: 'Первое касание на правильном языке', anchor: 'Client language' },
       { id: 'birth_data_chats', area: 'Правая', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'Client/Profile', when: 'Данные есть или нужны', responsibility: 'Показывает дату, время и timezone рождения', purpose: 'Основа эзотерической консультации', anchor: 'Birth data' },
-      { id: 'birth_data_pings', area: 'Правая', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'Client/Profile', when: 'Данные есть или нужны для outreach', responsibility: 'Показывает базу для корректного касания', purpose: 'Не строить сообщение на недостоверности', anchor: 'Birth data' },
+      { id: 'birth_data_pings', area: 'Правая', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'Client/Profile', when: 'Данные есть или нужны для первого касания', responsibility: 'Показывает базу для корректного касания', purpose: 'Не строить сообщение на недостоверности', anchor: 'Birth data' },
       { id: 'visible_expert_chats', area: 'Правая', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'System', when: 'Всегда', responsibility: 'Показывает экспертный профиль клиента', purpose: 'Сохранить роль и образ', anchor: 'Visible expert' },
       { id: 'visible_expert_pings', area: 'Правая', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'System/Analytics', when: 'Ping привязан к эксперту', responsibility: 'Показывает профиль интереса', purpose: 'Outreach должен идти от релевантного профиля', anchor: 'Visible expert' },
       { id: 'workflow_stage_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Workflow tab открыт', responsibility: 'Раскрывает текущий conversation_stage', purpose: 'Объяснить, почему следующий шаг такой', anchor: 'Workflow stage' },
       { id: 'workflow_stage_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Workflow tab открыт', responsibility: 'Раскрывает ping stage', purpose: 'Отличить Lift Due от Future Paid', anchor: 'Workflow stage' },
       { id: 'next_action_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Workflow tab открыт', responsibility: 'Показывает next action', purpose: 'Снизить ошибку эксперта', anchor: 'Next action' },
-      { id: 'next_action_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Workflow tab открыт', responsibility: 'Показывает outreach next action', purpose: 'Не писать без сценария', anchor: 'Next action' },
+      { id: 'next_action_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Workflow tab открыт', responsibility: 'Показывает следующее действие для первого касания', purpose: 'Не писать без сценария', anchor: 'Next action' },
       { id: 'free_boundary_chats', area: 'Правая', scenario: 'Chats', type: 'Guardrail', source: 'Workflow', caller: 'Workflow engine', when: 'Free или intrigue stage', responsibility: 'Показывает free state и insight count', purpose: 'Не отдавать полный продукт бесплатно', anchor: 'Free boundary' },
-      { id: 'free_boundary_pings', area: 'Правая', scenario: 'Pings', type: 'Guardrail', source: 'Workflow', caller: 'Workflow engine', when: 'Ping относится к lead/free или previous buyer', responsibility: 'Показывает доступность free value', purpose: 'Buyer не получает новый full free reading', anchor: 'Free boundary' },
+      { id: 'free_boundary_pings', area: 'Правая', scenario: 'Pings', type: 'Guardrail', source: 'Workflow', caller: 'Workflow engine', when: 'Ping относится к lead/free или previous buyer', responsibility: 'Показывает доступность бесплатной ценности', purpose: 'Buyer не получает новое полное бесплатное чтение', anchor: 'Free boundary' },
       { id: 'book_now_status_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Workflow', caller: 'Workflow/Payment', when: 'Есть переход к paid', responsibility: 'Показывает not sent, sent, clicked, paid', purpose: 'Контроль free -> paid конверсии', anchor: 'Book Now' },
       { id: 'book_now_status_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow/Payment', when: 'Ping ведет к paid или future paid', responsibility: 'Показывает paid future или not sent', purpose: 'Не раскрыть paid content заранее', anchor: 'Book Now' },
       { id: 'paid_session_status_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Billing', caller: 'Session engine', when: 'Есть paid state', responsibility: 'Показывает active, pending, future, none', purpose: 'Контроль оплаченной обязанности', anchor: 'Paid session' },
       { id: 'paid_session_status_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Billing', caller: 'Session engine', when: 'Ping связан с future paid или starts soon', responsibility: 'Показывает future paid state', purpose: 'Подтвердить время без раскрытия content', anchor: 'Paid session' },
       { id: 'objection_state_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Workflow', caller: 'Workflow/Expert', when: 'Клиент возражает после Book Now', responsibility: 'Показывает objection type и attempts', purpose: 'Не давить бесконечно', anchor: 'Objection' },
-      { id: 'objection_state_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow/Expert', when: 'Ping возник после сомнения или payment hesitation', responsibility: 'Показывает причину мягкого возврата', purpose: 'Не повторять offer механически', anchor: 'Objection' },
+      { id: 'objection_state_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow/Expert', when: 'Ping возник после сомнения или payment hesitation', responsibility: 'Показывает причину мягкого возврата', purpose: 'Не повторять предложение оплаты механически', anchor: 'Objection' },
       { id: 'ping_lift_reason_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Всегда для ping', responsibility: 'Показывает reason и due time', purpose: 'Outreach должен иметь причину', anchor: 'Ping / lift' },
       { id: 'ping_lift_reason_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Chat пришел из reactivation или lift', responsibility: 'Показывает origin reason', purpose: 'Сохранить контекст возврата клиента', anchor: 'Ping / lift' },
       { id: 'risk_flags_chats', area: 'Правая', scenario: 'Chats', type: 'Guardrail', source: 'Moderator', caller: 'System/Moderator', when: 'Есть safety, claim или complaint risk', responsibility: 'Показывает ограничение', purpose: 'Compliance и качество paid/free ответа', anchor: 'Risk' },
@@ -1612,9 +1612,9 @@
       { id: 'coupon_rule_chats', area: 'Правая', scenario: 'Chats', type: 'Guardrail', source: 'Billing', caller: 'Business rules', when: 'Payment issue или objection', responsibility: 'Показывает eligibility check', purpose: 'Эксперт не выдает купон напрямую', anchor: 'Coupon rule' },
       { id: 'coupon_rule_pings', area: 'Правая', scenario: 'Pings', type: 'Guardrail', source: 'Billing', caller: 'Business rules', when: 'Ping связан с payment hesitation', responsibility: 'Показывает необходимость rule check', purpose: 'Не обещать скидку без права', anchor: 'Coupon rule' },
       { id: 'extend_window_chats', area: 'Правая', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow/Session', when: 'Low time или новая тема', responsibility: 'Показывает уместность продления', purpose: 'Продать вовремя', anchor: 'Extend window' },
-      { id: 'extend_window_pings', area: 'Правая', scenario: 'Pings', type: 'Indicator', source: 'Workflow', caller: 'Workflow/Session', when: 'Buyer/reactivation reason допускает paid next step', responsibility: 'Показывает уместный paid invite', purpose: 'Вернуть клиента без спама', anchor: 'Extend window' },
+      { id: 'extend_window_pings', area: 'Правая', scenario: 'Pings', type: 'Indicator', source: 'Workflow', caller: 'Workflow/Session', when: 'Buyer/reactivation reason допускает paid next step', responsibility: 'Показывает уместное платное приглашение', purpose: 'Вернуть клиента без спама', anchor: 'Extend window' },
       { id: 'compensation_chats', area: 'Правая', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Сбой, спор, payment/session mismatch', responsibility: 'Создает request only', purpose: 'Аудит вместо ручной компенсации', anchor: 'Compensation' },
-      { id: 'compensation_pings', area: 'Правая', scenario: 'Pings', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Ping связан с payment dispute', responsibility: 'Создает request only', purpose: 'Не решать деньги из outreach-сообщения', anchor: 'Compensation' },
+      { id: 'compensation_pings', area: 'Правая', scenario: 'Pings', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Ping связан с payment dispute', responsibility: 'Создает только запрос', purpose: 'Не решать деньги из первого сообщения', anchor: 'Compensation' },
       { id: 'expert_private_note_chats', area: 'Правая', scenario: 'Chats', type: 'Note', source: 'Expert', caller: 'Expert', when: 'Эксперт сохраняет личный контекст', responsibility: 'Private note', purpose: 'Личная память без влияния на routing команды', anchor: 'Private note' },
       { id: 'expert_private_note_pings', area: 'Правая', scenario: 'Pings', type: 'Note', source: 'Expert', caller: 'Expert', when: 'Эксперт сохраняет перспективного лида', responsibility: 'Private note', purpose: 'Вернуться позже без глобального приоритета', anchor: 'Private note' },
       { id: 'moderator_note_chats', area: 'Правая', scenario: 'Chats', type: 'Note', source: 'Moderator', caller: 'Moderator/QA', when: 'Есть контроль качества или ограничение', responsibility: 'Team/moderator note', purpose: 'Передать смене важный guardrail', anchor: 'Moderator note' },
@@ -1666,14 +1666,14 @@
         title: 'Центральная область',
         area: 'Центральная',
         scenarios: ['Chats', 'Pings'],
-        purpose: 'Это рабочее место открытого кейса. Здесь эксперт отвечает, запускает paid session, обрабатывает Book Now/objection, делает invite или закрывает кейс.',
+        purpose: 'Это рабочее место открытого кейса. Здесь эксперт отвечает, запускает paid session, обрабатывает Book Now/возражение, делает приглашение или закрывает кейс.',
         role: 'Центр должен отвечать на вопрос: какое действие эксперт выполняет прямо сейчас и что нельзя нарушить перед отправкой сообщения.',
         includes: [
           ['Шапка кейса', 'Показывает client -> expert profile, stage chip, Live/PP и последнюю активность.'],
           ['Управление платной сессией', 'Start/Stop, My session, timer, sell window и статус доставки внутри сквозного чата.'],
           ['История сообщений', 'Сквозная история общения: бесплатный этап, Book Now, возражение и платная сессия не дробятся на отдельные чаты.'],
           ['Шаблоны ответа', 'Запрос данных, Book Now, возражение, платная тема, продление и safety route.'],
-          ['Действия', 'Chats: Offer, Comp request, Resolve. Pings: Send template, Invite, Favorite, Dismiss.']
+          ['Действия', 'Chats: предложение оплаты, запрос компенсации, закрытие кейса. Pings: шаблон первого касания, приглашение, Favorite, снятие из очереди.']
         ],
         variables: [
           'active_conversation_id',
@@ -1686,7 +1686,7 @@
           'next_action'
         ],
         triggers: [
-          'Эксперт запускает Start/Stop, Offer, Comp request, Resolve, Send template, Invite, Dismiss.',
+          'Эксперт запускает старт/стоп paid session, предложение оплаты, запрос компенсации, закрытие кейса, шаблон первого касания, приглашение или снятие Ping из очереди.',
           'Сценарный движок обновляет hint, stage и warning при выборе карточки.',
           'Биллинг/session engine обновляет Live, My session, timer и sell window.',
           'Safety/moderator signals могут подавлять sales push или требовать осторожную формулировку.'
@@ -1731,7 +1731,7 @@
           'Сценарный движок заполняет workflow fields.',
           'Биллинг/business rules заполняют денежные поля.',
           'Эксперт, команда и модератор создают notes с разной видимостью.',
-          'Moderator/system risk flags могут влиять на warning и suppression продажи.'
+          'Модераторские и системные risk flags могут влиять на предупреждение и запрет продажи.'
         ],
         notHere: [
           'Новые действия, которые должны быть в центре.',
@@ -1835,16 +1835,16 @@
         area: 'Центральная',
         layer: 'Composer templates|Composer actions|Ping actions',
         scenarios: ['Chats', 'Pings'],
-        purpose: 'Поле ответа превращает понимание stage в действие: ответ, offer, invite, compensation request, resolve или dismiss.',
+        purpose: 'Поле ответа превращает понимание стадии в действие: ответ, предложение оплаты, приглашение из Ping в Chat, запрос компенсации, закрытие чата или снятие Ping из очереди.',
         role: 'Сектор должен помогать выполнить следующий шаг, но не заменять экспертное решение и не давить на клиента.',
         includes: [
-          ['Сценарная подсказка', 'Короткое объяснение next action и warning.'],
+          ['Сценарная подсказка', 'Короткое объяснение следующего действия и предупреждения.'],
           ['Шаблоны', 'Сценарные заготовки без универсального мусора.'],
-          ['Действия', 'Chats: Offer, Comp request, Resolve. Pings: Send template, Invite, Dismiss.']
+          ['Действия', 'Chats: предложение оплаты, запрос компенсации, закрытие чата. Pings: отправка шаблона, приглашение в Chat, снятие из очереди.']
         ],
         variables: ['composer_mode', 'draft_text', 'next_action', 'workflow_warning', 'offer_type', 'invite_type'],
-        triggers: ['Expert выбирает шаблон или действие.', 'Workflow ограничивает действие через warning.', 'Billing/session state влияет на Offer/Extend/Start/Stop.'],
-        notHere: ['Ручная выдача компенсаций.', 'Скрытая смена денег.', 'Массовый outreach из ping без причины.'],
+        triggers: ['Эксперт выбирает шаблон или действие.', 'Workflow ограничивает действие через предупреждение.', 'Состояние биллинга и paid session влияет на предложение, продление, старт и стоп сессии.'],
+        notHere: ['Ручная выдача компенсаций.', 'Скрытая смена денег.', 'Массовые сообщения из Ping без причины.'],
         dictionary: { area: 'Центральная', layer: 'Composer templates|Composer actions|Ping actions' }
       },
       'right-tabs': {
@@ -1871,7 +1871,7 @@
         layer: 'Client profile',
         scenarios: ['Chats', 'Pings'],
         purpose: 'Профиль клиента дает минимальный паспорт, без которого легко ошибиться в языке, timezone, birth data или видимом экспертном образе.',
-        role: 'Используется перед содержательным ответом или первым outreach, когда важны персональные данные и контекст роли.',
+        role: 'Используется перед содержательным ответом или первым касанием, когда важны персональные данные и контекст роли.',
         includes: [
           ['Language/timezone', 'Правильный язык и время контакта.'],
           ['Birth data', 'База для консультации, если она нужна.'],
@@ -1907,13 +1907,13 @@
         purpose: 'Сектор хранит денежные детали и заметки с понятной видимостью: что видит команда, что видит модератор, что видит только эксперт.',
         role: 'Нужен для разборов, передачи смены, компенсаций и личной памяти эксперта без смешения private-флагов с глобальными решениями.',
         includes: [
-          ['Денежные поля', 'Balance, paid history, coupon eligibility, compensation request.'],
+          ['Денежные поля', 'Balance, paid history, coupon eligibility, запрос компенсации.'],
           ['Личная заметка эксперта', 'Видит только эксперт, не влияет на routing.'],
           ['Заметка модератора', 'Командное ограничение, QA или safety context.'],
           ['Журнал действий', 'След действий прототипа для QA, не production source of truth.']
         ],
         variables: ['balance', 'paid_history', 'coupon_rule', 'compensation_status', 'expert_private_note', 'moderator_note', 'note_visibility', 'action_log'],
-        triggers: ['Billing обновляет деньги.', 'Expert создает private note или compensation request.', 'Moderator/QA добавляет ограничения.', 'Prototype пишет local action log.'],
+        triggers: ['Billing обновляет деньги.', 'Эксперт создает private note или запрос компенсации.', 'Moderator/QA добавляет ограничения.', 'Prototype пишет local action log.'],
         notHere: ['Очередные фильтры.', 'Ответ клиенту.', 'Непроверенные LTV/risk проценты.'],
         dictionary: { area: 'Правая', layer: 'Pay fields|Notes and flags' }
       }
@@ -1931,29 +1931,29 @@
       'left-card-preview': ['Preview', 'Левая', 'Chats / Pings', 'Короткое объяснение последнего события. Не заменяет историю сообщений.'],
       'left-card-unread': ['Unread / attention', 'Левая', 'Chats / Pings', 'Для Chats это unread/action count. Для Pings это свежий необработанный сигнал.'],
       'left-card-favorite': ['Favorite', 'Левая', 'Chats / Pings', 'Expert-private флаг. Не использовать как глобальный routing для команды.'],
-      'center-header': ['Header identity', 'Центральная', 'Chats / Pings', 'Подтверждает текущего клиента и экспертный профиль перед ответом или outreach.'],
+      'center-header': ['Header identity', 'Центральная', 'Chats / Pings', 'Подтверждает текущего клиента и экспертный профиль перед ответом или первым касанием.'],
       'center-stage-chip': ['Stage chip', 'Центральная', 'Chats / Pings', 'Главный рабочий ориентир. Stage не является фильтром очереди.'],
-      'center-live-pp': ['Live / PP', 'Центральная', 'Chats', 'Live означает active paid delivery. PP означает payment pending.'],
+      'center-live-pp': ['Live / PP', 'Центральная', 'Chats', 'Live означает активную оплаченную доставку. PP означает ожидание платежа.'],
       'center-last-activity': ['Last activity', 'Центральная', 'Chats', 'Показывает свежесть события и помогает оценить срочность ответа.'],
       'center-start-stop': ['Start / Stop', 'Центральная', 'Chats', 'Запуск и завершение оплаченного интервала внутри сквозного чата.'],
       'center-my-session': ['My session', 'Центральная', 'Chats', 'Показывает, что именно текущий эксперт ведет paid session.'],
       'center-timer': ['Timer', 'Центральная', 'Chats', 'Остаток оплаченного времени. Влияет на глубину ответа и extend window.'],
       'center-sell-window': ['Sell window', 'Центральная', 'Chats', 'Момент уместного предложения продления. Не должен работать как давление.'],
       'center-workflow-hint': ['Workflow hint', 'Центральная', 'Chats / Pings', 'Короткая подсказка stage + next action + warning перед отправкой.'],
-      'center-quick-replies': ['Quick replies', 'Центральная', 'Chats / Pings', 'Шесть сценарных шаблонов без generic-мусора. Для общих шаблонов в словаре есть строки Chats и Pings.'],
-      'center-offer': ['Offer', 'Центральная', 'Chats', 'Commercial action для Chats. Для Pings используется Invite.'],
-      'center-comp-resolve': ['Comp / Resolve', 'Центральная', 'Chats', 'Comp request создает заявку. Resolve закрывает рабочий кейс.'],
+      'center-quick-replies': ['Quick replies', 'Центральная', 'Chats / Pings', 'Шесть сценарных шаблонов без универсального мусора. Для общих шаблонов в словаре есть строки Chats и Pings.'],
+      'center-offer': ['Предложение оплаты', 'Центральная', 'Chats', 'Коммерческое действие для Chats. Для Pings используется приглашение.'],
+      'center-comp-resolve': ['Компенсация / закрытие', 'Центральная', 'Chats', 'Запрос компенсации создает заявку. Закрытие убирает обработанный кейс из активной работы.'],
       'center-attachments': ['Attachments', 'Центральная', 'Chats', 'Вложения поддерживают консультацию, но не являются приоритетным индикатором очереди.'],
       'center-send-template': ['Send template', 'Центральная', 'Pings', 'Первое мягкое касание, если истории общения еще нет.'],
-      'center-invite': ['Invite', 'Центральная', 'Pings', 'Приглашение в чат или paid next step при Intent или Credits.'],
-      'center-dismiss': ['Dismiss', 'Центральная', 'Pings', 'Убирает неактуальный ping из рабочей очереди.'],
+      'center-invite': ['Приглашение', 'Центральная', 'Pings', 'Приглашение в чат или платный следующий шаг при Intent или Credits.'],
+      'center-dismiss': ['Снять Ping', 'Центральная', 'Pings', 'Убирает неактуальный Ping из рабочей очереди.'],
       'right-client-tab': ['Client tab', 'Правая', 'Chats / Pings', 'Паспорт клиента: язык, timezone, birth data, visible expert, device.'],
       'right-workflow-tab': ['Workflow tab', 'Правая', 'Chats / Pings', 'Объясняет stage, next action, boundary, paid state, risk.'],
       'right-pay-tab': ['Pay tab', 'Правая', 'Chats / Pings', 'Деньги отдельно от текста: balance, status, paid history, coupon rule.'],
       'right-notes-tab': ['Notes tab', 'Правая', 'Chats / Pings', 'Private/team/moderator notes. Видимость и source обязательны.'],
       'right-free-boundary': ['Free boundary', 'Правая', 'Chats / Pings', 'Защищает бесплатную часть и не дает отдать полный продукт без оплаты.'],
       'right-book-now': ['Book Now', 'Правая', 'Chats / Pings', 'Статус перехода к paid. Для future paid дополнительно блокирует content до старта.'],
-      'right-paid-session': ['Paid session', 'Правая', 'Chats / Pings', 'Active/pending/future state и delivery obligation.'],
+      'right-paid-session': ['Paid session', 'Правая', 'Chats / Pings', 'Активное, ожидающее или будущее состояние и обязательство по оплаченной доставке.'],
       'right-objection': ['Objection', 'Правая', 'Chats / Pings', 'Тип возражения и attempts, чтобы не давить бесконечно.'],
       'right-risk': ['Risk', 'Правая', 'Chats / Pings', 'Safety, claim, complaint или quality guardrail.'],
       'right-balance': ['Balance', 'Правая', 'Chats / Pings', 'Кредиты и платежная готовность. Не заменяет workflow decision.'],
@@ -2050,7 +2050,6 @@
         .replace(/\bpayment issue\b/g, 'проблема оплаты')
         .replace(/\bpayment hesitation\b/g, 'сомнение перед оплатой')
         .replace(/\bpaid next step\b/g, 'следующий платный шаг')
-        .replace(/\bfree value\b/g, 'бесплатная ценность')
         .replace(/\bfull free reading\b/g, 'полный бесплатный разбор')
         .replace(/\bstarts soon\b/g, 'скоро начинается')
         .replace(/\bfuture paid\b/g, 'будущая платная сессия')
@@ -2222,6 +2221,7 @@
         url.searchParams.set('tab', button.dataset.panel);
         window.history.replaceState(null, '', url);
         if (button.dataset.panel === 'map') {
+          loadMockupFrame();
           window.setTimeout(fitMockupStage, 0);
         }
       });
@@ -2280,6 +2280,38 @@
       renderRows();
     });
 
+    let mockupFrameLoaded = false;
+
+    async function loadMockupFrame() {
+      const iframe = document.getElementById('mockupIframe');
+      if (!iframe || mockupFrameLoaded) {
+        return;
+      }
+
+      mockupFrameLoaded = true;
+      const src = iframe.dataset.src || './index.html';
+
+      try {
+        const response = await fetch(src, { cache: 'no-store' });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        let html = await response.text();
+        html = html
+          .replace(/<link[^>]+href="cid:[^"]+"[^>]*>/gi, '')
+          .replace(/<link[^>]+href="https:\/\/confideline\.com\/content\/assets\/3cff7fa4\/css\/font-awesome\.min\.css[^"]*"[^>]*>/gi, '');
+
+        const baseHref = new URL('./', window.location.href).href;
+        const iconFallback = '<style>.fa{display:inline-block;width:1em;min-width:1em;text-align:center}.fa:before{content:""}</style>';
+        html = html.replace(/<head([^>]*)>/i, `<head$1><base href="${baseHref}">${iconFallback}`);
+        iframe.srcdoc = html;
+      } catch (error) {
+        iframe.removeAttribute('srcdoc');
+        iframe.src = src;
+      }
+    }
+
     function fitMockupStage() {
       const frame = document.querySelector('.mockup-frame');
       const stage = document.getElementById('mockupScaleStage');
@@ -2288,7 +2320,12 @@
       }
       const designWidth = 1440;
       const designHeight = 820;
-      const availableWidth = frame.parentElement ? frame.parentElement.clientWidth : frame.clientWidth;
+      const parent = frame.parentElement;
+      const parentStyle = parent ? window.getComputedStyle(parent) : null;
+      const parentHorizontalPadding = parentStyle
+        ? parseFloat(parentStyle.paddingLeft || '0') + parseFloat(parentStyle.paddingRight || '0')
+        : 0;
+      const availableWidth = parent ? Math.max(320, parent.clientWidth - parentHorizontalPadding - 2) : frame.clientWidth;
       const maxHeight = Math.max(460, Math.min(720, window.innerHeight - 360));
       const scale = Math.min(availableWidth / designWidth, maxHeight / designHeight, 1);
       frame.style.setProperty('--mockup-frame-width', `${Math.ceil(designWidth * scale)}px`);
