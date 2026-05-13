@@ -152,6 +152,27 @@
       box-shadow: var(--shadow);
     }
 
+    .filter-presets {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      padding-top: 2px;
+    }
+
+    .btn-toggle.is-active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .preset-hint {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
     .field label {
       display: block;
       margin-bottom: 5px;
@@ -1319,6 +1340,10 @@
             <option value="Note">Заметка</option>
           </select>
         </div>
+        <div class="filter-presets">
+          <button class="btn btn-toggle" type="button" id="productLogicPreset" aria-pressed="false">Только продуктовая логика эксперта</button>
+          <span class="preset-hint">Показывает элементы, которые влияют на решение эксперта в Chats/Pings: фильтры, индикаторы, сценарии, деньги, paid session, ограничения, заметки и действия.</span>
+        </div>
       </div>
 
       <div class="summary-strip" id="summaryStrip"></div>
@@ -2187,7 +2212,9 @@
     const layerFilter = document.getElementById('layerFilter');
     const sourceFilter = document.getElementById('sourceFilter');
     const typeFilter = document.getElementById('typeFilter');
+    const productLogicPreset = document.getElementById('productLogicPreset');
     const summaryStrip = document.getElementById('summaryStrip');
+    let productLogicOnly = false;
 
     function tag(label, className) {
       return `<span class="tag ${className || ''}">${label}</span>`;
@@ -2313,11 +2340,35 @@
       return 'left-active-card';
     }
 
+    function isExpertProductLogic(row) {
+      const id = row.id.toLowerCase();
+      const decisionTypes = ['Filter', 'Indicator', 'State', 'Action', 'Guardrail', 'Note'];
+
+      if (id.includes('action_log') || row.caller === 'Prototype') {
+        return false;
+      }
+
+      if (decisionTypes.includes(row.type)) {
+        return true;
+      }
+
+      if (row.type === 'Control') {
+        return ['workload_mode', 'queue_search', 'queue_user_select', 'right_tab'].some(part => id.includes(part));
+      }
+
+      if (row.type === 'Variable') {
+        return ['last_activity', 'message_stream', 'ping_context', 'balance', 'paid_history', 'coupon_rule'].some(part => id.includes(part));
+      }
+
+      return false;
+    }
+
     function matches(row) {
       const q = searchBox.value.trim().toLowerCase();
       const haystack = Object.values(row).join(' ').toLowerCase();
       const selectedLayers = layerFilter.value ? layerFilter.value.split('|') : [];
-      return (!q || haystack.includes(q)) &&
+      return (!productLogicOnly || isExpertProductLogic(row)) &&
+        (!q || haystack.includes(q)) &&
         (!areaFilter.value || row.area === areaFilter.value) &&
         (!scenarioFilter.value || row.scenario === scenarioFilter.value) &&
         (!selectedLayers.length || selectedLayers.includes(getLayer(row))) &&
@@ -2352,8 +2403,12 @@
         <span class="pill"><strong>${left}</strong> левая</span>
         <span class="pill"><strong>${center}</strong> центральная</span>
         <span class="pill"><strong>${right}</strong> правая</span>
+        ${productLogicOnly ? '<span class="pill pill-risk">Включен фильтр: продуктовая логика эксперта</span>' : ''}
         <span class="pill pill-risk">Общие механики описаны отдельными строками Chats и Pings</span>
       `;
+
+      productLogicPreset.classList.toggle('is-active', productLogicOnly);
+      productLogicPreset.setAttribute('aria-pressed', productLogicOnly ? 'true' : 'false');
     }
 
     function relatedRowsFor(detail, sectorKey) {
@@ -2473,6 +2528,19 @@
     }
 
     [searchBox, areaFilter, scenarioFilter, layerFilter, sourceFilter, typeFilter].forEach(el => el.addEventListener('input', renderRows));
+
+    productLogicPreset.addEventListener('click', () => {
+      productLogicOnly = !productLogicOnly;
+      if (productLogicOnly) {
+        searchBox.value = '';
+        areaFilter.value = '';
+        scenarioFilter.value = '';
+        layerFilter.value = '';
+        sourceFilter.value = '';
+        typeFilter.value = '';
+      }
+      renderRows();
+    });
 
     document.querySelectorAll('.tab').forEach(button => {
       button.addEventListener('click', () => {
