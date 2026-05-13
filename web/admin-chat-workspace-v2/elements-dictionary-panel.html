@@ -115,7 +115,7 @@
 
     .verdict-grid {
       display: grid;
-      grid-template-columns: repeat(5, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 10px;
       margin-bottom: 14px;
     }
@@ -338,11 +338,24 @@
 
     .mockup-frame {
       position: relative;
-      height: 720px;
+      width: var(--mockup-frame-width, 100%);
+      max-width: 100%;
+      height: var(--mockup-frame-height, 560px);
+      margin: 0 auto;
       border: 1px solid var(--line);
       border-radius: var(--radius);
       overflow: hidden;
       background: #fff;
+    }
+
+    .mockup-scale-stage {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1440px;
+      height: 820px;
+      transform-origin: top left;
+      will-change: transform;
     }
 
     .mockup-frame iframe {
@@ -358,7 +371,7 @@
       pointer-events: none;
     }
 
-    .area-hotspot {
+    .sector-hotspot {
       position: absolute;
       pointer-events: auto;
       display: flex;
@@ -376,7 +389,7 @@
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
     }
 
-    .area-hotspot span {
+    .sector-hotspot span {
       display: inline-flex;
       border-radius: 999px;
       background: #fff;
@@ -385,42 +398,61 @@
       box-shadow: 0 4px 12px rgba(16, 24, 40, 0.12);
     }
 
-    .area-hotspot--left {
-      left: 18%;
-      top: 12.5%;
-      width: 24.5%;
-      height: 82%;
-      border-color: #8bbcff;
-      background: rgba(31, 111, 235, 0.07);
+    .sector-hotspot {
+      border-width: 1px;
+      padding: 5px;
+      font-size: 11px;
+      opacity: 0.86;
     }
 
-    .area-hotspot--center {
-      left: 42.8%;
-      top: 12.5%;
-      width: 35%;
-      height: 82%;
-      border-color: #ffc66d;
-      background: rgba(179, 92, 0, 0.08);
-      color: var(--orange);
+    .sector-hotspot span {
+      padding: 4px 7px;
+      box-shadow: 0 3px 8px rgba(16, 24, 40, 0.12);
     }
 
-    .area-hotspot--right {
-      right: 1.2%;
-      top: 12.5%;
-      width: 20.5%;
-      height: 82%;
-      border-color: #c6adff;
-      background: rgba(111, 66, 193, 0.08);
-      color: var(--violet);
+    .sector-hotspot:hover,
+    .sector-hotspot.is-active {
+      opacity: 1;
+      border-width: 2px;
+      z-index: 4;
     }
 
-    .area-hotspot.is-active {
-      border-width: 3px;
-      background: rgba(31, 111, 235, 0.16);
+    .sector-left { border-color: #8bbcff; background: rgba(31, 111, 235, 0.08); color: #0b57d0; }
+    .sector-center { border-color: #ffc66d; background: rgba(179, 92, 0, 0.08); color: var(--orange); }
+    .sector-right { border-color: #c6adff; background: rgba(111, 66, 193, 0.08); color: var(--violet); }
+
+    .sector-left.is-active { background: rgba(31, 111, 235, 0.18); }
+    .sector-center.is-active { background: rgba(179, 92, 0, 0.18); }
+    .sector-right.is-active { background: rgba(111, 66, 193, 0.18); }
+
+    .sector-left-workload { left: 18.2%; top: 12.7%; width: 24.3%; height: 6.8%; }
+    .sector-left-search { left: 18.2%; top: 19.8%; width: 24.3%; height: 7.4%; }
+    .sector-left-cards { left: 18.2%; top: 27.6%; width: 24.3%; height: 66.5%; }
+    .sector-center-header { left: 42.9%; top: 12.7%; width: 34.6%; height: 8.9%; }
+    .sector-center-stream { left: 42.9%; top: 21.8%; width: 34.6%; height: 61.5%; }
+    .sector-center-composer { left: 42.9%; top: 83.8%; width: 34.6%; height: 10.3%; }
+    .sector-right-tabs { right: 1.35%; top: 12.7%; width: 20.3%; height: 8.3%; }
+    .sector-right-client { right: 1.35%; top: 21.3%; width: 20.3%; height: 38%; }
+    .sector-right-workflow { right: 1.35%; top: 59.7%; width: 20.3%; height: 17%; }
+    .sector-right-paynotes { right: 1.35%; top: 77.2%; width: 20.3%; height: 16.9%; }
+
+    .area-label {
+      position: absolute;
+      z-index: 3;
+      display: inline-flex;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid currentColor;
+      padding: 5px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      box-shadow: 0 3px 8px rgba(16, 24, 40, 0.14);
+      pointer-events: none;
     }
 
-    .area-hotspot--center.is-active { background: rgba(179, 92, 0, 0.16); }
-    .area-hotspot--right.is-active { background: rgba(111, 66, 193, 0.16); }
+    .area-label--left { left: 18.4%; top: 11.8%; color: #0b57d0; }
+    .area-label--center { left: 43.1%; top: 11.8%; color: var(--orange); }
+    .area-label--right { right: 1.5%; top: 11.8%; color: var(--violet); }
 
     .inspector-section {
       border-top: 1px solid var(--line);
@@ -770,6 +802,237 @@
       line-height: 1.5;
     }
 
+    .flow-shell {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .flow-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      background: #f9fbfd;
+    }
+
+    .flow-head h2 {
+      margin: 0 0 6px;
+      font-size: 19px;
+    }
+
+    .flow-head p {
+      margin: 0;
+      max-width: 900px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .flow-switch {
+      display: inline-flex;
+      align-items: flex-start;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      min-width: 360px;
+    }
+
+    .flow-nav-button {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--text);
+      padding: 9px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .flow-nav-button:hover,
+    .flow-nav-button.is-active {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      color: #174ea6;
+    }
+
+    .flow-scenario {
+      display: none;
+      padding: 16px;
+    }
+
+    .flow-scenario.is-active {
+      display: block;
+    }
+
+    .flow-goal {
+      display: grid;
+      grid-template-columns: minmax(360px, 1fr) minmax(260px, 0.62fr);
+      gap: 14px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .flow-goal--chats {
+      border-color: #b8d4ff;
+      background: linear-gradient(135deg, #f8fbff 0%, #edf5ff 100%);
+    }
+
+    .flow-goal--pings {
+      border-color: #b7e4cf;
+      background: linear-gradient(135deg, #f8fffb 0%, #ecfff5 100%);
+    }
+
+    .flow-goal span {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .flow-goal strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1.28;
+    }
+
+    .flow-goal p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .flow-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .flow-track {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(150px, 1fr));
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .flow-step {
+      position: relative;
+      min-height: 235px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .flow-step::after {
+      content: "";
+      position: absolute;
+      top: 32px;
+      right: -10px;
+      width: 10px;
+      height: 2px;
+      background: var(--line-strong);
+    }
+
+    .flow-step:last-child::after {
+      display: none;
+    }
+
+    .flow-step--result {
+      border-color: #a7d7bd;
+      background: #f8fffb;
+    }
+
+    .step-kicker {
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .flow-step h3 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.25;
+    }
+
+    .flow-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.48;
+    }
+
+    .flow-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: auto;
+    }
+
+    .flow-tags span {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel-soft);
+      padding: 5px 7px;
+      color: #344054;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .flow-side {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 14px;
+      position: sticky;
+      top: 12px;
+    }
+
+    .flow-side h3 {
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+
+    .flow-reason-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .flow-reason-list div {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--panel-soft);
+      padding: 9px;
+    }
+
+    .flow-reason-list strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 12px;
+    }
+
+    .flow-reason-list span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
     .empty {
       padding: 28px;
       color: var(--muted);
@@ -777,19 +1040,32 @@
     }
 
     @media (max-width: 1180px) {
-      .verdict-grid,
       .filters,
       .orientation-strip,
       .mockup-review-grid,
       .screen-walkthrough,
       .screen-columns,
       .map-layout,
-      .guide-grid {
+      .guide-grid,
+      .flow-head,
+      .flow-goal,
+      .flow-layout {
         grid-template-columns: 1fr;
       }
       .topbar { flex-direction: column; }
       .top-actions { justify-content: flex-start; }
       .area-panel { min-height: auto; }
+      .flow-switch { min-width: 0; justify-content: flex-start; }
+      .flow-side { position: static; }
+    }
+
+    @media (max-width: 940px) {
+      .verdict-grid,
+      .flow-track {
+        grid-template-columns: 1fr;
+      }
+      .flow-step { min-height: auto; }
+      .flow-step::after { display: none; }
     }
   </style>
 </head>
@@ -797,7 +1073,7 @@
   <main class="page">
     <header class="topbar">
       <div class="title-block">
-        <h1>Admin Chat Workspace V2: словарь элементов и карта областей</h1>
+        <h1>Admin Chat Workspace V2: словарь элементов, карта областей и Expert Flow</h1>
         <p>
           Панель для передачи разработчику: каждая переменная привязана к области экрана, сценарию Chats или Pings, источнику,
           моменту появления и действию. Общие механики продублированы отдельными строками для Chats и Pings, чтобы не было
@@ -837,6 +1113,7 @@
     <nav class="tabs" aria-label="Разделы панели">
       <button class="tab is-active" type="button" data-panel="dictionary">1. Общая таблица-словарь</button>
       <button class="tab" type="button" data-panel="map">2. Области и указания</button>
+      <button class="tab" type="button" data-panel="flow">3. Expert Flow</button>
     </nav>
 
     <section class="tab-panel is-active" id="panel-dictionary">
@@ -871,12 +1148,16 @@
             <option value="Queue card tags">Queue card tags</option>
             <option value="Header indicators">Header indicators</option>
             <option value="Paid session">Paid session</option>
+            <option value="Message stream">Message stream</option>
+            <option value="Composer templates|Composer actions|Ping actions">Composer and actions</option>
             <option value="Composer templates">Composer templates</option>
             <option value="Composer actions">Composer actions</option>
             <option value="Ping actions">Ping actions</option>
             <option value="Client profile">Client profile</option>
+            <option value="Workflow fields|Pay fields">Workflow + Pay</option>
             <option value="Workflow fields">Workflow fields</option>
             <option value="Pay fields">Pay fields</option>
+            <option value="Pay fields|Notes and flags">Pay + Notes</option>
             <option value="Notes and flags">Notes and flags</option>
           </select>
         </div>
@@ -960,16 +1241,188 @@
             <span class="pill pill-risk">Левая / Центр / Правая</span>
           </div>
           <div class="mockup-frame">
-            <iframe src="./index.html" title="Admin Chat Workspace V2 mockup"></iframe>
-            <div class="mockup-overlay" aria-label="Кликабельные области макета">
-              <button class="area-hotspot area-hotspot--left is-active" type="button" data-area="left"><span>Левая область</span></button>
-              <button class="area-hotspot area-hotspot--center" type="button" data-area="center"><span>Центральная область</span></button>
-              <button class="area-hotspot area-hotspot--right" type="button" data-area="right"><span>Правая область</span></button>
+            <div class="mockup-scale-stage" id="mockupScaleStage">
+              <iframe src="./index.html" title="Admin Chat Workspace V2 mockup"></iframe>
+              <div class="mockup-overlay" aria-label="Кликабельные сектора макета">
+                <span class="area-label area-label--left">Левая</span>
+                <span class="area-label area-label--center">Центр</span>
+                <span class="area-label area-label--right">Правая</span>
+                <button class="sector-hotspot sector-left sector-left-workload is-active" type="button" data-sector="left-workload"><span>Chats / Pings</span></button>
+                <button class="sector-hotspot sector-left sector-left-search" type="button" data-sector="left-search"><span>Search / filters</span></button>
+                <button class="sector-hotspot sector-left sector-left-cards" type="button" data-sector="left-cards"><span>Queue cards</span></button>
+                <button class="sector-hotspot sector-center sector-center-header" type="button" data-sector="center-header"><span>Header</span></button>
+                <button class="sector-hotspot sector-center sector-center-stream" type="button" data-sector="center-stream"><span>Message stream</span></button>
+                <button class="sector-hotspot sector-center sector-center-composer" type="button" data-sector="center-composer"><span>Composer</span></button>
+                <button class="sector-hotspot sector-right sector-right-tabs" type="button" data-sector="right-tabs"><span>Context tabs</span></button>
+                <button class="sector-hotspot sector-right sector-right-client" type="button" data-sector="right-client"><span>Client data</span></button>
+                <button class="sector-hotspot sector-right sector-right-workflow" type="button" data-sector="right-workflow"><span>Workflow / Pay</span></button>
+                <button class="sector-hotspot sector-right sector-right-paynotes" type="button" data-sector="right-paynotes"><span>Notes / audit</span></button>
+              </div>
             </div>
           </div>
         </section>
 
         <aside class="area-inspector-card" id="areaInspector" aria-live="polite"></aside>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="panel-flow">
+      <div class="flow-shell">
+        <div class="flow-head">
+          <div>
+            <h2>Expert Flow: путь от сигнала к бизнес-результату</h2>
+            <p>
+              Вкладка показывает не экранные элементы по отдельности, а рабочую последовательность эксперта:
+              что он видит, почему индикатор нужен, какое действие выполняет и какой результат должен получить.
+            </p>
+          </div>
+          <div class="flow-switch" role="tablist" aria-label="Сценарии User Flow">
+            <button class="flow-nav-button is-active" type="button" data-flow="chats">Chats: продажа paid chat</button>
+            <button class="flow-nav-button" type="button" data-flow="pings">Pings: перевод в Chats</button>
+          </div>
+        </div>
+
+        <section class="flow-scenario is-active" id="flow-chats" aria-label="Chats flow">
+          <div class="flow-goal flow-goal--chats">
+            <div>
+              <span>Итог сценария Chats</span>
+              <strong>Клиент получает релевантный ответ, понимает границу free value и покупает или продлевает paid chat.</strong>
+            </div>
+            <p>Сквозной чат не дробится: free trial, Book Now, payment pending, paid session, objection и extend живут в одной истории.</p>
+          </div>
+
+          <div class="flow-layout">
+            <div class="flow-track" aria-label="Последовательность Chats">
+              <article class="flow-step">
+                <span class="step-kicker">Левая область</span>
+                <h3>1. Выбрать правильный Chat из очереди</h3>
+                <p>Эксперт начинает с фильтров, которые меняют приоритет работы: Reply, SLA, Live, PP, Sell, Favorite, Archive.</p>
+                <div class="flow-tags">
+                  <span>Reply/SLA = клиент ждет</span>
+                  <span>Live = оплачено</span>
+                  <span>PP/Sell = близко к оплате</span>
+                </div>
+              </article>
+              <article class="flow-step">
+                <span class="step-kicker">Центр</span>
+                <h3>2. Понять stage и следующий безопасный шаг</h3>
+                <p>Header и workflow hint фиксируют стадию: free boundary, Book Now, objection, paid live, extend window.</p>
+                <div class="flow-tags">
+                  <span>Stage chip</span>
+                  <span>Workflow warning</span>
+                  <span>Live / PP</span>
+                </div>
+              </article>
+              <article class="flow-step">
+                <span class="step-kicker">Центр</span>
+                <h3>3. Дать value без нарушения free boundary</h3>
+                <p>Эксперт отвечает по сути, но не отдает полный продукт бесплатно. Composer подсказывает шаблон: need data, Book Now, objection или paid topic.</p>
+                <div class="flow-tags">
+                  <span>Quick reply</span>
+                  <span>Composer guardrail</span>
+                  <span>Attachments</span>
+                </div>
+              </article>
+              <article class="flow-step">
+                <span class="step-kicker">Центр + Pay</span>
+                <h3>4. Предложить оплату или продление в уместный момент</h3>
+                <p>Offer используется только когда stage и контекст это оправдывают. При active paid session важнее доставка, при low time - extend.</p>
+                <div class="flow-tags">
+                  <span>Offer</span>
+                  <span>Start / Stop</span>
+                  <span>Timer / Extend</span>
+                </div>
+              </article>
+              <article class="flow-step flow-step--result">
+                <span class="step-kicker">Результат</span>
+                <h3>5. Paid chat продан, продлен или корректно закрыт</h3>
+                <p>Итог фиксируется через payment/session events, resolve или objection state. Если нужна компенсация, эксперт создает request, а не меняет деньги вручную.</p>
+              </article>
+            </div>
+
+            <aside class="flow-side">
+              <h3>Зачем здесь индикаторы</h3>
+              <div class="flow-reason-list">
+                <div><strong>System</strong><span>Reply, SLA, unread, last activity показывают операционную срочность.</span></div>
+                <div><strong>Billing</strong><span>Live, PP, balance, paid status показывают денежное обязательство и шанс оплаты.</span></div>
+                <div><strong>Workflow</strong><span>Stage, next action, warning и objection защищают сценарий от хаотичных ответов.</span></div>
+                <div><strong>Moderator</strong><span>Риски и team notes ограничивают pushy sales, safety и quality ошибки.</span></div>
+                <div><strong>Expert-private</strong><span>Favorite/private note помогают самому эксперту вернуться к кейсу, но не маршрутизируют команду.</span></div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="flow-scenario" id="flow-pings" aria-label="Pings flow">
+          <div class="flow-goal flow-goal--pings">
+            <div>
+              <span>Итог сценария Pings</span>
+              <strong>Ping превращается в осмысленный Chat или убирается из очереди без спама и давления.</strong>
+            </div>
+            <p>Ping - это pre-chat сигнал интереса. Он не должен получать Chat SLA, пока клиент не вступил в диалог.</p>
+          </div>
+
+          <div class="flow-layout">
+            <div class="flow-track" aria-label="Последовательность Pings">
+              <article class="flow-step">
+                <span class="step-kicker">Левая область</span>
+                <h3>1. Отобрать релевантный Ping</h3>
+                <p>Эксперт смотрит не все подряд, а сигналы с причиной: NEW, Intent, Credits, Lift Due, Future Paid, Favorite.</p>
+                <div class="flow-tags">
+                  <span>NEW = свежий сигнал</span>
+                  <span>Intent = есть повод</span>
+                  <span>Credits = готовность платить</span>
+                </div>
+              </article>
+              <article class="flow-step">
+                <span class="step-kicker">Правая область</span>
+                <h3>2. Проверить причину контакта</h3>
+                <p>Workflow и Client объясняют, почему ping возник: интерес к эксперту, reactivation, кредиты, предыдущая покупка или future paid reminder.</p>
+                <div class="flow-tags">
+                  <span>Ping reason</span>
+                  <span>Client context</span>
+                  <span>Moderator note</span>
+                </div>
+              </article>
+              <article class="flow-step">
+                <span class="step-kicker">Центр</span>
+                <h3>3. Выбрать мягкое первое действие</h3>
+                <p>Send template используется для аккуратного касания. Invite используется, когда есть реальный intent или платежная готовность.</p>
+                <div class="flow-tags">
+                  <span>Send template</span>
+                  <span>Invite</span>
+                  <span>Favorite / Dismiss</span>
+                </div>
+              </article>
+              <article class="flow-step">
+                <span class="step-kicker">Переход</span>
+                <h3>4. Клиент отвечает или принимает invite</h3>
+                <p>После ответа ping перестает быть pre-chat сигналом и становится обычным сквозным Chat с историей, stage и дальнейшей продажей paid chat.</p>
+                <div class="flow-tags">
+                  <span>Create/open Chat</span>
+                  <span>Attach ping context</span>
+                  <span>Start Chat flow</span>
+                </div>
+              </article>
+              <article class="flow-step flow-step--result">
+                <span class="step-kicker">Результат</span>
+                <h3>5. Ping переведен в Chat или закрыт</h3>
+                <p>Если клиент не отвечает или повод слабый, ping закрывается через Dismiss. Если есть потенциал, эксперт может оставить personal Favorite/private note.</p>
+              </article>
+            </div>
+
+            <aside class="flow-side">
+              <h3>Почему Pings отделены от Chats</h3>
+              <div class="flow-reason-list">
+                <div><strong>Нет reply SLA</strong><span>До ответа клиента это не активный диалог, а сигнал интереса.</span></div>
+                <div><strong>Нет paid delivery</strong><span>Start/Stop paid session появляется только в Chat, не в ping-сигнале.</span></div>
+                <div><strong>Нужен повод</strong><span>Intent, Credits и ping reason защищают от случайного массового outreach.</span></div>
+                <div><strong>Конверсия</strong><span>Цель Pings - не ответить ради ответа, а перевести подходящий сигнал в Chat.</span></div>
+                <div><strong>Личная память</strong><span>Favorite/private note помогают эксперту, но не создают глобальный приоритет.</span></div>
+              </div>
+            </aside>
+          </div>
+        </section>
       </div>
     </section>
   </main>
@@ -1204,6 +1657,182 @@
       }
     };
 
+    const sectorDetails = {
+      'left-workload': {
+        title: 'Левая / выбор режима Chats или Pings',
+        area: 'Левая',
+        layer: 'Queue mode',
+        scenarios: ['Chats', 'Pings'],
+        purpose: 'Сектор определяет тип рабочей очереди. Эксперт сначала выбирает, работает он с реальными диалогами Chats или с pre-chat сигналами Pings.',
+        role: 'Это главный разворот логики: Chats ведут к ответу, paid session и продаже; Pings ведут к мягкому контакту и переводу в Chat.',
+        includes: [
+          ['Chats tab', 'Открывает сквозные диалоги с free, Book Now, paid session и objection внутри одной истории.'],
+          ['Pings tab', 'Открывает сигналы интереса до полноценного чата. Ping не получает Chat SLA до ответа клиента.'],
+          ['Counters', 'Показывают объем работы в каждом режиме, но не заменяют фильтры приоритета.']
+        ],
+        variables: ['workload_mode', 'conversation_count', 'ping_count'],
+        triggers: ['Expert переключает режим вручную.', 'System обновляет счетчики очередей.', 'Workflow меняет доступные фильтры после выбора режима.'],
+        notHere: ['Детали клиента.', 'Текст ответа.', 'Деньги и paid history.'],
+        dictionary: { area: 'Левая', layer: 'Queue mode' }
+      },
+      'left-search': {
+        title: 'Левая / поиск и фильтры очереди',
+        area: 'Левая',
+        layer: 'Queue filters',
+        scenarios: ['Chats', 'Pings'],
+        purpose: 'Сектор сужает очередь до кейсов, которые реально нужно обработать: по поиску, клиенту, эксперту и рабочему фильтру.',
+        role: 'Фильтр отвечает не за stage внутри кейса, а за отбор списка. Поэтому Chats и Pings имеют разные наборы фильтров.',
+        includes: [
+          ['Search', 'Ищет по клиенту, эксперту, id, preview и stage внутри выбранного режима.'],
+          ['User/expert select', 'Помогает быстро найти конкретного клиента или профиль эксперта.'],
+          ['Queue filters', 'Chats: Reply, SLA, Live, PP, Sell, Archive. Pings: NEW, Intent, Credits.']
+        ],
+        variables: ['queue_search', 'client_id', 'expert_profile_id', 'queue_filter', 'workload_mode'],
+        triggers: ['Expert задает поиск или фильтр.', 'System/Billing/Workflow выставляют значения, по которым фильтры отбирают карточки.'],
+        notHere: ['Смена stage.', 'Отправка сообщений.', 'Личные notes.'],
+        dictionary: { area: 'Левая', layer: 'Queue filters' }
+      },
+      'left-cards': {
+        title: 'Левая / карточки очереди и краткие индикаторы',
+        area: 'Левая',
+        layer: 'Queue card tags',
+        scenarios: ['Chats', 'Pings'],
+        purpose: 'Карточка объясняет, почему именно этот Chat или Ping стоит открыть, без погружения в полную историю.',
+        role: 'Здесь допустим только короткий набор сигналов: identity, preview, last activity, unread/attention, stage badge и личный Favorite.',
+        includes: [
+          ['Identity', 'Клиент и экспертный профиль, чтобы не перепутать роль.'],
+          ['Preview', 'Последнее значимое событие или причина ping.'],
+          ['Stage badge', 'Один короткий business-stage, детали раскрываются справа.'],
+          ['Favorite', 'Личный флаг эксперта, видит только он.']
+        ],
+        variables: ['conversation_id', 'client_id', 'expert_profile_id', 'last_activity_at', 'unread_count', 'conversation_stage', 'favorite_private_flag'],
+        triggers: ['System обновляет preview, last activity и unread.', 'Workflow ставит stage badge.', 'Expert ставит Favorite только для себя.'],
+        notHere: ['Полный workflow.', 'Длинные заметки.', 'Payment history.'],
+        dictionary: { area: 'Левая', layer: 'Queue card tags' }
+      },
+      'center-header': {
+        title: 'Центр / header открытого кейса',
+        area: 'Центральная',
+        layer: 'Header indicators',
+        scenarios: ['Chats', 'Pings'],
+        purpose: 'Header подтверждает, какой клиент и какой экспертный профиль сейчас открыт, и показывает краткие статусы, влияющие на ответ.',
+        role: 'Перед отправкой эксперт должен видеть stage, Live/PP или ping reason, чтобы не ответить не в тот сценарий.',
+        includes: [
+          ['Identity', 'Client -> expert profile для контроля роли.'],
+          ['Stage chip', 'Текущая стадия сценария.'],
+          ['Live / PP / NEW / Intent / Credits', 'Краткие системные и billing-индикаторы, которые меняют приоритет.']
+        ],
+        variables: ['active_conversation_id', 'conversation_stage', 'paid_session_status', 'payment_pending_status', 'ping_reason'],
+        triggers: ['System обновляет identity и last activity.', 'Billing обновляет Live/PP/Credits.', 'Workflow обновляет stage.'],
+        notHere: ['Полная платежная история.', 'Все notes.', 'Очередные фильтры.'],
+        dictionary: { area: 'Центральная', layer: 'Header indicators' }
+      },
+      'center-stream': {
+        title: 'Центр / сквозная история сообщений',
+        area: 'Центральная',
+        layer: 'Message stream',
+        scenarios: ['Chats', 'Pings'],
+        purpose: 'Сектор показывает контекст общения. Для Chats это непрерывная история free -> Book Now -> paid -> objection; для Pings это причина сигнала и предыдущие касания.',
+        role: 'Это доказательная база ответа: эксперт не должен писать без понимания последнего события и контекста.',
+        includes: [
+          ['Message stream', 'Все сообщения и события текущего Chat в одной линии.'],
+          ['Ping context', 'Причина pre-chat сигнала и история касаний до перехода в Chat.'],
+          ['Service events', 'Только события, которые помогают понять сценарий.']
+        ],
+        variables: ['message_id', 'sender_id', 'created_at', 'translated_text', 'ping_context', 'conversation_origin'],
+        triggers: ['System добавляет сообщения и служебные события.', 'Workflow добавляет context events при переходах stage.', 'Ping conversion переносит контекст в Chat.'],
+        notHere: ['Фильтры очереди.', 'Большие аналитические панели.', 'Настройки оплаты.'],
+        dictionary: { area: 'Центральная', layer: 'Message stream' }
+      },
+      'center-composer': {
+        title: 'Центр / composer, шаблоны и действия',
+        area: 'Центральная',
+        layer: 'Composer templates|Composer actions|Ping actions',
+        scenarios: ['Chats', 'Pings'],
+        purpose: 'Composer превращает понимание stage в действие: ответ, offer, invite, compensation request, resolve или dismiss.',
+        role: 'Сектор должен помогать выполнить следующий шаг, но не заменять экспертное решение и не давить на клиента.',
+        includes: [
+          ['Workflow hint', 'Короткое объяснение next action и warning.'],
+          ['Quick replies', 'Сценарные заготовки без generic-мусора.'],
+          ['Actions', 'Chats: Offer, Comp request, Resolve. Pings: Send template, Invite, Dismiss.']
+        ],
+        variables: ['composer_mode', 'draft_text', 'next_action', 'workflow_warning', 'offer_type', 'invite_type'],
+        triggers: ['Expert выбирает шаблон или действие.', 'Workflow ограничивает действие через warning.', 'Billing/session state влияет на Offer/Extend/Start/Stop.'],
+        notHere: ['Ручная выдача компенсаций.', 'Скрытая смена денег.', 'Массовый outreach из ping без причины.'],
+        dictionary: { area: 'Центральная', layer: 'Composer templates|Composer actions|Ping actions' }
+      },
+      'right-tabs': {
+        title: 'Правая / вкладки контекста',
+        area: 'Правая',
+        layer: '',
+        scenarios: ['Chats', 'Pings'],
+        purpose: 'Вкладки разделяют причины: Client, Workflow, Pay и Notes. Это защищает правую область от одной длинной свалки данных.',
+        role: 'Эксперт открывает нужный контекст только когда он нужен для решения: кто клиент, что говорит workflow, что с деньгами, какие есть notes.',
+        includes: [
+          ['Client', 'Паспорт клиента и роль эксперта.'],
+          ['Workflow', 'Stage, next action, boundary, objection и risk.'],
+          ['Pay', 'Balance, paid history, coupon и compensation.'],
+          ['Notes', 'Expert-private, team и moderator notes.']
+        ],
+        variables: ['active_context_tab', 'client_id', 'workflow_stage', 'pay_status', 'note_visibility'],
+        triggers: ['Expert переключает вкладку.', 'System показывает relevant tab при выборе кейса.', 'Moderator/risk может подсветить Workflow или Notes.'],
+        notHere: ['Новые действия отправки.', 'Очередные фильтры.', 'Дублирование message stream.'],
+        dictionary: { area: 'Правая', layer: '' }
+      },
+      'right-client': {
+        title: 'Правая / Client profile',
+        area: 'Правая',
+        layer: 'Client profile',
+        scenarios: ['Chats', 'Pings'],
+        purpose: 'Client profile дает минимальный паспорт клиента, без которого легко ошибиться в языке, timezone, birth data или видимом экспертном образе.',
+        role: 'Используется перед содержательным ответом или первым outreach, когда важны персональные данные и контекст роли.',
+        includes: [
+          ['Language/timezone', 'Правильный язык и время контакта.'],
+          ['Birth data', 'База для консультации, если она нужна.'],
+          ['Visible expert', 'Клиент видит экспертный профиль, а не внутреннего оператора.']
+        ],
+        variables: ['client_language', 'client_timezone', 'birth_data', 'visible_expert', 'real_operator'],
+        triggers: ['System/Profile заполняет данные.', 'Expert проверяет перед ответом.', 'Workflow может запросить недостающие данные.'],
+        notHere: ['Payment decisions.', 'Moderator notes.', 'Queue priority.'],
+        dictionary: { area: 'Правая', layer: 'Client profile' }
+      },
+      'right-workflow': {
+        title: 'Правая / Workflow и Pay rationale',
+        area: 'Правая',
+        layer: 'Workflow fields|Pay fields',
+        scenarios: ['Chats', 'Pings'],
+        purpose: 'Сектор объясняет, почему система предлагает текущий next action: stage, free boundary, Book Now, paid session, objection, risk и деньги.',
+        role: 'Это не кнопки действия, а логическое основание. Разработчику важно видеть, какие поля питают header, composer и фильтры.',
+        includes: [
+          ['Workflow fields', 'Stage, next action, free boundary, Book Now, objection, ping/lift, risk.'],
+          ['Pay fields', 'Balance, paid history, coupon rule, extend window, compensation.'],
+          ['Guardrails', 'Ограничения, которые подавляют неправильный sales push.']
+        ],
+        variables: ['workflow_stage', 'next_action', 'free_boundary', 'book_now_status', 'paid_session_status', 'objection_state', 'risk_flags', 'balance', 'coupon_rule'],
+        triggers: ['Workflow engine обновляет stage и next action.', 'Billing обновляет paid/balance/coupon.', 'Moderator/System ставят risk flags.'],
+        notHere: ['Текст ответа.', 'Личные expert-only флаги.', 'Очередной triage.'],
+        dictionary: { area: 'Правая', layer: 'Workflow fields|Pay fields' }
+      },
+      'right-paynotes': {
+        title: 'Правая / Pay details, notes и audit trail',
+        area: 'Правая',
+        layer: 'Pay fields|Notes and flags',
+        scenarios: ['Chats', 'Pings'],
+        purpose: 'Сектор хранит денежные детали и заметки с понятной видимостью: что видит команда, что видит модератор, что видит только эксперт.',
+        role: 'Нужен для разборов, передачи смены, компенсаций и личной памяти эксперта без смешения private-флагов с глобальными решениями.',
+        includes: [
+          ['Pay fields', 'Balance, paid history, coupon eligibility, compensation request.'],
+          ['Expert-private note', 'Видит только эксперт, не влияет на routing.'],
+          ['Moderator note', 'Командное ограничение, QA или safety context.'],
+          ['Action log', 'След действий прототипа для QA, не production source of truth.']
+        ],
+        variables: ['balance', 'paid_history', 'coupon_rule', 'compensation_status', 'expert_private_note', 'moderator_note', 'note_visibility', 'action_log'],
+        triggers: ['Billing обновляет деньги.', 'Expert создает private note или compensation request.', 'Moderator/QA добавляет ограничения.', 'Prototype пишет local action log.'],
+        notHere: ['Очередные фильтры.', 'Ответ клиенту.', 'Непроверенные LTV/risk проценты.'],
+        dictionary: { area: 'Правая', layer: 'Pay fields|Notes and flags' }
+      }
+    };
+
     const anchorDetails = {
       'left-chats-tab': ['Chats tab', 'Левая', 'Chats', 'Открывает реальные сквозные диалоги. Это основной режим ответа, paid delivery и продаж продолжения.'],
       'left-pings-tab': ['Pings tab', 'Левая', 'Pings', 'Открывает pre-chat сигналы интереса. Ping не равен обычному чату и не получает reply SLA до ответа клиента.'],
@@ -1270,6 +1899,7 @@
       if (key.includes('queue_card') || key.includes('last_activity') || key.includes('unread') || key.includes('attention') || key.includes('stage_badge') || key.includes('favorite')) return 'Queue card tags';
       if (key.includes('header') || key.includes('chip') || key.includes('live') || key.includes('payment_pending')) return 'Header indicators';
       if (key.includes('paid_session') || key.includes('start_paid') || key.includes('stop_paid') || key.includes('my_session') || key.includes('timer') || key.includes('sell_window')) return 'Paid session';
+      if (key.includes('message_stream') || key.includes('ping_context')) return 'Message stream';
       if (key.includes('quick_reply') || key.includes('workflow_hint')) return 'Composer templates';
       if (key.includes('offer') || key.includes('comp_request') || key.includes('resolve') || key.includes('attachment')) return 'Composer actions';
       if (key.includes('ping_first') || key.includes('ping_waiting') || key.includes('send_template') || key.includes('invite') || key.includes('dismiss') || key.includes('previous_buyer')) return 'Ping actions';
@@ -1285,10 +1915,11 @@
     function matches(row) {
       const q = searchBox.value.trim().toLowerCase();
       const haystack = Object.values(row).join(' ').toLowerCase();
+      const selectedLayers = layerFilter.value ? layerFilter.value.split('|') : [];
       return (!q || haystack.includes(q)) &&
         (!areaFilter.value || row.area === areaFilter.value) &&
         (!scenarioFilter.value || row.scenario === scenarioFilter.value) &&
-        (!layerFilter.value || getLayer(row) === layerFilter.value) &&
+        (!selectedLayers.length || selectedLayers.includes(getLayer(row))) &&
         (!sourceFilter.value || row.source === sourceFilter.value) &&
         (!typeFilter.value || row.type === typeFilter.value);
     }
@@ -1327,12 +1958,20 @@
       `;
     }
 
-    function renderAreaInspector(areaKey) {
-      const detail = areaDetails[areaKey] || areaDetails.left;
+    function relatedRowsFor(detail) {
+      const selectedLayers = detail.dictionary.layer ? detail.dictionary.layer.split('|') : [];
+      return dictionary.filter(row =>
+        row.area === detail.dictionary.area &&
+        (!selectedLayers.length || selectedLayers.includes(getLayer(row)))
+      );
+    }
+
+    function renderInspector(detail) {
       const inspector = document.getElementById('areaInspector');
-      const relatedRows = dictionary.filter(row => row.area === detail.area);
+      const relatedRows = relatedRowsFor(detail);
       const chatsCount = relatedRows.filter(row => row.scenario === 'Chats').length;
       const pingsCount = relatedRows.filter(row => row.scenario === 'Pings').length;
+      const layerLabel = detail.dictionary.layer || 'Все слои области';
       inspector.innerHTML = `
         <div class="area-inspector-head">
           <div>
@@ -1346,6 +1985,7 @@
           <span class="pill"><strong>${relatedRows.length}</strong> строк словаря</span>
           <span class="pill pill-chats"><strong>${chatsCount}</strong> Chats</span>
           <span class="pill pill-pings"><strong>${pingsCount}</strong> Pings</span>
+          <span class="pill"><strong>${layerLabel}</strong></span>
         </div>
         <div class="inspector-section">
           <h3>Смысл области</h3>
@@ -1372,10 +2012,18 @@
           <ul>${detail.notHere.map(item => `<li>${item}</li>`).join('')}</ul>
         </div>
         <div class="inspector-actions">
-          <button class="btn btn-primary" type="button" data-show-dictionary-area="${detail.area}">Показать строки словаря по области</button>
+          <button class="btn btn-primary" type="button" data-show-dictionary-area="${detail.dictionary.area}" data-show-dictionary-layer="${detail.dictionary.layer}">Показать строки словаря по области</button>
           <a class="btn" href="./index.html" target="_blank" rel="noopener">Открыть макет отдельно</a>
         </div>
       `;
+    }
+
+    function renderAreaInspector(areaKey) {
+      renderInspector(areaDetails[areaKey] || areaDetails.left);
+    }
+
+    function renderSectorInspector(sectorKey) {
+      renderInspector(sectorDetails[sectorKey] || sectorDetails['left-workload']);
     }
 
     [searchBox, areaFilter, scenarioFilter, layerFilter, sourceFilter, typeFilter].forEach(el => el.addEventListener('input', renderRows));
@@ -1389,6 +2037,9 @@
         const url = new URL(window.location.href);
         url.searchParams.set('tab', button.dataset.panel);
         window.history.replaceState(null, '', url);
+        if (button.dataset.panel === 'map') {
+          window.setTimeout(fitMockupStage, 0);
+        }
       });
     });
 
@@ -1410,11 +2061,23 @@
       });
     });
 
-    document.querySelectorAll('.area-hotspot').forEach(button => {
-      button.addEventListener('click', () => {
-        document.querySelectorAll('.area-hotspot').forEach(item => item.classList.remove('is-active'));
+    document.querySelectorAll('.sector-hotspot').forEach(button => {
+      const activateSector = () => {
+        document.querySelectorAll('.sector-hotspot').forEach(item => item.classList.remove('is-active'));
         button.classList.add('is-active');
-        renderAreaInspector(button.dataset.area);
+        renderSectorInspector(button.dataset.sector);
+      };
+      button.addEventListener('click', activateSector);
+      button.addEventListener('mouseenter', activateSector);
+      button.addEventListener('focus', activateSector);
+    });
+
+    document.querySelectorAll('.flow-nav-button').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.flow-nav-button').forEach(item => item.classList.remove('is-active'));
+        document.querySelectorAll('.flow-scenario').forEach(item => item.classList.remove('is-active'));
+        button.classList.add('is-active');
+        document.getElementById(`flow-${button.dataset.flow}`).classList.add('is-active');
       });
     });
 
@@ -1426,12 +2089,30 @@
       document.querySelector('[data-panel="dictionary"]').click();
       areaFilter.value = button.dataset.showDictionaryArea;
       scenarioFilter.value = '';
-      layerFilter.value = '';
+      layerFilter.value = button.dataset.showDictionaryLayer || '';
       sourceFilter.value = '';
       typeFilter.value = '';
       searchBox.value = '';
       renderRows();
     });
+
+    function fitMockupStage() {
+      const frame = document.querySelector('.mockup-frame');
+      const stage = document.getElementById('mockupScaleStage');
+      if (!frame || !stage) {
+        return;
+      }
+      const designWidth = 1440;
+      const designHeight = 820;
+      const availableWidth = frame.parentElement ? frame.parentElement.clientWidth : frame.clientWidth;
+      const maxHeight = Math.max(460, Math.min(720, window.innerHeight - 360));
+      const scale = Math.min(availableWidth / designWidth, maxHeight / designHeight, 1);
+      frame.style.setProperty('--mockup-frame-width', `${Math.ceil(designWidth * scale)}px`);
+      frame.style.setProperty('--mockup-frame-height', `${Math.ceil(designHeight * scale)}px`);
+      stage.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener('resize', fitMockupStage);
 
     document.getElementById('copyCurrentView').addEventListener('click', async () => {
       try {
@@ -1444,11 +2125,12 @@
     });
 
     const initialTab = new URL(window.location.href).searchParams.get('tab');
-    if (initialTab === 'map') {
-      document.querySelector('[data-panel="map"]').click();
+    if (initialTab && document.querySelector(`[data-panel="${initialTab}"]`)) {
+      document.querySelector(`[data-panel="${initialTab}"]`).click();
     }
     renderRows();
-    renderAreaInspector('left');
+    renderSectorInspector('left-workload');
+    fitMockupStage();
   </script>
 </body>
 </html>
