@@ -297,6 +297,191 @@
       margin-bottom: 14px;
     }
 
+    .mockup-review-grid {
+      display: grid;
+      grid-template-columns: minmax(720px, 1.35fr) minmax(420px, 0.65fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .real-mockup-card,
+    .area-inspector-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+
+    .real-mockup-head,
+    .area-inspector-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .real-mockup-head h2,
+    .area-inspector-head h2 {
+      margin: 0 0 5px;
+      font-size: 18px;
+    }
+
+    .real-mockup-head p,
+    .area-inspector-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .mockup-frame {
+      position: relative;
+      height: 720px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .mockup-frame iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+
+    .mockup-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .area-hotspot {
+      position: absolute;
+      pointer-events: auto;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      border: 2px solid rgba(31, 111, 235, 0.35);
+      background: rgba(31, 111, 235, 0.08);
+      color: #0b57d0;
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+      text-align: left;
+      font-weight: 800;
+      font-size: 12px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+    }
+
+    .area-hotspot span {
+      display: inline-flex;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid currentColor;
+      padding: 5px 8px;
+      box-shadow: 0 4px 12px rgba(16, 24, 40, 0.12);
+    }
+
+    .area-hotspot--left {
+      left: 18%;
+      top: 12.5%;
+      width: 24.5%;
+      height: 82%;
+      border-color: #8bbcff;
+      background: rgba(31, 111, 235, 0.07);
+    }
+
+    .area-hotspot--center {
+      left: 42.8%;
+      top: 12.5%;
+      width: 35%;
+      height: 82%;
+      border-color: #ffc66d;
+      background: rgba(179, 92, 0, 0.08);
+      color: var(--orange);
+    }
+
+    .area-hotspot--right {
+      right: 1.2%;
+      top: 12.5%;
+      width: 20.5%;
+      height: 82%;
+      border-color: #c6adff;
+      background: rgba(111, 66, 193, 0.08);
+      color: var(--violet);
+    }
+
+    .area-hotspot.is-active {
+      border-width: 3px;
+      background: rgba(31, 111, 235, 0.16);
+    }
+
+    .area-hotspot--center.is-active { background: rgba(179, 92, 0, 0.16); }
+    .area-hotspot--right.is-active { background: rgba(111, 66, 193, 0.16); }
+
+    .inspector-section {
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+      margin-top: 12px;
+    }
+
+    .inspector-section:first-child {
+      border-top: 0;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    .inspector-section h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+    }
+
+    .inspector-section p,
+    .inspector-section li {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .inspector-section ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .inspector-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .inspector-item {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 8px;
+      background: var(--panel-soft);
+    }
+
+    .inspector-item strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 12px;
+    }
+
+    .inspector-item span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .inspector-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
     .screen-diagram {
       background: var(--panel);
       border: 1px solid var(--line);
@@ -595,6 +780,7 @@
       .verdict-grid,
       .filters,
       .orientation-strip,
+      .mockup-review-grid,
       .screen-walkthrough,
       .screen-columns,
       .map-layout,
@@ -764,80 +950,26 @@
         </div>
       </div>
 
-      <div class="screen-walkthrough">
-        <div class="screen-diagram">
-          <div class="screen-diagram-head">
+      <div class="mockup-review-grid">
+        <section class="real-mockup-card">
+          <div class="real-mockup-head">
             <div>
-              <h2>Карта HTML-областей</h2>
-              <p>Это не декоративная схема. Каждый блок соответствует реальному месту на странице чата и связан со строками словаря.</p>
+              <h2>Реальная страница макета</h2>
+              <p>Кликните по подсвеченной зоне поверх живого HTML-макета. Справа откроется описание смысла функционала этой области.</p>
             </div>
-            <span class="pill pill-risk">Кликните по блоку</span>
+            <span class="pill pill-risk">Левая / Центр / Правая</span>
           </div>
-          <div class="screen-columns">
-            <section class="screen-column screen-column--left">
-              <h3>Левая область</h3>
-              <div class="subtitle">Очередь, фильтры, stage badges и короткий смысл карточки.</div>
-              <button class="screen-node" data-anchor="left-chats-tab"><b>Chats tab</b><span>Реальные сквозные диалоги.</span></button>
-              <button class="screen-node" data-anchor="left-pings-tab"><b>Pings tab</b><span>Pre-chat сигналы интереса.</span></button>
-              <button class="screen-node" data-anchor="left-chat-filters"><b>Chats filters</b><span>Reply, SLA, Live, PP, Sell, Favorite, Archive.</span></button>
-              <button class="screen-node" data-anchor="left-ping-filters"><b>Pings filters</b><span>NEW, Intent, Credits, Favorite.</span></button>
-              <button class="screen-node" data-anchor="left-card-stage"><b>Queue card tags</b><span>Paid Live, Book soon, Objection, Lift Due, Future Paid.</span></button>
-            </section>
+          <div class="mockup-frame">
+            <iframe src="./index.html" title="Admin Chat Workspace V2 mockup"></iframe>
+            <div class="mockup-overlay" aria-label="Кликабельные области макета">
+              <button class="area-hotspot area-hotspot--left is-active" type="button" data-area="left"><span>Левая область</span></button>
+              <button class="area-hotspot area-hotspot--center" type="button" data-area="center"><span>Центральная область</span></button>
+              <button class="area-hotspot area-hotspot--right" type="button" data-area="right"><span>Правая область</span></button>
+            </div>
+          </div>
+        </section>
 
-            <section class="screen-column screen-column--center">
-              <h3>Центральная область</h3>
-              <div class="subtitle">Открытый кейс и все рабочие действия эксперта.</div>
-              <button class="screen-node" data-anchor="center-header"><b>Header</b><span>Кто клиент, какой expert profile видит клиент.</span></button>
-              <button class="screen-node" data-anchor="center-stage-chip"><b>Stage chip</b><span>Текущая стадия: free, Book Now, objection, paid, lift.</span></button>
-              <button class="screen-node" data-anchor="center-start-stop"><b>Paid session controls</b><span>Start, Stop, My session, timer, sell window.</span></button>
-              <button class="screen-node" data-anchor="center-workflow-hint"><b>Workflow hint</b><span>Stage + next action + warning перед отправкой.</span></button>
-              <button class="screen-node" data-anchor="center-quick-replies"><b>Composer templates</b><span>Need data, Book Now, Objection, Paid topic, Extend, Safety route.</span></button>
-              <button class="screen-node" data-anchor="center-send-template"><b>Ping actions</b><span>Send template, Invite, Favorite, Dismiss.</span></button>
-            </section>
-
-            <section class="screen-column screen-column--right">
-              <h3>Правая область</h3>
-              <div class="subtitle">Детали, которые объясняют, но не перегружают очередь.</div>
-              <button class="screen-node" data-anchor="right-client-tab"><b>Client</b><span>Язык, timezone, birth data, visible expert, operator.</span></button>
-              <button class="screen-node" data-anchor="right-workflow-tab"><b>Workflow</b><span>Free boundary, Book Now, paid session, objection, ping/lift, risk.</span></button>
-              <button class="screen-node" data-anchor="right-pay-tab"><b>Pay</b><span>Balance, status, paid history, coupon rule, extend window.</span></button>
-              <button class="screen-node" data-anchor="right-notes-tab"><b>Notes</b><span>Expert-private, team и moderator context.</span></button>
-            </section>
-          </div>
-        </div>
-
-        <aside class="area-rules">
-          <div class="detail-box" id="anchorDetail">
-            <h3>Выберите блок на карте</h3>
-            <p>Здесь появится назначение элемента, сценарий Chats/Pings и причина, почему он находится именно в этой области.</p>
-          </div>
-          <div class="rule-card">
-            <h3>Правило областей</h3>
-            <ul>
-              <li>Если элемент помогает выбрать кейс, он живет слева.</li>
-              <li>Если элемент запускает действие, он живет в центре.</li>
-              <li>Если элемент объясняет причину или хранит детали, он живет справа.</li>
-              <li>Если элемент не отвечает на эти вопросы, он не нужен на основном экране.</li>
-            </ul>
-          </div>
-          <div class="rule-card">
-            <h3>Проверка модели</h3>
-            <ul>
-              <li>Chats - один сквозной диалог, stage меняется внутри него.</li>
-              <li>Pings - отдельная pre-chat очередь, не обычные сообщения.</li>
-              <li>Stage управляет сценарием, а не заменяет фильтр.</li>
-              <li>Expert-private флаги не становятся глобальным routing.</li>
-            </ul>
-          </div>
-        </aside>
-      </div>
-
-      <div class="html-preview-card">
-        <h2>Живая HTML-область макета</h2>
-        <p>Ниже встроен текущий HTML-макет страницы чата. Его можно открыть отдельно кнопкой сверху, а здесь он нужен как визуальная привязка к карте и словарю.</p>
-        <div class="iframe-shell">
-          <iframe src="./index.html" title="Admin Chat Workspace V2 mockup"></iframe>
-        </div>
+        <aside class="area-inspector-card" id="areaInspector" aria-live="polite"></aside>
       </div>
     </section>
   </main>
@@ -951,6 +1083,126 @@
       { id: 'action_log_chats', area: 'Правая', scenario: 'Chats', type: 'Variable', source: 'UI', caller: 'Prototype', when: 'После prototype-действий', responsibility: 'Локально показывает действия', purpose: 'QA прототипа, не production data contract', anchor: 'Action log' },
       { id: 'action_log_pings', area: 'Правая', scenario: 'Pings', type: 'Variable', source: 'UI', caller: 'Prototype', when: 'После prototype-действий', responsibility: 'Локально показывает действия', purpose: 'QA прототипа, не production data contract', anchor: 'Action log' }
     ];
+
+    const areaDetails = {
+      left: {
+        title: 'Левая область',
+        area: 'Левая',
+        scenarios: ['Chats', 'Pings'],
+        purpose: 'Это диспетчерская очередь. Она отвечает не за подробный разбор клиента, а за быстрый выбор следующего объекта работы.',
+        role: 'Эксперт должен за 3-5 секунд понять: это реальный Chat или Ping, насколько кейс срочный, есть ли деньги/риски, и почему его стоит открыть.',
+        includes: [
+          ['Workload mode', 'Chats показывает реальные диалоги, Pings показывает pre-chat сигналы интереса.'],
+          ['Search / user select', 'Ручной поиск по клиенту, экспертному профилю, id, preview и stage.'],
+          ['Queue filters', 'Chats: Reply, SLA, Live, PP, Sell, Favorite, Archive. Pings: NEW, Intent, Credits, Favorite.'],
+          ['Queue card tags', 'Один stage badge и до 3-4 рабочих индикаторов, которые реально меняют приоритет.'],
+          ['Preview / last activity / unread', 'Короткий смысл, свежесть и объем внимания без раскрытия всей истории.']
+        ],
+        variables: [
+          'workload_mode',
+          'conversation_id',
+          'client_id',
+          'expert_profile_id',
+          'conversation_stage',
+          'last_activity_at',
+          'unread_count',
+          'queue_filter',
+          'favorite_private_flag'
+        ],
+        triggers: [
+          'System ставит Reply, SLA, NEW, Intent и unread.',
+          'Billing ставит Live, PP и Credits.',
+          'Workflow ставит stage badge: Paid Live, Book soon, Objection, Lift Due, Future Paid.',
+          'Expert ставит только личные Favorite/Pin, они не становятся глобальной правдой.'
+        ],
+        notHere: [
+          'Полная история платежей.',
+          'Длинные notes и внутренние объяснения.',
+          'Все safety/legal правила.',
+          'Технические поля, которые не помогают выбрать следующий кейс.'
+        ],
+        dictionary: { area: 'Левая', layer: '' }
+      },
+      center: {
+        title: 'Центральная область',
+        area: 'Центральная',
+        scenarios: ['Chats', 'Pings'],
+        purpose: 'Это рабочее место открытого кейса. Здесь эксперт отвечает, запускает paid session, обрабатывает Book Now/objection, делает invite или закрывает кейс.',
+        role: 'Центр должен отвечать на вопрос: какое действие эксперт выполняет прямо сейчас и что нельзя нарушить перед отправкой сообщения.',
+        includes: [
+          ['Header', 'Показывает client -> expert profile, stage chip, Live/PP и last activity.'],
+          ['Paid session controls', 'Start/Stop, My session, timer, sell window и paid delivery status внутри сквозного чата.'],
+          ['Message stream', 'Сквозная история общения: free, Book Now, objection и paid не дробятся на отдельные чаты.'],
+          ['Composer templates', 'Need data, Book Now, Objection, Paid topic, Extend, Safety route.'],
+          ['Actions', 'Chats: Offer, Comp request, Resolve. Pings: Send template, Invite, Favorite, Dismiss.']
+        ],
+        variables: [
+          'active_conversation_id',
+          'conversation_stage',
+          'composer_mode',
+          'paid_session_status',
+          'paid_session_time_left',
+          'book_now_status',
+          'workflow_warning',
+          'next_action'
+        ],
+        triggers: [
+          'Expert запускает Start/Stop, Offer, Comp request, Resolve, Send template, Invite, Dismiss.',
+          'Workflow обновляет hint, stage и warning при выборе карточки.',
+          'Billing/session engine обновляет Live, My session, timer и sell window.',
+          'Safety/moderator signals могут подавлять sales push или требовать осторожную формулировку.'
+        ],
+        notHere: [
+          'Полная аналитика клиента.',
+          'Все payment events.',
+          'Большие внутренние заметки.',
+          'Сложные настройки routing и team ownership.'
+        ],
+        dictionary: { area: 'Центральная', layer: '' }
+      },
+      right: {
+        title: 'Правая область',
+        area: 'Правая',
+        scenarios: ['Chats', 'Pings'],
+        purpose: 'Это инспектор деталей. Он объясняет, почему система предлагает именно такой следующий шаг, и хранит контекст, который не должен засорять очередь и центр.',
+        role: 'Правая область нужна, когда эксперт или разработчик должен понять причину: клиент, workflow, деньги, риски, заметки и источники флагов.',
+        includes: [
+          ['Client', 'Язык, timezone, birth data, visible expert, real operator, device/platform.'],
+          ['Workflow', 'Stage, next action, warning, free boundary, Book Now, paid session, objection, ping/lift, risk.'],
+          ['Pay', 'Balance, status, paid history, coupon rule, extend window, used time, compensation, payment events.'],
+          ['Notes', 'Expert-private, team и moderator notes с понятной видимостью и источником.'],
+          ['Action log', 'Только prototype/QA след действий, не production source of truth.']
+        ],
+        variables: [
+          'client_language',
+          'birth_data',
+          'visible_expert',
+          'real_operator',
+          'free_trial_state',
+          'book_now_status',
+          'paid_session_status',
+          'objection_type',
+          'ping_reason',
+          'risk_flags',
+          'coupon_rule',
+          'note_visibility'
+        ],
+        triggers: [
+          'System/Profile заполняет Client.',
+          'Workflow engine заполняет Workflow fields.',
+          'Billing/business rules заполняют Pay fields.',
+          'Expert, team и moderator создают notes с разной видимостью.',
+          'Moderator/system risk flags могут влиять на warning и sales suppression.'
+        ],
+        notHere: [
+          'Новые действия, которые должны быть в центре.',
+          'Очередные фильтры и routing controls.',
+          'Личные флаги без source/owner/visibility.',
+          'Неподтвержденные проценты риска или точный LTV без формулы.'
+        ],
+        dictionary: { area: 'Правая', layer: '' }
+      }
+    };
 
     const anchorDetails = {
       'left-chats-tab': ['Chats tab', 'Левая', 'Chats', 'Открывает реальные сквозные диалоги. Это основной режим ответа, paid delivery и продаж продолжения.'],
@@ -1075,6 +1327,57 @@
       `;
     }
 
+    function renderAreaInspector(areaKey) {
+      const detail = areaDetails[areaKey] || areaDetails.left;
+      const inspector = document.getElementById('areaInspector');
+      const relatedRows = dictionary.filter(row => row.area === detail.area);
+      const chatsCount = relatedRows.filter(row => row.scenario === 'Chats').length;
+      const pingsCount = relatedRows.filter(row => row.scenario === 'Pings').length;
+      inspector.innerHTML = `
+        <div class="area-inspector-head">
+          <div>
+            <h2>${detail.title}</h2>
+            <p>${detail.purpose}</p>
+          </div>
+          ${tag(detail.area, areaClass[detail.area])}
+        </div>
+        <div class="detail-meta">
+          ${detail.scenarios.map(scenario => tag(scenario, scenarioClass[scenario])).join('')}
+          <span class="pill"><strong>${relatedRows.length}</strong> строк словаря</span>
+          <span class="pill pill-chats"><strong>${chatsCount}</strong> Chats</span>
+          <span class="pill pill-pings"><strong>${pingsCount}</strong> Pings</span>
+        </div>
+        <div class="inspector-section">
+          <h3>Смысл области</h3>
+          <p>${detail.role}</p>
+        </div>
+        <div class="inspector-section">
+          <h3>Что входит</h3>
+          <div class="inspector-list">
+            ${detail.includes.map(([name, text]) => `<div class="inspector-item"><strong>${name}</strong><span>${text}</span></div>`).join('')}
+          </div>
+        </div>
+        <div class="inspector-section">
+          <h3>Ключевые переменные</h3>
+          <div class="anchor-grid">
+            ${detail.variables.map(variable => `<span class="anchor">${variable}</span>`).join('')}
+          </div>
+        </div>
+        <div class="inspector-section">
+          <h3>Кем вызывается и когда обновляется</h3>
+          <ul>${detail.triggers.map(item => `<li>${item}</li>`).join('')}</ul>
+        </div>
+        <div class="inspector-section">
+          <h3>Что не должно жить в этой области</h3>
+          <ul>${detail.notHere.map(item => `<li>${item}</li>`).join('')}</ul>
+        </div>
+        <div class="inspector-actions">
+          <button class="btn btn-primary" type="button" data-show-dictionary-area="${detail.area}">Показать строки словаря по области</button>
+          <a class="btn" href="./index.html" target="_blank" rel="noopener">Открыть макет отдельно</a>
+        </div>
+      `;
+    }
+
     [searchBox, areaFilter, scenarioFilter, layerFilter, sourceFilter, typeFilter].forEach(el => el.addEventListener('input', renderRows));
 
     document.querySelectorAll('.tab').forEach(button => {
@@ -1107,6 +1410,29 @@
       });
     });
 
+    document.querySelectorAll('.area-hotspot').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.area-hotspot').forEach(item => item.classList.remove('is-active'));
+        button.classList.add('is-active');
+        renderAreaInspector(button.dataset.area);
+      });
+    });
+
+    document.addEventListener('click', event => {
+      const button = event.target.closest('[data-show-dictionary-area]');
+      if (!button) {
+        return;
+      }
+      document.querySelector('[data-panel="dictionary"]').click();
+      areaFilter.value = button.dataset.showDictionaryArea;
+      scenarioFilter.value = '';
+      layerFilter.value = '';
+      sourceFilter.value = '';
+      typeFilter.value = '';
+      searchBox.value = '';
+      renderRows();
+    });
+
     document.getElementById('copyCurrentView').addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(window.location.href);
@@ -1122,6 +1448,7 @@
       document.querySelector('[data-panel="map"]').click();
     }
     renderRows();
+    renderAreaInspector('left');
   </script>
 </body>
 </html>
