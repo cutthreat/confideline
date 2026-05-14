@@ -1559,7 +1559,6 @@
                 <th>Сценарий</th>
                 <th>Тип / источник</th>
                 <th>Когда появляется</th>
-                <th>Что делает</th>
                 <th>Зачем</th>
               </tr>
             </thead>
@@ -2692,11 +2691,10 @@
           <td>${tag('Не назначено', '')}</td>
           <td>${tag(row.scenario, scenarioClass[row.scenario])}</td>
           <td><div class="cell-stack">${tag('Бейдж', '')}${sourceTag(row)}</div></td>
-          <td><div class="when-cell"><span>${readableText(row.when)}</span><span class="caller-chip">Вызов: ${readableText(row.caller)}</span></div></td>
-          <td>${readableText(row.responsibility)}</td>
+          <td><div class="when-cell"><span>${readableText(row.when)}</span><span class="caller-chip">Вызов: ${readableText(row.caller)}</span><span class="caller-chip">Что делает: ${readableText(row.responsibility)}</span></div></td>
           <td><div class="purpose-cell"><p>${readableText(row.purpose)}</p><p class="source-note"><strong>Почему источник важен:</strong> ${sourceReason(row)}</p></div></td>
         </tr>
-      `).join('') || `<tr><td colspan="7"><div class="empty">Ничего не найдено по текущим фильтрам.</div></td></tr>`;
+      `).join('') || `<tr><td colspan="6"><div class="empty">Ничего не найдено по текущим фильтрам.</div></td></tr>`;
 
       const chats = filtered.filter(row => row.scenario === 'Chats').length;
       const pings = filtered.filter(row => row.scenario === 'Pings').length;
