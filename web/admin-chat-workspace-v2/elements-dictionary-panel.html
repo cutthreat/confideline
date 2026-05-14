@@ -647,6 +647,76 @@
     .sector-right-pay { right: 1.55%; top: 73%; width: 20%; height: 10.6%; }
     .sector-right-notes { right: 1.55%; top: 83.9%; width: 20%; height: 10.2%; }
 
+    .badge-map-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .badge-map-group {
+      position: absolute;
+      pointer-events: auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      gap: 4px;
+      border: 1px solid rgba(11, 87, 208, 0.22);
+      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.86);
+      box-shadow: 0 8px 22px rgba(16, 24, 40, 0.12);
+      padding: 7px;
+      cursor: pointer;
+      backdrop-filter: blur(2px);
+    }
+
+    .badge-map-group:hover,
+    .badge-map-group.is-active {
+      border-color: rgba(31, 111, 235, 0.62);
+      box-shadow: 0 10px 28px rgba(31, 111, 235, 0.18);
+    }
+
+    .badge-map-title {
+      width: 100%;
+      margin-bottom: 1px;
+      color: #344054;
+      font-size: 10px;
+      font-weight: 900;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    .badge-map-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 18px;
+      border-radius: 999px;
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      color: #0b57d0;
+      padding: 2px 7px;
+      font-size: 10px;
+      font-weight: 900;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .badge-map-chip--hot { border-color: #fed7aa; background: #fff7ed; color: #b45309; }
+    .badge-map-chip--paid { border-color: #bbf7d0; background: #ecfdf3; color: #027a48; }
+    .badge-map-chip--risk { border-color: #fecdd3; background: #fff1f2; color: #be123c; }
+    .badge-map-chip--manual { border-color: #ddd6fe; background: #f5f3ff; color: #6d28d9; }
+    .badge-map-chip--wait { border-color: #cbd5e1; background: #f8fafc; color: #475569; }
+
+    .badge-map-left-filters { left: 19.1%; top: 18.9%; width: 21.9%; min-height: 5.8%; }
+    .badge-map-left-card { left: 19.1%; top: 25%; width: 21.9%; min-height: 9.3%; }
+    .badge-map-left-pings { left: 19.1%; top: 39.7%; width: 21.9%; min-height: 11%; }
+    .badge-map-center-header { left: 43%; top: 13.4%; width: 33.8%; min-height: 6.8%; }
+    .badge-map-center-session { left: 43%; top: 21.2%; width: 33.8%; min-height: 7.3%; }
+    .badge-map-center-composer { left: 43%; top: 83.7%; width: 33.8%; min-height: 9.2%; }
+    .badge-map-right-workflow { right: 2.1%; top: 59.9%; width: 18.8%; min-height: 12.1%; }
+    .badge-map-right-pay { right: 2.1%; top: 73.3%; width: 18.8%; min-height: 9.8%; }
+    .badge-map-right-notes { right: 2.1%; top: 84.2%; width: 18.8%; min-height: 9.2%; }
+
     .sector-guide {
       display: grid;
       grid-template-columns: repeat(3, minmax(180px, 1fr));
@@ -1588,10 +1658,10 @@
         <section class="real-mockup-card">
           <div class="real-mockup-head">
             <div>
-              <h2>Реальная страница макета</h2>
-              <p>Нажмите на номер сектора. Справа откроется расшифровка того, что видит эксперт в этом месте: какие элементы есть, кто их назначает и зачем они нужны.</p>
+              <h2>Специальная версия макета с картой бейджей</h2>
+              <p>Нажмите на номер сектора или группу бейджей внутри макета. Справа откроется расшифровка: где бейдж появляется, кто его назначает и зачем он нужен эксперту.</p>
             </div>
-            <span class="pill pill-risk">Выбор только по клику</span>
+            <span class="pill pill-risk">Бейджи показаны поверх макета</span>
           </div>
           <div class="sector-guide" aria-label="Легенда секторов макета">
             <div class="sector-guide-group">
@@ -1626,7 +1696,75 @@
           </div>
           <div class="mockup-frame">
             <div class="mockup-scale-stage" id="mockupScaleStage">
-              <iframe id="mockupIframe" data-src="./index.html" title="Макет админ-панели чата V2" srcdoc="<p style=&quot;font:14px Arial;padding:16px;color:#667085&quot;>Загрузка макета...</p>"></iframe>
+              <iframe id="mockupIframe" data-src="./index.html?v=badge-map-20260515" title="Макет админ-панели чата V2" srcdoc="<p style=&quot;font:14px Arial;padding:16px;color:#667085&quot;>Загрузка макета...</p>"></iframe>
+              <div class="badge-map-overlay" aria-label="Карта размещения бейджей внутри макета">
+                <button class="badge-map-group badge-map-left-filters sector-trigger" type="button" data-sector="left-search" aria-label="Левая область: фильтры бейджей">
+                  <span class="badge-map-title">Левая / фильтры</span>
+                  <span class="badge-map-chip">NeedR</span>
+                  <span class="badge-map-chip badge-map-chip--hot">SLA</span>
+                  <span class="badge-map-chip badge-map-chip--paid">Live</span>
+                  <span class="badge-map-chip badge-map-chip--paid">PP</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Sell</span>
+                </button>
+                <button class="badge-map-group badge-map-left-card sector-trigger" type="button" data-sector="left-card-badges" aria-label="Левая область: бейджи карточки Chats">
+                  <span class="badge-map-title">Карточка Chats</span>
+                  <span class="badge-map-chip">NeedR</span>
+                  <span class="badge-map-chip badge-map-chip--hot">SLA</span>
+                  <span class="badge-map-chip badge-map-chip--paid">Paid</span>
+                  <span class="badge-map-chip badge-map-chip--paid">Live</span>
+                  <span class="badge-map-chip badge-map-chip--manual">Favorite</span>
+                </button>
+                <button class="badge-map-group badge-map-left-pings sector-trigger" type="button" data-sector="left-card-list" aria-label="Левая область: бейджи Pings">
+                  <span class="badge-map-title">Очередь Pings</span>
+                  <span class="badge-map-chip">NEW</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Hot</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Fire</span>
+                  <span class="badge-map-chip badge-map-chip--paid">Paid</span>
+                  <span class="badge-map-chip">NeedR</span>
+                  <span class="badge-map-chip badge-map-chip--wait">WaitR</span>
+                </button>
+                <button class="badge-map-group badge-map-center-header sector-trigger" type="button" data-sector="center-header" aria-label="Центр: шапка открытого кейса">
+                  <span class="badge-map-title">Центр / шапка</span>
+                  <span class="badge-map-chip badge-map-chip--paid">Paid</span>
+                  <span class="badge-map-chip badge-map-chip--paid">Live</span>
+                  <span class="badge-map-chip badge-map-chip--paid">PP</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Fire</span>
+                  <span class="badge-map-chip badge-map-chip--wait">WaitR</span>
+                </button>
+                <button class="badge-map-group badge-map-center-session sector-trigger" type="button" data-sector="center-session" aria-label="Центр: paid и sell window">
+                  <span class="badge-map-title">Paid / сессия</span>
+                  <span class="badge-map-chip badge-map-chip--paid">Paid</span>
+                  <span class="badge-map-chip badge-map-chip--paid">Live</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Sell window</span>
+                </button>
+                <button class="badge-map-group badge-map-center-composer sector-trigger" type="button" data-sector="center-composer" aria-label="Центр: подсказки ответа">
+                  <span class="badge-map-title">Поле ответа</span>
+                  <span class="badge-map-chip badge-map-chip--manual">Safety route</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Objection</span>
+                  <span class="badge-map-chip">Free</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Sell</span>
+                </button>
+                <button class="badge-map-group badge-map-right-workflow sector-trigger" type="button" data-sector="right-workflow" aria-label="Правая область: сценарий и риски">
+                  <span class="badge-map-title">Правая / сценарий</span>
+                  <span class="badge-map-chip">Free</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Objection</span>
+                  <span class="badge-map-chip badge-map-chip--risk">Risk</span>
+                  <span class="badge-map-chip badge-map-chip--manual">Safety route</span>
+                </button>
+                <button class="badge-map-group badge-map-right-pay sector-trigger" type="button" data-sector="right-pay" aria-label="Правая область: деньги">
+                  <span class="badge-map-title">Правая / деньги</span>
+                  <span class="badge-map-chip badge-map-chip--paid">Paid</span>
+                  <span class="badge-map-chip badge-map-chip--paid">PP</span>
+                  <span class="badge-map-chip badge-map-chip--manual">Coupon rule</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Reactivation</span>
+                </button>
+                <button class="badge-map-group badge-map-right-notes sector-trigger" type="button" data-sector="right-notes" aria-label="Правая область: заметки и ручные флаги">
+                  <span class="badge-map-title">Правая / заметки</span>
+                  <span class="badge-map-chip badge-map-chip--manual">Private note</span>
+                  <span class="badge-map-chip badge-map-chip--risk">Moderator note</span>
+                  <span class="badge-map-chip badge-map-chip--risk">Risk</span>
+                </button>
+              </div>
               <div class="mockup-overlay" aria-label="Кликабельные сектора макета">
                 <button class="sector-hotspot sector-trigger sector-left sector-left-workload is-active" type="button" data-sector="left-workload" aria-label="1. Режим Chats, Pings или Archive"><span>1</span></button>
                 <button class="sector-hotspot sector-trigger sector-left sector-left-search" type="button" data-sector="left-search" aria-label="2. Поиск и фильтры очереди"><span>2</span></button>
@@ -1855,7 +1993,7 @@
       { id: 'last_activity_pings', area: 'Левая', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'System', when: 'Всегда', responsibility: 'Показывает время последнего ping-сигнала', purpose: 'Не держать старые pings на уровне свежих', anchor: 'Last activity' },
       { id: 'unread_count_chats', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'System', when: 'Есть непрочитанные или action count', responsibility: 'Показывает объем внимания', purpose: 'Быстрый triage входящих', anchor: 'Unread/action count' },
       { id: 'attention_mark_pings', area: 'Левая', scenario: 'Pings', type: 'Indicator', source: 'System', caller: 'System', when: 'Ping находится в Fire, Hot, NEW или NeedR', responsibility: 'Подсвечивает лид, требующий внимания', purpose: 'Не пропустить актуальный сигнал или требующий ответа Ping', anchor: 'Attention mark' },
-      { id: 'stage_badge_chats', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'conversation_stage определен', responsibility: 'Показывает Paid Live, Book soon, Objection', purpose: 'Понять бизнес-стадию до открытия', anchor: 'Stage badge' },
+      { id: 'stage_badge_chats', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'conversation_stage определен', responsibility: 'Показывает Paid, Book soon, Objection', purpose: 'Понять бизнес-стадию до открытия', anchor: 'Stage badge' },
       { id: 'stage_badge_pings', area: 'Левая', scenario: 'Pings', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'Ping связан со стадией', responsibility: 'Показывает Lift Due, Future Paid', purpose: 'Разделить реактивацию и напоминание о будущей оплате', anchor: 'Stage badge' },
 
       { id: 'chat_header_identity', area: 'Центральная', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'System', when: 'Чат открыт', responsibility: 'Показывает client -> expert profile', purpose: 'Не ответить от неправильного образа', anchor: 'Header' },
@@ -2484,7 +2622,6 @@
 
       const badgeAliases = {
         Reply: 'NeedR',
-        'Paid Live': 'Paid',
         'Paid session': 'Paid',
         'Extend window': 'Reactivation',
         'Free boundary': 'Free'
