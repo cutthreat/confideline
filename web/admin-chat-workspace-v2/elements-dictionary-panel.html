@@ -1512,7 +1512,7 @@
           </div>
         </div>
         <div class="filter-presets">
-          <span class="preset-hint">Вкладка 1 показывает черновой словарь бейджей без привязки к левой, центральной или правой области. Размещение и UI-якоря будут назначены отдельно.</span>
+          <span class="preset-hint">Вкладка 1 показывает черновой словарь смысловых бейджей без дублей Filter/Chip/Tab и без привязки к областям. Согласованные бейджи со звездочкой не меняем.</span>
         </div>
       </div>
 
@@ -2480,8 +2480,11 @@
       if (row.scenario !== 'Pings') {
         return '';
       }
-      const firstToken = String(row.anchor || '').split(/\s+/)[0];
-      return approvedPingTags.has(firstToken) ? firstToken : '';
+      const normalizedAnchor = String(row.anchor || '')
+        .replace(/\s+(chip|pill|badge|tab)$/i, '')
+        .replace(/^(Chats|Pings)\s+tab$/i, '$1')
+        .trim();
+      return approvedPingTags.has(normalizedAnchor) ? normalizedAnchor : '';
     }
 
     function cleanDraftBadgeAnchor(row) {
@@ -2628,7 +2631,33 @@
     }
 
     function isBadgeProductLogic(row) {
-      return ['Filter', 'Indicator', 'State', 'Guardrail'].includes(row.type);
+      const allowedTypes = ['Filter', 'Indicator', 'State', 'Guardrail'];
+      if (!allowedTypes.includes(row.type)) {
+        return false;
+      }
+
+      if (approvedTagName(row)) {
+        return true;
+      }
+
+      const removedPingsBadges = new Set([
+        'Attention mark',
+        'Stage',
+        'Waiting reply',
+        'Previous buyer',
+        'Workflow hint',
+        'Safety route',
+        'Workflow stage',
+        'Next action',
+        'Book Now',
+        'Paid session',
+        'Ping / lift',
+        'Coupon rule',
+        'Favorite',
+        'Objection'
+      ]);
+
+      return !(row.scenario === 'Pings' && removedPingsBadges.has(cleanDraftBadgeAnchor(row)));
     }
 
     function sourceReason(row) {
