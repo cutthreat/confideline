@@ -1823,7 +1823,7 @@
       { id: 'queue_search_pings', area: 'Левая', scenario: 'Pings', type: 'Control', source: 'UI', caller: 'Expert', when: 'Всегда в режиме Pings', responsibility: 'Ищет по клиенту, эксперту, id, preview, stage', purpose: 'Найти конкретный ping или лида', anchor: 'Search' },
       { id: 'queue_user_select_chats', area: 'Левая', scenario: 'Chats', type: 'Control', source: 'UI', caller: 'Expert', when: 'Нужно найти диалог по участнику', responsibility: 'Фильтрует по client_id или expert_profile_id', purpose: 'Ручная навигация по конкретному клиенту или профилю', anchor: 'User/expert select' },
       { id: 'queue_user_select_pings', area: 'Левая', scenario: 'Pings', type: 'Control', source: 'UI', caller: 'Expert', when: 'Нужно найти ping по участнику', responsibility: 'Фильтрует по client_id или expert_profile_id', purpose: 'Проверка интереса к конкретному эксперту', anchor: 'User/expert select' },
-      { id: 'filter_reply', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'System', caller: 'System', when: 'Последнее значимое сообщение пришло от клиента, ответа еще нет', responsibility: 'Отбирает чаты, где клиент ждет ответа', purpose: 'Главный рабочий фильтр смены', anchor: 'Reply' },
+      { id: 'filter_reply', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'System', caller: 'System', when: 'Последнее значимое сообщение пришло от клиента, ответа еще нет', responsibility: 'Отбирает чаты, где клиент ждет ответа', purpose: 'Показывает эксперту, что следующий ход за ним: клиент уже дал входящий сигнал и ожидает содержательный ответ.', anchor: 'Reply' },
       { id: 'filter_sla', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'System', caller: 'System', when: 'Ожидание ответа превысило SLA-порог', responsibility: 'Показывает риск просрочки', purpose: 'Снизить жалобы, возвраты и потери клиента', anchor: 'SLA' },
       { id: 'filter_live', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'System', caller: 'Session engine', when: 'Есть активная paid session', responsibility: 'Отбирает оплаченные активные кейсы', purpose: 'Оплаченная доставка важнее обычной очереди', anchor: 'Live' },
       { id: 'filter_payment_pending', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'System', caller: 'Payment system', when: 'Клиент начал payment flow, но не завершил оплату', responsibility: 'Показывает PP', purpose: 'Довести почти готовую оплату', anchor: 'PP' },
@@ -2562,26 +2562,90 @@
 
     function badgeNameOptions(row) {
       const variants = {
-        NeedR: ['NeedR', 'Reply Needed', 'Expert Turn'],
-        SLA: ['SLA', 'Overdue', 'Late Reply'],
-        Live: ['Live', 'Active Paid', 'In Session'],
-        PP: ['PP', 'Pay Pending', 'Pending Pay'],
-        Sell: ['Sell', 'Offer', 'Next Sale'],
-        Favorite: ['Favorite', 'Star', 'Follow'],
-        Free: ['Free', 'Free Time', 'Trial'],
-        Paid: ['Paid', 'Buyer', 'Paid User'],
-        Reactivation: ['Reactivation', 'Return', 'Reopen'],
-        Risk: ['Risk', 'Warning', 'Caution'],
-        'Safety route': ['Safety route', 'Safety Override', 'Careful Path'],
-        'Sell window': ['Sell window', 'Warm-up', 'Extend Cue'],
-        'Coupon rule': ['Coupon rule', 'Coupon Review', 'Comp Review'],
-        Objection: ['Objection', 'Doubt', 'Hesitation'],
-        Fire: ['Fire', 'Strong Intent', 'Super Hot'],
-        Hot: ['Hot', 'Fresh Interest', 'Warm Lead'],
-        NEW: ['NEW', 'New Ping', 'Fresh Lead'],
-        WaitR: ['WaitR', 'Client Turn', 'Waiting']
+        NeedR: ['Reply', 'Answer', 'Turn'],
+        SLA: ['Late', 'Urgent', 'Overdue'],
+        Live: ['Live', 'Now', 'Active'],
+        PP: ['Pending', 'Checkout', 'Pay'],
+        Sell: ['Sell', 'Upsell', 'Offer'],
+        Favorite: ['Star', 'Pin', 'Saved'],
+        Free: ['Free', 'Trial', 'Limit'],
+        Paid: ['Paid', 'Buyer', 'Paid+'],
+        Reactivation: ['Return', 'Revive', 'Reopen'],
+        Risk: ['Risk', 'Warn', 'Alert'],
+        'Safety route': ['Safe', 'Clear', 'Override'],
+        'Sell window': ['Warmup', 'Extend', 'Continue'],
+        'Coupon rule': ['Coupon', 'Comp', 'Review'],
+        Objection: ['Doubt', 'Block', 'Pause'],
+        Fire: ['Fire', 'Intent', 'Peak'],
+        Hot: ['Hot', 'Warm', 'Fresh'],
+        NEW: ['Fresh', 'New', 'Lead'],
+        WaitR: ['Wait', 'Client', 'Pause']
       };
       return variants[cleanDraftBadgeAnchor(row)] || [cleanDraftBadgeAnchor(row)];
+    }
+
+    function badgeDictionaryKey(row) {
+      return `${row.scenario}::${cleanDraftBadgeAnchor(row)}`;
+    }
+
+    const badgeWhenText = {
+      'Chats::Coupon rule': 'Эксперт видит, что по диалогу может понадобиться купон или компенсация.',
+      'Chats::Favorite': 'Эксперт вручную помечает диалог как важный для себя.',
+      'Chats::Free': 'Клиент находится в бесплатной части консультации или использует бесплатные минуты.',
+      'Chats::Live': 'В диалоге идет активная оплаченная поминутная консультация.',
+      'Chats::NeedR': 'Последнее значимое сообщение пришло от клиента, и эксперт еще не ответил.',
+      'Chats::Objection': 'Клиент сомневается, спорит или не готов перейти к оплате/продлению.',
+      'Chats::Paid': 'У диалога есть оплаченный статус: текущая оплата, оплаченная сессия или платное обязательство.',
+      'Chats::PP': 'Клиент начал оплату, но платеж еще не завершен.',
+      'Chats::Reactivation': 'Старый клиент вернулся к теме, эксперту или продолжению консультации.',
+      'Chats::Risk': 'Модератор видит риск в диалоге: жалоба, claim, safety или качество ответа.',
+      'Chats::Safety route': 'Эксперт продолжил диалог после Risk и считает, что текущая беседа безопасна для аккуратного ответа.',
+      'Chats::Sell': 'В диалоге появился уместный коммерческий следующий шаг.',
+      'Chats::Sell window': 'Клиент вовлечен, тема развивается, и можно мягко готовить докупку минут.',
+      'Chats::SLA': 'Клиент ждет ответа дольше допустимого времени.',
+      'Pings::Fire': 'Клиент явно проявляет сильный интерес к конкретному эксперту: повторно смотрит профиль, возвращается к теме, кликает chat/payment path или favorite/expert interest.',
+      'Pings::Free': 'Клиент пришел через бесплатное окно или бесплатные минуты до платной консультации.',
+      'Pings::Hot': 'Было недавнее взаимодействие с этим экспертом, 4-часовое окно еще активно, и нет более сильного Fire.',
+      'Pings::NeedR': 'После Ping появилось событие, на которое должен ответить эксперт.',
+      'Pings::NEW': 'Ping появился в последние 24 часа, еще не перешел в Chat и не находится в более сильном Hot/Fire.',
+      'Pings::Paid': 'Клиент уже платил раньше, поэтому это не холодный бесплатный лид.',
+      'Pings::Reactivation': 'Исторический клиент снова проявил интерес к эзотерике, теме или эксперту.',
+      'Pings::Risk': 'Модератор видит риск в первом касании или возврате клиента.',
+      'Pings::WaitR': 'Эксперт уже сделал касание или ответил, теперь ожидается реакция клиента.'
+    };
+
+    const badgePurposeText = {
+      'Chats::Coupon rule': 'Сигнализирует эксперту, что клиенту может понадобиться купон или компенсация, но обещание и финальное решение остаются у модератора.',
+      'Chats::Favorite': 'Сохраняет личный ориентир эксперта: этот диалог важно быстро найти позже, но это не командный приоритет и не сигнал другим экспертам.',
+      'Chats::Free': 'Показывает границу бесплатной ценности: можно прогреть интерес, но нельзя отдавать полноценную консультацию без оплаты.',
+      'Chats::Live': 'Показывает, что прямо сейчас идет оплачиваемое время клиента, поэтому эксперт должен отвечать быстро и по сути, без ухода в общую очередь.',
+      'Chats::NeedR': 'Показывает эксперту, что следующий ход за ним: клиент уже дал входящий сигнал и ожидает содержательный ответ.',
+      'Chats::Objection': 'Показывает, что клиенту нужен не новый pitch, а аккуратная обработка сомнения без давления.',
+      'Chats::Paid': 'Отделяет платный диалог от бесплатного прогрева: эксперт обязан доставлять обещанную ценность и держать качество ответа выше.',
+      'Chats::PP': 'Показывает, что клиент почти купил, но деньги еще не пришли: эксперт должен мягко вернуть к оплате, не раскрывая услугу как уже оплаченную.',
+      'Chats::Reactivation': 'Сигнализирует, что клиент уже знаком с продуктом и вернулся с контекстом, значит разговор можно вести теплее и точнее.',
+      'Chats::Risk': 'Предупреждает всех экспертов, что обычный sales/reading сценарий опасен: нужны осторожные формулировки, без сильных обещаний и давления.',
+      'Chats::Safety route': 'Дает эксперту личный рабочий проход поверх Risk, если он видит безопасный контекст, но не снимает модераторское предупреждение для остальных.',
+      'Chats::Sell': 'Показывает, что в разговоре есть уместный момент для платного продолжения: эксперт может переводить интерес в оплату.',
+      'Chats::Sell window': 'Подсказывает эксперту развить тему и напряжение разговора так, чтобы клиент сам захотел докупить минуты.',
+      'Chats::SLA': 'Поднимает диалог в приоритете: задержка уже влияет на доверие клиента, риск жалобы и качество сервиса.',
+      'Pings::Fire': 'Показывает самый сильный pre-chat интерес к конкретному эксперту. Fire выше Hot и заменяет его, чтобы эксперт не видел два похожих сигнала одновременно.',
+      'Pings::Free': 'Помогает эксперту не перепутать бесплатный прогрев с полноценной консультацией и не раскрыть весь продукт до оплаты.',
+      'Pings::Hot': 'Показывает свежий персональный интерес на 4 часа. Если клиент не перешел в Chat, после Hot сигнал может стать NEW до истечения 24 часов.',
+      'Pings::NeedR': 'Сигнализирует, что Ping уже требует действия эксперта, а не просто лежит в списке ожидания.',
+      'Pings::NEW': 'Показывает свежий Ping в первые 24 часа. После 24 часов без перехода в Chat бейдж исчезает, чтобы старые сигналы не выглядели новыми.',
+      'Pings::Paid': 'Сигнализирует, что клиент уже покупал, поэтому с ним нужно работать как с previous buyer, а не как с холодным free-лидом.',
+      'Pings::Reactivation': 'Показывает возвращение старого клиента: у эксперта есть теплый повод перевести интерес в Chat или paid-сценарий.',
+      'Pings::Risk': 'Предупреждает эксперта до касания: сообщение может выглядеть давлением или вызвать жалобу, нужен осторожный тон.',
+      'Pings::WaitR': 'Показывает, что следующий ход за клиентом: эксперт уже сделал действие и не должен повторно писать без нового повода.'
+    };
+
+    function badgeWhen(row) {
+      return badgeWhenText[badgeDictionaryKey(row)] || row.when;
+    }
+
+    function badgePurpose(row) {
+      return badgePurposeText[badgeDictionaryKey(row)] || row.purpose;
     }
 
     function readableLayer(value) {
@@ -2801,8 +2865,8 @@
           <td class="col-anchor">${anchorName(row)}</td>
           <td>${tag(row.scenario, scenarioClass[row.scenario])}</td>
           <td>${badgeTypeTag(row)}</td>
-          <td><div class="when-cell"><span>${readableText(row.when)}</span></div></td>
-          <td><div class="purpose-cell"><p>${readableText(row.purpose)}</p></div></td>
+          <td><div class="when-cell"><span>${readableText(badgeWhen(row))}</span></div></td>
+          <td><div class="purpose-cell"><p>${readableText(badgePurpose(row))}</p></div></td>
         </tr>
       `).join('') || `<tr><td colspan="5"><div class="empty">Ничего не найдено по текущим фильтрам.</div></td></tr>`;
 
