@@ -1481,7 +1481,7 @@
       <div class="filters">
         <div class="field" hidden>
           <label for="searchBox">Поиск</label>
-          <input id="searchBox" type="search" placeholder="Например: Reply, Live, Favorite, coupon, paid_session">
+          <input id="searchBox" type="search" placeholder="Например: NeedR, Paid, Live, Favorite, coupon">
         </div>
         <div class="field">
           <label id="areaFilterLabel">Область</label>
@@ -2480,18 +2480,23 @@
       if (row.scenario !== 'Pings') {
         return '';
       }
-      const normalizedAnchor = String(row.anchor || '')
-        .replace(/\s+(chip|pill|badge|tab)$/i, '')
-        .replace(/^(Chats|Pings)\s+tab$/i, '$1')
-        .trim();
+      const normalizedAnchor = cleanDraftBadgeAnchor(row);
       return approvedPingTags.has(normalizedAnchor) ? normalizedAnchor : '';
     }
 
     function cleanDraftBadgeAnchor(row) {
-      return String(row.anchor || '')
+      const normalizedAnchor = String(row.anchor || '')
         .replace(/\s+(chip|pill|badge|tab)$/i, '')
         .replace(/^(Chats|Pings)\s+tab$/i, '$1')
         .trim();
+
+      const badgeAliases = {
+        Reply: 'NeedR',
+        'Paid Live': 'Paid',
+        'Paid session': 'Paid'
+      };
+
+      return badgeAliases[normalizedAnchor] || normalizedAnchor;
     }
 
     function anchorName(row) {
@@ -2640,24 +2645,30 @@
         return true;
       }
 
-      const removedPingsBadges = new Set([
-        'Attention mark',
+      const removedDraftBadges = new Set([
+        'Unread/action count',
         'Stage',
-        'Waiting reply',
-        'Previous buyer',
+        'My session',
         'Workflow hint',
-        'Safety route',
         'Workflow stage',
         'Next action',
+        'Ping / lift'
+      ]);
+
+      const removedPingsBadges = new Set([
+        'Attention mark',
+        'Waiting reply',
+        'Previous buyer',
+        'Safety route',
         'Book Now',
-        'Paid session',
-        'Ping / lift',
         'Coupon rule',
         'Favorite',
         'Objection'
       ]);
 
-      return !(row.scenario === 'Pings' && removedPingsBadges.has(cleanDraftBadgeAnchor(row)));
+      const draftBadge = cleanDraftBadgeAnchor(row);
+      return !removedDraftBadges.has(draftBadge) &&
+        !(row.scenario === 'Pings' && removedPingsBadges.has(draftBadge));
     }
 
     function sourceReason(row) {
@@ -2690,10 +2701,11 @@
       const anchor = String(row.anchor || '').toLowerCase();
       const id = String(row.id || '').toLowerCase();
       if (id.startsWith('approved_badge_')) return 0;
-      if (!/(chip|pill|badge)$/i.test(anchor) && row.type !== 'Filter') return 1;
-      if (row.type === 'Indicator' || row.type === 'State') return 2;
-      if (row.type === 'Guardrail') return 3;
-      return 4;
+      if (row.type === 'Filter') return 1;
+      if (!/(chip|pill|badge)$/i.test(anchor)) return 2;
+      if (row.type === 'Indicator' || row.type === 'State') return 3;
+      if (row.type === 'Guardrail') return 4;
+      return 5;
     }
 
     function uniqueBadgeRows(sourceRows) {
