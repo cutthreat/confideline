@@ -383,6 +383,16 @@
       line-height: 1;
     }
 
+    .badge-name-options {
+      display: block;
+      margin-top: 7px;
+      max-width: 210px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
     .tag {
       display: inline-flex;
       align-items: center;
@@ -404,6 +414,8 @@
     .tag-moderator { background: #fff1f0; color: var(--red); border-color: #ffccc7; }
     .tag-billing { background: #e6f7f0; color: var(--green); border-color: #b7e4cf; }
     .tag-workflow { background: var(--violet-soft); color: var(--violet); border-color: #d8c7ff; }
+    .tag-individual { background: #eaf7ff; color: #075985; border-color: #bae6fd; }
+    .tag-assigned { background: #fff6e6; color: #9a5200; border-color: #ffdca8; }
 
     .cell-stack {
       display: flex;
@@ -1491,14 +1503,13 @@
           </div>
         </div>
         <div class="field">
-          <label id="sourceFilterLabel">Источник</label>
+          <label id="sourceFilterLabel">Тип бейджа</label>
           <div class="multi-filter" id="sourceFilter" role="group" aria-labelledby="sourceFilterLabel" data-multi-filter>
             <button class="multi-filter-button is-active" type="button" data-value="">Все</button>
-            <button class="multi-filter-button" type="button" data-value="System">Система</button>
-            <button class="multi-filter-button" type="button" data-value="Workflow">Сценарий</button>
-            <button class="multi-filter-button" type="button" data-value="Expert">Эксперт</button>
-            <button class="multi-filter-button" type="button" data-value="Moderator">Модератор</button>
-            <button class="multi-filter-button" type="button" data-value="UI">UI</button>
+            <button class="multi-filter-button" type="button" data-value="Системные">Системные</button>
+            <button class="multi-filter-button" type="button" data-value="Индивидуальные">Индивидуальные</button>
+            <button class="multi-filter-button" type="button" data-value="Назначенные">Назначенные</button>
+            <button class="multi-filter-button" type="button" data-value="Модераторские">Модераторские</button>
           </div>
         </div>
         <div class="filter-presets">
@@ -1545,10 +1556,9 @@
             <thead>
               <tr>
                 <th>Бейдж</th>
-                <th>Размещение</th>
                 <th>Сценарий</th>
-                <th>Тип / источник</th>
-                <th>Когда появляется</th>
+                <th>Тип бейджа</th>
+                <th>Когда</th>
                 <th>Зачем</th>
               </tr>
             </thead>
@@ -2496,7 +2506,7 @@
       const approved = approvedTagName(row);
       const className = approved ? 'ui-anchor-name is-approved' : 'ui-anchor-name';
       const star = approved ? `<span class="approved-star" title="Утвержденный тег: ${approved}" aria-label="Утвержденный тег">★</span>` : '';
-      return `<span class="${className}">${label}${star}</span>`;
+      return `<span class="${className}">${label}${star}</span><span class="badge-name-options">${badgeNameOptions(row).join(' · ')}</span>`;
     }
 
     function approvedInlineStar(row) {
@@ -2506,6 +2516,72 @@
 
     function sourceTag(row) {
       return tag(sourceLabel[row.source] || row.source, sourceClass[row.source]);
+    }
+
+    const badgeTypeClass = {
+      'Системные': 'tag-system',
+      'Индивидуальные': 'tag-individual',
+      'Назначенные': 'tag-assigned',
+      'Модераторские': 'tag-moderator'
+    };
+
+    function badgeType(row) {
+      const badge = cleanDraftBadgeAnchor(row);
+
+      if (badge === 'Risk' || row.source === 'Moderator') {
+        return {
+          label: 'Модераторские',
+          note: 'Назначает модератор; видят все эксперты как предупреждение или ограничение.'
+        };
+      }
+
+      if (['Favorite', 'Safety route', 'Coupon rule'].includes(badge) || row.source === 'Expert') {
+        return {
+          label: 'Назначенные',
+          note: 'Назначает эксперт для работы с конкретным диалогом; не является глобальной системной правдой.'
+        };
+      }
+
+      if (['NeedR', 'WaitR', 'Hot', 'Fire', 'Reactivation', 'Free', 'Sell window', 'Sell', 'Objection'].includes(badge)) {
+        return {
+          label: 'Индивидуальные',
+          note: 'Появляется автоматически из взаимодействия клиент-эксперт и уникален для конкретного диалога.'
+        };
+      }
+
+      return {
+        label: 'Системные',
+        note: 'Появляется автоматически и виден всем экспертам как простое состояние очереди или оплаты.'
+      };
+    }
+
+    function badgeTypeTag(row) {
+      const type = badgeType(row);
+      return `<div class="cell-stack">${tag(type.label, badgeTypeClass[type.label])}<span class="cell-layer">${type.note}</span></div>`;
+    }
+
+    function badgeNameOptions(row) {
+      const variants = {
+        NeedR: ['NeedR', 'Reply Needed', 'Expert Turn'],
+        SLA: ['SLA', 'Overdue', 'Late Reply'],
+        Live: ['Live', 'Active Paid', 'In Session'],
+        PP: ['PP', 'Pay Pending', 'Pending Pay'],
+        Sell: ['Sell', 'Offer', 'Next Sale'],
+        Favorite: ['Favorite', 'Star', 'Follow'],
+        Free: ['Free', 'Free Time', 'Trial'],
+        Paid: ['Paid', 'Buyer', 'Paid User'],
+        Reactivation: ['Reactivation', 'Return', 'Reopen'],
+        Risk: ['Risk', 'Warning', 'Caution'],
+        'Safety route': ['Safety route', 'Safety Override', 'Careful Path'],
+        'Sell window': ['Sell window', 'Warm-up', 'Extend Cue'],
+        'Coupon rule': ['Coupon rule', 'Coupon Review', 'Comp Review'],
+        Objection: ['Objection', 'Doubt', 'Hesitation'],
+        Fire: ['Fire', 'Strong Intent', 'Super Hot'],
+        Hot: ['Hot', 'Fresh Interest', 'Warm Lead'],
+        NEW: ['NEW', 'New Ping', 'Fresh Lead'],
+        WaitR: ['WaitR', 'Client Turn', 'Waiting']
+      };
+      return variants[cleanDraftBadgeAnchor(row)] || [cleanDraftBadgeAnchor(row)];
     }
 
     function readableLayer(value) {
@@ -2684,7 +2760,7 @@
       return isBadgeProductLogic(row) &&
         (!q || haystack.includes(q)) &&
         (!scenarios.length || scenarios.includes(row.scenario)) &&
-        (!sources.length || sources.includes(row.source));
+        (!sources.length || sources.includes(badgeType(row).label));
     }
 
     function badgeDraftKey(row) {
@@ -2723,24 +2799,21 @@
       rows.innerHTML = filtered.map(row => `
         <tr>
           <td class="col-anchor">${anchorName(row)}</td>
-          <td>${tag('Не назначено', '')}</td>
           <td>${tag(row.scenario, scenarioClass[row.scenario])}</td>
-          <td><div class="cell-stack">${tag('Бейдж', '')}${sourceTag(row)}</div></td>
-          <td><div class="when-cell"><span>${readableText(row.when)}</span><span class="caller-chip">Вызов: ${readableText(row.caller)}</span><span class="caller-chip">Что делает: ${readableText(row.responsibility)}</span></div></td>
-          <td><div class="purpose-cell"><p>${readableText(row.purpose)}</p><p class="source-note"><strong>Почему источник важен:</strong> ${sourceReason(row)}</p></div></td>
+          <td>${badgeTypeTag(row)}</td>
+          <td><div class="when-cell"><span>${readableText(row.when)}</span></div></td>
+          <td><div class="purpose-cell"><p>${readableText(row.purpose)}</p></div></td>
         </tr>
-      `).join('') || `<tr><td colspan="6"><div class="empty">Ничего не найдено по текущим фильтрам.</div></td></tr>`;
+      `).join('') || `<tr><td colspan="5"><div class="empty">Ничего не найдено по текущим фильтрам.</div></td></tr>`;
 
       const chats = filtered.filter(row => row.scenario === 'Chats').length;
       const pings = filtered.filter(row => row.scenario === 'Pings').length;
       const approved = new Set(filtered.map(row => approvedTagName(row)).filter(Boolean)).size;
       summaryStrip.innerHTML = `
         <span class="pill"><strong>${filtered.length}</strong> бейджей</span>
-        <span class="pill"><strong>${sourceRows.length}</strong> исходных строк</span>
         <span class="pill pill-chats"><strong>${chats}</strong> Chats</span>
         <span class="pill pill-pings"><strong>${pings}</strong> Pings</span>
         <span class="pill pill-pings"><strong>${approved}</strong> согласованных</span>
-        <span class="pill pill-risk">Область и UI-якорь пока не назначены</span>
       `;
     }
 
