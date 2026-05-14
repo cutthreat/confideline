@@ -329,6 +329,7 @@
     }
 
     .ui-anchor-name {
+      position: relative;
       display: inline-flex;
       align-items: center;
       min-height: 24px;
@@ -339,6 +340,47 @@
       color: #0b57d0;
       font-size: 12px;
       font-weight: 800;
+    }
+
+    .ui-anchor-name.is-approved {
+      padding-right: 18px;
+      border-color: #f4c430;
+      background: #fff8df;
+      color: #7a4b00;
+    }
+
+    .approved-star {
+      position: absolute;
+      top: -8px;
+      right: -5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      border: 1px solid #f2bf24;
+      background: #fff;
+      color: #c88700;
+      font-size: 11px;
+      line-height: 1;
+      box-shadow: 0 2px 6px rgba(16, 24, 40, 0.12);
+    }
+
+    .approved-inline-star {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 15px;
+      height: 15px;
+      margin-left: 5px;
+      transform: translateY(-4px);
+      border-radius: 999px;
+      border: 1px solid #f2bf24;
+      background: #fff8df;
+      color: #c88700;
+      font-size: 10px;
+      line-height: 1;
     }
 
     .ui-anchor-id {
@@ -2430,6 +2472,29 @@
       return `<span class="tag ${className || ''}">${label}</span>`;
     }
 
+    const approvedPingTags = new Set(['NEW', 'Hot', 'Fire', 'Paid', 'NeedR', 'WaitR']);
+
+    function approvedTagName(row) {
+      if (row.scenario !== 'Pings') {
+        return '';
+      }
+      const firstToken = String(row.anchor || '').split(/\s+/)[0];
+      return approvedPingTags.has(firstToken) ? firstToken : '';
+    }
+
+    function anchorName(row) {
+      const label = readableText(row.anchor);
+      const approved = approvedTagName(row);
+      const className = approved ? 'ui-anchor-name is-approved' : 'ui-anchor-name';
+      const star = approved ? `<span class="approved-star" title="Утвержденный тег: ${approved}" aria-label="Утвержденный тег">★</span>` : '';
+      return `<span class="${className}">${label}${star}</span>`;
+    }
+
+    function approvedInlineStar(row) {
+      const approved = approvedTagName(row);
+      return approved ? `<span class="approved-inline-star" title="Утвержденный тег: ${approved}" aria-label="Утвержденный тег">★</span>` : '';
+    }
+
     function sourceTag(row) {
       return tag(sourceLabel[row.source] || row.source, sourceClass[row.source]);
     }
@@ -2604,7 +2669,7 @@
       const filtered = dictionary.filter(matches);
       rows.innerHTML = filtered.map(row => `
         <tr>
-          <td class="col-anchor"><span class="ui-anchor-name">${readableText(row.anchor)}</span><span class="ui-anchor-id">${row.id}</span></td>
+          <td class="col-anchor">${anchorName(row)}<span class="ui-anchor-id">${row.id}</span></td>
           <td>${tag(row.area, areaClass[row.area])}</td>
           <td>${tag(row.scenario, scenarioClass[row.scenario])}</td>
           <td><div class="cell-stack">${tag(typeLabel[row.type] || row.type, '')}${sourceTag(row)}</div></td>
@@ -2677,7 +2742,7 @@
       return relatedRows.map(row => `
         <div class="sector-dictionary-row">
           <div class="sector-dictionary-row-title">
-            <strong>${readableText(row.anchor)}</strong>
+            <strong>${readableText(row.anchor)}${approvedInlineStar(row)}</strong>
             ${tag(row.scenario, scenarioClass[row.scenario])}
           </div>
           <div class="sector-dictionary-row-meta">
