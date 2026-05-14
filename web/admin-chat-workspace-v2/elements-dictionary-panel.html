@@ -1918,7 +1918,7 @@
       { id: 'workflow_stage_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Workflow tab открыт', responsibility: 'Раскрывает ping stage', purpose: 'Отличить Lift Due от Future Paid', anchor: 'Workflow stage' },
       { id: 'next_action_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Workflow tab открыт', responsibility: 'Показывает next action', purpose: 'Снизить ошибку эксперта', anchor: 'Next action' },
       { id: 'next_action_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Workflow tab открыт', responsibility: 'Показывает следующее действие для первого касания', purpose: 'Не писать без сценария', anchor: 'Next action' },
-      { id: 'free_boundary_chats', area: 'Правая', scenario: 'Chats', type: 'Guardrail', source: 'Workflow', caller: 'Workflow engine', when: 'Free или intrigue stage', responsibility: 'Показывает free state и insight count', purpose: 'Не отдавать полный продукт бесплатно', anchor: 'Free boundary' },
+      { id: 'free_boundary_chats', area: 'Правая', scenario: 'Chats', type: 'Guardrail', source: 'Workflow', caller: 'Workflow engine', when: 'Клиент использует бесплатные минуты или бесплатное стартовое окно внутри сквозного чата', responsibility: 'Показывает, что сейчас можно дать только ограниченную бесплатную ценность без полного раскрытия продукта', purpose: 'Помочь эксперту прогреть интерес и не отдать полноценную консультацию до оплаты', anchor: 'Free boundary' },
       { id: 'free_boundary_pings', area: 'Правая', scenario: 'Pings', type: 'Guardrail', source: 'Workflow', caller: 'Workflow engine', when: 'Клиент использует бесплатные минуты или бесплатное стартовое окно перед платной консультацией', responsibility: 'Показывает, что сейчас можно дать только ограниченную бесплатную ценность без полного раскрытия продукта', purpose: 'Помочь эксперту прогреть интерес и не отдать полноценную консультацию до оплаты', anchor: 'Free boundary' },
       { id: 'book_now_status_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Workflow', caller: 'Workflow/Payment', when: 'Есть переход к paid', responsibility: 'Показывает not sent, sent, clicked, paid', purpose: 'Контроль free -> paid конверсии', anchor: 'Book Now' },
       { id: 'book_now_status_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow/Payment', when: 'Ping ведет к paid или future paid', responsibility: 'Показывает paid future или not sent', purpose: 'Не раскрыть paid content заранее', anchor: 'Book Now' },
@@ -1934,9 +1934,9 @@
       { id: 'balance_pings', area: 'Правая', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'Payment system', when: 'Pay tab открыт', responsibility: 'Показывает credits', purpose: 'Оценить payment readiness лида', anchor: 'Balance' },
       { id: 'paid_history_chats', area: 'Правая', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'Payment system', when: 'Есть платежная история', responsibility: 'Показывает buyer status', purpose: 'Buyer отличается от нового free клиента', anchor: 'Paid history' },
       { id: 'paid_history_pings', area: 'Правая', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'Payment system', when: 'Ping от previous buyer', responsibility: 'Показывает buyer status', purpose: 'Выбрать reactivation вместо full free reading', anchor: 'Paid history' },
-      { id: 'coupon_rule_chats', area: 'Правая', scenario: 'Chats', type: 'Guardrail', source: 'System', caller: 'Business rules', when: 'Payment issue или objection', responsibility: 'Показывает eligibility check', purpose: 'Эксперт не выдает купон напрямую', anchor: 'Coupon rule' },
-      { id: 'coupon_rule_pings', area: 'Правая', scenario: 'Pings', type: 'Guardrail', source: 'System', caller: 'Business rules', when: 'Ping связан с payment hesitation', responsibility: 'Показывает необходимость rule check', purpose: 'Не обещать скидку без права', anchor: 'Coupon rule' },
-      { id: 'extend_window_chats', area: 'Правая', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow/Session', when: 'Low time или новая тема', responsibility: 'Показывает уместность продления', purpose: 'Продать вовремя', anchor: 'Extend window' },
+      { id: 'coupon_rule_chats', area: 'Правая', scenario: 'Chats', type: 'Indicator', source: 'Expert', caller: 'Expert/Moderator', when: 'Эксперт считает, что по кейсу может понадобиться купон или компенсация', responsibility: 'Подсвечивает действие: нужно передать кейс модератору на решение по купону или компенсации', purpose: 'Эксперт не обещает и не выдает скидку сам; финальное решение остается на стороне модератора', anchor: 'Coupon rule' },
+      { id: 'coupon_rule_pings', area: 'Правая', scenario: 'Pings', type: 'Indicator', source: 'Expert', caller: 'Expert/Moderator', when: 'Эксперт считает, что для возврата клиента может понадобиться купон или компенсация', responsibility: 'Подсвечивает действие: нужно передать Ping модератору на решение по купону или компенсации', purpose: 'Эксперт не обещает и не выдает скидку сам; финальное решение остается на стороне модератора', anchor: 'Coupon rule' },
+      { id: 'extend_window_chats', area: 'Правая', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow/Session', when: 'Старый исторический клиент снова проявил интерес к эзотерике, теме, эксперту или платному продолжению внутри чата', responsibility: 'Показывает возвращение клиента с прошлым контекстом или уместный момент реактивации', purpose: 'Вернуть клиента в paid-сценарий релевантным поводом, без холодного спама', anchor: 'Extend window' },
       { id: 'extend_window_pings', area: 'Правая', scenario: 'Pings', type: 'Indicator', source: 'Workflow', caller: 'Workflow/Session', when: 'Старый исторический клиент снова проявил интерес к эзотерике, теме, эксперту или платному продолжению', responsibility: 'Показывает, что это не холодный новый лид, а возвращение клиента с прошлым контекстом', purpose: 'Вернуть клиента в Chats или paid-сценарий релевантным поводом, без холодного спама', anchor: 'Extend window' },
       { id: 'compensation_chats', area: 'Правая', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Сбой, спор, payment/session mismatch', responsibility: 'Создает request only', purpose: 'Аудит вместо ручной компенсации', anchor: 'Compensation' },
       { id: 'compensation_pings', area: 'Правая', scenario: 'Pings', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Ping связан с payment dispute', responsibility: 'Создает только запрос', purpose: 'Не решать деньги из первого сообщения', anchor: 'Compensation' },
@@ -2311,7 +2311,7 @@
         includes: [
           ['Balance', 'Система показывает кредиты, баланс или историю оплат. В Pings это помогает выбрать приглашение вместо холодного касания.'],
           ['Paid history', 'Система показывает прошлые покупки. Нужна для previous buyer логики и запрета нового полного бесплатного чтения.'],
-          ['Coupon rule', 'Business rules показывают eligibility. Эксперт не выдает купон напрямую, только видит допустимость.'],
+          ['Coupon rule', 'Эксперт считает, что может понадобиться купон или компенсация, и видит бейдж как индикатор действия. Решение давать или не давать остается на стороне модератора.'],
           ['Compensation request', 'Эксперт создает заявку при споре или сбое. Решение денег остается у support/биллинга.'],
           ['Payment events', 'Payment system показывает pending/success/failed события, чтобы не путать ожидание оплаты с оплаченной доставкой.']
         ],
@@ -2379,7 +2379,7 @@
       'right-objection': ['Objection', 'Правая', 'Chats / Pings', 'Тип возражения и attempts, чтобы не давить бесконечно.'],
       'right-risk': ['Risk', 'Правая', 'Chats / Pings', 'Safety, claim, complaint или quality guardrail.'],
       'right-balance': ['Balance', 'Правая', 'Chats / Pings', 'Кредиты и платежная готовность. Не заменяет workflow decision.'],
-      'right-coupon-rule': ['Coupon rule', 'Правая', 'Chats / Pings', 'Eligibility check. Эксперт не выдает купон напрямую.'],
+      'right-coupon-rule': ['Coupon rule', 'Правая', 'Chats / Pings', 'Эксперт подсвечивает возможную необходимость купона или компенсации; модератор принимает финальное решение.'],
       'right-private-note': ['Private note', 'Правая', 'Chats / Pings', 'Личная заметка эксперта. Не влияет на глобальную маршрутизацию.'],
       'right-moderator-note': ['Moderator note', 'Правая', 'Chats / Pings', 'Контроль качества, ограничение или передача смены с source Moderator.']
     };
@@ -2494,10 +2494,8 @@
         Reply: 'NeedR',
         'Paid Live': 'Paid',
         'Paid session': 'Paid',
-        ...(row.scenario === 'Pings' ? {
-          'Extend window': 'Reactivation',
-          'Free boundary': 'Free'
-        } : {})
+        'Extend window': 'Reactivation',
+        'Free boundary': 'Free'
       };
 
       return badgeAliases[normalizedAnchor] || normalizedAnchor;
