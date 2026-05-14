@@ -1479,7 +1479,7 @@
 
     <section class="tab-panel is-active" id="panel-dictionary">
       <div class="filters">
-        <div class="field">
+        <div class="field" hidden>
           <label for="searchBox">Поиск</label>
           <input id="searchBox" type="search" placeholder="Например: Reply, Live, Favorite, coupon, paid_session">
         </div>
@@ -1512,7 +1512,7 @@
           </div>
         </div>
         <div class="filter-presets">
-          <span class="preset-hint">Вкладка 1 временно показывает только базовую продуктовую логику бейджей без форматов Filter и * chip. Навигация, вкладки, поиск, действия и технические поля скрыты.</span>
+          <span class="preset-hint">Вкладка 1 показывает черновой словарь бейджей без привязки к левой, центральной или правой области. Размещение и UI-якоря будут назначены отдельно.</span>
         </div>
       </div>
 
@@ -1554,8 +1554,8 @@
           <table aria-label="Словарь элементов">
             <thead>
               <tr>
-                <th>UI-якорь / переменная</th>
-                <th>Область</th>
+                <th>Бейдж</th>
+                <th>Размещение</th>
                 <th>Сценарий</th>
                 <th>Тип / источник</th>
                 <th>Когда появляется</th>
@@ -2485,8 +2485,15 @@
       return approvedPingTags.has(firstToken) ? firstToken : '';
     }
 
+    function cleanDraftBadgeAnchor(row) {
+      return String(row.anchor || '')
+        .replace(/\s+(chip|pill|badge|tab)$/i, '')
+        .replace(/^(Chats|Pings)\s+tab$/i, '$1')
+        .trim();
+    }
+
     function anchorName(row) {
-      const label = readableText(row.anchor);
+      const label = readableText(cleanDraftBadgeAnchor(row));
       const approved = approvedTagName(row);
       const className = approved ? 'ui-anchor-name is-approved' : 'ui-anchor-name';
       const star = approved ? `<span class="approved-star" title="Утвержденный тег: ${approved}" aria-label="Утвержденный тег">★</span>` : '';
@@ -2621,14 +2628,8 @@
       return 'left-active-card';
     }
 
-    function isDraftExcludedBadgeFormat(row) {
-      const anchor = String(row.anchor || '').toLowerCase();
-      const id = String(row.id || '').toLowerCase();
-      return row.type === 'Filter' || anchor.includes('chip') || id.includes('_chip');
-    }
-
     function isBadgeProductLogic(row) {
-      return ['Indicator', 'State', 'Guardrail'].includes(row.type) && !isDraftExcludedBadgeFormat(row);
+      return ['Filter', 'Indicator', 'State', 'Guardrail'].includes(row.type);
     }
 
     function sourceReason(row) {
@@ -2644,25 +2645,53 @@
 
     function matches(row) {
       const q = searchBox.value.trim().toLowerCase();
-      const haystack = Object.values(row).join(' ').toLowerCase();
-      const areas = selectedValues(areaFilter);
+      const haystack = `${Object.values(row).join(' ')} ${cleanDraftBadgeAnchor(row)}`.toLowerCase();
       const scenarios = selectedValues(scenarioFilter);
       const sources = selectedValues(sourceFilter);
       return isBadgeProductLogic(row) &&
         (!q || haystack.includes(q)) &&
-        (!areas.length || areas.includes(row.area)) &&
         (!scenarios.length || scenarios.includes(row.scenario)) &&
         (!sources.length || sources.includes(row.source));
     }
 
+    function badgeDraftKey(row) {
+      return `${row.scenario}::${cleanDraftBadgeAnchor(row).toLowerCase()}`;
+    }
+
+    function badgeDraftPriority(row) {
+      const anchor = String(row.anchor || '').toLowerCase();
+      const id = String(row.id || '').toLowerCase();
+      if (id.startsWith('approved_badge_')) return 0;
+      if (!/(chip|pill|badge)$/i.test(anchor) && row.type !== 'Filter') return 1;
+      if (row.type === 'Indicator' || row.type === 'State') return 2;
+      if (row.type === 'Guardrail') return 3;
+      return 4;
+    }
+
+    function uniqueBadgeRows(sourceRows) {
+      const groups = new Map();
+      sourceRows.forEach(row => {
+        const key = badgeDraftKey(row);
+        const existing = groups.get(key) || [];
+        existing.push(row);
+        groups.set(key, existing);
+      });
+
+      return Array.from(groups.values()).map(group => {
+        const sorted = group.slice().sort((a, b) => badgeDraftPriority(a) - badgeDraftPriority(b));
+        return { ...sorted[0], _mergedCount: group.length };
+      });
+    }
+
     function renderRows() {
-      const filtered = dictionary.filter(matches);
+      const sourceRows = dictionary.filter(matches);
+      const filtered = uniqueBadgeRows(sourceRows);
       rows.innerHTML = filtered.map(row => `
         <tr>
-          <td class="col-anchor">${anchorName(row)}<span class="ui-anchor-id">${row.id}</span></td>
-          <td>${tag(row.area, areaClass[row.area])}</td>
+          <td class="col-anchor">${anchorName(row)}<span class="ui-anchor-id">${row._mergedCount > 1 ? `${row._mergedCount} исходных форматов объединены` : 'UI-якорь зададим позже'}</span></td>
+          <td>${tag('Не назначено', '')}</td>
           <td>${tag(row.scenario, scenarioClass[row.scenario])}</td>
-          <td><div class="cell-stack">${tag(typeLabel[row.type] || row.type, '')}${sourceTag(row)}</div></td>
+          <td><div class="cell-stack">${tag('Бейдж', '')}${sourceTag(row)}</div></td>
           <td><div class="when-cell"><span>${readableText(row.when)}</span><span class="caller-chip">Вызов: ${readableText(row.caller)}</span></div></td>
           <td>${readableText(row.responsibility)}</td>
           <td><div class="purpose-cell"><p>${readableText(row.purpose)}</p><p class="source-note"><strong>Почему источник важен:</strong> ${sourceReason(row)}</p></div></td>
@@ -2671,17 +2700,14 @@
 
       const chats = filtered.filter(row => row.scenario === 'Chats').length;
       const pings = filtered.filter(row => row.scenario === 'Pings').length;
-      const left = filtered.filter(row => row.area === 'Левая').length;
-      const center = filtered.filter(row => row.area === 'Центральная').length;
-      const right = filtered.filter(row => row.area === 'Правая').length;
+      const approved = new Set(filtered.map(row => approvedTagName(row)).filter(Boolean)).size;
       summaryStrip.innerHTML = `
-        <span class="pill"><strong>${filtered.length}</strong> строк</span>
+        <span class="pill"><strong>${filtered.length}</strong> бейджей</span>
+        <span class="pill"><strong>${sourceRows.length}</strong> исходных строк</span>
         <span class="pill pill-chats"><strong>${chats}</strong> Chats</span>
         <span class="pill pill-pings"><strong>${pings}</strong> Pings</span>
-        <span class="pill"><strong>${left}</strong> левая</span>
-        <span class="pill"><strong>${center}</strong> центральная</span>
-        <span class="pill"><strong>${right}</strong> правая</span>
-        <span class="pill pill-risk">Filter и * chip временно скрыты</span>
+        <span class="pill pill-pings"><strong>${approved}</strong> согласованных</span>
+        <span class="pill pill-risk">Область и UI-якорь пока не назначены</span>
       `;
     }
 
