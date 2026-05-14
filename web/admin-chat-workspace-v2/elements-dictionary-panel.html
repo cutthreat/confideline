@@ -1587,7 +1587,7 @@
             <div class="sector-guide-group">
               <div class="sector-guide-title"><span>Левая область</span><span>Очередь</span></div>
               <div class="sector-guide-list">
-                <button class="sector-guide-button sector-trigger is-active" type="button" data-sector="left-workload"><strong>1</strong><span>Режим Chats / Pings</span></button>
+                <button class="sector-guide-button sector-trigger is-active" type="button" data-sector="left-workload"><strong>1</strong><span>Режим Chats / Pings / Archive</span></button>
                 <button class="sector-guide-button sector-trigger" type="button" data-sector="left-search"><strong>2</strong><span>Поиск и фильтры</span></button>
                 <button class="sector-guide-button sector-trigger" type="button" data-sector="left-active-card"><strong>3</strong><span>Активная карточка</span></button>
                 <button class="sector-guide-button sector-trigger" type="button" data-sector="left-card-badges"><strong>4</strong><span>Индикаторы карточки</span></button>
@@ -1618,7 +1618,7 @@
             <div class="mockup-scale-stage" id="mockupScaleStage">
               <iframe id="mockupIframe" data-src="./index.html" title="Макет админ-панели чата V2" srcdoc="<p style=&quot;font:14px Arial;padding:16px;color:#667085&quot;>Загрузка макета...</p>"></iframe>
               <div class="mockup-overlay" aria-label="Кликабельные сектора макета">
-                <button class="sector-hotspot sector-trigger sector-left sector-left-workload is-active" type="button" data-sector="left-workload" aria-label="1. Режим Chats или Pings"><span>1</span></button>
+                <button class="sector-hotspot sector-trigger sector-left sector-left-workload is-active" type="button" data-sector="left-workload" aria-label="1. Режим Chats, Pings или Archive"><span>1</span></button>
                 <button class="sector-hotspot sector-trigger sector-left sector-left-search" type="button" data-sector="left-search" aria-label="2. Поиск и фильтры очереди"><span>2</span></button>
                 <button class="sector-hotspot sector-trigger sector-left sector-left-active-card" type="button" data-sector="left-active-card" aria-label="3. Активная карточка очереди"><span>3</span></button>
                 <button class="sector-hotspot sector-trigger sector-left sector-left-card-badges" type="button" data-sector="left-card-badges" aria-label="4. Индикаторы карточки"><span>4</span></button>
@@ -1808,6 +1808,7 @@
     const dictionary = [
       { id: 'workload_mode=chats', area: 'Левая', scenario: 'Chats', type: 'Control', source: 'UI', caller: 'Expert', when: 'Эксперт открывает рабочую очередь диалогов', responsibility: 'Переключает список на реальные сквозные чаты', purpose: 'Основной режим ответа, оплаты и paid sessions', anchor: 'Chats tab' },
       { id: 'workload_mode=pings', area: 'Левая', scenario: 'Pings', type: 'Control', source: 'UI', caller: 'Expert', when: 'Эксперт открывает очередь pre-chat сигналов', responsibility: 'Переключает список на pings', purpose: 'Работа с лидами до полноценного чата', anchor: 'Pings tab' },
+      { id: 'workload_mode=archive', area: 'Левая', scenario: 'Chats', type: 'Control', source: 'UI', caller: 'Expert/System', when: 'Диалог не активен или эксперт намеренно отправил его в архив', responsibility: 'Открывает архивные диалоги отдельно от активной очереди Chats', purpose: 'Не смешивать неактивные диалоги с рабочей очередью; если клиент сам пишет эксперту, диалог возвращается в активные Chats', anchor: 'Archive tab' },
       { id: 'queue_search_chats', area: 'Левая', scenario: 'Chats', type: 'Control', source: 'UI', caller: 'Expert', when: 'Всегда в режиме Chats', responsibility: 'Ищет по клиенту, эксперту, id, preview, stage', purpose: 'Найти конкретный диалог без ручного просмотра очереди', anchor: 'Search' },
       { id: 'queue_search_pings', area: 'Левая', scenario: 'Pings', type: 'Control', source: 'UI', caller: 'Expert', when: 'Всегда в режиме Pings', responsibility: 'Ищет по клиенту, эксперту, id, preview, stage', purpose: 'Найти конкретный ping или лида', anchor: 'Search' },
       { id: 'queue_user_select_chats', area: 'Левая', scenario: 'Chats', type: 'Control', source: 'UI', caller: 'Expert', when: 'Нужно найти диалог по участнику', responsibility: 'Фильтрует по client_id или expert_profile_id', purpose: 'Ручная навигация по конкретному клиенту или профилю', anchor: 'User/expert select' },
@@ -1865,7 +1866,7 @@
       { id: 'stop_paid_session', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Paid session active', responsibility: 'Завершает оплаченный интервал', purpose: 'Закрыть delivery корректно', anchor: 'Stop paid session' },
       { id: 'my_session', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'Session engine', when: 'Текущий эксперт ведет session', responsibility: 'Показывает ответственность', purpose: 'Не путать свою session с чужим Live', anchor: 'My session' },
       { id: 'session_timer', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'Session engine', when: 'Paid session active', responsibility: 'Показывает остаток минут', purpose: 'Дозировать глубину ответа', anchor: 'Timer' },
-      { id: 'sell_window', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'Осталось мало времени и предложение допустимо', responsibility: 'Подсказывает продление', purpose: 'Продажа вовремя, без раннего давления', anchor: 'Sell window' },
+      { id: 'sell_window', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'Клиент вовлечен в тему, платное время подходит к моменту расширения или появилась новая ветка разговора', responsibility: 'Уведомляет эксперта: усилить интерес, развить тему и подготовить клиента к докупке минут', purpose: 'Разогреть разговор до естественного желания продолжить консультацию без грубого давления', anchor: 'Sell window' },
       { id: 'ping_hot_window', area: 'Центральная', scenario: 'Pings', type: 'State', source: 'System', caller: 'System', when: 'После взаимодействия с экспертом; окно длится 4 часа; если есть Fire, Hot скрыт', responsibility: 'Держит Ping в статусе Hot до перехода в Chat, закрытия, появления Fire или окончания 4 часов', purpose: 'Показать свежее взаимодействие без смешения с Chat Reply/SLA и без дубля Fire', anchor: 'Hot' },
       { id: 'ping_waiting_reply', area: 'Центральная', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Первое касание уже отправлено', responsibility: 'Показывает ожидание ответа', purpose: 'Не спамить повторно', anchor: 'Waiting reply' },
       { id: 'previous_buyer_ping', area: 'Центральная', scenario: 'Pings', type: 'Guardrail', source: 'System', caller: 'Payment system/Workflow', when: 'У клиента была оплата', responsibility: 'Запрещает новый full free reading', purpose: 'Buyer ведется через reactivation и Book Now', anchor: 'Previous buyer' },
@@ -1881,7 +1882,7 @@
       { id: 'quick_reply_paid_topic_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Ping связан с future paid reminder', responsibility: 'Не раскрывает future paid content', purpose: 'Подтвердить время, не выдать продукт заранее', anchor: 'Paid topic' },
       { id: 'quick_reply_extend_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'UI', caller: 'Expert', when: 'Low time или новая тема', responsibility: 'Вставляет предложение добавить минуты', purpose: 'Продлить paid session', anchor: 'Extend' },
       { id: 'quick_reply_extend_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Есть buyer/reactivation reason и paid next step', responsibility: 'Вставляет аккуратное продолжение', purpose: 'Вернуть клиента к paid без спама', anchor: 'Extend' },
-      { id: 'quick_reply_safety_chats', area: 'Центральная', scenario: 'Chats', type: 'Guardrail', source: 'UI', caller: 'Expert', when: 'Есть safety, claim или legal risk', responsibility: 'Смягчает формулировку', purpose: 'Compliance и качество', anchor: 'Safety route' },
+      { id: 'quick_reply_safety_chats', area: 'Центральная', scenario: 'Chats', type: 'Guardrail', source: 'Expert', caller: 'Expert', when: 'Модератор поставил Risk, эксперт аккуратно продолжил диалог и не видит риска в текущей беседе', responsibility: 'Для этого эксперта перекрывает модераторский Risk в рабочем процессе, не снимая Risk глобально', purpose: 'Дать эксперту продолжить беседу осторожно, если фактический диалог не подтверждает риск, сохранив модераторский контроль', anchor: 'Safety route' },
       { id: 'quick_reply_safety_pings', area: 'Центральная', scenario: 'Pings', type: 'Guardrail', source: 'UI', caller: 'Expert', when: 'Outreach может звучать как давление или claim', responsibility: 'Смягчает первое касание', purpose: 'Не нарушить safety и доверие', anchor: 'Safety route' },
       { id: 'offer_menu_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Стадия допускает продажу', responsibility: 'Открывает варианты платного предложения', purpose: 'Не сочинять коммерческий сценарий вручную', anchor: 'Offer' },
       { id: 'invite_menu_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Есть Hot, Fire, Paid или другой подтвержденный повод Ping', responsibility: 'Открывает варианты приглашения', purpose: 'Перевести ping в chat или paid', anchor: 'Invite' },
@@ -1943,10 +1944,10 @@
         title: 'Левая область',
         area: 'Левая',
         scenarios: ['Chats', 'Pings'],
-        purpose: 'Это диспетчерская очередь. Она отвечает не за подробный разбор клиента, а за быстрый выбор следующего объекта работы.',
-        role: 'Эксперт должен за 3-5 секунд понять: это реальный Chat или Ping, насколько кейс срочный, есть ли деньги/риски, и почему его стоит открыть.',
+        purpose: 'Это диспетчерская очередь. Она отвечает не за подробный разбор клиента, а за быстрый выбор следующего объекта работы: активный Chat, Ping или архивный диалог.',
+        role: 'Эксперт должен за 3-5 секунд понять: это активный Chat, Ping или Archive, насколько кейс срочный, есть ли деньги/риски, и почему его стоит открыть.',
         includes: [
-          ['Режим очереди', 'Chats показывает реальные диалоги, Pings показывает pre-chat сигналы интереса.'],
+          ['Режим очереди', 'Chats показывает только активные диалоги, Pings показывает pre-chat сигналы интереса, Archive хранит неактивные или намеренно отправленные туда диалоги. Если клиент из архива сам пишет эксперту, диалог возвращается в активные Chats.'],
           ['Поиск и выбор участника', 'Ручной поиск по клиенту, экспертному профилю, id, preview и stage.'],
           ['Фильтры очереди', 'Chats: Reply, SLA, Live, PP, Sell, Favorite, Archive. Pings: NEW, Hot, Fire, Paid, NeedR, WaitR, Favorite.'],
           ['Метки карточки', 'Один stage badge и до 3-4 рабочих индикаторов, которые реально меняют приоритет.'],
@@ -1985,7 +1986,7 @@
         role: 'Центр должен отвечать на вопрос: какое действие эксперт выполняет прямо сейчас и что нельзя нарушить перед отправкой сообщения.',
         includes: [
           ['Шапка кейса', 'Показывает client -> expert profile, stage chip, Live/PP и последнюю активность.'],
-          ['Управление платной сессией', 'Start/Stop, My session, timer, sell window и статус доставки внутри сквозного чата.'],
+          ['Управление платной сессией', 'Start/Stop, статус доставки и подсказка Sell window внутри сквозного чата.'],
           ['История сообщений', 'Сквозная история общения: бесплатный этап, Book Now, возражение и платная сессия не дробятся на отдельные чаты.'],
           ['Шаблоны ответа', 'Запрос данных, Book Now, возражение, платная тема, продление и safety route.'],
           ['Действия', 'Chats: предложение оплаты, запрос компенсации, закрытие кейса. Pings: шаблон первого касания, приглашение, Favorite, снятие из очереди.']
@@ -2003,7 +2004,7 @@
         triggers: [
           'Эксперт запускает старт/стоп paid session, предложение оплаты, запрос компенсации, закрытие кейса, шаблон первого касания, приглашение или снятие Ping из очереди.',
           'Сценарный движок обновляет hint, stage и warning при выборе карточки.',
-          'Система/session engine обновляет Live, My session, timer и sell window.',
+          'Система/session engine обновляет Live и состояние оплаченной сессии.',
           'Safety/moderator signals могут подавлять sales push или требовать осторожную формулировку.'
         ],
         notHere: [
@@ -2060,19 +2061,20 @@
 
     const sectorDetails = {
       'left-workload': {
-        title: 'Левая / выбор режима Chats или Pings',
+        title: 'Левая / выбор режима Chats, Pings или Archive',
         area: 'Левая',
         layer: 'Queue mode',
         scenarios: ['Chats', 'Pings'],
-        purpose: 'Сектор определяет тип рабочей очереди. Эксперт сначала выбирает, работает он с реальными диалогами Chats или с pre-chat сигналами Pings.',
-        role: 'В этой зоне находятся две кнопки режима и счетчики нагрузки. Пользователь видит, в каком типе работы находится очередь сейчас: обычные диалоги Chats или сигналы Pings до начала полноценного чата.',
+        purpose: 'Сектор определяет тип рабочей очереди. Эксперт сначала выбирает, работает он с активными диалогами Chats, pre-chat сигналами Pings или архивными диалогами Archive.',
+        role: 'В этой зоне находятся три кнопки режима и счетчики нагрузки. Пользователь видит, в каком типе работы находится очередь сейчас: активные диалоги Chats, сигналы Pings до начала полноценного чата или Archive для неактивных диалогов.',
         includes: [
-          ['Chats tab', 'Открывает сквозные диалоги с free, Book Now, paid session и objection внутри одной истории.'],
+          ['Chats tab', 'Открывает только активные сквозные диалоги с free, Book Now, paid session и objection внутри одной истории.'],
           ['Pings tab', 'Открывает сигналы интереса до полноценного чата. Ping не получает Chat SLA до ответа клиента.'],
+          ['Archive tab', 'Открывает диалоги, которые считаются неактивными или были намеренно отправлены в архив. Новое сообщение клиента возвращает диалог в Chats; эксперт может вручную отправить активный диалог в Archive.'],
           ['Counters', 'Показывают объем работы в каждом режиме, но не заменяют фильтры приоритета.']
         ],
-        variables: ['workload_mode', 'conversation_count', 'ping_count'],
-        triggers: ['Expert переключает режим вручную.', 'System обновляет счетчики очередей.', 'Workflow меняет доступные фильтры после выбора режима.'],
+        variables: ['workload_mode', 'conversation_count', 'ping_count', 'archive_count'],
+        triggers: ['Expert переключает режим вручную.', 'System обновляет счетчики очередей.', 'Expert может отправить диалог в Archive.', 'System возвращает архивный диалог в Chats, если клиент сам написал эксперту.', 'Workflow меняет доступные фильтры после выбора режима.'],
         notHere: ['Детали клиента.', 'Текст ответа.', 'Деньги и paid history.'],
         dictionary: { area: 'Левая', layer: 'Queue mode' }
       },
@@ -2194,11 +2196,10 @@
           ['Start paid session', 'Эксперт запускает оплаченный интервал, когда оплата есть и delivery можно начинать.'],
           ['Stop paid session', 'Эксперт завершает оплаченный интервал, когда консультация закончена или время отработано.'],
           ['My session', 'Система показывает, что именно текущий эксперт ведет paid session. Нужен, чтобы не путать свою ответственность с чужой.'],
-          ['Timer', 'Session engine показывает остаток минут. Нужен для глубины ответа, темпа и решения о продлении.'],
-          ['Sell window', 'Workflow показывает уместный момент продления, когда времени мало или появилась новая тема. Это не давление, а timing-подсказка.']
+          ['Sell window', 'Workflow уведомляет эксперта, что разговор можно усилить: развить тему, поднять ценность продолжения и подготовить клиента к докупке минут без грубого давления.']
         ],
-        variables: ['paid_session_status', 'session_timer', 'my_session', 'sell_window', 'used_paid_minutes'],
-        triggers: ['System подтверждает оплату.', 'Expert запускает или завершает paid session.', 'Session engine обновляет timer.', 'Workflow рассчитывает sell window.'],
+        variables: ['paid_session_status', 'sell_window', 'used_paid_minutes'],
+        triggers: ['System подтверждает оплату.', 'Expert запускает или завершает paid session.', 'Workflow рассчитывает sell window.'],
         notHere: ['Pings без ответа клиента.', 'История всех платежей.', 'Купоны и компенсации.'],
         dictionary: { area: 'Центральная', layer: 'Paid session' }
       },
@@ -2349,7 +2350,6 @@
       'center-last-activity': ['Last activity', 'Центральная', 'Chats', 'Показывает свежесть события и помогает оценить срочность ответа.'],
       'center-start-stop': ['Start / Stop', 'Центральная', 'Chats', 'Запуск и завершение оплаченного интервала внутри сквозного чата.'],
       'center-my-session': ['My session', 'Центральная', 'Chats', 'Показывает, что именно текущий эксперт ведет paid session.'],
-      'center-timer': ['Timer', 'Центральная', 'Chats', 'Остаток оплаченного времени. Влияет на глубину ответа и extend window.'],
       'center-sell-window': ['Sell window', 'Центральная', 'Chats', 'Момент уместного предложения продления. Не должен работать как давление.'],
       'center-workflow-hint': ['Workflow hint', 'Центральная', 'Chats / Pings', 'Короткая подсказка stage + next action + warning перед отправкой.'],
       'center-quick-replies': ['Quick replies', 'Центральная', 'Chats / Pings', 'Шесть сценарных шаблонов без универсального мусора. Для общих шаблонов в словаре есть строки Chats и Pings.'],
@@ -2639,13 +2639,15 @@
 
       const removedDraftBadges = new Set([
         'Unread/action count',
+        'Timer',
         'Stage',
         'My session',
         'Workflow hint',
         'Workflow stage',
         'Next action',
         'Ping / lift',
-        'Archive'
+        'Archive',
+        'Book Now'
       ]);
 
       const removedPingsBadges = new Set([
@@ -2653,7 +2655,6 @@
         'Waiting reply',
         'Previous buyer',
         'Safety route',
-        'Book Now',
         'Coupon rule',
         'Favorite',
         'Objection'
