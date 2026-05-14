@@ -383,16 +383,6 @@
       line-height: 1;
     }
 
-    .ui-anchor-id {
-      display: block;
-      margin-top: 6px;
-      color: var(--muted);
-      font-family: Consolas, Monaco, monospace;
-      font-size: 11px;
-      line-height: 1.25;
-      overflow-wrap: anywhere;
-    }
-
     .tag {
       display: inline-flex;
       align-items: center;
@@ -2721,7 +2711,7 @@
 
       return Array.from(groups.values()).map(group => {
         const sorted = group.slice().sort((a, b) => badgeDraftPriority(a) - badgeDraftPriority(b));
-        return { ...sorted[0], _mergedCount: group.length };
+        return sorted[0];
       });
     }
 
@@ -2730,7 +2720,7 @@
       const filtered = uniqueBadgeRows(sourceRows);
       rows.innerHTML = filtered.map(row => `
         <tr>
-          <td class="col-anchor">${anchorName(row)}<span class="ui-anchor-id">${row._mergedCount > 1 ? `${row._mergedCount} исходных форматов объединены` : 'UI-якорь зададим позже'}</span></td>
+          <td class="col-anchor">${anchorName(row)}</td>
           <td>${tag('Не назначено', '')}</td>
           <td>${tag(row.scenario, scenarioClass[row.scenario])}</td>
           <td><div class="cell-stack">${tag('Бейдж', '')}${sourceTag(row)}</div></td>
