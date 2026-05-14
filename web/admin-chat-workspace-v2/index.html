@@ -263,9 +263,11 @@
                         <div class="filter-line-options">
                             <label class="filter-choice" title="Клиент ждет ответа агента"><input type="checkbox" data-group="chat" value="needs_reply">Reply</label>
                             <label class="filter-choice" title="Клиент слишком долго ждет реакции; влияет на SLA"><input type="checkbox" data-group="chat" value="sla">SLA</label>
-                            <label class="filter-choice" title="Fire: клиент активно изучает профиль конкретного эксперта или дошел до chat/payment path; выше Hot"><input type="checkbox" data-group="ping" value="fire">Fire</label>
-                            <label class="filter-choice" title="Горячий Ping: первые 4 часа после значимого сигнала"><input type="checkbox" data-group="ping" value="hot_ping">Hot</label>
-                            <label class="filter-choice" title="Новый Ping после горячего окна: 4-24 часа после значимого сигнала"><input type="checkbox" data-group="ping" value="new_ping">NEW</label>
+                            <label class="filter-choice" title="NEW: новый ping, который появился за последние 24 часа"><input type="checkbox" data-group="ping" value="new_ping">NEW</label>
+                            <label class="filter-choice" title="Hot: было взаимодействие с экспертом; длится 4 часа"><input type="checkbox" data-group="ping" value="hot_ping">Hot</label>
+                            <label class="filter-choice" title="Fire: до этого были взаимодействия, которые система считает горячими; выше Hot"><input type="checkbox" data-group="ping" value="fire">Fire</label>
+                            <label class="filter-choice" title="NeedR: требуется ответ эксперта клиенту"><input type="checkbox" data-group="ping" value="needr_ping">NeedR</label>
+                            <label class="filter-choice" title="WaitR: ожидается ответ клиента"><input type="checkbox" data-group="ping" value="waitr_ping">WaitR</label>
                             <label class="filter-choice" title="Показать чаты, убранные из рабочей очереди"><input type="checkbox" data-group="chat" value="archive">Archive</label>
                         </div>
                     </div>
@@ -275,7 +277,7 @@
                             <label class="filter-choice" title="Идет активная платная сессия"><input type="checkbox" data-group="chat" value="paid_live">Live</label>
                             <label class="filter-choice" title="Клиент открыл оплату, но платеж еще не завершен"><input type="checkbox" data-group="chat" value="payment_pending">PP</label>
                             <label class="filter-choice" title="Нужно довести клиента до покупки продолжения или дополнительных минут"><input type="checkbox" data-group="chat" value="sell">Sell</label>
-                            <label class="filter-choice" title="У лида есть платежная готовность: кредиты или другой подтвержденный paid-сигнал"><input type="checkbox" data-group="ping" value="has_paid_signal">Paid</label>
+                            <label class="filter-choice" title="Paid: клиент хотя бы раз платил"><input type="checkbox" data-group="ping" value="has_paid_history">Paid</label>
                         </div>
                     </div>
                     <div class="filter-line" data-filter-scope="all">
@@ -395,7 +397,7 @@
                 <small class="conv-time">38m ago</small>
             </div>
             <div class="conv-line conv-line-message">
-                <div class="conv-snippet">Viewed expert card twice in 9 minutes. Has paid signal.</div>
+                <div class="conv-snippet">Viewed expert card twice in 9 minutes. Client has paid before.</div>
                 <div class="conv-tools">
                     <span class="conv-favorite js-conv-favorite" role="button" tabindex="0" aria-pressed="false" title="Добавить чат в избранное" aria-label="Добавить чат в избранное"><i class="fa fa-star-o"></i></span>
                     <span class="conv-unread">!</span>
@@ -433,6 +435,7 @@
             <div class="conv-line conv-line-labels">
                 <span class="stage-badge stage-badge--future-paid" data-stage="paid_session_booked_future">Future Paid</span>
                 <span class="conv-pill conv-pill-warning">Starts soon</span>
+                <span class="conv-pill conv-pill-warning">WaitR</span>
             </div>
         </a>
     </div>
@@ -548,8 +551,8 @@
 </div>
 <div class="billing-panel billing-panel-v2 ping-lead-panel is-open" id="pingLeadPanel" hidden>
     <div class="billing-panel-left">
-        <span class="billing-pill billing-warning" title="Fire: клиент активно изучает профиль этого эксперта, возвращался к нему или дошел до chat/payment path. При Fire не показываем Hot.">Fire</span>
-        <span class="billing-pill" title="У клиента есть платежная готовность: кредиты или другой подтвержденный paid-сигнал">Paid</span>
+        <span class="billing-pill billing-warning" title="Fire: до этого были взаимодействия, которые система считает горячими. При Fire не показываем Hot.">Fire</span>
+        <span class="billing-pill" title="Paid: клиент хотя бы раз платил">Paid</span>
     </div>
     <div class="billing-panel-guidance" title="Подсказка, как аккуратно обработать лид без давления">
         <strong>Первое касание</strong>
