@@ -423,6 +423,50 @@
       text-transform: uppercase;
     }
 
+    .placement-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-width: 180px;
+    }
+
+    .placement-zones,
+    .placement-basis {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .zone-chip,
+    .basis-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 20px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 900;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+
+    .zone-chip--left { background: #edf4ff; border-color: #c7dcff; color: #0b57d0; }
+    .zone-chip--center { background: #fff6e6; border-color: #ffd8a8; color: #b54708; }
+    .zone-chip--right { background: #f5f3ff; border-color: #d8c7ff; color: #6d28d9; }
+
+    .basis-chip {
+      background: #f8fafc;
+      border-color: #d0d5dd;
+      color: #475467;
+      font-size: 9.5px;
+    }
+
+    .placement-rule {
+      color: #667085;
+      font-size: 10.5px;
+      line-height: 1.25;
+    }
+
     .tag {
       display: inline-flex;
       align-items: center;
@@ -1658,6 +1702,7 @@
                 <th>Бейдж</th>
                 <th>Сценарий</th>
                 <th>Тип бейджа</th>
+                <th>Расположение</th>
                 <th>Когда</th>
                 <th>Зачем</th>
               </tr>
@@ -2783,6 +2828,58 @@
       return allNames.length - new Set(allNames).size;
     }
 
+    const placementByBadge = {
+      'Chats::NeedR': { zones: ['Left', 'Center'], basis: ['AskNebula', 'PbExpert'], rule: 'Очередь ответа + статус текущего диалога.' },
+      'Chats::SLA': { zones: ['Left', 'Center'], basis: ['PbExpert', 'LLM'], rule: 'Просрочка должна поднимать карточку и предупреждать в открытом чате.' },
+      'Chats::Live': { zones: ['Left', 'Center'], basis: ['AskNebula', 'PbExpert'], rule: 'Оплаченный live-кейс важен в очереди и в зоне ответа.' },
+      'Chats::PP': { zones: ['Left', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Почти-оплата нужна для отбора и платежного контекста.' },
+      'Chats::Sell': { zones: ['Left', 'Center'], basis: ['PbExpert', 'LLM'], rule: 'Коммерческий следующий шаг нужен в очереди и у composer.' },
+      'Chats::Paid': { zones: ['Left', 'Center'], basis: ['AskNebula', 'PbExpert'], rule: 'Платное обязательство влияет на приоритет и текущую доставку.' },
+      'Chats::Favorite': { zones: ['Left'], basis: ['AskNebula', 'LLM'], rule: 'Личная навигационная отметка эксперта в списке.' },
+      'Chats::Free': { zones: ['Center', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Граница бесплатной ценности влияет на ответ и контекст.' },
+      'Chats::Objection': { zones: ['Center', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Возражение меняет тон ответа и требует причины справа.' },
+      'Chats::Reactivation': { zones: ['Left', 'Right'], basis: ['AskNebula', 'PbExpert'], rule: 'Возврат клиента нужен для отбора и истории.' },
+      'Chats::Risk': { zones: ['Center', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Риск должен быть виден перед ответом и раскрыт в контексте.' },
+      'Chats::Safety route': { zones: ['Center', 'Right'], basis: ['LLM'], rule: 'Перекрытие Risk влияет на ответ и должно жить рядом с модераторским контекстом.' },
+      'Chats::Sell window': { zones: ['Center', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Окно докупки нужно в зоне действия и рядом с деньгами.' },
+      'Chats::Coupon rule': { zones: ['Right'], basis: ['PbExpert', 'LLM'], rule: 'Купон/компенсация относится к модераторскому решению и платежному контексту.' },
+      'Pings::Hot': { zones: ['Left', 'Center'], basis: ['AskNebula', 'LLM'], rule: 'Свежий персональный сигнал нужен в очереди и открытом Ping.' },
+      'Pings::NEW': { zones: ['Left'], basis: ['AskNebula', 'LLM'], rule: 'Freshness нужен для сортировки и отбора очереди.' },
+      'Pings::Fire': { zones: ['Left', 'Center'], basis: ['AskNebula', 'LLM'], rule: 'Сильный intent поднимает Ping и объясняет повод касания.' },
+      'Pings::Paid': { zones: ['Left', 'Right'], basis: ['AskNebula', 'PbExpert'], rule: 'Paid history влияет на приоритет и сценарий реактивации.' },
+      'Pings::NeedR': { zones: ['Left', 'Center'], basis: ['AskNebula', 'LLM'], rule: 'Следующий ход эксперта нужен в очереди и открытом Ping.' },
+      'Pings::WaitR': { zones: ['Left', 'Center'], basis: ['LLM'], rule: 'Ожидание клиента снижает срочность и защищает от повторного касания.' },
+      'Pings::Free': { zones: ['Center', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Free-граница управляет первым сообщением и контекстом.' },
+      'Pings::Reactivation': { zones: ['Left', 'Right'], basis: ['AskNebula', 'PbExpert'], rule: 'Возврат клиента нужен для отбора и истории касаний.' },
+      'Pings::Risk': { zones: ['Center', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Риск ограничивает outreach и должен раскрываться справа.' }
+    };
+
+    function badgePlacement(row) {
+      const key = badgeDictionaryKey(row);
+      const placement = placementByBadge[key] || { zones: [row.area === 'Левая' ? 'Left' : row.area === 'Центральная' ? 'Center' : 'Right'], basis: ['LLM'], rule: 'Базовая привязка к текущей области.' };
+      return {
+        zones: placement.zones.slice(0, 2),
+        basis: uniqueNameOptions(placement.basis || ['LLM']),
+        rule: placement.rule
+      };
+    }
+
+    function renderPlacement(row) {
+      const placement = badgePlacement(row);
+      const zoneClass = {
+        Left: 'zone-chip--left',
+        Center: 'zone-chip--center',
+        Right: 'zone-chip--right'
+      };
+      return `
+        <div class="placement-cell">
+          <div class="placement-zones">${placement.zones.map(zone => `<span class="zone-chip ${zoneClass[zone] || ''}">${zone}</span>`).join('')}</div>
+          <div class="placement-basis">${placement.basis.map(source => `<span class="basis-chip">${source}</span>`).join('')}</div>
+          <div class="placement-rule">${placement.rule}</div>
+        </div>
+      `;
+    }
+
     function badgeDictionaryKey(row) {
       return `${row.scenario}::${cleanDraftBadgeAnchor(row)}`;
     }
@@ -3094,10 +3191,11 @@
           <td class="col-anchor">${anchorName(row)}</td>
           <td>${tag(row.scenario, scenarioClass[row.scenario])}</td>
           <td>${badgeTypeTag(row)}</td>
+          <td>${renderPlacement(row)}</td>
           <td><div class="when-cell"><span>${readableText(badgeWhen(row))}</span></div></td>
           <td><div class="purpose-cell"><p>${readableText(badgePurpose(row))}</p></div></td>
         </tr>
-      `).join('') || `<tr><td colspan="5"><div class="empty">Ничего не найдено по текущим фильтрам.</div></td></tr>`;
+      `).join('') || `<tr><td colspan="6"><div class="empty">Ничего не найдено по текущим фильтрам.</div></td></tr>`;
 
       const chats = filtered.filter(row => row.scenario === 'Chats').length;
       const pings = filtered.filter(row => row.scenario === 'Pings').length;
