@@ -384,13 +384,43 @@
     }
 
     .badge-name-options {
-      display: block;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
       margin-top: 7px;
       max-width: 210px;
       color: var(--muted);
       font-size: 11px;
       font-weight: 700;
       line-height: 1.35;
+    }
+
+    .badge-name-option {
+      display: inline-flex;
+      align-items: center;
+      min-height: 20px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid #d0d5dd;
+      background: #fff;
+      color: #667085;
+      white-space: nowrap;
+    }
+
+    .badge-name-option.is-best {
+      border-color: #86d39d;
+      background: #ecfdf3;
+      color: #027a48;
+      box-shadow: 0 0 0 1px rgba(2, 122, 72, 0.06);
+    }
+
+    .badge-name-option.is-best::before {
+      content: "лучшее";
+      margin-right: 4px;
+      color: #027a48;
+      font-size: 9px;
+      font-weight: 900;
+      text-transform: uppercase;
     }
 
     .tag {
@@ -2635,7 +2665,7 @@
       const approved = approvedTagName(row);
       const className = approved ? 'ui-anchor-name is-approved' : 'ui-anchor-name';
       const star = approved ? `<span class="approved-star" title="Утвержденный тег: ${approved}" aria-label="Утвержденный тег">★</span>` : '';
-      return `<span class="${className}">${label}${star}</span><span class="badge-name-options">${badgeNameOptions(row).join(' · ')}</span>`;
+      return `<span class="${className}">${label}${star}</span>${renderBadgeNameOptions(row)}`;
     }
 
     function approvedInlineStar(row) {
@@ -2689,28 +2719,68 @@
       return `<div class="cell-stack">${tag(type.label, badgeTypeClass[type.label])}<span class="cell-layer">${type.note}</span></div>`;
     }
 
+    const badgeNameOptionsByBadge = {
+      NeedR: { best: 'NeedR', variants: ['NeedR', 'Reply', 'Turn'] },
+      SLA: { best: 'SLA', variants: ['SLA', 'Overdue', 'Late'] },
+      Live: { best: 'Live', variants: ['Live', 'Active', 'OnAir'] },
+      PP: { best: 'PP', variants: ['PP', 'Checkout', 'Pending'] },
+      Sell: { best: 'Sell', variants: ['Sell', 'Offer', 'Close'] },
+      Favorite: { best: 'Star', variants: ['Star', 'Favorite', 'Saved'] },
+      Free: { best: 'Free', variants: ['Free', 'Trial', 'Limit'] },
+      Paid: { best: 'Paid', variants: ['Paid', 'Buyer', 'History'] },
+      Reactivation: { best: 'Reactivation', variants: ['Reactivation', 'Return', 'Revive'] },
+      Risk: { best: 'Risk', variants: ['Risk', 'Warn', 'Alert'] },
+      'Safety route': { best: 'Safe', variants: ['Safe', 'Clear', 'Override'] },
+      'Sell window': { best: 'Warmup', variants: ['Warmup', 'Extend', 'Continue'] },
+      'Coupon rule': { best: 'Coupon', variants: ['Coupon', 'Comp', 'Review'] },
+      Objection: { best: 'Objection', variants: ['Objection', 'Doubt', 'Block'] },
+      Fire: { best: 'Fire', variants: ['Fire', 'Peak', 'Signal'] },
+      Hot: { best: 'Hot', variants: ['Hot', 'Warm', 'Fresh'] },
+      NEW: { best: 'NEW', variants: ['NEW', 'Recent', 'Lead'] },
+      WaitR: { best: 'WaitR', variants: ['WaitR', 'Await', 'Pause'] }
+    };
+
+    function normalizedBadgeNameOption(value) {
+      return String(value || '').trim().toLowerCase();
+    }
+
+    function uniqueNameOptions(options) {
+      const seen = new Set();
+      return options.filter(option => {
+        const key = normalizedBadgeNameOption(option);
+        if (!key || seen.has(key)) {
+          return false;
+        }
+        seen.add(key);
+        return true;
+      });
+    }
+
     function badgeNameOptions(row) {
-      const variants = {
-        NeedR: ['Reply', 'Answer', 'Turn'],
-        SLA: ['Late', 'Urgent', 'Overdue'],
-        Live: ['Live', 'Now', 'Active'],
-        PP: ['Pending', 'Checkout', 'Pay'],
-        Sell: ['Sell', 'Upsell', 'Offer'],
-        Favorite: ['Star', 'Pin', 'Saved'],
-        Free: ['Free', 'Trial', 'Limit'],
-        Paid: ['Paid', 'Buyer', 'Paid+'],
-        Reactivation: ['Return', 'Revive', 'Reopen'],
-        Risk: ['Risk', 'Warn', 'Alert'],
-        'Safety route': ['Safe', 'Clear', 'Override'],
-        'Sell window': ['Warmup', 'Extend', 'Continue'],
-        'Coupon rule': ['Coupon', 'Comp', 'Review'],
-        Objection: ['Doubt', 'Block', 'Pause'],
-        Fire: ['Fire', 'Peak', 'Signal'],
-        Hot: ['Hot', 'Warm', 'Fresh'],
-        NEW: ['Fresh', 'New', 'Lead'],
-        WaitR: ['Wait', 'Client', 'Pause']
-      };
-      return variants[cleanDraftBadgeAnchor(row)] || [cleanDraftBadgeAnchor(row)];
+      const badge = cleanDraftBadgeAnchor(row);
+      const config = badgeNameOptionsByBadge[badge] || { best: badge, variants: [badge] };
+      const variants = uniqueNameOptions(config.variants || [badge]);
+      const best = variants.includes(config.best) ? config.best : variants[0];
+      return variants.map(option => ({ label: option, isBest: option === best }));
+    }
+
+    function renderBadgeNameOptions(row) {
+      const options = badgeNameOptions(row);
+      return `<span class="badge-name-options" aria-label="Варианты названия бейджа">${options.map(option => {
+        const className = option.isBest ? 'badge-name-option is-best' : 'badge-name-option';
+        const title = option.isBest
+          ? `Лучший термин: ${option.label}. Самый емкий по смыслу для этого бейджа.`
+          : `Альтернативный термин: ${option.label}.`;
+        return `<span class="${className}" title="${title}">${option.label}</span>`;
+      }).join('')}</span>`;
+    }
+
+    function badgeNameCollisionCount() {
+      const allNames = Object.values(badgeNameOptionsByBadge)
+        .flatMap(config => uniqueNameOptions(config.variants || []))
+        .map(normalizedBadgeNameOption)
+        .filter(Boolean);
+      return allNames.length - new Set(allNames).size;
     }
 
     function badgeDictionaryKey(row) {
@@ -3032,11 +3102,13 @@
       const chats = filtered.filter(row => row.scenario === 'Chats').length;
       const pings = filtered.filter(row => row.scenario === 'Pings').length;
       const approved = new Set(filtered.map(row => approvedTagName(row)).filter(Boolean)).size;
+      const nameCollisions = badgeNameCollisionCount();
       summaryStrip.innerHTML = `
         <span class="pill"><strong>${filtered.length}</strong> бейджей</span>
         <span class="pill pill-chats"><strong>${chats}</strong> Chats</span>
         <span class="pill pill-pings"><strong>${pings}</strong> Pings</span>
         <span class="pill pill-pings"><strong>${approved}</strong> согласованных</span>
+        <span class="pill ${nameCollisions ? 'pill-risk' : 'pill-pings'}"><strong>${nameCollisions}</strong> совпадений между разными бейджами</span>
       `;
     }
 
