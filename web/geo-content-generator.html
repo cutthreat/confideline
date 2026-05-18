@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | 12 SEO TXT</title>
+  <link rel="stylesheet" href="./css/task-panel-standard.css">
+  <style>
+    .geo-shell {
+      max-width: 920px;
+      padding: 18px 24px 32px;
+    }
+
+    .geo-panel {
+      display: grid;
+      gap: 16px;
+      background: #fff;
+      border: 1px solid #c8d8ea;
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: 0 8px 20px rgba(73, 103, 149, 0.05);
+    }
+
+    .geo-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .geo-label {
+      display: grid;
+      gap: 7px;
+      color: #5e738f;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .geo-input {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid #bfd0e5;
+      border-radius: 14px;
+      background: #fff;
+      color: #22344d;
+      padding: 10px 12px;
+      font: inherit;
+    }
+
+    .geo-status {
+      min-height: 22px;
+      color: #5e738f;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .geo-status.ok {
+      color: #087443;
+    }
+
+    .geo-status.error {
+      color: #b42318;
+    }
+
+    .geo-result,
+    .geo-pages {
+      display: grid;
+      gap: 12px;
+    }
+
+    .geo-file-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 8px;
+    }
+
+    .geo-file-grid a {
+      display: block;
+      border: 1px solid #bfd0e5;
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: #244a75;
+      text-decoration: none;
+      background: #f8fbff;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .geo-page {
+      display: grid;
+      gap: 10px;
+      border: 1px solid #d5e2f0;
+      border-radius: 16px;
+      padding: 14px;
+      background: #fbfdff;
+    }
+
+    .geo-page-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .geo-page-head strong {
+      font-size: 17px;
+    }
+
+    .geo-page-head span {
+      color: #5e738f;
+      font-size: 13px;
+    }
+
+    @media (max-width: 760px) {
+      .geo-shell {
+        padding: 14px 16px 24px;
+      }
+    }
+  </style>
+</head>
+<body class="cl-task-standard">
+  <div class="tp-page">
+    <header class="tp-hero">
+      <h1>12 SEO-файлов для страницы</h1>
+      <p>Загрузите исходный текст. Панель сама определит страну или город, сохранит папку страницы и покажет TXT-файлы.</p>
+    </header>
+
+    <main class="geo-shell">
+      <section class="geo-panel">
+        <form id="geoForm" class="geo-form">
+          <label class="geo-label">
+            Исходный текст
+            <input id="geoDocument" class="geo-input" name="document" type="file" accept=".docx,.txt,.md,.markdown,.html,.htm,.csv,.json">
+          </label>
+          <button id="geoSubmit" class="tp-btn tp-btn--primary" type="submit">Сгенерировать 12 файлов</button>
+          <div id="geoStatus" class="geo-status"></div>
+        </form>
+
+        <section id="geoProgress" class="geo-status"></section>
+        <section id="geoResult" class="geo-result"></section>
+        <section id="geoPages" class="geo-pages"></section>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const backend = 'https://biblical-martha-naval-vol.trycloudflare.com';
+    const form = document.querySelector('#geoForm');
+    const input = document.querySelector('#geoDocument');
+    const submit = document.querySelector('#geoSubmit');
+    const statusBox = document.querySelector('#geoStatus');
+    const progressBox = document.querySelector('#geoProgress');
+    const resultBox = document.querySelector('#geoResult');
+    const pagesBox = document.querySelector('#geoPages');
+    let timer = null;
+
+    loadPages();
+    form.addEventListener('submit', submitFile);
+
+    async function submitFile(event) {
+      event.preventDefault();
+      const file = input.files[0];
+      if (!file) return setStatus('Приложите исходный текст.', 'error');
+
+      clearTimer();
+      setBusy(true);
+      setStatus('Задание отправлено.');
+      progressBox.textContent = '';
+      resultBox.innerHTML = '';
+
+      try {
+        const body = new FormData();
+        body.set('message', 'Определи страну или город из исходного файла и подготовь пакет из 12 TXT-файлов.');
+        body.set('document', file);
+
+        const response = await fetch(`${backend}/api/chat/geo-content-packager`, {
+          method: 'POST',
+          body,
+        });
+        const data = await readJson(response);
+        renderProgress(data.run);
+        pollRun(data.run.runId);
+      } catch (error) {
+        setBusy(false);
+        setStatus(error.message, 'error');
+      }
+    }
+
+    async function pollRun(runId) {
+      try {
+        const response = await fetch(`${backend}/api/runs/${encodeURIComponent(runId)}`);
+        const data = await readJson(response);
+        renderProgress(data.run);
+        if (data.run.artifacts) renderArtifacts(data.run.artifacts);
+
+        if (['completed', 'needs_review', 'failed'].includes(data.run.status)) {
+          clearTimer();
+          setBusy(false);
+          setStatus(data.run.message || statusText(data.run.status), data.run.status === 'failed' ? 'error' : 'ok');
+          if (data.run.status !== 'failed') loadPages();
+          return;
+        }
+        timer = window.setTimeout(() => pollRun(runId), 2500);
+      } catch (error) {
+        clearTimer();
+        setBusy(false);
+        setStatus(error.message, 'error');
+      }
+    }
+
+    async function loadPages() {
+      try {
+        const response = await fetch(`${backend}/api/pages`);
+        const data = await readJson(response);
+        renderPages(data.pages || []);
+      } catch {
+        pagesBox.innerHTML = '';
+      }
+    }
+
+    function renderProgress(run) {
+      progressBox.textContent = run ? `${statusText(run.status)} ${run.message || ''}`.trim() : '';
+    }
+
+    function renderArtifacts(artifacts) {
+      if (!artifacts?.files?.length) return;
+      resultBox.innerHTML = '';
+
+      const title = document.createElement('h2');
+      title.textContent = artifacts.title || 'Файлы готовы';
+      resultBox.append(title);
+
+      const grid = document.createElement('div');
+      grid.className = 'geo-file-grid';
+      for (const file of artifacts.files) {
+        grid.append(fileLink(file));
+      }
+      resultBox.append(grid);
+    }
+
+    function renderPages(pages) {
+      pagesBox.innerHTML = '';
+      if (!pages.length) return;
+
+      const title = document.createElement('h2');
+      title.textContent = 'Сохраненные страницы';
+      pagesBox.append(title);
+
+      for (const page of pages) {
+        const item = document.createElement('article');
+        item.className = 'geo-page';
+
+        const head = document.createElement('div');
+        head.className = 'geo-page-head';
+
+        const name = document.createElement('strong');
+        name.textContent = page.title || page.slug;
+        head.append(name);
+
+        const meta = document.createElement('span');
+        meta.textContent = [page.slug, formatDate(page.updatedAt)].filter(Boolean).join(' · ');
+        head.append(meta);
+        item.append(head);
+
+        const grid = document.createElement('div');
+        grid.className = 'geo-file-grid';
+        for (const file of page.files || []) {
+          grid.append(fileLink(file));
+        }
+        item.append(grid);
+        pagesBox.append(item);
+      }
+    }
+
+    function fileLink(file) {
+      const link = document.createElement('a');
+      link.href = new URL(file.url, backend).toString();
+      link.textContent = file.filename;
+      link.download = file.filename;
+      return link;
+    }
+
+    function statusText(status) {
+      return ({
+        queued: 'В очереди',
+        running: 'Генерация',
+        saving: 'Подготовка файлов',
+        completed: 'Готово',
+        needs_review: 'Нужна проверка',
+        failed: 'Ошибка',
+      })[status] || 'Генерация';
+    }
+
+    function formatDate(value) {
+      if (!value) return '';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return '';
+      return date.toLocaleString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    }
+
+    function setBusy(isBusy) {
+      submit.disabled = isBusy;
+      submit.textContent = isBusy ? 'Генерация...' : 'Сгенерировать 12 файлов';
+    }
+
+    function setStatus(message, type = '') {
+      statusBox.textContent = message;
+      statusBox.className = `geo-status ${type}`;
+    }
+
+    function clearTimer() {
+      if (timer) {
+        window.clearTimeout(timer);
+        timer = null;
+      }
+    }
+
+    async function readJson(response) {
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || `Ошибка запроса: ${response.status}`);
+      return data;
+    }
+  </script>
+</body>
+</html>
