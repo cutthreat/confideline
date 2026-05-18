@@ -1897,7 +1897,7 @@
                 <p>Эксперт начинает с фильтров, которые меняют приоритет работы: NeedR, SLA, Live, PP и Sell. Favorite остается личной отметкой эксперта, Archive - отдельным режимом очереди.</p>
                 <div class="flow-tags">
                   <span>NeedR/SLA = клиент ждет</span>
-                  <span>Live = оплачено</span>
+                  <span>Live = сессия у другого эксперта</span>
                   <span>PP/Sell = близко к оплате</span>
                 </div>
               </article>
@@ -1924,7 +1924,7 @@
               <article class="flow-step">
                 <span class="step-kicker">Центр + деньги</span>
                 <h3>4. Предложить оплату или продление в уместный момент</h3>
-                <p>Коммерческое предложение используется только когда стадия и контекст это оправдывают. При активной платной сессии важнее качественная доставка, при малом остатке времени - продление.</p>
+                <p>Коммерческое предложение используется только когда стадия и контекст это оправдывают. Если у клиента Live с другим экспертом, текущий эксперт не пишет и не продает, чтобы не перебивать активную платную сессию.</p>
                 <div class="flow-tags">
                   <span>Предложение</span>
                   <span>Старт / стоп сессии</span>
@@ -1942,7 +1942,7 @@
               <h3>Зачем здесь индикаторы</h3>
               <div class="flow-reason-list">
                 <div><strong>Система</strong><span>NeedR, SLA и последняя активность показывают операционную срочность.</span></div>
-                <div><strong>Система</strong><span>Live, PP, баланс и статус оплаты показывают денежное обязательство и шанс оплаты.</span></div>
+                <div><strong>Система</strong><span>Live, PP, баланс и статус оплаты показывают платежный контекст: где не вмешиваться, где платеж не завершен и где есть шанс оплаты.</span></div>
                 <div><strong>Сценарный движок</strong><span>Сценарий, предупреждение, Sell window и Objection защищают ответ от хаотичной продажи.</span></div>
                 <div><strong>Модератор</strong><span>Риски и командные заметки ограничивают давление в продаже, safety и quality ошибки.</span></div>
                 <div><strong>Личное эксперта</strong><span>Favorite и private note помогают эксперту вернуться к кейсу, но не маршрутизируют команду.</span></div>
@@ -2038,7 +2038,7 @@
       { id: 'queue_user_select_pings', area: 'Левая', scenario: 'Pings', type: 'Control', source: 'UI', caller: 'Expert', when: 'Нужно найти ping по участнику', responsibility: 'Фильтрует по client_id или expert_profile_id', purpose: 'Проверка интереса к конкретному эксперту', anchor: 'User/expert select' },
       { id: 'filter_reply', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'System', caller: 'System', when: 'Клиент уже дал входящий сигнал, и эксперт еще не ответил', responsibility: 'Отбирает чаты, где следующий ход за экспертом', purpose: 'Показывает эксперту диалоги, где клиент уже ждет содержательный ответ', anchor: 'NeedR' },
       { id: 'filter_sla', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'System', caller: 'System', when: 'Ожидание ответа превысило SLA-порог', responsibility: 'Показывает риск просрочки', purpose: 'Снизить жалобы, возвраты и потери клиента', anchor: 'SLA' },
-      { id: 'filter_live', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'System', caller: 'Session engine', when: 'Есть активная paid session', responsibility: 'Отбирает оплаченные активные кейсы', purpose: 'Оплаченная доставка важнее обычной очереди', anchor: 'Live' },
+      { id: 'filter_live', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'System', caller: 'Session engine', when: 'У клиента идет активная платная сессия с другим экспертом', responsibility: 'Отбирает диалоги, где текущему эксперту нельзя вмешиваться', purpose: 'Не писать клиенту и не продавать ему, пока он занят оплаченной сессией у другого эксперта', anchor: 'Live' },
       { id: 'filter_payment_pending', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'System', caller: 'Payment system', when: 'Клиент начал payment flow, но не завершил оплату', responsibility: 'Показывает PP', purpose: 'Довести почти готовую оплату', anchor: 'PP' },
       { id: 'filter_sell', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'Workflow', caller: 'Workflow engine', when: 'Система по данным диалога, поведения и стадии видит, что клиент достаточно прогрет для офера платной сессии', responsibility: 'Отбирает диалоги, где уместно сделать offer платной сессии', purpose: 'Не упустить момент, когда клиент готов купить, но не давить до появления подтвержденной готовности', anchor: 'Sell' },
       { id: 'filter_archive_chats', area: 'Левая', scenario: 'Chats', type: 'Filter', source: 'System', caller: 'Expert/System', when: 'Диалог убран из активной очереди', responsibility: 'Показывает архивные чаты', purpose: 'Проверить обработанные кейсы без смешения с рабочей очередью', anchor: 'Archive' },
@@ -2056,7 +2056,7 @@
       { id: 'approved_badge_waitr_pings', area: 'Центральная', scenario: 'Pings', type: 'State', source: 'System', caller: 'Workflow engine', when: 'Следующий ход за клиентом: эксперт уже сделал первое касание или ответил, нового входящего события от клиента нет', responsibility: 'Показывает WaitR; сортировка 40', purpose: 'Не спамить повторно и не держать ожидание клиента на уровне срочного ответа эксперта', anchor: 'WaitR' },
       { id: 'card_badge_paid_live_chats', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow/Session', when: 'paid_session_active внутри карточки', responsibility: 'Показывает Paid в строке индикаторов карточки', purpose: 'Сразу понять, что это оплаченный кейс с обязательством ответить по обещанной теме', anchor: 'Paid badge' },
       { id: 'card_pill_reply_chats', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'System', when: 'Клиент дал входящий сигнал, и эксперт еще не ответил', responsibility: 'Показывает NeedR в строке индикаторов карточки', purpose: 'Не потерять диалог, где следующий ход за экспертом', anchor: 'NeedR pill' },
-      { id: 'card_pill_live_chats', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'Session engine', when: 'Идет активная платная сессия', responsibility: 'Показывает Live в строке индикаторов карточки', purpose: 'Отделить оплаченный live-диалог от обычного ожидания ответа', anchor: 'Live pill' },
+      { id: 'card_pill_live_chats', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'Session engine', when: 'У клиента идет активная платная сессия с другим экспертом', responsibility: 'Показывает Live в строке индикаторов карточки', purpose: 'Предупредить текущего эксперта: клиент сейчас занят другой paid-сессией, писать и продавать не нужно', anchor: 'Live pill' },
       { id: 'card_pill_sla_chats', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'SLA monitor', when: 'Клиент слишком долго ждет реакции', responsibility: 'Показывает SLA в строке индикаторов карточки', purpose: 'Поднять кейс выше обычной очереди из-за риска жалобы, возврата и потери доверия', anchor: 'SLA pill' },
       { id: 'favorite_chat', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'Expert', caller: 'Expert', when: 'Эксперт отметил чат', responsibility: 'Личный флаг важного диалога', purpose: 'Вернуться к своему кейсу, не маршрутизировать команду', anchor: 'Favorite' },
       { id: 'favorite_ping', area: 'Левая', scenario: 'Pings', type: 'Indicator', source: 'Expert', caller: 'Expert', when: 'Эксперт отметил ping', responsibility: 'Личный флаг перспективного лида', purpose: 'Вернуться позже, не менять глобальный приоритет', anchor: 'Favorite' },
@@ -2075,7 +2075,7 @@
       { id: 'ping_header_identity', area: 'Центральная', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'System', when: 'Ping открыт', responsibility: 'Показывает client -> expert profile interest', purpose: 'Первое касание должно быть персональным', anchor: 'Header' },
       { id: 'center_stage_chip_chats', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'Чат открыт', responsibility: 'Показывает текущую стадию', purpose: 'Вести free, Book Now, objection, paid внутри одного чата', anchor: 'Stage chip' },
       { id: 'center_stage_chip_pings', area: 'Центральная', scenario: 'Pings', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'Ping открыт', responsibility: 'Показывает Lift Due, Future Paid или другую стадию Ping', purpose: 'Не отправлять одинаковое касание всем', anchor: 'Stage chip' },
-      { id: 'live_chip_chats', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'Session engine', when: 'Paid session active', responsibility: 'Показывает оплаченный приоритет', purpose: 'Paid delivery нельзя задерживать', anchor: 'Live chip' },
+      { id: 'live_chip_chats', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'Session engine', when: 'У клиента активная платная сессия с другим экспертом', responsibility: 'Показывает, что клиент сейчас занят чужой Live-сессией', purpose: 'Не перебивать активную платную консультацию другого эксперта сообщением, офером или повторным касанием', anchor: 'Live chip' },
       { id: 'payment_pending_chip_chats', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'Payment system', when: 'Payment pending связан с текущим кейсом', responsibility: 'Показывает PP', purpose: 'Вернуть клиента к payment', anchor: 'PP chip' },
       { id: 'hot_chip_pings', area: 'Центральная', scenario: 'Pings', type: 'Indicator', source: 'System', caller: 'System', when: 'Клиент недавно коснулся этого эксперта, Ping не закрыт, не переведен в Chat и нет Fire', responsibility: 'Показывает свежее касание эксперта без Fire', purpose: 'Приоритизировать первое касание или продолжение в 4-часовое окно', anchor: 'Hot chip' },
       { id: 'new_chip_pings', area: 'Центральная', scenario: 'Pings', type: 'Indicator', source: 'System', caller: 'System', when: 'Ping появился за последние 24 часа, не закрыт и не переведен в Chat', responsibility: 'Показывает новый Ping', purpose: 'Не потерять новый лид в первые сутки', anchor: 'NEW chip' },
@@ -2309,7 +2309,7 @@
           ['User/expert select', 'Помогает быстро найти конкретного клиента или профиль эксперта.'],
           ['NeedR', 'Chats. Клиент уже дал входящий сигнал, и эксперт еще не ответил. Следующий ход за экспертом.'],
           ['SLA', 'Chats. Клиент ждет ответа дольше нормы. Это уже риск задержки сервиса, жалобы и потери доверия.'],
-          ['Live', 'Chats. Идет активная оплаченная консультация. Клиент платит сейчас, поэтому paid delivery выше обычной очереди.'],
+          ['Live', 'Chats. У клиента идет активная платная сессия с другим экспертом. Для текущего эксперта это стоп-сигнал: не писать, не продавать и не перебивать консультацию.'],
           ['PP', 'Chats. Клиент дошел до оплаты, но платеж еще не подтвержден. Это почти покупка, которую нельзя потерять.'],
           ['Sell', 'Chats. Система видит, что клиент достаточно прогрет: есть интерес, контекст и уместный момент предложить paid-сессию.'],
           ['NEW', 'Pings. Ping появился за последние 24 часа. Это свежий сигнал без более сильного Hot или Fire.'],
@@ -2353,7 +2353,7 @@
         includes: [
           ['Paid', 'Chats. Диалог связан с оплатой: активная сессия, оплаченная обязанность или paid-контекст. Эксперт ведет его как оплаченный кейс.'],
           ['NeedR', 'Chats. Клиент уже дал входящий сигнал, и эксперт еще не ответил. Следующий ход за экспертом.'],
-          ['Live', 'Chats. Идет активная оплаченная консультация. Клиент платит сейчас, поэтому этот диалог выше обычного ожидания.'],
+          ['Live', 'Chats. У клиента идет активная платная сессия с другим экспертом. Текущий эксперт видит, что клиента нельзя трогать до завершения этой сессии.'],
           ['SLA', 'Chats. Клиент ждет дольше нормы. Это риск жалобы, возврата и падения качества сервиса.'],
           ['PP', 'Chats. Клиент дошел до оплаты, но платеж еще не подтвержден. Нужно мягко вернуть к завершению оплаты.'],
           ['Sell', 'Chats. Система видит, что клиент достаточно прогрет: есть интерес, контекст и уместный момент предложить paid-сессию.'],
@@ -2393,7 +2393,7 @@
         includes: [
           ['Client -> expert profile', 'Система подтверждает, какой клиент и какой видимый экспертный профиль открыт. Это защита от ответа не от того образа.'],
           ['Сценарий', 'Workflow показывает текущий контекст: Free, Paid, Objection, Reactivation или Ping reason. Это ориентир ответа, не фильтр очереди.'],
-          ['Live', 'Система показывает активную оплаченную доставку. Нужен как напоминание, что качество и скорость выше обычной очереди.'],
+          ['Live', 'Система показывает, что клиент сейчас в активной платной сессии с другим экспертом. Это ограничение: не писать и не продавать, пока Live не завершится.'],
           ['PP', 'Payment system показывает ожидание платежа. Нужен, чтобы не писать как будто оплата уже завершена.'],
           ['NEW / Hot / Fire / Paid / NeedR / WaitR', 'Для Pings показывают свежесть сигнала, свежее касание эксперта, сильный персональный интерес, paid history и чей следующий ход.']
         ],
@@ -2562,7 +2562,7 @@
       'left-card-favorite': ['Favorite', 'Левая', 'Chats / Pings', 'Expert-private флаг. Не использовать как глобальный routing для команды.'],
       'center-header': ['Header identity', 'Центральная', 'Chats / Pings', 'Подтверждает текущего клиента и экспертный профиль перед ответом или первым касанием.'],
       'center-stage-chip': ['Scenario', 'Центральная', 'Chats / Pings', 'Главный рабочий контекст ответа. Это не отдельный бейдж и не фильтр очереди.'],
-      'center-live-pp': ['Live / PP', 'Центральная', 'Chats', 'Live означает активную оплаченную доставку. PP означает ожидание платежа.'],
+      'center-live-pp': ['Live / PP', 'Центральная', 'Chats', 'Live означает активную платную сессию клиента с другим экспертом. PP означает ожидание платежа.'],
       'center-last-activity': ['Last activity', 'Центральная', 'Chats', 'Показывает свежесть события и помогает оценить срочность ответа.'],
       'center-start-stop': ['Start / Stop', 'Центральная', 'Chats', 'Запуск и завершение оплаченного интервала внутри сквозного чата.'],
       'center-sell-window': ['Sell window', 'Центральная', 'Chats', 'Момент уместного предложения продления. Не должен работать как давление.'],
@@ -2831,7 +2831,7 @@
     const placementByBadge = {
       'Chats::NeedR': { zones: ['Left', 'Center'], basis: ['AskNebula', 'PbExpert'], rule: 'Очередь ответа + статус текущего диалога.' },
       'Chats::SLA': { zones: ['Left', 'Center'], basis: ['PbExpert', 'LLM'], rule: 'Просрочка должна поднимать карточку и предупреждать в открытом чате.' },
-      'Chats::Live': { zones: ['Left', 'Center'], basis: ['AskNebula', 'PbExpert'], rule: 'Оплаченный live-кейс важен в очереди и в зоне ответа.' },
+      'Chats::Live': { zones: ['Left', 'Center'], basis: ['AskNebula', 'PbExpert'], rule: 'Чужая активная paid-сессия должна быть видна в очереди и перед отправкой ответа.' },
       'Chats::PP': { zones: ['Left', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Почти-оплата нужна для отбора и платежного контекста.' },
       'Chats::Sell': { zones: ['Left', 'Center'], basis: ['PbExpert', 'LLM'], rule: 'Сигнал готовности к оферу нужен в очереди и у composer.' },
       'Chats::Paid': { zones: ['Left', 'Center'], basis: ['AskNebula', 'PbExpert'], rule: 'Платное обязательство влияет на приоритет и текущую доставку.' },
@@ -2888,7 +2888,7 @@
       'Chats::Coupon rule': 'Эксперт видит, что клиенту может понадобиться купон или компенсация. Эксперт только поднимает сигнал; решение принимает модератор.',
       'Chats::Favorite': 'Эксперт сам помечает диалог как важный для себя. Это личная отметка, а не общий приоритет для команды.',
       'Chats::Free': 'Клиент сейчас в бесплатной части консультации или тратит бесплатные минуты. Полную ценность еще нельзя отдавать как paid-сервис.',
-      'Chats::Live': 'Идет активная оплаченная поминутная консультация. Клиент сейчас платит за время и ждет содержательный ответ.',
+      'Chats::Live': 'У клиента идет активная платная сессия с другим экспертом. Для текущего эксперта это сигнал не писать и не продавать, пока сессия не завершится.',
       'Chats::NeedR': 'Клиент уже дал входящий сигнал, и эксперт еще не ответил. Следующий ход за экспертом.',
       'Chats::Objection': 'Клиент сомневается, спорит или не готов покупать/продлевать. Обычный прямой offer сейчас может сработать хуже.',
       'Chats::Paid': 'Диалог связан с оплатой: есть активная, будущая или уже оплаченная сессия. Это не обычный бесплатный прогрев.',
@@ -2914,7 +2914,7 @@
       'Chats::Coupon rule': 'Нужен, чтобы эксперт не обещал скидку сам. Он фиксирует повод, а модератор уже решает, давать купон/компенсацию или нет.',
       'Chats::Favorite': 'Нужен как личная закладка эксперта: быстро вернуться к важному диалогу, не меняя глобальную очередь и не создавая сигнал для остальных.',
       'Chats::Free': 'Нужен, чтобы эксперт держал границу бесплатной ценности: заинтересовать клиента, но оставить полноценную консультацию для оплаты.',
-      'Chats::Live': 'Нужен, чтобы paid-сессия не потерялась среди обычных чатов: клиент платит сейчас, поэтому ответ должен быть быстрым и полезным.',
+      'Chats::Live': 'Нужен, чтобы текущий эксперт не вмешивался в чужую активную консультацию: не отправлял сообщение, не делал offer и не сбивал клиента во время paid-сессии.',
       'Chats::NeedR': 'Нужен, чтобы эксперт сразу видел диалоги, где клиент уже ждет ответа. Это базовый сигнал: открыть, понять контекст и ответить.',
       'Chats::Objection': 'Нужен, чтобы эксперт сменил тактику: не давить новым offer, а спокойно закрыть сомнение, страх или недоверие клиента.',
       'Chats::Paid': 'Нужен, чтобы эксперт вел диалог как оплаченный кейс: отвечал по обещанной теме, не путал его с free-прогревом и держал качество доставки.',
@@ -2940,7 +2940,7 @@
       'Chats::Coupon rule': 'Поднимает кейс к модератору по купону/компенсации',
       'Chats::Favorite': 'Сохраняет личную закладку эксперта',
       'Chats::Free': 'Показывает границу бесплатной ценности',
-      'Chats::Live': 'Поднимает активную paid-сессию',
+      'Chats::Live': 'Показывает чужую активную paid-сессию',
       'Chats::NeedR': 'Показывает, что следующий ход за экспертом',
       'Chats::Objection': 'Переводит ответ в режим обработки сомнения',
       'Chats::Paid': 'Показывает paid-контекст и обязательство доставки',
