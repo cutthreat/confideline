@@ -182,7 +182,8 @@
   </div>
 
   <script>
-    const backend = 'https://telecom-neil-great-kit.trycloudflare.com';
+    const embeddedBackend = 'https://telecom-neil-great-kit.trycloudflare.com';
+    let backend = embeddedBackend;
     const form = document.querySelector('#geoForm');
     const input = document.querySelector('#geoDocument');
     const submit = document.querySelector('#geoSubmit');
@@ -192,9 +193,25 @@
     const pagesBox = document.querySelector('#geoPages');
     let timer = null;
 
-    checkBackend();
-    loadPages();
+    init();
     form.addEventListener('submit', submitFile);
+
+    async function init() {
+      await loadBackendConfig();
+      await checkBackend().catch(() => false);
+      await loadPages();
+    }
+
+    async function loadBackendConfig() {
+      try {
+        const response = await fetch(`./geo-content-backend.json?v=${Date.now()}`, { cache: 'no-store' });
+        if (!response.ok) return;
+        const data = await response.json();
+        if (data?.backend) backend = String(data.backend).replace(/\/+$/, '');
+      } catch {
+        backend = embeddedBackend;
+      }
+    }
 
     async function submitFile(event) {
       event.preventDefault();
