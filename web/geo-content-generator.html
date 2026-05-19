@@ -60,6 +60,45 @@
       color: #b42318;
     }
 
+    .geo-progress-card {
+      display: grid;
+      gap: 8px;
+      border: 1px solid #d5e2f0;
+      border-radius: 14px;
+      padding: 12px;
+      background: #f8fbff;
+    }
+
+    .geo-progress-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: #22344d;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .geo-progress-track {
+      height: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #dbe8f7;
+    }
+
+    .geo-progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: #2f70d8;
+      transition: width 0.25s ease;
+    }
+
+    .geo-progress-meta {
+      color: #5e738f;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
     .geo-result,
     .geo-pages {
       display: grid;
@@ -143,7 +182,7 @@
   </div>
 
   <script>
-    const backend = 'https://dicke-flux-save-maximize.trycloudflare.com';
+    const backend = 'https://telecom-neil-great-kit.trycloudflare.com';
     const form = document.querySelector('#geoForm');
     const input = document.querySelector('#geoDocument');
     const submit = document.querySelector('#geoSubmit');
@@ -153,6 +192,7 @@
     const pagesBox = document.querySelector('#geoPages');
     let timer = null;
 
+    checkBackend();
     loadPages();
     form.addEventListener('submit', submitFile);
 
@@ -163,11 +203,14 @@
 
       clearTimer();
       setBusy(true);
-      setStatus('Задание отправлено.');
-      progressBox.textContent = '';
+      setStatus('Проверяю связь с сервисом.');
+      renderClientProgress(2, 'Проверяю связь с сервисом');
       resultBox.innerHTML = '';
 
       try {
+        await checkBackend({ silent: true });
+        renderClientProgress(8, 'Отправляю исходный файл');
+
         const body = new FormData();
         body.set('message', 'Определи страну или город из исходного файла и подготовь пакет из 12 TXT-файлов.');
         body.set('document', file);
@@ -177,11 +220,13 @@
           body,
         });
         const data = await readJson(response);
+        setStatus(`Задание принято: ${shortId(data.run.runId)}.`);
         renderProgress(data.run);
         pollRun(data.run.runId);
       } catch (error) {
         setBusy(false);
-        setStatus(error.message, 'error');
+        renderClientProgress(100, 'Не удалось отправить файл');
+        setStatus(friendlyError(error), 'error');
       }
     }
 
@@ -203,7 +248,21 @@
       } catch (error) {
         clearTimer();
         setBusy(false);
-        setStatus(error.message, 'error');
+        setStatus(friendlyError(error), 'error');
+      }
+    }
+
+    async function checkBackend({ silent = false } = {}) {
+      try {
+        const response = await fetch(`${backend}/health`, { cache: 'no-store' });
+        await readJson(response);
+        if (!silent) setStatus('Сервис готов к работе.', 'ok');
+        return true;
+      } catch (error) {
+        if (!silent) {
+          setStatus('Сервис генерации сейчас недоступен. Обновляем подключение на нашей стороне.', 'error');
+        }
+        throw error;
       }
     }
 
@@ -218,7 +277,23 @@
     }
 
     function renderProgress(run) {
-      progressBox.textContent = run ? `${statusText(run.status)} ${run.message || ''}`.trim() : '';
+      if (!run) {
+        progressBox.innerHTML = '';
+        return;
+      }
+      const progress = normalizeProgress(run);
+      progressBox.innerHTML = `
+        <div class="geo-progress-card">
+          <div class="geo-progress-head">
+            <span>${escapeHtml(progress.label)}</span>
+            <span>${progress.percent}%</span>
+          </div>
+          <div class="geo-progress-track" aria-label="Прогресс генерации">
+            <div class="geo-progress-fill" style="width: ${progress.percent}%"></div>
+          </div>
+          <div class="geo-progress-meta">${escapeHtml(progress.meta)}</div>
+        </div>
+      `;
     }
 
     function renderArtifacts(artifacts) {
@@ -290,6 +365,44 @@
       })[status] || 'Генерация';
     }
 
+    function normalizeProgress(run) {
+      const progress = run.progress || {};
+      const percent = Number.isFinite(Number(progress.percent)) ? Math.max(0, Math.min(100, Math.round(Number(progress.percent)))) : fallbackPercent(run.status);
+      const label = progress.label || run.message || statusText(run.status);
+      const details = [`Задание ${shortId(run.runId)}`];
+      if (run.aiHubJobId || progress.aiHubJobId) details.push(`AI Hub ${shortId(run.aiHubJobId || progress.aiHubJobId)}`);
+      details.push(statusText(run.status));
+      if (run.message && run.message !== label) details.push(run.message);
+      return {
+        percent,
+        label,
+        meta: details.filter(Boolean).join(' · '),
+      };
+    }
+
+    function fallbackPercent(status) {
+      return ({
+        queued: 5,
+        running: 45,
+        saving: 85,
+        completed: 100,
+        needs_review: 100,
+        failed: 100,
+      })[status] || 0;
+    }
+
+    function renderClientProgress(percent, label) {
+      renderProgress({
+        runId: '',
+        status: 'running',
+        message: label,
+        progress: {
+          percent,
+          label,
+        },
+      });
+    }
+
     function formatDate(value) {
       if (!value) return '';
       const date = new Date(value);
@@ -311,6 +424,28 @@
     function setStatus(message, type = '') {
       statusBox.textContent = message;
       statusBox.className = `geo-status ${type}`;
+    }
+
+    function shortId(value) {
+      return String(value || '').slice(0, 8);
+    }
+
+    function friendlyError(error) {
+      const message = String(error?.message || error || '');
+      if (message === 'Failed to fetch' || message.includes('fetch')) {
+        return 'Не удалось связаться с сервисом генерации. Мы должны восстановить внешний канал и повторить запуск.';
+      }
+      return message || 'Не удалось выполнить запрос.';
+    }
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;',
+      })[char]);
     }
 
     function clearTimer() {
