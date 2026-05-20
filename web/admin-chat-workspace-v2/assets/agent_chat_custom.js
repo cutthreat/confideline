@@ -3534,8 +3534,50 @@
       item.setAttribute('aria-current', item.classList.contains('active') ? 'true' : 'false');
     });
 
+    const normalizeBadgeLabels = (labels = []) => Array.from(new Set(
+      labels.map((label) => String(label || '').trim()).filter(Boolean)
+    ));
+
+    const escapeBadgeText = (value) => String(value || '').replace(/[&<>"']/g, (char) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    }[char]));
+
+    const renderBadgeDeltaText = (labels, emptyText) => {
+      const normalized = normalizeBadgeLabels(labels);
+      return normalized.length ? normalized.map(escapeBadgeText).join(', ') : emptyText;
+    };
+
+    const renderBadgeTransition = (payload, previousLabels = []) => {
+      const strip = root.querySelector('#badgeTransitionStrip');
+      if (!strip) {
+        return;
+      }
+
+      const current = normalizeBadgeLabels(payload.labels);
+      const previous = normalizeBadgeLabels(previousLabels);
+      const kept = previous.length ? current.filter((label) => previous.includes(label)) : current;
+      const removed = previous.filter((label) => !current.includes(label));
+      const added = previous.length ? current.filter((label) => !previous.includes(label)) : [];
+      const sections = [
+        ['Останется', kept, 'Стартовый набор выбранного диалога'],
+        ['Исчезнет', removed, 'Ничего не исчезло'],
+        ['Появится', added, previous.length ? 'Новых бейджей нет' : 'Кликните другой диалог']
+      ];
+
+      strip.innerHTML = sections.map(([title, labels, empty]) => `
+        <div class="badge-transition-column ${labels.length ? '' : 'is-empty'}">
+          <strong>${title}</strong>
+          <span>${renderBadgeDeltaText(labels, empty)}</span>
+        </div>
+      `).join('');
+    };
+
     const getConversationSwitchPayload = (item) => {
-      const labels = Array.from(item.querySelectorAll('.conv-line-labels .conv-pill')).map((label) => label.textContent.trim()).filter(Boolean);
+      const labels = Array.from(item.querySelectorAll('.conv-line-labels .stage-badge, .conv-line-labels .conv-pill')).map((label) => label.textContent.trim()).filter(Boolean);
       const unread = item.querySelector('.conv-unread')?.textContent.trim() || '0';
       const pinned = !!item.querySelector('.conv-pin');
 
@@ -3625,7 +3667,7 @@
       });
     };
 
-    const applyDemoConversationSwitch = (payload) => {
+    const applyDemoConversationSwitch = (payload, previousLabels = []) => {
       const previousConversationId = root.dataset.conversationId;
       if (previousConversationId && previousConversationId !== payload.conversation_id) {
         root.dataset.sessionState = '';
@@ -3816,10 +3858,48 @@
         rightSub.textContent = `${stageMeta.label}${payload.client_previous_buyer ? ' · previous buyer' : ''}`;
       }
 
+      const setLabeledValue = (selector, label, value) => {
+        const row = Array.from(root.querySelectorAll(selector)).find((node) => node.querySelector('span')?.textContent.trim() === label);
+        const target = row?.querySelector('strong');
+        if (target) {
+          target.textContent = value;
+        }
+      };
+      const profileAvatar = root.querySelector('#tab-client .context-profile-head .context-avatar');
+      if (profileAvatar && payload.sender_avatar) {
+        profileAvatar.src = payload.sender_avatar;
+        profileAvatar.alt = payload.display_contact_name || payload.sender_name || 'Client';
+      }
+      const profileName = root.querySelector('#tab-client .context-name');
+      if (profileName) {
+        profileName.textContent = payload.display_contact_name || payload.sender_name || 'Client';
+      }
+      const profileSubline = root.querySelector('#tab-client .context-subline');
+      if (profileSubline) {
+        profileSubline.textContent = `id:${payload.sender_user_id || '—'} · ${stageMeta.label} · ${payload.last_message_time || 'now'}`;
+      }
+      const statusChips = root.querySelectorAll('#tab-client .context-profile-meta-strip .context-chip');
+      if (statusChips[0]) statusChips[0].textContent = hasPaymentOpened ? 'PP pending' : payload.client_previous_buyer ? 'paid history' : 'lead';
+      if (statusChips[1]) statusChips[1].textContent = payload.client_previous_buyer ? 'previous buyer' : 'new client';
+      if (statusChips[2]) {
+        statusChips[2].textContent = riskText !== 'none' ? 'Risk watch' : isFocus ? 'QC watch' : 'normal';
+        statusChips[2].classList.toggle('is-warn', riskText !== 'none' || isFocus);
+      }
+      setLabeledValue('#tab-client .context-kpi', 'Paid', payload.client_previous_buyer || hasPaymentOpened ? 'Yes' : 'No');
+      setLabeledValue('#tab-client .context-kpi', 'Paid sessions', payload.client_previous_buyer ? '1 session' : hasPaymentOpened ? 'pending' : 'none');
+      setLabeledValue('#tab-client .context-kpi', 'Topic', formatDatasetList(payload.book_now?.promised_topics, 'Relationship'));
+      setLabeledValue('#tab-client .context-kpi', 'Expert seen by client', payload.recipient_name || '—');
+      setLabeledValue('#tab-client .context-line', 'Conversation', payload.conversation_id || '—');
+      setLabeledValue('#tab-client .context-line', 'User', payload.sender_user_id ? `U-${payload.sender_user_id}` : '—');
+      setLabeledValue('#tab-client .context-line', 'Assigned', `Alex / ${payload.recipient_name || '—'}`);
+      setLabeledValue('#tab-client .context-line', 'Status', stageMeta.label);
+      setLabeledValue('#tab-client .context-line', 'Unread', String(payload.unread_count || 0));
+
       const drawerTitle = root.querySelector('.pinned-drawer-sub');
       if (drawerTitle) {
         drawerTitle.textContent = `Important points in ${payload.display_contact_name || 'this conversation'}`;
       }
+      renderBadgeTransition(payload, previousLabels);
     };
 
     const setActiveConversationItem = (nextItem) => {
@@ -3865,6 +3945,8 @@
       }
 
       event.preventDefault();
+      const previousItem = list.querySelector('.conv-item.active, .list-group-item.active');
+      const previousPayload = previousItem && previousItem !== item ? getConversationSwitchPayload(previousItem) : null;
       const payload = getConversationSwitchPayload(item);
       if (!payload.conversation_id) {
         return;
@@ -3874,7 +3956,7 @@
       root.classList.add('is-switching-conversation');
       requestConversationSwitch(payload)
         .then((data) => {
-          applyDemoConversationSwitch(data?.conversation || payload);
+          applyDemoConversationSwitch(data?.conversation || payload, previousPayload?.labels || []);
         })
         .catch(() => {
           list.querySelectorAll('.conv-item, .list-group-item').forEach((candidate) => {
