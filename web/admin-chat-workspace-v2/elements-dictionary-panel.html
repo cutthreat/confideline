@@ -1819,6 +1819,64 @@
       line-height: 1.45;
     }
 
+    .flow-rule-group {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .flow-rule-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 12px 0 0;
+      color: #475467;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .flow-rule-title::after {
+      content: "";
+      height: 1px;
+      flex: 1;
+      background: var(--line);
+    }
+
+    .flow-alt-card {
+      border: 1px solid #ffd6a6 !important;
+      background: #fff8ed !important;
+    }
+
+    .flow-alt-card strong {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .flow-alt-label {
+      display: inline-flex !important;
+      align-items: center;
+      width: fit-content;
+      margin: 0 !important;
+      border: 1px solid #f7b267;
+      border-radius: 999px;
+      background: #fff3df;
+      color: #b45309 !important;
+      padding: 2px 7px;
+      font-size: 10px !important;
+      font-weight: 900;
+      line-height: 1.2 !important;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .flow-alt-card span:not(.flow-alt-label) {
+      color: #7a4b14;
+    }
+
     .empty {
       padding: 28px;
       color: var(--muted);
@@ -2198,6 +2256,18 @@
                 <div><strong>Модератор</strong><span>Риски и командные заметки ограничивают давление в продаже, safety и quality ошибки.</span></div>
                 <div><strong>Личное эксперта</strong><span>Favorite и private note помогают эксперту вернуться к кейсу, но не маршрутизируют команду.</span></div>
               </div>
+              <div class="flow-rule-title">Альтернативные применения SLA</div>
+              <div class="flow-rule-group">
+                <div class="flow-alt-card"><strong><span class="flow-alt-label">Альтернатива</span>Paid session SLA</strong><span>Если клиент находится в активной paid-сессии именно с этим экспертом и ждет ответа по оплаченной теме, SLA может считаться по более короткому порогу. Это не новый бейдж: тот же SLA получает более высокий приоритет очереди.</span></div>
+                <div class="flow-alt-card"><strong><span class="flow-alt-label">Альтернатива</span>Payment handoff SLA</strong><span>Если клиент завис на оплате, задал вопрос по платежу или не понимает следующий шаг после PP, SLA можно включать для быстрого сопровождения оплаты. Важно: сам факт PP без входящего вопроса SLA не создает.</span></div>
+                <div class="flow-alt-card"><strong><span class="flow-alt-label">Альтернатива</span>Safety SLA</strong><span>Если в активном Chat есть Risk или тревожная фраза клиента, SLA может считать не коммерческий ответ, а обязательную безопасную реакцию: аккуратное уточнение, деэскалацию или передачу модератору.</span></div>
+                <div class="flow-alt-card"><strong><span class="flow-alt-label">Альтернатива</span>Moderator SLA</strong><span>Если модератор оставил обязательную инструкцию и эксперт должен отреагировать в диалоге, SLA может отслеживать выполнение этой инструкции. Это применяется только к явному required action, а не к обычной заметке.</span></div>
+              </div>
+              <div class="flow-rule-title">Другие альтернативы отображения</div>
+              <div class="flow-rule-group">
+                <div class="flow-alt-card"><strong><span class="flow-alt-label">Альтернатива</span>Sell без PP</strong><span>Если у клиента уже есть деньги/кредиты, успешный Sell не обязан переходить в PP. Следующий корректный статус - Paid или старт paid-сессии.</span></div>
+                <div class="flow-alt-card"><strong><span class="flow-alt-label">Альтернатива</span>Risk и Safe</strong><span>Risk остается глобальным предупреждением. Safe может локально заменить Risk только для эксперта, который проверил диалог и продолжает его безопасно.</span></div>
+              </div>
             </aside>
           </div>
         </section>
@@ -2270,6 +2340,13 @@
                 <div><strong>Нужен повод</strong><span>Fire, Paid и причина Ping защищают от случайного массового касания.</span></div>
                 <div><strong>Конверсия</strong><span>Цель Pings - не ответить ради ответа, а перевести подходящий сигнал в Chat.</span></div>
                 <div><strong>Личная память</strong><span>В Pings используется private note без отдельного бейджа. Это помогает эксперту вернуться к лиду, но не создает глобальный приоритет.</span></div>
+              </div>
+              <div class="flow-rule-title">Альтернативные применения Pings</div>
+              <div class="flow-rule-group">
+                <div class="flow-alt-card"><strong><span class="flow-alt-label">Альтернатива</span>Reply без Chat SLA</strong><span>Если клиент ответил на первое касание внутри Ping, можно показывать Reply как ход эксперта. SLA при этом не включается, пока Ping не стал активным Chat.</span></div>
+                <div class="flow-alt-card"><strong><span class="flow-alt-label">Альтернатива</span>Fire поверх Hot</strong><span>Если клиент не просто недавно касался эксперта, а прямо сейчас активно изучает профиль, тему или payment path, Fire временно заменяет Hot. После окончания окна Fire сигнал может вернуться к Hot, если 4-часовое окно еще активно.</span></div>
+                <div class="flow-alt-card"><strong><span class="flow-alt-label">Альтернатива</span>Paid как контекст, не свежесть</strong><span>Paid в Pings не заменяет NEW, Hot или Fire. Он меняет тон первого касания: это уже не холодный лид, а клиент с платежной историей.</span></div>
+                <div class="flow-alt-card"><strong><span class="flow-alt-label">Альтернатива</span>Risk поверх интереса</strong><span>Risk не обязан скрывать Fire или Hot, но меняет разрешенное действие: эксперт не давит, не продает и сначала проверяет безопасный контекст.</span></div>
               </div>
             </aside>
           </div>
