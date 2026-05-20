@@ -2351,7 +2351,7 @@
           ['Last activity', 'Система показывает время последнего события. Нужен для оценки свежести и срочности.'],
           ['Preview', 'Система показывает последнее значимое событие или причину Ping. Это повод открыть карточку, не полный контекст.'],
           ['Favorite', 'Только Chats. Эксперт ставит личный флаг. Его видит только этот эксперт; команда и модератор не должны использовать его как глобальный приоритет.'],
-          ['Индикаторы карточки', 'Paid, Reply, Live, SLA, PP, Sell, NEW, Hot, Fire и Await выделены отдельным сектором ниже, чтобы их нельзя было пропустить в разборе.']
+          ['Индикаторы карточки', 'Reply, SLA, Paid, Live, PP, Sell, Favorite, Risk, NEW, Hot, Fire, Await и Revive выделены отдельным сектором ниже, чтобы их нельзя было пропустить в разборе.']
         ],
         variables: ['conversation_id', 'client_id', 'expert_profile_id', 'last_activity_at', 'scenario_context', 'favorite_private_flag'],
         triggers: ['System обновляет preview и last activity.', 'Expert ставит Favorite только для себя в Chats.', 'Клик по карточке открывает этот кейс в центре и справа.'],
@@ -2372,7 +2372,7 @@
           ['SLA', 'Chats. Клиент ждет ответа дольше установленной нормы. Это риск жалобы, потери интереса и снижения вероятности оплаты.'],
           ['PP', 'Chats. Клиент дошел до этапа оплаты, но не завершил платеж или платеж не подтвержден. Нужно мягко подвести к завершению платежа.'],
           ['Sell', 'Chats. Система видит, что клиент достаточно прогрет: есть интерес, контекст и уместный момент предложить paid-сессию.'],
-          ['NEW / Hot / Fire / Paid / Reply / Await', 'Pings. Fire = клиент активен сейчас или был активен в последние 15 минут. Hot = свежее касание эксперта на 4 часа. NEW = 24 часа от последнего касания клиента. Paid = клиент уже платил. Reply/Await показывают, чей следующий ход.'],
+          ['NEW / Hot / Fire / Paid / Reply / Await / Revive / Risk', 'Pings. Fire = клиент активен сейчас или был активен в последние 15 минут. Hot = свежее касание эксперта на 4 часа. NEW = 24 часа от последнего касания клиента. Paid = клиент уже платил. Reply/Await показывают, чей следующий ход. Revive объясняет возврат старого клиента. Risk ограничивает первое касание.'],
           ['Favorite/star', 'Только Chats. Эксперт ставит вручную и видит только свои флаги. Это личная навигация, не глобальный приоритет очереди.']
         ],
         variables: ['paid_session_status', 'reply_state', 'sla_state', 'payment_pending_status', 'offer_action', 'ping_status', 'favorite_private_flag'],
@@ -3275,8 +3275,8 @@
         const badge = row => cleanDraftBadgeAnchor(row);
         const placedIn = (row, zone) => badgePlacement(row).zones.includes(zone);
         const sectorBadges = {
-          'left-card-badges': ['Reply', 'SLA', 'Paid', 'Live', 'Favorite', 'Risk', 'NEW', 'Hot', 'Fire', 'Await', 'Revive'],
-          'left-card-list': ['Reply', 'SLA', 'Paid', 'Live', 'Favorite', 'Risk', 'NEW', 'Hot', 'Fire', 'Await', 'Revive'],
+          'left-card-badges': ['Reply', 'SLA', 'Paid', 'Live', 'PP', 'Sell', 'Favorite', 'Risk', 'NEW', 'Hot', 'Fire', 'Await', 'Revive'],
+          'left-card-list': ['Reply', 'SLA', 'Paid', 'Live', 'PP', 'Sell', 'Favorite', 'Risk', 'NEW', 'Hot', 'Fire', 'Await', 'Revive'],
           'center-session': ['Paid', 'Live'],
           'right-workflow': ['Trial', 'Skeptic', 'Sell', 'Revive', 'Risk', 'Safe', 'Fire'],
           'right-pay': ['PP', 'Coupon', 'Paid'],
