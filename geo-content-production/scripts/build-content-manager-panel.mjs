@@ -110,6 +110,12 @@ function writeUtf8(filePath, content) {
   fs.writeFileSync(filePath, content, 'utf8');
 }
 
+function debugStep(label) {
+  if (process.env.GEO_PANEL_DEBUG === '1') {
+    console.error(`[geo-panel] ${new Date().toISOString()} ${label}`);
+  }
+}
+
 function slugifyTitle(title) {
   return String(title || '')
     .replace(/_Astro$/i, '')
@@ -721,6 +727,26 @@ function renderAdminPanel(totals, reportSources) {
       title: 'country-photo-audit.json',
       href: './country-photo-audit.json',
       text: 'Машинная версия аудита фото по всем странам.'
+    },
+    {
+      title: 'city-photo-audit.csv',
+      href: './city-photo-audit.csv',
+      text: 'Проверка городов: что видит панель, что найдено в Drive, открываются ли ссылки на фото.'
+    },
+    {
+      title: 'city-photo-audit.json',
+      href: './city-photo-audit.json',
+      text: 'Машинная версия аудита фото по всем городам.'
+    },
+    {
+      title: 'geo-text-audit.csv',
+      href: './geo-text-audit.csv',
+      text: 'Проверка TXT-пакетов: 12 файлов, 6 языков и базовая структура по каждой стране и городу.'
+    },
+    {
+      title: 'geo-text-audit.json',
+      href: './geo-text-audit.json',
+      text: 'Машинная версия аудита TXT-пакетов по всем страницам.'
     }
   ];
 
@@ -980,12 +1006,14 @@ function buildCsvRows(pages) {
 }
 
 function main() {
+  debugStep('start');
   const expectedPanelRoot = path.join(projectRoot, 'web', 'geo-content-panel');
   if (path.resolve(panelRoot) !== path.resolve(expectedPanelRoot)) {
     throw new Error(`Unexpected panel root: ${panelRoot}`);
   }
   fs.mkdirSync(panelFilesRoot, { recursive: true });
 
+  debugStep('load inputs');
   const manifest = loadManifestOrder();
   const pageList = loadPageList();
   const countries = normalizeItems('country', path.join(sourceRoot, 'countries'), manifest.country, pageList);
@@ -997,9 +1025,12 @@ function main() {
   const countryCodeBySlug = loadCountryCodeMap();
   const cityIdMap = loadCityIdMap(cities, countryCodeBySlug);
 
+  debugStep('copy country files');
   const countryResult = sanitizeSourceAndCopy(countries, 'countries');
+  debugStep('copy city files');
   const cityResult = sanitizeSourceAndCopy(cities, 'cities');
 
+  debugStep('build models');
   const context = { photoIndex, countryVerifyStatuses, cityVerifyStatuses, countryIdMap, cityIdMap };
   const countryPages = countries.map((item, index) => buildPageModel(item, 'countries', index + 1, context));
   const cityPages = cities.map((item, index) => buildPageModel(item, 'cities', countries.length + index + 1, context));
@@ -1060,6 +1091,7 @@ function main() {
     }))
   };
 
+  debugStep('write panel files');
   writeUtf8(path.join(panelRoot, 'index.html'), renderPanel(countryPages, cityPages, totals, reportSources));
   writeUtf8(path.join(panelRoot, 'admin.html'), renderAdminPanel(totals, reportSources));
   writeUtf8(path.join(panelRoot, 'manifest.json'), JSON.stringify(manifestJson, null, 2));
@@ -1070,6 +1102,7 @@ function main() {
   writeUtf8(cssPath, renderCss());
   writeUtf8(jsPath, renderJs());
 
+  debugStep('done');
   console.log(JSON.stringify({
     status: 'PASS',
     panel: path.join(panelRoot, 'index.html'),

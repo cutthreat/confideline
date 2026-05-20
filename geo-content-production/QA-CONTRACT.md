@@ -25,6 +25,8 @@ H:\GPT-Codex\Confideline\geo-content-production\scripts\Invoke-GeoContentQa.ps1 
 - `driveFolderFetchFailed > 0`
 - any Google Docs URL shown as a photo folder
 - country count mismatch between `manifest.json` and `country-photo-audit.json`
+- city count mismatch between `manifest.json` and `city-photo-audit.json`
+- incomplete TXT package in `geo-text-audit.json`
 - failed local or public Pages check
 
 ## Current Evidence Files
@@ -33,6 +35,10 @@ H:\GPT-Codex\Confideline\geo-content-production\scripts\Invoke-GeoContentQa.ps1 
 - `web/geo-content-panel/drive-photo-index.json`
 - `web/geo-content-panel/country-photo-audit.csv`
 - `web/geo-content-panel/country-photo-audit.json`
+- `web/geo-content-panel/city-photo-audit.csv`
+- `web/geo-content-panel/city-photo-audit.json`
+- `web/geo-content-panel/geo-text-audit.csv`
+- `web/geo-content-panel/geo-text-audit.json`
 - `reports/geo-content-qa/latest.json`
 
 ## Status Semantics
