@@ -582,6 +582,7 @@
 
     .real-mockup-card,
     .area-inspector-card {
+      min-width: 0;
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -889,13 +890,17 @@
 
     .sector-dictionary-list {
       display: grid;
-      gap: 6px;
-      max-height: 360px;
-      overflow: auto;
-      padding-right: 3px;
+      gap: 8px;
+      max-height: min(440px, calc(100vh - 430px));
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-right: 4px;
     }
 
     .sector-dictionary-row {
+      min-width: 0;
+      display: grid;
+      gap: 8px;
       border: 1px solid var(--line);
       border-radius: 7px;
       background: #fff;
@@ -905,9 +910,9 @@
     .sector-dictionary-row-title {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 5px;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      gap: 6px;
     }
 
     .sector-dictionary-row-title strong {
@@ -919,19 +924,35 @@
       display: flex;
       flex-wrap: wrap;
       gap: 5px;
-      margin-bottom: 5px;
     }
 
-    .sector-dictionary-row p {
-      margin: 0;
+    .sector-dictionary-field-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .sector-dictionary-field {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .sector-dictionary-field b {
+      color: var(--text);
+      font-size: 12px;
+      line-height: 1.25;
+    }
+
+    .sector-dictionary-field span {
+      min-width: 0;
       color: var(--muted);
       font-size: 12px;
-      line-height: 1.4;
+      line-height: 1.42;
+      overflow-wrap: anywhere;
     }
 
     .sector-dictionary-row small {
       display: block;
-      margin-top: 5px;
       color: var(--muted);
       font-size: 11px;
       overflow-wrap: anywhere;
@@ -3195,11 +3216,12 @@
             ${tag(typeLabel[row.type] || row.type, '')}
             ${sourceTag(row)}
           </div>
-          <p><b>Кто назначает:</b> ${readableText(row.caller)}</p>
-          <p><b>Когда появляется:</b> ${readableText(badgeWhen(row))}</p>
-          <p><b>Что делает:</b> ${readableText(badgeDoes(row))}</p>
-          <p><b>Зачем нужен:</b> ${readableText(badgePurpose(row))}</p>
-          <small>Строка словаря: ${row.id}</small>
+          <div class="sector-dictionary-field-list">
+            <div class="sector-dictionary-field"><b>Кто ставит</b><span>${readableText(row.caller)}</span></div>
+            <div class="sector-dictionary-field"><b>Когда</b><span>${readableText(badgeWhen(row))}</span></div>
+            <div class="sector-dictionary-field"><b>Что сигнализирует</b><span>${readableText(badgeDoes(row))}</span></div>
+            <div class="sector-dictionary-field"><b>Зачем эксперту</b><span>${readableText(badgePurpose(row))}</span></div>
+          </div>
         </div>
       `).join('');
     }
