@@ -383,46 +383,6 @@
       line-height: 1;
     }
 
-    .badge-name-options {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      margin-top: 7px;
-      max-width: 210px;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 700;
-      line-height: 1.35;
-    }
-
-    .badge-name-option {
-      display: inline-flex;
-      align-items: center;
-      min-height: 20px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      border: 1px solid #d0d5dd;
-      background: #fff;
-      color: #667085;
-      white-space: nowrap;
-    }
-
-    .badge-name-option.is-best {
-      border-color: #86d39d;
-      background: #ecfdf3;
-      color: #027a48;
-      box-shadow: 0 0 0 1px rgba(2, 122, 72, 0.06);
-    }
-
-    .badge-name-option.is-best::before {
-      content: "лучшее";
-      margin-right: 4px;
-      color: #027a48;
-      font-size: 9px;
-      font-weight: 900;
-      text-transform: uppercase;
-    }
-
     .placement-cell {
       display: flex;
       flex-direction: column;
@@ -731,7 +691,7 @@
     .badge-map-group {
       position: absolute;
       pointer-events: auto;
-      display: flex;
+      display: none;
       flex-wrap: wrap;
       align-content: flex-start;
       gap: 4px;
@@ -742,6 +702,10 @@
       padding: 7px;
       cursor: pointer;
       backdrop-filter: blur(2px);
+    }
+
+    .badge-map-group.is-visible {
+      display: flex;
     }
 
     .badge-map-group:hover,
@@ -786,10 +750,59 @@
     .badge-map-left-pings { left: 19.1%; top: 39.7%; width: 21.9%; min-height: 11%; }
     .badge-map-center-header { left: 43%; top: 13.4%; width: 33.8%; min-height: 6.8%; }
     .badge-map-center-session { left: 43%; top: 21.2%; width: 33.8%; min-height: 7.3%; }
-    .badge-map-center-composer { left: 43%; top: 83.7%; width: 33.8%; min-height: 9.2%; }
     .badge-map-right-workflow { right: 2.1%; top: 59.9%; width: 18.8%; min-height: 12.1%; }
     .badge-map-right-pay { right: 2.1%; top: 73.3%; width: 18.8%; min-height: 9.8%; }
     .badge-map-right-notes { right: 2.1%; top: 84.2%; width: 18.8%; min-height: 9.2%; }
+
+    .map-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 10px 0 8px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .map-toolbar-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .map-mode-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .map-mode-button {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--text);
+      padding: 6px 10px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .map-mode-button:hover,
+    .map-mode-button.is-active {
+      border-color: rgba(11, 87, 208, 0.42);
+      background: #eff6ff;
+      color: #0b57d0;
+    }
+
+    .map-mode-button[data-badge-map-show-all="Pings"].is-active {
+      border-color: rgba(2, 122, 72, 0.32);
+      background: #ecfdf3;
+      color: #027a48;
+    }
 
     .sector-guide {
       display: grid;
@@ -1742,8 +1755,8 @@
             <div class="sector-guide-group">
               <div class="sector-guide-title"><span>Левая область</span><span>Очередь</span></div>
               <div class="sector-guide-list">
-                <button class="sector-guide-button sector-trigger is-active" type="button" data-sector="left-workload"><strong>1</strong><span>Режим Chats / Pings / Archive</span></button>
-                <button class="sector-guide-button sector-trigger" type="button" data-sector="left-search"><strong>2</strong><span>Поиск и фильтры</span></button>
+                <button class="sector-guide-button sector-trigger" type="button" data-sector="left-workload"><strong>1</strong><span>Режим Chats / Pings / Archive</span></button>
+                <button class="sector-guide-button sector-trigger is-active" type="button" data-sector="left-search"><strong>2</strong><span>Поиск и фильтры</span></button>
                 <button class="sector-guide-button sector-trigger" type="button" data-sector="left-active-card"><strong>3</strong><span>Активная карточка</span></button>
                 <button class="sector-guide-button sector-trigger" type="button" data-sector="left-card-badges"><strong>4</strong><span>Индикаторы карточки</span></button>
                 <button class="sector-guide-button sector-trigger" type="button" data-sector="left-card-list"><strong>5</strong><span>Остальная очередь</span></button>
@@ -1769,28 +1782,30 @@
               </div>
             </div>
           </div>
+          <div class="map-toolbar" aria-label="Режим показа бейджей на макете">
+            <div class="map-toolbar-note">
+              По умолчанию бейджи показываются только в выбранном секторе. Для общего прохода включите полный слой отдельно по Chats или Pings.
+            </div>
+            <div class="map-mode-buttons">
+              <button class="map-mode-button is-active" type="button" data-badge-map-mode="sector">Только выбранный сектор</button>
+              <button class="map-mode-button" type="button" data-badge-map-show-all="Chats">Показать все Chats</button>
+              <button class="map-mode-button" type="button" data-badge-map-show-all="Pings">Показать все Pings</button>
+            </div>
+          </div>
           <div class="mockup-frame">
             <div class="mockup-scale-stage" id="mockupScaleStage">
               <iframe id="mockupIframe" data-src="./index.html?v=badge-map-20260515" title="Макет админ-панели чата V2" srcdoc="<p style=&quot;font:14px Arial;padding:16px;color:#667085&quot;>Загрузка макета...</p>"></iframe>
               <div class="badge-map-overlay" aria-label="Карта размещения бейджей внутри макета">
-                <button class="badge-map-group badge-map-left-filters sector-trigger" type="button" data-sector="left-search" aria-label="Левая область: фильтры бейджей">
-                  <span class="badge-map-title">Левая / фильтры</span>
+                <button class="badge-map-group badge-map-left-filters sector-trigger" type="button" data-sector="left-search" data-map-scenarios="Chats" aria-label="Левая область: фильтры Chats">
+                  <span class="badge-map-title">Фильтры Chats</span>
                   <span class="badge-map-chip">Reply</span>
                   <span class="badge-map-chip badge-map-chip--hot">SLA</span>
                   <span class="badge-map-chip badge-map-chip--paid">Live</span>
                   <span class="badge-map-chip badge-map-chip--paid">PP</span>
                   <span class="badge-map-chip badge-map-chip--hot">Sell</span>
                 </button>
-                <button class="badge-map-group badge-map-left-card sector-trigger" type="button" data-sector="left-card-badges" aria-label="Левая область: бейджи карточки Chats">
-                  <span class="badge-map-title">Карточка Chats</span>
-                  <span class="badge-map-chip">Reply</span>
-                  <span class="badge-map-chip badge-map-chip--hot">SLA</span>
-                  <span class="badge-map-chip badge-map-chip--paid">Paid</span>
-                  <span class="badge-map-chip badge-map-chip--paid">Live</span>
-                  <span class="badge-map-chip badge-map-chip--manual">Favorite</span>
-                </button>
-                <button class="badge-map-group badge-map-left-pings sector-trigger" type="button" data-sector="left-card-list" aria-label="Левая область: бейджи Pings">
-                  <span class="badge-map-title">Очередь Pings</span>
+                <button class="badge-map-group badge-map-left-filters sector-trigger" type="button" data-sector="left-search" data-map-scenarios="Pings" aria-label="Левая область: фильтры Pings">
+                  <span class="badge-map-title">Фильтры Pings</span>
                   <span class="badge-map-chip">NEW</span>
                   <span class="badge-map-chip badge-map-chip--hot">Hot</span>
                   <span class="badge-map-chip badge-map-chip--hot">Fire</span>
@@ -1798,51 +1813,66 @@
                   <span class="badge-map-chip">Reply</span>
                   <span class="badge-map-chip badge-map-chip--wait">Await</span>
                 </button>
-                <button class="badge-map-group badge-map-center-header sector-trigger" type="button" data-sector="center-header" aria-label="Центр: шапка открытого кейса">
-                  <span class="badge-map-title">Центр / шапка</span>
+                <button class="badge-map-group badge-map-left-card sector-trigger" type="button" data-sector="left-card-badges" data-map-scenarios="Chats" aria-label="Левая область: бейджи карточки Chats">
+                  <span class="badge-map-title">Карточка Chats</span>
+                  <span class="badge-map-chip">Reply</span>
+                  <span class="badge-map-chip badge-map-chip--hot">SLA</span>
                   <span class="badge-map-chip badge-map-chip--paid">Paid</span>
                   <span class="badge-map-chip badge-map-chip--paid">Live</span>
-                  <span class="badge-map-chip badge-map-chip--paid">PP</span>
+                  <span class="badge-map-chip badge-map-chip--manual">Favorite</span>
+                  <span class="badge-map-chip badge-map-chip--risk">Risk</span>
+                </button>
+                <button class="badge-map-group badge-map-left-card sector-trigger" type="button" data-sector="left-card-badges" data-map-scenarios="Pings" aria-label="Левая область: бейджи карточки Pings">
+                  <span class="badge-map-title">Карточка Pings</span>
+                  <span class="badge-map-chip">NEW</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Hot</span>
                   <span class="badge-map-chip badge-map-chip--hot">Fire</span>
+                  <span class="badge-map-chip badge-map-chip--paid">Paid</span>
+                  <span class="badge-map-chip">Reply</span>
                   <span class="badge-map-chip badge-map-chip--wait">Await</span>
                 </button>
-                <button class="badge-map-group badge-map-center-session sector-trigger" type="button" data-sector="center-session" aria-label="Центр: paid и offer action">
-                  <span class="badge-map-title">Paid / сессия</span>
+                <button class="badge-map-group badge-map-left-pings sector-trigger" type="button" data-sector="left-card-list" data-map-scenarios="Pings" aria-label="Левая область: очередь Pings">
+                  <span class="badge-map-title">Очередь Pings</span>
+                  <span class="badge-map-chip">NEW</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Hot</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Fire</span>
+                  <span class="badge-map-chip badge-map-chip--paid">Paid</span>
+                </button>
+                <button class="badge-map-group badge-map-center-session sector-trigger" type="button" data-sector="center-session" data-map-scenarios="Chats" aria-label="Центр: paid и offer action">
+                  <span class="badge-map-title">Center status</span>
                   <span class="badge-map-chip badge-map-chip--paid">Paid</span>
                   <span class="badge-map-chip badge-map-chip--paid">Live</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Offer action</span>
                 </button>
-                <button class="badge-map-group badge-map-center-composer sector-trigger" type="button" data-sector="center-composer" aria-label="Центр: подсказки ответа">
-                  <span class="badge-map-title">Поле ответа</span>
-                  <span class="badge-map-chip badge-map-chip--manual">Safe</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Skeptic</span>
+                <button class="badge-map-group badge-map-right-workflow sector-trigger" type="button" data-sector="right-workflow" data-map-scenarios="Chats" aria-label="Правая область: сценарий Chats">
+                  <span class="badge-map-title">Сценарий Chats</span>
                   <span class="badge-map-chip">Trial</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Skeptic</span>
                   <span class="badge-map-chip badge-map-chip--hot">Sell</span>
-                </button>
-                <button class="badge-map-group badge-map-right-workflow sector-trigger" type="button" data-sector="right-workflow" aria-label="Правая область: сценарий и риски">
-                  <span class="badge-map-title">Правая / сценарий</span>
-                  <span class="badge-map-chip">Trial</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Skeptic</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Revive</span>
                   <span class="badge-map-chip badge-map-chip--risk">Risk</span>
                   <span class="badge-map-chip badge-map-chip--manual">Safe</span>
                 </button>
-                <button class="badge-map-group badge-map-right-pay sector-trigger" type="button" data-sector="right-pay" aria-label="Правая область: деньги">
-                  <span class="badge-map-title">Правая / деньги</span>
-                  <span class="badge-map-chip badge-map-chip--paid">Paid</span>
+                <button class="badge-map-group badge-map-right-workflow sector-trigger" type="button" data-sector="right-workflow" data-map-scenarios="Pings" aria-label="Правая область: сценарий Pings">
+                  <span class="badge-map-title">Сценарий Pings</span>
+                  <span class="badge-map-chip">Trial</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Fire</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Revive</span>
+                  <span class="badge-map-chip badge-map-chip--risk">Risk</span>
+                </button>
+                <button class="badge-map-group badge-map-right-pay sector-trigger" type="button" data-sector="right-pay" data-map-scenarios="Chats" aria-label="Правая область: деньги Chats">
+                  <span class="badge-map-title">Деньги Chats</span>
                   <span class="badge-map-chip badge-map-chip--paid">PP</span>
                   <span class="badge-map-chip badge-map-chip--manual">Coupon</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Revive</span>
                 </button>
-                <button class="badge-map-group badge-map-right-notes sector-trigger" type="button" data-sector="right-notes" aria-label="Правая область: заметки и ручные флаги">
-                  <span class="badge-map-title">Правая / заметки</span>
-                  <span class="badge-map-chip badge-map-chip--manual">Private note</span>
-                  <span class="badge-map-chip badge-map-chip--risk">Moderator note</span>
-                  <span class="badge-map-chip badge-map-chip--risk">Risk</span>
+                <button class="badge-map-group badge-map-right-pay sector-trigger" type="button" data-sector="right-pay" data-map-scenarios="Pings" aria-label="Правая область: деньги Pings">
+                  <span class="badge-map-title">Деньги Pings</span>
+                  <span class="badge-map-chip badge-map-chip--paid">Paid</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Revive</span>
                 </button>
               </div>
               <div class="mockup-overlay" aria-label="Кликабельные сектора макета">
-                <button class="sector-hotspot sector-trigger sector-left sector-left-workload is-active" type="button" data-sector="left-workload" aria-label="1. Режим Chats, Pings или Archive"><span>1</span></button>
-                <button class="sector-hotspot sector-trigger sector-left sector-left-search" type="button" data-sector="left-search" aria-label="2. Поиск и фильтры очереди"><span>2</span></button>
+                <button class="sector-hotspot sector-trigger sector-left sector-left-workload" type="button" data-sector="left-workload" aria-label="1. Режим Chats, Pings или Archive"><span>1</span></button>
+                <button class="sector-hotspot sector-trigger sector-left sector-left-search is-active" type="button" data-sector="left-search" aria-label="2. Поиск и фильтры очереди"><span>2</span></button>
                 <button class="sector-hotspot sector-trigger sector-left sector-left-active-card" type="button" data-sector="left-active-card" aria-label="3. Активная карточка очереди"><span>3</span></button>
                 <button class="sector-hotspot sector-trigger sector-left sector-left-card-badges" type="button" data-sector="left-card-badges" aria-label="4. Индикаторы карточки"><span>4</span></button>
                 <button class="sector-hotspot sector-trigger sector-left sector-left-card-list" type="button" data-sector="left-card-list" aria-label="5. Остальная очередь"><span>5</span></button>
@@ -2351,7 +2381,7 @@
         purpose: 'Отдельная строка бейджей отвечает на вопрос: почему именно эта карточка срочная, денежная или сценарно важная до чтения правой панели.',
         role: 'В этой зоне находится строка коротких индикаторов карточки. По ним пользователь понимает срочность, оплату, ожидание ответа, риск SLA или причину Ping без открытия правой панели.',
         includes: [
-          ['Paid', 'Chats. У клиента пополнен кошелек для оплаты консультации. Начать платную консультацию можно прямо сейчас. Альтернатива для названия: $.'],
+          ['Paid', 'Chats. У клиента пополнен кошелек для оплаты консультации. Начать платную консультацию можно прямо сейчас.'],
           ['Reply', 'Chats. Клиент отправил входящее сообщение эксперту и ждет ответа. Следующий ход за экспертом.'],
           ['Live', 'Chats. У клиента идет активная платная сессия с другим экспертом. Текущий эксперт видит, что клиента нельзя трогать до завершения этой сессии.'],
           ['SLA', 'Chats. Клиент ждет ответа дольше установленной нормы. Это риск жалобы, потери интереса и снижения вероятности оплаты.'],
@@ -2388,14 +2418,12 @@
         area: 'Центральная',
         layer: 'Header indicators',
         scenarios: ['Chats', 'Pings'],
-        purpose: 'Шапка подтверждает, какой клиент и какой экспертный профиль сейчас открыт, и показывает краткие статусы, влияющие на ответ.',
-        role: 'В этой зоне находится паспорт открытого кейса: клиент, экспертный профиль, текущая стадия и краткие статусы. Она удерживает пользователя в правильном сценарии перед ответом.',
+        purpose: 'Шапка подтверждает, какой клиент и какой экспертный профиль сейчас открыт. Бейджи сюда не переносим по умолчанию: обученный эксперт смотрит состояние очереди слева, а причины справа.',
+        role: 'В этой зоне находится паспорт открытого кейса: клиент, экспертный профиль и базовая ориентация. Это не второй список бейджей и не замена правой панели.',
         includes: [
           ['Client -> expert profile', 'Система подтверждает, какой клиент и какой видимый экспертный профиль открыт. Это защита от ответа не от того образа.'],
-          ['Сценарий', 'Workflow показывает текущий контекст: Trial, Paid, Skeptic, Revive или Ping reason. Это ориентир ответа, не фильтр очереди.'],
-          ['Live', 'Система показывает, что клиент сейчас в активной платной сессии с другим экспертом. Это ограничение: не писать и не продавать, пока Live не завершится.'],
-          ['PP', 'Payment system показывает ожидание платежа. Нужен, чтобы не писать как будто оплата уже завершена.'],
-          ['NEW / Hot / Fire / Paid / Reply / Await', 'Для Pings показывают свежесть сигнала, свежее касание эксперта, активный intent прямо сейчас, paid history и чей следующий ход.']
+          ['Состояние кейса', 'Краткая ориентация по открытому кейсу без дублирования очереди.'],
+          ['Без Pings-бейджей', 'NEW, Hot, Fire, Reply и Await остаются в левой очереди Pings. Если нужна причина, она раскрывается справа.']
         ],
         variables: ['active_conversation_id', 'scenario_context', 'paid_session_status', 'payment_pending_status', 'ping_reason'],
         triggers: ['System обновляет identity, last activity, Live/PP/Paid.', 'Workflow обновляет сценарный контекст.'],
@@ -2407,12 +2435,12 @@
         area: 'Центральная',
         layer: 'Paid session',
         scenarios: ['Chats'],
-        purpose: 'Сектор показывает, есть ли оплаченная сессия, кто ее ведет и сколько времени осталось.',
-        role: 'В этой зоне находится управление оплаченной сессией: старт, стоп, остаток времени и окно продления. Для Pings этот блок не используется, потому что Ping еще не является чатом.',
+        purpose: 'Сектор показывает только те статусы, которые прямо меняют действие эксперта в открытом кейсе: Paid и Live.',
+        role: 'Это единственная центральная зона для бейджей. Paid нужен рядом с запуском paid-консультации, Live нужен как стоп-сигнал, если у клиента идет чужая активная paid-сессия. Для Pings этот блок не используется.',
         includes: [
-          ['Start paid session', 'Эксперт запускает оплаченный интервал, когда оплата есть и delivery можно начинать.'],
-          ['Stop paid session', 'Эксперт завершает оплаченный интервал, когда консультация закончена или время отработано.'],
-          ['Offer action', 'Кнопка запуска отправки оффера. Используется, когда клиенту можно или нужно отправить offer со стороны эксперта. Это действие, не бейдж.']
+          ['Paid', 'У клиента пополнен кошелек для оплаты консультации. Это влияет на запуск платной консультации прямо сейчас.'],
+          ['Live', 'У клиента идет активная платная сессия с другим экспертом. Это стоп-сигнал: не писать, не продавать и не перебивать.'],
+          ['Offer action', 'Кнопка запуска оффера может быть рядом, но это действие, не бейдж.']
         ],
         variables: ['paid_session_status', 'offer_action', 'used_paid_minutes'],
         triggers: ['System подтверждает оплату.', 'Expert запускает или завершает paid-сессию.', 'Workflow разрешает кнопку оффера.'],
@@ -2441,11 +2469,11 @@
         area: 'Центральная',
         layer: 'Composer templates|Composer actions|Ping actions',
         scenarios: ['Chats', 'Pings'],
-        purpose: 'Поле ответа превращает понимание стадии в действие: ответ, предложение оплаты, приглашение из Ping в Chat, запрос компенсации, закрытие чата или снятие Ping из очереди.',
-        role: 'В этой зоне находится поле ответа и рабочие действия: шаблоны, отправка, коммерческое предложение, приглашение, компенсация, закрытие Chat или снятие Ping из очереди.',
+        purpose: 'Поле ответа превращает понимание стадии в действие: ответ, предложение оплаты, приглашение из Ping в Chat, запрос компенсации, закрытие чата или снятие Ping из очереди. Бейджи здесь не размещаются.',
+        role: 'В этой зоне не размещаем бейджи. Здесь находятся текст ответа, шаблоны и кнопки действий; бейджи должны объяснять состояние выше в шапке/сессии или справа в контексте, но не смешиваться с composer.',
         includes: [
-          ['Сценарная подсказка', 'Короткое объяснение следующего действия и предупреждения.'],
-          ['Шаблоны', 'Сценарные заготовки без универсального мусора.'],
+          ['Текст ответа', 'Эксперт пишет сообщение клиенту. Бейджи в это поле не кладем, чтобы не смешивать статус кейса с вводом текста.'],
+          ['Шаблоны', 'Сценарные заготовки и быстрые ответы. Это действия, а не бейджи.'],
           ['Действия', 'Chats: предложение оплаты, запрос компенсации, закрытие чата. Pings: отправка шаблона, приглашение в Chat, снятие из очереди.']
         ],
         variables: ['composer_mode', 'draft_text', 'scenario_action', 'scenario_warning', 'offer_type', 'invite_type'],
@@ -2713,7 +2741,7 @@
       const approved = approvedTagName(row);
       const className = approved ? 'ui-anchor-name is-approved' : 'ui-anchor-name';
       const star = approved ? `<span class="approved-star" title="Утвержденный тег: ${approved}" aria-label="Утвержденный тег">★</span>` : '';
-      return `<span class="${className}">${label}${star}</span>${renderBadgeNameOptions(row)}`;
+      return `<span class="${className}">${label}${star}</span>`;
     }
 
     function approvedInlineStar(row) {
@@ -2767,92 +2795,30 @@
       return `<div class="cell-stack">${tag(type.label, badgeTypeClass[type.label])}<span class="cell-layer">${type.note}</span></div>`;
     }
 
-    const badgeNameOptionsByBadge = {
-      Reply: { best: 'Reply', variants: ['Reply', 'Turn', 'Action'] },
-      SLA: { best: 'SLA', variants: ['SLA', 'Overdue', 'Late'] },
-      Live: { best: 'Live', variants: ['Live', 'Active', 'OnAir'] },
-      PP: { best: 'PP', variants: ['PP', 'Checkout', 'Pending'] },
-      Sell: { best: 'Sell', variants: ['Sell', 'Offer', 'Close'] },
-      Favorite: { best: 'Star', variants: ['Star', 'Favorite', 'Saved'] },
-      Trial: { best: 'Trial', variants: ['Trial', 'Intro', 'Limit'] },
-      Paid: { best: 'Paid', variants: ['Paid', '$', 'Wallet'] },
-      Revive: { best: 'Revive', variants: ['Revive', 'Return', 'Wake'] },
-      Risk: { best: 'Risk', variants: ['Risk', 'Warn', 'Alert'] },
-      'Safe': { best: 'Safe', variants: ['Safe', 'Clear', 'Override'] },
-      'Coupon': { best: 'Coupon', variants: ['Coupon', 'Comp', 'Review'] },
-      Skeptic: { best: 'Skeptic', variants: ['Skeptic', 'Doubt', 'Block'] },
-      Fire: { best: 'Fire', variants: ['Fire', 'Peak', 'Signal'] },
-      Hot: { best: 'Hot', variants: ['Hot', 'Warm', 'Fresh'] },
-      NEW: { best: 'NEW', variants: ['NEW', 'Recent', 'Lead'] },
-      Await: { best: 'Await', variants: ['Await', 'Pause', 'Hold'] }
-    };
-
-    function normalizedBadgeNameOption(value) {
-      return String(value || '').trim().toLowerCase();
-    }
-
-    function uniqueNameOptions(options) {
-      const seen = new Set();
-      return options.filter(option => {
-        const key = normalizedBadgeNameOption(option);
-        if (!key || seen.has(key)) {
-          return false;
-        }
-        seen.add(key);
-        return true;
-      });
-    }
-
-    function badgeNameOptions(row) {
-      const badge = cleanDraftBadgeAnchor(row);
-      const config = badgeNameOptionsByBadge[badge] || { best: badge, variants: [badge] };
-      const variants = uniqueNameOptions(config.variants || [badge]);
-      const best = variants.includes(config.best) ? config.best : variants[0];
-      return variants.map(option => ({ label: option, isBest: option === best }));
-    }
-
-    function renderBadgeNameOptions(row) {
-      const options = badgeNameOptions(row);
-      return `<span class="badge-name-options" aria-label="Варианты названия бейджа">${options.map(option => {
-        const className = option.isBest ? 'badge-name-option is-best' : 'badge-name-option';
-        const title = option.isBest
-          ? `Лучший термин: ${option.label}. Самый емкий по смыслу для этого бейджа.`
-          : `Альтернативный термин: ${option.label}.`;
-        return `<span class="${className}" title="${title}">${option.label}</span>`;
-      }).join('')}</span>`;
-    }
-
-    function badgeNameCollisionCount() {
-      const allNames = Object.values(badgeNameOptionsByBadge)
-        .flatMap(config => uniqueNameOptions(config.variants || []))
-        .map(normalizedBadgeNameOption)
-        .filter(Boolean);
-      return allNames.length - new Set(allNames).size;
-    }
-
     const placementByBadge = {
-      'Chats::Reply': { zones: ['Left', 'Center'], basis: ['AskNebula', 'PbExpert'], rule: 'Очередь ответа + статус текущего диалога.' },
-      'Chats::SLA': { zones: ['Left', 'Center'], basis: ['PbExpert', 'LLM'], rule: 'Просрочка должна поднимать карточку и предупреждать в открытом чате.' },
-      'Chats::Live': { zones: ['Left', 'Center'], basis: ['AskNebula', 'PbExpert'], rule: 'Чужая активная paid-сессия должна быть видна в очереди и перед отправкой ответа.' },
+      'Chats::Reply': { zones: ['Left'], basis: ['AskNebula', 'PbExpert'], rule: 'Рабочий сигнал очереди: клиент ждет ответа. В открытом чате это уже видно по истории, дублировать не нужно.' },
+      'Chats::SLA': { zones: ['Left'], basis: ['PbExpert', 'LLM'], rule: 'Приоритет очереди: поднимает просроченный диалог выше остальных. В центре не нужен, если эксперт уже открыл кейс.' },
+      'Chats::Live': { zones: ['Left', 'Center'], basis: ['AskNebula', 'PbExpert'], rule: 'Стоп-сигнал: слева помогает не трогать клиента, в центре защищает от действия в открытом диалоге.' },
       'Chats::PP': { zones: ['Left', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Почти-оплата нужна для отбора и платежного контекста.' },
-      'Chats::Sell': { zones: ['Left', 'Center'], basis: ['PbExpert', 'LLM'], rule: 'Сигнал готовности к оферу нужен в очереди и у composer.' },
+      'Chats::Sell': { zones: ['Left', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Сигнал готовности к оферу нужен в очереди и в сценарном контексте; composer содержит действие, а не бейдж.' },
       'Chats::Paid': { zones: ['Left', 'Center'], basis: ['AskNebula', 'PbExpert'], rule: 'Пополненный кошелек важен в очереди и рядом с запуском paid-консультации.' },
       'Chats::Favorite': { zones: ['Left'], basis: ['AskNebula', 'LLM'], rule: 'Личная навигационная отметка эксперта в списке.' },
-      'Chats::Trial': { zones: ['Center', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Граница бесплатной ценности влияет на ответ и контекст.' },
-      'Chats::Skeptic': { zones: ['Center', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Возражение меняет тон ответа и требует причины справа.' },
-      'Chats::Revive': { zones: ['Left', 'Right'], basis: ['AskNebula', 'PbExpert'], rule: 'Возврат клиента нужен для отбора и истории.' },
-      'Chats::Risk': { zones: ['Center', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Риск должен быть виден перед ответом и раскрыт в контексте.' },
-      'Chats::Safe': { zones: ['Center', 'Right'], basis: ['LLM'], rule: 'Перекрытие Risk влияет на ответ и должно жить рядом с модераторским контекстом.' },
+      'Chats::Trial': { zones: ['Right'], basis: ['PbExpert', 'LLM'], rule: 'Граница бесплатной ценности должна объясняться в контексте, не в поле ответа.' },
+      'Chats::Skeptic': { zones: ['Right'], basis: ['PbExpert', 'LLM'], rule: 'Возражение меняет тон ответа и требует причины справа; composer содержит шаблон, а не бейдж.' },
+      'Chats::Revive': { zones: ['Right'], basis: ['AskNebula', 'PbExpert'], rule: 'В активном чате это контекст возврата старого клиента, а не отдельный приоритет очереди.' },
+      'Chats::Risk': { zones: ['Left', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Слева предупреждает до открытия, справа раскрывает причину, источник и ограничение.' },
+      'Chats::Safe': { zones: ['Right'], basis: ['LLM'], rule: 'Перекрытие Risk должно жить рядом с модераторским контекстом, не в поле ответа.' },
       'Chats::Coupon': { zones: ['Right'], basis: ['PbExpert', 'LLM'], rule: 'Купон/компенсация относится к модераторскому решению и платежному контексту.' },
-      'Pings::Hot': { zones: ['Left', 'Center'], basis: ['AskNebula', 'LLM'], rule: 'Свежий персональный сигнал нужен в очереди и открытом Ping.' },
+      'Pings::Favorite': { zones: ['Left'], basis: ['AskNebula', 'LLM'], rule: 'Личная навигационная отметка эксперта в списке Pings; не глобальный приоритет.' },
+      'Pings::Hot': { zones: ['Left'], basis: ['AskNebula', 'LLM'], rule: 'Свежий 4-часовой сигнал нужен только для сортировки и отбора Pings.' },
       'Pings::NEW': { zones: ['Left'], basis: ['AskNebula', 'LLM'], rule: 'Freshness нужен для сортировки и отбора очереди.' },
-      'Pings::Fire': { zones: ['Left', 'Center'], basis: ['AskNebula', 'LLM'], rule: 'Сильный intent поднимает Ping и объясняет повод касания.' },
+      'Pings::Fire': { zones: ['Left', 'Right'], basis: ['AskNebula', 'LLM'], rule: 'Слева поднимает самый горячий Ping, справа объясняет причину Fire.' },
       'Pings::Paid': { zones: ['Left', 'Right'], basis: ['AskNebula', 'PbExpert'], rule: 'Paid history влияет на приоритет и сценарий реактивации.' },
-      'Pings::Reply': { zones: ['Left', 'Center'], basis: ['AskNebula', 'LLM'], rule: 'Следующий ход эксперта нужен в очереди и открытом Ping.' },
-      'Pings::Await': { zones: ['Left', 'Center'], basis: ['LLM'], rule: 'Ожидание клиента снижает срочность и защищает от повторного касания.' },
-      'Pings::Trial': { zones: ['Center', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Trial-граница управляет первым сообщением и контекстом.' },
+      'Pings::Reply': { zones: ['Left'], basis: ['AskNebula', 'LLM'], rule: 'Pre-chat сигнал, где следующий ход за экспертом. Нужен для очереди Pings, не для центра.' },
+      'Pings::Await': { zones: ['Left'], basis: ['LLM'], rule: 'Защита от спама: эксперт уже сделал касание, теперь ждем клиента.' },
+      'Pings::Trial': { zones: ['Right'], basis: ['PbExpert', 'LLM'], rule: 'Граница первого касания: не отдавать полный reading бесплатно. Не является приоритетом очереди.' },
       'Pings::Revive': { zones: ['Left', 'Right'], basis: ['AskNebula', 'PbExpert'], rule: 'Возврат клиента нужен для отбора и истории касаний.' },
-      'Pings::Risk': { zones: ['Center', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Риск ограничивает outreach и должен раскрываться справа.' }
+      'Pings::Risk': { zones: ['Left', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Слева предупреждает до outreach, справа раскрывает причину ограничения.' }
     };
 
     function badgePlacement(row) {
@@ -2860,7 +2826,7 @@
       const placement = placementByBadge[key] || { zones: [row.area === 'Левая' ? 'Left' : row.area === 'Центральная' ? 'Center' : 'Right'], basis: ['LLM'], rule: 'Базовая привязка к текущей области.' };
       return {
         zones: placement.zones.slice(0, 2),
-        basis: uniqueNameOptions(placement.basis || ['LLM']),
+        basis: Array.from(new Set(placement.basis || ['LLM'])),
         rule: placement.rule
       };
     }
@@ -2900,6 +2866,7 @@
       'Chats::Sell': 'Система видит, что клиент достаточно прогрет: есть интерес, контекст и уместный момент предложить платную сессию.',
       'Chats::SLA': 'Клиент ждет ответа дольше установленной нормы.',
       'Pings::Fire': 'Клиент прямо сейчас или в последние 15 минут активно изучал эксперта: возвращался к профилю или теме, кликал chat/payment path или показывал сильный expert interest.',
+      'Pings::Favorite': 'Эксперт сам помечает Ping как важный для себя. Это личная отметка, а не общий приоритет для команды.',
       'Pings::Trial': 'Клиент находится в бесплатном стартовом окне до платной консультации. Первое касание должно прогревать, а не заменять paid-сервис.',
       'Pings::Hot': 'Клиент недавно коснулся этого эксперта: открыл профиль, вернулся к нему, посмотрел чат/тему или как-то отреагировал. Окно длится 4 часа; если появляется Fire, Hot скрывается.',
       'Pings::Reply': 'В Ping появилось входящее событие от клиента, на которое должен ответить эксперт. Следующий ход за экспертом.',
@@ -2925,6 +2892,7 @@
       'Chats::Sell': 'Нужен, чтобы эксперт не пропустил момент офера: клиент уже достаточно прогрет, но предложение должно быть релевантным и без преждевременного давления.',
       'Chats::SLA': 'Нужен, чтобы сместить фокус эксперта на клиента. Диалог становится выше обычной очереди: задержка бьет по доверию, теряется интерес, снижается вероятность оплаты и растет риск жалобы.',
       'Pings::Fire': 'Самый сильный pre-chat сигнал: клиент, вероятно, онлайн прямо сейчас, поэтому эксперт должен фокусироваться на нем первым.',
+      'Pings::Favorite': 'Нужен как личная закладка эксперта: вернуться к перспективному Ping позже, не меняя глобальную очередь.',
       'Pings::Trial': 'Нужен, чтобы первое сообщение не стало бесплатной полной консультацией. Эксперт дает интригу и повод перейти в Chat/paid, а не весь reading.',
       'Pings::Hot': 'Нужен, чтобы эксперт быстро отработал свежий интерес к себе. Если за 4 часа клиент не перешел в Chat, сигнал ослабевает до NEW. NEW длится 24 часа от последнего касания клиента.',
       'Pings::Reply': 'Нужен, чтобы эксперт увидел Ping, где появился входящий сигнал. Это еще не активный чат, но уже требует реакции по pre-chat сценарию.',
@@ -2950,6 +2918,7 @@
       'Chats::Sell': 'Показывает уместный момент для офера paid-сессии',
       'Chats::SLA': 'Поднимает просроченное ожидание ответа',
       'Pings::Fire': 'Показывает активный intent прямо сейчас',
+      'Pings::Favorite': 'Сохраняет личную закладку эксперта',
       'Pings::Trial': 'Показывает бесплатную границу первого касания',
       'Pings::Hot': 'Показывает свежее 4-часовое окно интереса к эксперту',
       'Pings::Reply': 'Показывает, что следующий ход за экспертом',
@@ -3120,7 +3089,6 @@
         'Previous buyer',
         'Safe',
         'Coupon',
-        'Favorite',
         'Skeptic'
       ]);
 
@@ -3198,35 +3166,82 @@
       const chats = filtered.filter(row => row.scenario === 'Chats').length;
       const pings = filtered.filter(row => row.scenario === 'Pings').length;
       const approved = new Set(filtered.map(row => approvedTagName(row)).filter(Boolean)).size;
-      const nameCollisions = badgeNameCollisionCount();
       summaryStrip.innerHTML = `
         <span class="pill"><strong>${filtered.length}</strong> бейджей</span>
         <span class="pill pill-chats"><strong>${chats}</strong> Chats</span>
         <span class="pill pill-pings"><strong>${pings}</strong> Pings</span>
         <span class="pill pill-pings"><strong>${approved}</strong> согласованных</span>
-        <span class="pill ${nameCollisions ? 'pill-risk' : 'pill-pings'}"><strong>${nameCollisions}</strong> совпадений между разными бейджами</span>
       `;
     }
 
     let selectedMapScenario = 'Chats';
+    let selectedBadgeMapMode = 'sector';
 
     function relatedRowsFor(detail, sectorKey) {
       if (sectorKey) {
-        if (sectorKey === 'left-card-list') {
-        return dictionary.filter(row => row.area === 'Левая' && getLayer(row) === 'Queue card tags' && isBadgeProductLogic(row));
-      }
-        return dictionary.filter(row => sectorForRow(row) === sectorKey && isBadgeProductLogic(row));
+        if (sectorKey === 'center-header' || sectorKey === 'center-composer') {
+          return [];
+        }
+        const badge = row => cleanDraftBadgeAnchor(row);
+        const placedIn = (row, zone) => badgePlacement(row).zones.includes(zone);
+        const sectorBadges = {
+          'left-card-badges': ['Reply', 'SLA', 'Paid', 'Live', 'Favorite', 'Risk', 'NEW', 'Hot', 'Fire', 'Await', 'Revive'],
+          'left-card-list': ['Reply', 'SLA', 'Paid', 'Live', 'Favorite', 'Risk', 'NEW', 'Hot', 'Fire', 'Await', 'Revive'],
+          'center-session': ['Paid', 'Live'],
+          'right-workflow': ['Trial', 'Skeptic', 'Sell', 'Revive', 'Risk', 'Safe', 'Fire'],
+          'right-pay': ['PP', 'Coupon', 'Paid'],
+          'right-notes': []
+        };
+        if (sectorBadges[sectorKey]) {
+          const zone = sectorKey.startsWith('left') ? 'Left' : sectorKey.startsWith('center') ? 'Center' : 'Right';
+          return uniqueBadgeRows(dictionary.filter(row =>
+            isBadgeProductLogic(row) &&
+            sectorBadges[sectorKey].includes(badge(row)) &&
+            placedIn(row, zone)
+          ));
+        }
+        return uniqueBadgeRows(dictionary.filter(row => sectorForRow(row) === sectorKey && isBadgeProductLogic(row)));
       }
       const selectedLayers = detail.dictionary.layer ? detail.dictionary.layer.split('|') : [];
-      return dictionary.filter(row =>
+      return uniqueBadgeRows(dictionary.filter(row =>
         isBadgeProductLogic(row) &&
         row.area === detail.dictionary.area &&
         (!selectedLayers.length || selectedLayers.includes(getLayer(row)))
-      );
+      ));
     }
 
     function filterRowsByMapScenario(rows) {
       return rows.filter(row => row.scenario === selectedMapScenario);
+    }
+
+    function groupSupportsScenario(group, scenario) {
+      const scenarios = (group.dataset.mapScenarios || 'Chats Pings').split(/\s+/).filter(Boolean);
+      return scenarios.includes(scenario);
+    }
+
+    function updateBadgeMapModeButtons() {
+      document.querySelectorAll('[data-badge-map-mode], [data-badge-map-show-all]').forEach(button => {
+        const isSectorButton = button.dataset.badgeMapMode === 'sector';
+        const showAllScenario = button.dataset.badgeMapShowAll;
+        const active = isSectorButton
+          ? selectedBadgeMapMode === 'sector'
+          : selectedBadgeMapMode === 'all' && selectedMapScenario === showAllScenario;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+    }
+
+    function updateBadgeMapVisibility() {
+      const sectorKey = currentSectorKey();
+      document.querySelectorAll('.badge-map-group').forEach(group => {
+        const scenarioMatch = groupSupportsScenario(group, selectedMapScenario);
+        const sectorMatch = group.dataset.sector === sectorKey;
+        const visible = selectedBadgeMapMode === 'all'
+          ? scenarioMatch
+          : scenarioMatch && sectorMatch;
+        group.classList.toggle('is-visible', visible);
+      });
+      updateBadgeMapModeButtons();
     }
 
     function renderScenarioSwitch(detail) {
@@ -3359,11 +3374,13 @@
     });
 
     function activateSector(sectorKey) {
+      selectedBadgeMapMode = 'sector';
       document.querySelectorAll('.sector-trigger').forEach(item => {
         item.classList.toggle('is-active', item.dataset.sector === sectorKey);
       });
       syncHotspotBounds(sectorKey);
       renderSectorInspector(sectorKey);
+      updateBadgeMapVisibility();
     }
 
     document.querySelectorAll('.sector-trigger').forEach(button => {
@@ -3387,6 +3404,26 @@
 
       selectedMapScenario = button.dataset.mapScenario;
       activateSector(currentSectorKey());
+    });
+
+    document.addEventListener('click', event => {
+      const sectorButton = event.target.closest('[data-badge-map-mode="sector"]');
+      if (sectorButton) {
+        selectedBadgeMapMode = 'sector';
+        updateBadgeMapVisibility();
+        return;
+      }
+
+      const showAllButton = event.target.closest('[data-badge-map-show-all]');
+      if (!showAllButton) {
+        return;
+      }
+
+      selectedBadgeMapMode = 'all';
+      selectedMapScenario = showAllButton.dataset.badgeMapShowAll;
+      syncMockupScenario();
+      renderSectorInspector(currentSectorKey());
+      updateBadgeMapVisibility();
     });
 
     document.addEventListener('click', event => {
@@ -3623,8 +3660,9 @@
       document.querySelector(`[data-panel="${initialTab}"]`).click();
     }
     renderRows();
-    renderSectorInspector('left-workload');
+    renderSectorInspector('left-search');
     fitMockupStage();
+    updateBadgeMapVisibility();
   </script>
 </body>
 </html>

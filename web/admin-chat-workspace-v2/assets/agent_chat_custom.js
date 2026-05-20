@@ -983,15 +983,15 @@
   };
 
   const workflowStageMeta = {
-    free_reading: { label: 'Free read', className: 'stage-badge--free', hint: 'Give limited value, keep paid answer unresolved' },
+    free_reading: { label: 'Trial', className: 'stage-badge--free', hint: 'Give limited value, keep paid answer unresolved' },
     intrigue_ready: { label: 'Book soon', className: 'stage-badge--free', hint: 'Create specific intrigue and move to Book Now' },
     book_now_sent: { label: 'Book Now', className: 'stage-badge--book-now', hint: 'Handle the response without revealing more paid value' },
-    post_book_now_objection: { label: 'Objection', className: 'stage-badge--objection', hint: 'Classify objection, answer it, and return to Book Now' },
+    post_book_now_objection: { label: 'Skeptic', className: 'stage-badge--objection', hint: 'Classify objection, answer it, and return to Book Now' },
     paid_session_booked_future: { label: 'Future Paid', className: 'stage-badge--future-paid', hint: 'Keep paid content locked until the scheduled session starts' },
     paid_session_active: { label: 'Paid', className: 'stage-badge--paid-live', hint: 'Answer promised topics and watch timer/idle risk' },
     extension_offer: { label: 'Sell window', className: 'stage-badge--book-now', hint: 'Move new topics to another paid slot' },
-    reactivation_due: { label: 'Reactivation', className: 'stage-badge--lift', hint: 'Use reason for return, intrigue, then Book Now' },
-    reactivation_active: { label: 'Reactivation', className: 'stage-badge--lift', hint: 'Do not repeat hooks; drive to Book Now' },
+    reactivation_due: { label: 'Revive', className: 'stage-badge--lift', hint: 'Use reason for return, intrigue, then Book Now' },
+    reactivation_active: { label: 'Revive', className: 'stage-badge--lift', hint: 'Do not repeat hooks; drive to Book Now' },
     safety_escalation: { label: 'Safety', className: 'stage-badge--safety', hint: 'Use safety path and suppress sales hints' },
   };
 
@@ -999,10 +999,10 @@
     client_waiting: 'Client waiting',
     paid_session_starts_soon: 'Paid starts soon',
     paid_session_idle_risk: 'Paid idle',
-    free_trial_ending: 'Free ending',
-    next_day_lift_due: 'Reactivation',
+    free_trial_ending: 'Trial ending',
+    next_day_lift_due: 'Revive',
     failed_objection_followup: 'Follow-up',
-    reactivation_due: 'Reactivation',
+    reactivation_due: 'Revive',
     safety_escalation: 'Safety',
     technical_issue: 'Tech issue',
   };
