@@ -1814,24 +1814,24 @@
                 </button>
                 <button class="badge-map-group badge-map-center-composer sector-trigger" type="button" data-sector="center-composer" aria-label="Центр: подсказки ответа">
                   <span class="badge-map-title">Поле ответа</span>
-                  <span class="badge-map-chip badge-map-chip--manual">Safety route</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Objection</span>
-                  <span class="badge-map-chip">Free</span>
+                  <span class="badge-map-chip badge-map-chip--manual">Safe</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Skeptic</span>
+                  <span class="badge-map-chip">Trial</span>
                   <span class="badge-map-chip badge-map-chip--hot">Sell</span>
                 </button>
                 <button class="badge-map-group badge-map-right-workflow sector-trigger" type="button" data-sector="right-workflow" aria-label="Правая область: сценарий и риски">
                   <span class="badge-map-title">Правая / сценарий</span>
-                  <span class="badge-map-chip">Free</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Objection</span>
+                  <span class="badge-map-chip">Trial</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Skeptic</span>
                   <span class="badge-map-chip badge-map-chip--risk">Risk</span>
-                  <span class="badge-map-chip badge-map-chip--manual">Safety route</span>
+                  <span class="badge-map-chip badge-map-chip--manual">Safe</span>
                 </button>
                 <button class="badge-map-group badge-map-right-pay sector-trigger" type="button" data-sector="right-pay" aria-label="Правая область: деньги">
                   <span class="badge-map-title">Правая / деньги</span>
                   <span class="badge-map-chip badge-map-chip--paid">Paid</span>
                   <span class="badge-map-chip badge-map-chip--paid">PP</span>
-                  <span class="badge-map-chip badge-map-chip--manual">Coupon rule</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Reactivation</span>
+                  <span class="badge-map-chip badge-map-chip--manual">Coupon</span>
+                  <span class="badge-map-chip badge-map-chip--hot">Revive</span>
                 </button>
                 <button class="badge-map-group badge-map-right-notes sector-trigger" type="button" data-sector="right-notes" aria-label="Правая область: заметки и ручные флаги">
                   <span class="badge-map-title">Правая / заметки</span>
@@ -1913,7 +1913,7 @@
               </article>
               <article class="flow-step">
                 <span class="step-kicker">Центр</span>
-                <h3>3. Дать value без нарушения free boundary</h3>
+                <h3>3. Дать value без нарушения trial boundary</h3>
                 <p>Эксперт отвечает по сути, но не отдает полный продукт бесплатно. Поле ответа подсказывает сценарий: запрос данных, переход к оплате, обработку возражения или платную тему.</p>
                 <div class="flow-tags">
                   <span>Сценарный шаблон</span>
@@ -1943,7 +1943,7 @@
               <div class="flow-reason-list">
                 <div><strong>Система</strong><span>NeedR, SLA и последняя активность показывают операционную срочность.</span></div>
                 <div><strong>Система</strong><span>Live, PP, баланс и статус оплаты показывают платежный контекст: где не вмешиваться, где платеж не завершен и где есть шанс оплаты.</span></div>
-                <div><strong>Сценарный движок</strong><span>Сценарий, предупреждение, кнопка оффера и Objection защищают ответ от хаотичной продажи.</span></div>
+                <div><strong>Сценарный движок</strong><span>Сценарий, предупреждение, кнопка оффера и Skeptic защищают ответ от хаотичной продажи.</span></div>
                 <div><strong>Модератор</strong><span>Риски и командные заметки ограничивают давление в продаже, safety и quality ошибки.</span></div>
                 <div><strong>Личное эксперта</strong><span>Favorite и private note помогают эксперту вернуться к кейсу, но не маршрутизируют команду.</span></div>
               </div>
@@ -1965,7 +1965,7 @@
               <article class="flow-step">
                 <span class="step-kicker">Левая область</span>
                 <h3>1. Отобрать релевантный Ping</h3>
-                <p>Эксперт смотрит не все подряд, а сигналы с причиной: Fire, Hot, NEW, Paid, NeedR, WaitR, Reactivation, Free или Risk.</p>
+                <p>Эксперт смотрит не все подряд, а сигналы с причиной: Fire, Hot, NEW, Paid, NeedR, WaitR, Revive, Trial или Risk.</p>
                 <div class="flow-tags">
                   <span>Fire = клиент активен сейчас</span>
                   <span>Hot = свежее касание эксперта, 4 часа</span>
@@ -2068,12 +2068,12 @@
       { id: 'last_activity_pings', area: 'Левая', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'System', when: 'Всегда', responsibility: 'Показывает время последнего ping-сигнала', purpose: 'Не держать старые pings на уровне свежих', anchor: 'Last activity' },
       { id: 'unread_count_chats', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'System', when: 'Есть непрочитанные или action count', responsibility: 'Показывает объем внимания', purpose: 'Быстрый triage входящих', anchor: 'Unread/action count' },
       { id: 'attention_mark_pings', area: 'Левая', scenario: 'Pings', type: 'Indicator', source: 'System', caller: 'System', when: 'Ping находится в Fire, Hot, NEW или NeedR', responsibility: 'Подсвечивает лид, требующий внимания', purpose: 'Не пропустить актуальный сигнал или требующий ответа Ping', anchor: 'Attention mark' },
-      { id: 'stage_badge_chats', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'conversation_stage определен', responsibility: 'Показывает Paid, Book soon, Objection', purpose: 'Понять бизнес-стадию до открытия', anchor: 'Stage badge' },
+      { id: 'stage_badge_chats', area: 'Левая', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'conversation_stage определен', responsibility: 'Показывает Paid, Book soon, Skeptic', purpose: 'Понять бизнес-стадию до открытия', anchor: 'Stage badge' },
       { id: 'stage_badge_pings', area: 'Левая', scenario: 'Pings', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'Ping связан со стадией', responsibility: 'Показывает Lift Due, Future Paid', purpose: 'Разделить реактивацию и напоминание о будущей оплате', anchor: 'Stage badge' },
 
       { id: 'chat_header_identity', area: 'Центральная', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'System', when: 'Чат открыт', responsibility: 'Показывает client -> expert profile', purpose: 'Не ответить от неправильного образа', anchor: 'Header' },
       { id: 'ping_header_identity', area: 'Центральная', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'System', when: 'Ping открыт', responsibility: 'Показывает client -> expert profile interest', purpose: 'Первое касание должно быть персональным', anchor: 'Header' },
-      { id: 'center_stage_chip_chats', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'Чат открыт', responsibility: 'Показывает текущую стадию', purpose: 'Вести free, Book Now, objection, paid внутри одного чата', anchor: 'Stage chip' },
+      { id: 'center_stage_chip_chats', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'Чат открыт', responsibility: 'Показывает текущую стадию', purpose: 'Вести trial, Book Now, skeptic, paid внутри одного чата', anchor: 'Stage chip' },
       { id: 'center_stage_chip_pings', area: 'Центральная', scenario: 'Pings', type: 'Indicator', source: 'Workflow', caller: 'Workflow engine', when: 'Ping открыт', responsibility: 'Показывает Lift Due, Future Paid или другую стадию Ping', purpose: 'Не отправлять одинаковое касание всем', anchor: 'Stage chip' },
       { id: 'live_chip_chats', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'Session engine', when: 'У клиента активная платная сессия с другим экспертом', responsibility: 'Показывает, что клиент сейчас занят чужой Live-сессией', purpose: 'Не перебивать активную платную консультацию другого эксперта сообщением, офером или повторным касанием', anchor: 'Live chip' },
       { id: 'payment_pending_chip_chats', area: 'Центральная', scenario: 'Chats', type: 'Indicator', source: 'System', caller: 'Payment system', when: 'Клиент дошел до этапа оплаты, но не завершил платеж или платеж не подтвержден', responsibility: 'Показывает PP', purpose: 'Мягко подвести клиента к завершению платежа и не потерять почти готовую оплату', anchor: 'PP chip' },
@@ -2092,21 +2092,21 @@
       { id: 'sell_window', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'Workflow', caller: 'Workflow engine', when: 'Клиенту можно или нужно отправить offer со стороны эксперта', responsibility: 'Запускает отправку оффера', purpose: 'Дать эксперту действие для отправки оффера в уместный момент; это кнопка, не бейдж', anchor: 'Offer action' },
       { id: 'ping_hot_window', area: 'Центральная', scenario: 'Pings', type: 'State', source: 'System', caller: 'System', when: 'Клиент недавно коснулся эксперта; окно длится 4 часа; если есть Fire, Hot скрыт', responsibility: 'Держит Ping в статусе Hot до перехода в Chat, закрытия, появления Fire или окончания 4 часов', purpose: 'Показать свежее касание без смешения с Chat NeedR/SLA и без дубля Fire', anchor: 'Hot' },
       { id: 'ping_waiting_reply', area: 'Центральная', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Первое касание уже отправлено', responsibility: 'Показывает ожидание ответа', purpose: 'Не спамить повторно', anchor: 'Waiting reply' },
-      { id: 'previous_buyer_ping', area: 'Центральная', scenario: 'Pings', type: 'Guardrail', source: 'System', caller: 'Payment system/Workflow', when: 'У клиента была оплата', responsibility: 'Запрещает новый full free reading', purpose: 'Buyer ведется через reactivation и Book Now', anchor: 'Previous buyer' },
+      { id: 'previous_buyer_ping', area: 'Центральная', scenario: 'Pings', type: 'Guardrail', source: 'System', caller: 'Payment system/Workflow', when: 'У клиента была оплата', responsibility: 'Запрещает новый full trial reading', purpose: 'Buyer ведется через Revive и Book Now', anchor: 'Previous buyer' },
       { id: 'workflow_hint_chats', area: 'Центральная', scenario: 'Chats', type: 'Guardrail', source: 'Workflow', caller: 'Workflow engine', when: 'Чат открыт', responsibility: 'Показывает stage, next action, warning', purpose: 'Не ошибиться перед отправкой', anchor: 'Workflow hint' },
       { id: 'workflow_hint_pings', area: 'Центральная', scenario: 'Pings', type: 'Guardrail', source: 'Workflow', caller: 'Workflow engine', when: 'Ping открыт', responsibility: 'Показывает stage, next action, warning', purpose: 'Outreach без давления и нарушения boundary', anchor: 'Workflow hint' },
       { id: 'quick_reply_need_data_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'UI', caller: 'Expert', when: 'Не хватает DOB, time, timezone или context', responsibility: 'Вставляет уточнение данных', purpose: 'Корректная консультация', anchor: 'Need data' },
       { id: 'quick_reply_need_data_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Для первого касания нужен корректный контекст', responsibility: 'Вставляет мягкое уточнение', purpose: 'Не начинать с недостоверного вывода', anchor: 'Need data' },
-      { id: 'quick_reply_book_now_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'UI', caller: 'Expert', when: 'Free/intrigue достаточно прогрели клиента', responsibility: 'Ведет к paid continuation', purpose: 'Конверсия free -> paid', anchor: 'Book Now' },
+      { id: 'quick_reply_book_now_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'UI', caller: 'Expert', when: 'Trial/intrigue достаточно прогрели клиента', responsibility: 'Ведет к paid continuation', purpose: 'Конверсия trial -> paid', anchor: 'Book Now' },
       { id: 'quick_reply_book_now_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Ping имеет strong intent или previous buyer', responsibility: 'Вставляет мягкое платное приглашение', purpose: 'Конвертировать интерес без нового полного бесплатного чтения', anchor: 'Book Now' },
-      { id: 'quick_reply_objection_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'UI', caller: 'Expert', when: 'Клиент сомневается после Book Now', responsibility: 'Вставляет обработку objection', purpose: 'Вернуть к оплате без давления', anchor: 'Objection' },
-      { id: 'quick_reply_objection_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Ping возник после сомнения или payment hesitation', responsibility: 'Вставляет мягкое объяснение следующего шага', purpose: 'Не повторять предложение оплаты механически', anchor: 'Objection' },
+      { id: 'quick_reply_objection_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'UI', caller: 'Expert', when: 'Клиент сомневается после Book Now', responsibility: 'Вставляет обработку Skeptic-состояния', purpose: 'Вернуть к оплате без давления', anchor: 'Skeptic' },
+      { id: 'quick_reply_objection_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Ping возник после сомнения или payment hesitation', responsibility: 'Вставляет мягкое объяснение следующего шага', purpose: 'Не повторять предложение оплаты механически', anchor: 'Skeptic' },
       { id: 'quick_reply_paid_topic_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'UI', caller: 'Expert', when: 'Paid session active', responsibility: 'Фокусирует ответ на оплаченном вопросе', purpose: 'Не уходить в новую тему бесплатно', anchor: 'Paid topic' },
       { id: 'quick_reply_paid_topic_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Ping связан с future paid reminder', responsibility: 'Не раскрывает future paid content', purpose: 'Подтвердить время, не выдать продукт заранее', anchor: 'Paid topic' },
       { id: 'quick_reply_extend_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'UI', caller: 'Expert', when: 'Low time или новая тема', responsibility: 'Вставляет предложение добавить минуты', purpose: 'Продлить paid session', anchor: 'Extend' },
-      { id: 'quick_reply_extend_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Есть buyer/reactivation reason и paid next step', responsibility: 'Вставляет аккуратное продолжение', purpose: 'Вернуть клиента к paid без спама', anchor: 'Extend' },
-      { id: 'quick_reply_safety_chats', area: 'Центральная', scenario: 'Chats', type: 'Guardrail', source: 'Expert', caller: 'Expert', when: 'Модератор поставил Risk, эксперт аккуратно продолжил диалог и не видит риска в текущей беседе', responsibility: 'Для этого эксперта перекрывает модераторский Risk в рабочем процессе, не снимая Risk глобально', purpose: 'Дать эксперту продолжить беседу осторожно, если фактический диалог не подтверждает риск, сохранив модераторский контроль', anchor: 'Safety route' },
-      { id: 'quick_reply_safety_pings', area: 'Центральная', scenario: 'Pings', type: 'Guardrail', source: 'UI', caller: 'Expert', when: 'Outreach может звучать как давление или claim', responsibility: 'Смягчает первое касание', purpose: 'Не нарушить safety и доверие', anchor: 'Safety route' },
+      { id: 'quick_reply_extend_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'UI', caller: 'Expert', when: 'Есть buyer/Revive reason и paid next step', responsibility: 'Вставляет аккуратное продолжение', purpose: 'Вернуть клиента к paid без спама', anchor: 'Extend' },
+      { id: 'quick_reply_safety_chats', area: 'Центральная', scenario: 'Chats', type: 'Guardrail', source: 'Expert', caller: 'Expert', when: 'Модератор поставил Risk, эксперт аккуратно продолжил диалог и не видит риска в текущей беседе', responsibility: 'Для этого эксперта перекрывает модераторский Risk в рабочем процессе, не снимая Risk глобально', purpose: 'Дать эксперту продолжить беседу осторожно, если фактический диалог не подтверждает риск, сохранив модераторский контроль', anchor: 'Safe' },
+      { id: 'quick_reply_safety_pings', area: 'Центральная', scenario: 'Pings', type: 'Guardrail', source: 'UI', caller: 'Expert', when: 'Outreach может звучать как давление или claim', responsibility: 'Смягчает первое касание', purpose: 'Не нарушить safety и доверие', anchor: 'Safe' },
       { id: 'offer_menu_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Стадия допускает продажу', responsibility: 'Открывает варианты платного предложения', purpose: 'Не сочинять коммерческий сценарий вручную', anchor: 'Offer' },
       { id: 'invite_menu_pings', area: 'Центральная', scenario: 'Pings', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Есть Hot, Fire, Paid или другой подтвержденный повод Ping', responsibility: 'Открывает варианты приглашения', purpose: 'Перевести ping в chat или paid', anchor: 'Invite' },
       { id: 'comp_request_chats', area: 'Центральная', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Сбой, спор или payment issue', responsibility: 'Создает запрос компенсации', purpose: 'Эксперт не выдает кредиты вручную', anchor: 'Comp request' },
@@ -2116,9 +2116,9 @@
 
       { id: 'right_tab_client_chats', area: 'Правая', scenario: 'Chats', type: 'Control', source: 'UI', caller: 'Expert', when: 'Нужно проверить паспорт клиента перед ответом', responsibility: 'Открывает Client tab для Chat', purpose: 'Проверить язык, birth data и видимый экспертный профиль без ухода из чата', anchor: 'Client tab' },
       { id: 'right_tab_client_pings', area: 'Правая', scenario: 'Pings', type: 'Control', source: 'UI', caller: 'Expert', when: 'Нужно проверить лида перед первым касанием', responsibility: 'Открывает Client tab для Ping', purpose: 'Не отправлять первое сообщение без языка, контекста и экспертного профиля', anchor: 'Client tab' },
-      { id: 'right_tab_workflow_chats', area: 'Правая', scenario: 'Chats', type: 'Control', source: 'UI', caller: 'Expert/System', when: 'Нужно понять stage и next action в Chat', responsibility: 'Открывает Workflow tab для Chat', purpose: 'Объяснить, почему сейчас NeedR, Book Now, paid delivery, objection или risk', anchor: 'Workflow tab' },
+      { id: 'right_tab_workflow_chats', area: 'Правая', scenario: 'Chats', type: 'Control', source: 'UI', caller: 'Expert/System', when: 'Нужно понять stage и next action в Chat', responsibility: 'Открывает Workflow tab для Chat', purpose: 'Объяснить, почему сейчас NeedR, Book Now, paid delivery, Skeptic или Risk', anchor: 'Workflow tab' },
       { id: 'right_tab_workflow_pings', area: 'Правая', scenario: 'Pings', type: 'Control', source: 'UI', caller: 'Expert/System', when: 'Нужно понять причину Ping и следующий шаг', responsibility: 'Открывает Workflow tab для Ping', purpose: 'Отличить Fire, Hot, NEW, Paid, Lift Due, Future Paid и не писать без повода', anchor: 'Workflow tab' },
-      { id: 'right_tab_pay_chats', area: 'Правая', scenario: 'Chats', type: 'Control', source: 'UI', caller: 'Expert', when: 'Нужно проверить оплату, credits, paid history или coupon rule', responsibility: 'Открывает Pay tab для Chat', purpose: 'Не смешивать текст ответа с платежным состоянием и не обещать деньги вручную', anchor: 'Pay tab' },
+      { id: 'right_tab_pay_chats', area: 'Правая', scenario: 'Chats', type: 'Control', source: 'UI', caller: 'Expert', when: 'Нужно проверить оплату, credits, paid history или Coupon', responsibility: 'Открывает Pay tab для Chat', purpose: 'Не смешивать текст ответа с платежным состоянием и не обещать деньги вручную', anchor: 'Pay tab' },
       { id: 'right_tab_pay_pings', area: 'Правая', scenario: 'Pings', type: 'Control', source: 'UI', caller: 'Expert', when: 'Нужно проверить credits или payment readiness лида', responsibility: 'Открывает Pay tab для Ping', purpose: 'Выбрать мягкое приглашение в Chat или paid step на основании платежной готовности', anchor: 'Pay tab' },
       { id: 'right_tab_notes_chats', area: 'Правая', scenario: 'Chats', type: 'Control', source: 'UI', caller: 'Expert/Moderator', when: 'Нужно проверить private, team или moderator notes', responsibility: 'Открывает Notes tab для Chat', purpose: 'Разделить личную память эксперта, командный контекст и модераторские ограничения', anchor: 'Notes tab' },
       { id: 'right_tab_notes_pings', area: 'Правая', scenario: 'Pings', type: 'Control', source: 'UI', caller: 'Expert/Moderator', when: 'Нужно проверить notes перед outreach', responsibility: 'Открывает Notes tab для Ping', purpose: 'Не писать повторно, рискованно или вопреки модераторскому ограничению', anchor: 'Notes tab' },
@@ -2132,26 +2132,26 @@
       { id: 'workflow_stage_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Workflow tab открыт', responsibility: 'Раскрывает ping stage', purpose: 'Отличить Lift Due от Future Paid', anchor: 'Workflow stage' },
       { id: 'next_action_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Workflow tab открыт', responsibility: 'Показывает next action', purpose: 'Снизить ошибку эксперта', anchor: 'Next action' },
       { id: 'next_action_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Workflow tab открыт', responsibility: 'Показывает следующее действие для первого касания', purpose: 'Не писать без сценария', anchor: 'Next action' },
-      { id: 'free_boundary_chats', area: 'Правая', scenario: 'Chats', type: 'Guardrail', source: 'Workflow', caller: 'Workflow engine', when: 'Клиент использует бесплатные минуты или бесплатное стартовое окно внутри сквозного чата', responsibility: 'Показывает, что сейчас можно дать только ограниченную бесплатную ценность без полного раскрытия продукта', purpose: 'Помочь эксперту прогреть интерес и не отдать полноценную консультацию до оплаты', anchor: 'Free boundary' },
-      { id: 'free_boundary_pings', area: 'Правая', scenario: 'Pings', type: 'Guardrail', source: 'Workflow', caller: 'Workflow engine', when: 'Клиент использует бесплатные минуты или бесплатное стартовое окно перед платной консультацией', responsibility: 'Показывает, что сейчас можно дать только ограниченную бесплатную ценность без полного раскрытия продукта', purpose: 'Помочь эксперту прогреть интерес и не отдать полноценную консультацию до оплаты', anchor: 'Free boundary' },
-      { id: 'book_now_status_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Workflow', caller: 'Workflow/Payment', when: 'Есть переход к paid', responsibility: 'Показывает not sent, sent, clicked, paid', purpose: 'Контроль free -> paid конверсии', anchor: 'Book Now' },
+      { id: 'free_boundary_chats', area: 'Правая', scenario: 'Chats', type: 'Guardrail', source: 'Workflow', caller: 'Workflow engine', when: 'Клиент использует бесплатные минуты или бесплатное стартовое окно внутри сквозного чата', responsibility: 'Показывает, что сейчас можно дать только ограниченную бесплатную ценность без полного раскрытия продукта', purpose: 'Помочь эксперту прогреть интерес и не отдать полноценную консультацию до оплаты', anchor: 'Trial boundary' },
+      { id: 'free_boundary_pings', area: 'Правая', scenario: 'Pings', type: 'Guardrail', source: 'Workflow', caller: 'Workflow engine', when: 'Клиент использует бесплатные минуты или бесплатное стартовое окно перед платной консультацией', responsibility: 'Показывает, что сейчас можно дать только ограниченную бесплатную ценность без полного раскрытия продукта', purpose: 'Помочь эксперту прогреть интерес и не отдать полноценную консультацию до оплаты', anchor: 'Trial boundary' },
+      { id: 'book_now_status_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Workflow', caller: 'Workflow/Payment', when: 'Есть переход к paid', responsibility: 'Показывает not sent, sent, clicked, paid', purpose: 'Контроль trial -> paid конверсии', anchor: 'Book Now' },
       { id: 'book_now_status_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow/Payment', when: 'Ping ведет к paid или future paid', responsibility: 'Показывает paid future или not sent', purpose: 'Не раскрыть paid content заранее', anchor: 'Book Now' },
       { id: 'paid_session_status_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'System', caller: 'Session engine', when: 'Есть paid state', responsibility: 'Показывает active, pending, future, none', purpose: 'Контроль оплаченной обязанности', anchor: 'Paid session' },
       { id: 'paid_session_status_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'System', caller: 'Session engine', when: 'Ping связан с future paid или starts soon', responsibility: 'Показывает future paid state', purpose: 'Подтвердить время без раскрытия content', anchor: 'Paid session' },
-      { id: 'objection_state_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Workflow', caller: 'Workflow/Expert', when: 'Клиент возражает после Book Now', responsibility: 'Показывает objection type и attempts', purpose: 'Не давить бесконечно', anchor: 'Objection' },
-      { id: 'objection_state_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow/Expert', when: 'Ping возник после сомнения или payment hesitation', responsibility: 'Показывает причину мягкого возврата', purpose: 'Не повторять предложение оплаты механически', anchor: 'Objection' },
+      { id: 'objection_state_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Workflow', caller: 'Workflow/Expert', when: 'Клиент возражает после Book Now', responsibility: 'Показывает Skeptic type и attempts', purpose: 'Не давить бесконечно', anchor: 'Skeptic' },
+      { id: 'objection_state_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow/Expert', when: 'Ping возник после сомнения или payment hesitation', responsibility: 'Показывает причину мягкого возврата', purpose: 'Не повторять предложение оплаты механически', anchor: 'Skeptic' },
       { id: 'ping_lift_reason_pings', area: 'Правая', scenario: 'Pings', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Всегда для ping', responsibility: 'Показывает reason и due time', purpose: 'Outreach должен иметь причину', anchor: 'Ping / lift' },
-      { id: 'ping_lift_reason_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Chat пришел из reactivation или lift', responsibility: 'Показывает origin reason', purpose: 'Сохранить контекст возврата клиента', anchor: 'Ping / lift' },
-      { id: 'risk_flags_chats', area: 'Правая', scenario: 'Chats', type: 'Guardrail', source: 'Moderator', caller: 'System/Moderator', when: 'Есть safety, claim или complaint risk', responsibility: 'Показывает ограничение', purpose: 'Compliance и качество paid/free ответа', anchor: 'Risk' },
+      { id: 'ping_lift_reason_chats', area: 'Правая', scenario: 'Chats', type: 'State', source: 'Workflow', caller: 'Workflow engine', when: 'Chat пришел из Revive или lift', responsibility: 'Показывает origin reason', purpose: 'Сохранить контекст возврата клиента', anchor: 'Ping / lift' },
+      { id: 'risk_flags_chats', area: 'Правая', scenario: 'Chats', type: 'Guardrail', source: 'Moderator', caller: 'System/Moderator', when: 'Есть safety, claim или complaint risk', responsibility: 'Показывает ограничение', purpose: 'Compliance и качество paid/trial ответа', anchor: 'Risk' },
       { id: 'risk_flags_pings', area: 'Правая', scenario: 'Pings', type: 'Guardrail', source: 'Moderator', caller: 'System/Moderator', when: 'Outreach может нарушить safety или звучать как pressure', responsibility: 'Показывает ограничение', purpose: 'Не провоцировать жалобу и не давить', anchor: 'Risk' },
       { id: 'balance_chats', area: 'Правая', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'Payment system', when: 'Pay tab открыт', responsibility: 'Показывает credits/balance', purpose: 'Понять возможность paid start или extension', anchor: 'Balance' },
       { id: 'balance_pings', area: 'Правая', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'Payment system', when: 'Pay tab открыт', responsibility: 'Показывает credits', purpose: 'Оценить payment readiness лида', anchor: 'Balance' },
-      { id: 'paid_history_chats', area: 'Правая', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'Payment system', when: 'Есть платежная история', responsibility: 'Показывает buyer status', purpose: 'Buyer отличается от нового free клиента', anchor: 'Paid history' },
-      { id: 'paid_history_pings', area: 'Правая', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'Payment system', when: 'Ping от previous buyer', responsibility: 'Показывает buyer status', purpose: 'Выбрать reactivation вместо full free reading', anchor: 'Paid history' },
-      { id: 'coupon_rule_chats', area: 'Правая', scenario: 'Chats', type: 'Indicator', source: 'Expert', caller: 'Expert/Moderator', when: 'Эксперт считает, что по кейсу может понадобиться купон или компенсация', responsibility: 'Подсвечивает действие: нужно передать кейс модератору на решение по купону или компенсации', purpose: 'Эксперт не обещает и не выдает скидку сам; финальное решение остается на стороне модератора', anchor: 'Coupon rule' },
-      { id: 'coupon_rule_pings', area: 'Правая', scenario: 'Pings', type: 'Indicator', source: 'Expert', caller: 'Expert/Moderator', when: 'Эксперт считает, что для возврата клиента может понадобиться купон или компенсация', responsibility: 'Подсвечивает действие: нужно передать Ping модератору на решение по купону или компенсации', purpose: 'Эксперт не обещает и не выдает скидку сам; финальное решение остается на стороне модератора', anchor: 'Coupon rule' },
-      { id: 'extend_window_chats', area: 'Правая', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow/Session', when: 'Старый исторический клиент снова проявил интерес к эзотерике, теме, эксперту или платному продолжению внутри чата', responsibility: 'Показывает возвращение клиента с прошлым контекстом или уместный момент реактивации', purpose: 'Вернуть клиента в paid-сценарий релевантным поводом, без холодного спама', anchor: 'Extend window' },
-      { id: 'extend_window_pings', area: 'Правая', scenario: 'Pings', type: 'Indicator', source: 'Workflow', caller: 'Workflow/Session', when: 'Старый исторический клиент снова проявил интерес к эзотерике, теме, эксперту или платному продолжению', responsibility: 'Показывает, что это не холодный новый лид, а возвращение клиента с прошлым контекстом', purpose: 'Вернуть клиента в Chats или paid-сценарий релевантным поводом, без холодного спама', anchor: 'Extend window' },
+      { id: 'paid_history_chats', area: 'Правая', scenario: 'Chats', type: 'Variable', source: 'System', caller: 'Payment system', when: 'Есть платежная история', responsibility: 'Показывает buyer status', purpose: 'Buyer отличается от нового trial клиента', anchor: 'Paid history' },
+      { id: 'paid_history_pings', area: 'Правая', scenario: 'Pings', type: 'Variable', source: 'System', caller: 'Payment system', when: 'Ping от previous buyer', responsibility: 'Показывает buyer status', purpose: 'Выбрать Revive вместо full trial reading', anchor: 'Paid history' },
+      { id: 'coupon_rule_chats', area: 'Правая', scenario: 'Chats', type: 'Indicator', source: 'Expert', caller: 'Expert/Moderator', when: 'Эксперт считает, что по кейсу может понадобиться купон или компенсация', responsibility: 'Подсвечивает действие: нужно передать кейс модератору на решение по купону или компенсации', purpose: 'Эксперт не обещает и не выдает скидку сам; финальное решение остается на стороне модератора', anchor: 'Coupon' },
+      { id: 'coupon_rule_pings', area: 'Правая', scenario: 'Pings', type: 'Indicator', source: 'Expert', caller: 'Expert/Moderator', when: 'Эксперт считает, что для возврата клиента может понадобиться купон или компенсация', responsibility: 'Подсвечивает действие: нужно передать Ping модератору на решение по купону или компенсации', purpose: 'Эксперт не обещает и не выдает скидку сам; финальное решение остается на стороне модератора', anchor: 'Coupon' },
+      { id: 'extend_window_chats', area: 'Правая', scenario: 'Chats', type: 'Indicator', source: 'Workflow', caller: 'Workflow/Session', when: 'Старый исторический клиент снова проявил интерес к эзотерике, теме, эксперту или платному продолжению внутри чата', responsibility: 'Показывает возвращение клиента с прошлым контекстом или уместный момент Revive', purpose: 'Вернуть клиента в paid-сценарий релевантным поводом, без холодного спама', anchor: 'Revive' },
+      { id: 'extend_window_pings', area: 'Правая', scenario: 'Pings', type: 'Indicator', source: 'Workflow', caller: 'Workflow/Session', when: 'Старый исторический клиент снова проявил интерес к эзотерике, теме, эксперту или платному продолжению', responsibility: 'Показывает, что это не холодный новый лид, а возвращение клиента с прошлым контекстом', purpose: 'Вернуть клиента в Chats или paid-сценарий релевантным поводом, без холодного спама', anchor: 'Revive' },
       { id: 'compensation_chats', area: 'Правая', scenario: 'Chats', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Сбой, спор, payment/session mismatch', responsibility: 'Создает request only', purpose: 'Аудит вместо ручной компенсации', anchor: 'Compensation' },
       { id: 'compensation_pings', area: 'Правая', scenario: 'Pings', type: 'Action', source: 'Expert', caller: 'Expert', when: 'Ping связан с payment dispute', responsibility: 'Создает только запрос', purpose: 'Не решать деньги из первого сообщения', anchor: 'Compensation' },
       { id: 'expert_private_note_chats', area: 'Правая', scenario: 'Chats', type: 'Note', source: 'Expert', caller: 'Expert', when: 'Эксперт сохраняет личный контекст', responsibility: 'Private note', purpose: 'Личная память без влияния на routing команды', anchor: 'Private note' },
@@ -2188,7 +2188,7 @@
         triggers: [
           'Система ставит NeedR, SLA, NEW, Hot, Fire, Paid и WaitR.',
           'Система через платежный контур ставит Live, PP и статусы оплаты.',
-          'Сценарный движок ведет сценарий ответа: Free, Sell, кнопка оффера, Objection, Reactivation и Safety route.',
+          'Сценарный движок ведет сценарий ответа: Trial, Sell, кнопка оффера, Skeptic, Revive и Safe.',
           'Эксперт ставит только личные Favorite/Pin, они не становятся глобальной правдой.'
         ],
         notHere: [
@@ -2209,7 +2209,7 @@
           ['Шапка кейса', 'Показывает client -> expert profile, сценарный контекст, Live/PP и последнюю активность.'],
           ['Управление платной сессией', 'Start/Stop, статус доставки и кнопка оффера внутри сквозного чата.'],
           ['История сообщений', 'Сквозная история общения: бесплатный этап, переход к оплате, возражение и платная сессия не дробятся на отдельные чаты.'],
-          ['Шаблоны ответа', 'Запрос данных, переход к оплате, возражение, платная тема, продление и Safety route.'],
+          ['Шаблоны ответа', 'Запрос данных, переход к оплате, возражение, платная тема, продление и Safe.'],
           ['Действия', 'Chats: предложение оплаты, запрос компенсации, закрытие кейса. Pings: шаблон первого касания, приглашение, личная отметка, снятие из очереди.']
         ],
         variables: [
@@ -2242,8 +2242,8 @@
         role: 'Правая область нужна, когда эксперт или разработчик должен понять причину: клиент, workflow, деньги, риски, заметки и источники флагов.',
         includes: [
           ['Клиент', 'Язык, timezone, birth data, visible expert, real operator, device/platform.'],
-          ['Сценарий', 'Сценарный контекст, free boundary, paid state, objection, reactivation, coupon rule и risk.'],
-          ['Деньги', 'Balance, status, paid history, coupon rule, extend window, used time, compensation, payment events.'],
+          ['Сценарий', 'Сценарный контекст, Trial boundary, paid state, Skeptic, Revive, Coupon и Risk.'],
+          ['Деньги', 'Balance, status, paid history, Coupon, Revive, used time, compensation, payment events.'],
           ['Заметки', 'Expert-private, team и moderator notes с понятной видимостью и источником.'],
           ['Журнал действий', 'Только prototype/QA след действий, не production source of truth.']
         ],
@@ -2287,7 +2287,7 @@
         purpose: 'Сектор определяет тип рабочей очереди. Эксперт сначала выбирает, работает он с активными диалогами Chats, pre-chat сигналами Pings или архивными диалогами Archive.',
         role: 'В этой зоне находятся три кнопки режима и счетчики нагрузки. Пользователь видит, в каком типе работы находится очередь сейчас: активные диалоги Chats, сигналы Pings до начала полноценного чата или Archive для неактивных диалогов.',
         includes: [
-          ['Chats tab', 'Открывает только активные сквозные диалоги с Free, Paid, PP, Sell и Objection внутри одной истории.'],
+          ['Chats tab', 'Открывает только активные сквозные диалоги с Trial, Paid, PP, Sell и Skeptic внутри одной истории.'],
           ['Pings tab', 'Открывает сигналы интереса до полноценного чата. Ping не получает Chat SLA до ответа клиента.'],
           ['Archive tab', 'Открывает диалоги, которые считаются неактивными или были намеренно отправлены в архив. Новое сообщение клиента возвращает диалог в Chats; эксперт может вручную отправить активный диалог в Archive.'],
           ['Counters', 'Показывают объем работы в каждом режиме, но не заменяют фильтры приоритета.']
@@ -2392,7 +2392,7 @@
         role: 'В этой зоне находится паспорт открытого кейса: клиент, экспертный профиль, текущая стадия и краткие статусы. Она удерживает пользователя в правильном сценарии перед ответом.',
         includes: [
           ['Client -> expert profile', 'Система подтверждает, какой клиент и какой видимый экспертный профиль открыт. Это защита от ответа не от того образа.'],
-          ['Сценарий', 'Workflow показывает текущий контекст: Free, Paid, Objection, Reactivation или Ping reason. Это ориентир ответа, не фильтр очереди.'],
+          ['Сценарий', 'Workflow показывает текущий контекст: Trial, Paid, Skeptic, Revive или Ping reason. Это ориентир ответа, не фильтр очереди.'],
           ['Live', 'Система показывает, что клиент сейчас в активной платной сессии с другим экспертом. Это ограничение: не писать и не продавать, пока Live не завершится.'],
           ['PP', 'Payment system показывает ожидание платежа. Нужен, чтобы не писать как будто оплата уже завершена.'],
           ['NEW / Hot / Fire / Paid / NeedR / WaitR', 'Для Pings показывают свежесть сигнала, свежее касание эксперта, активный intent прямо сейчас, paid history и чей следующий ход.']
@@ -2424,7 +2424,7 @@
         area: 'Центральная',
         layer: 'Message stream',
         scenarios: ['Chats', 'Pings'],
-        purpose: 'Сектор показывает контекст общения. Для Chats это непрерывная история free -> paid -> objection; для Pings это причина сигнала и предыдущие касания.',
+        purpose: 'Сектор показывает контекст общения. Для Chats это непрерывная история trial -> paid -> Skeptic; для Pings это причина сигнала и предыдущие касания.',
         role: 'В этой зоне находится история общения или контекст Ping. Пользователь видит, что уже было сказано, на каком этапе находится клиент и откуда берется следующий шаг.',
         includes: [
           ['Message stream', 'Все сообщения и события текущего Chat в одной линии.'],
@@ -2462,7 +2462,7 @@
         role: 'В этой зоне находятся вкладки правого инспектора. Они разделяют контекст на профиль клиента, сценарий, деньги и заметки, чтобы пользователь не искал все в одном длинном блоке.',
         includes: [
           ['Клиент', 'Паспорт клиента и роль эксперта.'],
-          ['Сценарий', 'Сценарный контекст, boundary, objection и risk.'],
+          ['Сценарий', 'Сценарный контекст, boundary, Skeptic и Risk.'],
           ['Деньги', 'Balance, paid history, coupon и compensation.'],
           ['Заметки', 'Expert-private, team и moderator notes.']
         ],
@@ -2493,17 +2493,17 @@
         area: 'Правая',
         layer: 'Workflow fields',
         scenarios: ['Chats', 'Pings'],
-        purpose: 'Сектор объясняет, почему система предлагает текущий следующий шаг: сценарный контекст, граница бесплатного ответа, paid state, возражение, reactivation, Ping reason и risk.',
+        purpose: 'Сектор объясняет, почему система предлагает текущий следующий шаг: сценарный контекст, граница бесплатного ответа, paid state, возражение, Revive, Ping reason и Risk.',
         role: 'В этой зоне находится объяснение сценария: текущий контекст, предупреждения, граница бесплатной ценности, платная сессия, возражение или причина Ping.',
         includes: [
-          ['Сценарий', 'Workflow показывает текущий контекст: Free, Paid, Objection, Reactivation или Ping reason. Нужен для выбора правильного шаблона.'],
+          ['Сценарий', 'Workflow показывает текущий контекст: Trial, Paid, Skeptic, Revive или Ping reason. Нужен для выбора правильного шаблона.'],
           ['Рекомендованный шаг', 'Workflow предлагает действие: запросить данные, дать ответ, предложить оплату, обработать возражение, пригласить из Ping в Chat.'],
-          ['Free boundary', 'Workflow показывает, где заканчивается бесплатная ценность. Нужен, чтобы не отдать полный продукт до оплаты.'],
+          ['Trial boundary', 'Workflow показывает, где заканчивается бесплатная ценность. Нужен, чтобы не отдать полный продукт до оплаты.'],
           ['Переход к оплате', 'Workflow/System показывают состояние перехода к paid: можно предложить, уже предложено, ожидается оплата, оплачено.'],
-          ['Objection', 'Workflow/Expert фиксируют тип сомнения и попытки обработки. Нужен, чтобы не давить повторяющимся offer.'],
+          ['Skeptic', 'Workflow/Expert фиксируют тип сомнения и попытки обработки. Нужен, чтобы не давить повторяющимся offer.'],
           ['Risk', 'Система или модератор ставит safety/claim/complaint/quality risk. Нужен, чтобы ограничить формулировку или запретить продажу.']
         ],
-        variables: ['scenario_context', 'scenario_action', 'free_boundary', 'paid_transition_status', 'paid_session_status', 'objection_state', 'risk_flags', 'balance', 'coupon_rule'],
+        variables: ['scenario_context', 'scenario_action', 'trial_boundary', 'paid_transition_status', 'paid_session_status', 'skeptic_state', 'risk_flags', 'balance', 'coupon'],
         triggers: ['Workflow engine обновляет сценарный контекст и рекомендованный шаг.', 'System обновляет paid/balance/coupon.', 'Moderator/System ставят risk flags.'],
         notHere: ['Текст ответа.', 'Личные expert-only флаги.', 'Очередной triage.', 'Полная платежная история.'],
         dictionary: { area: 'Правая', layer: 'Workflow fields' }
@@ -2513,12 +2513,12 @@
         area: 'Правая',
         layer: 'Pay fields',
         scenarios: ['Chats', 'Pings'],
-        purpose: 'Сектор хранит денежный контекст отдельно от текста ответа: баланс, paid history, coupon rule, compensation и payment events.',
+        purpose: 'Сектор хранит денежный контекст отдельно от текста ответа: баланс, paid history, Coupon, compensation и payment events.',
         role: 'В этой зоне находится платежный контекст: баланс, статус оплаты, история платных сессий, купоны, компенсации и ограничения по продаже или продлению.',
         includes: [
           ['Balance', 'Система показывает кредиты, баланс или историю оплат. В Pings это помогает выбрать приглашение вместо холодного касания.'],
           ['Paid history', 'Система показывает прошлые покупки. Нужна для previous buyer логики и запрета нового полного бесплатного чтения.'],
-          ['Coupon rule', 'Эксперт отправил запрос на купон или компенсацию. Бейдж держится у клиента, пока запрос не закрыт модератором; исход решения не влияет на факт отображения бейджа.'],
+          ['Coupon', 'Эксперт отправил запрос на купон или компенсацию. Бейдж держится у клиента, пока запрос не закрыт модератором; исход решения не влияет на факт отображения бейджа.'],
           ['Compensation request', 'Эксперт создает заявку при споре или сбое. Решение денег остается у support/биллинга.'],
           ['Payment events', 'Payment system показывает pending/success/failed события, чтобы не путать ожидание оплаты с оплаченной доставкой.']
         ],
@@ -2576,15 +2576,15 @@
       'center-dismiss': ['Снять Ping', 'Центральная', 'Pings', 'Убирает неактуальный Ping из рабочей очереди.'],
       'right-client-tab': ['Client tab', 'Правая', 'Chats / Pings', 'Паспорт клиента: язык, timezone, birth data, visible expert, device.'],
       'right-workflow-tab': ['Workflow tab', 'Правая', 'Chats / Pings', 'Объясняет сценарный контекст, boundary, paid state и risk.'],
-      'right-pay-tab': ['Pay tab', 'Правая', 'Chats / Pings', 'Деньги отдельно от текста: balance, status, paid history, coupon rule.'],
+      'right-pay-tab': ['Pay tab', 'Правая', 'Chats / Pings', 'Деньги отдельно от текста: balance, status, paid history, Coupon.'],
       'right-notes-tab': ['Notes tab', 'Правая', 'Chats / Pings', 'Private/team/moderator notes. Видимость и source обязательны.'],
-      'right-free-boundary': ['Free boundary', 'Правая', 'Chats / Pings', 'Защищает бесплатную часть и не дает отдать полный продукт без оплаты.'],
+      'right-free-boundary': ['Trial boundary', 'Правая', 'Chats / Pings', 'Защищает бесплатную часть и не дает отдать полный продукт без оплаты.'],
       'right-book-now': ['Paid transition', 'Правая', 'Chats / Pings', 'Статус перехода к paid. Это сценарное поле, не бейдж.'],
       'right-paid-session': ['Paid state', 'Правая', 'Chats / Pings', 'Активное, ожидающее или будущее состояние и обязательство по оплаченной доставке.'],
-      'right-objection': ['Objection', 'Правая', 'Chats / Pings', 'Тип возражения и attempts, чтобы не давить бесконечно.'],
+      'right-objection': ['Skeptic', 'Правая', 'Chats / Pings', 'Тип возражения и attempts, чтобы не давить бесконечно.'],
       'right-risk': ['Risk', 'Правая', 'Chats / Pings', 'Safety, claim, complaint или quality guardrail.'],
       'right-balance': ['Balance', 'Правая', 'Chats / Pings', 'Кредиты и платежная готовность. Не заменяет workflow decision.'],
-      'right-coupon-rule': ['Coupon rule', 'Правая', 'Chats / Pings', 'Эксперт подсвечивает возможную необходимость купона или компенсации; модератор принимает финальное решение.'],
+      'right-coupon-rule': ['Coupon', 'Правая', 'Chats / Pings', 'Эксперт подсвечивает возможную необходимость купона или компенсации; модератор принимает финальное решение.'],
       'right-private-note': ['Private note', 'Правая', 'Chats / Pings', 'Личная заметка эксперта. Не влияет на глобальную маршрутизацию.'],
       'right-moderator-note': ['Moderator note', 'Правая', 'Chats / Pings', 'Контроль качества, ограничение или передача смены с source Moderator.']
     };
@@ -2698,8 +2698,11 @@
       const badgeAliases = {
         Reply: 'NeedR',
         'Paid session': 'Paid',
-        'Extend window': 'Reactivation',
-        'Free boundary': 'Free'
+        Revive: 'Revive',
+        'Trial boundary': 'Trial',
+        Skeptic: 'Skeptic',
+        Safe: 'Safe',
+        Coupon: 'Coupon'
       };
 
       return badgeAliases[normalizedAnchor] || normalizedAnchor;
@@ -2739,14 +2742,14 @@
         };
       }
 
-      if (['Favorite', 'Safety route', 'Coupon rule'].includes(badge) || row.source === 'Expert') {
+      if (['Favorite', 'Safe', 'Coupon'].includes(badge) || row.source === 'Expert') {
         return {
           label: 'Назначенные',
           note: 'Назначает эксперт для работы с конкретным диалогом; не является глобальной системной правдой.'
         };
       }
 
-      if (['NeedR', 'WaitR', 'Hot', 'Fire', 'Reactivation', 'Free', 'Sell', 'Objection'].includes(badge)) {
+      if (['NeedR', 'WaitR', 'Hot', 'Fire', 'Revive', 'Trial', 'Sell', 'Skeptic'].includes(badge)) {
         return {
           label: 'Индивидуальные',
           note: 'Появляется автоматически из взаимодействия клиент-эксперт и уникален для конкретного диалога.'
@@ -2771,13 +2774,13 @@
       PP: { best: 'PP', variants: ['PP', 'Checkout', 'Pending'] },
       Sell: { best: 'Sell', variants: ['Sell', 'Offer', 'Close'] },
       Favorite: { best: 'Star', variants: ['Star', 'Favorite', 'Saved'] },
-      Free: { best: 'Free', variants: ['Free', 'Trial', 'Limit'] },
+      Trial: { best: 'Trial', variants: ['Trial', 'Intro', 'Limit'] },
       Paid: { best: 'Paid', variants: ['Paid', '$', 'Wallet'] },
-      Reactivation: { best: 'Reactivation', variants: ['Reactivation', 'Return', 'Revive'] },
+      Revive: { best: 'Revive', variants: ['Revive', 'Return', 'Wake'] },
       Risk: { best: 'Risk', variants: ['Risk', 'Warn', 'Alert'] },
-      'Safety route': { best: 'Safe', variants: ['Safe', 'Clear', 'Override'] },
-      'Coupon rule': { best: 'Coupon', variants: ['Coupon', 'Comp', 'Review'] },
-      Objection: { best: 'Objection', variants: ['Objection', 'Doubt', 'Block'] },
+      'Safe': { best: 'Safe', variants: ['Safe', 'Clear', 'Override'] },
+      'Coupon': { best: 'Coupon', variants: ['Coupon', 'Comp', 'Review'] },
+      Skeptic: { best: 'Skeptic', variants: ['Skeptic', 'Doubt', 'Block'] },
       Fire: { best: 'Fire', variants: ['Fire', 'Peak', 'Signal'] },
       Hot: { best: 'Hot', variants: ['Hot', 'Warm', 'Fresh'] },
       NEW: { best: 'NEW', variants: ['NEW', 'Recent', 'Lead'] },
@@ -2835,20 +2838,20 @@
       'Chats::Sell': { zones: ['Left', 'Center'], basis: ['PbExpert', 'LLM'], rule: 'Сигнал готовности к оферу нужен в очереди и у composer.' },
       'Chats::Paid': { zones: ['Left', 'Center'], basis: ['AskNebula', 'PbExpert'], rule: 'Пополненный кошелек важен в очереди и рядом с запуском paid-консультации.' },
       'Chats::Favorite': { zones: ['Left'], basis: ['AskNebula', 'LLM'], rule: 'Личная навигационная отметка эксперта в списке.' },
-      'Chats::Free': { zones: ['Center', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Граница бесплатной ценности влияет на ответ и контекст.' },
-      'Chats::Objection': { zones: ['Center', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Возражение меняет тон ответа и требует причины справа.' },
-      'Chats::Reactivation': { zones: ['Left', 'Right'], basis: ['AskNebula', 'PbExpert'], rule: 'Возврат клиента нужен для отбора и истории.' },
+      'Chats::Trial': { zones: ['Center', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Граница бесплатной ценности влияет на ответ и контекст.' },
+      'Chats::Skeptic': { zones: ['Center', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Возражение меняет тон ответа и требует причины справа.' },
+      'Chats::Revive': { zones: ['Left', 'Right'], basis: ['AskNebula', 'PbExpert'], rule: 'Возврат клиента нужен для отбора и истории.' },
       'Chats::Risk': { zones: ['Center', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Риск должен быть виден перед ответом и раскрыт в контексте.' },
-      'Chats::Safety route': { zones: ['Center', 'Right'], basis: ['LLM'], rule: 'Перекрытие Risk влияет на ответ и должно жить рядом с модераторским контекстом.' },
-      'Chats::Coupon rule': { zones: ['Right'], basis: ['PbExpert', 'LLM'], rule: 'Купон/компенсация относится к модераторскому решению и платежному контексту.' },
+      'Chats::Safe': { zones: ['Center', 'Right'], basis: ['LLM'], rule: 'Перекрытие Risk влияет на ответ и должно жить рядом с модераторским контекстом.' },
+      'Chats::Coupon': { zones: ['Right'], basis: ['PbExpert', 'LLM'], rule: 'Купон/компенсация относится к модераторскому решению и платежному контексту.' },
       'Pings::Hot': { zones: ['Left', 'Center'], basis: ['AskNebula', 'LLM'], rule: 'Свежий персональный сигнал нужен в очереди и открытом Ping.' },
       'Pings::NEW': { zones: ['Left'], basis: ['AskNebula', 'LLM'], rule: 'Freshness нужен для сортировки и отбора очереди.' },
       'Pings::Fire': { zones: ['Left', 'Center'], basis: ['AskNebula', 'LLM'], rule: 'Сильный intent поднимает Ping и объясняет повод касания.' },
       'Pings::Paid': { zones: ['Left', 'Right'], basis: ['AskNebula', 'PbExpert'], rule: 'Paid history влияет на приоритет и сценарий реактивации.' },
       'Pings::NeedR': { zones: ['Left', 'Center'], basis: ['AskNebula', 'LLM'], rule: 'Следующий ход эксперта нужен в очереди и открытом Ping.' },
       'Pings::WaitR': { zones: ['Left', 'Center'], basis: ['LLM'], rule: 'Ожидание клиента снижает срочность и защищает от повторного касания.' },
-      'Pings::Free': { zones: ['Center', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Free-граница управляет первым сообщением и контекстом.' },
-      'Pings::Reactivation': { zones: ['Left', 'Right'], basis: ['AskNebula', 'PbExpert'], rule: 'Возврат клиента нужен для отбора и истории касаний.' },
+      'Pings::Trial': { zones: ['Center', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Trial-граница управляет первым сообщением и контекстом.' },
+      'Pings::Revive': { zones: ['Left', 'Right'], basis: ['AskNebula', 'PbExpert'], rule: 'Возврат клиента нужен для отбора и истории касаний.' },
       'Pings::Risk': { zones: ['Center', 'Right'], basis: ['PbExpert', 'LLM'], rule: 'Риск ограничивает outreach и должен раскрываться справа.' }
     };
 
@@ -2883,76 +2886,76 @@
     }
 
     const badgeWhenText = {
-      'Chats::Coupon rule': 'Эксперт видит, что клиенту может понадобиться купон или компенсация, и отправляет запрос модератору. Бейдж висит до закрытия запроса, независимо от решения.',
+      'Chats::Coupon': 'Эксперт видит, что клиенту может понадобиться купон или компенсация, и отправляет запрос модератору. Бейдж висит до закрытия запроса, независимо от решения.',
       'Chats::Favorite': 'Эксперт сам помечает диалог как важный для себя. Это личная отметка, а не общий приоритет для команды.',
-      'Chats::Free': 'Клиент сейчас в бесплатной части консультации или тратит бесплатные минуты. Полную ценность еще нельзя отдавать как paid-сервис.',
+      'Chats::Trial': 'Клиент сейчас в бесплатной части консультации или тратит бесплатные минуты. Полную ценность еще нельзя отдавать как paid-сервис.',
       'Chats::Live': 'У клиента идет активная платная сессия с другим экспертом. Для текущего эксперта это сигнал не писать и не продавать, пока сессия не завершится.',
       'Chats::NeedR': 'Клиент отправил входящее сообщение эксперту и ждет ответа. Следующий ход за экспертом.',
-      'Chats::Objection': 'Клиент сомневается, спорит или не готов покупать/продлевать. Обычный прямой offer сейчас может сработать хуже.',
+      'Chats::Skeptic': 'Клиент сомневается, спорит или не готов покупать/продлевать. Обычный прямой offer сейчас может сработать хуже.',
       'Chats::Paid': 'У клиента пополнен кошелек для оплаты консультации. Начать платную консультацию можно прямо сейчас.',
       'Chats::PP': 'Клиент дошел до этапа оплаты, но не завершил платеж или платеж не подтвержден. Это почти покупка, но услуга еще не оплачена.',
-      'Chats::Reactivation': 'Старый платящий клиент вернулся к интересу по эзотерике, снова начал смотреть страницу эксперта или продолжать чат.',
+      'Chats::Revive': 'Старый платящий клиент вернулся к интересу по эзотерике, снова начал смотреть страницу эксперта или продолжать чат.',
       'Chats::Risk': 'Модератор отметил риск в диалоге: жалоба, safety, спорное обещание или качество ответа. Работать нужно осторожнее обычного.',
-      'Chats::Safety route': 'В диалоге есть Risk, но эксперт понимает, что диалог идет корректно и кризис миновал. Для него Risk меняется на Safety route; для остальных остается Risk.',
+      'Chats::Safe': 'В диалоге есть Risk, но эксперт понимает, что диалог идет корректно и кризис миновал. Для него Risk меняется на Safe; для остальных остается Risk.',
       'Chats::Sell': 'Система видит, что клиент достаточно прогрет: есть интерес, контекст и уместный момент предложить платную сессию.',
       'Chats::SLA': 'Клиент ждет ответа дольше установленной нормы.',
       'Pings::Fire': 'Клиент прямо сейчас или в последние 15 минут активно изучал эксперта: возвращался к профилю или теме, кликал chat/payment path или показывал сильный expert interest.',
-      'Pings::Free': 'Клиент находится в бесплатном стартовом окне до платной консультации. Первое касание должно прогревать, а не заменять paid-сервис.',
+      'Pings::Trial': 'Клиент находится в бесплатном стартовом окне до платной консультации. Первое касание должно прогревать, а не заменять paid-сервис.',
       'Pings::Hot': 'Клиент недавно коснулся этого эксперта: открыл профиль, вернулся к нему, посмотрел чат/тему или как-то отреагировал. Окно длится 4 часа; если появляется Fire, Hot скрывается.',
       'Pings::NeedR': 'В Ping появилось входящее событие от клиента, на которое должен ответить эксперт. Следующий ход за экспертом.',
       'Pings::NEW': 'Последнее касание клиента было за последние 24 часа. Это свежий сигнал, но без более сильного персонального интереса Hot или Fire.',
       'Pings::Paid': 'Клиент уже хотя бы раз платил. Это теплый клиент с paid-историей, а не холодный бесплатный лид.',
-      'Pings::Reactivation': 'Исторический клиент снова проявил интерес к эзотерике, теме или эксперту. Это возврат, а не первое холодное касание.',
+      'Pings::Revive': 'Исторический клиент снова проявил интерес к эзотерике, теме или эксперту. Это возврат, а не первое холодное касание.',
       'Pings::Risk': 'Модератор отметил риск в первом касании или возврате клиента. Сообщение может выглядеть давлением или вызвать жалобу.',
       'Pings::WaitR': 'Эксперт уже сделал касание или ответил, нового ответа от клиента пока нет. Следующий ход за клиентом.'
     };
 
     const badgePurposeText = {
-      'Chats::Coupon rule': 'Нужен, чтобы эксперт мог отправить запрос на компенсацию, а модератор принял решение. Пока запрос открыт, бейдж держит кейс в видимом состоянии.',
+      'Chats::Coupon': 'Нужен, чтобы эксперт мог отправить запрос на компенсацию, а модератор принял решение. Пока запрос открыт, бейдж держит кейс в видимом состоянии.',
       'Chats::Favorite': 'Нужен как личная закладка эксперта: быстро вернуться к важному диалогу, не меняя глобальную очередь и не создавая сигнал для остальных.',
-      'Chats::Free': 'Нужен, чтобы эксперт держал границу бесплатной ценности: заинтересовать клиента, но оставить полноценную консультацию для оплаты.',
+      'Chats::Trial': 'Нужен, чтобы эксперт держал границу бесплатной ценности: заинтересовать клиента, но оставить полноценную консультацию для оплаты.',
       'Chats::Live': 'Нужен, чтобы текущий эксперт не вмешивался в чужую активную консультацию: не отправлял сообщение, не делал offer и не сбивал клиента во время paid-сессии.',
       'Chats::NeedR': 'Бейдж помогает эксперту сразу увидеть диалоги, где клиент ждет ответа.',
-      'Chats::Objection': 'Нужен, чтобы эксперт сменил тактику: не давить новым offer, а спокойно закрыть сомнение, страх или недоверие клиента.',
-      'Chats::Paid': 'Нужен, чтобы эксперт вел диалог с фокусом на продажу платного чата, а не как free-прогрев.',
+      'Chats::Skeptic': 'Нужен, чтобы эксперт сменил тактику: не давить новым offer, а спокойно закрыть сомнение, страх или недоверие клиента.',
+      'Chats::Paid': 'Нужен, чтобы эксперт вел диалог с фокусом на продажу платного чата, а не как trial-прогрев.',
       'Chats::PP': 'Сигнал для эксперта: мягко подвести клиента к завершению платежа и не потерять почти готовую оплату.',
-      'Chats::Reactivation': 'Нужен, чтобы эксперт говорил теплее и точнее, опираясь на прошлый платящий контекст клиента.',
+      'Chats::Revive': 'Нужен, чтобы эксперт говорил теплее и точнее, опираясь на прошлый платящий контекст клиента.',
       'Chats::Risk': 'Нужен как предупреждение всем экспертам: обычный sales/reading сценарий здесь опасен, нужны аккуратные формулировки и меньше давления.',
-      'Chats::Safety route': 'Нужен, чтобы эксперт мог продолжить свой диалог после Risk, если видит, что кризис миновал. Для остальных экспертов Risk остается видимым.',
+      'Chats::Safe': 'Нужен, чтобы эксперт мог продолжить свой диалог после Risk, если видит, что кризис миновал. Для остальных экспертов Risk остается видимым.',
       'Chats::Sell': 'Нужен, чтобы эксперт не пропустил момент офера: клиент уже достаточно прогрет, но предложение должно быть релевантным и без преждевременного давления.',
       'Chats::SLA': 'Нужен, чтобы сместить фокус эксперта на клиента. Диалог становится выше обычной очереди: задержка бьет по доверию, теряется интерес, снижается вероятность оплаты и растет риск жалобы.',
       'Pings::Fire': 'Самый сильный pre-chat сигнал: клиент, вероятно, онлайн прямо сейчас, поэтому эксперт должен фокусироваться на нем первым.',
-      'Pings::Free': 'Нужен, чтобы первое сообщение не стало бесплатной полной консультацией. Эксперт дает интригу и повод перейти в Chat/paid, а не весь reading.',
+      'Pings::Trial': 'Нужен, чтобы первое сообщение не стало бесплатной полной консультацией. Эксперт дает интригу и повод перейти в Chat/paid, а не весь reading.',
       'Pings::Hot': 'Нужен, чтобы эксперт быстро отработал свежий интерес к себе. Если за 4 часа клиент не перешел в Chat, сигнал ослабевает до NEW. NEW длится 24 часа от последнего касания клиента.',
       'Pings::NeedR': 'Нужен, чтобы эксперт увидел Ping, где появился входящий сигнал. Это еще не активный чат, но уже требует реакции по pre-chat сценарию.',
       'Pings::NEW': 'Нужен, чтобы эксперт видел новые сигналы в первые сутки от последнего касания клиента. Через 24 часа бейдж исчезает, чтобы старое не выглядело свежим.',
-      'Pings::Paid': 'Нужен, чтобы эксперт вел клиента как previous buyer: меньше холодного free, больше точного возврата, продолжения или paid next step.',
-      'Pings::Reactivation': 'Нужен, чтобы эксперт использовал теплый повод возврата: не писать как новому лиду, а связать касание с прошлым интересом.',
+      'Pings::Paid': 'Нужен, чтобы эксперт вел клиента как previous buyer: меньше холодного trial, больше точного возврата, продолжения или paid next step.',
+      'Pings::Revive': 'Нужен, чтобы эксперт использовал теплый повод возврата: не писать как новому лиду, а связать касание с прошлым интересом.',
       'Pings::Risk': 'Нужен, чтобы эксперт не начал outreach рискованно. Перед сообщением нужно смягчить тон, убрать давление и не делать сильных обещаний.',
       'Pings::WaitR': 'Нужен, чтобы эксперт не спамил повторно. Сейчас ход за клиентом; новое сообщение оправдано только при новом поводе.'
     };
 
     const badgeDoesText = {
-      'Chats::Coupon rule': 'Показывает открытый запрос на купон/компенсацию',
+      'Chats::Coupon': 'Показывает открытый запрос на купон/компенсацию',
       'Chats::Favorite': 'Сохраняет личную закладку эксперта',
-      'Chats::Free': 'Показывает границу бесплатной ценности',
+      'Chats::Trial': 'Показывает границу бесплатной ценности',
       'Chats::Live': 'Показывает чужую активную paid-сессию',
       'Chats::NeedR': 'Показывает, что клиент ждет ответа эксперта',
-      'Chats::Objection': 'Переводит ответ в режим обработки сомнения',
+      'Chats::Skeptic': 'Переводит ответ в режим обработки сомнения',
       'Chats::Paid': 'Показывает пополненный кошелек клиента',
       'Chats::PP': 'Показывает незавершенный платеж',
-      'Chats::Reactivation': 'Показывает возврат старого платящего клиента',
+      'Chats::Revive': 'Показывает возврат старого платящего клиента',
       'Chats::Risk': 'Предупреждает о модераторском риске',
-      'Chats::Safety route': 'Заменяет Risk на Safety route только для этого эксперта',
+      'Chats::Safe': 'Заменяет Risk на Safe только для этого эксперта',
       'Chats::Sell': 'Показывает уместный момент для офера paid-сессии',
       'Chats::SLA': 'Поднимает просроченное ожидание ответа',
       'Pings::Fire': 'Показывает активный intent прямо сейчас',
-      'Pings::Free': 'Показывает бесплатную границу первого касания',
+      'Pings::Trial': 'Показывает бесплатную границу первого касания',
       'Pings::Hot': 'Показывает свежее 4-часовое окно интереса к эксперту',
       'Pings::NeedR': 'Показывает, что следующий ход за экспертом',
       'Pings::NEW': 'Показывает 24-часовое окно от последнего касания',
       'Pings::Paid': 'Показывает paid-историю клиента',
-      'Pings::Reactivation': 'Показывает возврат исторического клиента',
+      'Pings::Revive': 'Показывает возврат исторического клиента',
       'Pings::Risk': 'Предупреждает о риске перед outreach',
       'Pings::WaitR': 'Показывает, что следующий ход за клиентом'
     };
@@ -3013,7 +3016,7 @@
         .replace(/\bpayment issue\b/g, 'проблема оплаты')
         .replace(/\bpayment hesitation\b/g, 'сомнение перед оплатой')
         .replace(/\bpaid next step\b/g, 'следующий платный шаг')
-        .replace(/\bfull free reading\b/g, 'полный бесплатный разбор')
+        .replace(/\bfull trial reading\b/g, 'полный бесплатный разбор')
         .replace(/\bstarts soon\b/g, 'скоро начинается')
         .replace(/\bfuture paid\b/g, 'будущая платная сессия')
         .replace(/\bprevious buyer\b/g, 'предыдущий покупатель')
@@ -3115,10 +3118,10 @@
         'Attention mark',
         'Waiting reply',
         'Previous buyer',
-        'Safety route',
-        'Coupon rule',
+        'Safe',
+        'Coupon',
         'Favorite',
-        'Objection'
+        'Skeptic'
       ]);
 
       const draftBadge = cleanDraftBadgeAnchor(row);
