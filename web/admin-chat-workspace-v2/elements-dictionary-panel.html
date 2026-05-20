@@ -299,7 +299,7 @@
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
-      min-width: 1320px;
+      min-width: 1480px;
     }
 
     th,
@@ -422,6 +422,39 @@
     }
 
     .placement-rule {
+      color: #667085;
+      font-size: 10.5px;
+      line-height: 1.25;
+    }
+
+    .replacement-cell {
+      display: grid;
+      gap: 5px;
+      max-width: 190px;
+    }
+
+    .replacement-chip {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      min-height: 22px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #ecfdf3;
+      border: 1px solid #b7e4cf;
+      color: #027a48;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .replacement-chip.is-muted {
+      background: #f8fafc;
+      border-color: #d0d5dd;
+      color: #667085;
+    }
+
+    .replacement-note {
       color: #667085;
       font-size: 10.5px;
       line-height: 1.25;
@@ -680,79 +713,6 @@
     .sector-right-workflow { right: 1.55%; top: 59.8%; width: 20%; height: 12.8%; }
     .sector-right-pay { right: 1.55%; top: 73%; width: 20%; height: 10.6%; }
     .sector-right-notes { right: 1.55%; top: 83.9%; width: 20%; height: 10.2%; }
-
-    .badge-map-overlay {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 3;
-    }
-
-    .badge-map-group {
-      position: absolute;
-      pointer-events: auto;
-      display: none;
-      flex-wrap: wrap;
-      align-content: flex-start;
-      gap: 4px;
-      border: 1px solid rgba(11, 87, 208, 0.22);
-      border-radius: 9px;
-      background: rgba(255, 255, 255, 0.86);
-      box-shadow: 0 8px 22px rgba(16, 24, 40, 0.12);
-      padding: 7px;
-      cursor: pointer;
-      backdrop-filter: blur(2px);
-    }
-
-    .badge-map-group.is-visible {
-      display: flex;
-    }
-
-    .badge-map-group:hover,
-    .badge-map-group.is-active {
-      border-color: rgba(31, 111, 235, 0.62);
-      box-shadow: 0 10px 28px rgba(31, 111, 235, 0.18);
-    }
-
-    .badge-map-title {
-      width: 100%;
-      margin-bottom: 1px;
-      color: #344054;
-      font-size: 10px;
-      font-weight: 900;
-      line-height: 1.1;
-      text-transform: uppercase;
-    }
-
-    .badge-map-chip {
-      display: inline-flex;
-      align-items: center;
-      min-height: 18px;
-      border-radius: 999px;
-      border: 1px solid #bfdbfe;
-      background: #eff6ff;
-      color: #0b57d0;
-      padding: 2px 7px;
-      font-size: 10px;
-      font-weight: 900;
-      line-height: 1;
-      white-space: nowrap;
-    }
-
-    .badge-map-chip--hot { border-color: #fed7aa; background: #fff7ed; color: #b45309; }
-    .badge-map-chip--paid { border-color: #bbf7d0; background: #ecfdf3; color: #027a48; }
-    .badge-map-chip--risk { border-color: #fecdd3; background: #fff1f2; color: #be123c; }
-    .badge-map-chip--manual { border-color: #ddd6fe; background: #f5f3ff; color: #6d28d9; }
-    .badge-map-chip--wait { border-color: #cbd5e1; background: #f8fafc; color: #475569; }
-
-    .badge-map-left-filters { left: 19.1%; top: 18.9%; width: 21.9%; min-height: 5.8%; }
-    .badge-map-left-card { left: 19.1%; top: 25%; width: 21.9%; min-height: 9.3%; }
-    .badge-map-left-pings { left: 19.1%; top: 39.7%; width: 21.9%; min-height: 11%; }
-    .badge-map-center-header { left: 43%; top: 13.4%; width: 33.8%; min-height: 6.8%; }
-    .badge-map-center-session { left: 43%; top: 21.2%; width: 33.8%; min-height: 7.3%; }
-    .badge-map-right-workflow { right: 2.1%; top: 59.9%; width: 18.8%; min-height: 12.1%; }
-    .badge-map-right-pay { right: 2.1%; top: 73.3%; width: 18.8%; min-height: 9.8%; }
-    .badge-map-right-notes { right: 2.1%; top: 84.2%; width: 18.8%; min-height: 9.2%; }
 
     .map-toolbar {
       display: flex;
@@ -1716,6 +1676,7 @@
                 <th>Сценарий</th>
                 <th>Тип бейджа</th>
                 <th>Расположение</th>
+                <th>Замещение</th>
                 <th>Когда</th>
                 <th>Зачем</th>
               </tr>
@@ -1749,7 +1710,7 @@
               <h2>Специальная версия макета с картой бейджей</h2>
               <p>Нажмите на номер сектора или группу бейджей внутри макета. Справа откроется расшифровка: где бейдж появляется, кто его назначает и зачем он нужен эксперту.</p>
             </div>
-            <span class="pill pill-risk">Бейджи показаны поверх макета</span>
+            <span class="pill pill-pings">Бейджи показаны справа</span>
           </div>
           <div class="sector-guide" aria-label="Легенда секторов макета">
             <div class="sector-guide-group">
@@ -1784,92 +1745,17 @@
           </div>
           <div class="map-toolbar" aria-label="Режим показа бейджей на макете">
             <div class="map-toolbar-note">
-              По умолчанию бейджи показываются только в выбранном секторе. Для общего прохода включите полный слой отдельно по Chats или Pings.
+              На макете оставлены только кликабельные области. Бейджи и объяснения показываются справа, чтобы не перекрывать интерфейс.
             </div>
             <div class="map-mode-buttons">
-              <button class="map-mode-button is-active" type="button" data-badge-map-mode="sector">Только выбранный сектор</button>
-              <button class="map-mode-button" type="button" data-badge-map-show-all="Chats">Показать все Chats</button>
-              <button class="map-mode-button" type="button" data-badge-map-show-all="Pings">Показать все Pings</button>
+              <button class="map-mode-button is-active" type="button" data-badge-map-mode="sector">Выбранная область</button>
+              <button class="map-mode-button" type="button" data-badge-map-show-all="Chats">Все бейджи Chats</button>
+              <button class="map-mode-button" type="button" data-badge-map-show-all="Pings">Все бейджи Pings</button>
             </div>
           </div>
           <div class="mockup-frame">
             <div class="mockup-scale-stage" id="mockupScaleStage">
               <iframe id="mockupIframe" data-src="./index.html?v=badge-map-20260515" title="Макет админ-панели чата V2" srcdoc="<p style=&quot;font:14px Arial;padding:16px;color:#667085&quot;>Загрузка макета...</p>"></iframe>
-              <div class="badge-map-overlay" aria-label="Карта размещения бейджей внутри макета">
-                <button class="badge-map-group badge-map-left-filters sector-trigger" type="button" data-sector="left-search" data-map-scenarios="Chats" aria-label="Левая область: фильтры Chats">
-                  <span class="badge-map-title">Фильтры Chats</span>
-                  <span class="badge-map-chip">Reply</span>
-                  <span class="badge-map-chip badge-map-chip--hot">SLA</span>
-                  <span class="badge-map-chip badge-map-chip--paid">Live</span>
-                  <span class="badge-map-chip badge-map-chip--paid">PP</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Sell</span>
-                </button>
-                <button class="badge-map-group badge-map-left-filters sector-trigger" type="button" data-sector="left-search" data-map-scenarios="Pings" aria-label="Левая область: фильтры Pings">
-                  <span class="badge-map-title">Фильтры Pings</span>
-                  <span class="badge-map-chip">NEW</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Hot</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Fire</span>
-                  <span class="badge-map-chip badge-map-chip--paid">Paid</span>
-                  <span class="badge-map-chip">Reply</span>
-                  <span class="badge-map-chip badge-map-chip--wait">Await</span>
-                </button>
-                <button class="badge-map-group badge-map-left-card sector-trigger" type="button" data-sector="left-card-badges" data-map-scenarios="Chats" aria-label="Левая область: бейджи карточки Chats">
-                  <span class="badge-map-title">Карточка Chats</span>
-                  <span class="badge-map-chip">Reply</span>
-                  <span class="badge-map-chip badge-map-chip--hot">SLA</span>
-                  <span class="badge-map-chip badge-map-chip--paid">Paid</span>
-                  <span class="badge-map-chip badge-map-chip--paid">Live</span>
-                  <span class="badge-map-chip badge-map-chip--manual">Favorite</span>
-                  <span class="badge-map-chip badge-map-chip--risk">Risk</span>
-                </button>
-                <button class="badge-map-group badge-map-left-card sector-trigger" type="button" data-sector="left-card-badges" data-map-scenarios="Pings" aria-label="Левая область: бейджи карточки Pings">
-                  <span class="badge-map-title">Карточка Pings</span>
-                  <span class="badge-map-chip">NEW</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Hot</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Fire</span>
-                  <span class="badge-map-chip badge-map-chip--paid">Paid</span>
-                  <span class="badge-map-chip">Reply</span>
-                  <span class="badge-map-chip badge-map-chip--wait">Await</span>
-                </button>
-                <button class="badge-map-group badge-map-left-pings sector-trigger" type="button" data-sector="left-card-list" data-map-scenarios="Pings" aria-label="Левая область: очередь Pings">
-                  <span class="badge-map-title">Очередь Pings</span>
-                  <span class="badge-map-chip">NEW</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Hot</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Fire</span>
-                  <span class="badge-map-chip badge-map-chip--paid">Paid</span>
-                </button>
-                <button class="badge-map-group badge-map-center-session sector-trigger" type="button" data-sector="center-session" data-map-scenarios="Chats" aria-label="Центр: paid и offer action">
-                  <span class="badge-map-title">Center status</span>
-                  <span class="badge-map-chip badge-map-chip--paid">Paid</span>
-                  <span class="badge-map-chip badge-map-chip--paid">Live</span>
-                </button>
-                <button class="badge-map-group badge-map-right-workflow sector-trigger" type="button" data-sector="right-workflow" data-map-scenarios="Chats" aria-label="Правая область: сценарий Chats">
-                  <span class="badge-map-title">Сценарий Chats</span>
-                  <span class="badge-map-chip">Trial</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Skeptic</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Sell</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Revive</span>
-                  <span class="badge-map-chip badge-map-chip--risk">Risk</span>
-                  <span class="badge-map-chip badge-map-chip--manual">Safe</span>
-                </button>
-                <button class="badge-map-group badge-map-right-workflow sector-trigger" type="button" data-sector="right-workflow" data-map-scenarios="Pings" aria-label="Правая область: сценарий Pings">
-                  <span class="badge-map-title">Сценарий Pings</span>
-                  <span class="badge-map-chip">Trial</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Fire</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Revive</span>
-                  <span class="badge-map-chip badge-map-chip--risk">Risk</span>
-                </button>
-                <button class="badge-map-group badge-map-right-pay sector-trigger" type="button" data-sector="right-pay" data-map-scenarios="Chats" aria-label="Правая область: деньги Chats">
-                  <span class="badge-map-title">Деньги Chats</span>
-                  <span class="badge-map-chip badge-map-chip--paid">PP</span>
-                  <span class="badge-map-chip badge-map-chip--manual">Coupon</span>
-                </button>
-                <button class="badge-map-group badge-map-right-pay sector-trigger" type="button" data-sector="right-pay" data-map-scenarios="Pings" aria-label="Правая область: деньги Pings">
-                  <span class="badge-map-title">Деньги Pings</span>
-                  <span class="badge-map-chip badge-map-chip--paid">Paid</span>
-                  <span class="badge-map-chip badge-map-chip--hot">Revive</span>
-                </button>
-              </div>
               <div class="mockup-overlay" aria-label="Кликабельные сектора макета">
                 <button class="sector-hotspot sector-trigger sector-left sector-left-workload" type="button" data-sector="left-workload" aria-label="1. Режим Chats, Pings или Archive"><span>1</span></button>
                 <button class="sector-hotspot sector-trigger sector-left sector-left-search is-active" type="button" data-sector="left-search" aria-label="2. Поиск и фильтры очереди"><span>2</span></button>
@@ -2851,6 +2737,47 @@
       return `${row.scenario}::${cleanDraftBadgeAnchor(row)}`;
     }
 
+    const replacementByBadge = {
+      'Chats::Reply': { badge: 'SLA', note: 'Если клиент ждет дольше нормы, Reply не дублируется: показываем более сильный сигнал просрочки.' },
+      'Chats::SLA': { badge: 'Await', note: 'После ответа эксперта ожидание клиента закрыто, следующий ход переходит к клиенту.' },
+      'Chats::Live': { badge: '', note: 'После окончания чужой paid-сессии стоп-сигнал снимается; новый бейдж выбирается по текущему состоянию диалога.' },
+      'Chats::PP': { badge: 'Paid', note: 'После подтверждения платежа почти-оплата становится оплаченной готовностью.' },
+      'Chats::Sell': { badge: 'PP', note: 'Если клиент перешел к оплате, офер уже не главный сигнал: важно довести платеж.' },
+      'Chats::Paid': { badge: 'Live', note: 'Если у клиента началась активная paid-сессия с другим экспертом, стоп-сигнал Live сильнее.' },
+      'Chats::Favorite': { badge: '', note: 'Не замещается: это личная закладка эксперта, а не состояние очереди.' },
+      'Chats::Trial': { badge: 'Paid', note: 'После оплаты trial-контекст больше не главный: клиент готов к paid-консультации.' },
+      'Chats::Skeptic': { badge: '', note: 'Не замещается автоматически: эксперт сначала закрывает сомнение, затем система заново оценивает уместность offer.' },
+      'Chats::Revive': { badge: '', note: 'Не замещается: это контекст возврата клиента, а не стадия действия.' },
+      'Chats::Risk': { badge: 'Safe', note: 'Только для эксперта, который подтвердил Safe; для остальных Risk остается видимым.' },
+      'Chats::Safe': { badge: '', note: 'Не замещается автоматически: это локальная версия Risk для одного эксперта, пока он ведет диалог.' },
+      'Chats::Coupon': { badge: '', note: 'После закрытия запроса бейдж снимается; дальше система заново оценивает оплату, offer или обычный ответ.' },
+      'Pings::NEW': { badge: '', note: 'Через 24 часа без нового касания бейдж снимается, чтобы старый Ping не выглядел свежим.' },
+      'Pings::Hot': { badge: 'Fire', note: 'Если клиент прямо сейчас показывает сильный интерес, Fire замещает Hot как более сильный pre-chat сигнал.' },
+      'Pings::Fire': { badge: 'Hot', note: 'Когда активный intent закончился, но 4-часовое окно еще живо, Fire ослабевает до Hot.' },
+      'Pings::Paid': { badge: '', note: 'Не замещается: paid history является контекстом клиента и может жить рядом с freshness-сигналом.' },
+      'Pings::Reply': { badge: 'Await', note: 'После касания эксперта следующий ход переходит к клиенту, поэтому Reply меняется на Await.' },
+      'Pings::Await': { badge: 'Reply', note: 'Если клиент снова отреагировал, следующий ход возвращается к эксперту.' },
+      'Pings::Revive': { badge: '', note: 'Не замещается: это причина возврата исторического клиента, а не таймер свежести.' },
+      'Pings::Trial': { badge: 'Paid', note: 'Если клиент оплатил, trial-логика больше не главный режим первого касания.' },
+      'Pings::Risk': { badge: '', note: 'Не замещается автоматически: модераторский риск снимается или меняется только отдельным решением.' },
+      'Pings::Favorite': { badge: '', note: 'Не замещается: это личная закладка эксперта, а не общий приоритет.' }
+    };
+
+    function badgeReplacement(row) {
+      return replacementByBadge[badgeDictionaryKey(row)] || { badge: '', note: 'Прямое замещение для этого бейджа не задано.' };
+    }
+
+    function renderReplacement(row) {
+      const replacement = badgeReplacement(row);
+      const hasTarget = Boolean(replacement.badge);
+      return `
+        <div class="replacement-cell">
+          <span class="replacement-chip ${hasTarget ? '' : 'is-muted'}">${hasTarget ? `→ ${replacement.badge}` : 'Нет замены'}</span>
+          <span class="replacement-note">${readableText(replacement.note)}</span>
+        </div>
+      `;
+    }
+
     const badgeWhenText = {
       'Chats::Coupon': 'Эксперт видит, что клиенту может понадобиться купон или компенсация, и отправляет запрос модератору. Бейдж висит до закрытия запроса, независимо от решения.',
       'Chats::Favorite': 'Эксперт сам помечает диалог как важный для себя. Это личная отметка, а не общий приоритет для команды.',
@@ -3158,10 +3085,11 @@
           <td>${tag(row.scenario, scenarioClass[row.scenario])}</td>
           <td>${badgeTypeTag(row)}</td>
           <td>${renderPlacement(row)}</td>
+          <td>${renderReplacement(row)}</td>
           <td><div class="when-cell"><span>${readableText(badgeWhen(row))}</span></div></td>
           <td><div class="purpose-cell"><p>${readableText(badgePurpose(row))}</p></div></td>
         </tr>
-      `).join('') || `<tr><td colspan="6"><div class="empty">Ничего не найдено по текущим фильтрам.</div></td></tr>`;
+      `).join('') || `<tr><td colspan="7"><div class="empty">Ничего не найдено по текущим фильтрам.</div></td></tr>`;
 
       const chats = filtered.filter(row => row.scenario === 'Chats').length;
       const pings = filtered.filter(row => row.scenario === 'Pings').length;
@@ -3214,11 +3142,6 @@
       return rows.filter(row => row.scenario === selectedMapScenario);
     }
 
-    function groupSupportsScenario(group, scenario) {
-      const scenarios = (group.dataset.mapScenarios || 'Chats Pings').split(/\s+/).filter(Boolean);
-      return scenarios.includes(scenario);
-    }
-
     function updateBadgeMapModeButtons() {
       document.querySelectorAll('[data-badge-map-mode], [data-badge-map-show-all]').forEach(button => {
         const isSectorButton = button.dataset.badgeMapMode === 'sector';
@@ -3232,16 +3155,14 @@
     }
 
     function updateBadgeMapVisibility() {
-      const sectorKey = currentSectorKey();
-      document.querySelectorAll('.badge-map-group').forEach(group => {
-        const scenarioMatch = groupSupportsScenario(group, selectedMapScenario);
-        const sectorMatch = group.dataset.sector === sectorKey;
-        const visible = selectedBadgeMapMode === 'all'
-          ? scenarioMatch
-          : scenarioMatch && sectorMatch;
-        group.classList.toggle('is-visible', visible);
-      });
       updateBadgeMapModeButtons();
+    }
+
+    function allScenarioBadgeRows() {
+      return uniqueBadgeRows(dictionary.filter(row =>
+        isBadgeProductLogic(row) &&
+        row.scenario === selectedMapScenario
+      ));
     }
 
     function renderScenarioSwitch(detail) {
@@ -3285,28 +3206,37 @@
 
     function renderInspector(detail, sectorKey = '') {
       const inspector = document.getElementById('areaInspector');
-      const allRelatedRows = relatedRowsFor(detail, sectorKey);
-      const relatedRows = filterRowsByMapScenario(allRelatedRows);
+      const isAllMode = selectedBadgeMapMode === 'all';
+      const allRelatedRows = isAllMode ? allScenarioBadgeRows() : relatedRowsFor(detail, sectorKey);
+      const relatedRows = isAllMode ? allRelatedRows : filterRowsByMapScenario(allRelatedRows);
       const chatsCount = allRelatedRows.filter(row => row.scenario === 'Chats').length;
       const pingsCount = allRelatedRows.filter(row => row.scenario === 'Pings').length;
+      const title = isAllMode ? `Все бейджи ${selectedMapScenario}` : detail.title;
+      const purpose = isAllMode
+        ? 'Общий список бейджей выбранного сценария без наложения на макет. Используется для проверки состава и логики размещения.'
+        : detail.purpose;
+      const role = isAllMode
+        ? 'Макет остается чистым: слева пользователь видит очередь, центр не перегружается бейджами, справа раскрываются причины. Ниже перечислены бейджи выбранного сценария и их смысл.'
+        : detail.role;
+      const areaTag = isAllMode ? tag(selectedMapScenario, scenarioClass[selectedMapScenario]) : tag(detail.area, areaClass[detail.area]);
       inspector.innerHTML = `
         <div class="area-inspector-head">
           <div>
-            <h2>${detail.title}</h2>
-            <p>${detail.purpose}</p>
+            <h2>${title}</h2>
+            <p>${purpose}</p>
           </div>
-          ${tag(detail.area, areaClass[detail.area])}
+          ${areaTag}
         </div>
-        ${renderScenarioSwitch(detail)}
+        ${isAllMode ? '' : renderScenarioSwitch(detail)}
         <div class="detail-meta">
           ${tag(`Показан сценарий: ${selectedMapScenario}`, scenarioClass[selectedMapScenario])}
-          <span class="pill"><strong>${relatedRows.length}</strong> строк в выбранном сценарии</span>
+          <span class="pill"><strong>${relatedRows.length}</strong> строк</span>
           <span class="pill pill-chats"><strong>${chatsCount}</strong> Chats</span>
           <span class="pill pill-pings"><strong>${pingsCount}</strong> Pings</span>
         </div>
         <div class="inspector-section">
           <h3>Смысл области</h3>
-          <p>${readableText(detail.role)}</p>
+          <p>${readableText(role)}</p>
         </div>
         <div class="inspector-section">
           <h3>Что входит</h3>
@@ -3315,7 +3245,7 @@
           </div>
         </div>
         <div class="inspector-actions">
-          <button class="btn btn-primary" type="button" data-show-dictionary-area="${detail.dictionary.area}" data-show-dictionary-layer="${detail.dictionary.layer}">Показать связанные строки в словаре</button>
+          ${isAllMode ? '' : `<button class="btn btn-primary" type="button" data-show-dictionary-area="${detail.dictionary.area}" data-show-dictionary-layer="${detail.dictionary.layer}">Показать связанные строки в словаре</button>`}
           <a class="btn" href="./index.html" target="_blank" rel="noopener">Открыть макет отдельно</a>
         </div>
       `;
