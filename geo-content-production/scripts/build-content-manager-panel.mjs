@@ -1,22 +1,61 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const sourceRoot = 'H:\\GPT-Codex\\.ops\\content-packages\\all-locations';
-const panelRoot = 'H:\\GPT-Codex\\Confideline\\web\\geo-content-panel';
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const projectRoot = process.env.CONFIDELINE_PROJECT_ROOT || path.resolve(scriptDir, '..', '..');
+
+function findWorkspaceRoot(startDir) {
+  let current = path.resolve(startDir);
+  while (current !== path.dirname(current)) {
+    if (fs.existsSync(path.join(current, '.ops'))) {
+      return current;
+    }
+    current = path.dirname(current);
+  }
+  return 'H:\\GPT-Codex';
+}
+
+function firstExistingPath(...candidates) {
+  return candidates.find((candidate) => fs.existsSync(candidate)) || candidates[0];
+}
+
+const workspaceRoot = process.env.WORKSPACE_ROOT || findWorkspaceRoot(projectRoot);
+const canonicalConfidelineRoot = path.join(workspaceRoot, 'Confideline');
+const sourceRoot = path.join(workspaceRoot, '.ops', 'content-packages', 'all-locations');
+const panelRoot = path.join(projectRoot, 'web', 'geo-content-panel');
 const panelFilesRoot = path.join(panelRoot, 'files');
-const cssPath = 'H:\\GPT-Codex\\Confideline\\web\\css\\geo-content-panel.css';
-const jsPath = 'H:\\GPT-Codex\\Confideline\\web\\js\\geo-content-panel.js';
-const photoIndexPath = 'H:\\GPT-Codex\\Confideline\\geo-content-production\\drive-photo-index.json';
-const pageListPath = 'H:\\GPT-Codex\\Confideline\\geo-content-production\\queue\\page-list.csv';
-const countryVerifyCsvPath = 'H:\\GPT-Codex\\Confideline\\reports\\geo-countries-bulk-fill\\bulk-verify-country-content-result.csv';
+const cssPath = path.join(projectRoot, 'web', 'css', 'geo-content-panel.css');
+const jsPath = path.join(projectRoot, 'web', 'js', 'geo-content-panel.js');
+const photoIndexPath = path.join(projectRoot, 'geo-content-production', 'drive-photo-index.json');
+const pageListPath = firstExistingPath(
+  path.join(projectRoot, 'geo-content-production', 'queue', 'page-list.csv'),
+  path.join(canonicalConfidelineRoot, 'geo-content-production', 'queue', 'page-list.csv')
+);
+const countryVerifyCsvPath = firstExistingPath(
+  path.join(projectRoot, 'reports', 'geo-countries-bulk-fill', 'bulk-verify-country-content-result.csv'),
+  path.join(canonicalConfidelineRoot, 'reports', 'geo-countries-bulk-fill', 'bulk-verify-country-content-result.csv')
+);
 const cityVerifyCsvCandidates = [
-  'H:\\GPT-Codex\\Confideline\\reports\\geo-cities-bulk-fill\\bulk-verify-city-content-result.csv',
-  'H:\\GPT-Codex\\Confideline\\reports\\geo-geonames-bulk-fill\\bulk-verify-geoname-content-result.csv',
-  'H:\\GPT-Codex\\Confideline\\reports\\geo-geonames-bulk-fill\\bulk-verify-city-content-result.csv'
+  path.join(projectRoot, 'reports', 'geo-cities-bulk-fill', 'bulk-verify-city-content-result.csv'),
+  path.join(canonicalConfidelineRoot, 'reports', 'geo-cities-bulk-fill', 'bulk-verify-city-content-result.csv'),
+  path.join(projectRoot, 'reports', 'geo-geonames-bulk-fill', 'bulk-verify-geoname-content-result.csv'),
+  path.join(canonicalConfidelineRoot, 'reports', 'geo-geonames-bulk-fill', 'bulk-verify-geoname-content-result.csv'),
+  path.join(projectRoot, 'reports', 'geo-geonames-bulk-fill', 'bulk-verify-city-content-result.csv'),
+  path.join(canonicalConfidelineRoot, 'reports', 'geo-geonames-bulk-fill', 'bulk-verify-city-content-result.csv')
 ];
-const countryLiveMapPath = 'H:\\GPT-Codex\\Confideline\\reports\\geo-countries-bulk-fill\\live-country-id-map.json';
-const countriesSqlPath = 'H:\\GPT-Codex\\Confideline\\Chat\\youdate-2.0.2-yii2\\Source\\countries.sql';
-const geodataSqlPath = 'H:\\GPT-Codex\\Confideline\\Chat\\youdate-2.0.2-yii2\\Source\\geodata.sql';
+const countryLiveMapPath = firstExistingPath(
+  path.join(projectRoot, 'reports', 'geo-countries-bulk-fill', 'live-country-id-map.json'),
+  path.join(canonicalConfidelineRoot, 'reports', 'geo-countries-bulk-fill', 'live-country-id-map.json')
+);
+const countriesSqlPath = firstExistingPath(
+  path.join(projectRoot, 'Chat', 'youdate-2.0.2-yii2', 'Source', 'countries.sql'),
+  path.join(canonicalConfidelineRoot, 'Chat', 'youdate-2.0.2-yii2', 'Source', 'countries.sql')
+);
+const geodataSqlPath = firstExistingPath(
+  path.join(projectRoot, 'Chat', 'youdate-2.0.2-yii2', 'Source', 'geodata.sql'),
+  path.join(canonicalConfidelineRoot, 'Chat', 'youdate-2.0.2-yii2', 'Source', 'geodata.sql')
+);
 
 const cmsBase = 'https://confideline.com/ru/admin';
 const publicBase = 'https://confideline.com';
@@ -941,7 +980,8 @@ function buildCsvRows(pages) {
 }
 
 function main() {
-  if (path.resolve(panelRoot) !== path.resolve('H:\\GPT-Codex\\Confideline\\web\\geo-content-panel')) {
+  const expectedPanelRoot = path.join(projectRoot, 'web', 'geo-content-panel');
+  if (path.resolve(panelRoot) !== path.resolve(expectedPanelRoot)) {
     throw new Error(`Unexpected panel root: ${panelRoot}`);
   }
   fs.mkdirSync(panelFilesRoot, { recursive: true });
