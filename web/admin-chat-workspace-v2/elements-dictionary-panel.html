@@ -452,6 +452,31 @@
       overflow-wrap: anywhere;
     }
 
+    .replacement-mode {
+      font-weight: 900;
+    }
+
+    .replacement-target {
+      appearance: none;
+      border: 0;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.72);
+      color: inherit;
+      padding: 1px 4px;
+      font: inherit;
+      font-weight: 900;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+      cursor: pointer;
+    }
+
+    .replacement-target:hover,
+    .replacement-target:focus-visible {
+      background: #fff;
+      outline: 1px solid currentColor;
+    }
+
     .replacement-chip.is-muted {
       background: #f8fafc;
       border-color: #d0d5dd;
@@ -486,6 +511,11 @@
       color: #667085;
       font-size: 10.5px;
       line-height: 1.25;
+    }
+
+    tr.is-jump-target td {
+      background: #fff8df;
+      box-shadow: inset 3px 0 0 #f2bf24;
     }
 
     .tag {
@@ -726,6 +756,27 @@
     .sector-left.is-active { background: rgba(31, 111, 235, 0.18); }
     .sector-center.is-active { background: rgba(179, 92, 0, 0.18); }
     .sector-right.is-active { background: rgba(111, 66, 193, 0.18); }
+
+    .mockup-frame:hover .sector-hotspot {
+      opacity: 0;
+      border-color: transparent;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .mockup-frame:hover .sector-hotspot span {
+      opacity: 0;
+    }
+
+    .mockup-frame:hover .sector-hotspot.is-active {
+      opacity: 1;
+      border-width: 2px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+    }
+
+    .mockup-frame:hover .sector-left.is-active { border-color: #1f6feb; background: rgba(31, 111, 235, 0.14); }
+    .mockup-frame:hover .sector-center.is-active { border-color: #b35c00; background: rgba(179, 92, 0, 0.14); }
+    .mockup-frame:hover .sector-right.is-active { border-color: #6f42c1; background: rgba(111, 66, 193, 0.14); }
 
     .sector-left-workload { left: 18.6%; top: 13%; width: 23.3%; height: 4.9%; }
     .sector-left-search { left: 18.6%; top: 18.6%; width: 23.3%; height: 5.2%; }
@@ -2774,7 +2825,6 @@
       return `
         <div class="placement-cell">
           <div class="placement-zones">${placement.zones.map(zone => `<span class="zone-chip ${zoneClass[zone] || ''}">${zone}</span>`).join('')}</div>
-          <div class="placement-basis">${placement.basis.map(source => `<span class="basis-chip">${source}</span>`).join('')}</div>
           <div class="placement-rule">${placement.rule}</div>
         </div>
       `;
@@ -2823,10 +2873,45 @@
       const hasTarget = Boolean(replacement.badge);
       return `
         <div class="replacement-cell">
-          <span class="replacement-chip ${replacement.className || (hasTarget ? '' : 'is-muted')}">${replacement.mode || (hasTarget ? 'Заменяет' : 'Нет замены')}${hasTarget ? `: ${replacement.badge}` : ''}</span>
+          <span class="replacement-chip ${replacement.className || (hasTarget ? '' : 'is-muted')}">${renderReplacementLabel(row, replacement)}</span>
           <span class="replacement-note">${readableText(replacement.note)}</span>
         </div>
       `;
+    }
+
+    function badgeRowId(scenario, badge) {
+      return `badge-${String(scenario).toLowerCase()}-${String(badge).toLowerCase().replace(/[^a-z0-9]+/gi, '-')}`;
+    }
+
+    function availableBadgeNames(scenario) {
+      return new Set(uniqueBadgeRows(dictionary.filter(item =>
+        isBadgeProductLogic(item) &&
+        item.scenario === scenario
+      )).map(item => cleanDraftBadgeAnchor(item)));
+    }
+
+    function renderReplacementLabel(row, replacement) {
+      const mode = replacement.mode || (replacement.badge ? 'Заменяет' : 'Нет замены');
+      if (!replacement.badge) {
+        return `<span class="replacement-mode">${readableText(mode)}</span>`;
+      }
+
+      const available = availableBadgeNames(row.scenario);
+      const parts = String(replacement.badge).split(/(\/)/);
+      const renderedBadge = parts.map(part => {
+        const trimmed = part.trim();
+        if (!trimmed || part === '/') {
+          return readableText(part);
+        }
+
+        if (!available.has(trimmed)) {
+          return readableText(part);
+        }
+
+        return `<button class="replacement-target" type="button" data-jump-badge="${trimmed}" data-jump-scenario="${row.scenario}" title="Перейти к бейджу ${trimmed}">${trimmed}</button>`;
+      }).join('');
+
+      return `<span class="replacement-mode">${readableText(mode)}:</span> ${renderedBadge}`;
     }
 
     const badgeWhenText = {
@@ -3129,7 +3214,7 @@
       const sourceRows = dictionary.filter(matches);
       const filtered = uniqueBadgeRows(sourceRows);
       rows.innerHTML = filtered.map(row => `
-        <tr>
+        <tr id="${badgeRowId(row.scenario, cleanDraftBadgeAnchor(row))}" data-badge-key="${badgeDictionaryKey(row)}">
           <td class="col-anchor">${anchorName(row)}</td>
           <td>${tag(row.scenario, scenarioClass[row.scenario])}</td>
           <td>${badgeTypeTag(row)}</td>
@@ -3150,6 +3235,34 @@
         <span class="pill pill-pings"><strong>${approved}</strong> согласованных</span>
       `;
     }
+
+    function jumpToBadge(scenario, badge) {
+      document.querySelector('[data-panel="dictionary"]').click();
+      setMultiFilter(scenarioFilter, [scenario]);
+      resetMultiFilter(sourceFilter);
+      searchBox.value = '';
+      renderRows();
+
+      const target = document.getElementById(badgeRowId(scenario, badge));
+      if (!target) {
+        return;
+      }
+
+      target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+      target.classList.add('is-jump-target');
+      window.setTimeout(() => target.classList.remove('is-jump-target'), 1800);
+    }
+
+    rows.addEventListener('click', event => {
+      const button = event.target.closest('[data-jump-badge]');
+      if (!button) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      jumpToBadge(button.dataset.jumpScenario, button.dataset.jumpBadge);
+    });
 
     let selectedMapScenario = 'Chats';
     let selectedBadgeMapMode = 'sector';
