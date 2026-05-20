@@ -650,7 +650,7 @@
 
     .sector-hotspot {
       position: absolute;
-      pointer-events: auto;
+      pointer-events: none;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -685,7 +685,6 @@
       opacity: 0.42;
     }
 
-    .sector-hotspot:hover,
     .sector-hotspot.is-active {
       opacity: 1;
       border-width: 2px;
@@ -749,7 +748,7 @@
       font: inherit;
       font-size: 12px;
       font-weight: 800;
-      cursor: pointer;
+      cursor: default;
     }
 
     .map-mode-button:hover,
@@ -1729,7 +1728,7 @@
           <div class="real-mockup-head">
             <div>
               <h2>Специальная версия макета с картой бейджей</h2>
-              <p>Нажмите на номер сектора или группу бейджей внутри макета. Справа откроется расшифровка: где бейдж появляется, кто его назначает и зачем он нужен эксперту.</p>
+              <p>Выберите сектор кнопкой над макетом. Номера и подсветка на макете остаются визуальной картой, а сам макет под ними кликается и работает как обычная страница.</p>
             </div>
             <span class="pill pill-pings">Бейджи показаны справа</span>
           </div>
@@ -1766,7 +1765,7 @@
           </div>
           <div class="map-toolbar" aria-label="Режим показа бейджей на макете">
             <div class="map-toolbar-note">
-              На макете оставлены только кликабельные области. Бейджи и объяснения показываются справа, чтобы не перекрывать интерфейс.
+              Кликабельны кнопки выбора области выше и реальная страница внутри макета. Номера 1-14 только показывают границы и не перехватывают мышь.
             </div>
             <div class="map-mode-buttons">
               <button class="map-mode-button is-active" type="button" data-badge-map-mode="sector">Выбранная область</button>
@@ -1777,7 +1776,7 @@
           <div class="mockup-frame">
             <div class="mockup-scale-stage" id="mockupScaleStage">
               <iframe id="mockupIframe" data-src="./index.html?v=badge-map-20260515" title="Макет админ-панели чата V2" srcdoc="<p style=&quot;font:14px Arial;padding:16px;color:#667085&quot;>Загрузка макета...</p>"></iframe>
-              <div class="mockup-overlay" aria-label="Кликабельные сектора макета">
+              <div class="mockup-overlay" aria-label="Визуальные сектора макета" aria-hidden="true">
                 <button class="sector-hotspot sector-trigger sector-left sector-left-workload" type="button" data-sector="left-workload" aria-label="1. Режим Chats, Pings или Archive"><span>1</span></button>
                 <button class="sector-hotspot sector-trigger sector-left sector-left-search is-active" type="button" data-sector="left-search" aria-label="2. Поиск и фильтры очереди"><span>2</span></button>
                 <button class="sector-hotspot sector-trigger sector-left sector-left-active-card" type="button" data-sector="left-active-card" aria-label="3. Активная карточка очереди"><span>3</span></button>
@@ -3323,6 +3322,11 @@
           <p>Связанные строки можно найти на вкладке словаря через поиск по названию якоря.</p>
         `;
       });
+    });
+
+    document.querySelectorAll('.mockup-overlay .sector-hotspot').forEach(button => {
+      button.tabIndex = -1;
+      button.setAttribute('aria-hidden', 'true');
     });
 
     function activateSector(sectorKey) {
