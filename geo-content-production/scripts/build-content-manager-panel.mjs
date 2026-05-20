@@ -422,7 +422,7 @@ function buildUploadStatus(item, verifyStatuses) {
 function buildPhotoStatus(entry) {
   const photos = entry?.photos || [];
   return {
-    folderUrl: entry?.photoFolderUrl || entry?.sourceUrl || '',
+    folderUrl: entry?.photoFolderUrl || '',
     photos,
     ok: photos.length >= 2,
     missing: Math.max(0, 2 - photos.length),
@@ -672,6 +672,16 @@ function renderAdminPanel(totals, reportSources) {
       title: 'photo-index.json',
       href: './drive-photo-index.json',
       text: 'Индекс Google Drive: папки, отдельные фото, download/view ссылки.'
+    },
+    {
+      title: 'country-photo-audit.csv',
+      href: './country-photo-audit.csv',
+      text: 'Проверка стран: что видит панель, что реально найдено в папке Drive, открываются ли ссылки на фото.'
+    },
+    {
+      title: 'country-photo-audit.json',
+      href: './country-photo-audit.json',
+      text: 'Машинная версия аудита фото по всем странам.'
     }
   ];
 
