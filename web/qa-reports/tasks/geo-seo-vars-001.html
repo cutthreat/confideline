@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GEO-SEO-VARS-001 | Confideline QA</title>
+  <link rel="stylesheet" href="../../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../qa-report.css">
+  <style>
+    .task-sheet{border:1px solid #d8e0ec;border-radius:8px;background:#fff;padding:18px;margin-top:16px}
+    .task-sheet h2{margin-top:0}
+    .task-sheet h3{margin:22px 0 10px;font-size:18px;color:#15233b}
+    .task-sheet li{margin-bottom:8px}
+    .task-sheet code{white-space:normal;word-break:break-word}
+    .task-meta{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+    .task-meta span{display:inline-flex;border:1px solid #d8e0ec;border-radius:999px;background:#f8fafc;padding:6px 10px;font-weight:800;color:#243451}
+  </style>
+</head>
+<body class="cl-task-standard qa-report-page">
+  <main class="tp-page">
+    <header class="tp-hero qa-hero">
+      <p class="qa-kicker">Задача · GEO-SEO-VARS-001</p>
+      <h1>Запрограммировать безопасные переменные в SEO-текстах стран и городов</h1>
+      <p>ТЗ для программиста: публичный рендер стран и городов должен подставлять разрешенные плейсхолдеры из SEO-полей и не показывать пользователю сырой текст вида <code>{{siteName}}</code>.</p>
+      <div class="tp-actions" style="margin-top:16px">
+        <a class="tp-btn tp-btn--primary" href="../tasks/">Все задачи</a>
+        <a class="tp-btn" href="../qa-control-center-2026-05-07/">QA Control Center</a>
+        <a class="tp-btn" href="../../geo-content-panel/">Geo-панель контента</a>
+      </div>
+    </header>
+
+    <section class="qa-summary">
+      <div class="qa-metric"><span>Приоритет</span><strong>P1</strong></div>
+      <div class="qa-metric"><span>Зона</span><strong>Backend / SEO</strong></div>
+      <div class="qa-metric"><span>Объект</span><strong>Страны + города</strong></div>
+      <div class="qa-metric"><span>Статус</span><strong>К разработке</strong></div>
+    </section>
+
+    <section class="qa-section">
+      <article class="task-sheet">
+        <div class="task-meta">
+          <span>GEO-SEO-VARS-001</span>
+          <span>P1</span>
+          <span>Backend / SEO</span>
+          <span>Страны и города</span>
+        </div>
+
+        <h2>Результат</h2>
+        <p>На публичных страницах стран и городов плейсхолдеры из SEO-полей должны подставляться автоматически, чтобы в текстах можно было хранить <code>{{siteName}}</code>, а не жестко писать бренд проекта.</p>
+
+        <h3>Что нужно сделать</h3>
+        <ol>
+          <li>Найти место, где публичные страницы страны и города выводят поля <code>Meta Title</code>, <code>Meta Description</code>, <code>H1</code>, <code>Seo Text</code> и <code>Html Description</code>.</li>
+          <li>Перед выводом этих полей пропускать текст через один общий helper/сервис замены переменных, а не делать разрозненные <code>str_replace</code> в шаблонах.</li>
+          <li>Поддержать активную переменную <code>{{siteName}}</code>: значение брать из настройки сайта <code>frontend.siteName</code>.</li>
+          <li>Поддержать <code>{{siteUrl}}</code> только для отдельного URL или <code>href</code>, значение брать из <code>common.siteUrl</code>. В обычные предложения ее не подставлять как текстовую фразу.</li>
+          <li>Не добавлять inline-переменные для страны, города, типа локации, услуги или формата консультации: они ломают падежи, артикли и согласования в RU/ES/IT/DE/PT.</li>
+          <li>Заложить расширение под целые локализованные HTML-блоки, но не включать их без отдельного renderer-контракта: <code>{{whatWeOfferBlock}}</code>, <code>{{geoServiceListBlock}}</code>, <code>{{informationalDisclaimerBlock}}</code>.</li>
+        </ol>
+
+        <h3>Как должно работать после фикса</h3>
+        <ul>
+          <li>Если в SEO-тексте страны или города сохранено <code>{{siteName}}</code>, на публичной странице пользователь видит текущее название проекта, например <code>Neiro</code>.</li>
+          <li>Если значение <code>siteName</code> поменяется в настройках, новые публичные страницы автоматически покажут новое имя без ручной правки 1884 TXT-файлов.</li>
+          <li>В админке можно продолжать хранить исходный SEO-текст с плейсхолдерами; на публичной странице сырой <code>{{siteName}}</code> не должен быть виден.</li>
+          <li>HTML должен остаться безопасным: не добавлять новые разрешенные теги, не экранировать уже разрешенный HTML так, чтобы он стал видимым текстом.</li>
+        </ul>
+
+        <h3>Где смотреть</h3>
+        <ul>
+          <li>Админка стран: <code>/ru/admin/country</code>, публичные страницы стран.</li>
+          <li>Админка городов: <code>/ru/admin/geoname</code>, публичные страницы городов.</li>
+          <li>Настройка бренда: <code>application/config/settings.php</code>, alias <code>siteName</code>.</li>
+          <li>Карта правил для контента: <code>Confideline/geo-content-production/seo-template-variables.json</code>.</li>
+        </ul>
+
+        <h3>Критерии приемки</h3>
+        <ol>
+          <li>На тестовой стране и тестовом городе во всех 6 языках <code>{{siteName}}</code> подставляется в title/meta/H1/SEO/HTML description.</li>
+          <li>На публичной странице нет сырого текста <code>{{siteName}}</code>, <code>{{siteUrl}}</code> или неизвестных <code>{{...}}</code>.</li>
+          <li>После временной смены <code>siteName</code> в настройках публичная страница меняет бренд; после rollback возвращается исходное значение.</li>
+          <li>Названия стран и городов не заменяются переменными и остаются в готовом локализованном тексте.</li>
+          <li>Ретест фиксируется в QA Control Center: PASS для страны, PASS для города, скрин публичной страницы и ссылка на исходный SEO-текст в админке.</li>
+        </ol>
+      </article>
+    </section>
+
+    <footer class="tp-footer">
+      <a href="../tasks/">Все задачи</a> · <a href="../qa-control-center-2026-05-07/">QA Control Center</a>
+    </footer>
+  </main>
+</body>
+</html>
