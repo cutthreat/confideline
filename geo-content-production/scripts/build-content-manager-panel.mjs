@@ -592,7 +592,6 @@ function renderPanel(countryPages, cityPages, totals, reportSources) {
       <div class="geo-cm-actions">
         <a class="tp-btn tp-btn--primary" href="https://confideline.com/ru/admin/country/index" target="_blank" rel="noopener">Страны CMS</a>
         <a class="tp-btn" href="https://confideline.com/ru/admin/geoname/index" target="_blank" rel="noopener">Города CMS</a>
-        <a class="tp-btn" href="./content-manager-queue.csv" target="_blank">Скачать CSV</a>
       </div>
     </header>
 
@@ -625,9 +624,7 @@ function renderPanel(countryPages, cityPages, totals, reportSources) {
       <aside class="geo-cm-nav">
         <a href="#countries">Страны</a>
         <a href="#cities">Города</a>
-        <a href="./manifest.json" target="_blank">manifest.json</a>
-        <a href="./content-manager-queue.csv" target="_blank">queue.csv</a>
-        <a href="./drive-photo-index.json" target="_blank">photo-index.json</a>
+        <a href="./admin.html" class="geo-cm-admin-nav">Служебное</a>
       </aside>
 
       <div class="geo-cm-list">
@@ -658,6 +655,89 @@ function renderPanel(countryPages, cityPages, totals, reportSources) {
 `;
 }
 
+function renderAdminPanel(totals, reportSources) {
+  const generated = new Date().toISOString().slice(0, 19).replace('T', ' ');
+  const technicalFiles = [
+    {
+      title: 'manifest.json',
+      href: './manifest.json',
+      text: 'Машинная сводка по всем страницам, статусам, ссылкам CMS и фото.'
+    },
+    {
+      title: 'queue.csv',
+      href: './content-manager-queue.csv',
+      text: 'Полная таблица для выгрузки: страницы, языки, TXT, фото, CMS-ссылки.'
+    },
+    {
+      title: 'photo-index.json',
+      href: './drive-photo-index.json',
+      text: 'Индекс Google Drive: папки, отдельные фото, download/view ссылки.'
+    }
+  ];
+
+  return `<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | Служебные файлы geo-контента</title>
+  <link rel="stylesheet" href="../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../css/geo-content-panel.css">
+</head>
+<body class="cl-task-standard geo-cm">
+  <div class="tp-page">
+    <header class="tp-hero geo-cm-hero">
+      <div>
+        <h1>Служебные файлы geo-контента</h1>
+        <p>Техническая страница для администратора. Основная панель для контент-менеджера остается без JSON/CSV и служебных индексов.</p>
+      </div>
+      <div class="geo-cm-actions">
+        <a class="tp-btn tp-btn--primary" href="./">Вернуться в панель</a>
+      </div>
+    </header>
+
+    <section class="geo-cm-toolbar geo-cm-toolbar--admin">
+      <div class="geo-cm-metric"><strong>${totals.pages}</strong><span>страниц</span></div>
+      <div class="geo-cm-metric"><strong>${totals.txt}</strong><span>TXT-файлов</span></div>
+      <div class="geo-cm-metric"><strong>${totals.ready}</strong><span>полностью зелёных</span></div>
+      <div class="geo-cm-metric"><strong>${totals.uploadComplete}</strong><span>CMS 6/6 PASS</span></div>
+      <div class="geo-cm-metric"><strong>${totals.withTwoPhotos}</strong><span>с 2 фото</span></div>
+      <div class="geo-cm-metric"><strong>${totals.cityDirectLinks}</strong><span>прямых ссылок городов</span></div>
+    </section>
+
+    <main class="geo-cm-admin-page">
+      <section class="geo-cm-admin-files">
+        ${technicalFiles.map((file) => `
+          <a class="geo-cm-admin-file" href="${escapeAttr(file.href)}" target="_blank" rel="noopener">
+            <strong>${escapeHtml(file.title)}</strong>
+            <span>${escapeHtml(file.text)}</span>
+          </a>`).join('')}
+      </section>
+
+      <section class="geo-cm-admin-sources">
+        <h2>Источники проверки</h2>
+        <dl>
+          <div>
+            <dt>Страны</dt>
+            <dd>${escapeHtml(reportSources.country)}</dd>
+          </div>
+          <div>
+            <dt>Города</dt>
+            <dd>${escapeHtml(reportSources.city)}</dd>
+          </div>
+        </dl>
+      </section>
+    </main>
+
+    <footer class="geo-cm-footer">
+      Сгенерировано: ${generated}. Эта страница предназначена для администратора и диагностики.
+    </footer>
+  </div>
+</body>
+</html>
+`;
+}
+
 function renderCss() {
   return `.geo-cm { background: #f4f7fb; color: #102033; }
 .geo-cm .tp-page { max-width: 1360px; }
@@ -677,6 +757,7 @@ function renderCss() {
 .geo-cm-layout { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 22px; align-items: start; }
 .geo-cm-nav { position: sticky; top: 16px; display: grid; gap: 8px; }
 .geo-cm-nav a { display: block; padding: 10px 12px; border: 1px solid #d7e0ea; border-radius: 8px; background: #fff; color: #1f3a5f; text-decoration: none; font-weight: 800; }
+.geo-cm-nav a.geo-cm-admin-nav { margin-top: 10px; color: #64748b; font-weight: 750; }
 .geo-cm-list { display: grid; gap: 28px; }
 .geo-cm-section-head { margin: 0 0 12px; }
 .geo-cm-section-head h2 { margin: 0; font-size: 26px; }
@@ -724,15 +805,29 @@ function renderCss() {
 .geo-cm-photo-slot a { color: #174ea6; text-decoration: none; font-weight: 850; }
 .geo-cm-photo-slot.is-missing { display: grid; place-items: center; grid-template-columns: 1fr; background: #fee2e2; border-color: #fecaca; color: #7f1d1d; text-transform: uppercase; }
 .geo-cm-muted { color: #64748b; }
+.geo-cm-toolbar--admin { grid-template-columns: repeat(6, minmax(120px, 1fr)); }
+.geo-cm-admin-page { display: grid; gap: 18px; }
+.geo-cm-admin-files { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.geo-cm-admin-file { display: grid; gap: 8px; background: #fff; border: 1px solid #d7e0ea; border-radius: 8px; padding: 16px; text-decoration: none; color: #102033; box-shadow: 0 1px 2px rgba(15, 23, 42, .04); }
+.geo-cm-admin-file strong { color: #174ea6; font-size: 17px; }
+.geo-cm-admin-file span { color: #536274; line-height: 1.45; }
+.geo-cm-admin-sources { background: #fff; border: 1px solid #d7e0ea; border-radius: 8px; padding: 16px; box-shadow: 0 1px 2px rgba(15, 23, 42, .04); }
+.geo-cm-admin-sources h2 { margin: 0 0 12px; font-size: 22px; }
+.geo-cm-admin-sources dl { margin: 0; display: grid; gap: 10px; }
+.geo-cm-admin-sources div { display: grid; gap: 4px; }
+.geo-cm-admin-sources dt { font-weight: 900; color: #0f172a; }
+.geo-cm-admin-sources dd { margin: 0; color: #536274; overflow-wrap: anywhere; }
 .geo-cm-footer { margin: 28px 0 8px; color: #536274; font-size: 13px; }
 @media (max-width: 1000px) {
   .geo-cm-hero { display: block; }
   .geo-cm-actions { justify-content: flex-start; margin-top: 14px; }
   .geo-cm-toolbar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .geo-cm-toolbar--admin { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .geo-cm-search { grid-column: 1 / -1; }
   .geo-cm-layout { grid-template-columns: 1fr; }
   .geo-cm-nav { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .geo-cm-grid { grid-template-columns: 1fr; }
+  .geo-cm-admin-files { grid-template-columns: 1fr; }
   .geo-cm-card-head { grid-template-columns: 36px minmax(0, 1fr); }
   .geo-cm-card-actions { grid-column: 1 / -1; justify-content: flex-start; }
 }
@@ -916,6 +1011,7 @@ function main() {
   };
 
   writeUtf8(path.join(panelRoot, 'index.html'), renderPanel(countryPages, cityPages, totals, reportSources));
+  writeUtf8(path.join(panelRoot, 'admin.html'), renderAdminPanel(totals, reportSources));
   writeUtf8(path.join(panelRoot, 'manifest.json'), JSON.stringify(manifestJson, null, 2));
   writeUtf8(path.join(panelRoot, 'content-manager-queue.csv'), buildCsvRows(pages));
   if (fs.existsSync(photoIndexPath)) {
