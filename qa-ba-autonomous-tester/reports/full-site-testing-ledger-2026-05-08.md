@@ -1600,3 +1600,35 @@ BA / правило:
 BA / правило:
 
 - Для QA-панели нельзя добавлять новые статусы/кнопки только в HTML: каждый новый control должен пройти mobile/desktop sanity в общем CSS, иначе панель быстро становится неудобной для Игоря и Алексея.
+
+## 2026-05-21 PHP 8.3 upgrade production QA
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\php83-upgrade-2026-05-21\index.html`
+
+Tester evidence:
+
+- `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\production-readiness.md`
+- `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\release-decision.md`
+- `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\latest-report.md`
+- `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\browser-qa-summary.json`
+
+Результат:
+
+- Fresh production run `confideline-production-qa-20260521-160149` завершился без таймаута, но release decision остался `NO_GO`.
+- Latest QA run `confideline-qa-20260521-160614`: `PASS=37`, `FAIL=3`, `WARN=7`, `BLOCKED=6`.
+- Прямые live HEAD-запросы к `/`, `/en`, `/ru`, `/en/signup` вернули `X-Powered-By: PHP/8.5.0`, что не совпадает с заявленной целью PHP 8.3.
+- Public browser smoke прошел, но admin routes возвращают 404 в authenticated/admin checks, axe WCAG падает на public routes, desktop human journey превысил latency threshold, k6/ZAP заблокированы Docker daemon, analytics runtime `NOT_PROVEN`.
+
+Действие для Игоря:
+
+- Проверить реальную PHP-версию hosting/PHP-FPM/CDN origin и зафиксировать целевую версию.
+- Разобрать admin route 404: это новый route/prefix, устаревший storage-state или rewrite/routing дефект.
+- Закрыть axe-дефекты на `/en`, `/en/login`, `/en/signup`.
+- После исправлений выполнить retest командами из public HTML страницы.
+
+BA / правило:
+
+- После runtime migration отдельная вкладка теста обязательна: она должна показывать версию PHP как проверенный live-факт, а не как предположение из задачи.
+- Если пользователь говорит "перевели на PHP 8.3", тестировщик обязан сверить live/runtime headers или серверный источник; несовпадение версии является отдельным migration finding.
