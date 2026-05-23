@@ -1686,3 +1686,36 @@ BA / правило:
 
 - Для Confideline admin нельзя проверять админку прямым anonymous URL inventory. Сначала доказать user login, роль, пункт меню `Администрирование`, затем открывать `/ru/admin` и разделы.
 - После восстановления локального QA-инструмента нужно перезапустить проверку, иначе старые browser FAIL могут быть ложными дефектами из-за runtime blocker.
+
+## 2026-05-23 Admin full live audit update
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\php83-upgrade-2026-05-21\index.html`
+
+Live scope:
+
+- Проверялся именно `https://confideline.com` в авторизованной admin-сессии через Manhattan.
+- Блокер Manhattan handoff снят; базовый `/ru/admin/geoname/index` открылся как `Manage cities`.
+- Live destructive/mutating actions не выполнялись без QA-фикстуры и rollback.
+
+Tester evidence:
+
+- `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\admin-full-audit-20260523\geoname-munich-reproduction-20260523.json`
+- `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\admin-full-audit-20260523\admin-readonly-matrix-20260523.json`
+- `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\admin-full-audit-20260523\admin-grid-surface-discovery-20260523.json`
+- `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\admin-full-audit-20260523\admin-php-lint-20260523.json`
+
+Результат:
+
+- Read-only admin matrix: 39 URL, 37 PASS, 2 FAIL.
+- `Cities`: direct `GeonameSearch[name]=Munich` и URL-like value дают `Ошибка (#8192)`.
+- `Cities`: UI Enter submit оставляет `Munich` в поле, но не фильтрует список, остается `1-20 из 589 978`.
+- `Cities/Countries`: sort/page query links ведут на `Not Found (#404)`.
+- `Plugins`: `/ru/admin/plugin/index` и `/ru/admin/plugin/browse` дают HTTP 500 / `Ошибка (#8192)`.
+- `Admin PHP lint`: 215 PHP-файлов admin-модуля, 0 parse errors под локальным PHP 8.1 CLI.
+
+BA / правило:
+
+- После PHP migration admin grid надо проверять не только base URL, но и query-state UX: sort, page, filter, direct query, URL-like input, reset.
+- Read-only PASS не доказывает mutating PASS; delete/save/enable/disable/install/update должны идти через QA fixture lane с rollback.

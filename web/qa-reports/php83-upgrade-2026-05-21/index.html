@@ -31,10 +31,11 @@
     <header class="tp-hero qa-hero">
       <p class="qa-kicker">Live Confideline QA · 2026-05-23 · https://confideline.com</p>
       <h1>Актуальный аудит после перехода live-сайта на PHP 8.5</h1>
-      <p>Обновление прежнего отчета от 2026-05-21. Проверялся именно live-домен <code>https://confideline.com</code>, не локальная копия проекта. Локальный source использован только как QA-инструмент и вспомогательная синтаксическая проверка.</p>
+      <p>Обновление прежнего отчета от 2026-05-21. Проверялся именно live-домен <code>https://confideline.com</code>, не локальная копия проекта. Добавлен авторизованный admin-аудит после снятия блокера Manhattan: read-only разделы, поиск/сортировка/пагинация, plugin pages и локальный syntax lint admin-модуля.</p>
       <div class="tp-actions" style="margin-top:16px">
         <a class="tp-btn tp-btn--primary" href="#igor">Доска Игоря</a>
         <a class="tp-btn" href="#live">Live-факты</a>
+        <a class="tp-btn" href="#admin-live">Admin audit</a>
         <a class="tp-btn" href="#evidence">Evidence</a>
         <a class="tp-btn" href="../">Все QA-отчеты</a>
       </div>
@@ -42,7 +43,7 @@
 
     <section class="qa-summary">
       <div class="qa-metric"><span>Вердикт</span><strong>NO_GO</strong></div>
-      <div class="qa-metric"><span>Production run</span><strong>20260523-124528</strong></div>
+      <div class="qa-metric"><span>Production run</span><strong>20260523-1520 admin</strong></div>
       <div class="qa-metric"><span>Latest QA</span><strong>FAIL</strong></div>
       <div class="qa-metric"><span>Live header</span><strong>PHP/8.5.0</strong></div>
     </section>
@@ -59,11 +60,11 @@
         </article>
         <article class="php-card">
           <h2>Админка</h2>
-          <p>Правильный flow: сначала login как обычный пользователь с ролью супер-админ/админ, затем вход в админ-панель через выпадающее меню <strong>Администрирование</strong> или уже авторизованную вкладку <code>/ru/admin</code>. Manhattan evidence показывает живые страницы <code>/ru/admin/geoname/update</code> и <code>/ru/admin/country/update</code>.</p>
+          <p>Правильный flow подтвержден: авторизованная admin-сессия открывает <code>/ru/admin/geoname/index</code> как <strong>Manage cities</strong>. Блокер Manhattan снят. Внутри админки найдены новые live-дефекты: Cities search <code>#8192</code>, query-ссылки 404 и Plugins <code>#8192</code>.</p>
         </article>
         <article class="php-card">
           <h2>Синтаксис</h2>
-          <p>Live-синтаксис напрямую не виден без серверных логов. По live HTTP на публичных маршрутах 500 не найден. Дополнительно локальный source-снимок: <code>php -l</code> прошел по 861 PHP-файлу, <strong>0 syntax errors</strong>.</p>
+          <p>Live-синтаксис напрямую не виден без серверных логов. Дополнительно локальный source-снимок: общий lint 861 PHP-файл и отдельный admin lint 215 PHP-файлов прошли без parse errors. PHP CLI локально 8.1, поэтому это вспомогательный слой, не замена live PHP 8.5 ретеста.</p>
         </article>
       </div>
     </section>
@@ -95,9 +96,21 @@
             </tr>
             <tr>
               <td>Админка</td>
-              <td><span class="php-status php-status--warn">RETEST</span></td>
-              <td>Предыдущий прямой route probe <code>/ru/admin</code>/<code>/en/admin...</code> без доказанного пользовательского login-flow; затем Manhattan status/CDP list с уже авторизованными страницами <code>/ru/admin/geoname/update</code> и <code>/ru/admin/country/update</code>.</td>
-              <td>Старый вывод "админка 404" не является дефектом сайта. Он является дефектом QA-метода. Админская бизнес-логика требует отдельного ретеста через user login + роль супер-админ + меню "Администрирование".</td>
+              <td><span class="php-status php-status--fail">FAIL</span></td>
+              <td>Авторизованная super-admin сессия через Manhattan. Базовый <code>/ru/admin/geoname/index</code> открывается как <strong>Manage cities</strong>; read-only matrix покрыла 39 admin URL.</td>
+              <td>Админка доступна правильным способом, но внутри найдены рабочие дефекты: Cities/Countries query links, Cities name search и Plugins.</td>
+            </tr>
+            <tr>
+              <td>Admin read-only menu</td>
+              <td><span class="php-status php-status--fail">FAIL</span></td>
+              <td>39 безопасных admin URL из меню и read-only inventory: dashboard, users, finance/order, support, groups, messages, photos, pages, reports, verifications, gifts, bans, settings, country/city, logs, queues/cache/websocket, plugins.</td>
+              <td>37/39 PASS. <code>/ru/admin/plugin/index</code> и <code>/ru/admin/plugin/browse</code> возвращают HTTP 500 / <code>Ошибка (#8192)</code>. Country index работает, первоначальный WARN был ложным текстовым срабатыванием на ID.</td>
+            </tr>
+            <tr>
+              <td>Admin Cities/Countries UX</td>
+              <td><span class="php-status php-status--fail">FAIL</span></td>
+              <td><code>/ru/admin/geoname/index?GeonameSearch[name]=Munich</code>, URL-like value, country mix, grid Enter submit, <code>?sort=name</code>, <code>?page=2</code>, <code>/ru/admin/country/index?sort=countryCode</code>.</td>
+              <td>Direct name search падает <code>#8192</code>; UI filter оставляет <code>Munich</code> в поле, но показывает прежние 589 978 записей; sort/page query links ведут на 404.</td>
             </tr>
             <tr>
               <td>Accessibility</td>
@@ -128,6 +141,85 @@
       </div>
     </section>
 
+    <section id="admin-live" class="qa-section">
+      <h2>Admin audit 2026-05-23</h2>
+      <div class="php-board">
+        <article class="php-card">
+          <h3>Блокер снят</h3>
+          <p>Активный Manhattan handoff был закрыт и возвращен в фон. После этого <code>/ru/admin/geoname/index</code> открылся в авторизованной admin-сессии как <strong>Manage cities</strong>, без login form и без 404.</p>
+        </article>
+        <article class="php-card">
+          <h3>Read-only покрытие</h3>
+          <p>Проверено 39 безопасных admin URL. 37 открываются без серверной ошибки. 2 подтвержденных FAIL: <code>/ru/admin/plugin/index</code> и <code>/ru/admin/plugin/browse</code> дают HTTP 500 / <code>Ошибка (#8192)</code>.</p>
+        </article>
+        <article class="php-card">
+          <h3>Cities/Countries</h3>
+          <p>Базовые <code>Countries</code> и <code>Cities</code> открываются. Но grid-функции ломаются: поиск <code>Munich</code> через query дает <code>#8192</code>, Enter submit не фильтрует, сортировка и пагинация через query ведут на 404.</p>
+        </article>
+        <article class="php-card">
+          <h3>Mutation boundary</h3>
+          <p>DELETE, enable/disable, install/update/uninstall, save settings, bans, moderation approve/reject и другие live-mutations не выполнялись без QA-фикстуры и rollback. Они помечены как <strong>BLOCKED_BY_RISK</strong>, а не как PASS.</p>
+        </article>
+      </div>
+
+      <div class="php-table-wrap" style="margin-top:14px">
+        <table class="php-table">
+          <thead>
+            <tr>
+              <th>Сценарий</th>
+              <th>Статус</th>
+              <th>Факт</th>
+              <th>Evidence</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Base Cities</td>
+              <td><span class="php-status php-status--pass">PASS</span></td>
+              <td><code>/ru/admin/geoname/index</code> показывает <code>1-20 из 589 978</code>.</td>
+              <td><a href="./raw/geoname-base.png">screenshot</a>, <a href="./raw/geoname-munich-reproduction-20260523.json">json</a></td>
+            </tr>
+            <tr>
+              <td>Search Munich direct</td>
+              <td><span class="php-status php-status--fail">FAIL</span></td>
+              <td><code>GeonameSearch[name]=Munich</code> возвращает <code>Ошибка (#8192)</code>.</td>
+              <td><a href="./raw/geoname-direct-name-munich.png">screenshot</a></td>
+            </tr>
+            <tr>
+              <td>Search URL-like value</td>
+              <td><span class="php-status php-status--fail">FAIL</span></td>
+              <td>URL-like value в <code>GeonameSearch[name]</code> тоже возвращает <code>Ошибка (#8192)</code>.</td>
+              <td><a href="./raw/geoname-direct-name-urlvalue.png">screenshot</a></td>
+            </tr>
+            <tr>
+              <td>Grid Enter submit</td>
+              <td><span class="php-status php-status--fail">FAIL</span></td>
+              <td>После Enter URL содержит <code>GeonameSearch[name]=Munich</code>, но таблица остается <code>1-20 из 589 978</code> с прежними первыми строками.</td>
+              <td><a href="./raw/geoname-ui-filter-name-munich-enter.png">screenshot</a></td>
+            </tr>
+            <tr>
+              <td>Sort / pagination query</td>
+              <td><span class="php-status php-status--fail">FAIL</span></td>
+              <td><code>/ru/admin/geoname/index?sort=name</code>, <code>?page=2</code> и <code>/ru/admin/country/index?sort=countryCode</code> открывают <code>Not Found (#404)</code>.</td>
+              <td><a href="./raw/geoname-sort-name-404.png">screenshot</a></td>
+            </tr>
+            <tr>
+              <td>Plugins</td>
+              <td><span class="php-status php-status--fail">FAIL</span></td>
+              <td><code>/ru/admin/plugin/index</code> и <code>/ru/admin/plugin/browse</code> возвращают HTTP 500 / <code>Ошибка (#8192)</code>.</td>
+              <td><a href="./raw/admin-readonly-plugin-index.png">index</a>, <a href="./raw/admin-readonly-plugin-browse.png">browse</a></td>
+            </tr>
+            <tr>
+              <td>Admin PHP lint</td>
+              <td><span class="php-status php-status--pass">PASS</span></td>
+              <td>215 PHP-файлов admin-модуля прошли <code>php -l</code> локальным PHP 8.1 CLI без parse errors.</td>
+              <td><a href="./raw/admin-php-lint-20260523.json">json</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
     <section id="igor" class="qa-section">
       <h2>Доска Игоря</h2>
       <div class="php-table-wrap">
@@ -145,7 +237,39 @@
           <tbody>
             <tr>
               <td>P0</td>
-              <td><span class="php-status php-status--warn">RETEST</span></td>
+              <td><span class="php-status php-status--fail">FAIL</span></td>
+              <td>Admin / Cities search</td>
+              <td>В авторизованной админке <code>/ru/admin/geoname/index?GeonameSearch[name]=Munich</code> стабильно возвращает <code>Ошибка (#8192)</code>. То же для URL-like значения и mixed country query.</td>
+              <td>Проверить live/custom <code>GeonameSearch</code>, GridView/Pjax/filter form и Yii2 query parsing после PHP 8.5. Ожидаемое поведение: поиск по имени не должен давать 500; <code>Munich</code> должен фильтровать строки или показывать чистый empty state.</td>
+              <td>Ретест: открыть <code>/ru/admin/geoname/index</code> как admin, ввести <code>Munich</code> в колонку "ИМЯ", нажать Enter; отдельно открыть direct URL с <code>GeonameSearch[name]=Munich</code>. Ожидание: нет <code>#8192</code>, результат фильтруется.</td>
+            </tr>
+            <tr>
+              <td>P1</td>
+              <td><span class="php-status php-status--fail">FAIL</span></td>
+              <td>Admin / Grid query links</td>
+              <td>Ссылки сортировки/пагинации в Cities/Countries ведут на 404: <code>/ru/admin/geoname/index?sort=name</code>, <code>/ru/admin/geoname/index?page=2</code>, <code>/ru/admin/country/index?sort=countryCode</code>.</td>
+              <td>Проверить urlManager/rules для admin grid query params и генерацию ссылок GridView. Query params не должны выводить из admin module на generic 404.</td>
+              <td>Ретест: кликнуть заголовок "ИМЯ" в Cities, перейти на страницу 2, кликнуть sort в Countries. Ожидание: остается admin layout и меняется порядок/страница.</td>
+            </tr>
+            <tr>
+              <td>P1</td>
+              <td><span class="php-status php-status--fail">FAIL</span></td>
+              <td>Admin / Plugins</td>
+              <td><code>/ru/admin/plugin/index</code> и <code>/ru/admin/plugin/browse</code> возвращают HTTP 500 / <code>Ошибка (#8192)</code> в авторизованной admin-сессии.</td>
+              <td>Проверить <code>PluginController::actionIndex()</code>, <code>actionBrowse()</code>, <code>pluginManager</code>, <code>pluginInstaller</code>, views <code>admin/views/plugin/*</code> и PHP 8.5 compatibility внешнего plugin catalog/provider.</td>
+              <td>Ретест: открыть оба URL из левого меню "Плагины". Ожидание: список установленных/доступных plugins или контролируемый empty/error state без 500.</td>
+            </tr>
+            <tr>
+              <td>P2</td>
+              <td><span class="php-status php-status--warn">WARN</span></td>
+              <td>Admin / Sidebar parent links</td>
+              <td>В DOM родительские пункты с подпунктами рендерятся как <code>/ru/admin/geoname/%7Burl%7D</code> или аналогичный <code>{url}</code> placeholder на текущем route. Основной click может перехватываться JS, но open-in-new-tab/keyboard route будет некорректным.</td>
+              <td>Проверить <code>app\modules\admin\widgets\Menu::renderItem()</code>: для item с <code>items</code> и без <code>url</code> шаблон содержит <code>{url}</code>, но replacement не задается.</td>
+              <td>Ретест: на любой admin странице проверить DOM href родительских пунктов "Финансы", "Сообщения", "Countries & Cities", "Логи", "Поля профиля"; не должно быть <code>{url}</code>.</td>
+            </tr>
+            <tr>
+              <td>P2</td>
+              <td><span class="php-status php-status--warn">INVALID/RETEST</span></td>
               <td>Admin flow / QA contour</td>
               <td>Прежний P0 "Admin route 404" снят как дефект сайта: проверка была сделана неверным способом. Админка открывается после пользовательской авторизации с ролью супер-админ/админ и перехода через меню "Администрирование"; в Manhattan видны live-вкладки <code>/ru/admin/geoname/update</code> и <code>/ru/admin/country/update</code>.</td>
               <td>Обновить QA-скрипты: сначала доказывать user-login и наличие admin menu item, затем открывать <code>/ru/admin</code> и проверять разделы. Не использовать прямой anonymous route inventory как основание для дефекта.</td>
@@ -221,14 +345,35 @@
     <section class="qa-section">
       <h2>Что не доказано</h2>
       <div class="php-note">
-        Админская бизнес-логика пока не проверена end-to-end именно правильным сценарием: user login -> роль супер-админ/админ -> выпадающее меню "Администрирование" -> <code>/ru/admin</code> -> конкретные разделы. Прежний прямой 404-probe является <strong>INVALID</strong> для вывода о работоспособности админки. Manhattan evidence доказывает наличие авторизованных live admin tabs, но не заменяет полный функциональный ретест платежей, модерации, ролей, настроек и сообщений.
+        Live destructive/mutating admin actions не выполнялись без безопасной QA-фикстуры и rollback: delete, enable/disable plugins, install/update/uninstall, save settings, approve/reject moderation, bans, gifts and money-changing flows. Это не PASS и не FAIL, а <strong>BLOCKED_BY_RISK</strong>. Для полного закрытия нужен отдельный fixture-lane: создать QA-prefixed сущность, выполнить действие, проверить результат, вернуть состояние.
       </div>
     </section>
 
     <section class="qa-section">
       <h2>Поправка по админке</h2>
       <div class="php-note">
-        Обновлено после уточнения: <code>/ru/admin</code> должен проверяться только в авторизованной пользовательской сессии с ролью супер-админа/админа. В raw evidence добавлен Manhattan status/CDP list, где видны активные админ-вкладки <code>/ru/admin/geoname/update</code> и <code>/ru/admin/country/update</code>. Старый скрин <code>/en/admin = 404</code> оставлен только как evidence ошибочного QA-route, не как дефект сайта.
+        Обновлено после уточнения: <code>/ru/admin</code> должен проверяться только в авторизованной пользовательской сессии с ролью супер-админа/админа. Новый проход доказал, что админка открывается правильным способом; старый скрин <code>/en/admin = 404</code> оставлен только как evidence ошибочного QA-route, не как дефект сайта. Актуальные admin-дефекты перечислены выше и имеют отдельные raw evidence.
+      </div>
+    </section>
+
+    <section class="qa-section php-evidence">
+      <h2>Скриншоты admin-дефектов</h2>
+      <div class="php-board">
+        <article class="php-card">
+          <h3>Cities search #8192</h3>
+          <img src="./raw/geoname-direct-name-munich.png" alt="Geoname Munich search returns Yii error 8192">
+          <p><code>GeonameSearch[name]=Munich</code> возвращает внутреннюю ошибку сервера.</p>
+        </article>
+        <article class="php-card">
+          <h3>Cities sort 404</h3>
+          <img src="./raw/geoname-sort-name-404.png" alt="Geoname sort query returns 404">
+          <p><code>/ru/admin/geoname/index?sort=name</code> выводит generic 404.</p>
+        </article>
+        <article class="php-card">
+          <h3>Plugins #8192</h3>
+          <img src="./raw/admin-readonly-plugin-index.png" alt="Admin plugin index returns Yii error 8192">
+          <p><code>/ru/admin/plugin/index</code> возвращает HTTP 500 / <code>Ошибка (#8192)</code>.</p>
+        </article>
       </div>
     </section>
 
@@ -245,6 +390,12 @@
           <tbody>
             <tr><td><a href="./raw/live-route-probe-20260523.json">live-route-probe-20260523.json</a></td><td>Прямые live HEAD probes по public и admin URL, включая <code>PHP/8.5.0</code> и 404 на <code>/ru/admin</code>.</td></tr>
             <tr><td><a href="./raw/admin-authenticated-flow-correction-20260523.json">admin-authenticated-flow-correction-20260523.json</a></td><td>Поправка по админке: предыдущий direct route check признан невалидным; Manhattan показывает авторизованные live admin pages после правильной сессии.</td></tr>
+            <tr><td><a href="./raw/admin-live-audit-summary-20260523.json">admin-live-audit-summary-20260523.json</a></td><td>Кураторская сводка нового admin-аудита: NO_GO, corrected matrix, findings, not-executed mutation boundary.</td></tr>
+            <tr><td><a href="./raw/geoname-munich-reproduction-20260523.json">geoname-munich-reproduction-20260523.json</a></td><td>Авторизованная live reproduction matrix для Cities: base PASS, <code>Munich</code>/<code>URL-like</code> FAIL <code>#8192</code>, UI Enter submit не фильтрует, global search не падает.</td></tr>
+            <tr><td><a href="./raw/admin-readonly-matrix-20260523.json">admin-readonly-matrix-20260523.json</a></td><td>39 read-only admin URL через авторизованную Manhattan-сессию: 37 PASS, 2 FAIL на Plugins.</td></tr>
+            <tr><td><a href="./raw/admin-grid-surface-discovery-20260523.json">admin-grid-surface-discovery-20260523.json</a></td><td>DOM discovery по admin grids: filter inputs, sort links, pagination links, action link inventory.</td></tr>
+            <tr><td><a href="./raw/admin-action-inventory.json">admin-action-inventory.json</a></td><td>Source/live admin action inventory: 102 actions, из них 35 read-only, 29 form/mutating, 38 mutating.</td></tr>
+            <tr><td><a href="./raw/admin-php-lint-20260523.json">admin-php-lint-20260523.json</a></td><td>Локальный syntax lint admin-модуля: 215 PHP-файлов, 0 parse errors, PHP CLI 8.1.</td></tr>
             <tr><td><a href="./raw/production-readiness.json">production-readiness.json</a></td><td>Итог production run <code>confideline-production-qa-20260523-124528</code>, критические шаги и release decision.</td></tr>
             <tr><td><a href="./raw/latest-report.json">latest-report.json</a></td><td>Главный QA report по live <code>https://confideline.com</code>: 38 PASS / 2 FAIL / 7 WARN / 6 BLOCKED.</td></tr>
             <tr><td><a href="./raw/browser-qa-summary.json">browser-qa-summary.json</a></td><td>Public smoke PASS, human journey PASS, accessibility FAIL; admin route result superseded by corrected authenticated-flow note.</td></tr>
