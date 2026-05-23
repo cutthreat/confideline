@@ -60,7 +60,7 @@
         </article>
         <article class="php-card">
           <h2>Админка</h2>
-          <p>Правильный flow подтвержден: авторизованная admin-сессия открывает <code>/ru/admin/geoname/index</code> как <strong>Manage cities</strong>. Блокер Manhattan снят. Внутри админки найдены новые live-дефекты: Cities search <code>#8192</code>, query-ссылки 404 и Plugins <code>#8192</code>.</p>
+          <p>Корень админки: <code>/ru/admin</code>, доступен после авторизации как пользователь с admin/super-admin ролью. <code>/ru/admin/geoname/index</code> - не вход в админку, а проверенная страница раздела <strong>Cities / Manage cities</strong>. Внутри админки найдены live-дефекты: Cities search <code>#8192</code>, query-ссылки 404 и Plugins <code>#8192</code>.</p>
         </article>
         <article class="php-card">
           <h2>Синтаксис</h2>
@@ -97,7 +97,7 @@
             <tr>
               <td>Админка</td>
               <td><span class="php-status php-status--fail">FAIL</span></td>
-              <td>Авторизованная super-admin сессия через Manhattan. Базовый <code>/ru/admin/geoname/index</code> открывается как <strong>Manage cities</strong>; read-only matrix покрыла 39 admin URL.</td>
+              <td>Авторизованная super-admin сессия через Manhattan. Корень админки - <code>/ru/admin</code>. Страница <code>/ru/admin/geoname/index</code> проверена как раздел управления городами <strong>Manage cities</strong>; read-only matrix покрыла 39 admin URL.</td>
               <td>Админка доступна правильным способом, но внутри найдены рабочие дефекты: Cities/Countries query links, Cities name search и Plugins.</td>
             </tr>
             <tr>
@@ -145,8 +145,8 @@
       <h2>Admin audit 2026-05-23</h2>
       <div class="php-board">
         <article class="php-card">
-          <h3>Блокер снят</h3>
-          <p>Активный Manhattan handoff был закрыт и возвращен в фон. После этого <code>/ru/admin/geoname/index</code> открылся в авторизованной admin-сессии как <strong>Manage cities</strong>, без login form и без 404.</p>
+          <h3>Доступ к админке</h3>
+          <p>Вход/корень админки: <code>/ru/admin</code> после авторизации как пользователь с admin/super-admin ролью. <code>/ru/admin/geoname/index</code> использовался только как тестируемая страница раздела Cities, а не как точка входа в админку.</p>
         </article>
         <article class="php-card">
           <h3>Read-only покрытие</h3>
@@ -214,6 +214,103 @@
               <td><span class="php-status php-status--pass">PASS</span></td>
               <td>215 PHP-файлов admin-модуля прошли <code>php -l</code> локальным PHP 8.1 CLI без parse errors.</td>
               <td><a href="./raw/admin-php-lint-20260523.json">json</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Карточки для программиста</h2>
+      <div class="php-table-wrap">
+        <table class="php-table">
+          <thead>
+            <tr>
+              <th>Дефект</th>
+              <th>Факт</th>
+              <th>Как должно быть</th>
+              <th>Как воспроизвести</th>
+              <th>Где смотреть</th>
+              <th>Ретест</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Admin Cities search #8192</td>
+              <td>В авторизованной админке direct URL <code>/ru/admin/geoname/index?GeonameSearch[name]=Munich</code> возвращает <code>Ошибка (#8192)</code>. URL-like значение в том же поле тоже падает.</td>
+              <td>Поиск города по имени не должен давать 500. Для <code>Munich</code> таблица должна показать подходящие города или чистый empty state. URL-like строка должна обрабатываться как обычный текст, без серверной ошибки.</td>
+              <td>1. Войти как пользователь с admin/super-admin ролью. 2. Открыть <code>/ru/admin</code>. 3. Перейти в Countries & Cities -> Cities. 4. Ввести <code>Munich</code> в колонку "ИМЯ" или открыть direct URL из факта.</td>
+              <td>На production нужен stack trace для <code>#8192</code>. В локальном source не найдены <code>GeonameSearch</code>, <code>CountrySearch</code>, <code>GeonameController</code>, <code>CountryController</code>, поэтому точный файл live-доработки не доказан. Проверить production admin geoname/country controller, search model, GridView/Pjax filter form, urlManager rules.</td>
+              <td>Ожидание: нет <code>#8192</code>; <code>Munich</code> остается в поле; строки фильтруются или показан empty state; reset очищает query.</td>
+            </tr>
+            <tr>
+              <td>Admin grid query 404</td>
+              <td><code>/ru/admin/geoname/index?sort=name</code>, <code>/ru/admin/geoname/index?page=2</code>, <code>/ru/admin/country/index?sort=countryCode</code> открывают generic <code>Not Found (#404)</code>.</td>
+              <td>Сортировка и пагинация должны оставаться внутри admin layout и менять порядок/страницу таблицы.</td>
+              <td>1. Открыть Cities. 2. Кликнуть заголовок "ИМЯ". 3. Открыть страницу 2. 4. Открыть Countries и кликнуть сортировку по countryCode.</td>
+              <td>Проверить Yii2 urlManager/rules для admin route + query params, генерацию sort/page links в GridView/DataProvider и кастомные rewrite rules, если они есть на production.</td>
+              <td>Ожидание: admin layout остается, HTTP 200, таблица меняет sort/page, query params не ломают route.</td>
+            </tr>
+            <tr>
+              <td>Admin Plugins #8192</td>
+              <td><code>/ru/admin/plugin/index</code> и <code>/ru/admin/plugin/browse</code> возвращают HTTP 500 / <code>Ошибка (#8192)</code>.</td>
+              <td>Раздел Plugins должен показывать список установленных/доступных плагинов или контролируемый empty/error state без 500.</td>
+              <td>1. Войти в админку через <code>/ru/admin</code>. 2. В левом меню открыть "Плагины". 3. Проверить installed plugins и browse plugins.</td>
+              <td>Локальный source: <code>application/modules/admin/controllers/PluginController.php</code>, <code>application/plugins/PluginManager.php</code>, <code>application/plugins/PluginInstaller.php</code>, <code>application/modules/admin/views/plugin/*</code>. Вероятные причины: PHP 8.5 compatibility в plugin manager/installer, внешний plugin provider, ZIP/HTTP client dependency, view access to null/array offset.</td>
+              <td>Ожидание: оба URL HTTP 200, нет <code>#8192</code>, есть понятное сообщение, если catalog/provider недоступен.</td>
+            </tr>
+            <tr>
+              <td>Sidebar parent href <code>{url}</code></td>
+              <td>У родительских пунктов меню с подпунктами DOM href содержит literal placeholder, например <code>/ru/admin/geoname/%7Burl%7D</code>.</td>
+              <td>Родительский пункт должен либо иметь безопасный <code>#</code>/<code>javascript:void(0)</code>, либо реальный URL первого подпункта; literal <code>{url}</code> в DOM быть не должен.</td>
+              <td>Открыть любую admin страницу, посмотреть DOM/href у родительских пунктов "Финансы", "Сообщения", "Countries & Cities", "Логи", "Поля профиля".</td>
+              <td>Локальный source указывает на <code>application/modules/admin/widgets/Menu.php</code>: для item с <code>items</code> шаблон использует <code>{url}</code>, но если у item нет <code>url</code>, replacement не задается.</td>
+              <td>Ожидание: в DOM нет <code>{url}</code>; keyboard/open-in-new-tab не ведет на мусорный URL.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Код и синтаксис</h2>
+      <div class="php-note">
+        Доступный локальный source-снимок проверен, но он не доказывает полное совпадение с production. Для точной причины <code>#8192</code> нужен production stack trace или актуальные файлы live-доработок admin Cities/Countries.
+      </div>
+      <div class="php-table-wrap" style="margin-top:14px">
+        <table class="php-table">
+          <thead>
+            <tr>
+              <th>Проверка</th>
+              <th>Результат</th>
+              <th>Что это значит</th>
+              <th>Evidence</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>PHP syntax lint</td>
+              <td><span class="php-status php-status--pass">PASS</span></td>
+              <td>Локальный <code>php -l</code>: общий source snapshot 861 PHP-файл без parse errors; admin-модуль 215 PHP-файлов без parse errors. Это ловит синтаксис, но не runtime errors PHP 8.5.</td>
+              <td><a href="./raw/source-php-lint-local-php81-20260523.json">source lint</a>, <a href="./raw/admin-php-lint-20260523.json">admin lint</a></td>
+            </tr>
+            <tr>
+              <td>Production Cities code</td>
+              <td><span class="php-status php-status--warn">NOT_IN_LOCAL_SOURCE</span></td>
+              <td>В доступном локальном source не найдены <code>GeonameSearch</code>, <code>CountrySearch</code>, <code>GeonameController</code>, <code>CountryController</code>, хотя live admin URLs существуют. Значит точная причина Cities #8192 лежит в production/custom code, которого нет в этом snapshot, или в другом модуле.</td>
+              <td><a href="./raw/source-php85-static-scan-20260524.json">static scan</a></td>
+            </tr>
+            <tr>
+              <td>Plugin source area</td>
+              <td><span class="php-status php-status--warn">TARGET_FOUND</span></td>
+              <td>Для Plugins локальные точки входа найдены: <code>PluginController</code>, <code>PluginManager</code>, <code>PluginInstaller</code>, views <code>admin/views/plugin/*</code>. Это первый кодовый контур для разбора HTTP 500 / <code>#8192</code>.</td>
+              <td><a href="./raw/source-php85-static-scan-20260524.json">static scan</a></td>
+            </tr>
+            <tr>
+              <td>Composer/PHP 8.5 constraints</td>
+              <td><span class="php-status php-status--block">BLOCKED</span></td>
+              <td>В текущей машине нет команды <code>composer</code>, поэтому <code>composer check-platform-reqs</code> и <code>composer prohibits php 8.5</code> не выполнены. По <code>composer.json</code> видно старое ограничение <code>php: ^7.1</code>, это надо перепроверить на production/vendor.</td>
+              <td><a href="./raw/source-php85-static-scan-20260524.json">static scan</a></td>
             </tr>
           </tbody>
         </table>
@@ -379,6 +476,7 @@
             <tr><td><a href="./raw/admin-grid-surface-discovery-20260523.json">admin-grid-surface-discovery-20260523.json</a></td><td>DOM discovery по admin grids: filter inputs, sort links, pagination links, action link inventory.</td></tr>
             <tr><td><a href="./raw/admin-action-inventory.json">admin-action-inventory.json</a></td><td>Source/live admin action inventory: 102 actions, из них 35 read-only, 29 form/mutating, 38 mutating.</td></tr>
             <tr><td><a href="./raw/admin-php-lint-20260523.json">admin-php-lint-20260523.json</a></td><td>Локальный syntax lint admin-модуля: 215 PHP-файлов, 0 parse errors, PHP CLI 8.1.</td></tr>
+            <tr><td><a href="./raw/source-php85-static-scan-20260524.json">source-php85-static-scan-20260524.json</a></td><td>Статический source scan: PHP 8.x breaking-pattern probes, наличие/отсутствие live admin classes, plugin source area, composer availability.</td></tr>
             <tr><td><a href="./raw/playwright-public-smoke-output.txt">playwright-public-smoke-output.txt</a></td><td>6/6 public browser smoke passed.</td></tr>
             <tr><td><a href="./raw/playwright-human-journey-output.txt">playwright-human-journey-output.txt</a></td><td>2/2 human-paced customer journey passed.</td></tr>
             <tr><td><a href="./raw/playwright-accessibility-output.txt">playwright-accessibility-output.txt</a></td><td>Конкретные axe violations и selectors для исправления.</td></tr>
