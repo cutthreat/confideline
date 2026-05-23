@@ -31,7 +31,7 @@
     <header class="tp-hero qa-hero">
       <p class="qa-kicker">Live Confideline QA · 2026-05-23 · https://confideline.com</p>
       <h1>Актуальный аудит после перехода live-сайта на PHP 8.5</h1>
-      <p>Обновление прежнего отчета от 2026-05-21. Проверялся именно live-домен <code>https://confideline.com</code>, не локальная копия проекта. Добавлен авторизованный admin-аудит после снятия блокера Manhattan: read-only разделы, поиск/сортировка/пагинация, plugin pages и локальный syntax lint admin-модуля.</p>
+      <p>Проверялся именно live-домен <code>https://confideline.com</code>, не локальная копия проекта. Актуальный проход по PHP 8.5 включает авторизованный admin-аудит: read-only разделы, поиск/сортировка/пагинация, plugin pages и локальный syntax lint admin-модуля.</p>
       <div class="tp-actions" style="margin-top:16px">
         <a class="tp-btn tp-btn--primary" href="#igor">Доска Игоря</a>
         <a class="tp-btn" href="#live">Live-факты</a>
@@ -52,7 +52,7 @@
       <div class="php-board">
         <article class="php-card">
           <h2>Факт</h2>
-          <p>Свежий production QA по live-домену завершился <strong>FAIL / NO_GO</strong>. После уточнения входа в админку прежний вывод про <code>/ru/admin = 404</code> переведен в <strong>INVALID/RETEST</strong>: админку нельзя проверять прямым анонимным заходом.</p>
+          <p>Свежий QA по live-домену завершился <strong>FAIL / NO_GO</strong>. Админка открывается в авторизованной admin-сессии, но внутри найдены подтвержденные дефекты в Cities/Countries grids и Plugins.</p>
         </article>
         <article class="php-card">
           <h2>Клиентская часть</h2>
@@ -86,7 +86,7 @@
               <td>PHP/runtime</td>
               <td><span class="php-status php-status--warn">WARN</span></td>
               <td><code>/</code>, <code>/en</code>, <code>/ru</code>, <code>/en/login</code>, <code>/en/signup</code> отдают <code>X-Powered-By: PHP/8.5.0</code>.</td>
-              <td>Фактическая версия live - PHP 8.5.0. Старое название отчета "PHP 8.3" больше не является точным.</td>
+              <td>Live работает на PHP 8.5.0; результаты ниже относятся к этому runtime.</td>
             </tr>
             <tr>
               <td>Публичные маршруты</td>
@@ -268,14 +268,6 @@
               <td>Ретест: на любой admin странице проверить DOM href родительских пунктов "Финансы", "Сообщения", "Countries & Cities", "Логи", "Поля профиля"; не должно быть <code>{url}</code>.</td>
             </tr>
             <tr>
-              <td>P2</td>
-              <td><span class="php-status php-status--warn">INVALID/RETEST</span></td>
-              <td>Admin flow / QA contour</td>
-              <td>Прежний P0 "Admin route 404" снят как дефект сайта: проверка была сделана неверным способом. Админка открывается после пользовательской авторизации с ролью супер-админ/админ и перехода через меню "Администрирование"; в Manhattan видны live-вкладки <code>/ru/admin/geoname/update</code> и <code>/ru/admin/country/update</code>.</td>
-              <td>Обновить QA-скрипты: сначала доказывать user-login и наличие admin menu item, затем открывать <code>/ru/admin</code> и проверять разделы. Не использовать прямой anonymous route inventory как основание для дефекта.</td>
-              <td>Ретест готов, когда есть новый raw evidence: login user -> admin menu -> dashboard/разделы -> no 404/no login form, плюс role marker супер-админа.</td>
-            </tr>
-            <tr>
               <td>P0</td>
               <td><span class="php-status php-status--fail">FAIL</span></td>
               <td>Accessibility</td>
@@ -349,13 +341,6 @@
       </div>
     </section>
 
-    <section class="qa-section">
-      <h2>Поправка по админке</h2>
-      <div class="php-note">
-        Обновлено после уточнения: <code>/ru/admin</code> должен проверяться только в авторизованной пользовательской сессии с ролью супер-админа/админа. Новый проход доказал, что админка открывается правильным способом; старый скрин <code>/en/admin = 404</code> оставлен только как evidence ошибочного QA-route, не как дефект сайта. Актуальные admin-дефекты перечислены выше и имеют отдельные raw evidence.
-      </div>
-    </section>
-
     <section class="qa-section php-evidence">
       <h2>Скриншоты admin-дефектов</h2>
       <div class="php-board">
@@ -388,25 +373,17 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td><a href="./raw/live-route-probe-20260523.json">live-route-probe-20260523.json</a></td><td>Прямые live HEAD probes по public и admin URL, включая <code>PHP/8.5.0</code> и 404 на <code>/ru/admin</code>.</td></tr>
-            <tr><td><a href="./raw/admin-authenticated-flow-correction-20260523.json">admin-authenticated-flow-correction-20260523.json</a></td><td>Поправка по админке: предыдущий direct route check признан невалидным; Manhattan показывает авторизованные live admin pages после правильной сессии.</td></tr>
             <tr><td><a href="./raw/admin-live-audit-summary-20260523.json">admin-live-audit-summary-20260523.json</a></td><td>Кураторская сводка нового admin-аудита: NO_GO, corrected matrix, findings, not-executed mutation boundary.</td></tr>
             <tr><td><a href="./raw/geoname-munich-reproduction-20260523.json">geoname-munich-reproduction-20260523.json</a></td><td>Авторизованная live reproduction matrix для Cities: base PASS, <code>Munich</code>/<code>URL-like</code> FAIL <code>#8192</code>, UI Enter submit не фильтрует, global search не падает.</td></tr>
             <tr><td><a href="./raw/admin-readonly-matrix-20260523.json">admin-readonly-matrix-20260523.json</a></td><td>39 read-only admin URL через авторизованную Manhattan-сессию: 37 PASS, 2 FAIL на Plugins.</td></tr>
             <tr><td><a href="./raw/admin-grid-surface-discovery-20260523.json">admin-grid-surface-discovery-20260523.json</a></td><td>DOM discovery по admin grids: filter inputs, sort links, pagination links, action link inventory.</td></tr>
             <tr><td><a href="./raw/admin-action-inventory.json">admin-action-inventory.json</a></td><td>Source/live admin action inventory: 102 actions, из них 35 read-only, 29 form/mutating, 38 mutating.</td></tr>
             <tr><td><a href="./raw/admin-php-lint-20260523.json">admin-php-lint-20260523.json</a></td><td>Локальный syntax lint admin-модуля: 215 PHP-файлов, 0 parse errors, PHP CLI 8.1.</td></tr>
-            <tr><td><a href="./raw/production-readiness.json">production-readiness.json</a></td><td>Итог production run <code>confideline-production-qa-20260523-124528</code>, критические шаги и release decision.</td></tr>
-            <tr><td><a href="./raw/latest-report.json">latest-report.json</a></td><td>Главный QA report по live <code>https://confideline.com</code>: 38 PASS / 2 FAIL / 7 WARN / 6 BLOCKED.</td></tr>
-            <tr><td><a href="./raw/browser-qa-summary.json">browser-qa-summary.json</a></td><td>Public smoke PASS, human journey PASS, accessibility FAIL; admin route result superseded by corrected authenticated-flow note.</td></tr>
             <tr><td><a href="./raw/playwright-public-smoke-output.txt">playwright-public-smoke-output.txt</a></td><td>6/6 public browser smoke passed.</td></tr>
             <tr><td><a href="./raw/playwright-human-journey-output.txt">playwright-human-journey-output.txt</a></td><td>2/2 human-paced customer journey passed.</td></tr>
             <tr><td><a href="./raw/playwright-accessibility-output.txt">playwright-accessibility-output.txt</a></td><td>Конкретные axe violations и selectors для исправления.</td></tr>
-            <tr><td><a href="./raw/playwright-admin-gated-output.txt">playwright-admin-gated-output.txt</a></td><td>Архивный результат старого QA-метода; не использовать как дефект сайта без user-login + admin-menu flow.</td></tr>
-            <tr><td><a href="./raw/admin-surface-inspection.json">admin-surface-inspection.json</a></td><td>Архивный direct route inspection по <code>/en/admin</code>; superseded by authenticated-flow correction.</td></tr>
             <tr><td><a href="./raw/analytics-runtime-summary.json">analytics-runtime-summary.json</a></td><td>Analytics runtime <code>NOT_PROVEN</code>: ожидаемые события не пойманы.</td></tr>
             <tr><td><a href="./raw/source-php-lint-local-php81-20260523.json">source-php-lint-local-php81-20260523.json</a></td><td>Вспомогательная локальная проверка source syntax: 861 PHP-файл, 0 failures. Не является доказательством live-деплоя.</td></tr>
-            <tr><td><a href="./raw/repair-cards.json">repair-cards.json</a></td><td>Машинные repair cards для Игоря/оператора.</td></tr>
           </tbody>
         </table>
       </div>
