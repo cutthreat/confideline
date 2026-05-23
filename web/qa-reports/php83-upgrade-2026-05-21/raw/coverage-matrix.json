@@ -1,0 +1,848 @@
+﻿{
+    "generated":  "2026-05-23T12:48:50.5346201+03:00",
+    "catalog":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\config\\scenario-catalog.json",
+    "catalogVersion":  "2026-05-02-wave16",
+    "sourceReport":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\latest-report.json",
+    "overall":  "FAIL",
+    "statusCounts":  {
+                         "PASS":  8,
+                         "FAIL":  2,
+                         "WARN":  3,
+                         "BLOCKED":  4
+                     },
+    "scenarioCount":  17,
+    "scenarios":  [
+                      {
+                          "id":  "SC-PUBLIC-HOME-001",
+                          "title":  "Visitor opens localized home page",
+                          "persona":  "visitor",
+                          "role":  "anonymous",
+                          "surface":  "public-funnel",
+                          "risk":  "blocker",
+                          "automation":  "network-and-browser",
+                          "status":  "PASS",
+                          "requiredChecks":  [
+                                                 "HTTP-HOME",
+                                                 "BROWSER-PUBLIC-001"
+                                             ],
+                          "checks":  [
+                                         {
+                                             "id":  "HTTP-HOME",
+                                             "area":  "public-http",
+                                             "status":  "PASS",
+                                             "summary":  "home returned 200."
+                                         },
+                                         {
+                                             "id":  "BROWSER-PUBLIC-001",
+                                             "area":  "browser",
+                                             "status":  "PASS",
+                                             "summary":  "Playwright public desktop/mobile smoke passed."
+                                         }
+                                     ],
+                          "evidence":  [
+                                           "reports/latest-report.json",
+                                           "reports/playwright-public-smoke-output.txt"
+                                       ],
+                          "repairCards":  [
+                                              {
+                                                  "id":  "RC-BROWSER-PUBLIC-001",
+                                                  "status":  "NOT_OPEN",
+                                                  "priority":  "",
+                                                  "ownerSurface":  ""
+                                              },
+                                              {
+                                                  "id":  "RC-PERF-K6-001",
+                                                  "status":  "BLOCKED_BY_TOOLING_OR_RUNTIME",
+                                                  "priority":  "P1",
+                                                  "ownerSurface":  "performance/backend-cache-edge"
+                                              }
+                                          ],
+                          "blocker":  "",
+                          "verification":  "Run full QA and browser QA; home route must return 200 and pass desktop/mobile browser smoke."
+                      },
+                      {
+                          "id":  "SC-PUBLIC-LOGIN-001",
+                          "title":  "Visitor can inspect and fill login form",
+                          "persona":  "visitor",
+                          "role":  "anonymous",
+                          "surface":  "auth",
+                          "risk":  "high",
+                          "automation":  "network-and-browser",
+                          "status":  "PASS",
+                          "requiredChecks":  [
+                                                 "HTTP-LOGIN",
+                                                 "FORM-LOGIN-001",
+                                                 "BROWSER-PUBLIC-001"
+                                             ],
+                          "checks":  [
+                                         {
+                                             "id":  "HTTP-LOGIN",
+                                             "area":  "public-http",
+                                             "status":  "PASS",
+                                             "summary":  "login returned 200."
+                                         },
+                                         {
+                                             "id":  "FORM-LOGIN-001",
+                                             "area":  "auth",
+                                             "status":  "PASS",
+                                             "summary":  "Expected fields are present."
+                                         },
+                                         {
+                                             "id":  "BROWSER-PUBLIC-001",
+                                             "area":  "browser",
+                                             "status":  "PASS",
+                                             "summary":  "Playwright public desktop/mobile smoke passed."
+                                         }
+                                     ],
+                          "evidence":  [
+                                           "reports/latest-report.json",
+                                           "reports/playwright-public-smoke-output.txt"
+                                       ],
+                          "repairCards":  [
+                                              {
+                                                  "id":  "RC-BROWSER-PUBLIC-001",
+                                                  "status":  "NOT_OPEN",
+                                                  "priority":  "",
+                                                  "ownerSurface":  ""
+                                              }
+                                          ],
+                          "blocker":  "",
+                          "verification":  "Login route must expose expected fields and pass real browser smoke without forced fast-click behavior."
+                      },
+                      {
+                          "id":  "SC-PUBLIC-SIGNUP-001",
+                          "title":  "Visitor can inspect and fill signup form",
+                          "persona":  "visitor",
+                          "role":  "anonymous",
+                          "surface":  "signup",
+                          "risk":  "high",
+                          "automation":  "network-and-browser",
+                          "status":  "PASS",
+                          "requiredChecks":  [
+                                                 "HTTP-SIGNUP",
+                                                 "FORM-SIGNUP-001",
+                                                 "BROWSER-PUBLIC-001"
+                                             ],
+                          "checks":  [
+                                         {
+                                             "id":  "HTTP-SIGNUP",
+                                             "area":  "public-http",
+                                             "status":  "PASS",
+                                             "summary":  "signup returned 200."
+                                         },
+                                         {
+                                             "id":  "FORM-SIGNUP-001",
+                                             "area":  "signup",
+                                             "status":  "PASS",
+                                             "summary":  "Expected fields are present."
+                                         },
+                                         {
+                                             "id":  "BROWSER-PUBLIC-001",
+                                             "area":  "browser",
+                                             "status":  "PASS",
+                                             "summary":  "Playwright public desktop/mobile smoke passed."
+                                         }
+                                     ],
+                          "evidence":  [
+                                           "reports/latest-report.json",
+                                           "reports/playwright-public-smoke-output.txt"
+                                       ],
+                          "repairCards":  [
+                                              {
+                                                  "id":  "RC-BROWSER-PUBLIC-001",
+                                                  "status":  "NOT_OPEN",
+                                                  "priority":  "",
+                                                  "ownerSurface":  ""
+                                              }
+                                          ],
+                          "blocker":  "",
+                          "verification":  "Signup route must expose expected fields and pass browser smoke."
+                      },
+                      {
+                          "id":  "SC-PUBLIC-HUMAN-JOURNEY-001",
+                          "title":  "Normal-speed customer path is usable",
+                          "persona":  "visitor",
+                          "role":  "anonymous",
+                          "surface":  "public-human-customer-journey",
+                          "risk":  "high",
+                          "automation":  "human-paced-browser",
+                          "status":  "PASS",
+                          "requiredChecks":  [
+                                                 "BROWSER-HUMAN-001"
+                                             ],
+                          "checks":  [
+                                         {
+                                             "id":  "BROWSER-HUMAN-001",
+                                             "area":  "browser",
+                                             "status":  "PASS",
+                                             "summary":  "Human-paced customer journey passed."
+                                         }
+                                     ],
+                          "evidence":  [
+                                           "reports/human-journey-observations.jsonl",
+                                           "reports/playwright-human-journey-output.txt"
+                                       ],
+                          "repairCards":  [
+                                              {
+                                                  "id":  "RC-BROWSER-HUMAN-001",
+                                                  "status":  "NOT_OPEN",
+                                                  "priority":  "",
+                                                  "ownerSurface":  ""
+                                              },
+                                              {
+                                                  "id":  "RC-PERF-K6-001",
+                                                  "status":  "BLOCKED_BY_TOOLING_OR_RUNTIME",
+                                                  "priority":  "P1",
+                                                  "ownerSurface":  "performance/backend-cache-edge"
+                                              }
+                                          ],
+                          "blocker":  "",
+                          "verification":  "Human-paced Playwright scenario must pass with normal delays and route readiness thresholds."
+                      },
+                      {
+                          "id":  "SC-PUBLIC-MODALS-001",
+                          "title":  "Auth and language modals are present",
+                          "persona":  "visitor",
+                          "role":  "anonymous",
+                          "surface":  "modal-surface",
+                          "risk":  "medium",
+                          "automation":  "network-dom-contract",
+                          "status":  "PASS",
+                          "requiredChecks":  [
+                                                 "MODAL-MODAL-AUTH",
+                                                 "MODAL-MODAL-LANGUAGE-SWITCHER"
+                                             ],
+                          "checks":  [
+                                         {
+                                             "id":  "MODAL-MODAL-AUTH",
+                                             "area":  "modal-surface",
+                                             "status":  "PASS",
+                                             "summary":  "Expected modal id modal-auth is present."
+                                         },
+                                         {
+                                             "id":  "MODAL-MODAL-LANGUAGE-SWITCHER",
+                                             "area":  "modal-surface",
+                                             "status":  "PASS",
+                                             "summary":  "Expected modal id modal-language-switcher is present."
+                                         }
+                                     ],
+                          "evidence":  [
+                                           "reports/latest-report.json"
+                                       ],
+                          "repairCards":  [
+
+                                          ],
+                          "blocker":  "",
+                          "verification":  "Home HTML must expose auth and language modal IDs; browser QA must still verify interaction when route readiness is fixed."
+                      },
+                      {
+                          "id":  "SC-PUBLIC-LEGAL-001",
+                          "title":  "Visitor can access legal and trust pages",
+                          "persona":  "visitor",
+                          "role":  "anonymous",
+                          "surface":  "legal-trust",
+                          "risk":  "medium",
+                          "automation":  "network-content-contract",
+                          "status":  "PASS",
+                          "requiredChecks":  [
+                                                 "HTTP-TERMS",
+                                                 "HTTP-PRIVACY",
+                                                 "HTTP-COOKIE",
+                                                 "HTTP-ABOUT",
+                                                 "LEGAL-TERMS",
+                                                 "LEGAL-PRIVACY",
+                                                 "LEGAL-COOKIE",
+                                                 "LEGAL-ABOUT"
+                                             ],
+                          "checks":  [
+                                         {
+                                             "id":  "HTTP-TERMS",
+                                             "area":  "public-http",
+                                             "status":  "PASS",
+                                             "summary":  "terms returned 200."
+                                         },
+                                         {
+                                             "id":  "HTTP-PRIVACY",
+                                             "area":  "public-http",
+                                             "status":  "PASS",
+                                             "summary":  "privacy returned 200."
+                                         },
+                                         {
+                                             "id":  "HTTP-COOKIE",
+                                             "area":  "public-http",
+                                             "status":  "PASS",
+                                             "summary":  "cookie returned 200."
+                                         },
+                                         {
+                                             "id":  "HTTP-ABOUT",
+                                             "area":  "public-http",
+                                             "status":  "PASS",
+                                             "summary":  "about returned 200."
+                                         },
+                                         {
+                                             "id":  "LEGAL-TERMS",
+                                             "area":  "legal-trust",
+                                             "status":  "PASS",
+                                             "summary":  "Expected trust/legal keywords are present."
+                                         },
+                                         {
+                                             "id":  "LEGAL-PRIVACY",
+                                             "area":  "legal-trust",
+                                             "status":  "PASS",
+                                             "summary":  "Expected trust/legal keywords are present."
+                                         },
+                                         {
+                                             "id":  "LEGAL-COOKIE",
+                                             "area":  "legal-trust",
+                                             "status":  "PASS",
+                                             "summary":  "Expected trust/legal keywords are present."
+                                         },
+                                         {
+                                             "id":  "LEGAL-ABOUT",
+                                             "area":  "legal-trust",
+                                             "status":  "PASS",
+                                             "summary":  "Expected trust/legal keywords are present."
+                                         }
+                                     ],
+                          "evidence":  [
+                                           "reports/latest-report.json"
+                                       ],
+                          "repairCards":  [
+
+                                          ],
+                          "blocker":  "",
+                          "verification":  "All legal routes must return 200 and contain expected trust/legal keywords."
+                      },
+                      {
+                          "id":  "SC-A11Y-WCAG-001",
+                          "title":  "Public pages pass automated WCAG smoke",
+                          "persona":  "visitor",
+                          "role":  "anonymous",
+                          "surface":  "accessibility",
+                          "risk":  "high",
+                          "automation":  "axe-playwright",
+                          "status":  "FAIL",
+                          "requiredChecks":  [
+                                                 "SOURCE-A11Y-001",
+                                                 "A11Y-AXE-001"
+                                             ],
+                          "checks":  [
+                                         {
+                                             "id":  "SOURCE-A11Y-001",
+                                             "area":  "source",
+                                             "status":  "PASS",
+                                             "summary":  "Source-level accessibility fixes are present for viewport, form names, alert close and contrast override."
+                                         },
+                                         {
+                                             "id":  "A11Y-AXE-001",
+                                             "area":  "accessibility",
+                                             "status":  "FAIL",
+                                             "summary":  "Axe WCAG smoke failed for public routes."
+                                         }
+                                     ],
+                          "evidence":  [
+                                           "reports/playwright-accessibility-output.txt",
+                                           "reports/latest-report.json"
+                                       ],
+                          "repairCards":  [
+                                              {
+                                                  "id":  "RC-A11Y-AXE-001",
+                                                  "status":  "SOURCE_READY_LIVE_OPEN",
+                                                  "priority":  "P1",
+                                                  "ownerSurface":  "public-theme-accessibility"
+                                              },
+                                              {
+                                                  "id":  "RC-DEPLOY-SYNC-001",
+                                                  "status":  "READY_FOR_HUMAN_DEPLOY_CONTOUR",
+                                                  "priority":  "P0",
+                                                  "ownerSurface":  "deployment/live-sync"
+                                              }
+                                          ],
+                          "blocker":  "A11Y-AXE-001: Axe WCAG smoke failed for public routes.",
+                          "verification":  "Source a11y gate and live axe browser gate must both pass."
+                      },
+                      {
+                          "id":  "SC-PERF-PUBLIC-001",
+                          "title":  "Public routes meet response-time SLA",
+                          "persona":  "visitor",
+                          "role":  "anonymous",
+                          "surface":  "performance",
+                          "risk":  "high",
+                          "automation":  "k6",
+                          "status":  "BLOCKED",
+                          "requiredChecks":  [
+                                                 "PERF-HTTP-001",
+                                                 "PERF-K6-001"
+                                             ],
+                          "checks":  [
+                                         {
+                                             "id":  "PERF-HTTP-001",
+                                             "area":  "performance",
+                                             "status":  "PASS",
+                                             "summary":  "No checked public route exceeded 1500 ms in this single-run HTTP probe."
+                                         },
+                                         {
+                                             "id":  "PERF-K6-001",
+                                             "area":  "performance",
+                                             "status":  "BLOCKED",
+                                             "summary":  "k6 performance smoke is blocked by tooling readiness."
+                                         }
+                                     ],
+                          "evidence":  [
+                                           "reports/performance-qa-summary.json",
+                                           "reports/k6-smoke-output.txt"
+                                       ],
+                          "repairCards":  [
+                                              {
+                                                  "id":  "RC-PERF-K6-001",
+                                                  "status":  "BLOCKED_BY_TOOLING_OR_RUNTIME",
+                                                  "priority":  "P1",
+                                                  "ownerSurface":  "performance/backend-cache-edge"
+                                              }
+                                          ],
+                          "blocker":  "PERF-K6-001: k6 performance smoke is blocked by tooling readiness.",
+                          "verification":  "HTTP probe should not warn and k6 p95 should stay under the configured SLA."
+                      },
+                      {
+                          "id":  "SC-SEC-PASSIVE-001",
+                          "title":  "Passive security baseline is reviewed",
+                          "persona":  "security-reviewer",
+                          "role":  "qa-security",
+                          "surface":  "security",
+                          "risk":  "high",
+                          "automation":  "zap-passive-and-source",
+                          "status":  "BLOCKED",
+                          "requiredChecks":  [
+                                                 "SOURCE-SEC-001",
+                                                 "SEC-HEADERS-001",
+                                                 "SEC-ZAP-001"
+                                             ],
+                          "checks":  [
+                                         {
+                                             "id":  "SOURCE-SEC-001",
+                                             "area":  "source",
+                                             "status":  "PASS",
+                                             "summary":  "Yii response security header, CSP and cookie-hardening hooks are present in source."
+                                         },
+                                         {
+                                             "id":  "SEC-HEADERS-001",
+                                             "area":  "security",
+                                             "status":  "WARN",
+                                             "summary":  "Some baseline security headers are missing on home route."
+                                         },
+                                         {
+                                             "id":  "SEC-ZAP-001",
+                                             "area":  "security",
+                                             "status":  "BLOCKED",
+                                             "summary":  "OWASP ZAP passive baseline is blocked by tooling readiness."
+                                         }
+                                     ],
+                          "evidence":  [
+                                           "reports/security-passive-summary.json",
+                                           "reports/zap-baseline-output.txt"
+                                       ],
+                          "repairCards":  [
+                                              {
+                                                  "id":  "RC-SEC-HEADERS-001",
+                                                  "status":  "SOURCE_READY_LIVE_OPEN",
+                                                  "priority":  "P1",
+                                                  "ownerSurface":  "security/app-edge"
+                                              },
+                                              {
+                                                  "id":  "RC-DEPLOY-SYNC-001",
+                                                  "status":  "READY_FOR_HUMAN_DEPLOY_CONTOUR",
+                                                  "priority":  "P0",
+                                                  "ownerSurface":  "deployment/live-sync"
+                                              }
+                                          ],
+                          "blocker":  "SEC-ZAP-001: OWASP ZAP passive baseline is blocked by tooling readiness.",
+                          "verification":  "Source security gate must pass, live headers must be present, and passive ZAP warnings must be fixed or explicitly accepted."
+                      },
+                      {
+                          "id":  "SC-FUNNEL-ANALYTICS-001",
+                          "title":  "Analytics funnel contract covers launch decision metrics",
+                          "persona":  "product-analyst",
+                          "role":  "qa-ba-tester",
+                          "surface":  "analytics/funnel",
+                          "risk":  "high",
+                          "automation":  "schema-event-order-contract",
+                          "status":  "WARN",
+                          "requiredChecks":  [
+                                                 "ANALYTICS-001",
+                                                 "ANALYTICS-002",
+                                                 "ANALYTICS-003",
+                                                 "ANALYTICS-004",
+                                                 "ANALYTICS-005",
+                                                 "ANALYTICS-006",
+                                                 "ANALYTICS-007",
+                                                 "ANALYTICS-008",
+                                                 "ANALYTICS-009"
+                                             ],
+                          "checks":  [
+                                         {
+                                             "id":  "ANALYTICS-001",
+                                             "area":  "analytics",
+                                             "status":  "PASS",
+                                             "summary":  "Analytics schema contains required launch events and no duplicate event names."
+                                         },
+                                         {
+                                             "id":  "ANALYTICS-002",
+                                             "area":  "analytics",
+                                             "status":  "PASS",
+                                             "summary":  "Forbidden sensitive tokens are not required by analytics schema."
+                                         },
+                                         {
+                                             "id":  "ANALYTICS-003",
+                                             "area":  "analytics",
+                                             "status":  "PASS",
+                                             "summary":  "Analytics schema columns and event names are readable."
+                                         },
+                                         {
+                                             "id":  "ANALYTICS-004",
+                                             "area":  "analytics",
+                                             "status":  "PASS",
+                                             "summary":  "Full launch analytics event coverage has no missing or duplicate events."
+                                         },
+                                         {
+                                             "id":  "ANALYTICS-005",
+                                             "area":  "analytics",
+                                             "status":  "PASS",
+                                             "summary":  "Schema event order matches acquisition-to-repeat funnel contract."
+                                         },
+                                         {
+                                             "id":  "ANALYTICS-006",
+                                             "area":  "analytics",
+                                             "status":  "PASS",
+                                             "summary":  "Conversion truth metrics have required event/property mapping."
+                                         },
+                                         {
+                                             "id":  "ANALYTICS-007",
+                                             "area":  "analytics",
+                                             "status":  "PASS",
+                                             "summary":  "Funnel analytics required properties respect privacy boundary."
+                                         },
+                                         {
+                                             "id":  "ANALYTICS-008",
+                                             "area":  "analytics",
+                                             "status":  "PASS",
+                                             "summary":  "Business decision metrics have analytics event coverage."
+                                         },
+                                         {
+                                             "id":  "ANALYTICS-009",
+                                             "area":  "analytics",
+                                             "status":  "WARN",
+                                             "summary":  "Runtime analytics firing/order proof is not captured yet; schema is not conversion truth."
+                                         }
+                                     ],
+                          "evidence":  [
+                                           "reports/funnel-analytics.json",
+                                           "reports/funnel-analytics.md",
+                                           "reports/latest-report.json"
+                                       ],
+                          "repairCards":  [
+                                              {
+                                                  "id":  "RC-ANALYTICS-RUNTIME-001",
+                                                  "status":  "OPEN",
+                                                  "priority":  "P1",
+                                                  "ownerSurface":  "analytics/runtime-browser-capture"
+                                              }
+                                          ],
+                          "blocker":  "ANALYTICS-009: Runtime analytics firing/order proof is not captured yet; schema is not conversion truth.",
+                          "verification":  "Schema/order/privacy/conversion mapping must pass; runtimeStatus may remain NOT_PROVEN until browser/network event capture is added."
+                      },
+                      {
+                          "id":  "SC-ANALYTICS-RUNTIME-001",
+                          "title":  "Runtime analytics firing and order are captured from browser evidence",
+                          "persona":  "product-analyst",
+                          "role":  "qa-ba-tester",
+                          "surface":  "analytics/runtime",
+                          "risk":  "high",
+                          "automation":  "browser-network-capture",
+                          "status":  "WARN",
+                          "requiredChecks":  [
+                                                 "SOURCE-ANALYTICS-RUNTIME-001",
+                                                 "ANALYTICS-010"
+                                             ],
+                          "checks":  [
+                                         {
+                                             "id":  "SOURCE-ANALYTICS-RUNTIME-001",
+                                             "area":  "analytics",
+                                             "status":  "PASS",
+                                             "summary":  "Source runtime analytics bridge contains expected launch events and is registered in the custom theme layout."
+                                         },
+                                         {
+                                             "id":  "ANALYTICS-010",
+                                             "area":  "analytics",
+                                             "status":  "WARN",
+                                             "summary":  "Runtime analytics browser capture status is NOT_PROVEN."
+                                         }
+                                     ],
+                          "evidence":  [
+                                           "reports/analytics-runtime-summary.json",
+                                           "reports/analytics-runtime-summary.md",
+                                           "reports/analytics-runtime-observations.json"
+                                       ],
+                          "repairCards":  [
+                                              {
+                                                  "id":  "RC-ANALYTICS-RUNTIME-001",
+                                                  "status":  "OPEN",
+                                                  "priority":  "P1",
+                                                  "ownerSurface":  "analytics/runtime-browser-capture"
+                                              }
+                                          ],
+                          "blocker":  "ANALYTICS-010: Runtime analytics browser capture status is NOT_PROVEN.",
+                          "verification":  "Runtime analytics capture must reach RUNTIME_PROVEN before analytics can be used as conversion truth; route readiness blockers must stay BLOCKED."
+                      },
+                      {
+                          "id":  "SC-DEPLOY-SYNC-001",
+                          "title":  "Source-fixed defects are synced to live",
+                          "persona":  "operator",
+                          "role":  "deploy-owner",
+                          "surface":  "deployment/live-sync",
+                          "risk":  "blocker",
+                          "automation":  "manifest-and-bundle",
+                          "status":  "WARN",
+                          "requiredChecks":  [
+                                                 "SOURCE-A11Y-001",
+                                                 "SOURCE-BRAND-001",
+                                                 "SOURCE-SEC-001",
+                                                 "SOURCE-PHP-LINT-001",
+                                                 "DEPLOY-BUNDLE-001",
+                                                 "DEPLOY-SYNC-001"
+                                             ],
+                          "checks":  [
+                                         {
+                                             "id":  "SOURCE-A11Y-001",
+                                             "area":  "source",
+                                             "status":  "PASS",
+                                             "summary":  "Source-level accessibility fixes are present for viewport, form names, alert close and contrast override."
+                                         },
+                                         {
+                                             "id":  "SOURCE-BRAND-001",
+                                             "area":  "source",
+                                             "status":  "PASS",
+                                             "summary":  "Primary source defaults use Confideline branding."
+                                         },
+                                         {
+                                             "id":  "SOURCE-SEC-001",
+                                             "area":  "source",
+                                             "status":  "PASS",
+                                             "summary":  "Yii response security header, CSP and cookie-hardening hooks are present in source."
+                                         },
+                                         {
+                                             "id":  "SOURCE-PHP-LINT-001",
+                                             "area":  "source",
+                                             "status":  "PASS",
+                                             "summary":  "Edited PHP source files pass php -l."
+                                         },
+                                         {
+                                             "id":  "DEPLOY-BUNDLE-001",
+                                             "area":  "deployment",
+                                             "status":  "PASS",
+                                             "summary":  "Deploy handoff bundle exists with checksums and rollback checklist."
+                                         },
+                                         {
+                                             "id":  "DEPLOY-SYNC-001",
+                                             "area":  "deployment",
+                                             "status":  "WARN",
+                                             "summary":  "Deploy/sync manifest is ready, but no proven external deploy contour is configured in this QA package."
+                                         }
+                                     ],
+                          "evidence":  [
+                                           "reports/deploy-sync-manifest.md",
+                                           "reports/deploy-bundle-summary.json"
+                                       ],
+                          "repairCards":  [
+                                              {
+                                                  "id":  "RC-DEPLOY-SYNC-001",
+                                                  "status":  "READY_FOR_HUMAN_DEPLOY_CONTOUR",
+                                                  "priority":  "P0",
+                                                  "ownerSurface":  "deployment/live-sync"
+                                              }
+                                          ],
+                          "blocker":  "DEPLOY-SYNC-001: Deploy/sync manifest is ready, but no proven external deploy contour is configured in this QA package.",
+                          "verification":  "Deploy bundle must exist and live checks must stop showing source-fixed issues after sync."
+                      },
+                      {
+                          "id":  "SC-RUNTIME-READINESS-001",
+                          "title":  "QA runtime separates product defects from local blockers",
+                          "persona":  "qa-operator",
+                          "role":  "qa-runtime",
+                          "surface":  "qa-runtime",
+                          "risk":  "high",
+                          "automation":  "runtime-doctor",
+                          "status":  "FAIL",
+                          "requiredChecks":  [
+                                                 "RUNTIME-READINESS-001"
+                                             ],
+                          "checks":  [
+                                         {
+                                             "id":  "RUNTIME-READINESS-001",
+                                             "area":  "runtime",
+                                             "status":  "FAIL",
+                                             "summary":  "QA runtime readiness has local failures."
+                                         }
+                                     ],
+                          "evidence":  [
+                                           "reports/runtime-readiness.md",
+                                           "reports/runtime-readiness.json"
+                                       ],
+                          "repairCards":  [
+                                              {
+                                                  "id":  "RC-RUNTIME-READINESS-001",
+                                                  "status":  "OPEN",
+                                                  "priority":  "P0",
+                                                  "ownerSurface":  "qa-runtime"
+                                              },
+                                              {
+                                                  "id":  "RC-ADMIN-AUTH-STATE-001",
+                                                  "status":  "BLOCKED_BY_HUMAN_LOGIN",
+                                                  "priority":  "P0",
+                                                  "ownerSurface":  "admin-auth-browser-state"
+                                              }
+                                          ],
+                          "blocker":  "RUNTIME-READINESS-001: QA runtime readiness has local failures.",
+                          "verification":  "Runtime readiness must pass or clearly block only capabilities that require human login/storage state."
+                      },
+                      {
+                          "id":  "SC-ADMIN-ROLE-MAP-001",
+                          "title":  "Admin role/function map is source-derived",
+                          "persona":  "admin",
+                          "role":  "super-admin-or-moderator",
+                          "surface":  "admin-role-permission-map",
+                          "risk":  "high",
+                          "automation":  "source-role-map",
+                          "status":  "PASS",
+                          "requiredChecks":  [
+                                                 "ADMIN-ROLE-MAP-001"
+                                             ],
+                          "checks":  [
+                                         {
+                                             "id":  "ADMIN-ROLE-MAP-001",
+                                             "area":  "admin",
+                                             "status":  "PASS",
+                                             "summary":  "Admin role/function map was refreshed from source."
+                                         }
+                                     ],
+                          "evidence":  [
+                                           "reports/admin-role-map-current.json",
+                                           "reports/admin-role-map-output.txt"
+                                       ],
+                          "repairCards":  [
+
+                                          ],
+                          "blocker":  "",
+                          "verification":  "Role map must be regenerated from source and include configured behavior envelopes."
+                      },
+                      {
+                          "id":  "SC-ADMIN-AUTH-001",
+                          "title":  "Authenticated admin browser state exists",
+                          "persona":  "admin",
+                          "role":  "super-admin",
+                          "surface":  "admin-auth-browser-state",
+                          "risk":  "blocker",
+                          "automation":  "headed-storage-state-capture",
+                          "status":  "BLOCKED",
+                          "requiredChecks":  [
+                                                 "BROWSER-ADMIN-001",
+                                                 "ADMIN-ROUTE-001"
+                                             ],
+                          "checks":  [
+                                         {
+                                             "id":  "BROWSER-ADMIN-001",
+                                             "area":  "admin",
+                                             "status":  "BLOCKED",
+                                             "summary":  "Authenticated Playwright admin gate is blocked because admin storage state is missing."
+                                         },
+                                         {
+                                             "id":  "ADMIN-ROUTE-001",
+                                             "area":  "admin",
+                                             "status":  "BLOCKED",
+                                             "summary":  "Admin routes are known from inventory/source but require an authenticated admin browser state; anonymous probes are expected to be inconclusive."
+                                         }
+                                     ],
+                          "evidence":  [
+                                           "reports/playwright-admin-gated-output.txt",
+                                           "secrets/admin-storage-state.json"
+                                       ],
+                          "repairCards":  [
+                                              {
+                                                  "id":  "RC-ADMIN-AUTH-STATE-001",
+                                                  "status":  "BLOCKED_BY_HUMAN_LOGIN",
+                                                  "priority":  "P0",
+                                                  "ownerSurface":  "admin-auth-browser-state"
+                                              }
+                                          ],
+                          "blocker":  "BROWSER-ADMIN-001: Authenticated Playwright admin gate is blocked because admin storage state is missing.",
+                          "verification":  "Storage state must be captured outside git, then authenticated admin gate must pass."
+                      },
+                      {
+                          "id":  "SC-ADMIN-ROLE-AWARE-001",
+                          "title":  "Admin and moderator stay inside role behavior envelope",
+                          "persona":  "admin",
+                          "role":  "super-admin-and-moderator",
+                          "surface":  "admin-role-aware-browser",
+                          "risk":  "high",
+                          "automation":  "role-aware-browser",
+                          "status":  "BLOCKED",
+                          "requiredChecks":  [
+                                                 "ADMIN-ROLE-MAP-001",
+                                                 "ADMIN-ROLE-AWARE-001"
+                                             ],
+                          "checks":  [
+                                         {
+                                             "id":  "ADMIN-ROLE-MAP-001",
+                                             "area":  "admin",
+                                             "status":  "PASS",
+                                             "summary":  "Admin role/function map was refreshed from source."
+                                         },
+                                         {
+                                             "id":  "ADMIN-ROLE-AWARE-001",
+                                             "area":  "admin",
+                                             "status":  "BLOCKED",
+                                             "summary":  "Role-aware admin browser gate is blocked by missing per-role storage state."
+                                         }
+                                     ],
+                          "evidence":  [
+                                           "reports/admin-role-observations.jsonl",
+                                           "reports/playwright-admin-role-aware-output.txt"
+                                       ],
+                          "repairCards":  [
+                                              {
+                                                  "id":  "RC-ADMIN-AUTH-STATE-001",
+                                                  "status":  "BLOCKED_BY_HUMAN_LOGIN",
+                                                  "priority":  "P0",
+                                                  "ownerSurface":  "admin-auth-browser-state"
+                                              }
+                                          ],
+                          "blocker":  "ADMIN-ROLE-AWARE-001: Role-aware admin browser gate is blocked by missing per-role storage state.",
+                          "verification":  "Per-role browser checks must pass using storage states and source-derived behavior constraints."
+                      },
+                      {
+                          "id":  "SC-MACHINE-INTERFACE-001",
+                          "title":  "Tester state is readable through machine interface",
+                          "persona":  "qa-operator",
+                          "role":  "qa-ba-tester",
+                          "surface":  "machine-interface",
+                          "risk":  "medium",
+                          "automation":  "artifact-contract",
+                          "status":  "PASS",
+                          "requiredChecks":  [
+
+                                             ],
+                          "checks":  [
+
+                                     ],
+                          "evidence":  [
+                                           "reports/machine-interface/index.html",
+                                           "reports/machine-interface/state.json",
+                                           "reports/coverage-matrix.json"
+                                       ],
+                          "repairCards":  [
+
+                                          ],
+                          "blocker":  "",
+                          "verification":  "Artifact verifier must pass and machine interface must expose status, runtime, role model, repair cards, coverage matrix, and commands."
+                      }
+                  ]
+}
