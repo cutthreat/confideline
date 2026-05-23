@@ -1,0 +1,487 @@
+﻿{
+    "generated":  "2026-05-23T12:48:50.0849351+03:00",
+    "sourceReport":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\latest-report.json",
+    "overall":  "FAIL",
+    "statusCounts":  {
+                         "PASS":  38,
+                         "FAIL":  2,
+                         "WARN":  7,
+                         "BLOCKED":  6
+                     },
+    "cardCount":  8,
+    "cards":  [
+                  {
+                      "id":  "RC-ADMIN-AUTH-STATE-001",
+                      "priority":  "P0",
+                      "status":  "BLOCKED_BY_HUMAN_LOGIN",
+                      "ownerSurface":  "admin-auth-browser-state",
+                      "title":  "Capture authenticated admin Playwright storage state",
+                      "whyItMatters":  "Admin/advisor operations, moderation, refunds and message shell cannot be verified live yet.",
+                      "action":  "Run the storage-state capture script, complete admin login/MFA manually in the headed browser, and save the gitignored storage state. Then rerun browser QA.",
+                      "evidence":  [
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\playwright-admin-gated-output.txt",
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\secrets\\admin-storage-state.json"
+                                   ],
+                      "verify":  "powershell -NoProfile -ExecutionPolicy Bypass -File H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\scripts\\Invoke-ConfidelineBrowserQa.ps1 -SkipInstall",
+                      "stopCondition":  "Stop at login/MFA/account confirmation; never commit storage state or secrets.",
+                      "dependsOn":  [
+
+                                    ],
+                      "details":  {
+                                      "captureCommand":  "powershell -NoProfile -ExecutionPolicy Bypass -File H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\scripts\\Capture-ConfidelineAdminStorageState.ps1"
+                                  }
+                  },
+                  {
+                      "id":  "RC-DEPLOY-SYNC-001",
+                      "priority":  "P0",
+                      "status":  "READY_FOR_HUMAN_DEPLOY_CONTOUR",
+                      "ownerSurface":  "deployment/live-sync",
+                      "title":  "Sync repaired Yii2 source to live Confideline",
+                      "whyItMatters":  "Live QA will continue reporting old accessibility, branding, header, and analytics bridge defects until the repaired files are deployed or otherwise synced.",
+                      "action":  "Use the generated deploy bundle or deploy-sync manifest with the real hosting contour, then rerun full QA. Do not close live browser/accessibility/security findings from source proof alone.",
+                      "evidence":  [
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\deploy-sync-manifest.md",
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\deploy-bundle-summary.json",
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\deploy-bundle\\confideline-source-sync-20260523-124312.zip"
+                                   ],
+                      "verify":  "powershell -NoProfile -ExecutionPolicy Bypass -File H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\scripts\\Invoke-ConfidelineQa.ps1",
+                      "stopCondition":  "Stop if the hosting/deploy contour is unknown, credentials are missing, or the deploy action would mutate production without an approved external path.",
+                      "dependsOn":  [
+
+                                    ],
+                      "details":  {
+                                      "sourceReady":  true,
+                                      "bundle":  {
+                                                     "status":  "READY",
+                                                     "generated":  "2026-05-23T12:43:13.8660165+03:00",
+                                                     "zip":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\deploy-bundle\\confideline-source-sync-20260523-124312.zip",
+                                                     "stagingRoot":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\deploy-bundle\\staging-20260523-124312",
+                                                     "checksumsCsv":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\deploy-bundle\\staging-20260523-124312\\checksums.csv",
+                                                     "checksumsJson":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\deploy-bundle\\staging-20260523-124312\\checksums.json",
+                                                     "rollbackChecklist":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\deploy-bundle\\staging-20260523-124312\\rollback-checklist.md",
+                                                     "fileCount":  20
+                                                 }
+                                  }
+                  },
+                  {
+                      "id":  "RC-RUNTIME-READINESS-001",
+                      "priority":  "P0",
+                      "status":  "OPEN",
+                      "ownerSurface":  "qa-runtime",
+                      "title":  "Repair local QA runtime before trusting browser conclusions",
+                      "whyItMatters":  "Browser or security/performance QA results may be local-runtime failures rather than product defects.",
+                      "action":  "Open runtime-readiness.md/json, fix local runtime failures, then rerun browser QA. Do not classify browser failures as product defects while runtime readiness is FAIL.",
+                      "evidence":  [
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\runtime-readiness.md",
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\runtime-readiness.json",
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\runtime-readiness-output.txt"
+                                   ],
+                      "verify":  "powershell -NoProfile -ExecutionPolicy Bypass -File H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\scripts\\Test-ConfidelineQaRuntime.ps1",
+                      "stopCondition":  "Stop before killing unrelated browser/Manhattan sessions or changing OS pagefile settings without a separate operator action.",
+                      "dependsOn":  [
+
+                                    ],
+                      "details":  {
+                                      "generated":  "2026-05-23T12:45:37.3764403+03:00",
+                                      "overall":  "FAIL",
+                                      "statusCounts":  {
+                                                           "PASS":  7,
+                                                           "FAIL":  1,
+                                                           "WARN":  3
+                                                       },
+                                      "checks":  [
+                                                     {
+                                                         "id":  "RUNTIME-NODE",
+                                                         "status":  "PASS",
+                                                         "summary":  "Node is available.",
+                                                         "evidence":  {
+                                                                          "source":  "C:\\Program Files\\nodejs\\node.exe",
+                                                                          "version":  "v24.14.1"
+                                                                      }
+                                                     },
+                                                     {
+                                                         "id":  "RUNTIME-NPM",
+                                                         "status":  "PASS",
+                                                         "summary":  "npm is available.",
+                                                         "evidence":  {
+                                                                          "source":  "C:\\Program Files\\nodejs\\npm.ps1"
+                                                                      }
+                                                     },
+                                                     {
+                                                         "id":  "RUNTIME-PLAYWRIGHT",
+                                                         "status":  "PASS",
+                                                         "summary":  "Local Playwright command is available.",
+                                                         "evidence":  {
+                                                                          "command":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\playwright\\node_modules\\.bin\\playwright.cmd"
+                                                                      }
+                                                     },
+                                                     {
+                                                         "id":  "RUNTIME-MEMORY",
+                                                         "status":  "PASS",
+                                                         "summary":  "Physical memory snapshot collected.",
+                                                         "evidence":  {
+                                                                          "freeMb":  13770.6,
+                                                                          "totalMb":  24415.5
+                                                                      }
+                                                     },
+                                                     {
+                                                         "id":  "RUNTIME-PAGEFILE",
+                                                         "status":  "PASS",
+                                                         "summary":  "Pagefile usage snapshot collected.",
+                                                         "evidence":  [
+                                                                          {
+                                                                              "name":  "C:\\pagefile.sys",
+                                                                              "allocatedMb":  27067,
+                                                                              "currentUsageMb":  5473,
+                                                                              "peakUsageMb":  28506
+                                                                          }
+                                                                      ]
+                                                     },
+                                                     {
+                                                         "id":  "RUNTIME-BROWSER-PROCESS-PRESSURE",
+                                                         "status":  "WARN",
+                                                         "summary":  "Browser/Node process pressure snapshot collected.",
+                                                         "evidence":  {
+                                                                          "count":  111,
+                                                                          "top":  [
+                                                                                      {
+                                                                                          "ProcessName":  "chrome",
+                                                                                          "Id":  32096,
+                                                                                          "workingSetMb":  165.6
+                                                                                      },
+                                                                                      {
+                                                                                          "ProcessName":  "chrome",
+                                                                                          "Id":  15652,
+                                                                                          "workingSetMb":  155.7
+                                                                                      },
+                                                                                      {
+                                                                                          "ProcessName":  "chrome",
+                                                                                          "Id":  30468,
+                                                                                          "workingSetMb":  108.4
+                                                                                      },
+                                                                                      {
+                                                                                          "ProcessName":  "chrome",
+                                                                                          "Id":  28156,
+                                                                                          "workingSetMb":  108.2
+                                                                                      },
+                                                                                      {
+                                                                                          "ProcessName":  "chrome",
+                                                                                          "Id":  24724,
+                                                                                          "workingSetMb":  105.8
+                                                                                      },
+                                                                                      {
+                                                                                          "ProcessName":  "chrome",
+                                                                                          "Id":  29980,
+                                                                                          "workingSetMb":  102.4
+                                                                                      },
+                                                                                      {
+                                                                                          "ProcessName":  "chrome",
+                                                                                          "Id":  1264,
+                                                                                          "workingSetMb":  99
+                                                                                      },
+                                                                                      {
+                                                                                          "ProcessName":  "chrome",
+                                                                                          "Id":  15664,
+                                                                                          "workingSetMb":  98.2
+                                                                                      },
+                                                                                      {
+                                                                                          "ProcessName":  "chrome",
+                                                                                          "Id":  12532,
+                                                                                          "workingSetMb":  97.1
+                                                                                      },
+                                                                                      {
+                                                                                          "ProcessName":  "chrome",
+                                                                                          "Id":  17044,
+                                                                                          "workingSetMb":  97.1
+                                                                                      }
+                                                                                  ]
+                                                                      }
+                                                     },
+                                                     {
+                                                         "id":  "RUNTIME-DOCKER",
+                                                         "status":  "WARN",
+                                                         "summary":  "Docker command exists but readiness check failed.",
+                                                         "evidence":  {
+                                                                          "source":  "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe",
+                                                                          "error":  "failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified."
+                                                                      }
+                                                     },
+                                                     {
+                                                         "id":  "RUNTIME-ROLE-MAP",
+                                                         "status":  "PASS",
+                                                         "summary":  "Admin role map exists.",
+                                                         "evidence":  {
+                                                                          "path":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\admin-role-map-current.json"
+                                                                      }
+                                                     },
+                                                     {
+                                                         "id":  "RUNTIME-ADMIN-STORAGE-STATES",
+                                                         "status":  "WARN",
+                                                         "summary":  "Admin storage-state presence checked; role-aware admin QA requires both super-admin and moderator states.",
+                                                         "evidence":  {
+                                                                          "states":  {
+                                                                                         "moderator":  {
+                                                                                                           "path":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\secrets\\admin-storage-state.moderator.json",
+                                                                                                           "exists":  false
+                                                                                                       },
+                                                                                         "default":  {
+                                                                                                         "path":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\secrets\\admin-storage-state.json",
+                                                                                                         "exists":  true
+                                                                                                     },
+                                                                                         "superAdmin":  {
+                                                                                                            "path":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\secrets\\admin-storage-state.super-admin.json",
+                                                                                                            "exists":  true
+                                                                                                        }
+                                                                                     },
+                                                                          "defaultReady":  true,
+                                                                          "roleAwareReady":  false
+                                                                      }
+                                                     },
+                                                     {
+                                                         "id":  "RUNTIME-ADMIN-STORAGE-VALIDATION",
+                                                         "status":  "FAIL",
+                                                         "summary":  "Admin storage-state validation evidence exists.",
+                                                         "evidence":  {
+                                                                          "generated":  "2026-05-23T09:45:29.868Z",
+                                                                          "baseURL":  "https://confideline.com",
+                                                                          "adminRoute":  "/en/admin",
+                                                                          "storageStatePath":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\secrets\\admin-storage-state.json",
+                                                                          "status":  "FAIL",
+                                                                          "markers":  {
+                                                                                          "httpOk":  false,
+                                                                                          "adminUrl":  true,
+                                                                                          "adminText":  false,
+                                                                                          "noLoginForm":  true,
+                                                                                          "adminMenu":  false,
+                                                                                          "noAccessDenied":  false
+                                                                                      },
+                                                                          "evidence":  {
+                                                                                           "finalUrl":  "https://confideline.com/en/admin",
+                                                                                           "statusCode":  404,
+                                                                                           "bodySnippet":  "404\nPage not found\n\nThe requested page does not exist\n\n Go back",
+                                                                                           "loginFormCount":  0,
+                                                                                           "adminMenuCount":  0
+                                                                                       },
+                                                                          "reason":  "Storage state did not prove authenticated admin access with required markers."
+                                                                      }
+                                                     },
+                                                     {
+                                                         "id":  "RUNTIME-PLAYWRIGHT-VERSION",
+                                                         "status":  "PASS",
+                                                         "summary":  "Playwright CLI version check completed.",
+                                                         "evidence":  {
+                                                                          "output":  "Version 1.59.1",
+                                                                          "exitCode":  0
+                                                                      }
+                                                     }
+                                                 ]
+                                  }
+                  },
+                  {
+                      "id":  "RC-A11Y-AXE-001",
+                      "priority":  "P1",
+                      "status":  "SOURCE_READY_LIVE_OPEN",
+                      "ownerSurface":  "public-theme-accessibility",
+                      "title":  "Close live axe WCAG failures after source sync",
+                      "whyItMatters":  "Keyboard/screen-reader/low-vision users can hit blockers; this also signals rough product quality on paid acquisition pages.",
+                      "action":  "Deploy/sync the repaired source accessibility changes first, then rerun browser QA. If axe still fails after sync, repair the specific targets from playwright-accessibility-output.txt.",
+                      "evidence":  [
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\playwright-accessibility-output.txt",
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\latest-report.json"
+                                   ],
+                      "verify":  "powershell -NoProfile -ExecutionPolicy Bypass -File H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\scripts\\Invoke-ConfidelineBrowserQa.ps1 -SkipInstall",
+                      "stopCondition":  "Stop before hiding axe rules or accepting critical label/viewport issues without product/accessibility rationale.",
+                      "dependsOn":  [
+                                        "RC-DEPLOY-SYNC-001"
+                                    ],
+                      "details":  {
+                                      "sourceGate":  "SOURCE-A11Y-001",
+                                      "sourceStatus":  "PASS"
+                                  }
+                  },
+                  {
+                      "id":  "RC-ANALYTICS-RUNTIME-001",
+                      "priority":  "P1",
+                      "status":  "OPEN",
+                      "ownerSurface":  "analytics/runtime-browser-capture",
+                      "title":  "Prove runtime analytics firing and order from browser evidence",
+                      "whyItMatters":  "Without runtime browser proof, paid validation can count schema intent instead of actual conversion-truth events fired by the customer journey.",
+                      "action":  "Open analytics-runtime-summary.md/json and analytics-runtime-observations.json. First clear the recorded phase blocker, then verify matched expected events and qualified event beacons. Do not accept vendor script/container loads as proof.",
+                      "evidence":  [
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\analytics-runtime-summary.md",
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\analytics-runtime-summary.json",
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\analytics-runtime-observations.json",
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\playwright-analytics-runtime-output.txt"
+                                   ],
+                      "verify":  "powershell -NoProfile -ExecutionPolicy Bypass -File H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\scripts\\Invoke-ConfidelineAnalyticsRuntimeQa.ps1 -SkipInstall",
+                      "stopCondition":  "Stop before marking analytics runtime proven unless overall is RUNTIME_PROVEN with matched expected events and qualified event beacons.",
+                      "dependsOn":  [
+
+                                    ],
+                      "details":  {
+                                      "analyticsRuntime":  {
+                                                               "status":  "READY",
+                                                               "generated":  "2026-05-23T12:48:44.3866321+03:00",
+                                                               "baseUrl":  "https://confideline.com",
+                                                               "overall":  "NOT_PROVEN",
+                                                               "evidenceGrade":  "NO_RUNTIME_EVIDENCE",
+                                                               "reason":  "Browser loaded the route but did not capture matched expected analytics events and qualified beacons. Phase: collecting_client_events.",
+                                                               "phase":  "collecting_client_events",
+                                                               "exitCode":  0,
+                                                               "output":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\playwright-analytics-runtime-output.txt",
+                                                               "observation":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\analytics-runtime-observations.json",
+                                                               "observationData":  {
+                                                                                       "generated":  "2026-05-23T09:48:44.224Z",
+                                                                                       "route":  "/en?utm_source=qa-runtime\u0026utm_medium=paid\u0026utm_campaign=analytics-runtime-proof\u0026utm_term=starter",
+                                                                                       "phase":  "collecting_client_events",
+                                                                                       "expectedEarlyEvents":  [
+                                                                                                                   "ad_click_session_start",
+                                                                                                                   "lp_view",
+                                                                                                                   "trust_block_view",
+                                                                                                                   "starter_price_view"
+                                                                                                               ],
+                                                                                       "analyticsRequests":  [
+                                                                                                                 {
+                                                                                                                     "url":  "https://confideline.com/en?utm_source=qa-runtime\u0026utm_medium=paid\u0026utm_campaign=analytics-runtime-proof\u0026utm_term=starter",
+                                                                                                                     "method":  "GET",
+                                                                                                                     "resourceType":  "document",
+                                                                                                                     "provider":  "unknown",
+                                                                                                                     "transport":  "document",
+                                                                                                                     "eventName":  "",
+                                                                                                                     "payloadEventName":  "",
+                                                                                                                     "hasPostData":  false
+                                                                                                                 }
+                                                                                                             ],
+                                                                                       "clientEvents":  [
+                                                                                                            {
+                                                                                                                "source":  "fbq",
+                                                                                                                "args":  [
+                                                                                                                             "init",
+                                                                                                                             "637118337054292"
+                                                                                                                         ]
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "source":  "fbq",
+                                                                                                                "args":  [
+                                                                                                                             "track",
+                                                                                                                             "PageView"
+                                                                                                                         ]
+                                                                                                            }
+                                                                                                        ],
+                                                                                       "matchedExpectedEvents":  [
+
+                                                                                                                 ],
+                                                                                       "status":  "NOT_PROVEN",
+                                                                                       "project":  "chromium-direct",
+                                                                                       "navigationMs":  5051,
+                                                                                       "clientEventNames":  [
+                                                                                                                "init",
+                                                                                                                "637118337054292",
+                                                                                                                "track",
+                                                                                                                "PageView"
+                                                                                                            ],
+                                                                                       "expectedEventOrderStatus":  "FAIL",
+                                                                                       "qualifiedEventBeacons":  [
+
+                                                                                                                 ],
+                                                                                       "matchedRuntimeEvents":  [
+
+                                                                                                                ]
+                                                                                   },
+                                                               "stopCondition":  "Do not claim runtime analytics conversion truth unless overall is RUNTIME_PROVEN with captured browser evidence."
+                                                           },
+                                      "check":  {
+                                                    "id":  "ANALYTICS-010",
+                                                    "area":  "analytics",
+                                                    "status":  "WARN",
+                                                    "summary":  "Runtime analytics browser capture status is NOT_PROVEN.",
+                                                    "evidence":  {
+                                                                     "status":  "READY",
+                                                                     "overall":  "NOT_PROVEN",
+                                                                     "evidenceGrade":  "NO_RUNTIME_EVIDENCE",
+                                                                     "json":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\analytics-runtime-summary.json",
+                                                                     "markdown":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\analytics-runtime-summary.md"
+                                                                 }
+                                                },
+                                      "phase":  "collecting_client_events"
+                                  }
+                  },
+                  {
+                      "id":  "RC-PERF-K6-001",
+                      "priority":  "P1",
+                      "status":  "BLOCKED_BY_TOOLING_OR_RUNTIME",
+                      "ownerSurface":  "performance/backend-cache-edge",
+                      "title":  "Unblock k6 performance smoke evidence",
+                      "whyItMatters":  "Performance evidence is required before paid validation traffic or release readiness can be trusted.",
+                      "action":  "Open performance-qa-summary.json and k6 output, repair k6/Docker/runtime blocker, then rerun the k6 smoke before judging route latency.",
+                      "evidence":  [
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\performance-qa-summary.json",
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\k6-smoke-output.txt",
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\k6-smoke-summary.json"
+                                   ],
+                      "verify":  "powershell -NoProfile -ExecutionPolicy Bypass -File H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\scripts\\Invoke-ConfidelinePerformanceQa.ps1",
+                      "stopCondition":  "Stop before speculative server rewrites without route-level evidence; do not loosen the SLA to make the gate pass.",
+                      "dependsOn":  [
+
+                                    ],
+                      "details":  {
+                                      "slowRoutes":  [
+
+                                                     ]
+                                  }
+                  },
+                  {
+                      "id":  "RC-SEC-HEADERS-001",
+                      "priority":  "P1",
+                      "status":  "SOURCE_READY_LIVE_OPEN",
+                      "ownerSurface":  "security/app-edge",
+                      "title":  "Close live security header and cookie hardening warnings",
+                      "whyItMatters":  "Clickjacking, MIME sniffing, referrer leakage, or transport downgrade controls may be weaker than expected.",
+                      "action":  "Sync the source security hooks and verify whether missing headers must be emitted by Yii2, web server, CDN, or hosting edge. Keep CSP legacy-compatible until browser smoke proves stricter policy is safe.",
+                      "evidence":  [
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\latest-report.json",
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\security-passive-summary.json",
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\zap-baseline-output.txt"
+                                   ],
+                      "verify":  "powershell -NoProfile -ExecutionPolicy Bypass -File H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\scripts\\Invoke-ConfidelineSecurityPassiveQa.ps1",
+                      "stopCondition":  "Stop before strict CSP or frontend vendor upgrades without UI/browser verification.",
+                      "dependsOn":  [
+                                        "RC-DEPLOY-SYNC-001"
+                                    ],
+                      "details":  {
+                                      "sourceGate":  "SOURCE-SEC-001",
+                                      "sourceStatus":  "PASS",
+                                      "zap":  {
+                                                  "name":  "zap-baseline",
+                                                  "exitCode":  2,
+                                                  "status":  "BLOCKED",
+                                                  "reason":  "Docker CLI is installed but the daemon is not ready; cannot run containerized ZAP baseline.",
+                                                  "output":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\zap-baseline-output.txt",
+                                                  "html":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\zap-baseline.html",
+                                                  "json":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\zap-baseline.json"
+                                              }
+                                  }
+                  },
+                  {
+                      "id":  "RC-BRAND-001",
+                      "priority":  "P2",
+                      "status":  "SOURCE_READY_LIVE_OPEN",
+                      "ownerSurface":  "brand/content-config",
+                      "title":  "Remove legacy YouDate branding from live public title/meta",
+                      "whyItMatters":  "Confideline paid acquisition and trust may be diluted by upstream dating-script branding.",
+                      "action":  "Sync Confideline source branding defaults to live or document an intentional exception. Verify title/meta on /en after sync.",
+                      "evidence":  [
+                                       "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\latest-report.json"
+                                   ],
+                      "verify":  "powershell -NoProfile -ExecutionPolicy Bypass -File H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\scripts\\Invoke-ConfidelineQa.ps1",
+                      "stopCondition":  "Stop if legacy branding is intentionally required for a hidden test; record the exception in the project dossier.",
+                      "dependsOn":  [
+                                        "RC-DEPLOY-SYNC-001"
+                                    ],
+                      "details":  {
+                                      "sourceGate":  "SOURCE-BRAND-001",
+                                      "sourceStatus":  "PASS"
+                                  }
+                  }
+              ]
+}

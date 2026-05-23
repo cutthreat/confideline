@@ -1632,3 +1632,40 @@ BA / правило:
 
 - После runtime migration отдельная вкладка теста обязательна: она должна показывать версию PHP как проверенный live-факт, а не как предположение из задачи.
 - Если пользователь говорит "перевели на PHP 8.3", тестировщик обязан сверить live/runtime headers или серверный источник; несовпадение версии является отдельным migration finding.
+
+## 2026-05-23 PHP 8.5 live upgrade QA refresh
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\php83-upgrade-2026-05-21\index.html`
+
+Live scope:
+
+- Проверялся именно `https://confideline.com`, не локальная копия проекта.
+- Локальные файлы использовались только как QA-инструмент, evidence storage и вспомогательный source/lint контекст.
+
+Tester evidence:
+
+- `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\production-readiness.json`
+- `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\latest-report.json`
+- `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\browser-qa-summary.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\php83-upgrade-2026-05-21\raw\live-route-probe-20260523.json`
+
+Результат:
+
+- Fresh production run `confideline-production-qa-20260523-124528`: `FAIL / NO_GO`.
+- Latest QA run `confideline-qa-20260523-124834`: `PASS=38`, `FAIL=2`, `WARN=7`, `BLOCKED=6`.
+- Live headers на `/`, `/en`, `/ru`, `/en/login`, `/en/signup` подтверждают фактический `X-Powered-By: PHP/8.5.0`.
+- Client-side public smoke после восстановления Playwright Chromium: 6/6 PASS.
+- Human-paced customer journey: 2/2 PASS.
+- Admin route из задачи `https://confideline.com/ru/admin` и проверенные `/en/admin...` routes возвращают 404; админская логика остается `BLOCKED`, а не PASS.
+- Axe WCAG: 6/6 public checks FAIL с конкретными selectors: alert close button name, contrast, terms/legal links.
+- Analytics runtime: `NOT_PROVEN`; пойманы только Meta Pixel init/PageView, ожидаемые launch events не пойманы.
+- k6/ZAP остаются blocked из-за Docker daemon/k6/ZAP CLI readiness.
+- Вспомогательный local source syntax probe: 861 PHP-файл, 0 `php -l` failures под локальным PHP 8.1.34; это не считается доказательством live-деплоя.
+
+BA / правило:
+
+- Если пользователь уточняет "тестишь сайт, а не локальную версию", отчет должен явно разделять `live facts`, `local QA contour`, `source/lint context`.
+- Нельзя переносить source-ready/lint PASS в live PASS без браузерного или HTTP-доказательства с production домена.
+- После восстановления локального QA-инструмента нужно перезапустить проверку, иначе старые browser FAIL могут быть ложными дефектами из-за runtime blocker.

@@ -1,26 +1,25 @@
 ﻿# Confideline QA Release Decision
 
-- Generated: 2026-05-21T16:07:16.8047377+03:00
+- Generated: 2026-05-23T12:48:54.1972535+03:00
 - Status: READY
-- Run: `confideline-qa-20260521-160614`
+- Run: `confideline-qa-20260523-124834`
 - Base URL: https://confideline.com
 - Decision: **NO_GO**
 - Confidence: high
 - Recommendation: Do not launch paid validation traffic or claim release readiness. Execute requiredBeforeLaunch actions in priority order, then rerun full QA.
-- Repair cards: 9 total, 3 P0, 5 P1
+- Repair cards: 8 total, 3 P0, 4 P1
 
 ## Rationale
 
-- Latest QA report has 3 FAIL checks.
-- Scenario coverage has 3 FAIL scenarios.
-- There are 7 blocker/high-risk failed or blocked scenarios.
+- Latest QA report has 2 FAIL checks.
+- Scenario coverage has 2 FAIL scenarios.
+- There are 6 blocker/high-risk failed or blocked scenarios.
 
 ## Blocking Scenarios
 
 | ID | Status | Risk | Surface | Blocker |
 |---|---|---|---|---|
 | SC-A11Y-WCAG-001 | FAIL | high | accessibility | A11Y-AXE-001: Axe WCAG smoke failed for public routes. |
-| SC-PUBLIC-HUMAN-JOURNEY-001 | FAIL | high | public-human-customer-journey | BROWSER-HUMAN-001: Human-paced customer journey failed. |
 | SC-RUNTIME-READINESS-001 | FAIL | high | qa-runtime | RUNTIME-READINESS-001: QA runtime readiness has local failures. |
 | SC-ADMIN-AUTH-001 | BLOCKED | blocker | admin-auth-browser-state | BROWSER-ADMIN-001: Authenticated Playwright admin gate is blocked because admin storage state is missing. |
 | SC-ADMIN-ROLE-AWARE-001 | BLOCKED | high | admin-role-aware-browser | ADMIN-ROLE-AWARE-001: Role-aware admin browser gate is blocked by missing per-role storage state. |
@@ -35,7 +34,7 @@
 | FUNNEL-ANALYTICS-001 | analytics | WARN | Funnel analytics is SCHEMA_READY_RUNTIME_OPEN; runtime event firing/order proof is NOT_PROVEN. |
 | ANALYTICS-RUNTIME-001 | analytics | WARN | Analytics runtime capture is NOT_PROVEN; evidence grade is NO_RUNTIME_EVIDENCE. |
 | BROWSER-PUBLIC-001 | browser | PASS | Playwright public desktop/mobile smoke passed. |
-| BROWSER-HUMAN-001 | browser | FAIL | Human-paced customer journey failed. |
+| BROWSER-HUMAN-001 | browser | PASS | Human-paced customer journey passed. |
 | A11Y-AXE-001 | accessibility | FAIL | Axe WCAG smoke failed for public routes. |
 | PERF-K6-001 | performance | BLOCKED | k6 performance smoke is blocked by tooling readiness. |
 | BROWSER-ADMIN-001 | admin | BLOCKED | Authenticated Playwright admin gate is blocked because admin storage state is missing. |

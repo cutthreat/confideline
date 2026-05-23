@@ -3,103 +3,135 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PHP 8.3 Upgrade QA | Confideline</title>
+  <title>PHP 8.5 Live QA | Confideline</title>
   <link rel="stylesheet" href="../../css/task-panel-standard.css">
   <link rel="stylesheet" href="../qa-report.css">
   <style>
-    .php83-board{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
-    .php83-card{background:#fff;border:1px solid #d8e0ec;border-radius:8px;padding:16px}
-    .php83-card h2,.php83-card h3{margin:0 0 10px;color:#15233b}
-    .php83-card p,.php83-card li{color:#40516b;line-height:1.55}
-    .php83-card code,.php83-table code{white-space:normal;word-break:break-word}
-    .php83-table-wrap{overflow:auto;border:1px solid #d8e0ec;border-radius:8px;background:#fff}
-    .php83-table{width:100%;border-collapse:collapse;min-width:980px}
-    .php83-table th,.php83-table td{padding:12px;border-bottom:1px solid #e2ebf5;text-align:left;vertical-align:top}
-    .php83-table th{background:#f8fafc;color:#15233b;font-size:13px}
-    .php83-table td{color:#40516b;font-size:14px}
-    .php83-status{display:inline-flex;align-items:center;border-radius:999px;padding:5px 10px;font-weight:800;font-size:12px}
-    .php83-status--fail{background:#ffe7e7;color:#9b1c1c}
-    .php83-status--warn{background:#fff4d6;color:#7a4d00}
-    .php83-status--pass{background:#e2f7ea;color:#17633a}
-    .php83-status--block{background:#eceff5;color:#334155}
-    .php83-evidence img{width:100%;max-width:720px;border:1px solid #d8e0ec;border-radius:8px;background:#f8fafc}
-    .php83-note{border-left:4px solid #3a80e8;background:#f8fbff;padding:12px 14px;border-radius:8px}
+    .php-board{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
+    .php-card{background:#fff;border:1px solid #d8e0ec;border-radius:8px;padding:16px}
+    .php-card h2,.php-card h3{margin:0 0 10px;color:#15233b}
+    .php-card p,.php-card li{color:#40516b;line-height:1.55}
+    .php-card code,.php-table code{white-space:normal;word-break:break-word}
+    .php-table-wrap{overflow:auto;border:1px solid #d8e0ec;border-radius:8px;background:#fff}
+    .php-table{width:100%;border-collapse:collapse;min-width:980px}
+    .php-table th,.php-table td{padding:12px;border-bottom:1px solid #e2ebf5;text-align:left;vertical-align:top}
+    .php-table th{background:#f8fafc;color:#15233b;font-size:13px}
+    .php-table td{color:#40516b;font-size:14px}
+    .php-status{display:inline-flex;align-items:center;border-radius:999px;padding:5px 10px;font-weight:800;font-size:12px}
+    .php-status--fail{background:#ffe7e7;color:#9b1c1c}
+    .php-status--warn{background:#fff4d6;color:#7a4d00}
+    .php-status--pass{background:#e2f7ea;color:#17633a}
+    .php-status--block{background:#eceff5;color:#334155}
+    .php-note{border-left:4px solid #3a80e8;background:#f8fbff;padding:12px 14px;border-radius:8px;color:#40516b}
+    .php-evidence img{width:100%;max-width:760px;border:1px solid #d8e0ec;border-radius:8px;background:#f8fafc}
   </style>
 </head>
 <body class="cl-task-standard qa-report-page">
   <main class="tp-page">
     <header class="tp-hero qa-hero">
-      <p class="qa-kicker">PHP migration QA · live Confideline · 2026-05-21</p>
-      <h1>Аудит после перевода Confideline на PHP 8.3</h1>
-      <p>Отдельная страница для Игоря и тестировщика: свежий production-прогон, факты по runtime, список исправлений, raw evidence и команды ретеста.</p>
+      <p class="qa-kicker">Live Confideline QA · 2026-05-23 · https://confideline.com</p>
+      <h1>Актуальный аудит после перехода live-сайта на PHP 8.5</h1>
+      <p>Обновление прежнего отчета от 2026-05-21. Проверялся именно live-домен <code>https://confideline.com</code>, не локальная копия проекта. Локальный source использован только как QA-инструмент и вспомогательная синтаксическая проверка.</p>
       <div class="tp-actions" style="margin-top:16px">
         <a class="tp-btn tp-btn--primary" href="#igor">Доска Игоря</a>
+        <a class="tp-btn" href="#live">Live-факты</a>
         <a class="tp-btn" href="#evidence">Evidence</a>
-        <a class="tp-btn" href="../qa-control-center-2026-05-07/">QA Control Center</a>
-        <a class="tp-btn" href="../tasks/">Все задачи</a>
+        <a class="tp-btn" href="../">Все QA-отчеты</a>
       </div>
     </header>
 
     <section class="qa-summary">
       <div class="qa-metric"><span>Вердикт</span><strong>NO_GO</strong></div>
-      <div class="qa-metric"><span>Production run</span><strong>20260521-160149</strong></div>
+      <div class="qa-metric"><span>Production run</span><strong>20260523-124528</strong></div>
       <div class="qa-metric"><span>Latest QA</span><strong>FAIL</strong></div>
       <div class="qa-metric"><span>Live header</span><strong>PHP/8.5.0</strong></div>
     </section>
 
     <section class="qa-section">
-      <div class="php83-board">
-        <article class="php83-card">
+      <div class="php-board">
+        <article class="php-card">
           <h2>Факт</h2>
-          <p>Production QA завершился без таймаута, но итоговый release decision: <strong>NO_GO</strong>. Из 15 critical steps плохие: runtime-readiness, admin-storage-validation, performance, security, analytics-runtime, full-qa, release-decision, artifact-contract.</p>
+          <p>Свежий production QA по live-домену завершился <strong>FAIL / NO_GO</strong>. В последнем отчете: <strong>38 PASS</strong>, <strong>2 FAIL</strong>, <strong>7 WARN</strong>, <strong>6 BLOCKED</strong>.</p>
         </article>
-        <article class="php83-card">
-          <h2>Несовпадение версии</h2>
-          <p>Прямые live HEAD-запросы к <code>/</code>, <code>/en</code>, <code>/ru</code>, <code>/en/signup</code> вернули <code>X-Powered-By: PHP/8.5.0</code>. Если целевой перевод был именно на PHP 8.3, нужно проверить конфигурацию PHP-FPM/hosting pool/CDN origin.</p>
+        <article class="php-card">
+          <h2>Клиентская часть</h2>
+          <p>Публичный browser smoke и human-paced customer journey теперь проходят: главная, login/signup формы и базовые legal/trust маршруты открываются на desktop и mobile.</p>
         </article>
-        <article class="php83-card">
-          <h2>Что прошло</h2>
-          <p>Публичный browser smoke desktop/mobile прошел. Базовые маршруты home/login/signup/recovery/legal отдают 200 в full QA. Node, npm, Playwright и локальные source-level PHP lint checks доступны.</p>
+        <article class="php-card">
+          <h2>Админка</h2>
+          <p>Заданный путь <code>/ru/admin</code> и проверенные admin paths <code>/en/admin</code>, <code>/en/admin/user/index</code>, <code>/en/admin/message/index</code> возвращают <strong>404</strong>. Это главный live-блокер админской проверки.</p>
         </article>
-        <article class="php83-card">
-          <h2>Что блокирует</h2>
-          <p>Admin routes в текущем storage state отдают 404, axe WCAG падает на public routes, human desktop journey превышает latency threshold, Docker daemon не готов для k6/ZAP, analytics runtime не доказан.</p>
+        <article class="php-card">
+          <h2>Синтаксис</h2>
+          <p>Live-синтаксис напрямую не виден без серверных логов. По live HTTP на публичных маршрутах 500 не найден. Дополнительно локальный source-снимок: <code>php -l</code> прошел по 861 PHP-файлу, <strong>0 syntax errors</strong>.</p>
         </article>
       </div>
     </section>
 
-    <section class="qa-section">
-      <h2>Коротко для Игоря</h2>
-      <div class="php83-board">
-        <article class="php83-card">
-          <h3>Факты</h3>
-          <ul>
-            <li>Публичные маршруты <code>/en</code>, <code>/en/login</code>, <code>/en/signup</code>, recovery и legal pages открываются с <code>200</code>.</li>
-            <li>Главная <code>/en</code> все еще имеет title <code>Welcome to YouDate!</code>.</li>
-            <li>На live response headers нет <code>Strict-Transport-Security</code>, <code>X-Frame-Options</code>, <code>X-Content-Type-Options</code>, <code>Referrer-Policy</code>.</li>
-            <li>Локальный source показывает наличие Confideline branding/security/a11y fixes, но live QA их не подтверждает как развернутые.</li>
-          </ul>
-        </article>
-        <article class="php83-card">
-          <h3>Вывод</h3>
-          <p>Это не один баг после PHP-обновления, а набор разных контуров: runtime version mismatch, live routing/admin access, live public UI/accessibility, deploy-sync gap, analytics proof gap и локальные performance/security tooling blockers.</p>
-        </article>
-        <article class="php83-card">
-          <h3>Не делать вслепую</h3>
-          <ul>
-            <li>Не закрывать accessibility/security/brand по source-only proof: live все еще показывает старое поведение.</li>
-            <li>Не ослаблять latency threshold <code>5000 ms</code> ради зеленого теста.</li>
-            <li>Не коммитить storage-state или секреты после admin-login capture.</li>
-            <li>Не считать analytics schema conversion truth без runtime beacons.</li>
-          </ul>
-        </article>
+    <section id="live" class="qa-section">
+      <h2>Live-факты</h2>
+      <div class="php-table-wrap">
+        <table class="php-table">
+          <thead>
+            <tr>
+              <th>Зона</th>
+              <th>Статус</th>
+              <th>Что проверено на live</th>
+              <th>Вывод</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>PHP/runtime</td>
+              <td><span class="php-status php-status--warn">WARN</span></td>
+              <td><code>/</code>, <code>/en</code>, <code>/ru</code>, <code>/en/login</code>, <code>/en/signup</code> отдают <code>X-Powered-By: PHP/8.5.0</code>.</td>
+              <td>Фактическая версия live - PHP 8.5.0. Старое название отчета "PHP 8.3" больше не является точным.</td>
+            </tr>
+            <tr>
+              <td>Публичные маршруты</td>
+              <td><span class="php-status php-status--pass">PASS</span></td>
+              <td><code>/en</code>, <code>/en/login</code>, <code>/en/signup</code>, recovery, terms, privacy, cookie, about.</td>
+              <td>Базовая клиентская навигация и формы доступны, browser smoke 6/6 PASS, human journey 2/2 PASS.</td>
+            </tr>
+            <tr>
+              <td>Админка</td>
+              <td><span class="php-status php-status--fail">FAIL</span></td>
+              <td><code>/ru/admin</code>, <code>/en/admin</code>, <code>/en/admin/user/index</code>, <code>/en/admin/message/index</code>, <code>/en/admin/settings/index</code>, <code>/en/admin/settings/role</code>.</td>
+              <td>Маршруты возвращают 404 даже с сохраненным admin storage-state. Админскую бизнес-логику нельзя считать проверенной до восстановления реального admin route/session.</td>
+            </tr>
+            <tr>
+              <td>Accessibility</td>
+              <td><span class="php-status php-status--fail">FAIL</span></td>
+              <td>Axe smoke на <code>/en</code>, <code>/en/login</code>, <code>/en/signup</code> в desktop/mobile.</td>
+              <td>6/6 checks FAIL: critical <code>button-name</code> на alert close и serious contrast/link issues.</td>
+            </tr>
+            <tr>
+              <td>Analytics runtime</td>
+              <td><span class="php-status php-status--warn">WARN</span></td>
+              <td>Браузерный capture на <code>/en?utm_source=qa-runtime...</code>.</td>
+              <td>Страница загружается, но ожидаемые события <code>ad_click_session_start</code>, <code>lp_view</code>, <code>trust_block_view</code>, <code>starter_price_view</code> не пойманы; есть только Meta Pixel init/PageView.</td>
+            </tr>
+            <tr>
+              <td>Security headers</td>
+              <td><span class="php-status php-status--warn">WARN</span></td>
+              <td>Live headers главной страницы.</td>
+              <td>Нет baseline headers: <code>Strict-Transport-Security</code>, <code>X-Frame-Options</code>, <code>X-Content-Type-Options</code>, <code>Referrer-Policy</code>.</td>
+            </tr>
+            <tr>
+              <td>Performance/security tooling</td>
+              <td><span class="php-status php-status--block">BLOCKED</span></td>
+              <td>k6 и ZAP passive baseline.</td>
+              <td>k6/ZAP CLI не установлены, Docker CLI есть, но daemon не запущен. Это блокер тестового контура, не доказанный дефект сайта.</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </section>
 
     <section id="igor" class="qa-section">
       <h2>Доска Игоря</h2>
-      <div class="php83-table-wrap">
-        <table class="php83-table">
+      <div class="php-table-wrap">
+        <table class="php-table">
           <thead>
             <tr>
               <th>Приоритет</th>
@@ -113,75 +145,51 @@
           <tbody>
             <tr>
               <td>P0</td>
-              <td><span class="php83-status php83-status--fail">FAIL</span></td>
-              <td>PHP/runtime route</td>
-              <td>Live отвечает <code>X-Powered-By: PHP/8.5.0</code>, не PHP 8.3.</td>
-              <td>Проверить реальный PHP handler для домена: hosting PHP selector, PHP-FPM pool, nginx/apache proxy, CDN origin. Зафиксировать, целевая версия 8.3 или 8.5.</td>
-              <td>Повторить HEAD/GET для <code>/</code>, <code>/en</code>, <code>/ru</code>, <code>/en/signup</code>; сверить <code>X-Powered-By</code> и серверный phpinfo/CLI только в безопасном закрытом контуре.</td>
+              <td><span class="php-status php-status--fail">FAIL</span></td>
+              <td>Admin route</td>
+              <td><code>https://confideline.com/ru/admin</code> и проверенные <code>/en/admin...</code> routes возвращают 404. Сохраненный admin storage-state не доказывает доступ к админке.</td>
+              <td>Проверить фактический admin prefix/rewrite после PHP-переезда: Yii2 urlManager, nginx/apache rewrite, document root, hidden admin route, locale prefix. Если route изменился - обновить QA-инвентарь и рабочий URL.</td>
+              <td>Повторить <code>Invoke-Testirovshchik.ps1 -Mode Production -BaseUrl https://confideline.com</code>. Готово, когда <code>BROWSER-ADMIN-001</code> и <code>admin-surface-inspection.json</code> перестают возвращать 404.</td>
             </tr>
             <tr>
               <td>P0</td>
-              <td><span class="php83-status php83-status--fail">FAIL</span></td>
-              <td>Admin access</td>
-              <td><code>/en/admin</code>, <code>/en/admin/user/index</code>, <code>/en/admin/message/index</code>, <code>/en/admin/settings/index</code>, <code>/en/admin/settings/role</code> отдают 404 даже с текущим storage state.</td>
-              <td>Проверить, изменился ли admin prefix/route после обновления PHP или слетела авторизация storage-state. Если admin route действительно скрыт новым путем, обновить тестер и handoff URL; если нет, чинить routing/web server rewrite.</td>
-              <td>После фикса запустить <code>Invoke-ConfidelineBrowserQa.ps1 -SkipInstall</code> и <code>Inspect-ConfidelineAdminSurface.ps1</code>; artifact-contract должен перестать ругаться на missing passing route.</td>
-            </tr>
-            <tr>
-              <td>P0</td>
-              <td><span class="php83-status php83-status--block">BLOCKED</span></td>
-              <td>Admin role coverage</td>
-              <td>Default и super-admin storage files существуют, но moderator storage-state отсутствует; role-aware admin gate заблокирован.</td>
-              <td>Через capture flow сохранить gitignored moderator storage-state. Если login/MFA требуется, выполнить через обычный human login handoff, без передачи паролей в файлы/чат.</td>
-              <td>Ретест: <code>Invoke-ConfidelineBrowserQa.ps1 -SkipInstall</code>. Готово, когда <code>BROWSER-ADMIN-001</code> и <code>ADMIN-ROLE-AWARE-001</code> не BLOCKED.</td>
-            </tr>
-            <tr>
-              <td>P0</td>
-              <td><span class="php83-status php83-status--fail">FAIL</span></td>
+              <td><span class="php-status php-status--fail">FAIL</span></td>
               <td>Accessibility</td>
-              <td>Axe WCAG упал на 6/6 public checks: <code>/en</code>, <code>/en/login</code>, <code>/en/signup</code> desktop/mobile.</td>
-              <td>На <code>/en</code>: добавить accessible name для <code>button[data-dismiss="alert"]</code>, поправить contrast для <code>.container &gt; a</code>, <code>.btn-male</code>, <code>.btn-female</code>. На login/signup: contrast для request/resend/buttons/terms links, различимость links in text block.</td>
-              <td>Запустить browser QA или точечно Playwright accessibility spec; ожидаемый результат: empty axe summary по всем 6 checks.</td>
-            </tr>
-            <tr>
-              <td>P0</td>
-              <td><span class="php83-status php83-status--warn">WARN</span></td>
-              <td>Deploy sync</td>
-              <td>Source-level fixes для accessibility, branding, security headers и analytics bridge найдены, но live QA продолжает видеть старые public findings.</td>
-              <td>Проверить, что именно развернуто на live: deploy bundle, source sync manifest, hosting document root, кеш/CDN. Закрывать live findings только после реального deploy/sync и повторного QA.</td>
-              <td>Ретест: full production QA. Готово, когда <code>DEPLOY-SYNC-001</code> не WARN и live checks подтверждают исправления.</td>
+              <td>Axe падает на всех 6 public checks. На <code>/en</code>: <code>button[data-dismiss="alert"]</code> без accessible name, contrast у <code>.container &gt; a</code>, <code>.btn-male</code>, <code>.btn-female</code>. На login/signup: contrast и link-in-text-block.</td>
+              <td>В live theme/CSS/markup добавить имя кнопке закрытия alert и поправить контраст ссылок/кнопок/terms-блока. Не закрывать по source-only proof, пока live axe не зеленый.</td>
+              <td>Ретест: <code>Invoke-ConfidelineBrowserQa.ps1 -SkipInstall</code>. Ожидание: <code>playwright-accessibility-output.txt</code> без axe violations.</td>
             </tr>
             <tr>
               <td>P1</td>
-              <td><span class="php83-status php83-status--warn">WARN</span></td>
-              <td>Human journey / performance</td>
-              <td>Desktop human-paced journey упал: home <code>domcontentloaded</code> занял 6615 ms при пороге 5000 ms. Mobile в том же сценарии прошел.</td>
-              <td>Проверить server response, first route load, кеширование, тяжелые assets и CDN/origin latency. Не ослаблять порог теста, пока нет route-level evidence.</td>
-              <td>После оптимизации повторить <code>Invoke-ConfidelineBrowserQa.ps1 -SkipInstall</code>; отдельно разблокировать k6, чтобы подтвердить p95 не единичным Playwright замером.</td>
-            </tr>
-            <tr>
-              <td>P1</td>
-              <td><span class="php83-status php83-status--block">BLOCKED</span></td>
-              <td>Performance/Security gates</td>
-              <td>k6 и ZAP baseline не запущены: Docker CLI есть, но daemon недоступен.</td>
-              <td>Поднять Docker Desktop daemon или установить локальные k6/ZAP CLI без контейнерного fallback. Это tooling blocker, не доказанный продуктовый баг.</td>
-              <td>Запустить <code>Invoke-ConfidelinePerformanceQa.ps1</code> и <code>Invoke-ConfidelineSecurityPassiveQa.ps1</code>; статус должен быть PASS/WARN с реальными находками, не BLOCKED.</td>
-            </tr>
-            <tr>
-              <td>P1</td>
-              <td><span class="php83-status php83-status--warn">WARN</span></td>
+              <td><span class="php-status php-status--warn">WARN</span></td>
               <td>Analytics runtime</td>
-              <td>Schema готова, но runtime не доказан: analytics requests = 1, client events = 2, matched expected events = 0, qualified event beacons = 0.</td>
-              <td>Проверить реальное срабатывание launch events в браузере, порядок событий и qualified beacons. Нельзя считать paid validation измеримой только по schema/source proof.</td>
-              <td>Запустить <code>Invoke-ConfidelineAnalyticsRuntimeQa.ps1 -SkipInstall</code>; закрывать только при <code>overall=RUNTIME_PROVEN</code>.</td>
+              <td>На live captured только <code>fbq init</code> и <code>fbq PageView</code>. Ожидаемые launch/conversion events не пойманы, <code>overall=NOT_PROVEN</code>.</td>
+              <td>Проверить подключение runtime analytics bridge на live, порядок событий и реальные beacons. Schema/source готовность не считать conversion truth.</td>
+              <td>Ретест: <code>Invoke-ConfidelineAnalyticsRuntimeQa.ps1 -SkipInstall</code>. Готово только при <code>overall=RUNTIME_PROVEN</code>.</td>
+            </tr>
+            <tr>
+              <td>P1</td>
+              <td><span class="php-status php-status--warn">WARN</span></td>
+              <td>Security headers</td>
+              <td>На live отсутствуют HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy.</td>
+              <td>Определить, где должны выставляться headers: Yii2, web server, hosting edge или Cloudflare. Включить безопасно, без поломки legacy UI.</td>
+              <td>Повторить live HEAD/QA; закрывать только когда headers реально есть в ответах <code>https://confideline.com/en</code>.</td>
+            </tr>
+            <tr>
+              <td>P1</td>
+              <td><span class="php-status php-status--block">BLOCKED</span></td>
+              <td>k6/ZAP</td>
+              <td>Performance/security passive gates не выполнены: Docker daemon недоступен, k6/ZAP CLI отсутствуют.</td>
+              <td>Запустить Docker Desktop daemon или установить локальные k6/ZAP CLI. Это нужно для доказательства нагрузки и passive security, но не является найденным PHP-багом.</td>
+              <td>Ретест: <code>Invoke-ConfidelinePerformanceQa.ps1</code> и <code>Invoke-ConfidelineSecurityPassiveQa.ps1</code>.</td>
             </tr>
             <tr>
               <td>P2</td>
-              <td><span class="php83-status php83-status--warn">WARN</span></td>
-              <td>Brand/security headers</td>
-              <td>Full QA видит legacy YouDate branding в title и неполные baseline security headers.</td>
-              <td>Синхронизировать Confideline branding/security hooks на live или документировать исключение. Проверить, какие headers должны идти из Yii2, веб-сервера или Cloudflare.</td>
-              <td>Повторить full QA; закрывать только когда BRAND-001 и SEC-HEADERS-001 стали PASS или явно приняты как исключение.</td>
+              <td><span class="php-status php-status--warn">WARN</span></td>
+              <td>Brand/title</td>
+              <td>Главная live-страница имеет title <code>Welcome to YouDate!</code>.</td>
+              <td>Синхронизировать Confideline branding на live или зафиксировать сознательное исключение.</td>
+              <td>Ретест: title/meta на <code>https://confideline.com/en</code> больше не содержат legacy YouDate.</td>
             </tr>
           </tbody>
         </table>
@@ -189,147 +197,68 @@
     </section>
 
     <section class="qa-section">
-      <h2>Матрица доказательств</h2>
-      <div class="php83-table-wrap">
-        <table class="php83-table">
-          <thead>
-            <tr>
-              <th>Пункт</th>
-              <th>Evidence</th>
-              <th>Почему это доказательство</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Версия PHP на live</td>
-              <td><code>latest-report.json -> SEC-HEADERS-001.headers.X-Powered-By</code> и direct HEAD probe</td>
-              <td>Это текущий HTTP response с live <code>https://confideline.com/en</code>, а не локальная настройка.</td>
-            </tr>
-            <tr>
-              <td>Admin route 404</td>
-              <td><a href="./raw/admin-surface-inspection.json">admin-surface-inspection.json</a>, <a href="./assets/admin-surface-en-admin.png">admin screenshot</a>, <a href="./raw/playwright-admin-gated-output.txt">admin gated output</a></td>
-              <td>Проверены конкретные URL; получен <code>404 Page not found</code>, admin menu не найден.</td>
-            </tr>
-            <tr>
-              <td>A11Y FAIL</td>
-              <td><a href="./raw/playwright-accessibility-output.txt">playwright-accessibility-output.txt</a></td>
-              <td>Axe вернул конкретные rules и targets: <code>button-name</code>, <code>color-contrast</code>, <code>link-in-text-block</code>.</td>
-            </tr>
-            <tr>
-              <td>Human journey latency</td>
-              <td><a href="./raw/playwright-human-journey-output.txt">playwright-human-journey-output.txt</a></td>
-              <td>Desktop home <code>domcontentloaded</code> измерен как <code>6615 ms</code> при допустимом <code>5000 ms</code>.</td>
-            </tr>
-            <tr>
-              <td>Analytics NOT_PROVEN</td>
-              <td><a href="./raw/analytics-runtime-summary.md">analytics-runtime-summary.md</a></td>
-              <td>Browser route загрузился, но matched expected events = <code>0</code>, qualified event beacons = <code>0</code>.</td>
-            </tr>
-            <tr>
-              <td>Release NO_GO</td>
-              <td><a href="./raw/release-decision.md">release-decision.md</a>, <a href="./raw/production-readiness.md">production-readiness.md</a></td>
-              <td>Решение собрано из latest QA, coverage matrix, repair cards, analytics runtime и blockers, а не из одного красного теста.</td>
-            </tr>
-          </tbody>
-        </table>
+      <h2>PASS для Алексея</h2>
+      <div class="php-board">
+        <article class="php-card">
+          <h3>Публичный клиентский smoke</h3>
+          <p>6/6 browser checks прошли: главная, login и signup доступны на desktop/mobile; поля форм найдены.</p>
+        </article>
+        <article class="php-card">
+          <h3>Human-paced journey</h3>
+          <p>2/2 сценария прошли: пользователь нормальной скоростью открывает landing, legal trust links, login и signup без fast-click поведения.</p>
+        </article>
+        <article class="php-card">
+          <h3>Legal/trust pages</h3>
+          <p>Terms, Privacy, Cookie и About возвращают 200 и содержат ожидаемые trust/legal keywords.</p>
+        </article>
+        <article class="php-card">
+          <h3>Синтаксический smoke</h3>
+          <p>На live public routes не пойманы 500. В локальном source-снимке 861 PHP-файл прошел <code>php -l</code> без syntax errors.</p>
+        </article>
       </div>
     </section>
 
     <section class="qa-section">
-      <h2>Результаты прогона</h2>
-      <div class="php83-board">
-        <article class="php83-card">
-          <h3>Production runner</h3>
-          <ul>
-            <li>Run: <code>confideline-production-qa-20260521-160149</code></li>
-            <li>Duration: <code>337.05s</code></li>
-            <li>Overall: <code>FAIL</code></li>
-            <li>Release decision: <code>NO_GO</code></li>
-          </ul>
-        </article>
-        <article class="php83-card">
-          <h3>Latest QA counts</h3>
-          <ul>
-            <li>PASS: <code>37</code></li>
-            <li>FAIL: <code>3</code></li>
-            <li>WARN: <code>7</code></li>
-            <li>BLOCKED: <code>6</code></li>
-          </ul>
-        </article>
-        <article class="php83-card">
-          <h3>Stop condition</h3>
-          <p>Не запускать paid validation traffic и не заявлять release-ready, пока release decision остается <code>NO_GO</code>, analytics runtime <code>NOT_PROVEN</code>, а admin/performance/security gates не закрыты.</p>
-        </article>
+      <h2>Что не доказано</h2>
+      <div class="php-note">
+        Админская бизнес-логика не проверена end-to-end, потому что live admin route из задачи возвращает 404. Платежи, модерация, роли, админские настройки, сообщения из админки и role-aware проверки остаются <strong>BLOCKED</strong> до подтверждения реального URL/сессии админки. Это не закрывать как PASS.
+      </div>
+    </section>
+
+    <section class="qa-section">
+      <h2>Скриншот admin 404</h2>
+      <div class="php-evidence">
+        <img src="./assets/admin-surface-en-admin.png" alt="Live admin route returns 404">
       </div>
     </section>
 
     <section id="evidence" class="qa-section">
       <h2>Evidence</h2>
-      <div class="php83-board">
-        <article class="php83-card">
-          <h3>Raw reports</h3>
-          <ul>
-            <li><a href="./raw/latest-report.md">latest-report.md</a></li>
-            <li><a href="./raw/release-decision.md">release-decision.md</a></li>
-            <li><a href="./raw/production-readiness.md">production-readiness.md</a></li>
-            <li><a href="./raw/repair-cards.md">repair-cards.md</a></li>
-            <li><a href="./raw/browser-qa-summary.json">browser-qa-summary.json</a></li>
-            <li><a href="./raw/runtime-readiness.json">runtime-readiness.json</a></li>
-            <li><a href="./raw/admin-surface-inspection.json">admin-surface-inspection.json</a></li>
-            <li><a href="./raw/analytics-runtime-summary.md">analytics-runtime-summary.md</a></li>
-          </ul>
-        </article>
-        <article class="php83-card">
-          <h3>Playwright outputs</h3>
-          <ul>
-            <li><a href="./raw/playwright-human-journey-output.txt">human journey output</a></li>
-            <li><a href="./raw/playwright-accessibility-output.txt">accessibility output</a></li>
-            <li><a href="./raw/playwright-admin-gated-output.txt">admin gated output</a></li>
-          </ul>
-        </article>
-        <article class="php83-card php83-evidence">
-          <h3>Admin 404 screenshot</h3>
-          <p class="php83-note">Скрин подтверждает не просто auth gap, а конкретный live ответ <code>404 Page not found</code> на <code>/en/admin</code> в admin-surface inspection.</p>
-          <a href="./assets/admin-surface-en-admin.png"><img src="./assets/admin-surface-en-admin.png" alt="Admin surface 404 evidence"></a>
-        </article>
-      </div>
-    </section>
-
-    <section class="qa-section">
-      <h2>Команды ретеста</h2>
-      <div class="php83-table-wrap">
-        <table class="php83-table">
+      <div class="php-table-wrap">
+        <table class="php-table">
           <thead>
             <tr>
-              <th>Цель</th>
-              <th>Команда</th>
-              <th>Готово когда</th>
+              <th>Файл</th>
+              <th>Что доказывает</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Полный production QA</td>
-              <td><code>powershell -NoProfile -ExecutionPolicy Bypass -File H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\scripts\Invoke-Testirovshchik.ps1 -Mode Production -Json -StepTimeoutSeconds 240</code></td>
-              <td><code>productionReady=true</code>, <code>releaseDecision=GO</code> или принятый WARN-only state.</td>
-            </tr>
-            <tr>
-              <td>Browser/admin/a11y retest</td>
-              <td><code>powershell -NoProfile -ExecutionPolicy Bypass -File H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\scripts\Invoke-ConfidelineBrowserQa.ps1 -SkipInstall</code></td>
-              <td>Public smoke, human journey, accessibility и admin gates не FAIL/BLOCKED.</td>
-            </tr>
-            <tr>
-              <td>Runtime readiness</td>
-              <td><code>powershell -NoProfile -ExecutionPolicy Bypass -File H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\scripts\Test-ConfidelineQaRuntime.ps1</code></td>
-              <td>Нет FAIL; Docker/tooling warnings либо исправлены, либо явно исключены из текущего scope.</td>
-            </tr>
+            <tr><td><a href="./raw/live-route-probe-20260523.json">live-route-probe-20260523.json</a></td><td>Прямые live HEAD probes по public и admin URL, включая <code>PHP/8.5.0</code> и 404 на <code>/ru/admin</code>.</td></tr>
+            <tr><td><a href="./raw/production-readiness.json">production-readiness.json</a></td><td>Итог production run <code>confideline-production-qa-20260523-124528</code>, критические шаги и release decision.</td></tr>
+            <tr><td><a href="./raw/latest-report.json">latest-report.json</a></td><td>Главный QA report по live <code>https://confideline.com</code>: 38 PASS / 2 FAIL / 7 WARN / 6 BLOCKED.</td></tr>
+            <tr><td><a href="./raw/browser-qa-summary.json">browser-qa-summary.json</a></td><td>Public smoke PASS, human journey PASS, accessibility FAIL, admin route BLOCKED/404.</td></tr>
+            <tr><td><a href="./raw/playwright-public-smoke-output.txt">playwright-public-smoke-output.txt</a></td><td>6/6 public browser smoke passed.</td></tr>
+            <tr><td><a href="./raw/playwright-human-journey-output.txt">playwright-human-journey-output.txt</a></td><td>2/2 human-paced customer journey passed.</td></tr>
+            <tr><td><a href="./raw/playwright-accessibility-output.txt">playwright-accessibility-output.txt</a></td><td>Конкретные axe violations и selectors для исправления.</td></tr>
+            <tr><td><a href="./raw/playwright-admin-gated-output.txt">playwright-admin-gated-output.txt</a></td><td>Admin routes возвращают 404 в authenticated browser check.</td></tr>
+            <tr><td><a href="./raw/admin-surface-inspection.json">admin-surface-inspection.json</a></td><td>Admin surface inspection: <code>/en/admin</code>, settings index, settings role = 404.</td></tr>
+            <tr><td><a href="./raw/analytics-runtime-summary.json">analytics-runtime-summary.json</a></td><td>Analytics runtime <code>NOT_PROVEN</code>: ожидаемые события не пойманы.</td></tr>
+            <tr><td><a href="./raw/source-php-lint-local-php81-20260523.json">source-php-lint-local-php81-20260523.json</a></td><td>Вспомогательная локальная проверка source syntax: 861 PHP-файл, 0 failures. Не является доказательством live-деплоя.</td></tr>
+            <tr><td><a href="./raw/repair-cards.json">repair-cards.json</a></td><td>Машинные repair cards для Игоря/оператора.</td></tr>
           </tbody>
         </table>
       </div>
     </section>
-
-    <footer class="tp-footer">
-      <a href="../">Все QA reports</a> · <a href="../tasks/">Задачи</a> · <a href="../qa-control-center-2026-05-07/">QA Control Center</a>
-    </footer>
   </main>
 </body>
 </html>

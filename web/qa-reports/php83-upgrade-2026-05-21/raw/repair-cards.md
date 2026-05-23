@@ -1,9 +1,9 @@
-# Confideline Repair Cards
+﻿# Confideline Repair Cards
 
-- Generated: 2026-05-21T16:06:59.3157293+03:00
+- Generated: 2026-05-23T12:48:50.0849351+03:00
 - Source report: `reports\latest-report.json`
 - Overall: **FAIL**
-- Cards: 9
+- Cards: 8
 
 ## RC-ADMIN-AUTH-STATE-001 - Capture authenticated admin Playwright storage state
 
@@ -16,7 +16,7 @@
 - Stop condition: Stop at login/MFA/account confirmation; never commit storage state or secrets.
 - Evidence:
   - `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\playwright-admin-gated-output.txt`
-  - `[gitignored admin storage-state path]`
+  - `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\secrets\admin-storage-state.json`
 
 ## RC-DEPLOY-SYNC-001 - Sync repaired Yii2 source to live Confideline
 
@@ -30,7 +30,7 @@
 - Evidence:
   - `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\deploy-sync-manifest.md`
   - `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\deploy-bundle-summary.json`
-  - `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\deploy-bundle\confideline-source-sync-20260518-235607.zip`
+  - `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\deploy-bundle\confideline-source-sync-20260523-124312.zip`
 
 ## RC-RUNTIME-READINESS-001 - Repair local QA runtime before trusting browser conclusions
 
@@ -75,21 +75,6 @@
   - `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\analytics-runtime-observations.json`
   - `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\playwright-analytics-runtime-output.txt`
 
-## RC-BROWSER-HUMAN-001 - Repair normal-speed customer journey
-
-- Priority: `P1`
-- Status: `OPEN`
-- Owner surface: `public-human-customer-journey`
-- Depends on: `RC-PERF-K6-001`
-- Why it matters: A normal visitor may experience slow, confusing, or broken frontend interactions.
-- Action: Use human-journey-observations.jsonl and the Playwright output to fix the first slow, confusing, or broken visitor interaction. Preserve normal human pacing; do not optimize by making the tester a fast clicker.
-- Verify: `powershell -NoProfile -ExecutionPolicy Bypass -File H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\scripts\Invoke-ConfidelineBrowserQa.ps1 -SkipInstall`
-- Stop condition: Stop before weakening human latency thresholds or skipping realistic form/modal interactions.
-- Evidence:
-  - `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\human-journey-observations.jsonl`
-  - `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\playwright-human-journey-output.txt`
-  - `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\browser-qa-summary.json`
-
 ## RC-PERF-K6-001 - Unblock k6 performance smoke evidence
 
 - Priority: `P1`
@@ -131,3 +116,4 @@
 - Stop condition: Stop if legacy branding is intentionally required for a hidden test; record the exception in the project dossier.
 - Evidence:
   - `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\latest-report.json`
+

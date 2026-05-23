@@ -1,0 +1,306 @@
+﻿{
+    "status":  "READY",
+    "generated":  "2026-05-23T12:48:54.1972535+03:00",
+    "runId":  "confideline-qa-20260523-124834",
+    "sourceRunId":  "confideline-qa-20260523-124834",
+    "baseUrl":  "https://confideline.com",
+    "sourceOverall":  "FAIL",
+    "decision":  "NO_GO",
+    "confidence":  "high",
+    "recommendation":  "Do not launch paid validation traffic or claim release readiness. Execute requiredBeforeLaunch actions in priority order, then rerun full QA.",
+    "rationale":  [
+                      "Latest QA report has 2 FAIL checks.",
+                      "Scenario coverage has 2 FAIL scenarios.",
+                      "There are 6 blocker/high-risk failed or blocked scenarios."
+                  ],
+    "requiredInputs":  [
+                           "latest-report.json",
+                           "coverage-matrix.json",
+                           "repair-cards.json",
+                           "next-actions.json",
+                           "run-history-summary.json",
+                           "funnel-analytics.json",
+                           "analytics-runtime-summary.json"
+                       ],
+    "latestStatusCounts":  {
+                               "PASS":  38,
+                               "FAIL":  2,
+                               "WARN":  7,
+                               "BLOCKED":  6
+                           },
+    "statusCounts":  {
+                         "PASS":  38,
+                         "FAIL":  2,
+                         "WARN":  7,
+                         "BLOCKED":  6
+                     },
+    "coverageStatusCounts":  {
+                                 "PASS":  8,
+                                 "FAIL":  2,
+                                 "WARN":  3,
+                                 "BLOCKED":  4
+                             },
+    "repairCardCount":  8,
+    "p0CardCount":  3,
+    "p1CardCount":  4,
+    "blockingScenarios":  [
+                              {
+                                  "id":  "SC-A11Y-WCAG-001",
+                                  "title":  "Public pages pass automated WCAG smoke",
+                                  "status":  "FAIL",
+                                  "risk":  "high",
+                                  "surface":  "accessibility",
+                                  "blocker":  "A11Y-AXE-001: Axe WCAG smoke failed for public routes."
+                              },
+                              {
+                                  "id":  "SC-RUNTIME-READINESS-001",
+                                  "title":  "QA runtime separates product defects from local blockers",
+                                  "status":  "FAIL",
+                                  "risk":  "high",
+                                  "surface":  "qa-runtime",
+                                  "blocker":  "RUNTIME-READINESS-001: QA runtime readiness has local failures."
+                              },
+                              {
+                                  "id":  "SC-ADMIN-AUTH-001",
+                                  "title":  "Authenticated admin browser state exists",
+                                  "status":  "BLOCKED",
+                                  "risk":  "blocker",
+                                  "surface":  "admin-auth-browser-state",
+                                  "blocker":  "BROWSER-ADMIN-001: Authenticated Playwright admin gate is blocked because admin storage state is missing."
+                              },
+                              {
+                                  "id":  "SC-ADMIN-ROLE-AWARE-001",
+                                  "title":  "Admin and moderator stay inside role behavior envelope",
+                                  "status":  "BLOCKED",
+                                  "risk":  "high",
+                                  "surface":  "admin-role-aware-browser",
+                                  "blocker":  "ADMIN-ROLE-AWARE-001: Role-aware admin browser gate is blocked by missing per-role storage state."
+                              },
+                              {
+                                  "id":  "SC-PERF-PUBLIC-001",
+                                  "title":  "Public routes meet response-time SLA",
+                                  "status":  "BLOCKED",
+                                  "risk":  "high",
+                                  "surface":  "performance",
+                                  "blocker":  "PERF-K6-001: k6 performance smoke is blocked by tooling readiness."
+                              },
+                              {
+                                  "id":  "SC-SEC-PASSIVE-001",
+                                  "title":  "Passive security baseline is reviewed",
+                                  "status":  "BLOCKED",
+                                  "risk":  "high",
+                                  "surface":  "security",
+                                  "blocker":  "SEC-ZAP-001: OWASP ZAP passive baseline is blocked by tooling readiness."
+                              }
+                          ],
+    "blockers":  [
+                     {
+                         "id":  "SC-A11Y-WCAG-001",
+                         "status":  "FAIL",
+                         "risk":  "high",
+                         "blocker":  "A11Y-AXE-001: Axe WCAG smoke failed for public routes."
+                     },
+                     {
+                         "id":  "SC-RUNTIME-READINESS-001",
+                         "status":  "FAIL",
+                         "risk":  "high",
+                         "blocker":  "RUNTIME-READINESS-001: QA runtime readiness has local failures."
+                     },
+                     {
+                         "id":  "SC-ADMIN-AUTH-001",
+                         "status":  "BLOCKED",
+                         "risk":  "blocker",
+                         "blocker":  "BROWSER-ADMIN-001: Authenticated Playwright admin gate is blocked because admin storage state is missing."
+                     },
+                     {
+                         "id":  "SC-ADMIN-ROLE-AWARE-001",
+                         "status":  "BLOCKED",
+                         "risk":  "high",
+                         "blocker":  "ADMIN-ROLE-AWARE-001: Role-aware admin browser gate is blocked by missing per-role storage state."
+                     },
+                     {
+                         "id":  "SC-PERF-PUBLIC-001",
+                         "status":  "BLOCKED",
+                         "risk":  "high",
+                         "blocker":  "PERF-K6-001: k6 performance smoke is blocked by tooling readiness."
+                     },
+                     {
+                         "id":  "SC-SEC-PASSIVE-001",
+                         "status":  "BLOCKED",
+                         "risk":  "high",
+                         "blocker":  "SEC-ZAP-001: OWASP ZAP passive baseline is blocked by tooling readiness."
+                     }
+                 ],
+    "criticalGates":  [
+                          {
+                              "id":  "RUNTIME-READINESS-001",
+                              "area":  "runtime",
+                              "status":  "FAIL",
+                              "summary":  "QA runtime readiness has local failures."
+                          },
+                          {
+                              "id":  "FUNNEL-ANALYTICS-001",
+                              "area":  "analytics",
+                              "status":  "WARN",
+                              "summary":  "Funnel analytics is SCHEMA_READY_RUNTIME_OPEN; runtime event firing/order proof is NOT_PROVEN."
+                          },
+                          {
+                              "id":  "ANALYTICS-RUNTIME-001",
+                              "area":  "analytics",
+                              "status":  "WARN",
+                              "summary":  "Analytics runtime capture is NOT_PROVEN; evidence grade is NO_RUNTIME_EVIDENCE."
+                          },
+                          {
+                              "id":  "BROWSER-PUBLIC-001",
+                              "area":  "browser",
+                              "status":  "PASS",
+                              "summary":  "Playwright public desktop/mobile smoke passed."
+                          },
+                          {
+                              "id":  "BROWSER-HUMAN-001",
+                              "area":  "browser",
+                              "status":  "PASS",
+                              "summary":  "Human-paced customer journey passed."
+                          },
+                          {
+                              "id":  "A11Y-AXE-001",
+                              "area":  "accessibility",
+                              "status":  "FAIL",
+                              "summary":  "Axe WCAG smoke failed for public routes."
+                          },
+                          {
+                              "id":  "PERF-K6-001",
+                              "area":  "performance",
+                              "status":  "BLOCKED",
+                              "summary":  "k6 performance smoke is blocked by tooling readiness."
+                          },
+                          {
+                              "id":  "BROWSER-ADMIN-001",
+                              "area":  "admin",
+                              "status":  "BLOCKED",
+                              "summary":  "Authenticated Playwright admin gate is blocked because admin storage state is missing."
+                          },
+                          {
+                              "id":  "ADMIN-ROLE-AWARE-001",
+                              "area":  "admin",
+                              "status":  "BLOCKED",
+                              "summary":  "Role-aware admin browser gate is blocked by missing per-role storage state."
+                          },
+                          {
+                              "id":  "DEPLOY-SYNC-001",
+                              "area":  "deployment",
+                              "status":  "WARN",
+                              "summary":  "Deploy/sync manifest is ready, but no proven external deploy contour is configured in this QA package."
+                          }
+                      ],
+    "funnelAnalytics":  {
+                            "overall":  "SCHEMA_READY_RUNTIME_OPEN",
+                            "schemaStatus":  "PASS",
+                            "runtimeStatus":  "NOT_PROVEN",
+                            "evidenceGrade":  "SCHEMA_ONLY",
+                            "recommendation":  "Schema and event-order contract are ready; add runtime browser instrumentation proof before using analytics for conversion decisions."
+                        },
+    "analyticsRuntime":  {
+                             "overall":  "NOT_PROVEN",
+                             "evidenceGrade":  "NO_RUNTIME_EVIDENCE",
+                             "reason":  "Browser loaded the route but did not capture matched expected analytics events and qualified beacons. Phase: collecting_client_events."
+                         },
+    "evidenceLinks":  {
+                          "latestReportJson":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\latest-report.json",
+                          "latestReportMarkdown":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\latest-report.md",
+                          "coverageMatrixJson":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\coverage-matrix.json",
+                          "coverageMatrixMarkdown":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\coverage-matrix.md",
+                          "repairCardsJson":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\repair-cards.json",
+                          "repairCardsMarkdown":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\repair-cards.md",
+                          "nextActionsJson":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\next-actions.json",
+                          "nextActionsMarkdown":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\next-actions.md",
+                          "runHistoryJson":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\run-history-summary.json",
+                          "runHistoryMarkdown":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\run-history-summary.md",
+                          "funnelAnalyticsJson":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\funnel-analytics.json",
+                          "funnelAnalyticsMarkdown":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\funnel-analytics.md",
+                          "analyticsRuntimeJson":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\analytics-runtime-summary.json",
+                          "analyticsRuntimeMarkdown":  "H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\reports\\analytics-runtime-summary.md"
+                      },
+    "requiredBeforeLaunch":  [
+                                 {
+                                     "priority":  "P0",
+                                     "scenarioId":  "SC-ADMIN-AUTH-001",
+                                     "cardId":  "RC-ADMIN-AUTH-STATE-001",
+                                     "ownerSurface":  "admin-auth-browser-state",
+                                     "action":  "Run the storage-state capture script, complete admin login/MFA manually in the headed browser, and save the gitignored storage state. Then rerun browser QA.",
+                                     "verify":  "powershell -NoProfile -ExecutionPolicy Bypass -File H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\scripts\\Invoke-ConfidelineBrowserQa.ps1 -SkipInstall"
+                                 },
+                                 {
+                                     "priority":  "P0",
+                                     "scenarioId":  "SC-ADMIN-ROLE-AWARE-001",
+                                     "cardId":  "RC-ADMIN-AUTH-STATE-001",
+                                     "ownerSurface":  "admin-auth-browser-state",
+                                     "action":  "Run the storage-state capture script, complete admin login/MFA manually in the headed browser, and save the gitignored storage state. Then rerun browser QA.",
+                                     "verify":  "powershell -NoProfile -ExecutionPolicy Bypass -File H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\scripts\\Invoke-ConfidelineBrowserQa.ps1 -SkipInstall"
+                                 },
+                                 {
+                                     "priority":  "P0",
+                                     "scenarioId":  "SC-SEC-PASSIVE-001",
+                                     "cardId":  "RC-DEPLOY-SYNC-001",
+                                     "ownerSurface":  "deployment/live-sync",
+                                     "action":  "Use the generated deploy bundle or deploy-sync manifest with the real hosting contour, then rerun full QA. Do not close live browser/accessibility/security findings from source proof alone.",
+                                     "verify":  "powershell -NoProfile -ExecutionPolicy Bypass -File H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\scripts\\Invoke-ConfidelineQa.ps1"
+                                 },
+                                 {
+                                     "priority":  "P0",
+                                     "scenarioId":  "SC-A11Y-WCAG-001",
+                                     "cardId":  "RC-DEPLOY-SYNC-001",
+                                     "ownerSurface":  "deployment/live-sync",
+                                     "action":  "Use the generated deploy bundle or deploy-sync manifest with the real hosting contour, then rerun full QA. Do not close live browser/accessibility/security findings from source proof alone.",
+                                     "verify":  "powershell -NoProfile -ExecutionPolicy Bypass -File H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\scripts\\Invoke-ConfidelineQa.ps1"
+                                 },
+                                 {
+                                     "priority":  "P0",
+                                     "scenarioId":  "SC-RUNTIME-READINESS-001",
+                                     "cardId":  "RC-ADMIN-AUTH-STATE-001",
+                                     "ownerSurface":  "admin-auth-browser-state",
+                                     "action":  "Run the storage-state capture script, complete admin login/MFA manually in the headed browser, and save the gitignored storage state. Then rerun browser QA.",
+                                     "verify":  "powershell -NoProfile -ExecutionPolicy Bypass -File H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\scripts\\Invoke-ConfidelineBrowserQa.ps1 -SkipInstall"
+                                 },
+                                 {
+                                     "priority":  "P0",
+                                     "scenarioId":  "SC-RUNTIME-READINESS-001",
+                                     "cardId":  "RC-RUNTIME-READINESS-001",
+                                     "ownerSurface":  "qa-runtime",
+                                     "action":  "Open runtime-readiness.md/json, fix local runtime failures, then rerun browser QA. Do not classify browser failures as product defects while runtime readiness is FAIL.",
+                                     "verify":  "powershell -NoProfile -ExecutionPolicy Bypass -File H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\scripts\\Test-ConfidelineQaRuntime.ps1"
+                                 },
+                                 {
+                                     "priority":  "P0",
+                                     "scenarioId":  "SC-DEPLOY-SYNC-001",
+                                     "cardId":  "RC-DEPLOY-SYNC-001",
+                                     "ownerSurface":  "deployment/live-sync",
+                                     "action":  "Use the generated deploy bundle or deploy-sync manifest with the real hosting contour, then rerun full QA. Do not close live browser/accessibility/security findings from source proof alone.",
+                                     "verify":  "powershell -NoProfile -ExecutionPolicy Bypass -File H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\scripts\\Invoke-ConfidelineQa.ps1"
+                                 },
+                                 {
+                                     "priority":  "P1",
+                                     "scenarioId":  "SC-PERF-PUBLIC-001",
+                                     "cardId":  "RC-PERF-K6-001",
+                                     "ownerSurface":  "performance/backend-cache-edge",
+                                     "action":  "Open performance-qa-summary.json and k6 output, repair k6/Docker/runtime blocker, then rerun the k6 smoke before judging route latency.",
+                                     "verify":  "powershell -NoProfile -ExecutionPolicy Bypass -File H:\\GPT-Codex\\Confideline\\qa-ba-autonomous-tester\\scripts\\Invoke-ConfidelinePerformanceQa.ps1"
+                                 }
+                             ],
+    "trend":  {
+                  "comparedToRunId":  "confideline-qa-20260523-124250",
+                  "overallChanged":  false,
+                  "failDelta":  -2,
+                  "blockedDelta":  -1,
+                  "warnDelta":  0,
+                  "coverageFailDelta":  -4,
+                  "repairCardDelta":  -2
+              },
+    "goCriteria":  [
+                       "Latest QA overall must be PASS or an explicitly accepted WARN-only state.",
+                       "Scenario coverage must have zero FAIL and zero blocker/high-risk BLOCKED scenarios.",
+                       "P0 repair cards must be closed or documented as accepted external constraints.",
+                       "Public browser, human journey, accessibility, performance, and admin-auth coverage must be green or intentionally excluded from the launch scope."
+                   ],
+    "stopCondition":  "Do not launch paid validation traffic or claim release readiness while this decision is NO_GO."
+}

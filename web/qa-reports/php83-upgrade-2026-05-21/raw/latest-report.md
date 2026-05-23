@@ -1,16 +1,16 @@
 ﻿# Confideline QA/BA Run Report
 
-- Run: confideline-qa-20260521-160614
+- Run: confideline-qa-20260523-124834
 - Base URL: https://confideline.com
 - Overall: **FAIL**
-- Started: 2026-05-21 16:06:14 +03:00
-- Ended: 2026-05-21 16:06:58 +03:00
+- Started: 2026-05-23 12:48:34 +03:00
+- Ended: 2026-05-23 12:48:49 +03:00
 
 ## Status Counts
 
-- PASS: 37
+- PASS: 38
 - WARN: 7
-- FAIL: 3
+- FAIL: 2
 - BLOCKED: 6
 - SKIP: 0
 
@@ -65,7 +65,7 @@
 | RUNTIME-READINESS-001 | runtime | FAIL | QA runtime readiness has local failures. |
 | ADMIN-ROLE-MAP-001 | admin | PASS | Admin role/function map was refreshed from source. |
 | BROWSER-PUBLIC-001 | browser | PASS | Playwright public desktop/mobile smoke passed. |
-| BROWSER-HUMAN-001 | browser | FAIL | Human-paced customer journey failed. |
+| BROWSER-HUMAN-001 | browser | PASS | Human-paced customer journey passed. |
 | A11Y-AXE-001 | accessibility | FAIL | Axe WCAG smoke failed for public routes. |
 | BROWSER-ADMIN-001 | admin | BLOCKED | Authenticated Playwright admin gate is blocked because admin storage state is missing. |
 | ADMIN-ROLE-AWARE-001 | admin | BLOCKED | Role-aware admin browser gate is blocked by missing per-role storage state. |
@@ -80,14 +80,13 @@
 | SEC-HEADERS-001-F01 | medium | medium | security | Baseline security headers are incomplete. | Add or verify HSTS, X-Frame-Options or CSP frame-ancestors, X-Content-Type-Options and Referrer-Policy at the web server/app edge. |
 | DEPLOY-SYNC-001-F01 | medium | high | deployment | Source repair is ready but live sync is not proven. | Use the deploy-sync manifest with the real hosting/deploy contour, then rerun full QA; do not mark live findings closed from source-only proof. |
 | RUNTIME-READINESS-001-F01 | high | high | runtime | QA runtime is not reliable. | Open runtime-readiness.md/json and fix local runtime blockers before trusting browser conclusions. |
-| BROWSER-HUMAN-001-F01 | high | high | browser | Human-paced customer path failed. | Open human journey observations and Playwright output; repair the first route or interaction that fails under human-paced behavior. |
 | A11Y-AXE-001-F01 | high | high | accessibility | Public pages fail automated WCAG smoke. | Source-level accessibility repair is present; deploy/sync the repaired Yii2 theme to the live target, then rerun Invoke-ConfidelineBrowserQa.ps1. |
 | ADMIN-AUTH-STATE-001-F01 | high | high | admin | Authenticated admin browser state is missing for live admin QA. | Create a Playwright storage-state file at the configured secrets path after manual/admin login, then rerun browser QA; do not store the file in git or reports. |
 
 ## Repair Cards
 
 - Status: READY
-- Cards: 9
+- Cards: 8
 - JSON: reports\repair-cards.json
 - Markdown: reports\repair-cards.md
 
@@ -110,7 +109,7 @@
 ## Known Blockers
 
 - Status: READY
-- Blockers: 14
+- Blockers: 12
 - JSON: reports\known-blockers.json
 - Markdown: reports\known-blockers.md
 
@@ -134,16 +133,16 @@
 ## Manual Next Actions
 
 - Status: READY
-- Items considered: 14
-- Actions shown: 14
+- Items considered: 12
+- Actions shown: 12
 - JSON: reports\next-actions.json
 - Markdown: reports\next-actions.md
 
 ## Run History
 
 - Status: READY
-- Runs tracked: 18
-- Latest run: confideline-qa-20260521-160614
+- Runs tracked: 20
+- Latest run: confideline-qa-20260523-124834
 - JSON: reports\run-history-summary.json
 - Markdown: reports\run-history-summary.md
 
