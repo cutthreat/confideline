@@ -51,7 +51,7 @@
       <div class="php-board">
         <article class="php-card">
           <h2>Факт</h2>
-          <p>Свежий production QA по live-домену завершился <strong>FAIL / NO_GO</strong>. В последнем отчете: <strong>38 PASS</strong>, <strong>2 FAIL</strong>, <strong>7 WARN</strong>, <strong>6 BLOCKED</strong>.</p>
+          <p>Свежий production QA по live-домену завершился <strong>FAIL / NO_GO</strong>. После уточнения входа в админку прежний вывод про <code>/ru/admin = 404</code> переведен в <strong>INVALID/RETEST</strong>: админку нельзя проверять прямым анонимным заходом.</p>
         </article>
         <article class="php-card">
           <h2>Клиентская часть</h2>
@@ -59,7 +59,7 @@
         </article>
         <article class="php-card">
           <h2>Админка</h2>
-          <p>Заданный путь <code>/ru/admin</code> и проверенные admin paths <code>/en/admin</code>, <code>/en/admin/user/index</code>, <code>/en/admin/message/index</code> возвращают <strong>404</strong>. Это главный live-блокер админской проверки.</p>
+          <p>Правильный flow: сначала login как обычный пользователь с ролью супер-админ/админ, затем вход в админ-панель через выпадающее меню <strong>Администрирование</strong> или уже авторизованную вкладку <code>/ru/admin</code>. Manhattan evidence показывает живые страницы <code>/ru/admin/geoname/update</code> и <code>/ru/admin/country/update</code>.</p>
         </article>
         <article class="php-card">
           <h2>Синтаксис</h2>
@@ -95,9 +95,9 @@
             </tr>
             <tr>
               <td>Админка</td>
-              <td><span class="php-status php-status--fail">FAIL</span></td>
-              <td><code>/ru/admin</code>, <code>/en/admin</code>, <code>/en/admin/user/index</code>, <code>/en/admin/message/index</code>, <code>/en/admin/settings/index</code>, <code>/en/admin/settings/role</code>.</td>
-              <td>Маршруты возвращают 404 даже с сохраненным admin storage-state. Админскую бизнес-логику нельзя считать проверенной до восстановления реального admin route/session.</td>
+              <td><span class="php-status php-status--warn">RETEST</span></td>
+              <td>Предыдущий прямой route probe <code>/ru/admin</code>/<code>/en/admin...</code> без доказанного пользовательского login-flow; затем Manhattan status/CDP list с уже авторизованными страницами <code>/ru/admin/geoname/update</code> и <code>/ru/admin/country/update</code>.</td>
+              <td>Старый вывод "админка 404" не является дефектом сайта. Он является дефектом QA-метода. Админская бизнес-логика требует отдельного ретеста через user login + роль супер-админ + меню "Администрирование".</td>
             </tr>
             <tr>
               <td>Accessibility</td>
@@ -145,11 +145,11 @@
           <tbody>
             <tr>
               <td>P0</td>
-              <td><span class="php-status php-status--fail">FAIL</span></td>
-              <td>Admin route</td>
-              <td><code>https://confideline.com/ru/admin</code> и проверенные <code>/en/admin...</code> routes возвращают 404. Сохраненный admin storage-state не доказывает доступ к админке.</td>
-              <td>Проверить фактический admin prefix/rewrite после PHP-переезда: Yii2 urlManager, nginx/apache rewrite, document root, hidden admin route, locale prefix. Если route изменился - обновить QA-инвентарь и рабочий URL.</td>
-              <td>Повторить <code>Invoke-Testirovshchik.ps1 -Mode Production -BaseUrl https://confideline.com</code>. Готово, когда <code>BROWSER-ADMIN-001</code> и <code>admin-surface-inspection.json</code> перестают возвращать 404.</td>
+              <td><span class="php-status php-status--warn">RETEST</span></td>
+              <td>Admin flow / QA contour</td>
+              <td>Прежний P0 "Admin route 404" снят как дефект сайта: проверка была сделана неверным способом. Админка открывается после пользовательской авторизации с ролью супер-админ/админ и перехода через меню "Администрирование"; в Manhattan видны live-вкладки <code>/ru/admin/geoname/update</code> и <code>/ru/admin/country/update</code>.</td>
+              <td>Обновить QA-скрипты: сначала доказывать user-login и наличие admin menu item, затем открывать <code>/ru/admin</code> и проверять разделы. Не использовать прямой anonymous route inventory как основание для дефекта.</td>
+              <td>Ретест готов, когда есть новый raw evidence: login user -> admin menu -> dashboard/разделы -> no 404/no login form, плюс role marker супер-админа.</td>
             </tr>
             <tr>
               <td>P0</td>
@@ -221,14 +221,14 @@
     <section class="qa-section">
       <h2>Что не доказано</h2>
       <div class="php-note">
-        Админская бизнес-логика не проверена end-to-end, потому что live admin route из задачи возвращает 404. Платежи, модерация, роли, админские настройки, сообщения из админки и role-aware проверки остаются <strong>BLOCKED</strong> до подтверждения реального URL/сессии админки. Это не закрывать как PASS.
+        Админская бизнес-логика пока не проверена end-to-end именно правильным сценарием: user login -> роль супер-админ/админ -> выпадающее меню "Администрирование" -> <code>/ru/admin</code> -> конкретные разделы. Прежний прямой 404-probe является <strong>INVALID</strong> для вывода о работоспособности админки. Manhattan evidence доказывает наличие авторизованных live admin tabs, но не заменяет полный функциональный ретест платежей, модерации, ролей, настроек и сообщений.
       </div>
     </section>
 
     <section class="qa-section">
-      <h2>Скриншот admin 404</h2>
-      <div class="php-evidence">
-        <img src="./assets/admin-surface-en-admin.png" alt="Live admin route returns 404">
+      <h2>Поправка по админке</h2>
+      <div class="php-note">
+        Обновлено после уточнения: <code>/ru/admin</code> должен проверяться только в авторизованной пользовательской сессии с ролью супер-админа/админа. В raw evidence добавлен Manhattan status/CDP list, где видны активные админ-вкладки <code>/ru/admin/geoname/update</code> и <code>/ru/admin/country/update</code>. Старый скрин <code>/en/admin = 404</code> оставлен только как evidence ошибочного QA-route, не как дефект сайта.
       </div>
     </section>
 
@@ -244,14 +244,15 @@
           </thead>
           <tbody>
             <tr><td><a href="./raw/live-route-probe-20260523.json">live-route-probe-20260523.json</a></td><td>Прямые live HEAD probes по public и admin URL, включая <code>PHP/8.5.0</code> и 404 на <code>/ru/admin</code>.</td></tr>
+            <tr><td><a href="./raw/admin-authenticated-flow-correction-20260523.json">admin-authenticated-flow-correction-20260523.json</a></td><td>Поправка по админке: предыдущий direct route check признан невалидным; Manhattan показывает авторизованные live admin pages после правильной сессии.</td></tr>
             <tr><td><a href="./raw/production-readiness.json">production-readiness.json</a></td><td>Итог production run <code>confideline-production-qa-20260523-124528</code>, критические шаги и release decision.</td></tr>
             <tr><td><a href="./raw/latest-report.json">latest-report.json</a></td><td>Главный QA report по live <code>https://confideline.com</code>: 38 PASS / 2 FAIL / 7 WARN / 6 BLOCKED.</td></tr>
-            <tr><td><a href="./raw/browser-qa-summary.json">browser-qa-summary.json</a></td><td>Public smoke PASS, human journey PASS, accessibility FAIL, admin route BLOCKED/404.</td></tr>
+            <tr><td><a href="./raw/browser-qa-summary.json">browser-qa-summary.json</a></td><td>Public smoke PASS, human journey PASS, accessibility FAIL; admin route result superseded by corrected authenticated-flow note.</td></tr>
             <tr><td><a href="./raw/playwright-public-smoke-output.txt">playwright-public-smoke-output.txt</a></td><td>6/6 public browser smoke passed.</td></tr>
             <tr><td><a href="./raw/playwright-human-journey-output.txt">playwright-human-journey-output.txt</a></td><td>2/2 human-paced customer journey passed.</td></tr>
             <tr><td><a href="./raw/playwright-accessibility-output.txt">playwright-accessibility-output.txt</a></td><td>Конкретные axe violations и selectors для исправления.</td></tr>
-            <tr><td><a href="./raw/playwright-admin-gated-output.txt">playwright-admin-gated-output.txt</a></td><td>Admin routes возвращают 404 в authenticated browser check.</td></tr>
-            <tr><td><a href="./raw/admin-surface-inspection.json">admin-surface-inspection.json</a></td><td>Admin surface inspection: <code>/en/admin</code>, settings index, settings role = 404.</td></tr>
+            <tr><td><a href="./raw/playwright-admin-gated-output.txt">playwright-admin-gated-output.txt</a></td><td>Архивный результат старого QA-метода; не использовать как дефект сайта без user-login + admin-menu flow.</td></tr>
+            <tr><td><a href="./raw/admin-surface-inspection.json">admin-surface-inspection.json</a></td><td>Архивный direct route inspection по <code>/en/admin</code>; superseded by authenticated-flow correction.</td></tr>
             <tr><td><a href="./raw/analytics-runtime-summary.json">analytics-runtime-summary.json</a></td><td>Analytics runtime <code>NOT_PROVEN</code>: ожидаемые события не пойманы.</td></tr>
             <tr><td><a href="./raw/source-php-lint-local-php81-20260523.json">source-php-lint-local-php81-20260523.json</a></td><td>Вспомогательная локальная проверка source syntax: 861 PHP-файл, 0 failures. Не является доказательством live-деплоя.</td></tr>
             <tr><td><a href="./raw/repair-cards.json">repair-cards.json</a></td><td>Машинные repair cards для Игоря/оператора.</td></tr>
