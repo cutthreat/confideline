@@ -1719,3 +1719,39 @@ BA / правило:
 
 - После PHP migration admin grid надо проверять не только base URL, но и query-state UX: sort, page, filter, direct query, URL-like input, reset.
 - Read-only PASS не доказывает mutating PASS; delete/save/enable/disable/install/update должны идти через QA fixture lane с rollback.
+
+## 2026-05-24 PHP 8.5 client journey update
+
+Public HTML:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\php83-upgrade-2026-05-21\index.html`
+- `https://cutthreat.github.io/confideline/web/qa-reports/php83-upgrade-2026-05-21/`
+
+Live scope:
+
+- Проверялся именно `https://confideline.com`.
+- Клиентский logged-in путь проверялся через admin `Login as user` из карточки пользователя, а не прямым заходом в `/admin/...`.
+- Для cross-user действий проверялись обе стороны: отправитель/автор и получатель/зритель.
+
+Tester evidence:
+
+- `H:\GPT-Codex\Confideline\web\qa-reports\php83-upgrade-2026-05-21\raw\client-full-journey.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\php83-upgrade-2026-05-21\raw\admin-rollback-user.json`
+- `H:\GPT-Codex\Confideline\web\qa-reports\php83-upgrade-2026-05-21\raw\client-impersonation-journey.json`
+
+Результат:
+
+- Signup flow: `/en/signup` принимает заполнение и submit.
+- Новый signup-клиент после logout не может повторно войти без email confirmation: `You need to confirm your email address`.
+- Signup QA user rollback/readback: `NO_USER_FOUND`.
+- Full logged-in client path через U166 `KaelarisDornSchwarz` -> U168 `CaelumRastNielsen`: `PASS_WITH_WARNINGS`.
+- Message delivery доказана: marker `QA_CLIENT_IMPERSONATION_20260524-105254`, `messageId=264`, получатель U168 видит точный marker в `/en/messages/messages?contactId=166`.
+- Visit proof PASS: U168 видит U166 в guests после визита.
+- Like action PASS, но recipient likes-to-you proof WARN: actor не найден в списке, возможно из-за mutual/hidden/control-state неоднозначности.
+- Клиентские разделы `/en/messages`, `/en/connections/encounters`, `/en/settings/profile`, `/en/settings/account`, `/en/groups`, `/en/browse` открываются.
+
+BA / правило:
+
+- Для общения от лица анкет использовать только доказанный регламент: admin user info -> `Login as user` -> frontend action -> proof у второй анкеты.
+- Если тест создаёт нового клиента, заранее нужен mailbox/admin-confirm шаг или QA-fixture без ручной почты; иначе повторный login честно фиксируется как confirmation blocker, а не как полный клиентский PASS.
+- Видимую profile-level кнопку/модалку Message нужно ретестить отдельно: endpoint доставки работает, но UI action должен быть доказан через реальный visible control.
