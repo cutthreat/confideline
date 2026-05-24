@@ -53,6 +53,7 @@
     <div class="card metric"><span>Runtime</span><strong>PHP 8.5.0</strong></div>
     <div class="card metric"><span>Public GET</span><strong>160 PASS / 20 FAIL</strong></div>
     <div class="card metric"><span>Admin GET</span><strong>42 PASS / 9 FAIL</strong></div>
+    <div class="card metric"><span>Client flow</span><strong>PASS + WARN</strong></div>
   </section>
 
   <section class="note danger">
@@ -93,6 +94,13 @@
             <td>Повторены важные URL: Cities base/name/search/sort/page, Countries sort, Messages sort/page, Plugins.</td>
             <td>После нескольких 500 часть поздних URL ушла в <code>RETEST_TOOLING</code>; основной admin audit уже зафиксировал Plugins/Messages failures отдельно.</td>
             <td><a href="./raw/live-admin-targeted-regression.json">targeted JSON</a></td>
+          </tr>
+          <tr>
+            <td>Клиентский путь</td>
+            <td><span class="status warn">PASS_WITH_WARNINGS</span></td>
+            <td>Полный logged-in путь проверен по регламенту через admin <code>Login as user</code>: U166 отправитель -> U168 получатель. Профиль, визит, like action, отправка сообщения, доставка получателю, messages, connections, settings, groups, browse.</td>
+            <td>Новый signup-клиент создан и удален/не найден на readback, но повторный вход заблокирован email-confirmation gate. Профильный visible message modal не доказан: сообщение отправлено через рабочий frontend endpoint <code>/en/messages/create</code>.</td>
+            <td><a href="./raw/client-impersonation-journey.json">client impersonation JSON</a>, <a href="./raw/client-full-journey.json">signup JSON</a>, <a href="./raw/admin-rollback-user.json">rollback JSON</a></td>
           </tr>
           <tr>
             <td>Код и синтаксис</td>
@@ -168,6 +176,45 @@
             <td>Queue monitor controller/view, supervisor XML-RPC access, permissions for supervisor socket/config.</td>
             <td>Страница показывает статус supervisor без traceback/PermissionError.</td>
           </tr>
+          <tr>
+            <td>CF-PHP85-08<br><span class="status warn">PRODUCT/QA BLOCKER</span></td>
+            <td>Новый клиент <code>QAClient20260524103509</code> успешно проходит signup, но после logout не может повторно войти: live показывает <code>You need to confirm your email address</code>. QA-пользователь затем удален или отсутствует на readback: <code>admin-rollback-user.json</code> = <code>NO_USER_FOUND</code>.</td>
+            <td>Если email confirmation обязательна, для QA нужен тестовый mailbox/admin-confirm шаг. Если подтверждение не должно блокировать prelaunch QA, нужна настройка fixture-пользователя без ручной почты.</td>
+            <td>Открыть <code>/en/signup</code>, зарегистрировать нового пользователя, выйти, затем войти тем же email/password.</td>
+            <td>Signup/auth/email confirmation flow: registration form, confirmation token mailer, login guard, admin user confirmation action.</td>
+            <td>Создать нового QA-пользователя, подтвердить email выбранным способом, повторный login должен открыть клиентскую сессию без ошибки confirmation.</td>
+          </tr>
+          <tr>
+            <td>CF-PHP85-09<br><span class="status warn">UI RETEST</span></td>
+            <td>Сообщение U166 -> U168 доставлено и видно получателю, но profile-level visible message modal/button не был доказан. При клике доступного пункта UI открылся <code>/en/messages</code>; отправка выполнена через рабочий frontend endpoint <code>/en/messages/create</code> с <code>contactId=168</code>, marker <code>QA_CLIENT_IMPERSONATION_20260524-105254</code>, <code>messageId=264</code>.</td>
+            <td>На странице профиля другого клиента должна быть понятная видимая кнопка/модалка отправки сообщения либо ожидаемый переход в чат с выбранным получателем.</td>
+            <td>Через admin <code>Login as user</code> войти как U166, открыть <code>/en/profile/CaelumRastNielsen</code>, найти действие Message, отправить уникальный текст, затем войти как U168 и проверить <code>/en/messages/messages?contactId=166</code>.</td>
+            <td>Profile view/action buttons, messages widget, JS обработчик открытия compose/modal, <code>MessagesController::actionCreate</code> или текущий Yii action для <code>/messages/create</code>.</td>
+            <td>Отправка должна проходить через видимый UI; recipient-side exact marker должен появиться в переписке с U166.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Клиентский путь</h2>
+    <div class="note">
+      <p><strong>Регламент:</strong> для общения от лица анкет используется admin-карточка пользователя -> <code>Login as user</code>, затем проверяется frontend identity без admin menu. Для кросс-пользовательского действия требуется proof с обеих сторон: отправитель/автор и получатель/зритель.</p>
+      <p><strong>Доказанный сценарий:</strong> U166 <code>KaelarisDornSchwarz</code> отправил сообщение U168 <code>CaelumRastNielsen</code>. Marker <code>QA_CLIENT_IMPERSONATION_20260524-105254</code>, <code>messageId=264</code>. Получатель увидел точный текст в <code>/en/messages/messages?contactId=166</code>.</p>
+      <p><strong>Ограничения:</strong> like action выполнен, но recipient proof в likes-to-you не подтвердил actor; возможна mutual/hidden/control-state неоднозначность. Новый signup-клиент уперся в email confirmation при повторном login, поэтому полный путь нового пользователя требует тестовой почты или admin-confirm шага.</p>
+    </div>
+    <div class="wide">
+      <table>
+        <thead><tr><th>Проверка</th><th>Статус</th><th>Факт</th><th>Evidence</th></tr></thead>
+        <tbody>
+          <tr><td>Signup</td><td><span class="status pass">PASS</span></td><td><code>/en/signup</code> принял заполнение и submit. После logout повторный login заблокирован email confirmation.</td><td><a href="./raw/client-full-journey.md">client-full-journey.md</a></td></tr>
+          <tr><td>Rollback signup user</td><td><span class="status pass">PASS</span></td><td>Readback по email <code>qa.client.20260524103509@example.com</code> вернул <code>NO_USER_FOUND</code>.</td><td><a href="./raw/admin-rollback-user.json">admin-rollback-user.json</a></td></tr>
+          <tr><td>Admin Login as user</td><td><span class="status pass">PASS</span></td><td>U166 и U168 открыты через admin user info, frontend identity подтвержден, admin UI отсутствует.</td><td><a href="./raw/client-impersonation-journey.md">client-impersonation-journey.md</a></td></tr>
+          <tr><td>Visit proof</td><td><span class="status pass">PASS</span></td><td>После визита U166 получатель U168 видит U166 в guests.</td><td><a href="./raw/recipient-guests-after.png">recipient-guests-after.png</a></td></tr>
+          <tr><td>Like action</td><td><span class="status warn">WARN</span></td><td>Клик like/favorite выполнен, но recipient likes-to-you не доказал actor.</td><td><a href="./raw/actor-after-like.png">actor-after-like.png</a></td></tr>
+          <tr><td>Message delivery</td><td><span class="status pass">PASS</span></td><td><code>/en/messages/create</code> вернул success; U168 видит marker <code>QA_CLIENT_IMPERSONATION_20260524-105254</code>.</td><td><a href="./raw/recipient-message-proof.png">recipient-message-proof.png</a></td></tr>
+          <tr><td>Основные клиентские разделы</td><td><span class="status pass">PASS</span></td><td><code>/en/messages</code>, <code>/en/connections/encounters</code>, <code>/en/settings/profile</code>, <code>/en/settings/account</code>, <code>/en/groups</code>, <code>/en/browse</code> открываются в клиентской сессии.</td><td><a href="./raw/route-client-messages.png">route-client-messages.png</a></td></tr>
         </tbody>
       </table>
     </div>
@@ -207,6 +254,22 @@
         <a href="./raw/admin-fail-page-35.png"><img src="./raw/admin-fail-page-35.png" alt="Queue monitor PermissionError"></a>
         <figcaption>Queue Monitor показывает Supervisor PermissionError внутри UI.</figcaption>
       </figure>
+      <figure>
+        <a href="./raw/actor-identity.png"><img src="./raw/actor-identity.png" alt="U166 frontend identity"></a>
+        <figcaption>Admin <code>Login as user</code>: U166 открыт как обычный клиент, admin menu отсутствует.</figcaption>
+      </figure>
+      <figure>
+        <a href="./raw/actor-target-profile.png"><img src="./raw/actor-target-profile.png" alt="U166 opens U168 profile"></a>
+        <figcaption>U166 открывает профиль U168 <code>/en/profile/CaelumRastNielsen</code>.</figcaption>
+      </figure>
+      <figure>
+        <a href="./raw/recipient-message-proof.png"><img src="./raw/recipient-message-proof.png" alt="Recipient message proof"></a>
+        <figcaption>U168 видит точный marker сообщения от U166: <code>QA_CLIENT_IMPERSONATION_20260524-105254</code>.</figcaption>
+      </figure>
+      <figure>
+        <a href="./raw/08-after-login.png"><img src="./raw/08-after-login.png" alt="Signup login email confirmation"></a>
+        <figcaption>Новый signup-клиент после logout не входит повторно без email confirmation.</figcaption>
+      </figure>
     </div>
   </section>
 
@@ -232,6 +295,9 @@
           <tr><td><a href="./raw/live-admin-targeted-regression.json">live-admin-targeted-regression.json</a></td><td>Targeted regression для Cities/Countries/Messages/Plugins.</td></tr>
           <tr><td><a href="./raw/source-php-lint-focused-20260524.json">source-php-lint-focused-20260524.json</a></td><td>Focused PHP lint: 368 files, 0 parse errors.</td></tr>
           <tr><td><a href="./raw/source-php85-risk-scan-focused-20260524.json">source-php85-risk-scan-focused-20260524.json</a></td><td>Focused static risk scan.</td></tr>
+          <tr><td><a href="./raw/client-full-journey.json">client-full-journey.json</a></td><td>Signup path, profile/settings attempt, logout/login confirmation blocker, discovery/profile smoke.</td></tr>
+          <tr><td><a href="./raw/admin-rollback-user.json">admin-rollback-user.json</a></td><td>Rollback/readback по signup QA user: <code>NO_USER_FOUND</code>.</td></tr>
+          <tr><td><a href="./raw/client-impersonation-journey.json">client-impersonation-journey.json</a></td><td>Logged-in client path через admin <code>Login as user</code>, U166 -> U168, message marker proof.</td></tr>
         </tbody>
       </table>
     </div>
@@ -240,7 +306,7 @@
   <section>
     <h2>Следующий корректный шаг</h2>
     <p>Игорю нужен production stack trace для <code>#8192</code> и <code>#2</code>. Самый быстрый путь: включить/посмотреть Yii error log для конкретных URL из карточек, исправить first exception, затем ретестить raw URL из этого отчета. Для mutating admin controls нужен отдельный fixture-lane: создать QA-сущность, зафиксировать baseline, нажать действие, проверить эффект, выполнить rollback/readback.</p>
-    <p class="small">Отчет не использует выводы старого задания как source-of-truth. Старые raw-файлы оставлены только как дополнительные evidence-артефакты, где они явно связаны с текущим live-проходом.</p>
+    <p class="small">Для клиентского общения использовать доказанный регламент: admin user info -> <code>Login as user</code> -> frontend action -> proof у второй анкеты.</p>
   </section>
 </main>
 </body>
