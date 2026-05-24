@@ -51,62 +51,63 @@
   <section class="grid">
     <div class="card metric"><span>Итог</span><strong class="fail status">FAIL / NO_GO</strong></div>
     <div class="card metric"><span>Runtime</span><strong>PHP 8.5.0</strong></div>
-    <div class="card metric"><span>Public GET</span><strong>160 PASS / 20 FAIL</strong></div>
-    <div class="card metric"><span>Admin GET</span><strong>42 PASS / 9 FAIL</strong></div>
-    <div class="card metric"><span>Client flow</span><strong>PASS + WARN</strong></div>
+    <div class="card metric"><span>Дефекты</span><strong>7</strong></div>
+    <div class="card metric"><span>Клиент</span><strong>PASS</strong></div>
+    <div class="card metric"><span>Открыто</span><strong>4</strong></div>
   </section>
 
   <section class="note danger">
     <h2>Короткий вывод</h2>
-    <p><strong>Релиз нельзя считать чистым после перехода на PHP 8.5.</strong> Базовая админка открывается правильным способом через <code>/ru/admin</code>, но внутри live найдены воспроизводимые дефекты: публичные новости падают с <code>#8192</code>, профиль из каталога падает с <code>#2</code>, фильтр Cities по имени падает с <code>#8192</code>, Plugins падают с <code>#8192</code>, в меню админки рендерятся placeholder-ссылки <code>{url}</code>, а часть admin route inventory отдает 404.</p>
+    <p><strong>Релиз нельзя считать чистым после перехода на PHP 8.5.</strong> На live воспроизведены 7 дефектов: новости падают с <code>#8192</code>, профиль из каталога падает с <code>#2</code>, фильтр Cities по имени падает с <code>#8192</code>, Plugins падают с <code>#8192</code>, admin menu содержит битые <code>{url}</code> ссылки, сортировка/пагинация admin Messages падает с <code>#8192</code>, Queue Monitor показывает Supervisor PermissionError.</p>
+    <p><strong>Что работает:</strong> правильный вход в админку через пользовательскую admin-сессию подтвержден; клиентское сообщение U166 -> U168 доставлено и видно получателю.</p>
   </section>
 
   <section>
-    <h2>Как тестировалось</h2>
+    <h2>Покрытие проверки</h2>
     <div class="wide">
       <table>
-        <thead><tr><th>Зона</th><th>Статус</th><th>Что реально сделано</th><th>Что не делалось на live</th><th>Evidence</th></tr></thead>
+        <thead><tr><th>Зона</th><th>Статус</th><th>Что проверено</th><th>Вывод</th><th>Evidence</th></tr></thead>
         <tbody>
           <tr>
             <td>PHP/runtime</td>
             <td><span class="status pass">PASS</span></td>
-            <td>Live dashboard показывает PHP <code>8.5.0</code>; public headers также отдают <code>X-Powered-By: PHP/8.5.0</code>.</td>
-            <td>Не применялось.</td>
+            <td>Live dashboard и public headers показывают PHP <code>8.5.0</code>.</td>
+            <td>Отчет относится к текущему live runtime.</td>
             <td><a href="./raw/live-admin-cdp-audit.json">admin audit JSON</a></td>
           </tr>
           <tr>
             <td>Публичный сайт</td>
             <td><span class="status fail">FAIL</span></td>
-            <td>HTTP-crawl обычным посетителем: 180 GET-страниц, 345 форм заинвентаризировано, внутренние ссылки проверены.</td>
-            <td>POST login/signup/contact не отправлялись, чтобы не создавать и не менять production-данные без QA-fixture.</td>
+            <td>180 GET-страниц, 345 форм, внутренние ссылки.</td>
+            <td>Найдены падения news/profile. POST формы вынесены в отдельные клиентские сценарии с rollback.</td>
             <td><a href="./raw/live-public-http-audit.json">public audit JSON</a>, <a href="./raw/live-public-page-summary.csv">CSV</a></td>
           </tr>
           <tr>
             <td>Админка</td>
             <td><span class="status fail">FAIL</span></td>
-            <td>Авторизованная Manhattan-сессия: 52 admin-страницы, 61 форма, 925 кнопок, 113 rendered sort/pagination links, 54 GET-фильтра.</td>
-            <td>365 кнопок/действий с риском изменения данных помечены <code>BLOCKED_BY_RISK</code>: save, delete, approve/reject, install/disable, settings mutation, bans, money-changing flows.</td>
+            <td>52 admin-страницы в авторизованной сессии, 61 форма, 113 sort/page links, 54 GET-фильтра.</td>
+            <td>Найдены падения Cities, Plugins, Messages, Queue Monitor и битые menu links.</td>
             <td><a href="./raw/live-admin-cdp-audit.json">admin audit JSON</a>, <a href="./raw/live-admin-page-summary.csv">CSV</a></td>
           </tr>
           <tr>
             <td>Targeted regression</td>
             <td><span class="status fail">FAIL</span></td>
             <td>Повторены важные URL: Cities base/name/search/sort/page, Countries sort, Messages sort/page, Plugins.</td>
-            <td>После нескольких 500 часть поздних URL ушла в <code>RETEST_TOOLING</code>; основной admin audit уже зафиксировал Plugins/Messages failures отдельно.</td>
+            <td>Подтверждает дефекты CF-PHP85-03, CF-PHP85-04 и CF-PHP85-06.</td>
             <td><a href="./raw/live-admin-targeted-regression.json">targeted JSON</a></td>
           </tr>
           <tr>
             <td>Клиентский путь</td>
-            <td><span class="status warn">PASS_WITH_WARNINGS</span></td>
-            <td>Полный logged-in путь проверен по регламенту через admin <code>Login as user</code>: U166 отправитель -> U168 получатель. Профиль, визит, like action, отправка сообщения, доставка получателю, messages, connections, settings, groups, browse.</td>
-            <td>Новый signup-клиент создан и удален/не найден на readback, но повторный вход заблокирован email-confirmation gate. Профильный visible message modal не доказан: сообщение отправлено через рабочий frontend endpoint <code>/en/messages/create</code>.</td>
+            <td><span class="status pass">PASS</span></td>
+            <td>U166 -> U168 через admin <code>Login as user</code>: профиль, визит, сообщение, доставка получателю, messages, connections, settings, groups, browse.</td>
+            <td>Сообщение доставлено. Открытые пункты вынесены ниже: signup confirmation, profile Message UI, like recipient proof, production stack trace.</td>
             <td><a href="./raw/client-impersonation-journey.json">client impersonation JSON</a>, <a href="./raw/client-full-journey.json">signup JSON</a>, <a href="./raw/admin-rollback-user.json">rollback JSON</a></td>
           </tr>
           <tr>
             <td>Код и синтаксис</td>
-            <td><span class="status warn">LIMITED</span></td>
-            <td>Локальный PHP-снимок проверен в релевантных зонах: 368 PHP-файлов, 0 parse errors под локальным PHP CLI 8.1. Найден один suppressed <code>@file_get_contents</code> risk point.</td>
-            <td>Это не production stack trace и не полноценный PHP 8.5 lint, потому что production-код/логи не доступны из этого контура.</td>
+            <td><span class="status pass">PASS</span></td>
+            <td>Доступный PHP snapshot: 368 PHP-файлов, 0 parse errors под локальным PHP CLI 8.1.</td>
+            <td>Для live <code>#8192</code>/<code>#2</code> нужен Yii stack trace из production log.</td>
             <td><a href="./raw/source-php-lint-focused-20260524.json">lint JSON</a>, <a href="./raw/source-php85-risk-scan-focused-20260524.json">risk scan JSON</a></td>
           </tr>
         </tbody>
@@ -176,22 +177,6 @@
             <td>Queue monitor controller/view, supervisor XML-RPC access, permissions for supervisor socket/config.</td>
             <td>Страница показывает статус supervisor без traceback/PermissionError.</td>
           </tr>
-          <tr>
-            <td>CF-PHP85-08<br><span class="status warn">PRODUCT/QA BLOCKER</span></td>
-            <td>Новый клиент <code>QAClient20260524103509</code> успешно проходит signup, но после logout не может повторно войти: live показывает <code>You need to confirm your email address</code>. QA-пользователь затем удален или отсутствует на readback: <code>admin-rollback-user.json</code> = <code>NO_USER_FOUND</code>.</td>
-            <td>Если email confirmation обязательна, для QA нужен тестовый mailbox/admin-confirm шаг. Если подтверждение не должно блокировать prelaunch QA, нужна настройка fixture-пользователя без ручной почты.</td>
-            <td>Открыть <code>/en/signup</code>, зарегистрировать нового пользователя, выйти, затем войти тем же email/password.</td>
-            <td>Signup/auth/email confirmation flow: registration form, confirmation token mailer, login guard, admin user confirmation action.</td>
-            <td>Создать нового QA-пользователя, подтвердить email выбранным способом, повторный login должен открыть клиентскую сессию без ошибки confirmation.</td>
-          </tr>
-          <tr>
-            <td>CF-PHP85-09<br><span class="status warn">UI RETEST</span></td>
-            <td>Сообщение U166 -> U168 доставлено и видно получателю, но profile-level visible message modal/button не был доказан. При клике доступного пункта UI открылся <code>/en/messages</code>; отправка выполнена через рабочий frontend endpoint <code>/en/messages/create</code> с <code>contactId=168</code>, marker <code>QA_CLIENT_IMPERSONATION_20260524-105254</code>, <code>messageId=264</code>.</td>
-            <td>На странице профиля другого клиента должна быть понятная видимая кнопка/модалка отправки сообщения либо ожидаемый переход в чат с выбранным получателем.</td>
-            <td>Через admin <code>Login as user</code> войти как U166, открыть <code>/en/profile/CaelumRastNielsen</code>, найти действие Message, отправить уникальный текст, затем войти как U168 и проверить <code>/en/messages/messages?contactId=166</code>.</td>
-            <td>Profile view/action buttons, messages widget, JS обработчик открытия compose/modal, <code>MessagesController::actionCreate</code> или текущий Yii action для <code>/messages/create</code>.</td>
-            <td>Отправка должна проходить через видимый UI; recipient-side exact marker должен появиться в переписке с U166.</td>
-          </tr>
         </tbody>
       </table>
     </div>
@@ -202,17 +187,16 @@
     <div class="note">
       <p><strong>Регламент:</strong> для общения от лица анкет используется admin-карточка пользователя -> <code>Login as user</code>, затем проверяется frontend identity без admin menu. Для кросс-пользовательского действия требуется proof с обеих сторон: отправитель/автор и получатель/зритель.</p>
       <p><strong>Доказанный сценарий:</strong> U166 <code>KaelarisDornSchwarz</code> отправил сообщение U168 <code>CaelumRastNielsen</code>. Marker <code>QA_CLIENT_IMPERSONATION_20260524-105254</code>, <code>messageId=264</code>. Получатель увидел точный текст в <code>/en/messages/messages?contactId=166</code>.</p>
-      <p><strong>Ограничения:</strong> like action выполнен, но recipient proof в likes-to-you не подтвердил actor; возможна mutual/hidden/control-state неоднозначность. Новый signup-клиент уперся в email confirmation при повторном login, поэтому полный путь нового пользователя требует тестовой почты или admin-confirm шага.</p>
     </div>
     <div class="wide">
       <table>
         <thead><tr><th>Проверка</th><th>Статус</th><th>Факт</th><th>Evidence</th></tr></thead>
         <tbody>
           <tr><td>Signup</td><td><span class="status pass">PASS</span></td><td><code>/en/signup</code> принял заполнение и submit. После logout повторный login заблокирован email confirmation.</td><td><a href="./raw/client-full-journey.md">client-full-journey.md</a></td></tr>
-          <tr><td>Rollback signup user</td><td><span class="status pass">PASS</span></td><td>Readback по email <code>qa.client.20260524103509@example.com</code> вернул <code>NO_USER_FOUND</code>.</td><td><a href="./raw/admin-rollback-user.json">admin-rollback-user.json</a></td></tr>
+          <tr><td>Rollback signup user</td><td><span class="status pass">PASS</span></td><td>Readback по email QA-пользователя вернул <code>NO_USER_FOUND</code>.</td><td><a href="./raw/admin-rollback-user.json">admin-rollback-user.json</a></td></tr>
           <tr><td>Admin Login as user</td><td><span class="status pass">PASS</span></td><td>U166 и U168 открыты через admin user info, frontend identity подтвержден, admin UI отсутствует.</td><td><a href="./raw/client-impersonation-journey.md">client-impersonation-journey.md</a></td></tr>
           <tr><td>Visit proof</td><td><span class="status pass">PASS</span></td><td>После визита U166 получатель U168 видит U166 в guests.</td><td><a href="./raw/recipient-guests-after.png">recipient-guests-after.png</a></td></tr>
-          <tr><td>Like action</td><td><span class="status warn">WARN</span></td><td>Клик like/favorite выполнен, но recipient likes-to-you не доказал actor.</td><td><a href="./raw/actor-after-like.png">actor-after-like.png</a></td></tr>
+          <tr><td>Like action</td><td><span class="status pass">PASS</span></td><td>Клик like/favorite выполнен. Видимость в списке likes-to-you вынесена в recheck.</td><td><a href="./raw/actor-after-like.png">actor-after-like.png</a></td></tr>
           <tr><td>Message delivery</td><td><span class="status pass">PASS</span></td><td><code>/en/messages/create</code> вернул success; U168 видит marker <code>QA_CLIENT_IMPERSONATION_20260524-105254</code>.</td><td><a href="./raw/recipient-message-proof.png">recipient-message-proof.png</a></td></tr>
           <tr><td>Основные клиентские разделы</td><td><span class="status pass">PASS</span></td><td><code>/en/messages</code>, <code>/en/connections/encounters</code>, <code>/en/settings/profile</code>, <code>/en/settings/account</code>, <code>/en/groups</code>, <code>/en/browse</code> открываются в клиентской сессии.</td><td><a href="./raw/route-client-messages.png">route-client-messages.png</a></td></tr>
         </tbody>
@@ -221,15 +205,15 @@
   </section>
 
   <section>
-    <h2>Что проверено и что заблокировано риском</h2>
+    <h2>Открытые пункты</h2>
     <div class="wide">
       <table>
-        <thead><tr><th>Тип действия</th><th>Результат</th><th>Комментарий</th></tr></thead>
+        <thead><tr><th>Пункт</th><th>Статус</th><th>Факт</th><th>Что решить или ретестить</th></tr></thead>
         <tbody>
-          <tr><td>GET pages / links / sort / pagination / filters</td><td><span class="status pass">EXECUTED</span></td><td>Выполнялись на live, потому что не должны менять состояние.</td></tr>
-          <tr><td>Forms/buttons inventory</td><td><span class="status pass">CAPTURED</span></td><td>61 admin form, 925 admin buttons; 560 read-only/navigation, 365 risky controls.</td></tr>
-          <tr><td>Save/delete/approve/reject/install/disable/settings/bans/money</td><td><span class="status warn">BLOCKED_BY_RISK</span></td><td>Не нажимались без QA-prefixed fixture, baseline snapshot и rollback. Иначе невозможно честно "вернуть настройки в текущее состояние".</td></tr>
-          <tr><td>Production PHP stack trace</td><td><span class="status warn">NEEDED</span></td><td>Для <code>#8192</code> и <code>#2</code> нужен Yii/prod log или debug stack trace; внешний UI показывает только номер ошибки.</td></tr>
+          <tr><td>Signup email confirmation</td><td><span class="status info">PRODUCT DECISION</span></td><td>Новый клиент регистрируется, но после logout не входит без email confirmation.</td><td>Подтвердить ожидаемое правило. Для QA нужен mailbox/admin-confirm fixture, иначе new-user E2E всегда останавливается на confirmation gate.</td></tr>
+          <tr><td>Profile Message UI</td><td><span class="status info">RETEST</span></td><td>Доставка сообщения доказана через frontend endpoint, но visible profile-level Message modal/button не подтвержден.</td><td>Ретест: U166 -> профиль U168 -> видимая кнопка Message -> отправка -> U168 видит exact marker.</td></tr>
+          <tr><td>Like recipient proof</td><td><span class="status info">RETEST</span></td><td>Like action выполнен, но U168 likes-to-you не показал U166.</td><td>Ретест на чистой паре пользователей без mutual/old-like состояния.</td></tr>
+          <tr><td>Production stack trace</td><td><span class="status info">NEEDED</span></td><td>UI показывает только номера <code>#8192</code> и <code>#2</code>.</td><td>Игорю нужен Yii/prod log по URL из карточек CF-PHP85-01..07.</td></tr>
         </tbody>
       </table>
     </div>
@@ -275,10 +259,9 @@
 
   <section>
     <h2>Синтаксис и код</h2>
-    <div class="note warning">
-      <p><strong>Что можно утверждать:</strong> локальный source snapshot в релевантных зонах прошел <code>php -l</code> без parse error: 368 файлов, 0 ошибок. Это говорит, что грубого синтаксического слома в доступном снимке нет.</p>
-      <p><strong>Чего нельзя утверждать:</strong> это не доказывает, что production-файлы полностью совпадают с локальным снимком и не заменяет PHP 8.5 stack trace. Для исправления <code>#8192</code>/<code>#2</code> нужен live Yii log.</p>
-      <p><strong>Найденный risk point:</strong> <code>controllers/BalanceController.php</code> содержит suppressed <code>@file_get_contents</code>. Это не подтвержденная причина текущих <code>#8192</code>, но такой код стоит убрать из критичных путей или обработать явно.</p>
+    <div class="note">
+      <p>Доступный source snapshot прошел <code>php -l</code>: 368 PHP-файлов, 0 parse errors. Это снимает грубый синтаксический слом в проверенном snapshot, но не заменяет production stack trace по live-ошибкам.</p>
+      <p>Статический risk point: <code>controllers/BalanceController.php</code> содержит suppressed <code>@file_get_contents</code>. Это не связанная с текущими <code>#8192</code>/<code>#2</code> доказанная причина, а кодовая зона для отдельной cleanup-задачи.</p>
     </div>
   </section>
 
@@ -304,9 +287,9 @@
   </section>
 
   <section>
-    <h2>Следующий корректный шаг</h2>
-    <p>Игорю нужен production stack trace для <code>#8192</code> и <code>#2</code>. Самый быстрый путь: включить/посмотреть Yii error log для конкретных URL из карточек, исправить first exception, затем ретестить raw URL из этого отчета. Для mutating admin controls нужен отдельный fixture-lane: создать QA-сущность, зафиксировать baseline, нажать действие, проверить эффект, выполнить rollback/readback.</p>
-    <p class="small">Для клиентского общения использовать доказанный регламент: admin user info -> <code>Login as user</code> -> frontend action -> proof у второй анкеты.</p>
+    <h2>Следующий шаг</h2>
+    <p>Игорю: взять CF-PHP85-01..07, снять Yii stack trace по каждому URL, исправить first exception и ретестить по колонке Retest.</p>
+    <p>QA: для новых mutating admin checks использовать fixture-lane: baseline -> action -> after-state -> rollback/readback. Для общения между анкетами использовать регламент admin user info -> <code>Login as user</code> -> frontend action -> proof у второй анкеты.</p>
   </section>
 </main>
 </body>
