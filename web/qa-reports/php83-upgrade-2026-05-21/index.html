@@ -100,8 +100,15 @@
             <td>Клиентский путь</td>
             <td><span class="status pass">PASS</span></td>
             <td>U166 -> U168 через admin <code>Login as user</code>: профиль, визит, сообщение, доставка получателю, messages, connections, settings, groups, browse.</td>
-            <td>Сообщение доставлено. Открытые пункты вынесены ниже: signup confirmation, profile Message UI, like recipient proof, production stack trace.</td>
-            <td><a href="./raw/client-impersonation-journey.json">client impersonation JSON</a>, <a href="./raw/client-full-journey.json">signup JSON</a>, <a href="./raw/admin-rollback-user.json">rollback JSON</a></td>
+            <td>Сообщение доставлено. Signup перепроверен с отключенной email verification: повторный login PASS. Открытые пункты вынесены ниже: profile Message UI, like recipient proof, production stack trace.</td>
+            <td><a href="./raw/client-impersonation-journey.json">client impersonation JSON</a>, <a href="./raw/email-verification-signup-off-summary-20260524.json">signup/email setting summary</a>, <a href="./raw/repeat-login-clean-context-after.png">repeat-login screenshot</a></td>
+          </tr>
+          <tr>
+            <td>Premium/free settings</td>
+            <td><span class="status pass">PASS</span></td>
+            <td>Свежий readback <code>/en/admin/settings/premium</code>: 68 settings fields. Ключевые лимиты на месте: <code>messagesInFree*=999</code>, <code>writeWithoutMutualFree*=999</code>, <code>writeWithoutMutualPremium*=99</code>, <code>writeWithoutMutualPeriod=24</code>, <code>seeMessageStatusOn=1</code>, extendedSearch toggles = <code>1</code>.</td>
+            <td>После прерванного premium deep audit выполнен отдельный readback: live-настройки не остались в тестовом состоянии.</td>
+            <td><a href="./raw/current-premium-settings-readback.json">premium settings readback</a></td>
           </tr>
           <tr>
             <td>Код и синтаксис</td>
@@ -192,8 +199,9 @@
       <table>
         <thead><tr><th>Проверка</th><th>Статус</th><th>Факт</th><th>Evidence</th></tr></thead>
         <tbody>
-          <tr><td>Signup</td><td><span class="status pass">PASS</span></td><td><code>/en/signup</code> принял заполнение и submit. После logout повторный login заблокирован email confirmation.</td><td><a href="./raw/client-full-journey.md">client-full-journey.md</a></td></tr>
-          <tr><td>Rollback signup user</td><td><span class="status pass">PASS</span></td><td>Readback по email QA-пользователя вернул <code>NO_USER_FOUND</code>.</td><td><a href="./raw/admin-rollback-user.json">admin-rollback-user.json</a></td></tr>
+          <tr><td>Signup при включенной email verification</td><td><span class="status pass">PASS</span></td><td><code>/en/signup</code> принимает заполнение и submit. Повторный login без подтверждения почты блокируется штатно, когда <code>siteRequireEmailVerification=1</code>.</td><td><a href="./raw/client-full-journey.md">client-full-journey.md</a></td></tr>
+          <tr><td>Signup при выключенной email verification</td><td><span class="status pass">PASS</span></td><td>Через админку временно выставлено <code>siteRequireEmailVerification=0</code>, новый QA-клиент зарегистрирован, профиль открылся без PHP/Yii runtime error, затем чистый контекст успешно вошел этим пользователем после logout без email confirmation. Настройка возвращена в <code>1</code>, QA-пользователь удален.</td><td><a href="./raw/email-verification-signup-off-summary-20260524.json">email-verification summary</a>, <a href="./raw/repeat-login-clean-context-after.png">repeat-login screenshot</a></td></tr>
+          <tr><td>Rollback signup user/settings</td><td><span class="status pass">PASS</span></td><td><code>siteRequireEmailVerification</code> восстановлен в <code>1</code>; QA-пользователь <code>QAClient20260524123151</code> удален, readback <code>No results found</code>.</td><td><a href="./raw/current-premium-settings-readback.json">settings readback</a></td></tr>
           <tr><td>Admin Login as user</td><td><span class="status pass">PASS</span></td><td>U166 и U168 открыты через admin user info, frontend identity подтвержден, admin UI отсутствует.</td><td><a href="./raw/client-impersonation-journey.md">client-impersonation-journey.md</a></td></tr>
           <tr><td>Visit proof</td><td><span class="status pass">PASS</span></td><td>После визита U166 получатель U168 видит U166 в guests.</td><td><a href="./raw/recipient-guests-after.png">recipient-guests-after.png</a></td></tr>
           <tr><td>Like action</td><td><span class="status pass">PASS</span></td><td>Клик like/favorite выполнен. Видимость в списке likes-to-you вынесена в recheck.</td><td><a href="./raw/actor-after-like.png">actor-after-like.png</a></td></tr>
@@ -210,7 +218,6 @@
       <table>
         <thead><tr><th>Пункт</th><th>Статус</th><th>Факт</th><th>Что решить или ретестить</th></tr></thead>
         <tbody>
-          <tr><td>Signup email confirmation</td><td><span class="status info">PRODUCT DECISION</span></td><td>Новый клиент регистрируется, но после logout не входит без email confirmation.</td><td>Подтвердить ожидаемое правило. Для QA нужен mailbox/admin-confirm fixture, иначе new-user E2E всегда останавливается на confirmation gate.</td></tr>
           <tr><td>Profile Message UI</td><td><span class="status info">RETEST</span></td><td>Доставка сообщения доказана через frontend endpoint, но visible profile-level Message modal/button не подтвержден.</td><td>Ретест: U166 -> профиль U168 -> видимая кнопка Message -> отправка -> U168 видит exact marker.</td></tr>
           <tr><td>Like recipient proof</td><td><span class="status info">RETEST</span></td><td>Like action выполнен, но U168 likes-to-you не показал U166.</td><td>Ретест на чистой паре пользователей без mutual/old-like состояния.</td></tr>
           <tr><td>Production stack trace</td><td><span class="status info">NEEDED</span></td><td>UI показывает только номера <code>#8192</code> и <code>#2</code>.</td><td>Игорю нужен Yii/prod log по URL из карточек CF-PHP85-01..07.</td></tr>
@@ -251,8 +258,8 @@
         <figcaption>U168 видит точный marker сообщения от U166: <code>QA_CLIENT_IMPERSONATION_20260524-105254</code>.</figcaption>
       </figure>
       <figure>
-        <a href="./raw/08-after-login.png"><img src="./raw/08-after-login.png" alt="Signup login email confirmation"></a>
-        <figcaption>Новый signup-клиент после logout не входит повторно без email confirmation.</figcaption>
+        <a href="./raw/repeat-login-clean-context-after.png"><img src="./raw/repeat-login-clean-context-after.png" alt="Signup repeat login with email verification off"></a>
+        <figcaption>Новый signup-клиент, созданный при <code>siteRequireEmailVerification=0</code>, повторно входит в чистом контексте без email confirmation.</figcaption>
       </figure>
     </div>
   </section>
@@ -278,7 +285,9 @@
           <tr><td><a href="./raw/live-admin-targeted-regression.json">live-admin-targeted-regression.json</a></td><td>Targeted regression для Cities/Countries/Messages/Plugins.</td></tr>
           <tr><td><a href="./raw/source-php-lint-focused-20260524.json">source-php-lint-focused-20260524.json</a></td><td>Focused PHP lint: 368 files, 0 parse errors.</td></tr>
           <tr><td><a href="./raw/source-php85-risk-scan-focused-20260524.json">source-php85-risk-scan-focused-20260524.json</a></td><td>Focused static risk scan.</td></tr>
-          <tr><td><a href="./raw/client-full-journey.json">client-full-journey.json</a></td><td>Signup path, profile/settings attempt, logout/login confirmation blocker, discovery/profile smoke.</td></tr>
+          <tr><td><a href="./raw/client-full-journey.json">client-full-journey.json</a></td><td>Signup path при включенной email verification: регистрация работает, login gate ожидаемо упирается в confirmation.</td></tr>
+          <tr><td><a href="./raw/email-verification-signup-off-summary-20260524.json">email-verification-signup-off-summary-20260524.json</a></td><td>Admin baseline, temporary <code>siteRequireEmailVerification=0</code>, repeat login PASS, setting/user rollback proof.</td></tr>
+          <tr><td><a href="./raw/current-premium-settings-readback.json">current-premium-settings-readback.json</a></td><td>Свежий readback premium/free settings после остановки зависшего deep audit.</td></tr>
           <tr><td><a href="./raw/admin-rollback-user.json">admin-rollback-user.json</a></td><td>Rollback/readback по signup QA user: <code>NO_USER_FOUND</code>.</td></tr>
           <tr><td><a href="./raw/client-impersonation-journey.json">client-impersonation-journey.json</a></td><td>Logged-in client path через admin <code>Login as user</code>, U166 -> U168, message marker proof.</td></tr>
         </tbody>
