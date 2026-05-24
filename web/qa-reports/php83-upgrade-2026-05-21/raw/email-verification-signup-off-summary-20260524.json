@@ -1,0 +1,47 @@
+{
+  "capturedAt": "2026-05-24T12:39:00Z",
+  "target": "https://confideline.com",
+  "setting": {
+    "key": "siteRequireEmailVerification",
+    "baseline": "1",
+    "testValue": "0",
+    "restoredReadback": "1",
+    "restoreEvidence": "Admin settings checkbox [name=\"Settings[siteRequireEmailVerification]\"][type=\"checkbox\"] checked=true after rollback"
+  },
+  "qaUser": {
+    "username": "QAClient20260524123151",
+    "email": "qa.client.20260524123151@example.com",
+    "createdWithEmailVerificationOff": true,
+    "repeatLoginCleanContext": "PASS",
+    "deleted": true,
+    "deleteReadback": "No results found by UserSearch[username]=QAClient20260524123151"
+  },
+  "checks": [
+    {
+      "id": "EMAIL_VERIFICATION_OFF_SIGNUP",
+      "status": "PASS",
+      "fact": "New user registered and landed on /en/settings/profile without PHP/Yii runtime error while siteRequireEmailVerification=0."
+    },
+    {
+      "id": "REPEAT_LOGIN_CLEAN_CONTEXT",
+      "status": "PASS",
+      "fact": "Clean browser context opened /en/login and logged in as qa.client.20260524123151@example.com; after submit landed on https://confideline.com/ with authenticated user visible."
+    },
+    {
+      "id": "ROLLBACK_SETTING",
+      "status": "PASS",
+      "fact": "siteRequireEmailVerification restored to 1 after the test."
+    },
+    {
+      "id": "ROLLBACK_USER",
+      "status": "PASS",
+      "fact": "Admin POST /en/admin/user/delete?id=191 returned HTTP 200; search by username returned No results found."
+    }
+  ],
+  "screenshots": {
+    "repeatLoginFilled": "repeat-login-clean-context-filled.png",
+    "repeatLoginAfter": "repeat-login-clean-context-after.png",
+    "signupAfterSubmit": "email-off-signup-after-submit.png"
+  },
+  "conclusion": "The previous finding 'new signup client cannot login again without email confirmation' is not a product defect when email verification is enabled. With the admin setting disabled, repeat login passes."
+}
