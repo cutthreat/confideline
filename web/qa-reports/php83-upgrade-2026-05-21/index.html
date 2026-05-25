@@ -40,6 +40,17 @@
     figure img{width:100%;height:auto;border:1px solid #e5eaf2}
     figcaption{margin-top:8px;color:var(--muted);font-size:13px}
     .small{color:var(--muted);font-size:13px}
+    .feedback-panel{display:grid;gap:10px}
+    .feedback-actions{display:grid;grid-template-columns:auto minmax(260px,1fr) auto;gap:10px;align-items:center}
+    .feedback-actions input{width:100%;min-width:0;border:1px solid var(--line);border-radius:6px;padding:9px 10px;color:var(--text);font:13px/1.35 system-ui,-apple-system,"Segoe UI",Arial,sans-serif;text-overflow:ellipsis}
+    .feedback-actions button{border:1px solid #b9c9dd;border-radius:6px;background:#fff;color:#10203d;padding:9px 12px;font-weight:700;cursor:pointer}
+    .feedback-actions button:first-child{background:#185abc;border-color:#185abc;color:#fff}
+    .dev-feedback{min-width:280px;display:grid;gap:7px}
+    .dev-feedback label{display:grid;gap:4px;color:var(--muted);font-size:12px;font-weight:700}
+    .dev-feedback select,.dev-feedback textarea{width:100%;border:1px solid var(--line);border-radius:6px;padding:8px 9px;color:var(--text);font:13px/1.35 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+    .dev-feedback textarea{min-height:78px;resize:vertical}
+    .dev-feedback small{color:var(--muted);font-size:12px}
+    @media (max-width:720px){.feedback-actions{grid-template-columns:1fr}.feedback-actions button{width:100%}}
   </style>
 </head>
 <body>
@@ -124,8 +135,17 @@
 
   <section>
     <h2>Дефекты для программиста</h2>
+    <div class="note feedback-panel">
+      <p><strong>Обратная связь Игоря:</strong> по каждому дефекту можно отметить итог и оставить комментарий: ложная тревога, нужен лог, исправлено, в работе, нужен ретест. Поля сохраняются в браузере сразу после изменения.</p>
+      <div class="feedback-actions">
+        <button type="button" data-action="build-dev-feedback-link">Сформировать ссылку с ответами Игоря</button>
+        <input type="text" data-dev-feedback-url readonly aria-label="Ссылка с ответами Игоря" placeholder="После формирования здесь появится ссылка для Алексея">
+        <button type="button" data-action="copy-dev-feedback-link">Копировать</button>
+      </div>
+      <p class="small" data-dev-feedback-status aria-live="polite">Если Игорь откроет присланную ссылку, заполнит поля и отправит ссылку обратно, ответы отобразятся в этом же отчете.</p>
+    </div>
     <div class="wide">
-      <table>
+      <table data-dev-feedback-table>
         <thead><tr><th>ID</th><th>Факт</th><th>Как должно быть</th><th>Как воспроизвести</th><th>Где смотреть</th><th>Retest</th></tr></thead>
         <tbody>
           <tr>
@@ -301,5 +321,174 @@
     <p>QA: для новых mutating admin checks использовать fixture-lane: baseline -> action -> after-state -> rollback/readback. Для общения между анкетами использовать регламент admin user info -> <code>Login as user</code> -> frontend action -> proof у второй анкеты.</p>
   </section>
 </main>
+<script>
+  (() => {
+    const table = document.querySelector('[data-dev-feedback-table]');
+    if (!table) return;
+
+    const storeKey = 'confideline.php85.igor.feedback.v1';
+    const feedbackUrl = document.querySelector('[data-dev-feedback-url]');
+    const statusLine = document.querySelector('[data-dev-feedback-status]');
+    const options = [
+      ['', 'Не заполнено'],
+      ['false-positive', 'Ложная тревога / не баг'],
+      ['needs-log', 'Нужен production log'],
+      ['needs-qa', 'Нужна допроверка QA'],
+      ['in-progress', 'В работе'],
+      ['fixed', 'Исправлено, нужен ретест'],
+      ['blocked', 'Заблокировано']
+    ];
+    const store = mergeFeedback(readStore(), readFeedbackFromUrl());
+
+    function encodePayload(value) {
+      const json = JSON.stringify(value);
+      return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+    }
+
+    function decodePayload(value) {
+      const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=');
+      return JSON.parse(decodeURIComponent(escape(atob(padded))));
+    }
+
+    function readStore() {
+      try { return JSON.parse(localStorage.getItem(storeKey) || '{}'); } catch { return {}; }
+    }
+
+    function saveStore() {
+      localStorage.setItem(storeKey, JSON.stringify(store));
+    }
+
+    function readFeedbackFromUrl() {
+      const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
+      const encoded = hash.get('igorfb');
+      if (!encoded) return {};
+      try {
+        const parsed = decodePayload(encoded);
+        return parsed && typeof parsed === 'object' ? parsed : {};
+      } catch {
+        return {};
+      }
+    }
+
+    function mergeFeedback(saved, fromUrl) {
+      let changed = false;
+      Object.entries(fromUrl).forEach(([id, value]) => {
+        if (!/^CF-PHP85-\d+$/.test(id) || !value || typeof value !== 'object') return;
+        saved[id] = {
+          state: String(value.state || ''),
+          note: String(value.note || ''),
+          updatedAt: value.updatedAt || new Date().toISOString()
+        };
+        changed = true;
+      });
+      if (changed) localStorage.setItem(storeKey, JSON.stringify(saved));
+      return saved;
+    }
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[char]));
+    }
+
+    function formatSavedAt(value) {
+      if (!value) return 'Сохраняется автоматически';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return 'Сохранено';
+      return `Сохранено: ${date.toLocaleString('ru-RU', { dateStyle: 'short', timeStyle: 'short' })}`;
+    }
+
+    function buildFeedbackUrl() {
+      const payload = {};
+      Object.entries(store).forEach(([id, value]) => {
+        if (!value?.state && !value?.note) return;
+        payload[id] = {
+          state: value.state || '',
+          note: value.note || '',
+          updatedAt: value.updatedAt || new Date().toISOString()
+        };
+      });
+      const url = new URL(location.href);
+      url.search = '';
+      url.hash = `igorfb=${encodePayload(payload)}`;
+      return url.href;
+    }
+
+    function setStatus(id, text) {
+      const status = [...document.querySelectorAll('[data-feedback-saved]')].find((node) => node.dataset.feedbackSaved === id);
+      if (status) status.textContent = text;
+    }
+
+    function renderFeedbackColumn() {
+      const header = table.querySelector('thead tr');
+      if (header && !header.querySelector('[data-feedback-heading]')) {
+        header.insertAdjacentHTML('beforeend', '<th data-feedback-heading>Ответ Игоря</th>');
+      }
+
+      table.querySelectorAll('tbody tr').forEach((row) => {
+        const id = row.cells[0]?.textContent.match(/CF-PHP85-\d+/)?.[0];
+        if (!id || row.querySelector('[data-feedback-cell]')) return;
+        const value = store[id] || {};
+        const optionHtml = options.map(([optionValue, label]) => `<option value="${optionValue}"${value.state === optionValue ? ' selected' : ''}>${label}</option>`).join('');
+        row.insertAdjacentHTML('beforeend', `
+          <td data-feedback-cell>
+            <div class="dev-feedback">
+              <label>
+                <span>Статус Игоря</span>
+                <select data-feedback-state="${id}">${optionHtml}</select>
+              </label>
+              <label>
+                <span>Комментарий Игоря</span>
+                <textarea data-feedback-note="${id}" placeholder="Например: это не баг, нужен stack trace, исправлено в файле..., нужен ретест">${escapeHtml(value.note)}</textarea>
+              </label>
+              <small data-feedback-saved="${id}">${escapeHtml(formatSavedAt(value.updatedAt))}</small>
+            </div>
+          </td>
+        `);
+      });
+    }
+
+    document.addEventListener('change', (event) => {
+      if (!event.target.matches('[data-feedback-state]')) return;
+      const id = event.target.dataset.feedbackState;
+      store[id] = store[id] || {};
+      store[id].state = event.target.value;
+      store[id].updatedAt = new Date().toISOString();
+      saveStore();
+      feedbackUrl.value = buildFeedbackUrl();
+      setStatus(id, formatSavedAt(store[id].updatedAt));
+    });
+
+    document.addEventListener('input', (event) => {
+      if (!event.target.matches('[data-feedback-note]')) return;
+      const id = event.target.dataset.feedbackNote;
+      store[id] = store[id] || {};
+      store[id].note = event.target.value;
+      store[id].updatedAt = new Date().toISOString();
+      saveStore();
+      feedbackUrl.value = buildFeedbackUrl();
+      setStatus(id, formatSavedAt(store[id].updatedAt));
+    });
+
+    document.addEventListener('click', async (event) => {
+      const action = event.target.dataset.action;
+      if (action === 'build-dev-feedback-link') {
+        feedbackUrl.value = buildFeedbackUrl();
+        feedbackUrl.focus();
+        feedbackUrl.select();
+        statusLine.textContent = 'Ссылка с ответами Игоря сформирована.';
+      }
+      if (action === 'copy-dev-feedback-link') {
+        if (!feedbackUrl.value) feedbackUrl.value = buildFeedbackUrl();
+        feedbackUrl.focus();
+        feedbackUrl.select();
+        try { await navigator.clipboard.writeText(feedbackUrl.value); } catch { document.execCommand('copy'); }
+        statusLine.textContent = 'Ссылка скопирована.';
+      }
+    });
+
+    renderFeedbackColumn();
+    feedbackUrl.value = buildFeedbackUrl();
+  })();
+</script>
 </body>
 </html>
