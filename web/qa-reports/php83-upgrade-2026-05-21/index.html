@@ -93,14 +93,14 @@
   <section class="grid">
     <div class="card metric"><span>Итог</span><strong class="fail status">FAIL / NO_GO</strong></div>
     <div class="card metric"><span>Runtime</span><strong>PHP 8.5.0</strong></div>
-    <div class="card metric"><span>Дефекты</span><strong>7</strong></div>
+    <div class="card metric"><span>Дефекты</span><strong>6 + 1 RETEST</strong></div>
     <div class="card metric"><span>Клиент</span><strong>PASS</strong></div>
     <div class="card metric"><span>Открыто</span><strong>4</strong></div>
   </section>
 
   <section class="note danger">
     <h2>Короткий вывод</h2>
-    <p><strong>Релиз нельзя считать чистым после перехода на PHP 8.5.</strong> На live воспроизведены 7 дефектов: новости падают с <code>#8192</code>, профиль из каталога падает с <code>#2</code>, фильтр Cities по имени падает с <code>#8192</code>, Plugins падают с <code>#8192</code>, admin menu содержит битые <code>{url}</code> ссылки, сортировка/пагинация admin Messages падает с <code>#8192</code>, Queue Monitor показывает Supervisor PermissionError.</p>
+    <p><strong>Релиз нельзя считать чистым после перехода на PHP 8.5.</strong> На live воспроизведены 6 подтвержденных дефектов: новости падают с <code>#8192</code>, фильтр Cities по имени падает с <code>#8192</code>, Plugins падают с <code>#8192</code>, admin menu содержит битые <code>{url}</code> ссылки, сортировка/пагинация admin Messages падает с <code>#8192</code>, Queue Monitor показывает Supervisor PermissionError. Пункт <code>CF-PHP85-02</code> переведен в <code>RETEST_AUTH_REQUIRED</code>: для профиля из каталога нужна свежая проверка guest-vs-auth, потому что видимость анкет может быть продуктовой настройкой.</p>
     <p><strong>Что работает:</strong> правильный вход в админку через пользовательскую admin-сессию подтвержден; клиентское сообщение U166 -> U168 доставлено и видно получателю.</p>
   </section>
 
@@ -121,7 +121,7 @@
             <td>Публичный сайт</td>
             <td><span class="status fail">FAIL</span></td>
             <td>180 GET-страниц, 345 форм, внутренние ссылки.</td>
-            <td>Найдены падения news/profile. POST формы вынесены в отдельные клиентские сценарии с rollback.</td>
+            <td>Подтверждено падение news. Profile из каталога вынесен в <code>RETEST_AUTH_REQUIRED</code>, потому что нужен guest-vs-auth proof и проверка настройки видимости анкет.</td>
             <td><a href="./raw/live-public-http-audit.json">public audit JSON</a>, <a href="./raw/live-public-page-summary.csv">CSV</a></td>
           </tr>
           <tr>
@@ -188,12 +188,12 @@
             <td>После фикса открыть news index/article для ru/en/pt/de/es/it; все должны вернуть 200 без <code>#8192</code>.</td>
           </tr>
           <tr>
-            <td>CF-PHP85-02<br><span class="status fail">FAIL</span></td>
-            <td>Публичный профиль <code>/ru/profile/OmkarTiwari</code> и <code>/en/profile/OmkarTiwari</code>, найденный из directory, возвращает HTTP 500 / <code>Ошибка (#2)</code>.</td>
-            <td>Профиль из каталога должен открываться. Если пользователь недоступен, нужен контролируемый 404/empty state, не 500.</td>
-            <td>Открыть <code>/ru/directory</code>, перейти на профиль OmkarTiwari.</td>
-            <td>Profile controller/view, user/profile relation, media/avatar/widgets, access/visibility checks. Нужен live stack trace по <code>#2</code>.</td>
-            <td>Directory -> profile в ru/en без 500.</td>
+            <td>CF-PHP85-02<br><span class="status info">RETEST</span></td>
+            <td>Гостевой профиль <code>/ru/profile/OmkarTiwari</code> и <code>/en/profile/OmkarTiwari</code>, найденный из directory, возвращает HTTP 500 / <code>Ошибка (#2)</code>. Предыдущий вывод был слишком сильным: перед финальным FAIL нужно проверить тот же URL в свежей авторизованной сессии.</td>
+            <td>Если анкеты закрыты для гостей, guest-flow должен давать контролируемый login/403/empty state, а авторизованный пользователь должен видеть профиль. Если авторизованный пользователь тоже получает 500, это runtime defect.</td>
+            <td>Быстрый recheck: guest URL -> auth-check <code>/en/dashboard</code> без redirect на login -> тот же profile URL в auth context -> readback настройки <code>siteHideUsersFromGuests</code>.</td>
+            <td>Кодовая гипотеза подтверждена: <code>frontend.siteHideUsersFromGuests</code> / "Hide user profiles from guests" в <code>application/config/settings.php</code>, gate в <code>ProfileController::behaviors()</code>. Текущий сохраненный auth state протух: <code>/en/dashboard</code> уводит на <code>/en/login</code>, поэтому auth-vs-guest proof надо переснять.</td>
+            <td><a href="./raw/profile-visibility-gating-recheck-20260525.json">profile visibility gating recheck</a>. Финальная классификация: auth=200 -> product gating/guest handling; auth=500 -> confirmed runtime defect.</td>
           </tr>
           <tr>
             <td>CF-PHP85-03<br><span class="status fail">FAIL</span></td>
@@ -271,7 +271,8 @@
         <tbody>
           <tr><td>Profile Message UI</td><td><span class="status info">RETEST</span></td><td>Доставка сообщения доказана через frontend endpoint, но visible profile-level Message modal/button не подтвержден.</td><td>Ретест: U166 -> профиль U168 -> видимая кнопка Message -> отправка -> U168 видит exact marker.</td></tr>
           <tr><td>Like recipient proof</td><td><span class="status info">RETEST</span></td><td>Like action выполнен, но U168 likes-to-you не показал U166.</td><td>Ретест на чистой паре пользователей без mutual/old-like состояния.</td></tr>
-          <tr><td>Production stack trace</td><td><span class="status info">NEEDED</span></td><td>UI показывает только номера <code>#8192</code> и <code>#2</code>.</td><td>Игорю нужен Yii/prod log по URL из карточек CF-PHP85-01..07.</td></tr>
+          <tr><td>Profile visibility auth proof</td><td><span class="status info">RETEST</span></td><td><code>CF-PHP85-02</code> не закрыт как финальный FAIL: нужно доказать поведение того же профиля авторизованным пользователем.</td><td>Переснять свежий auth storage/login-as-user, открыть <code>/ru/profile/OmkarTiwari</code> и <code>/en/profile/OmkarTiwari</code>; затем readback <code>siteHideUsersFromGuests</code>.</td></tr>
+          <tr><td>Production stack trace</td><td><span class="status info">NEEDED</span></td><td>UI показывает только номера <code>#8192</code> и <code>#2</code>.</td><td>Игорю нужен Yii/prod log по URL из карточек CF-PHP85-01, CF-PHP85-03..07; для CF-PHP85-02 сначала нужен auth-vs-guest recheck.</td></tr>
         </tbody>
       </table>
     </div>
@@ -341,6 +342,7 @@
           <tr><td><a href="./raw/current-premium-settings-readback.json">current-premium-settings-readback.json</a></td><td>Свежий readback premium/free settings после остановки зависшего deep audit.</td></tr>
           <tr><td><a href="./raw/admin-rollback-user.json">admin-rollback-user.json</a></td><td>Rollback/readback по signup QA user: <code>NO_USER_FOUND</code>.</td></tr>
           <tr><td><a href="./raw/client-impersonation-journey.json">client-impersonation-journey.json</a></td><td>Logged-in client path через admin <code>Login as user</code>, U166 -> U168, message marker proof.</td></tr>
+          <tr><td><a href="./raw/profile-visibility-gating-recheck-20260525.json">profile-visibility-gating-recheck-20260525.json</a></td><td>Новая проверка гипотезы видимости профиля: guest=500, сохраненная auth-сессия протухла, поэтому <code>CF-PHP85-02</code> переведен в <code>RETEST_AUTH_REQUIRED</code>.</td></tr>
         </tbody>
       </table>
     </div>
@@ -348,7 +350,7 @@
 
   <section>
     <h2>Следующий шаг</h2>
-    <p>Игорю: взять CF-PHP85-01..07, снять Yii stack trace по каждому URL, исправить first exception и ретестить по колонке Retest.</p>
+    <p>Игорю: взять подтвержденные <code>CF-PHP85-01</code>, <code>CF-PHP85-03..07</code>, снять Yii stack trace по каждому URL, исправить first exception и ретестить по колонке Retest. <code>CF-PHP85-02</code> сначала требует auth-vs-guest recheck, потому что возможна продуктовая настройка видимости анкет.</p>
     <p>QA: для новых mutating admin checks использовать fixture-lane: baseline -> action -> after-state -> rollback/readback. Для общения между анкетами использовать регламент admin user info -> <code>Login as user</code> -> frontend action -> proof у второй анкеты.</p>
   </section>
 </main>

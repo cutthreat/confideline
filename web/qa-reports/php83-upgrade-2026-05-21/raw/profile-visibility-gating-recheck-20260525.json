@@ -1,0 +1,31 @@
+{
+  "generatedAt": "2026-05-25T11:54:31Z",
+  "target": "https://confideline.com/ru/profile/OmkarTiwari",
+  "rule": "Before final FAIL for a public profile/directory route, compare guest vs authenticated access and inspect product visibility settings when auth works.",
+  "knownProductGate": {
+    "category": "frontend",
+    "alias": "siteHideUsersFromGuests",
+    "label": "Hide user profiles from guests",
+    "codeEvidence": [
+      "application/config/settings.php",
+      "application/controllers/ProfileController.php"
+    ]
+  },
+  "guestCheck": {
+    "url": "https://confideline.com/ru/profile/OmkarTiwari",
+    "status": 500,
+    "title": "Ошибка (#2)"
+  },
+  "authCheck": {
+    "storageStatePath": "qa-ba-autonomous-tester/secrets/admin-storage-state.json",
+    "valid": false,
+    "evidence": {
+      "url": "https://confideline.com/en/dashboard",
+      "status": 200,
+      "finalUrl": "https://confideline.com/en/login",
+      "title": "Sign in"
+    }
+  },
+  "classification": "RETEST_AUTH_REQUIRED",
+  "conclusion": "The previous unconditional CF-PHP85-02 FAIL was overconfident. Guest still returns 500, but the correct next proof is a fresh authenticated profile check. If auth profile returns 200, classify this as product visibility gating or guest error handling; if auth profile also returns 500, classify as confirmed runtime defect."
+}

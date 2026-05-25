@@ -17,6 +17,7 @@
 9. Публичный каталог должен показывать только актуальные источники правды в основном списке. Старые отчеты остаются доступны, но только как `АРХИВ` с указанием, каким новым отчетом они заменены.
 10. Для финальных `FAIL/WARN` evidence screenshots должны иметь аннотацию: цветной статус, стрелка/рамка на проблемной области и короткая подпись, почему скрин является доказательством.
 11. Для полезных независимых QA-карт можно подключать до `10` субагентов за один проход и расходовать доступную квоту `gpt-5.3-codex-spark` на `xhigh` reasoning. Каждый субагент получает один bounded сценарий и возвращает verdict, evidence, findings, residual risks и next action. Нельзя тратить субагентов на общий mutable browser state, login/MFA/payment/credentials, destructive external actions или дублирование одного и того же теста.
+12. Для public/profile/directory/access FAIL сначала выполнять быстрый gating-diff: тот же URL гостем и авторизованным пользователем. Если auth=200, сначала искать продуктовую настройку доступа/видимости и классифицировать как `EXPECTED_BY_PRODUCT`/guest handling, а не как runtime defect. Если auth тоже 500, это подтверждает runtime defect. Если свежая auth-сессия не доказана, статус не может быть финальным `FAIL`: ставить `RETEST_AUTH_REQUIRED`.
 
 ## Статусы
 
@@ -33,6 +34,7 @@
 - Называть limitation то, что можно снять выбором чистого пользователя, корректным CSRF/POST или ожиданием готовности JS-компонента.
 - Оставлять live-сущности измененными после теста, если есть безопасный rollback.
 - По умолчанию подключаться к общему `127.0.0.1:9224` CDP-браузеру для QA-проходов Confideline. Это может смешать Confideline с чужими активными вкладками и сделать evidence невалидным.
+- Называть гостевой профиль/каталог багом, не сравнив с авторизованной сессией и не проверив, есть ли настройка продукта, которая намеренно скрывает анкеты от гостей.
 
 ## Формат отчета
 
@@ -45,6 +47,27 @@
 - Где смотреть Игорю.
 - Evidence: скриншот, network/server response, DOM/model state, author/viewer proof.
 - Что не доказано и какой следующий recheck нужен.
+
+## Быстрый gating-check для public/profile
+
+Для подозрений вроде `гость не видит профиль`, `directory -> profile упал`, `страница скрыта для неавторизованных` использовать порядок:
+
+```text
+1. Guest URL -> status/finalUrl/screenshot.
+2. Auth-check -> доказать, что storage/session действительно авторизованы.
+3. Тот же URL в auth context.
+4. Если guest fail, auth 200 -> искать и фиксировать настройку продукта, например frontend.siteHideUsersFromGuests.
+5. Если guest fail, auth fail -> runtime defect с двумя доказательствами.
+6. Если auth state stale/missing -> RETEST_AUTH_REQUIRED, не финальный FAIL.
+```
+
+Готовый smoke-скрипт:
+
+```powershell
+cd H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\playwright
+$env:PROFILE_URL='https://confideline.com/ru/profile/OmkarTiwari'
+node .\scripts\profile-visibility-gating-recheck.mjs
+```
 
 ## UX/UI минимум отчета
 

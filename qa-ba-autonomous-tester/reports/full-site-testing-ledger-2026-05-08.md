@@ -22,6 +22,21 @@
 
 `H:\GPT-Codex\Confideline\qa-ba-autonomous-tester\reports\full-site-route-inventory-20260508-211324\full-site-route-inventory.json`
 
+## Правило: public/profile gating-diff
+
+Добавлено 2026-05-25 после пересмотра `CF-PHP85-02`.
+
+Для public/profile/directory failures нельзя закрывать финальный `FAIL` только по гостевому URL. Сначала нужен быстрый diff:
+
+1. открыть тот же URL гостем;
+2. доказать, что auth/session storage действительно авторизован, а не редиректит на login;
+3. открыть тот же URL авторизованным пользователем;
+4. если guest fail, auth 200 — искать настройку продукта, например `frontend.siteHideUsersFromGuests`, и классифицировать как expected gating или guest error handling;
+5. если guest fail, auth fail — это runtime/user-surface defect;
+6. если auth state протух или не доказан — ставить `RETEST_AUTH_REQUIRED`, не финальный `FAIL`.
+
+Быстрый скрипт: `qa-ba-autonomous-tester/playwright/scripts/profile-visibility-gating-recheck.mjs`.
+
 ## Итог первого прохода
 
 | Роль | Проверено routes | PASS | WARN | FAIL |
