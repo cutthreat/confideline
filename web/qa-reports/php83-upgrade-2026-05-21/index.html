@@ -50,7 +50,38 @@
     .dev-feedback select,.dev-feedback textarea{width:100%;border:1px solid var(--line);border-radius:6px;padding:8px 9px;color:var(--text);font:13px/1.35 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
     .dev-feedback textarea{min-height:78px;resize:vertical}
     .dev-feedback small{color:var(--muted);font-size:12px}
-    @media (max-width:720px){.feedback-actions{grid-template-columns:1fr}.feedback-actions button{width:100%}}
+    .defect-feedback-list{overflow:visible}
+    [data-dev-feedback-table]{display:block;border:0;background:transparent;margin-top:12px}
+    [data-dev-feedback-table] thead{display:none}
+    [data-dev-feedback-table] tbody{display:grid;gap:14px}
+    [data-dev-feedback-table] tr{display:grid;grid-template-columns:160px repeat(2,minmax(0,1fr));gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px}
+    [data-dev-feedback-table] td{display:block;min-width:0;border:0;padding:0}
+    [data-dev-feedback-table] td::before{display:block;margin-bottom:5px;color:var(--muted);font-size:11px;font-weight:800;letter-spacing:.03em;text-transform:uppercase}
+    [data-dev-feedback-table] td:nth-child(1)::before{content:"ID"}
+    [data-dev-feedback-table] td:nth-child(2)::before{content:"Факт"}
+    [data-dev-feedback-table] td:nth-child(3)::before{content:"Как должно быть"}
+    [data-dev-feedback-table] td:nth-child(4)::before{content:"Как воспроизвести"}
+    [data-dev-feedback-table] td:nth-child(5)::before{content:"Где смотреть"}
+    [data-dev-feedback-table] td:nth-child(6)::before{content:"Retest"}
+    [data-dev-feedback-table] td:nth-child(7)::before{content:"Ответ Игоря"}
+    [data-dev-feedback-table] td:nth-child(2){grid-column:span 2}
+    [data-dev-feedback-table] td:nth-child(7){grid-column:1/-1;border-top:1px solid var(--line);padding-top:12px}
+    [data-dev-feedback-table] tr:last-child td{border-bottom:0}
+    [data-dev-feedback-table] .dev-feedback{grid-template-columns:minmax(180px,260px) minmax(280px,1fr);align-items:start}
+    [data-dev-feedback-table] .dev-feedback small{grid-column:1/-1}
+    @media (max-width:900px){
+      [data-dev-feedback-table] tr{grid-template-columns:1fr 1fr}
+      [data-dev-feedback-table] td:nth-child(1),
+      [data-dev-feedback-table] td:nth-child(2),
+      [data-dev-feedback-table] td:nth-child(7){grid-column:1/-1}
+    }
+    @media (max-width:720px){
+      .feedback-actions{grid-template-columns:1fr}
+      .feedback-actions button{width:100%}
+      [data-dev-feedback-table] tr,
+      [data-dev-feedback-table] .dev-feedback{grid-template-columns:1fr}
+      [data-dev-feedback-table] td{grid-column:1/-1}
+    }
   </style>
 </head>
 <body>
@@ -75,7 +106,7 @@
 
   <section>
     <h2>Покрытие проверки</h2>
-    <div class="wide">
+    <div class="defect-feedback-list">
       <table>
         <thead><tr><th>Зона</th><th>Статус</th><th>Что проверено</th><th>Вывод</th><th>Evidence</th></tr></thead>
         <tbody>
