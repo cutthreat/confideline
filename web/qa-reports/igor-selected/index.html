@@ -37,7 +37,7 @@
         <button class="tp-btn" type="button" data-action="only-fail">Только FAIL</button>
         <button class="tp-btn" type="button" data-action="show-all">Показать все</button>
       </div>
-      <p class="qa-help">Поле “выполнено” сохраняется локально в браузере Игоря. Для общего статуса Алексей потом переносит результат в отчет/коммит.</p>
+      <p class="qa-help">Поле “выполнено” и комментарий по каждому пункту сохраняются локально в браузере Игоря сразу после изменения. Для передачи Алексею нужно сформировать ссылку с комментариями.</p>
       <div class="qa-share-box">
         <button class="tp-btn tp-btn--primary" type="button" data-action="build-feedback-link">Сформировать ссылку с комментариями</button>
         <input type="text" data-feedback-url readonly aria-label="Ссылка с комментариями Игоря" placeholder="После формирования здесь появится ссылка для Алексея">
@@ -71,7 +71,8 @@
       const feedbackInput = document.querySelector('[data-feedback-url]');
       const copyStatus = document.querySelector('[data-copy-status]');
       const selectedIds = new Set(readSelectedIds());
-      const doneStore = readDoneStore();
+      const feedbackFromUrl = readFeedbackFromUrl();
+      const doneStore = mergeFeedbackIntoDoneStore(readDoneStore(), feedbackFromUrl);
 
       function encodePayload(value) {
         const json = JSON.stringify(value);
@@ -100,6 +101,32 @@
         try { return JSON.parse(localStorage.getItem(doneKey) || '{}'); } catch { return {}; }
       }
 
+      function readFeedbackFromUrl() {
+        const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
+        const encoded = hash.get('fb');
+        if (!encoded) return {};
+        try {
+          const parsed = decodePayload(encoded);
+          return parsed && typeof parsed === 'object' ? parsed : {};
+        } catch {
+          return {};
+        }
+      }
+
+      function mergeFeedbackIntoDoneStore(store, feedback) {
+        let changed = false;
+        Object.entries(feedback).forEach(([id, value]) => {
+          if (!selectedIds.has(id) || !value || typeof value !== 'object') return;
+          store[id] = store[id] || {};
+          store[id].done = Boolean(value.done);
+          store[id].note = String(value.note || '');
+          store[id].updatedAt = value.updatedAt || new Date().toISOString();
+          changed = true;
+        });
+        if (changed) localStorage.setItem(doneKey, JSON.stringify(store));
+        return store;
+      }
+
       function saveDoneStore() {
         localStorage.setItem(doneKey, JSON.stringify(doneStore));
       }
@@ -111,8 +138,19 @@
         return 'qa-badge--info';
       }
 
-      function escapeAttr(value) {
-        return String(value || '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+      function escapeHtml(value) {
+        return String(value || '').replace(/[&<>]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[char]));
+      }
+
+      function formatSavedAt(value) {
+        if (!value) return 'Комментарий сохраняется автоматически';
+        try {
+          const date = new Date(value);
+          if (Number.isNaN(date.getTime())) return 'Сохранено';
+          return `Сохранено: ${date.toLocaleString('ru-RU', { dateStyle: 'short', timeStyle: 'short' })}`;
+        } catch {
+          return 'Сохранено';
+        }
       }
 
       function selectedItems() {
@@ -149,6 +187,7 @@
         list.innerHTML = rows.map((item) => {
           const done = doneStore[item.id]?.done;
           const note = doneStore[item.id]?.note || '';
+          const savedAt = formatSavedAt(doneStore[item.id]?.updatedAt);
           const hidden = !enabledStatuses.has(item.status) || (hideDone && done) ? ' qa-filter-hidden' : '';
           const muted = done ? ' qa-filter-muted' : '';
           return `
@@ -168,7 +207,11 @@
               <div class="qa-igor-actions">
                 <a class="tp-btn tp-btn--primary" href="${item.sourceUrl}">Открыть evidence</a>
                 <label class="qa-igor-toggle"><input type="checkbox" data-done-id="${item.id}" ${done ? 'checked' : ''}> выполнено</label>
-                <input type="text" data-note-id="${item.id}" value="${escapeAttr(note)}" placeholder="Комментарий Игоря для Алексея">
+                <label class="qa-igor-comment">
+                  <span>Комментарий Игоря для Алексея</span>
+                  <textarea data-note-id="${item.id}" rows="3" placeholder="Что сделано, что осталось, где нужен ответ">${escapeHtml(note)}</textarea>
+                  <small data-save-id="${item.id}">${escapeHtml(savedAt)}</small>
+                </label>
               </div>
             </article>
           `;
@@ -183,6 +226,11 @@
         document.querySelector('[data-pass]').textContent = String(rows.filter((item) => item.status === 'PASS').length);
       }
 
+      function updateSaveStatus(id, text) {
+        const status = [...document.querySelectorAll('[data-save-id]')].find((node) => node.dataset.saveId === id);
+        if (status) status.textContent = text;
+      }
+
       document.addEventListener('change', (event) => {
         if (event.target.matches('[data-status-filter], #hide-done')) render();
         if (event.target.matches('[data-done-id]')) {
@@ -192,6 +240,7 @@
           doneStore[id].updatedAt = new Date().toISOString();
           saveDoneStore();
           feedbackInput.value = buildFeedbackUrl();
+          updateSaveStatus(id, formatSavedAt(doneStore[id].updatedAt));
           render();
         }
       });
@@ -204,6 +253,7 @@
           doneStore[id].updatedAt = new Date().toISOString();
           saveDoneStore();
           feedbackInput.value = buildFeedbackUrl();
+          updateSaveStatus(id, formatSavedAt(doneStore[id].updatedAt));
         }
       });
 
