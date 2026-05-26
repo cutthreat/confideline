@@ -18,6 +18,8 @@
 
 ## Как загружать один шаблон
 
+Если внедрение делает программист вместе с Codex, сначала использовать `CODEX_PROGRAMMER_HANDOFF_RU.md`: там описан порядок чтения файлов, контракт импорта, проверки backend events и готовый prompt для Codex.
+
 1. Открыть существующий шаблон или создать через `Create from existing`.
 2. Взять строку из `ADMIN_UPLOAD_INDEX_RU.csv`.
 3. Установить `type_id`, `event_name`, `condition_id`, `delay`, `is_active`, `count_user_settings`.
