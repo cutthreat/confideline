@@ -9,21 +9,22 @@
 ## Что Codex должен прочитать первым
 
 1. `PROGRAMMER_AUDIO_TRANSCRIPT_RU.md` - требования программиста из голосового: EN-first, переводы, переменные, queue.
-2. `ADMIN_UPLOAD_INDEX_RU.json` - машинная карта всех шаблонов.
-3. `EMAIL_NOTIFICATION_LOGIC_RU.md` - логика `event_name`, `condition_id`, `delay` и риски dropdown-only проверки.
-4. `TEMPLATE_SETTINGS_SCENARIOS_RU.html` - когда, зачем и с какими настройками использовать каждый шаблон.
-5. `TEMPLATE_SETTINGS_SCENARIOS_RU.csv` - табличная матрица сценариев для сверки/import checklist.
-6. `TEMPLATES_PREVIEW_RU.html` - визуальный просмотр всех 19 писем в сверстанном виде.
-7. `ADMIN_UPLOAD_GUIDE_RU.md` - реальные поля формы сайта.
-8. `INTEGRATION_STATUS_RU.md` - проверенные факты live-админки и оставшиеся риски.
-9. `templates/*/admin-meta.json` - переменные, event, condition, delay и флаг `needs_new_backend_event`.
-10. `templates/*/subject_email.txt`, `body_email_html.html`, `body_email_txt.txt`, `comment_about.txt` - значения для записи в модель.
+2. `VARIABLES_CONTRACT_RU.md` - отдельный список новых/неподтвержденных переменных.
+3. `ADMIN_UPLOAD_INDEX_RU.json` - машинная карта всех шаблонов.
+4. `EMAIL_NOTIFICATION_LOGIC_RU.md` - логика `event_name`, `condition_id`, `delay` и риски dropdown-only проверки.
+5. `TEMPLATE_SETTINGS_SCENARIOS_RU.html` - когда, зачем и с какими настройками использовать каждый шаблон.
+6. `TEMPLATE_SETTINGS_SCENARIOS_RU.csv` - табличная матрица сценариев для сверки/import checklist.
+7. `TEMPLATES_PREVIEW_RU.html` - визуальный просмотр всех 19 писем в сверстанном виде.
+8. `ADMIN_UPLOAD_GUIDE_RU.md` - реальные поля формы сайта.
+9. `INTEGRATION_STATUS_RU.md` - проверенные факты live-админки и оставшиеся риски.
+10. `templates/*/admin-meta.json` - переменные, event, condition, delay и флаг `needs_new_backend_event`.
+11. `templates/*/subject_email.txt`, `body_email_html.html`, `body_email_txt.txt`, `comment_about.txt` - значения для записи в модель.
 
 ## Правильный сценарий работы
 
 1. Программист дает Codex доступ к актуальному репозиторию сайта и локальному окружению.
 2. Codex находит актуальный production-код `EmailTemplate`, модель, миграции, seed/import-механизм и текущие обработчики email-событий. Базовый `youdate_extracted` не считать достаточным доказательством, потому что в нем live-слой `EmailTemplate` не найден.
-3. Codex проверяет доступные переменные каждого текущего template/event. Новые переменные не добавлять в текст самовольно; если они нужны, оформить отдельное изменение backend-кода.
+3. Codex проверяет доступные переменные каждого текущего template/event по `VARIABLES_CONTRACT_RU.md`. Новые переменные не добавлять в текст самовольно; если они нужны, оформить отдельное изменение backend-кода.
 4. Codex сравнивает `ADMIN_UPLOAD_INDEX_RU.json` с реальными `event_name`, `condition_id`, переменными и queue-binding в коде/БД.
 5. Шаблоны с `needs_new_backend_event=false` можно импортировать первыми только после подтверждения, что backend реально вызывает соответствующий `event_name` и ставит письмо в очередь. Наличие значения в dropdown не равно готовому trigger.
 6. Шаблоны с `needs_new_backend_event=true` нельзя просто добавить в админку как красивые письма: сначала нужно реализовать или подтвердить backend-trigger и queue.
@@ -71,12 +72,12 @@
 ```text
 Ты работаешь в репозитории Confideline. Нужно внедрить пакет email-шаблонов из nebula-admin-upload-ready-ru-2026-05-25.
 
-Сначала прочитай PROGRAMMER_AUDIO_TRANSCRIPT_RU.md, CODEX_PROGRAMMER_HANDOFF_RU.md, EMAIL_NOTIFICATION_LOGIC_RU.md, TEMPLATE_SETTINGS_SCENARIOS_RU.md, ADMIN_UPLOAD_INDEX_RU.json, ADMIN_UPLOAD_GUIDE_RU.md и INTEGRATION_STATUS_RU.md.
+Сначала прочитай PROGRAMMER_AUDIO_TRANSCRIPT_RU.md, CODEX_PROGRAMMER_HANDOFF_RU.md, VARIABLES_CONTRACT_RU.md, EMAIL_NOTIFICATION_LOGIC_RU.md, TEMPLATE_SETTINGS_SCENARIOS_RU.md, ADMIN_UPLOAD_INDEX_RU.json, ADMIN_UPLOAD_GUIDE_RU.md и INTEGRATION_STATUS_RU.md.
 
 Задача:
 1. Найди актуальную модель/таблицу EmailTemplate, текущие event_name, condition_id, delay и механизм отправки email.
 2. Сопоставь каждый шаблон из ADMIN_UPLOAD_INDEX_RU.json и TEMPLATE_SETTINGS_SCENARIOS_RU.csv с текущей системой. Не считай dropdown event доказательством backend-trigger.
-3. Проверь доступные переменные текущего template/event. Новые переменные не придумывай; если переменной нет, вынеси это в backend change request.
+3. Проверь доступные переменные текущего template/event по VARIABLES_CONTRACT_RU.md. Новые переменные не придумывай; если переменной нет, вынеси это в backend change request.
 4. Проверь, какие события уже добавляются в queue и выполняются, а какие template events не задействованы в очередях.
 5. Для шаблонов без новых backend events подготовь импорт/seed/migration или admin-safe update.
 6. Для шаблонов с needs_new_backend_event=true не имитируй готовность: составь список недостающих trigger/event/queue-binding и точек кода, где их нужно реализовать.

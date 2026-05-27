@@ -1,0 +1,307 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline email templates | контракт переменных</title>
+  <style>
+    :root { --ink:#172033; --muted:#667085; --line:#d9e0ea; --bg:#f5f7fb; --card:#fff; --brand:#5d3fd3; --warn:#a15c00; --warn-bg:#fff6e6; --ok:#176b48; --ok-bg:#eaf7ef; --teal:#168b8b; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Arial, Helvetica, sans-serif; color:var(--ink); background:var(--bg); line-height:1.55; }
+    .wrap { width:min(1120px, calc(100% - 32px)); margin:0 auto; padding:34px 0 56px; }
+    .kicker { margin:0 0 8px; color:var(--teal); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; }
+    h1 { margin:0; font-size:38px; line-height:1.12; letter-spacing:0; }
+    .lead { max-width:920px; margin:14px 0 20px; color:var(--muted); font-size:16px; }
+    .stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:20px 0; }
+    .stat, .rule, .card { border:1px solid var(--line); border-radius:8px; background:var(--card); box-shadow:0 14px 34px rgba(21,32,51,.07); }
+    .stat { padding:16px; }
+    .stat strong { display:block; font-size:28px; line-height:1; }
+    .stat span { display:block; margin-top:6px; color:var(--muted); font-size:13px; }
+    .rules { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:0 0 20px; }
+    .rule { padding:16px; }
+    .rule strong { display:block; margin-bottom:6px; }
+    .rule p { margin:0; color:var(--muted); font-size:14px; }
+    .cards { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .card { padding:16px; }
+    .card h2 { margin:0 0 8px; font-size:20px; font-family:Consolas, Monaco, monospace; }
+    .card p { margin:7px 0 0; color:#465066; }
+    .ok { color:var(--ok); background:var(--ok-bg); }
+    .warn { color:var(--warn); background:var(--warn-bg); }
+    .pill { display:inline-flex; min-height:28px; align-items:center; padding:0 10px; border-radius:999px; font-size:12px; font-weight:800; }
+    @media (max-width:860px) { .stats, .rules, .cards { grid-template-columns:1fr; } h1 { font-size:30px; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <p class="kicker">Confideline / email variables</p>
+    <h1>Контракт переменных email-шаблонов</h1>
+    <p class="lead">Отдельный список переменных, которые используются в предложенных шаблонах, но не подтверждены live-аудитом id=1. Перед импортом программист с Codex должен подтвердить их в production-коде или оформить backend-изменение.</p>
+    <section class="stats">
+      <div class="stat"><strong>39</strong><span>переменных в пакете</span></div>
+      <div class="stat"><strong>3</strong><span>используются и подтверждены в id=1</span></div>
+      <div class="stat"><strong>36</strong><span>неподтвержденные / кандидаты на backend</span></div>
+      <div class="stat"><strong>3</strong><span>подтверждены, но не используются</span></div>
+    </section>
+    <section class="rules">
+      <div class="rule"><strong>Не придумывать переменные</strong><p>Если переменной нет в доступном списке template/event, это отдельная backend-задача.</p></div>
+      <div class="rule"><strong>Проверять event scope</strong><p>Даже подтвержденная переменная из id=1 может отсутствовать в другом событии.</p></div>
+      <div class="rule"><strong>Queue и renderer</strong><p>Переменная должна передаваться в момент постановки письма в очередь и рендера.</p></div>
+    </section>
+    <p><span class="pill warn">Новые / неподтвержденные переменные</span></p>
+    <section class="cards">
+          <article class="card">
+      <h2>accountSecurityUrl</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> security_change_alert</p>
+      <p><strong>Events:</strong> security.security_change</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>advisorName</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> advisor_chat_reply_ready, chat_message_received, payment_success_receipt, same_advisor_followup_offer</p>
+      <p><strong>Events:</strong> advisor.followup.offer, message.received, payment.success</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>amount</h2>
+      <p><strong>Статус:</strong> unconfirmed_existing_event_variable</p>
+      <p><strong>Где используется:</strong> payment_failed, payment_started, payment_success_receipt</p>
+      <p><strong>Events:</strong> payment.error, payment.init, payment.success</p>
+      <p><strong>Действие:</strong> Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</p>
+    </article>
+    <article class="card">
+      <h2>answerDueAt</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> chat_message_received, chat_sla_delay</p>
+      <p><strong>Events:</strong> message.answer_delayed, message.received</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>chatUrl</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, paid_chat_no_message_reminder, payment_success_receipt, same_advisor_followup_offer</p>
+      <p><strong>Events:</strong> advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.success</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>checkoutUrl</h2>
+      <p><strong>Статус:</strong> unconfirmed_existing_event_variable</p>
+      <p><strong>Где используется:</strong> payment_failed, payment_started</p>
+      <p><strong>Events:</strong> payment.error, payment.init</p>
+      <p><strong>Действие:</strong> Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</p>
+    </article>
+    <article class="card">
+      <h2>confirmationExpiresAt</h2>
+      <p><strong>Статус:</strong> unconfirmed_existing_event_variable</p>
+      <p><strong>Где используется:</strong> email_confirmation</p>
+      <p><strong>Events:</strong> user.email_confirmation</p>
+      <p><strong>Действие:</strong> Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</p>
+    </article>
+    <article class="card">
+      <h2>consultationId</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> chat_message_received, chat_sla_delay</p>
+      <p><strong>Events:</strong> message.answer_delayed, message.received</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>currency</h2>
+      <p><strong>Статус:</strong> unconfirmed_existing_event_variable</p>
+      <p><strong>Где используется:</strong> payment_failed, payment_started, payment_success_receipt, refund_confirmed</p>
+      <p><strong>Events:</strong> payment.error, payment.init, payment.refund, payment.success</p>
+      <p><strong>Действие:</strong> Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</p>
+    </article>
+    <article class="card">
+      <h2>emailPreferencesUrl</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> d2_chat_reflection, payment_started, review_request, same_advisor_followup_offer</p>
+      <p><strong>Events:</strong> advisor.followup.offer, message.chat_saved, payment.init, review.left</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>firstResponseSla</h2>
+      <p><strong>Статус:</strong> unconfirmed_existing_event_variable</p>
+      <p><strong>Где используется:</strong> payment_success_receipt</p>
+      <p><strong>Events:</strong> payment.success</p>
+      <p><strong>Действие:</strong> Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</p>
+    </article>
+    <article class="card">
+      <h2>followupOfferUrl</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> same_advisor_followup_offer</p>
+      <p><strong>Events:</strong> advisor.followup.offer</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>legalMerchantName</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, email_confirmation, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened</p>
+      <p><strong>Events:</strong> advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.success, review.left, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>merchantDescriptor</h2>
+      <p><strong>Статус:</strong> unconfirmed_existing_event_variable</p>
+      <p><strong>Где используется:</strong> payment_success_receipt</p>
+      <p><strong>Events:</strong> payment.success</p>
+      <p><strong>Действие:</strong> Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</p>
+    </article>
+    <article class="card">
+      <h2>orderId</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> paid_chat_no_message_reminder, payment_success_receipt, refund_confirmed</p>
+      <p><strong>Events:</strong> message.no_first_chat_message, payment.refund, payment.success</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>paidAt</h2>
+      <p><strong>Статус:</strong> unconfirmed_existing_event_variable</p>
+      <p><strong>Где используется:</strong> payment_success_receipt</p>
+      <p><strong>Events:</strong> payment.success</p>
+      <p><strong>Действие:</strong> Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</p>
+    </article>
+    <article class="card">
+      <h2>privacyUrl</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, email_confirmation, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened</p>
+      <p><strong>Events:</strong> advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.success, review.left, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>processorRefundId</h2>
+      <p><strong>Статус:</strong> unconfirmed_existing_event_variable</p>
+      <p><strong>Где используется:</strong> refund_confirmed</p>
+      <p><strong>Events:</strong> payment.refund</p>
+      <p><strong>Действие:</strong> Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</p>
+    </article>
+    <article class="card">
+      <h2>receiptUrl</h2>
+      <p><strong>Статус:</strong> unconfirmed_existing_event_variable</p>
+      <p><strong>Где используется:</strong> payment_success_receipt</p>
+      <p><strong>Events:</strong> payment.success</p>
+      <p><strong>Действие:</strong> Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</p>
+    </article>
+    <article class="card">
+      <h2>refundAmount</h2>
+      <p><strong>Статус:</strong> unconfirmed_existing_event_variable</p>
+      <p><strong>Где используется:</strong> refund_confirmed</p>
+      <p><strong>Events:</strong> payment.refund</p>
+      <p><strong>Действие:</strong> Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</p>
+    </article>
+    <article class="card">
+      <h2>refundEta</h2>
+      <p><strong>Статус:</strong> unconfirmed_existing_event_variable</p>
+      <p><strong>Где используется:</strong> refund_confirmed</p>
+      <p><strong>Events:</strong> payment.refund</p>
+      <p><strong>Действие:</strong> Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</p>
+    </article>
+    <article class="card">
+      <h2>refundPolicyUrl</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, email_confirmation, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened</p>
+      <p><strong>Events:</strong> advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.success, review.left, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>resetExpiresAt</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> password_reset</p>
+      <p><strong>Events:</strong> user.password_recovery</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>resetUrl</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> password_reset</p>
+      <p><strong>Events:</strong> user.password_recovery</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>reviewUrl</h2>
+      <p><strong>Статус:</strong> unconfirmed_existing_event_variable</p>
+      <p><strong>Где используется:</strong> review_request</p>
+      <p><strong>Events:</strong> review.left</p>
+      <p><strong>Действие:</strong> Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</p>
+    </article>
+    <article class="card">
+      <h2>securityChangedAt</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> security_change_alert</p>
+      <p><strong>Events:</strong> security.security_change</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>siteUrl</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, email_confirmation, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened</p>
+      <p><strong>Events:</strong> advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.success, review.left, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>supportCaseId</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> chat_sla_delay, refund_case_update, support_reply, support_ticket_opened</p>
+      <p><strong>Events:</strong> message.answer_delayed, payment.refund, support.message.received, support.ticket.opened</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>supportCaseStatus</h2>
+      <p><strong>Статус:</strong> unconfirmed_existing_event_variable</p>
+      <p><strong>Где используется:</strong> support_reply</p>
+      <p><strong>Events:</strong> support.message.received</p>
+      <p><strong>Действие:</strong> Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</p>
+    </article>
+    <article class="card">
+      <h2>supportCaseUrl</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> chat_sla_delay, refund_case_update, refund_confirmed, support_reply, support_ticket_opened</p>
+      <p><strong>Events:</strong> message.answer_delayed, payment.refund, support.message.received, support.ticket.opened</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>supportEmail</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> advisor_chat_reply_ready, email_confirmation, minor_or_age_restriction_notice, password_reset, payment_success_receipt, refund_confirmed, safety_notice, security_change_alert, support_reply, support_ticket_opened</p>
+      <p><strong>Events:</strong> message.received, payment.refund, payment.success, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>supportUpdatedAt</h2>
+      <p><strong>Статус:</strong> unconfirmed_existing_event_variable</p>
+      <p><strong>Где используется:</strong> refund_case_update, support_reply</p>
+      <p><strong>Events:</strong> payment.refund, support.message.received</p>
+      <p><strong>Действие:</strong> Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</p>
+    </article>
+    <article class="card">
+      <h2>supportUrl</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> advisor_chat_reply_ready, minor_or_age_restriction_notice, paid_chat_no_message_reminder, payment_failed, safety_notice</p>
+      <p><strong>Events:</strong> message.no_first_chat_message, message.received, payment.error, support.safety_notice, user.age_restricted</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>termsUrl</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, email_confirmation, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened</p>
+      <p><strong>Events:</strong> advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.success, review.left, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>unsubscribeUrl</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> d2_chat_reflection, payment_started, review_request, same_advisor_followup_offer</p>
+      <p><strong>Events:</strong> advisor.followup.offer, message.chat_saved, payment.init, review.left</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    <article class="card">
+      <h2>updatedAnswerEta</h2>
+      <p><strong>Статус:</strong> candidate_new_or_event_scoped</p>
+      <p><strong>Где используется:</strong> chat_sla_delay</p>
+      <p><strong>Events:</strong> message.answer_delayed</p>
+      <p><strong>Действие:</strong> Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</p>
+    </article>
+    </section>
+  </main>
+</body>
+</html>
