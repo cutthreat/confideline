@@ -9,17 +9,18 @@
 ## Что Codex должен прочитать первым
 
 1. `ADMIN_UPLOAD_INDEX_RU.json` - машинная карта всех шаблонов.
-2. `ADMIN_UPLOAD_GUIDE_RU.md` - реальные поля формы сайта.
-3. `INTEGRATION_STATUS_RU.md` - проверенные факты live-админки и оставшиеся риски.
-4. `templates/*/admin-meta.json` - переменные, event, condition, delay и флаг `needs_new_backend_event`.
-5. `templates/*/subject_email.txt`, `body_email_html.html`, `body_email_txt.txt`, `comment_about.txt` - значения для записи в модель.
+2. `EMAIL_NOTIFICATION_LOGIC_RU.md` - логика `event_name`, `condition_id`, `delay` и риски dropdown-only проверки.
+3. `ADMIN_UPLOAD_GUIDE_RU.md` - реальные поля формы сайта.
+4. `INTEGRATION_STATUS_RU.md` - проверенные факты live-админки и оставшиеся риски.
+5. `templates/*/admin-meta.json` - переменные, event, condition, delay и флаг `needs_new_backend_event`.
+6. `templates/*/subject_email.txt`, `body_email_html.html`, `body_email_txt.txt`, `comment_about.txt` - значения для записи в модель.
 
 ## Правильный сценарий работы
 
 1. Программист дает Codex доступ к актуальному репозиторию сайта и локальному окружению.
-2. Codex находит модель, миграции, seed/import-механизм и текущие обработчики email-событий.
+2. Codex находит актуальный production-код `EmailTemplate`, модель, миграции, seed/import-механизм и текущие обработчики email-событий. Базовый `youdate_extracted` не считать достаточным доказательством, потому что в нем live-слой `EmailTemplate` не найден.
 3. Codex сравнивает `ADMIN_UPLOAD_INDEX_RU.json` с реальными `event_name` и `condition_id` в коде/БД.
-4. Шаблоны с `needs_new_backend_event=false` можно импортировать первыми.
+4. Шаблоны с `needs_new_backend_event=false` можно импортировать первыми только после подтверждения, что backend реально вызывает соответствующий `event_name`. Наличие значения в dropdown не равно готовому trigger.
 5. Шаблоны с `needs_new_backend_event=true` нельзя просто добавить в админку как красивые письма: сначала нужно реализовать или подтвердить backend-trigger.
 6. После импорта Codex запускает тестовую отправку или локальный render каждого шаблона с тестовыми переменными.
 7. Программист проверяет спорные продуктовые решения: тексты refund/support/safety, delays и условия повторных писем.
@@ -62,11 +63,11 @@
 ```text
 Ты работаешь в репозитории Confideline. Нужно внедрить пакет email-шаблонов из nebula-admin-upload-ready-ru-2026-05-25.
 
-Сначала прочитай CODEX_PROGRAMMER_HANDOFF_RU.md, ADMIN_UPLOAD_INDEX_RU.json, ADMIN_UPLOAD_GUIDE_RU.md и INTEGRATION_STATUS_RU.md.
+Сначала прочитай CODEX_PROGRAMMER_HANDOFF_RU.md, EMAIL_NOTIFICATION_LOGIC_RU.md, ADMIN_UPLOAD_INDEX_RU.json, ADMIN_UPLOAD_GUIDE_RU.md и INTEGRATION_STATUS_RU.md.
 
 Задача:
-1. Найди модель/таблицу EmailTemplate, текущие event_name, condition_id и механизм отправки email.
-2. Сопоставь каждый шаблон из ADMIN_UPLOAD_INDEX_RU.json с текущей системой.
+1. Найди актуальную модель/таблицу EmailTemplate, текущие event_name, condition_id, delay и механизм отправки email.
+2. Сопоставь каждый шаблон из ADMIN_UPLOAD_INDEX_RU.json с текущей системой. Не считай dropdown event доказательством backend-trigger.
 3. Для шаблонов без новых backend events подготовь импорт/seed/migration или admin-safe update.
 4. Для шаблонов с needs_new_backend_event=true не имитируй готовность: составь список недостающих trigger/event и точек кода, где их нужно реализовать.
 5. Проверь render HTML/TXT с тестовыми переменными и зафиксируй результат.
