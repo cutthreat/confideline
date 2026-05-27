@@ -18,12 +18,12 @@
 
 ## Как загружать один шаблон
 
-Если внедрение делает программист вместе с Codex, сначала использовать `CODEX_PROGRAMMER_HANDOFF_RU.md`, `VARIABLES_CONTRACT_RU.html`, `EMAIL_NOTIFICATION_LOGIC_RU.md`, `TEMPLATE_SETTINGS_SCENARIOS_RU.html` и `TEMPLATES_PREVIEW_RU.html`: там описан порядок чтения файлов, контракт импорта, проверки backend events, переменные, логика `event_name` / `condition_id` / `delay`, сценарии настроек, визуальный просмотр писем и готовый prompt для Codex.
+Если внедрение делает программист вместе с Codex, сначала использовать `BILINGUAL_UPLOAD_GUIDE_RU.md`, `CODEX_PROGRAMMER_HANDOFF_RU.md`, `ADMIN_UPLOAD_INDEX_RU_EN.json`, `VARIABLES_CONTRACT_RU.html`, `EMAIL_NOTIFICATION_LOGIC_RU.md`, `TEMPLATE_SETTINGS_SCENARIOS_RU.html` и `TEMPLATES_PREVIEW_RU_EN.html`: там описан порядок чтения файлов, контракт импорта, проверки backend events, переменные, логика `event_name` / `condition_id` / `delay`, сценарии настроек, визуальный просмотр писем и готовый prompt для Codex.
 
-Важное правило внедрения: базовый импорт идет через тексты в текущую админку; сначала вносится английский текст, затем переводы. Русский пакет нужно использовать как RU-локализацию или как основу после EN-base. Новые переменные нельзя придумывать в шаблонах: если переменной нет в доступном списке конкретного template/event, это отдельная backend-задача. Все неподтвержденные переменные вынесены отдельным списком в `VARIABLES_CONTRACT_RU.md`.
+Важное правило внедрения: базовый импорт идет через тексты в текущую админку; сначала вносится английский текст из `templates/*/en/`, затем русский перевод из `templates/*/ru/`. Новые переменные нельзя придумывать в шаблонах: если переменной нет в доступном списке конкретного template/event, это отдельная backend-задача. Все неподтвержденные переменные вынесены отдельным списком в `VARIABLES_CONTRACT_RU.md`.
 
 1. Открыть существующий шаблон или создать через `Create from existing`.
-2. Взять строку из `ADMIN_UPLOAD_INDEX_RU.csv`.
+2. Взять строку из `ADMIN_UPLOAD_INDEX_RU_EN.csv` для нужного языка.
 3. Установить `type_id`, `event_name`, `condition_id`, `delay`, `is_active`, `count_user_settings`.
 4. Вставить `subject_email.txt` в `Subject Email`.
 5. Вставить `body_email_html.html` в `Body Email(html)`.
@@ -48,4 +48,4 @@
 
 В live-индексе найдено 11 шаблонов. Текущие events в форме включают `user.email_confirmation`, `message.received`, `payment.success`, `payment.error`, `payment.refund`, `support.message.received`, `review.left` и другие legacy-события.
 
-Часть Nebula-сценариев можно посадить на существующие события, но часть требует новых backend events. Это отмечено в индексе.
+Часть сценариев можно посадить на существующие события, но часть требует новых backend events. Это отмечено в индексе.

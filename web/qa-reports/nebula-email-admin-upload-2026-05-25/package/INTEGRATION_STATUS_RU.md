@@ -37,16 +37,14 @@ Live-шаблон id=1 использует Handlebars-подобный синт
 - `{{confirmUrl}}`
 - `{{#if showPassword}}...{{/if}}`
 
-Все Nebula-шаблоны в этом пакете переведены в такой синтаксис. Брендовая переменная заменена на `{{siteName}}`.
+Все шаблоны в этом пакете переведены в такой синтаксис. Брендовая переменная заменена на `{{siteName}}`. Для каждого сценария подготовлены две языковые версии: `templates/*/en/` и `templates/*/ru/`.
 
 ## Интеграционный вывод
 
-Для легкой загрузки программисту нужен не старый пакет `nebula-upload-ready-ru-2026-05-25`, а этот пакет:
-
-`nebula-admin-upload-ready-ru-2026-05-25`
+Для легкой загрузки программисту нужен текущий admin upload-ready пакет, а не старый концепт-пакет.
 
 Он уже разложен по реальным полям формы и содержит live-аудит текущей админки.
 
 ## Оставшийся риск
 
-Не все Nebula-сценарии уже имеют backend event в текущем списке `event_name`. В `ADMIN_UPLOAD_INDEX_RU.csv` и `admin-meta.json` поле `needs_new_backend_event=true` отмечает такие сценарии.
+Не все сценарии уже имеют backend event в текущем списке `event_name`. В `ADMIN_UPLOAD_INDEX_RU_EN.csv`, `ADMIN_UPLOAD_INDEX_RU.csv` и `admin-meta.json` поле `needs_new_backend_event=true` отмечает такие сценарии.
