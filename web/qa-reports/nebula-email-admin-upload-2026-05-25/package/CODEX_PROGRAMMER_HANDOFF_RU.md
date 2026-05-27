@@ -10,10 +10,11 @@
 
 1. `ADMIN_UPLOAD_INDEX_RU.json` - машинная карта всех шаблонов.
 2. `EMAIL_NOTIFICATION_LOGIC_RU.md` - логика `event_name`, `condition_id`, `delay` и риски dropdown-only проверки.
-3. `ADMIN_UPLOAD_GUIDE_RU.md` - реальные поля формы сайта.
-4. `INTEGRATION_STATUS_RU.md` - проверенные факты live-админки и оставшиеся риски.
-5. `templates/*/admin-meta.json` - переменные, event, condition, delay и флаг `needs_new_backend_event`.
-6. `templates/*/subject_email.txt`, `body_email_html.html`, `body_email_txt.txt`, `comment_about.txt` - значения для записи в модель.
+3. `TEMPLATES_PREVIEW_RU.html` - визуальный просмотр всех 19 писем в сверстанном виде.
+4. `ADMIN_UPLOAD_GUIDE_RU.md` - реальные поля формы сайта.
+5. `INTEGRATION_STATUS_RU.md` - проверенные факты live-админки и оставшиеся риски.
+6. `templates/*/admin-meta.json` - переменные, event, condition, delay и флаг `needs_new_backend_event`.
+7. `templates/*/subject_email.txt`, `body_email_html.html`, `body_email_txt.txt`, `comment_about.txt` - значения для записи в модель.
 
 ## Правильный сценарий работы
 
