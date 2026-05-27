@@ -28,6 +28,7 @@ const panelFilesRoot = path.join(panelRoot, 'files');
 const cssPath = path.join(projectRoot, 'web', 'css', 'geo-content-panel.css');
 const jsPath = path.join(projectRoot, 'web', 'js', 'geo-content-panel.js');
 const photoIndexPath = path.join(projectRoot, 'geo-content-production', 'drive-photo-index.json');
+const batchStatusPath = path.join(projectRoot, 'reports', 'geo-source-rewrite-batch', 'batch-status.json');
 const pageListPath = firstExistingPath(
   path.join(projectRoot, 'geo-content-production', 'queue', 'page-list.csv'),
   path.join(canonicalConfidelineRoot, 'geo-content-production', 'queue', 'page-list.csv')
@@ -84,7 +85,7 @@ const countrySlugAliases = new Map([
 ]);
 
 const cityNameSlugAliases = new Map([
-  ['new-york', 'new-york-city'],
+  ['new-york', 'city-of-new-york'],
   ['geneva', 'geneve'],
   ['cologne', 'koln'],
   ['frankfurt', 'frankfurt-am-main'],
@@ -93,8 +94,12 @@ const cityNameSlugAliases = new Map([
   ['seville', 'sevilla'],
   ['bangalore', 'bengaluru'],
   ['bali', 'provinsi-bali'],
+  ['monte-carlo', 'monte-carlo-spelugues'],
   ['wroclaw', 'wroclaw'],
   ['grodno', 'hrodna']
+]);
+
+const citySlugsWithoutSeparateCmsRecord = new Set([
 ]);
 
 function readUtf8(filePath) {
@@ -103,6 +108,10 @@ function readUtf8(filePath) {
 
 function readUtf8IfExists(filePath) {
   return fs.existsSync(filePath) ? readUtf8(filePath) : '';
+}
+
+function readJsonIfExists(filePath, fallback = null) {
+  return fs.existsSync(filePath) ? JSON.parse(readUtf8(filePath)) : fallback;
 }
 
 function writeUtf8(filePath, content) {
@@ -349,13 +358,15 @@ function loadCityIdMap(cities, countryCodeBySlug) {
   }
 
   const text = readUtf8(geodataSqlPath);
-  const regex = /\((\d+),'((?:\\'|[^'])*)',[-0-9.]+,[-0-9.]+,'[PA]','[^']+','([A-Z]{2})',(\d+),/g;
+  const regex = /\((\d+),'((?:\\'|[^'])*)',[-0-9.]+,[-0-9.]+,'([PA])','([^']+)','([A-Z]{2})',(\d+),/g;
   let match;
   while ((match = regex.exec(text))) {
     const geonameId = match[1];
     const name = match[2].replace(/\\'/g, "'");
-    const countryCode = match[3];
-    const population = Number.parseInt(match[4] || '0', 10);
+    const featureClass = match[3];
+    const featureCode = match[4];
+    const countryCode = match[5];
+    const population = Number.parseInt(match[6] || '0', 10);
     const nameSlug = slugifyTitle(name);
     const targets = targetsByName.get(nameSlug);
     if (!targets) continue;
@@ -364,8 +375,17 @@ function loadCityIdMap(cities, countryCodeBySlug) {
       if (target.countryCode && target.countryCode !== countryCode) continue;
       const slug = target.city.slug;
       const current = result.get(slug);
-      if (!current || population > current.population) {
-        result.set(slug, { id: geonameId, name, countryCode, population });
+      const rank = {
+        featureClassRank: featureClass === 'P' ? 2 : 1,
+        featureCodeRank: featureCode === 'PPLC' ? 5 : featureCode === 'PPLA' ? 4 : featureCode === 'PPLA2' ? 3 : featureCode === 'PPL' ? 2 : 1,
+        population
+      };
+      const better = !current
+        || rank.featureClassRank > current.rank.featureClassRank
+        || (rank.featureClassRank === current.rank.featureClassRank && rank.featureCodeRank > current.rank.featureCodeRank)
+        || (rank.featureClassRank === current.rank.featureClassRank && rank.featureCodeRank === current.rank.featureCodeRank && population > current.population);
+      if (better) {
+        result.set(slug, { id: geonameId, name, countryCode, population, featureClass, featureCode, rank });
       }
     }
   }
@@ -385,6 +405,14 @@ function buildAdminLink(item, countryIdMap, cityIdMap) {
       url: live?.href || `${cmsBase}/country/index`,
       label: live?.id ? 'Открыть страну' : 'Список стран',
       direct: Boolean(live?.id)
+    };
+  }
+  if (citySlugsWithoutSeparateCmsRecord.has(item.slug)) {
+    return {
+      id: '',
+      url: `${cmsBase}/geoname/index`,
+      label: 'Список городов',
+      direct: false
     };
   }
   const city = cityIdMap.get(item.slug);
@@ -700,7 +728,37 @@ function renderPanel(countryPages, cityPages, totals, reportSources) {
 `;
 }
 
-function renderAdminPanel(totals, reportSources) {
+function renderBatchStatus(batchStatus) {
+  if (!batchStatus) {
+    return `
+      <section class="geo-cm-admin-sources">
+        <h2>Перегенерация SEO-текстов</h2>
+        <p class="geo-cm-muted">Пакетный прогон еще не запускался.</p>
+      </section>`;
+  }
+  const active = batchStatus.active
+    ? `${batchStatus.active.type === 'country' ? 'Страна' : 'Город'}: ${batchStatus.active.name || batchStatus.active.slug}`
+    : 'нет активной страницы';
+  const statusClass = batchStatus.status === 'PASS' ? 'is-ok' : (batchStatus.status === 'RUNNING' ? 'is-unknown' : 'is-bad');
+  return `
+      <section class="geo-cm-admin-sources">
+        <h2>Перегенерация SEO-текстов</h2>
+        <div class="geo-cm-batch-status">
+          <div class="geo-cm-batch-bar" aria-label="Прогресс ${escapeAttr(batchStatus.progressPercent || 0)}%">
+            <span style="width:${Math.max(0, Math.min(100, Number(batchStatus.progressPercent || 0)))}%"></span>
+          </div>
+          <dl>
+            <div><dt>Статус</dt><dd><span class="geo-cm-mini ${statusClass}">${escapeHtml(batchStatus.status || 'UNKNOWN')}</span></dd></div>
+            <div><dt>Готово</dt><dd>${escapeHtml(batchStatus.done ?? 0)} из ${escapeHtml(batchStatus.total ?? 0)} (${escapeHtml(batchStatus.progressPercent ?? 0)}%)</dd></div>
+            <div><dt>Сейчас</dt><dd>${escapeHtml(active)}</dd></div>
+            <div><dt>Ошибки</dt><dd>${escapeHtml(batchStatus.failed ?? 0)}</dd></div>
+            <div><dt>Обновлено</dt><dd>${escapeHtml(batchStatus.generatedAt || '')}</dd></div>
+          </dl>
+        </div>
+      </section>`;
+}
+
+function renderAdminPanel(totals, reportSources, batchStatus) {
   const generated = new Date().toISOString().slice(0, 19).replace('T', ' ');
   const technicalFiles = [
     {
@@ -747,6 +805,41 @@ function renderAdminPanel(totals, reportSources) {
       title: 'geo-text-audit.json',
       href: './geo-text-audit.json',
       text: 'Машинная версия аудита TXT-пакетов по всем страницам.'
+    },
+    {
+      title: 'geo-seo-quality-audit.csv',
+      href: './geo-seo-quality-audit.csv',
+      text: 'Проверка SEO-полей, HTML-структуры и похожести текстов между страницами.'
+    },
+    {
+      title: 'geo-seo-quality-audit.json',
+      href: './geo-seo-quality-audit.json',
+      text: 'Машинная версия SEO-аудита: дубли, почти дубли и ошибки SEO-полей.'
+    },
+    {
+      title: 'source-preservation-audit.csv',
+      href: './source-preservation-audit.csv',
+      text: 'Проверка, что русский SEO-текст сохраняет смысл, тональность и смысловые якоря исходного Astro-документа.'
+    },
+    {
+      title: 'source-preservation-audit.json',
+      href: './source-preservation-audit.json',
+      text: 'Машинная версия проверки связи готового текста с исходником: source overlap, anchors, страницы с провалом.'
+    },
+    {
+      title: 'source-rewrite-contract.csv',
+      href: './source-rewrite-contract.csv',
+      text: 'Контрактная проверка контура перегенерации: источники, staged-очередь, зависимости, preflight/final.'
+    },
+    {
+      title: 'source-rewrite-contract.json',
+      href: './source-rewrite-contract.json',
+      text: 'Машинная версия контракта перегенерации SEO-текстов и текущий статус приемки.'
+    },
+    {
+      title: 'source-rewrite-batch-status.json',
+      href: './source-rewrite-batch-status.json',
+      text: 'Текущий статус пакетной перегенерации: прогресс, активная страна или город, ошибки.'
     }
   ];
 
@@ -768,6 +861,7 @@ function renderAdminPanel(totals, reportSources) {
       </div>
       <div class="geo-cm-actions">
         <a class="tp-btn tp-btn--primary" href="./">Вернуться в панель</a>
+        <a class="tp-btn" href="./variables.html">Переменные для программиста</a>
       </div>
     </header>
 
@@ -781,6 +875,8 @@ function renderAdminPanel(totals, reportSources) {
     </section>
 
     <main class="geo-cm-admin-page">
+      ${renderBatchStatus(batchStatus)}
+
       <section class="geo-cm-admin-files">
         ${technicalFiles.map((file) => `
           <a class="geo-cm-admin-file" href="${escapeAttr(file.href)}" target="_blank" rel="noopener">
@@ -806,6 +902,142 @@ function renderAdminPanel(totals, reportSources) {
 
     <footer class="geo-cm-footer">
       Сгенерировано: ${generated}. Эта страница предназначена для администратора и диагностики.
+    </footer>
+  </div>
+</body>
+</html>
+`;
+}
+
+function renderVariablesPanel() {
+  const generated = new Date().toISOString().slice(0, 19).replace('T', ' ');
+  const variables = [
+    {
+      placeholder: '{{siteName}}',
+      status: 'Обязательная',
+      value: 'Название проекта. Сейчас: Neiro.',
+      usage: 'Можно выводить внутри предложений, в Meta Title, Meta Description, H1, Seo Text и Html Description.',
+      implementation: 'Брать из существующей настройки siteName и заменять до вывода страницы.'
+    },
+    {
+      placeholder: '{{whatWeOfferBlock}}',
+      status: 'Обязательная',
+      value: 'Локализованный HTML-блок "Что предлагаем".',
+      usage: 'Только целым блоком. Не вставлять внутрь предложения.',
+      implementation: 'Рендерить готовый блок на языке текущей страницы.'
+    },
+    {
+      placeholder: '{{geoServiceListBlock}}',
+      status: 'Обязательная',
+      value: 'Локализованный HTML-блок со списком услуг для geo SEO-страниц.',
+      usage: 'Только целым блоком. Не дробить на отдельные названия услуг в тексте.',
+      implementation: 'Рендерить список услуг на языке текущей страницы: Tarot, astrology, natal chart, synastry, compatibility, relocation, astrocartography, forecast, online consultation, text chat.'
+    },
+    {
+      placeholder: '{{informationalDisclaimerBlock}}',
+      status: 'Обязательная',
+      value: 'Локализованный информационный дисклеймер.',
+      usage: 'Только целым блоком или абзацем, без вставки в середину предложения.',
+      implementation: 'Рендерить стандартный текст о том, что консультации носят информационный характер, не гарантируют результат и не заменяют самостоятельные решения пользователя.'
+    },
+    {
+      placeholder: '{{siteUrl}}',
+      status: 'Разрешенная, но сейчас не используется',
+      value: 'Канонический URL сайта.',
+      usage: 'Только отдельный URL или значение href.',
+      implementation: 'Брать из существующей настройки siteUrl. Не подставлять в обычные SEO-предложения.'
+    }
+  ];
+  const blocked = [
+    {
+      placeholder: '{{countryName}}, {{cityName}}, {{locationName}}',
+      reason: 'Не использовать inline: в RU, ES, IT, DE и PT ломаются падежи, артикли, предлоги, род и согласование.'
+    },
+    {
+      placeholder: '{{locationType}}, {{geoType}}',
+      reason: 'Не использовать inline: страна, город и тип страницы требуют разной грамматики в разных языках.'
+    },
+    {
+      placeholder: '{{serviceName}}, {{mainService}}, {{consultationFormat}}',
+      reason: 'Не использовать inline: названия услуг меняют форму в предложениях. Для услуг нужен целый блок {{geoServiceListBlock}}.'
+    }
+  ];
+  return `<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | Переменные geo SEO</title>
+  <link rel="stylesheet" href="../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../css/geo-content-panel.css">
+</head>
+<body class="cl-task-standard geo-cm">
+  <div class="tp-page geo-cm-dev-page">
+    <header class="tp-hero geo-cm-hero">
+      <div>
+        <h1>Переменные geo SEO для сайта</h1>
+        <p>Контракт для программиста: какие плейсхолдеры должны заменяться при выводе страниц стран и городов.</p>
+      </div>
+      <div class="geo-cm-actions">
+        <a class="tp-btn tp-btn--primary" href="./">Панель контента</a>
+        <a class="tp-btn" href="./admin.html">Служебное</a>
+      </div>
+    </header>
+
+    <section class="geo-cm-dev-summary" aria-label="Сводка">
+      <div class="geo-cm-metric"><strong>4</strong><span>обязательные переменные</span></div>
+      <div class="geo-cm-metric"><strong>1</strong><span>разрешенная резервная</span></div>
+      <div class="geo-cm-metric"><strong>0</strong><span>неизвестных переменных в TXT</span></div>
+      <div class="geo-cm-metric"><strong>6382</strong><span>вхождения {{siteName}}</span></div>
+    </section>
+
+    <main class="geo-cm-dev-layout">
+      <section class="geo-cm-admin-sources">
+        <h2>Что нужно реализовать</h2>
+        <p>При выводе публичных geo-страниц сайт должен заменять переменные в полях Meta Title, Meta Description, H1, Seo Text и Html Description. Замена должна выполняться для стран и городов на всех языках: RU, EN, ES, IT, DE, PT-BR.</p>
+        <p>Если переменная блочная, она должна возвращать готовый локализованный HTML-фрагмент. Не нужно вставлять такие переменные внутрь предложения.</p>
+      </section>
+
+      <section class="geo-cm-variable-list" aria-label="Разрешенные переменные">
+        ${variables.map((variable) => `
+          <article class="geo-cm-variable-card">
+            <div class="geo-cm-variable-head">
+              <code>${escapeHtml(variable.placeholder)}</code>
+              <span class="geo-cm-mini is-ok">${escapeHtml(variable.status)}</span>
+            </div>
+            <dl>
+              <div><dt>Что значит</dt><dd>${escapeHtml(variable.value)}</dd></div>
+              <div><dt>Где использовать</dt><dd>${escapeHtml(variable.usage)}</dd></div>
+              <div><dt>Как настроить</dt><dd>${escapeHtml(variable.implementation)}</dd></div>
+            </dl>
+          </article>`).join('')}
+      </section>
+
+      <section class="geo-cm-admin-sources">
+        <h2>Нельзя добавлять как inline-переменные</h2>
+        <div class="geo-cm-blocked-list">
+          ${blocked.map((item) => `
+            <div class="geo-cm-blocked-item">
+              <code>${escapeHtml(item.placeholder)}</code>
+              <p>${escapeHtml(item.reason)}</p>
+            </div>`).join('')}
+        </div>
+      </section>
+
+      <section class="geo-cm-admin-sources">
+        <h2>Критерии приемки</h2>
+        <ul class="geo-cm-acceptance">
+          <li>На публичной странице не остается сырой строки {{siteName}} вместо названия проекта.</li>
+          <li>На публичной странице не остается сырой строки {{whatWeOfferBlock}}, {{geoServiceListBlock}} или {{informationalDisclaimerBlock}}.</li>
+          <li>Блочные переменные выводятся на языке текущей страницы.</li>
+          <li>HTML-блоки не добавляют запрещенные теги script, style, html, head, body и не ломают структуру описания.</li>
+          <li>Существующие тексты стран и городов не переписываются, меняется только рендер переменных.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="geo-cm-footer">
+      Сгенерировано: ${generated}. Источник контракта: geo SEO TXT-пакеты и seo-template-variables.json.
     </footer>
   </div>
 </body>
@@ -892,6 +1124,24 @@ function renderCss() {
 .geo-cm-admin-sources div { display: grid; gap: 4px; }
 .geo-cm-admin-sources dt { font-weight: 900; color: #0f172a; }
 .geo-cm-admin-sources dd { margin: 0; color: #536274; overflow-wrap: anywhere; }
+.geo-cm-batch-status { display: grid; gap: 12px; }
+.geo-cm-batch-bar { height: 12px; border-radius: 999px; overflow: hidden; background: #e2e8f0; border: 1px solid #cbd5e1; }
+.geo-cm-batch-bar span { display: block; height: 100%; background: #2563eb; }
+.geo-cm-dev-page { max-width: 1180px; }
+.geo-cm-dev-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 22px 0; }
+.geo-cm-dev-layout { display: grid; gap: 18px; }
+.geo-cm-variable-list { display: grid; gap: 12px; }
+.geo-cm-variable-card { background: #fff; border: 1px solid #d7e0ea; border-radius: 8px; padding: 16px; box-shadow: 0 1px 2px rgba(15, 23, 42, .04); }
+.geo-cm-variable-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+.geo-cm-variable-head code, .geo-cm-blocked-item code { display: inline-block; color: #0f172a; background: #eef6ff; border: 1px solid #bfdbfe; border-radius: 7px; padding: 6px 8px; font-weight: 900; overflow-wrap: anywhere; }
+.geo-cm-variable-card dl { margin: 0; display: grid; gap: 10px; }
+.geo-cm-variable-card div { display: grid; gap: 4px; }
+.geo-cm-variable-card dt { font-weight: 900; color: #0f172a; }
+.geo-cm-variable-card dd { margin: 0; color: #536274; line-height: 1.45; }
+.geo-cm-blocked-list { display: grid; gap: 10px; }
+.geo-cm-blocked-item { border: 1px solid #fecaca; background: #fff7f7; border-radius: 8px; padding: 12px; }
+.geo-cm-blocked-item p { margin: 8px 0 0; color: #7f1d1d; line-height: 1.45; }
+.geo-cm-acceptance { margin: 0; padding-left: 20px; color: #334155; line-height: 1.55; }
 .geo-cm-footer { margin: 28px 0 8px; color: #536274; font-size: 13px; }
 @media (max-width: 1000px) {
   .geo-cm-hero { display: block; }
@@ -903,6 +1153,7 @@ function renderCss() {
   .geo-cm-nav { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .geo-cm-grid { grid-template-columns: 1fr; }
   .geo-cm-admin-files { grid-template-columns: 1fr; }
+  .geo-cm-dev-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .geo-cm-card-head { grid-template-columns: 36px minmax(0, 1fr); }
   .geo-cm-card-actions { grid-column: 1 / -1; justify-content: flex-start; }
 }
@@ -912,6 +1163,7 @@ function renderCss() {
   .geo-cm-lang-row { grid-template-columns: 50px 44px 1fr; }
   .geo-cm-lang-row a { grid-column: span 1; }
   .geo-cm-photo-slot { grid-template-columns: 1fr; }
+  .geo-cm-dev-summary { grid-template-columns: 1fr; }
 }
 `;
 }
@@ -1019,6 +1271,7 @@ function main() {
   const countries = normalizeItems('country', path.join(sourceRoot, 'countries'), manifest.country, pageList);
   const cities = normalizeItems('city', path.join(sourceRoot, 'cities'), manifest.city, pageList);
   const photoIndex = fs.existsSync(photoIndexPath) ? JSON.parse(readUtf8(photoIndexPath)) : { countries: {}, cities: {}, summary: {} };
+  const batchStatus = readJsonIfExists(batchStatusPath, null);
   const countryVerifyStatuses = loadVerifyStatuses(countryVerifyCsvPath);
   const cityVerifyStatuses = loadCityVerifyStatuses();
   const countryIdMap = loadCountryIdMap();
@@ -1093,9 +1346,13 @@ function main() {
 
   debugStep('write panel files');
   writeUtf8(path.join(panelRoot, 'index.html'), renderPanel(countryPages, cityPages, totals, reportSources));
-  writeUtf8(path.join(panelRoot, 'admin.html'), renderAdminPanel(totals, reportSources));
+  writeUtf8(path.join(panelRoot, 'admin.html'), renderAdminPanel(totals, reportSources, batchStatus));
+  writeUtf8(path.join(panelRoot, 'variables.html'), renderVariablesPanel());
   writeUtf8(path.join(panelRoot, 'manifest.json'), JSON.stringify(manifestJson, null, 2));
   writeUtf8(path.join(panelRoot, 'content-manager-queue.csv'), buildCsvRows(pages));
+  if (batchStatus) {
+    writeUtf8(path.join(panelRoot, 'source-rewrite-batch-status.json'), JSON.stringify(batchStatus, null, 2));
+  }
   if (fs.existsSync(photoIndexPath)) {
     writeUtf8(path.join(panelRoot, 'drive-photo-index.json'), readUtf8(photoIndexPath));
   }

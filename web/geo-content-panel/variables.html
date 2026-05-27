@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confideline | Переменные geo SEO</title>
+  <link rel="stylesheet" href="../css/task-panel-standard.css">
+  <link rel="stylesheet" href="../css/geo-content-panel.css">
+</head>
+<body class="cl-task-standard geo-cm">
+  <div class="tp-page geo-cm-dev-page">
+    <header class="tp-hero geo-cm-hero">
+      <div>
+        <h1>Переменные geo SEO для сайта</h1>
+        <p>Контракт для программиста: какие плейсхолдеры должны заменяться при выводе страниц стран и городов.</p>
+      </div>
+      <div class="geo-cm-actions">
+        <a class="tp-btn tp-btn--primary" href="./">Панель контента</a>
+        <a class="tp-btn" href="./admin.html">Служебное</a>
+      </div>
+    </header>
+
+    <section class="geo-cm-dev-summary" aria-label="Сводка">
+      <div class="geo-cm-metric"><strong>4</strong><span>обязательные переменные</span></div>
+      <div class="geo-cm-metric"><strong>1</strong><span>разрешенная резервная</span></div>
+      <div class="geo-cm-metric"><strong>0</strong><span>неизвестных переменных в TXT</span></div>
+      <div class="geo-cm-metric"><strong>6382</strong><span>вхождения {{siteName}}</span></div>
+    </section>
+
+    <main class="geo-cm-dev-layout">
+      <section class="geo-cm-admin-sources">
+        <h2>Что нужно реализовать</h2>
+        <p>При выводе публичных geo-страниц сайт должен заменять переменные в полях Meta Title, Meta Description, H1, Seo Text и Html Description. Замена должна выполняться для стран и городов на всех языках: RU, EN, ES, IT, DE, PT-BR.</p>
+        <p>Если переменная блочная, она должна возвращать готовый локализованный HTML-фрагмент. Не нужно вставлять такие переменные внутрь предложения.</p>
+      </section>
+
+      <section class="geo-cm-variable-list" aria-label="Разрешенные переменные">
+        
+          <article class="geo-cm-variable-card">
+            <div class="geo-cm-variable-head">
+              <code>{{siteName}}</code>
+              <span class="geo-cm-mini is-ok">Обязательная</span>
+            </div>
+            <dl>
+              <div><dt>Что значит</dt><dd>Название проекта. Сейчас: Neiro.</dd></div>
+              <div><dt>Где использовать</dt><dd>Можно выводить внутри предложений, в Meta Title, Meta Description, H1, Seo Text и Html Description.</dd></div>
+              <div><dt>Как настроить</dt><dd>Брать из существующей настройки siteName и заменять до вывода страницы.</dd></div>
+            </dl>
+          </article>
+          <article class="geo-cm-variable-card">
+            <div class="geo-cm-variable-head">
+              <code>{{whatWeOfferBlock}}</code>
+              <span class="geo-cm-mini is-ok">Обязательная</span>
+            </div>
+            <dl>
+              <div><dt>Что значит</dt><dd>Локализованный HTML-блок &quot;Что предлагаем&quot;.</dd></div>
+              <div><dt>Где использовать</dt><dd>Только целым блоком. Не вставлять внутрь предложения.</dd></div>
+              <div><dt>Как настроить</dt><dd>Рендерить готовый блок на языке текущей страницы.</dd></div>
+            </dl>
+          </article>
+          <article class="geo-cm-variable-card">
+            <div class="geo-cm-variable-head">
+              <code>{{geoServiceListBlock}}</code>
+              <span class="geo-cm-mini is-ok">Обязательная</span>
+            </div>
+            <dl>
+              <div><dt>Что значит</dt><dd>Локализованный HTML-блок со списком услуг для geo SEO-страниц.</dd></div>
+              <div><dt>Где использовать</dt><dd>Только целым блоком. Не дробить на отдельные названия услуг в тексте.</dd></div>
+              <div><dt>Как настроить</dt><dd>Рендерить список услуг на языке текущей страницы: Tarot, astrology, natal chart, synastry, compatibility, relocation, astrocartography, forecast, online consultation, text chat.</dd></div>
+            </dl>
+          </article>
+          <article class="geo-cm-variable-card">
+            <div class="geo-cm-variable-head">
+              <code>{{informationalDisclaimerBlock}}</code>
+              <span class="geo-cm-mini is-ok">Обязательная</span>
+            </div>
+            <dl>
+              <div><dt>Что значит</dt><dd>Локализованный информационный дисклеймер.</dd></div>
+              <div><dt>Где использовать</dt><dd>Только целым блоком или абзацем, без вставки в середину предложения.</dd></div>
+              <div><dt>Как настроить</dt><dd>Рендерить стандартный текст о том, что консультации носят информационный характер, не гарантируют результат и не заменяют самостоятельные решения пользователя.</dd></div>
+            </dl>
+          </article>
+          <article class="geo-cm-variable-card">
+            <div class="geo-cm-variable-head">
+              <code>{{siteUrl}}</code>
+              <span class="geo-cm-mini is-ok">Разрешенная, но сейчас не используется</span>
+            </div>
+            <dl>
+              <div><dt>Что значит</dt><dd>Канонический URL сайта.</dd></div>
+              <div><dt>Где использовать</dt><dd>Только отдельный URL или значение href.</dd></div>
+              <div><dt>Как настроить</dt><dd>Брать из существующей настройки siteUrl. Не подставлять в обычные SEO-предложения.</dd></div>
+            </dl>
+          </article>
+      </section>
+
+      <section class="geo-cm-admin-sources">
+        <h2>Нельзя добавлять как inline-переменные</h2>
+        <div class="geo-cm-blocked-list">
+          
+            <div class="geo-cm-blocked-item">
+              <code>{{countryName}}, {{cityName}}, {{locationName}}</code>
+              <p>Не использовать inline: в RU, ES, IT, DE и PT ломаются падежи, артикли, предлоги, род и согласование.</p>
+            </div>
+            <div class="geo-cm-blocked-item">
+              <code>{{locationType}}, {{geoType}}</code>
+              <p>Не использовать inline: страна, город и тип страницы требуют разной грамматики в разных языках.</p>
+            </div>
+            <div class="geo-cm-blocked-item">
+              <code>{{serviceName}}, {{mainService}}, {{consultationFormat}}</code>
+              <p>Не использовать inline: названия услуг меняют форму в предложениях. Для услуг нужен целый блок {{geoServiceListBlock}}.</p>
+            </div>
+        </div>
+      </section>
+
+      <section class="geo-cm-admin-sources">
+        <h2>Критерии приемки</h2>
+        <ul class="geo-cm-acceptance">
+          <li>На публичной странице не остается сырой строки {{siteName}} вместо названия проекта.</li>
+          <li>На публичной странице не остается сырой строки {{whatWeOfferBlock}}, {{geoServiceListBlock}} или {{informationalDisclaimerBlock}}.</li>
+          <li>Блочные переменные выводятся на языке текущей страницы.</li>
+          <li>HTML-блоки не добавляют запрещенные теги script, style, html, head, body и не ломают структуру описания.</li>
+          <li>Существующие тексты стран и городов не переписываются, меняется только рендер переменных.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="geo-cm-footer">
+      Сгенерировано: 2026-05-27 12:10:24. Источник контракта: geo SEO TXT-пакеты и seo-template-variables.json.
+    </footer>
+  </div>
+</body>
+</html>
