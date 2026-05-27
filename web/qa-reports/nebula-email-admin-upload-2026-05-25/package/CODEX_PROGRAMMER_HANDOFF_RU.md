@@ -8,17 +8,16 @@
 
 ## Что Codex должен прочитать первым
 
-1. `PROGRAMMER_AUDIO_TRANSCRIPT_RU.md` - требования программиста из голосового: EN-first, переводы, переменные, queue.
-2. `VARIABLES_CONTRACT_RU.md` - отдельный список новых/неподтвержденных переменных.
-3. `ADMIN_UPLOAD_INDEX_RU.json` - машинная карта всех шаблонов.
-4. `EMAIL_NOTIFICATION_LOGIC_RU.md` - логика `event_name`, `condition_id`, `delay` и риски dropdown-only проверки.
-5. `TEMPLATE_SETTINGS_SCENARIOS_RU.html` - когда, зачем и с какими настройками использовать каждый шаблон.
-6. `TEMPLATE_SETTINGS_SCENARIOS_RU.csv` - табличная матрица сценариев для сверки/import checklist.
-7. `TEMPLATES_PREVIEW_RU.html` - визуальный просмотр всех 19 писем в сверстанном виде.
-8. `ADMIN_UPLOAD_GUIDE_RU.md` - реальные поля формы сайта.
-9. `INTEGRATION_STATUS_RU.md` - проверенные факты live-админки и оставшиеся риски.
-10. `templates/*/admin-meta.json` - переменные, event, condition, delay и флаг `needs_new_backend_event`.
-11. `templates/*/subject_email.txt`, `body_email_html.html`, `body_email_txt.txt`, `comment_about.txt` - значения для записи в модель.
+1. `VARIABLES_CONTRACT_RU.md` - отдельный список новых/неподтвержденных переменных.
+2. `ADMIN_UPLOAD_INDEX_RU.json` - машинная карта всех шаблонов.
+3. `EMAIL_NOTIFICATION_LOGIC_RU.md` - логика `event_name`, `condition_id`, `delay` и риски dropdown-only проверки.
+4. `TEMPLATE_SETTINGS_SCENARIOS_RU.html` - когда, зачем и с какими настройками использовать каждый шаблон.
+5. `TEMPLATE_SETTINGS_SCENARIOS_RU.csv` - табличная матрица сценариев для сверки/import checklist.
+6. `TEMPLATES_PREVIEW_RU.html` - визуальный просмотр всех 19 писем в сверстанном виде.
+7. `ADMIN_UPLOAD_GUIDE_RU.md` - реальные поля формы сайта.
+8. `INTEGRATION_STATUS_RU.md` - проверенные факты live-админки и оставшиеся риски.
+9. `templates/*/admin-meta.json` - переменные, event, condition, delay и флаг `needs_new_backend_event`.
+10. `templates/*/subject_email.txt`, `body_email_html.html`, `body_email_txt.txt`, `comment_about.txt` - значения для записи в модель.
 
 ## Правильный сценарий работы
 
@@ -72,7 +71,7 @@
 ```text
 Ты работаешь в репозитории Confideline. Нужно внедрить пакет email-шаблонов из nebula-admin-upload-ready-ru-2026-05-25.
 
-Сначала прочитай PROGRAMMER_AUDIO_TRANSCRIPT_RU.md, CODEX_PROGRAMMER_HANDOFF_RU.md, VARIABLES_CONTRACT_RU.md, EMAIL_NOTIFICATION_LOGIC_RU.md, TEMPLATE_SETTINGS_SCENARIOS_RU.md, ADMIN_UPLOAD_INDEX_RU.json, ADMIN_UPLOAD_GUIDE_RU.md и INTEGRATION_STATUS_RU.md.
+Сначала прочитай CODEX_PROGRAMMER_HANDOFF_RU.md, VARIABLES_CONTRACT_RU.md, EMAIL_NOTIFICATION_LOGIC_RU.md, TEMPLATE_SETTINGS_SCENARIOS_RU.md, ADMIN_UPLOAD_INDEX_RU.json, ADMIN_UPLOAD_GUIDE_RU.md и INTEGRATION_STATUS_RU.md.
 
 Задача:
 1. Найди актуальную модель/таблицу EmailTemplate, текущие event_name, condition_id, delay и механизм отправки email.

@@ -4,7 +4,7 @@
 
 ## Что подтверждено по странице шаблона
 
-Страница `https://confideline.com/ru/admin/email-template/update?id=1` была прочитана через Manhattan и сохранена в `live-audit/CURRENT_ADMIN_FORM_FIELDS_ID1.json`.
+Страница `https://confideline.com/ru/admin/email-template/update?id=1` была прочитана через рабочий браузер. В публичный пакет сырые данные формы не включаются.
 
 Подтвержденные поля модели `EmailTemplate`:
 
