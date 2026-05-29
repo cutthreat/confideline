@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Старт внедрения email-шаблонов для Игоря</title>
+  <style>
+    :root { --ink:#172033; --muted:#667085; --line:#d9e2ef; --bg:#f5f7fb; --panel:#fff; --brand:#6338d8; --accent:#168a8a; --warn:#a15c00; --bad:#b42318; --good:#027a48; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:Arial,Helvetica,sans-serif; line-height:1.5; }
+    header, main { max-width:1180px; margin:0 auto; padding:28px 22px; }
+    h1 { margin:0 0 10px; font-size:32px; line-height:1.15; letter-spacing:0; }
+    h2 { margin:34px 0 12px; font-size:22px; line-height:1.25; }
+    h3 { margin:0 0 10px; font-size:18px; }
+    p { margin:0 0 12px; }
+    a { color:var(--brand); }
+    code, pre { font-family:Consolas,Menlo,monospace; }
+    pre { white-space:pre-wrap; margin:0; padding:14px; background:#111827; color:#f9fafb; border-radius:8px; overflow:auto; }
+    .lead { max-width:900px; color:var(--muted); font-size:16px; }
+    .notice { padding:16px 18px; border:1px solid var(--line); border-left:5px solid var(--brand); border-radius:8px; background:#fff; }
+    .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+    .grid.two { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .card { min-height:138px; padding:18px; border:1px solid var(--line); border-radius:8px; background:#fff; box-shadow:0 10px 28px rgba(23,32,51,.06); }
+    .card strong { display:block; margin-bottom:8px; font-size:18px; }
+    .card span, small { display:block; color:var(--muted); font-size:13px; }
+    .metric { font-size:34px; line-height:1; font-weight:700; }
+    .ok { border-top:5px solid var(--good); }
+    .mid { border-top:5px solid var(--warn); }
+    .block { border-top:5px solid var(--bad); }
+    .flow { counter-reset:step; display:grid; gap:12px; }
+    .step { position:relative; padding:16px 16px 16px 56px; background:#fff; border:1px solid var(--line); border-radius:8px; }
+    .step:before { counter-increment:step; content:counter(step); position:absolute; left:16px; top:16px; width:28px; height:28px; border-radius:50%; background:var(--brand); color:#fff; display:grid; place-items:center; font-weight:700; }
+    table { width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    th, td { padding:11px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:14px; }
+    th { background:#eef3f9; font-size:12px; text-transform:uppercase; color:#475467; letter-spacing:.04em; }
+    tr:last-child td { border-bottom:0; }
+    td small { margin-top:3px; }
+    .badge { display:inline-block; min-width:34px; padding:3px 8px; border-radius:999px; background:#ece7ff; color:#4220a8; font-weight:700; font-size:12px; text-align:center; }
+    .links { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .links a { display:block; padding:12px 14px; border:1px solid var(--line); border-radius:8px; background:#fff; text-decoration:none; color:var(--ink); }
+    .links a strong { display:block; }
+    .links a span { display:block; color:var(--muted); font-size:13px; }
+    @media (max-width:900px) { .grid, .grid.two, .links { grid-template-columns:1fr; } h1 { font-size:26px; } table { display:block; overflow-x:auto; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Старт внедрения email-шаблонов для Игоря</h1>
+    <p class="lead">Это главный вход в пакет. Он объясняет порядок действий для человека-программиста и показывает, какие шаблоны можно переносить в админку сразу, а какие сначала требуют backend-событий, переменных и проверки очереди.</p>
+  </header>
+  <main>
+    <section class="notice">
+      <strong>Главное правило:</strong> наличие события в dropdown не доказывает, что письмо реально отправляется. Перед импортом каждого шаблона нужно подтвердить три вещи: событие вызывается в коде, payload содержит все переменные, а очередь повторно проверяет состояние перед отправкой delayed-писем.
+    </section>
+
+    <h2>Состояние пакета</h2>
+    <div class="grid">
+      <div class="card ok"><div class="metric">2</div><strong>Обновить существующие</strong><span>Можно начать с live-шаблонов после проверки render и переменных.</span></div>
+      <div class="card mid"><div class="metric">9</div><strong>Создать после проверки</strong><span>Нужна сверка event binding, payload и queue, затем импорт в админку.</span></div>
+      <div class="card block"><div class="metric">9</div><strong>Сначала backend</strong><span>Нельзя считать готовыми до реализации событий, payload и отмен pending-писем.</span></div>
+    </div>
+
+    <h2>Как действовать</h2>
+    <div class="flow">
+      <div class="step"><h3>Открыть эту страницу и не начинать с ZIP</h3><p>Сначала понять группы внедрения ниже. ZIP нужен для передачи файлов, но решение о порядке внедрения принимается по этой панели.</p></div>
+      <div class="step"><h3>Проверить текущий механизм EmailTemplate</h3><p>Найти модель, таблицу, языковые записи, сохранение HTML/TXT, поля <code>event_name</code>, <code>condition_id</code>, <code>delay</code> и фактическую очередь отправки.</p></div>
+      <div class="step"><h3>Начать с двух существующих live-шаблонов</h3><p>Сначала обновить регистрацию и подтверждение email, потому что это самые проверяемые сервисные сценарии.</p></div>
+      <div class="step"><h3>Для остальных идти по статусу</h3><p>Если событие или переменная отсутствует, не импортировать письмо как готовое. Сначала добавить backend-trigger, payload, queue-binding и suppression-правила.</p></div>
+      <div class="step"><h3>Проверить RU и EN отдельно</h3><p>Для каждого импортированного шаблона проверить subject, HTML, TXT, comment, переменные и тестовый render без пустых URL и сломанных блоков.</p></div>
+    </div>
+
+    <h2>Что открывать в панели</h2>
+    <div class="links">
+      <a href="SCENARIOS_IMPLEMENTATION_PANEL_RU.html"><strong>Панель сценариев</strong><span>Человеческое объяснение: когда, зачем, настройки, риски и тест.</span></a>
+      <a href="IGOR_BACKEND_TASKS_RU.html"><strong>Задачи backend для Игоря</strong><span>Новые события, переменные, приоритеты и acceptance.</span></a>
+      <a href="BACKEND_EMAIL_EVENTS_CONTRACT_RU.html"><strong>Backend-контракт</strong><span>Фактические события, условия и доступные переменные.</span></a>
+      <a href="EVENT_VARIABLE_COMPATIBILITY_RU.csv"><strong>CSV совместимости</strong><span>Машинная сверка переменных по каждому шаблону.</span></a>
+      <a href="EMAIL_FLOW_CHAINS_PANEL_RU.html"><strong>Flow-цепочки</strong><span>Что отменяет delayed-письма и где сценарии пересекаются.</span></a>
+      <a href="TEMPLATES_PREVIEW_RU_EN.html"><strong>Превью RU/EN</strong><span>Визуальная проверка готовых HTML-писем.</span></a>
+    </div>
+
+    <h2>Очередность внедрения</h2>
+    <table>
+      <thead><tr><th>Приоритет</th><th>Шаблон</th><th>event_name</th><th>condition</th><th>delay</th><th>Действие</th><th>Как проверить</th></tr></thead>
+      <tbody>
+        <tr>
+<td><span class="badge">P0</span></td>
+<td><strong>Регистрация пользователя</strong><small>user_registration</small></td>
+<td><code>user.register</code></td>
+<td>0</td>
+<td>0</td>
+<td>Обновить live id=3</td>
+<td>Создать тестового пользователя; проверить welcome-письмо, затем отдельно проверить email confirmation.</td>
+</tr>
+<tr>
+<td><span class="badge">P0</span></td>
+<td><strong>Подтверждение email</strong><small>email_confirmation</small></td>
+<td><code>user.email_confirmation</code></td>
+<td>0</td>
+<td>0</td>
+<td>Обновить live id=4</td>
+<td>Создать тестового пользователя или запросить повторное подтверждение email; проверить ссылку, срок действия и отсутствие жестко прошитого бренда в тексте.</td>
+</tr>
+<tr>
+<td><span class="badge">P0</span></td>
+<td><strong>Эксперт ответил в чате</strong><small>advisor_chat_reply_ready</small></td>
+<td><code>message.received</code></td>
+<td>0</td>
+<td>0</td>
+<td>Создать в админке после проверки</td>
+<td>Создать ответ эксперта; проверить, что письмо ушло клиенту и содержит ссылку на конкретный чат.</td>
+</tr>
+<tr>
+<td><span class="badge">P0</span></td>
+<td><strong>Поддержка ответила</strong><small>support_reply</small></td>
+<td><code>support.message.received</code></td>
+<td>0</td>
+<td>0</td>
+<td>Создать в админке после проверки</td>
+<td>Ответить в тестовом тикете публичным сообщением; проверить письмо и ссылку на обращение.</td>
+</tr>
+<tr>
+<td><span class="badge">P0</span></td>
+<td><strong>Возврат подтвержден</strong><small>refund_confirmed</small></td>
+<td><code>payment.refund</code></td>
+<td>0</td>
+<td>0</td>
+<td>Создать в админке после проверки</td>
+<td>Смоделировать refund confirmed; проверить сумму, orderId, refundEta и отсутствие дубля при повторном webhook.</td>
+</tr>
+<tr>
+<td><span class="badge">P0</span></td>
+<td><strong>Оплата подтверждена</strong><small>payment_success_receipt</small></td>
+<td><code>payment.success</code></td>
+<td>0</td>
+<td>0</td>
+<td>Создать в админке после проверки</td>
+<td>Провести тестовую оплату/sandbox callback; проверить сумму, orderId, ссылку на чат и отсутствие дублей при повторном webhook.</td>
+</tr>
+<tr>
+<td><span class="badge">P0</span></td>
+<td><strong>Оплата не прошла</strong><small>payment_failed</small></td>
+<td><code>payment.error</code></td>
+<td>0</td>
+<td>0</td>
+<td>Создать в админке после проверки</td>
+<td>Смоделировать failed payment; проверить один email на одну попытку и корректный retry URL.</td>
+</tr>
+<tr>
+<td><span class="badge">P0</span></td>
+<td><strong>Сообщение клиента принято</strong><small>chat_message_received</small></td>
+<td><code>message.client_submitted</code></td>
+<td>0</td>
+<td>0</td>
+<td>Создать в админке после проверки</td>
+<td>Отправить сообщение клиентом; проверить, что уходит это письмо, а не advisor_chat_reply_ready.</td>
+</tr>
+<tr>
+<td><span class="badge">P1</span></td>
+<td><strong>Обращение в поддержку создано</strong><small>support_ticket_opened</small></td>
+<td><code>support.ticket.opened</code></td>
+<td>0</td>
+<td>0</td>
+<td>Сначала backend</td>
+<td>Создать тестовое обращение; проверить номер, ссылку и отсутствие отправки при внутренней операторской заметке.</td>
+</tr>
+<tr>
+<td><span class="badge">P1</span></td>
+<td><strong>Статус возврата обновлен</strong><small>refund_case_update</small></td>
+<td><code>payment.refund.update</code></td>
+<td>0</td>
+<td>0</td>
+<td>Создать в админке после проверки</td>
+<td>Перевести refund case между пользовательскими статусами; проверить, что письмо не уходит на внутренние изменения.</td>
+</tr>
+<tr>
+<td><span class="badge">P1</span></td>
+<td><strong>Попросить оценку консультации</strong><small>review_request</small></td>
+<td><code>review.request</code></td>
+<td>0</td>
+<td>24</td>
+<td>Создать в админке после проверки</td>
+<td>Завершить чат без отзыва; проверить письмо через delay. Затем оставить отзыв до delay и убедиться, что письмо не ушло.</td>
+</tr>
+<tr>
+<td><span class="badge">P1</span></td>
+<td><strong>Важная информация о поддержке</strong><small>safety_notice</small></td>
+<td><code>support.safety_notice</code></td>
+<td>0</td>
+<td>0</td>
+<td>Сначала backend</td>
+<td>Смоделировать safety flow; проверить, что письмо уходит только адресату и не содержит лишних деталей.</td>
+</tr>
+<tr>
+<td><span class="badge">P1</span></td>
+<td><strong>Ограничение доступа по возрасту/правилам</strong><small>minor_or_age_restriction_notice</small></td>
+<td><code>user.age_restricted</code></td>
+<td>0</td>
+<td>0</td>
+<td>Сначала backend</td>
+<td>На тестовом аккаунте применить ограничение; проверить письмо, поддержку и отсутствие деталей, которые нельзя раскрывать.</td>
+</tr>
+<tr>
+<td><span class="badge">P1</span></td>
+<td><strong>Сброс пароля</strong><small>password_reset</small></td>
+<td><code>user.password_recovery</code></td>
+<td>0</td>
+<td>0</td>
+<td>Сначала backend</td>
+<td>Запросить восстановление пароля на тестовом аккаунте; проверить одноразовость ссылки, срок действия и отсутствие раскрытия существования аккаунта.</td>
+</tr>
+<tr>
+<td><span class="badge">P1</span></td>
+<td><strong>Изменение безопасности</strong><small>security_change_alert</small></td>
+<td><code>security.security_change</code></td>
+<td>0</td>
+<td>0</td>
+<td>Сначала backend</td>
+<td>Изменить пароль/2FA в тестовом аккаунте; проверить, что письмо не содержит лишних персональных или технических данных.</td>
+</tr>
+<tr>
+<td><span class="badge">P1</span></td>
+<td><strong>Оплата начата, но не завершена</strong><small>payment_started</small></td>
+<td><code>payment.init</code></td>
+<td>0</td>
+<td>2</td>
+<td>Создать в админке после проверки</td>
+<td>Создать платеж и не завершать его; через тестовый delay проверить, что письмо уходит только для unpaid order. При success/error до delay письмо должно быть отменено.</td>
+</tr>
+<tr>
+<td><span class="badge">P1</span></td>
+<td><strong>Оплаченный чат без первого сообщения</strong><small>paid_chat_no_message_reminder</small></td>
+<td><code>message.no_first_chat_message</code></td>
+<td>5</td>
+<td>2</td>
+<td>Сначала backend</td>
+<td>Оплатить тестовый чат и не писать сообщение; проверить отправку после delay и отсутствие письма, если сообщение появилось до delay.</td>
+</tr>
+<tr>
+<td><span class="badge">P1</span></td>
+<td><strong>Ответ эксперта задерживается</strong><small>chat_sla_delay</small></td>
+<td><code>message.answer_delayed</code></td>
+<td>0</td>
+<td>0</td>
+<td>Сначала backend</td>
+<td>Создать чат без ответа эксперта и искусственно сдвинуть время; проверить одно письмо и отмену, если эксперт ответил.</td>
+</tr>
+<tr>
+<td><span class="badge">P2</span></td>
+<td><strong>Продолжить с тем же экспертом</strong><small>same_advisor_followup_offer</small></td>
+<td><code>advisor.followup.offer</code></td>
+<td>0</td>
+<td>72</td>
+<td>Сначала backend</td>
+<td>Закрыть тестовый чат; проверить отправку через 72 часа только при разрешенном follow-up и активных user settings.</td>
+</tr>
+<tr>
+<td><span class="badge">P2</span></td>
+<td><strong>Чат сохранен, можно вернуться</strong><small>d2_chat_reflection</small></td>
+<td><code>message.chat_saved</code></td>
+<td>0</td>
+<td>48</td>
+<td>Сначала backend</td>
+<td>Закрыть чат и дождаться/смоделировать 48 часов; проверить ссылку на сохраненный чат и respect user settings.</td>
+</tr>
+
+      </tbody>
+    </table>
+
+    <h2>Новые backend-события</h2>
+    <p class="lead">Эти события нельзя заменить красивым письмом в админке. Их нужно реализовать или явно связать с текущим кодом до импорта соответствующих шаблонов.</p>
+    <table>
+      <thead><tr><th>Приоритет</th><th>event_name</th><th>Шаблон</th><th>Acceptance</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge">P0</span></td><td><code>message.client_submitted</code></td><td>chat_message_received</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>message.answer_delayed</code></td><td>chat_sla_delay</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>message.no_first_chat_message</code></td><td>paid_chat_no_message_reminder</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>payment.refund.update</code></td><td>refund_case_update</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>review.request</code></td><td>review_request</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>security.security_change</code></td><td>security_change_alert</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>support.safety_notice</code></td><td>safety_notice</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>support.ticket.opened</code></td><td>support_ticket_opened</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>user.age_restricted</code></td><td>minor_or_age_restriction_notice</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>user.password_recovery</code></td><td>password_reset</td><td></td></tr>
+<tr><td><span class="badge">P2</span></td><td><code>advisor.followup.offer</code></td><td>same_advisor_followup_offer</td><td></td></tr>
+<tr><td><span class="badge">P2</span></td><td><code>message.chat_saved</code></td><td>d2_chat_reflection</td><td></td></tr>
+
+      </tbody>
+    </table>
+
+    <h2>Файлы для Codex</h2>
+    <div class="grid two">
+      <div class="card"><strong>Минимальный набор</strong><span>START_HERE_FOR_IGOR_RU.html, ADMIN_UPLOAD_INDEX_RU_EN.json, EVENT_VARIABLE_COMPATIBILITY_RU.csv, IGOR_MISSING_BACKEND_VARIABLES_RU.csv, IGOR_MISSING_BACKEND_EVENTS_RU.csv, EMAIL_FLOW_CHAINS_RU.json, templates/*/admin-meta.json.</span></div>
+      <div class="card"><strong>Проверочный набор</strong><span>SCENARIOS_IMPLEMENTATION_MATRIX_RU.json, BACKEND_EMAIL_EVENTS_CONTRACT_RU.json, VARIABLES_GLOSSARY_RU.json, FINAL_PACKAGE_QA_RU.md.</span></div>
+    </div>
+
+    <h2>Готовый prompt для Codex</h2>
+    <pre>Ты работаешь в репозитории Confideline. Нужно внедрить пакет email-шаблонов из папки или ZIP.
+
+Маршрут:
+1. Открой START_HERE_FOR_IGOR_RU.html и прочитай порядок внедрения.
+2. Проверь текущую модель EmailTemplate, таблицу, языковую модель, поля subject_email/body_email_html/body_email_txt/comment_about, event_name, condition_id и delay.
+3. Сопоставь ADMIN_UPLOAD_INDEX_RU_EN.json с реальными events, conditions и queue-binding в коде.
+4. Для каждого шаблона проверь EVENT_VARIABLE_COMPATIBILITY_RU.csv и IGOR_MISSING_BACKEND_VARIABLES_RU.csv.
+5. Шаблоны из блока &quot;обновить существующие&quot; можно внедрять первыми только после проверки render.
+6. Шаблоны из блока &quot;сначала backend&quot; не импортируй как готовые, пока не реализованы event, payload и queue-binding.
+7. После импорта проверь render RU/EN без пустых ссылок, undefined и сломанных handlebars-блоков.
+
+На выходе дай: что импортировано, что заблокировано backend-доработками, какие файлы изменены, какие проверки выполнены.</pre>
+
+    <h2>Стоп-условия</h2>
+    <div class="notice">
+      Не импортировать шаблон как готовый, если нет события в backend, нет источника для обязательной переменной, sanitizer ломает HTML/handlebars, delayed-письмо не проверяет состояние перед отправкой или тестовая отправка может уйти реальному клиенту.
+    </div>
+  </main>
+</body>
+</html>

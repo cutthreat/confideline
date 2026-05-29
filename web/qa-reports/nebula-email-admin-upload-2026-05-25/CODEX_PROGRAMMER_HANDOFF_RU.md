@@ -8,43 +8,30 @@
 
 ## Что Codex должен прочитать первым
 
-1. `BACKEND_EMAIL_EVENTS_CONTRACT_RU.html` - фактические `event_name`, `available_params`, `condition_id` и сверка каждого предложенного шаблона с текущим кодовым контрактом.
-2. `EVENT_VARIABLE_COMPATIBILITY_RU.csv` - машинная таблица: какие переменные уже доступны в выбранном event, а какие нужно добавить в backend payload.
-3. `IGOR_BACKEND_TASKS_RU.html` - отдельная страница для Игоря: недостающие переменные и события, что запрограммировать, priority и acceptance.
-4. `IGOR_MISSING_BACKEND_VARIABLES_RU.csv` - машинный список переменных, которых нет в `available_params` конкретных событий.
-5. `IGOR_MISSING_BACKEND_EVENTS_RU.csv` - машинный список событий, которых нет в текущем backend-контракте.
-6. `BILINGUAL_UPLOAD_GUIDE_RU.md` - структура RU/EN папок и порядок внедрения языков.
-7. `ADMIN_UPLOAD_INDEX_RU_EN.json` - машинная карта всех шаблонов в двух языках.
+1. `START_HERE_FOR_IGOR_RU.html` - главный вход для программиста: порядок действий, группы внедрения, новые backend events, файлы для Codex и стоп-условия.
+2. `SCENARIOS_IMPLEMENTATION_PANEL_RU.html` - основная веб-панель сценариев: приоритеты, live-статус, настройки, backend-gates, переменные и тесты.
+3. `BACKEND_EMAIL_EVENTS_CONTRACT_RU.html` - фактические `event_name`, `available_params`, `condition_id` и сверка каждого предложенного шаблона с текущим кодовым контрактом.
+4. `EVENT_VARIABLE_COMPATIBILITY_RU.csv` - машинная таблица: какие переменные уже доступны в выбранном event, а какие нужно добавить в backend payload.
+5. `IGOR_BACKEND_TASKS_RU.html` - отдельная страница для Игоря: недостающие переменные и события, что запрограммировать, priority и acceptance.
+6. `ADMIN_UPLOAD_INDEX_RU_EN.json` - машинная карта всех шаблонов в двух языках.
+7. `EMAIL_FLOW_CHAINS_PANEL_RU.html` - flow-цепочки, пересечения, отмены delayed email и suppression-правила.
 8. `VARIABLES_GLOSSARY_RU.html` - табличный поисковый словарь переменных: значение, backend source, usage, статус.
-9. `VARIABLES_CONTRACT_RU.md` - отдельный список новых/неподтвержденных переменных.
-10. `ADMIN_UPLOAD_INDEX_RU.json` - RU-only карта, оставлена для совместимости.
-11. `EMAIL_FLOW_CHAINS_PANEL_RU.html` - flow-цепочки, пересечения, отмены delayed email и suppression-правила; открыть переключатель `Для Игоря`.
-12. `EMAIL_FLOW_CHAINS_RU.json` - машинная карта flow-цепочек для Codex/программиста.
-13. `EMAIL_MARKETING_FLOW_REVIEW_RU.md` - почему выбраны такие задержки, suppression и порядок касаний.
-14. `SCENARIOS_IMPLEMENTATION_PANEL_RU.html` - основная веб-панель сценариев: приоритеты, live-статус, настройки, backend-gates, переменные и тесты.
-15. `SCENARIOS_IMPLEMENTATION_MATRIX_RU.json` - машинная версия решений из панели.
-16. `LIVE_CUSTOM_SITE_RECONCILIATION_RU.md` - свежая сверка пакета с текущей кастомной админкой `confideline.com`.
-17. `EMAIL_NOTIFICATION_LOGIC_RU.md` - логика `event_name`, `condition_id`, `delay` и риски dropdown-only проверки.
-18. `TEMPLATE_SETTINGS_SCENARIOS_RU.html` - когда, зачем и с какими настройками использовать каждый шаблон.
-19. `TEMPLATES_PREVIEW_RU_EN.html` - визуальный просмотр всех 20 писем в RU/EN.
-20. `TEMPLATES_PREVIEW_RU.html` - RU-only просмотр для совместимости.
-21. `ADMIN_UPLOAD_GUIDE_RU.md` - реальные поля формы сайта.
-22. `INTEGRATION_STATUS_RU.md` - проверенные факты live-админки и оставшиеся риски.
-23. `templates/*/en/admin-meta.json` и `templates/*/ru/admin-meta.json` - переменные, event, condition, delay и язык.
-24. `templates/*/{en,ru}/subject_email.txt`, `body_email_html.html`, `body_email_txt.txt`, `comment_about.txt` - значения для записи в модель.
+9. `IGOR_MISSING_BACKEND_VARIABLES_RU.csv` и `IGOR_MISSING_BACKEND_EVENTS_RU.csv` - машинные списки того, что нужно добавить в backend.
+10. `templates/*/en/admin-meta.json` и `templates/*/ru/admin-meta.json` - переменные, event, condition, delay и язык.
+11. `templates/*/{en,ru}/subject_email.txt`, `body_email_html.html`, `body_email_txt.txt`, `comment_about.txt` - значения для записи в модель.
 
 ## Правильный сценарий работы
 
 1. Программист дает Codex доступ к актуальному репозиторию сайта и локальному окружению.
-2. Codex находит актуальный production-код `EmailTemplate`, модель, миграции, seed/import-механизм и текущие обработчики email-событий. Базовый `youdate_extracted` не считать достаточным доказательством, потому что в нем live-слой `EmailTemplate` не найден.
-3. Codex проверяет доступные переменные каждого текущего template/event по `VARIABLES_CONTRACT_RU.md`. Новые переменные не добавлять в текст самовольно; если они нужны, оформить отдельное изменение backend-кода.
-4. Codex сравнивает `ADMIN_UPLOAD_INDEX_RU_EN.json` с реальными `event_name`, `condition_id`, переменными, языковой моделью и queue-binding в коде/БД.
-5. Codex сверяет каждый шаблон по `EVENT_VARIABLE_COMPATIBILITY_RU.csv`. Если статус не `compatible`, сначала расширить backend payload/event или упростить шаблон под реально доступные переменные.
-6. Шаблоны с `needs_new_backend_event=false` можно импортировать первыми только после подтверждения, что backend реально вызывает соответствующий `event_name` и ставит письмо в очередь. Наличие значения в dropdown не равно готовому trigger.
-7. Шаблоны с `needs_new_backend_event=true` нельзя просто добавить в админку как красивые письма: сначала нужно реализовать или подтвердить backend-trigger и queue.
-8. Импорт учитывать как EN-first процесс: сначала английский текст из `templates/*/en/`, затем русский перевод из `templates/*/ru/`.
-9. Перед импортом delayed-сценариев Codex сверяет `EMAIL_FLOW_CHAINS_RU.json`: какие события отменяют pending email и какие письма подавляются refund/safety/active chat.
-10. Для `user.register + condition_id 1/2/3` создавать отдельные follow-up шаблоны, если продуктово нужны возвраты через 1/3/7 дней. Это не тот же шаблон, что базовая регистрация `condition_id=0`.
+2. Codex открывает `START_HERE_FOR_IGOR_RU.html` и фиксирует три группы: обновить существующие, создать после проверки, сначала backend.
+3. Codex находит актуальный production-код `EmailTemplate`, модель, миграции, seed/import-механизм и текущие обработчики email-событий.
+4. Codex проверяет доступные переменные каждого текущего template/event по `EVENT_VARIABLE_COMPATIBILITY_RU.csv`. Новые переменные не добавлять в текст самовольно; если они нужны, оформить отдельное изменение backend-кода.
+5. Codex сравнивает `ADMIN_UPLOAD_INDEX_RU_EN.json` с реальными `event_name`, `condition_id`, переменными, языковой моделью и queue-binding в коде/БД.
+6. Сначала внедряются только два существующих live-шаблона: `user_registration` и `email_confirmation`, если тестовый render проходит.
+7. Шаблоны из группы `Создать после проверки` можно импортировать только после подтверждения, что backend реально вызывает соответствующий `event_name` и ставит письмо в очередь.
+8. Шаблоны из группы `Сначала backend` нельзя просто добавить в админку как красивые письма: сначала нужно реализовать или подтвердить backend-trigger, payload и queue.
+9. Импорт учитывать как EN-first процесс: сначала английский текст из `templates/*/en/`, затем русский перевод из `templates/*/ru/`.
+10. Перед импортом delayed-сценариев Codex сверяет `EMAIL_FLOW_CHAINS_RU.json`: какие события отменяют pending email и какие письма подавляются refund/safety/active chat.
 11. После импорта Codex запускает тестовую отправку или локальный render каждого шаблона с тестовыми переменными.
 12. Программист проверяет спорные продуктовые решения: тексты refund/support/safety, delays и условия повторных писем.
 

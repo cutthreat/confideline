@@ -20,6 +20,7 @@
 | Жестко прошитое рабочее название | PASS | 0 в клиентском пакете |
 | Справочник переменных | PASS | 39 строк, табличный HTML + CSV + JSON |
 | Список backend-доработок | PASS | Отдельная вкладка для Игоря + CSV/JSON |
+| Стартовая панель для программиста | PASS | `START_HERE_FOR_IGOR_RU.html`: порядок внедрения, группы шаблонов, файлы для Codex и стоп-условия |
 
 ## Ключевые логические исправления
 
@@ -63,10 +64,11 @@
 Программист вместе с Codex должен идти не по визуальному списку, а по связке:
 
 1. `SCENARIOS_IMPLEMENTATION_PANEL_RU.html`
-2. `BACKEND_EMAIL_EVENTS_CONTRACT_RU.html`
-3. `EVENT_VARIABLE_COMPATIBILITY_RU.csv`
-4. `IGOR_BACKEND_TASKS_RU.html`
-5. `ADMIN_UPLOAD_INDEX_RU_EN.json`
-6. `templates/*/admin-meta.json`
+2. `START_HERE_FOR_IGOR_RU.html`
+3. `BACKEND_EMAIL_EVENTS_CONTRACT_RU.html`
+4. `EVENT_VARIABLE_COMPATIBILITY_RU.csv`
+5. `IGOR_BACKEND_TASKS_RU.html`
+6. `ADMIN_UPLOAD_INDEX_RU_EN.json`
+7. `templates/*/admin-meta.json`
 
 Сначала обновляются 2 существующих live-шаблона. Остальные шаблоны загружаются только после проверки event binding, condition, delay и доступности переменных.
