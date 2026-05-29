@@ -10,25 +10,28 @@
 
 1. `BACKEND_EMAIL_EVENTS_CONTRACT_RU.html` - фактические `event_name`, `available_params`, `condition_id` и сверка каждого предложенного шаблона с текущим кодовым контрактом.
 2. `EVENT_VARIABLE_COMPATIBILITY_RU.csv` - машинная таблица: какие переменные уже доступны в выбранном event, а какие нужно добавить в backend payload.
-3. `BILINGUAL_UPLOAD_GUIDE_RU.md` - структура RU/EN папок и порядок внедрения языков.
-4. `ADMIN_UPLOAD_INDEX_RU_EN.json` - машинная карта всех шаблонов в двух языках.
-5. `VARIABLES_GLOSSARY_RU.html` - табличный поисковый словарь переменных: значение, backend source, usage, статус.
-6. `VARIABLES_CONTRACT_RU.md` - отдельный список новых/неподтвержденных переменных.
-7. `ADMIN_UPLOAD_INDEX_RU.json` - RU-only карта, оставлена для совместимости.
-8. `EMAIL_FLOW_CHAINS_PANEL_RU.html` - flow-цепочки, пересечения, отмены delayed email и suppression-правила; открыть переключатель `Для Игоря`.
-9. `EMAIL_FLOW_CHAINS_RU.json` - машинная карта flow-цепочек для Codex/программиста.
-10. `EMAIL_MARKETING_FLOW_REVIEW_RU.md` - почему выбраны такие задержки, suppression и порядок касаний.
-11. `SCENARIOS_IMPLEMENTATION_PANEL_RU.html` - основная веб-панель сценариев: приоритеты, live-статус, настройки, backend-gates, переменные и тесты.
-12. `SCENARIOS_IMPLEMENTATION_MATRIX_RU.json` - машинная версия решений из панели.
-13. `LIVE_CUSTOM_SITE_RECONCILIATION_RU.md` - свежая сверка пакета с текущей кастомной админкой `confideline.com`.
-14. `EMAIL_NOTIFICATION_LOGIC_RU.md` - логика `event_name`, `condition_id`, `delay` и риски dropdown-only проверки.
-15. `TEMPLATE_SETTINGS_SCENARIOS_RU.html` - когда, зачем и с какими настройками использовать каждый шаблон.
-16. `TEMPLATES_PREVIEW_RU_EN.html` - визуальный просмотр всех 20 писем в RU/EN.
-17. `TEMPLATES_PREVIEW_RU.html` - RU-only просмотр для совместимости.
-18. `ADMIN_UPLOAD_GUIDE_RU.md` - реальные поля формы сайта.
-19. `INTEGRATION_STATUS_RU.md` - проверенные факты live-админки и оставшиеся риски.
-20. `templates/*/en/admin-meta.json` и `templates/*/ru/admin-meta.json` - переменные, event, condition, delay и язык.
-21. `templates/*/{en,ru}/subject_email.txt`, `body_email_html.html`, `body_email_txt.txt`, `comment_about.txt` - значения для записи в модель.
+3. `IGOR_BACKEND_TODO_RU.html` - отдельная страница для Игоря: недостающие переменные и события, что запрограммировать, priority и acceptance.
+4. `IGOR_MISSING_BACKEND_VARIABLES_RU.csv` - машинный список переменных, которых нет в `available_params` конкретных событий.
+5. `IGOR_MISSING_BACKEND_EVENTS_RU.csv` - машинный список событий, которых нет в текущем backend-контракте.
+6. `BILINGUAL_UPLOAD_GUIDE_RU.md` - структура RU/EN папок и порядок внедрения языков.
+7. `ADMIN_UPLOAD_INDEX_RU_EN.json` - машинная карта всех шаблонов в двух языках.
+8. `VARIABLES_GLOSSARY_RU.html` - табличный поисковый словарь переменных: значение, backend source, usage, статус.
+9. `VARIABLES_CONTRACT_RU.md` - отдельный список новых/неподтвержденных переменных.
+10. `ADMIN_UPLOAD_INDEX_RU.json` - RU-only карта, оставлена для совместимости.
+11. `EMAIL_FLOW_CHAINS_PANEL_RU.html` - flow-цепочки, пересечения, отмены delayed email и suppression-правила; открыть переключатель `Для Игоря`.
+12. `EMAIL_FLOW_CHAINS_RU.json` - машинная карта flow-цепочек для Codex/программиста.
+13. `EMAIL_MARKETING_FLOW_REVIEW_RU.md` - почему выбраны такие задержки, suppression и порядок касаний.
+14. `SCENARIOS_IMPLEMENTATION_PANEL_RU.html` - основная веб-панель сценариев: приоритеты, live-статус, настройки, backend-gates, переменные и тесты.
+15. `SCENARIOS_IMPLEMENTATION_MATRIX_RU.json` - машинная версия решений из панели.
+16. `LIVE_CUSTOM_SITE_RECONCILIATION_RU.md` - свежая сверка пакета с текущей кастомной админкой `confideline.com`.
+17. `EMAIL_NOTIFICATION_LOGIC_RU.md` - логика `event_name`, `condition_id`, `delay` и риски dropdown-only проверки.
+18. `TEMPLATE_SETTINGS_SCENARIOS_RU.html` - когда, зачем и с какими настройками использовать каждый шаблон.
+19. `TEMPLATES_PREVIEW_RU_EN.html` - визуальный просмотр всех 20 писем в RU/EN.
+20. `TEMPLATES_PREVIEW_RU.html` - RU-only просмотр для совместимости.
+21. `ADMIN_UPLOAD_GUIDE_RU.md` - реальные поля формы сайта.
+22. `INTEGRATION_STATUS_RU.md` - проверенные факты live-админки и оставшиеся риски.
+23. `templates/*/en/admin-meta.json` и `templates/*/ru/admin-meta.json` - переменные, event, condition, delay и язык.
+24. `templates/*/{en,ru}/subject_email.txt`, `body_email_html.html`, `body_email_txt.txt`, `comment_about.txt` - значения для записи в модель.
 
 ## Правильный сценарий работы
 
@@ -87,7 +90,7 @@
 ```text
 Ты работаешь в репозитории Confideline. Нужно внедрить текущий пакет email-шаблонов из переданного ZIP/папки.
 
-Сначала прочитай BACKEND_EMAIL_EVENTS_CONTRACT_RU.html, EVENT_VARIABLE_COMPATIBILITY_RU.csv, BILINGUAL_UPLOAD_GUIDE_RU.md, CODEX_PROGRAMMER_HANDOFF_RU.md, VARIABLES_CONTRACT_RU.md, EMAIL_NOTIFICATION_LOGIC_RU.md, TEMPLATE_SETTINGS_SCENARIOS_RU.md, ADMIN_UPLOAD_INDEX_RU_EN.json, ADMIN_UPLOAD_GUIDE_RU.md и INTEGRATION_STATUS_RU.md.
+Сначала прочитай BACKEND_EMAIL_EVENTS_CONTRACT_RU.html, IGOR_BACKEND_TODO_RU.html, IGOR_MISSING_BACKEND_VARIABLES_RU.csv, EVENT_VARIABLE_COMPATIBILITY_RU.csv, BILINGUAL_UPLOAD_GUIDE_RU.md, CODEX_PROGRAMMER_HANDOFF_RU.md, VARIABLES_CONTRACT_RU.md, EMAIL_NOTIFICATION_LOGIC_RU.md, TEMPLATE_SETTINGS_SCENARIOS_RU.md, ADMIN_UPLOAD_INDEX_RU_EN.json, ADMIN_UPLOAD_GUIDE_RU.md и INTEGRATION_STATUS_RU.md.
 
 Задача:
 1. Найди актуальную модель/таблицу EmailTemplate, текущие event_name, condition_id, delay и механизм отправки email.

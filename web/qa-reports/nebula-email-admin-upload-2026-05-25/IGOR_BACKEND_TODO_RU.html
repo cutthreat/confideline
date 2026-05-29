@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Что нужно запрограммировать Игорю</title>
+  <style>
+    :root { --ink:#172033; --muted:#667085; --line:#d9e2ef; --bg:#f5f7fb; --panel:#fff; --p0:#a33a3a; --p1:#a15c00; --p2:#155c8a; --brand:#6338d8; }
+    * { box-sizing:border-box; } body { margin:0; background:var(--bg); color:var(--ink); font-family:Arial,Helvetica,sans-serif; line-height:1.5; }
+    header, main { max-width:1280px; margin:0 auto; padding:24px; } h1 { margin:0 0 8px; font-size:30px; line-height:1.16; } h2 { margin:24px 0 12px; font-size:22px; }
+    .lead { color:var(--muted); max-width:920px; } .nav { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+    .nav a { color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px 10px; text-decoration:none; font-size:13px; }
+    .cards { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:16px 0; }
+    .card, section { background:var(--panel); border:1px solid var(--line); border-radius:8px; box-shadow:0 12px 34px rgba(23,32,51,.07); }
+    .card { padding:14px; } .card span { display:block; color:var(--muted); font-size:12px; text-transform:uppercase; } .card strong { display:block; margin-top:8px; font-size:24px; }
+    section { padding:16px; margin-bottom:18px; } .table-wrap { overflow-x:auto; border:1px solid var(--line); border-radius:8px; }
+    table { width:100%; border-collapse:collapse; min-width:1180px; } th,td { padding:10px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:13px; }
+    th { background:#f8fafc; color:var(--muted); font-size:12px; text-transform:uppercase; }
+    code { background:#f0eefb; color:#402391; border-radius:5px; padding:2px 5px; font-family:Consolas,Monaco,monospace; font-size:12px; }
+    small { display:block; margin-top:5px; color:var(--muted); } .tag { display:inline-flex; border-radius:999px; padding:2px 8px; background:#edf1f6; color:#344054; font-size:12px; font-weight:700; }
+    .priority { display:inline-flex; min-width:34px; justify-content:center; border-radius:999px; padding:3px 8px; color:#fff; font-weight:700; font-size:12px; }
+    .p0 { background:var(--p0); } .p1 { background:var(--p1); } .p2 { background:var(--p2); }
+    @media (max-width:900px) { .cards { grid-template-columns:1fr 1fr; } h1 { font-size:24px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Что нужно запрограммировать Игорю</h1>
+    <p class="lead">Отдельный список недостающих backend-переменных и событий. HTML-шаблоны подготовлены, но для части сценариев нужно добавить переменные в render context или реализовать event/trigger/queue-binding.</p>
+    <nav class="nav">
+      <a href="index.html">Главная</a>
+      <a href="IGOR_MISSING_BACKEND_VARIABLES_RU.csv">CSV переменных</a>
+      <a href="IGOR_MISSING_BACKEND_EVENTS_RU.csv">CSV событий</a>
+      <a href="EVENT_VARIABLE_COMPATIBILITY_RU.csv">Полная совместимость</a>
+      <a href="BACKEND_EMAIL_EVENTS_CONTRACT_RU.html">Backend-контракт</a>
+      <a href="TEMPLATES_PREVIEW_RU_EN.html">Превью писем</a>
+    </nav>
+  </header>
+  <main>
+    <div class="cards">
+      <div class="card"><span>Недостающих переменных</span><strong>36</strong></div>
+      <div class="card"><span>Недостающих событий</span><strong>9</strong></div>
+      <div class="card"><span>P0 переменных</span><strong>25</strong></div>
+      <div class="card"><span>P1 переменных</span><strong>10</strong></div>
+    </div>
+    <section>
+      <h2>Недостающие переменные</h2>
+      <div class="table-wrap"><table><thead><tr><th>Priority</th><th>Variable</th><th>Категория</th><th>Смысл/source</th><th>Что запрограммировать</th><th>Где нужна</th><th>Acceptance</th></tr></thead><tbody>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{advisorName}}</code></td>
+          <td><span class="tag">chat</span></td>
+          <td>Имя эксперта/консультанта, назначенного на конкретную чат-консультацию<small>consultation.assignedAdvisor.displayName</small></td>
+          <td>Передать display name эксперта/консультанта, назначенного на консультацию.</td>
+          <td>advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_message_received / message.received / condition=0 / delay=0 | payment_success_receipt / payment.success / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{advisorName}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{answerDueAt}}</code></td>
+          <td><span class="tag">chat</span></td>
+          <td>Плановое время ответа эксперта по SLA<small>consultation.sla.answerDueAt</small></td>
+          <td>Передать человекочитаемое плановое время ответа по SLA с учетом timezone.</td>
+          <td>chat_message_received / message.received / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{answerDueAt}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{chatUrl}}</code></td>
+          <td><span class="tag">chat</span></td>
+          <td>URL конкретного чата/консультации в кабинете<small>consultation.chatUrl</small></td>
+          <td>Сформировать абсолютную ссылку на конкретный чат/консультацию, не на общий кабинет.</td>
+          <td>advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_message_received / message.received / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | payment_success_receipt / payment.success / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{chatUrl}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{consultationId}}</code></td>
+          <td><span class="tag">chat</span></td>
+          <td>Внутренний ID консультации/чата<small>consultation.id</small></td>
+          <td>Передать ID консультации/чата, если он используется в поддержке и отображении.</td>
+          <td>chat_message_received / message.received / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{consultationId}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{firstResponseSla}}</code></td>
+          <td><span class="tag">chat</span></td>
+          <td>Обещанный срок первого ответа эксперта<small>consultation.sla.firstResponseLabel</small></td>
+          <td>Передать публичный SLA первого ответа, например &#39;до 24 часов&#39;.</td>
+          <td>payment_success_receipt / payment.success / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{firstResponseSla}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{siteUrl}}</code></td>
+          <td><span class="tag">global_config</span></td>
+          <td>Базовый URL сайта/личного кабинета<small>global_config.siteUrl</small></td>
+          <td>Передать базовый публичный URL сайта/кабинета из глобальной конфигурации.</td>
+          <td>advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_message_received / message.received / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | payment_failed / payment.error / condition=0 / delay=0 | payment_started / payment.init / condition=0 / delay=2 | payment_success_receipt / payment.success / condition=0 / delay=0 | refund_case_update / payment.refund / condition=0 / delay=0 | refund_confirmed / payment.refund / condition=0 / delay=0 | review_request / review.left / condition=0 / delay=24 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_reply / support.message.received / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{siteUrl}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{supportEmail}}</code></td>
+          <td><span class="tag">global_config</span></td>
+          <td>Email поддержки<small>global_config.supportEmail</small></td>
+          <td>Передать email поддержки из глобальной конфигурации.</td>
+          <td>advisor_chat_reply_ready / message.received / condition=0 / delay=0 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | password_reset / user.password_recovery / condition=0 / delay=0 | payment_success_receipt / payment.success / condition=0 / delay=0 | refund_confirmed / payment.refund / condition=0 / delay=0 | safety_notice / support.safety_notice / condition=0 / delay=0 | security_change_alert / security.security_change / condition=0 / delay=0 | support_reply / support.message.received / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{supportEmail}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{legalMerchantName}}</code></td>
+          <td><span class="tag">global_legal</span></td>
+          <td>Юридическое имя продавца/сервиса<small>global_config.legalMerchantName</small></td>
+          <td>Передать юридическое имя продавца/сервиса из глобальной конфигурации.</td>
+          <td>advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_message_received / message.received / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | payment_failed / payment.error / condition=0 / delay=0 | payment_started / payment.init / condition=0 / delay=2 | payment_success_receipt / payment.success / condition=0 / delay=0 | refund_case_update / payment.refund / condition=0 / delay=0 | refund_confirmed / payment.refund / condition=0 / delay=0 | review_request / review.left / condition=0 / delay=24 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_reply / support.message.received / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{legalMerchantName}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{privacyUrl}}</code></td>
+          <td><span class="tag">global_legal</span></td>
+          <td>URL политики приватности<small>legal_config.privacyUrl</small></td>
+          <td>Передать публичную ссылку на политику приватности.</td>
+          <td>advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_message_received / message.received / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | payment_failed / payment.error / condition=0 / delay=0 | payment_started / payment.init / condition=0 / delay=2 | payment_success_receipt / payment.success / condition=0 / delay=0 | refund_case_update / payment.refund / condition=0 / delay=0 | refund_confirmed / payment.refund / condition=0 / delay=0 | review_request / review.left / condition=0 / delay=24 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_reply / support.message.received / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{privacyUrl}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{refundPolicyUrl}}</code></td>
+          <td><span class="tag">global_legal</span></td>
+          <td>URL правил возврата<small>legal_config.refundPolicyUrl</small></td>
+          <td>Передать публичную ссылку на правила возврата.</td>
+          <td>advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_message_received / message.received / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | payment_failed / payment.error / condition=0 / delay=0 | payment_started / payment.init / condition=0 / delay=2 | payment_success_receipt / payment.success / condition=0 / delay=0 | refund_case_update / payment.refund / condition=0 / delay=0 | refund_confirmed / payment.refund / condition=0 / delay=0 | review_request / review.left / condition=0 / delay=24 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_reply / support.message.received / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{refundPolicyUrl}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{termsUrl}}</code></td>
+          <td><span class="tag">global_legal</span></td>
+          <td>URL пользовательских условий<small>legal_config.termsUrl</small></td>
+          <td>Передать публичную ссылку на пользовательские условия.</td>
+          <td>advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_message_received / message.received / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | payment_failed / payment.error / condition=0 / delay=0 | payment_started / payment.init / condition=0 / delay=2 | payment_success_receipt / payment.success / condition=0 / delay=0 | refund_case_update / payment.refund / condition=0 / delay=0 | refund_confirmed / payment.refund / condition=0 / delay=0 | review_request / review.left / condition=0 / delay=24 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_reply / support.message.received / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{termsUrl}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{checkoutUrl}}</code></td>
+          <td><span class="tag">payment</span></td>
+          <td>URL возврата к незавершенной оплате<small>payment_order.checkoutUrl</small></td>
+          <td>Сформировать безопасную ссылку возврата к актуальной неоплаченной попытке.</td>
+          <td>payment_failed / payment.error / condition=0 / delay=0 | payment_started / payment.init / condition=0 / delay=2</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{checkoutUrl}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{currency}}</code></td>
+          <td><span class="tag">payment</span></td>
+          <td>Валюта платежа/возврата<small>payment_order.currency</small></td>
+          <td>Передать валюту и форматировать вместе с суммой.</td>
+          <td>payment_failed / payment.error / condition=0 / delay=0 | refund_confirmed / payment.refund / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{currency}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{merchantDescriptor}}</code></td>
+          <td><span class="tag">payment</span></td>
+          <td>Дескриптор продавца в выписке/чеке<small>payment_merchant.descriptor</small></td>
+          <td>Передать дескриптор продавца в выписке, если он реально известен.</td>
+          <td>payment_success_receipt / payment.success / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{merchantDescriptor}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{orderId}}</code></td>
+          <td><span class="tag">payment</span></td>
+          <td>ID заказа/платежа<small>payment_order.id</small></td>
+          <td>Передать ID заказа/платежа, по которому поддержка сможет найти операцию.</td>
+          <td>paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | payment_success_receipt / payment.success / condition=0 / delay=0 | refund_confirmed / payment.refund / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{orderId}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{paidAt}}</code></td>
+          <td><span class="tag">payment</span></td>
+          <td>Дата/время успешной оплаты<small>payment_order.paidAt</small></td>
+          <td>Передать дату/время успешной оплаты в человекочитаемом формате.</td>
+          <td>payment_success_receipt / payment.success / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{paidAt}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{receiptUrl}}</code></td>
+          <td><span class="tag">payment</span></td>
+          <td>URL чека/квитанции<small>payment_order.receiptUrl</small></td>
+          <td>Передать ссылку на чек/квитанцию; если чека нет, не показывать пустую ссылку.</td>
+          <td>payment_success_receipt / payment.success / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{receiptUrl}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{processorRefundId}}</code></td>
+          <td><span class="tag">refund</span></td>
+          <td>ID возврата в платежном провайдере<small>refund.processorRefundId</small></td>
+          <td>Передать ID возврата у платежного провайдера, если он полезен клиенту/поддержке.</td>
+          <td>refund_confirmed / payment.refund / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{processorRefundId}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{refundAmount}}</code></td>
+          <td><span class="tag">refund</span></td>
+          <td>Сумма возврата<small>refund.amount</small></td>
+          <td>Передать сумму возврата в человекочитаемом виде.</td>
+          <td>refund_confirmed / payment.refund / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{refundAmount}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{refundEta}}</code></td>
+          <td><span class="tag">refund</span></td>
+          <td>Ожидаемый срок поступления возврата<small>refund.etaLabel</small></td>
+          <td>Передать ожидаемый срок поступления возврата.</td>
+          <td>refund_confirmed / payment.refund / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{refundEta}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{supportCaseId}}</code></td>
+          <td><span class="tag">support</span></td>
+          <td>ID обращения в поддержку<small>support_case.id</small></td>
+          <td>Передать публичный ID обращения в поддержку.</td>
+          <td>chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | refund_case_update / payment.refund / condition=0 / delay=0 | support_reply / support.message.received / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{supportCaseId}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{supportCaseStatus}}</code></td>
+          <td><span class="tag">support</span></td>
+          <td>Пользовательский статус обращения<small>support_case.publicStatus</small></td>
+          <td>Передать пользовательский статус обращения, не внутренний статус оператора.</td>
+          <td>support_reply / support.message.received / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{supportCaseStatus}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{supportCaseUrl}}</code></td>
+          <td><span class="tag">support</span></td>
+          <td>URL конкретного обращения в поддержку<small>support_case.url</small></td>
+          <td>Сформировать ссылку на конкретное обращение.</td>
+          <td>chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | refund_case_update / payment.refund / condition=0 / delay=0 | refund_confirmed / payment.refund / condition=0 / delay=0 | support_reply / support.message.received / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{supportCaseUrl}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{supportUpdatedAt}}</code></td>
+          <td><span class="tag">support</span></td>
+          <td>Дата/время обновления обращения<small>support_case.updatedAt</small></td>
+          <td>Передать дату/время пользовательски видимого обновления обращения.</td>
+          <td>refund_case_update / payment.refund / condition=0 / delay=0 | support_reply / support.message.received / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{supportUpdatedAt}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p0">P0</span></td>
+          <td><code>{{supportUrl}}</code></td>
+          <td><span class="tag">support</span></td>
+          <td>URL раздела поддержки<small>route_builder.support</small></td>
+          <td>Передать ссылку на раздел поддержки или конкретный тикет.</td>
+          <td>advisor_chat_reply_ready / message.received / condition=0 / delay=0 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | payment_failed / payment.error / condition=0 / delay=0 | safety_notice / support.safety_notice / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{supportUrl}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p1">P1</span></td>
+          <td><code>{{resetExpiresAt}}</code></td>
+          <td><span class="tag">auth</span></td>
+          <td>Дата/время истечения ссылки сброса пароля<small>password_reset_token.expiresAt</small></td>
+          <td>Передать дату/время истечения ссылки сброса пароля.</td>
+          <td>password_reset / user.password_recovery / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{resetExpiresAt}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p1">P1</span></td>
+          <td><code>{{resetUrl}}</code></td>
+          <td><span class="tag">auth</span></td>
+          <td>URL сброса пароля<small>password_reset_token.url</small></td>
+          <td>Передать одноразовую ссылку сброса пароля.</td>
+          <td>password_reset / user.password_recovery / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{resetUrl}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p1">P1</span></td>
+          <td><code>{{updatedAnswerEta}}</code></td>
+          <td><span class="tag">chat</span></td>
+          <td>Обновленный прогноз ответа при задержке SLA<small>consultation.sla.updatedAnswerEta</small></td>
+          <td>Передать новый честный прогноз ответа при задержке SLA.</td>
+          <td>chat_sla_delay / message.answer_delayed / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{updatedAnswerEta}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p1">P1</span></td>
+          <td><code>{{siteName}}</code></td>
+          <td><span class="tag">global_config</span></td>
+          <td>Название сайта/бренда<small>global_config.siteName</small></td>
+          <td>Передать название сайта/бренда из глобальной конфигурации в render context каждого email event.</td>
+          <td>chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{siteName}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p1">P1</span></td>
+          <td><code>{{reviewUrl}}</code></td>
+          <td><span class="tag">review</span></td>
+          <td>URL формы отзыва о консультации<small>review_flow.reviewUrl</small></td>
+          <td>Сформировать ссылку на форму отзыва для конкретной консультации.</td>
+          <td>review_request / review.left / condition=0 / delay=24</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{reviewUrl}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p1">P1</span></td>
+          <td><code>{{accountSecurityUrl}}</code></td>
+          <td><span class="tag">security</span></td>
+          <td>URL раздела безопасности аккаунта<small>route_builder/account</small></td>
+          <td>Сформировать абсолютную ссылку на раздел безопасности аккаунта.</td>
+          <td>security_change_alert / security.security_change / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{accountSecurityUrl}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p1">P1</span></td>
+          <td><code>{{securityChangedAt}}</code></td>
+          <td><span class="tag">security</span></td>
+          <td>Дата/время изменения настройки безопасности<small>security_event.changedAt</small></td>
+          <td>Передать дату/время изменения настройки безопасности.</td>
+          <td>security_change_alert / security.security_change / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{securityChangedAt}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p1">P1</span></td>
+          <td><code>{{userName}}</code></td>
+          <td><span class="tag">user</span></td>
+          <td>Имя пользователя для персонализации<small>user.displayName</small></td>
+          <td>Передать display name пользователя с безопасным fallback, если имя пустое.</td>
+          <td>chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{userName}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p1">P1</span></td>
+          <td><code>{{emailPreferencesUrl}}</code></td>
+          <td><span class="tag">user_settings</span></td>
+          <td>URL настроек email-уведомлений<small>user.emailPreferencesUrl</small></td>
+          <td>Сформировать ссылку на настройки email-уведомлений для lifecycle/marketing писем.</td>
+          <td>d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | payment_started / payment.init / condition=0 / delay=2 | review_request / review.left / condition=0 / delay=24 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{emailPreferencesUrl}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p1">P1</span></td>
+          <td><code>{{unsubscribeUrl}}</code></td>
+          <td><span class="tag">user_settings</span></td>
+          <td>URL отписки от marketing/lifecycle писем<small>unsubscribe.url</small></td>
+          <td>Сформировать ссылку отписки для marketing/lifecycle писем.</td>
+          <td>d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | payment_started / payment.init / condition=0 / delay=2 | review_request / review.left / condition=0 / delay=24 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{unsubscribeUrl}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+        <tr>
+          <td><span class="priority p2">P2</span></td>
+          <td><code>{{followupOfferUrl}}</code></td>
+          <td><span class="tag">lifecycle</span></td>
+          <td>URL предложения продолжить консультацию с тем же экспертом<small>lifecycle_offer.followupOfferUrl</small></td>
+          <td>Сформировать ссылку на предложение продолжить консультацию с тем же экспертом.</td>
+          <td>same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72</td>
+          <td>В render-тесте для всех перечисленных шаблонов переменная {{followupOfferUrl}} не пустая, корректно экранируется и имеет fallback.</td>
+        </tr>
+      </tbody></table></div>
+    </section>
+    <section>
+      <h2>Недостающие события</h2>
+      <div class="table-wrap"><table><thead><tr><th>Priority</th><th>Template</th><th>event_name</th><th>condition</th><th>delay</th><th>Что запрограммировать</th></tr></thead><tbody>
+        <tr>
+          <td><span class="priority p1">P1</span></td>
+          <td><code>chat_sla_delay</code></td>
+          <td><code>message.answer_delayed</code></td>
+          <td><code>0</code></td>
+          <td><code>0</code></td>
+          <td>Добавить event/trigger/queue-binding или согласовать замену на существующее событие. После этого передать missing_variables в render context.<small>Недостающие переменные: answerDueAt, chatUrl, consultationId, legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportCaseId, supportCaseUrl, termsUrl, updatedAnswerEta, userName</small></td>
+        </tr>
+        <tr>
+          <td><span class="priority p1">P1</span></td>
+          <td><code>paid_chat_no_message_reminder</code></td>
+          <td><code>message.no_first_chat_message</code></td>
+          <td><code>5</code></td>
+          <td><code>2</code></td>
+          <td>Добавить event/trigger/queue-binding или согласовать замену на существующее событие. После этого передать missing_variables в render context.<small>Недостающие переменные: chatUrl, legalMerchantName, orderId, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportUrl, termsUrl, userName</small></td>
+        </tr>
+        <tr>
+          <td><span class="priority p1">P1</span></td>
+          <td><code>security_change_alert</code></td>
+          <td><code>security.security_change</code></td>
+          <td><code>0</code></td>
+          <td><code>0</code></td>
+          <td>Добавить event/trigger/queue-binding или согласовать замену на существующее событие. После этого передать missing_variables в render context.<small>Недостающие переменные: accountSecurityUrl, legalMerchantName, privacyUrl, refundPolicyUrl, securityChangedAt, siteName, siteUrl, supportEmail, termsUrl, userName</small></td>
+        </tr>
+        <tr>
+          <td><span class="priority p1">P1</span></td>
+          <td><code>safety_notice</code></td>
+          <td><code>support.safety_notice</code></td>
+          <td><code>0</code></td>
+          <td><code>0</code></td>
+          <td>Добавить event/trigger/queue-binding или согласовать замену на существующее событие. После этого передать missing_variables в render context.<small>Недостающие переменные: legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportEmail, supportUrl, termsUrl, userName</small></td>
+        </tr>
+        <tr>
+          <td><span class="priority p1">P1</span></td>
+          <td><code>support_ticket_opened</code></td>
+          <td><code>support.ticket.opened</code></td>
+          <td><code>0</code></td>
+          <td><code>0</code></td>
+          <td>Добавить event/trigger/queue-binding или согласовать замену на существующее событие. После этого передать missing_variables в render context.<small>Недостающие переменные: legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportCaseId, supportCaseUrl, supportEmail, termsUrl, userName</small></td>
+        </tr>
+        <tr>
+          <td><span class="priority p1">P1</span></td>
+          <td><code>minor_or_age_restriction_notice</code></td>
+          <td><code>user.age_restricted</code></td>
+          <td><code>0</code></td>
+          <td><code>0</code></td>
+          <td>Добавить event/trigger/queue-binding или согласовать замену на существующее событие. После этого передать missing_variables в render context.<small>Недостающие переменные: legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportEmail, supportUrl, termsUrl, userName</small></td>
+        </tr>
+        <tr>
+          <td><span class="priority p1">P1</span></td>
+          <td><code>password_reset</code></td>
+          <td><code>user.password_recovery</code></td>
+          <td><code>0</code></td>
+          <td><code>0</code></td>
+          <td>Добавить event/trigger/queue-binding или согласовать замену на существующее событие. После этого передать missing_variables в render context.<small>Недостающие переменные: legalMerchantName, privacyUrl, refundPolicyUrl, resetExpiresAt, resetUrl, siteName, siteUrl, supportEmail, termsUrl, userName</small></td>
+        </tr>
+        <tr>
+          <td><span class="priority p2">P2</span></td>
+          <td><code>same_advisor_followup_offer</code></td>
+          <td><code>advisor.followup.offer</code></td>
+          <td><code>0</code></td>
+          <td><code>72</code></td>
+          <td>Добавить event/trigger/queue-binding или согласовать замену на существующее событие. После этого передать missing_variables в render context.<small>Недостающие переменные: advisorName, chatUrl, emailPreferencesUrl, followupOfferUrl, legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, termsUrl, unsubscribeUrl, userName</small></td>
+        </tr>
+        <tr>
+          <td><span class="priority p2">P2</span></td>
+          <td><code>d2_chat_reflection</code></td>
+          <td><code>message.chat_saved</code></td>
+          <td><code>0</code></td>
+          <td><code>48</code></td>
+          <td>Добавить event/trigger/queue-binding или согласовать замену на существующее событие. После этого передать missing_variables в render context.<small>Недостающие переменные: chatUrl, emailPreferencesUrl, legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, termsUrl, unsubscribeUrl, userName</small></td>
+        </tr>
+      </tbody></table></div>
+    </section>
+  </main>
+</body>
+</html>
