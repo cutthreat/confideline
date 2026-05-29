@@ -53,6 +53,7 @@
 
 В live-индексе найдено 11 шаблонов. Текущие events в форме включают `user.email_confirmation`, `message.received`, `payment.success`, `payment.error`, `payment.refund`, `support.message.received`, `review.left` и другие legacy-события.
 
-Часть Nebula-сценариев можно посадить на существующие события, но часть требует новых backend events. Это отмечено в индексе.
+Часть сценариев онлайн-консультации можно посадить на существующие события, но часть требует новых backend events. Это отмечено в индексе.
 
 Отложенные сценарии нельзя импортировать как простые письма без queue/cancel логики. Правила пересечений зафиксированы в `EMAIL_FLOW_CHAINS_RU.json` и `EMAIL_FLOW_CHAINS_PANEL_RU.html`.
+
