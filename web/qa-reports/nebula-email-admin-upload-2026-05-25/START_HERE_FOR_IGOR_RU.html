@@ -27,6 +27,12 @@
     .ok { border-top:5px solid var(--good); }
     .mid { border-top:5px solid var(--warn); }
     .block { border-top:5px solid var(--bad); }
+    .legend { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0 0; }
+    .legend span { display:inline-flex; align-items:center; gap:7px; padding:6px 10px; border:1px solid var(--line); border-radius:999px; background:#fff; font-size:13px; color:var(--muted); }
+    .legend i { width:12px; height:12px; border-radius:3px; display:inline-block; }
+    .legend .existing i { background:#dff8ea; border:1px solid #6fcf97; }
+    .legend .create i { background:#fff5e6; border:1px solid #e9b36b; }
+    .legend .backend i { background:#fff1f0; border:1px solid #f97066; }
     .flow { counter-reset:step; display:grid; gap:12px; }
     .step { position:relative; padding:16px 16px 16px 56px; background:#fff; border:1px solid var(--line); border-radius:8px; }
     .step:before { counter-increment:step; content:counter(step); position:absolute; left:16px; top:16px; width:28px; height:28px; border-radius:50%; background:var(--brand); color:#fff; display:grid; place-items:center; font-weight:700; }
@@ -34,6 +40,10 @@
     th, td { padding:11px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:14px; }
     th { background:#eef3f9; font-size:12px; text-transform:uppercase; color:#475467; letter-spacing:.04em; }
     tr:last-child td { border-bottom:0; }
+    tr.row-existing td { background:#f0fbf4; border-bottom-color:#c7eed8; }
+    tr.row-existing td:first-child { box-shadow:inset 5px 0 0 var(--good); }
+    tr.row-create td { background:#fffaf2; }
+    tr.row-backend td { background:#fff6f5; }
     td small { margin-top:3px; }
     .badge { display:inline-block; min-width:34px; padding:3px 8px; border-radius:999px; background:#ece7ff; color:#4220a8; font-weight:700; font-size:12px; text-align:center; }
     .links { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
@@ -59,6 +69,11 @@
       <div class="card mid"><div class="metric">9</div><strong>Создать после проверки</strong><span>Нужна сверка event binding, payload и queue, затем импорт в админку.</span></div>
       <div class="card block"><div class="metric">9</div><strong>Сначала backend</strong><span>Нельзя считать готовыми до реализации событий, payload и отмен pending-писем.</span></div>
     </div>
+    <div class="legend" aria-label="Легенда цветов">
+      <span class="existing"><i></i>Зеленый: шаблон уже есть в системе, обновлять существующую запись</span>
+      <span class="create"><i></i>Желтый: можно создать после проверки backend-trigger</span>
+      <span class="backend"><i></i>Красный: сначала backend-доработка</span>
+    </div>
 
     <h2>Как действовать</h2>
     <div class="flow">
@@ -83,7 +98,7 @@
     <table>
       <thead><tr><th>Приоритет</th><th>Шаблон</th><th>event_name</th><th>condition</th><th>delay</th><th>Действие</th><th>Как проверить</th></tr></thead>
       <tbody>
-        <tr>
+        <tr class="row-existing">
 <td><span class="badge">P0</span></td>
 <td><strong>Регистрация пользователя</strong><small>user_registration</small></td>
 <td><code>user.register</code></td>
@@ -92,7 +107,7 @@
 <td>Обновить live id=3</td>
 <td>Создать тестового пользователя; проверить welcome-письмо, затем отдельно проверить email confirmation.</td>
 </tr>
-<tr>
+<tr class="row-existing">
 <td><span class="badge">P0</span></td>
 <td><strong>Подтверждение email</strong><small>email_confirmation</small></td>
 <td><code>user.email_confirmation</code></td>
@@ -101,7 +116,7 @@
 <td>Обновить live id=4</td>
 <td>Создать тестового пользователя или запросить повторное подтверждение email; проверить ссылку, срок действия и отсутствие жестко прошитого бренда в тексте.</td>
 </tr>
-<tr>
+<tr class="row-create">
 <td><span class="badge">P0</span></td>
 <td><strong>Эксперт ответил в чате</strong><small>advisor_chat_reply_ready</small></td>
 <td><code>message.received</code></td>
@@ -110,7 +125,7 @@
 <td>Создать в админке после проверки</td>
 <td>Создать ответ эксперта; проверить, что письмо ушло клиенту и содержит ссылку на конкретный чат.</td>
 </tr>
-<tr>
+<tr class="row-create">
 <td><span class="badge">P0</span></td>
 <td><strong>Поддержка ответила</strong><small>support_reply</small></td>
 <td><code>support.message.received</code></td>
@@ -119,7 +134,7 @@
 <td>Создать в админке после проверки</td>
 <td>Ответить в тестовом тикете публичным сообщением; проверить письмо и ссылку на обращение.</td>
 </tr>
-<tr>
+<tr class="row-create">
 <td><span class="badge">P0</span></td>
 <td><strong>Возврат подтвержден</strong><small>refund_confirmed</small></td>
 <td><code>payment.refund</code></td>
@@ -128,7 +143,7 @@
 <td>Создать в админке после проверки</td>
 <td>Смоделировать refund confirmed; проверить сумму, orderId, refundEta и отсутствие дубля при повторном webhook.</td>
 </tr>
-<tr>
+<tr class="row-create">
 <td><span class="badge">P0</span></td>
 <td><strong>Оплата подтверждена</strong><small>payment_success_receipt</small></td>
 <td><code>payment.success</code></td>
@@ -137,7 +152,7 @@
 <td>Создать в админке после проверки</td>
 <td>Провести тестовую оплату/sandbox callback; проверить сумму, orderId, ссылку на чат и отсутствие дублей при повторном webhook.</td>
 </tr>
-<tr>
+<tr class="row-create">
 <td><span class="badge">P0</span></td>
 <td><strong>Оплата не прошла</strong><small>payment_failed</small></td>
 <td><code>payment.error</code></td>
@@ -146,7 +161,7 @@
 <td>Создать в админке после проверки</td>
 <td>Смоделировать failed payment; проверить один email на одну попытку и корректный retry URL.</td>
 </tr>
-<tr>
+<tr class="row-create">
 <td><span class="badge">P0</span></td>
 <td><strong>Сообщение клиента принято</strong><small>chat_message_received</small></td>
 <td><code>message.client_submitted</code></td>
@@ -155,7 +170,7 @@
 <td>Создать в админке после проверки</td>
 <td>Отправить сообщение клиентом; проверить, что уходит это письмо, а не advisor_chat_reply_ready.</td>
 </tr>
-<tr>
+<tr class="row-backend">
 <td><span class="badge">P1</span></td>
 <td><strong>Обращение в поддержку создано</strong><small>support_ticket_opened</small></td>
 <td><code>support.ticket.opened</code></td>
@@ -164,7 +179,7 @@
 <td>Сначала backend</td>
 <td>Создать тестовое обращение; проверить номер, ссылку и отсутствие отправки при внутренней операторской заметке.</td>
 </tr>
-<tr>
+<tr class="row-create">
 <td><span class="badge">P1</span></td>
 <td><strong>Статус возврата обновлен</strong><small>refund_case_update</small></td>
 <td><code>payment.refund.update</code></td>
@@ -173,7 +188,7 @@
 <td>Создать в админке после проверки</td>
 <td>Перевести refund case между пользовательскими статусами; проверить, что письмо не уходит на внутренние изменения.</td>
 </tr>
-<tr>
+<tr class="row-create">
 <td><span class="badge">P1</span></td>
 <td><strong>Попросить оценку консультации</strong><small>review_request</small></td>
 <td><code>review.request</code></td>
@@ -182,7 +197,7 @@
 <td>Создать в админке после проверки</td>
 <td>Завершить чат без отзыва; проверить письмо через delay. Затем оставить отзыв до delay и убедиться, что письмо не ушло.</td>
 </tr>
-<tr>
+<tr class="row-backend">
 <td><span class="badge">P1</span></td>
 <td><strong>Важная информация о поддержке</strong><small>safety_notice</small></td>
 <td><code>support.safety_notice</code></td>
@@ -191,7 +206,7 @@
 <td>Сначала backend</td>
 <td>Смоделировать safety flow; проверить, что письмо уходит только адресату и не содержит лишних деталей.</td>
 </tr>
-<tr>
+<tr class="row-backend">
 <td><span class="badge">P1</span></td>
 <td><strong>Ограничение доступа по возрасту/правилам</strong><small>minor_or_age_restriction_notice</small></td>
 <td><code>user.age_restricted</code></td>
@@ -200,7 +215,7 @@
 <td>Сначала backend</td>
 <td>На тестовом аккаунте применить ограничение; проверить письмо, поддержку и отсутствие деталей, которые нельзя раскрывать.</td>
 </tr>
-<tr>
+<tr class="row-backend">
 <td><span class="badge">P1</span></td>
 <td><strong>Сброс пароля</strong><small>password_reset</small></td>
 <td><code>user.password_recovery</code></td>
@@ -209,7 +224,7 @@
 <td>Сначала backend</td>
 <td>Запросить восстановление пароля на тестовом аккаунте; проверить одноразовость ссылки, срок действия и отсутствие раскрытия существования аккаунта.</td>
 </tr>
-<tr>
+<tr class="row-backend">
 <td><span class="badge">P1</span></td>
 <td><strong>Изменение безопасности</strong><small>security_change_alert</small></td>
 <td><code>security.security_change</code></td>
@@ -218,7 +233,7 @@
 <td>Сначала backend</td>
 <td>Изменить пароль/2FA в тестовом аккаунте; проверить, что письмо не содержит лишних персональных или технических данных.</td>
 </tr>
-<tr>
+<tr class="row-create">
 <td><span class="badge">P1</span></td>
 <td><strong>Оплата начата, но не завершена</strong><small>payment_started</small></td>
 <td><code>payment.init</code></td>
@@ -227,7 +242,7 @@
 <td>Создать в админке после проверки</td>
 <td>Создать платеж и не завершать его; через тестовый delay проверить, что письмо уходит только для unpaid order. При success/error до delay письмо должно быть отменено.</td>
 </tr>
-<tr>
+<tr class="row-backend">
 <td><span class="badge">P1</span></td>
 <td><strong>Оплаченный чат без первого сообщения</strong><small>paid_chat_no_message_reminder</small></td>
 <td><code>message.no_first_chat_message</code></td>
@@ -236,7 +251,7 @@
 <td>Сначала backend</td>
 <td>Оплатить тестовый чат и не писать сообщение; проверить отправку после delay и отсутствие письма, если сообщение появилось до delay.</td>
 </tr>
-<tr>
+<tr class="row-backend">
 <td><span class="badge">P1</span></td>
 <td><strong>Ответ эксперта задерживается</strong><small>chat_sla_delay</small></td>
 <td><code>message.answer_delayed</code></td>
@@ -245,7 +260,7 @@
 <td>Сначала backend</td>
 <td>Создать чат без ответа эксперта и искусственно сдвинуть время; проверить одно письмо и отмену, если эксперт ответил.</td>
 </tr>
-<tr>
+<tr class="row-backend">
 <td><span class="badge">P2</span></td>
 <td><strong>Продолжить с тем же экспертом</strong><small>same_advisor_followup_offer</small></td>
 <td><code>advisor.followup.offer</code></td>
@@ -254,7 +269,7 @@
 <td>Сначала backend</td>
 <td>Закрыть тестовый чат; проверить отправку через 72 часа только при разрешенном follow-up и активных user settings.</td>
 </tr>
-<tr>
+<tr class="row-backend">
 <td><span class="badge">P2</span></td>
 <td><strong>Чат сохранен, можно вернуться</strong><small>d2_chat_reflection</small></td>
 <td><code>message.chat_saved</code></td>

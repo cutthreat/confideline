@@ -158,8 +158,21 @@
       gap: 20px;
       padding: 18px;
       border-bottom: 1px solid var(--line-soft);
+      border-left: 6px solid transparent;
     }
     .scenario-row:last-child { border-bottom: 0; }
+    .scenario-row.status-update {
+      background: #f0fbf4;
+      border-left-color: #027a48;
+    }
+    .scenario-row.status-create {
+      background: #fffaf2;
+      border-left-color: #dc8a00;
+    }
+    .scenario-row.status-backend {
+      background: #fff6f5;
+      border-left-color: #b42318;
+    }
     .scenario-topline { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .scenario-topline h3 { margin: 0; font-size: 17px; line-height: 1.25; }
     .scenario-index, .priority, .badge {
@@ -226,6 +239,28 @@
     th, td { padding: 10px 12px; border-bottom: 1px solid var(--line-soft); text-align: left; vertical-align: top; }
     th { color: var(--muted); font-size: 12px; text-transform: uppercase; background: #fbfcfe; }
     td { font-size: 13px; }
+    .color-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0 0 18px;
+    }
+    .color-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .color-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
+    .color-legend .exists i { background: #dff8ea; border: 1px solid #6fcf97; }
+    .color-legend .create i { background: #fff5e6; border: 1px solid #e9b36b; }
+    .color-legend .backend i { background: #fff1f0; border: 1px solid #f97066; }
     .scenario-row.hidden, .stage-section.hidden { display: none; }
     @media (max-width: 980px) {
       .topbar-inner, .summary, .lanes, .scenario-row { grid-template-columns: 1fr; }
@@ -244,7 +279,7 @@
     <div class="topbar-inner">
       <div class="title">
         <h1>Панель сценариев email-уведомлений Confideline</h1>
-        <p>RU-версия для внедрения: текущая кастомная админка, сценарии онлайн-консультации через чат, переменные, backend-проверки и тесты. Обновлено: 2026-05-29 21:40.</p>
+        <p>RU-версия для внедрения: текущая кастомная админка, сценарии онлайн-консультации через чат, переменные, backend-проверки и тесты. Обновлено: 2026-05-29 21:58.</p>
       </div>
       <nav class="filters" aria-label="Фильтры сценариев">
         <button type="button" class="active" data-filter="all">Все</button>
@@ -269,10 +304,16 @@
       <div class="metric"><span>Создать / Backend</span><strong>9/9</strong></div>
     </section>
     <section class="quick-links" aria-label="Связанные панели">
+      <a href="START_HERE_FOR_IGOR_RU.html">Начать здесь для Игоря</a>
       <a href="EMAIL_FLOW_CHAINS_PANEL_RU.html">Flow-цепочки и пересечения</a>
       <a href="TEMPLATE_SETTINGS_SCENARIOS_RU.html">Настройки шаблонов</a>
       <a href="VARIABLES_GLOSSARY_RU.html">Словарь переменных</a>
       <a href="TEMPLATES_PREVIEW_RU_EN.html">Превью RU/EN</a>
+    </section>
+    <section class="color-legend" aria-label="Легенда цветов">
+      <span class="exists"><i></i>Зеленый: шаблон уже есть в системе, обновлять live-запись</span>
+      <span class="create"><i></i>Желтый: можно создать после проверки trigger/payload</span>
+      <span class="backend"><i></i>Красный: сначала backend-доработка</span>
     </section>
     <section class="lanes">
       <div class="lane status-update">
@@ -299,7 +340,7 @@
     </div>
     <strong>4</strong>
   </header>
-  <article class="scenario-row" data-priority="P0" data-status="existing_template" data-stage="Регистрация и доступ">
+  <article class="scenario-row status-update" data-priority="P0" data-status="existing_template" data-stage="Регистрация и доступ">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p0">P0</span>
@@ -329,7 +370,7 @@
     <a class="link" href="templates/00_user_registration/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
-<article class="scenario-row" data-priority="P0" data-status="existing_template" data-stage="Регистрация и доступ">
+<article class="scenario-row status-update" data-priority="P0" data-status="existing_template" data-stage="Регистрация и доступ">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p0">P0</span>
@@ -359,7 +400,7 @@
     <a class="link" href="templates/01_email_confirmation/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
-<article class="scenario-row" data-priority="P1" data-status="requires_backend_event" data-stage="Регистрация и доступ">
+<article class="scenario-row status-backend" data-priority="P1" data-status="requires_backend_event" data-stage="Регистрация и доступ">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p1">P1</span>
@@ -389,7 +430,7 @@
     <a class="link" href="templates/02_password_reset/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
-<article class="scenario-row" data-priority="P1" data-status="requires_backend_event" data-stage="Регистрация и доступ">
+<article class="scenario-row status-backend" data-priority="P1" data-status="requires_backend_event" data-stage="Регистрация и доступ">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p1">P1</span>
@@ -428,7 +469,7 @@
     </div>
     <strong>3</strong>
   </header>
-  <article class="scenario-row" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Оплата">
+  <article class="scenario-row status-create" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Оплата">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p0">P0</span>
@@ -458,7 +499,7 @@
     <a class="link" href="templates/04_payment_success_receipt/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
-<article class="scenario-row" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Оплата">
+<article class="scenario-row status-create" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Оплата">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p0">P0</span>
@@ -488,7 +529,7 @@
     <a class="link" href="templates/05_payment_failed/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
-<article class="scenario-row" data-priority="P1" data-status="can_create_in_current_admin" data-stage="Оплата">
+<article class="scenario-row status-create" data-priority="P1" data-status="can_create_in_current_admin" data-stage="Оплата">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p1">P1</span>
@@ -527,7 +568,7 @@
     </div>
     <strong>4</strong>
   </header>
-  <article class="scenario-row" data-priority="P1" data-status="requires_backend_event" data-stage="Чат-консультация">
+  <article class="scenario-row status-backend" data-priority="P1" data-status="requires_backend_event" data-stage="Чат-консультация">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p1">P1</span>
@@ -557,7 +598,7 @@
     <a class="link" href="templates/07_paid_chat_no_message_reminder/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
-<article class="scenario-row" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Чат-консультация">
+<article class="scenario-row status-create" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Чат-консультация">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p0">P0</span>
@@ -587,7 +628,7 @@
     <a class="link" href="templates/08_chat_message_received/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
-<article class="scenario-row" data-priority="P1" data-status="requires_backend_event" data-stage="Чат-консультация">
+<article class="scenario-row status-backend" data-priority="P1" data-status="requires_backend_event" data-stage="Чат-консультация">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p1">P1</span>
@@ -617,7 +658,7 @@
     <a class="link" href="templates/09_chat_sla_delay/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
-<article class="scenario-row" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Чат-консультация">
+<article class="scenario-row status-create" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Чат-консультация">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p0">P0</span>
@@ -656,7 +697,7 @@
     </div>
     <strong>2</strong>
   </header>
-  <article class="scenario-row" data-priority="P1" data-status="requires_backend_event" data-stage="Поддержка">
+  <article class="scenario-row status-backend" data-priority="P1" data-status="requires_backend_event" data-stage="Поддержка">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p1">P1</span>
@@ -686,7 +727,7 @@
     <a class="link" href="templates/11_support_ticket_opened/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
-<article class="scenario-row" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Поддержка">
+<article class="scenario-row status-create" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Поддержка">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p0">P0</span>
@@ -725,7 +766,7 @@
     </div>
     <strong>2</strong>
   </header>
-  <article class="scenario-row" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Возвраты">
+  <article class="scenario-row status-create" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Возвраты">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p0">P0</span>
@@ -755,7 +796,7 @@
     <a class="link" href="templates/13_refund_confirmed/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
-<article class="scenario-row" data-priority="P1" data-status="can_create_in_current_admin" data-stage="Возвраты">
+<article class="scenario-row status-create" data-priority="P1" data-status="can_create_in_current_admin" data-stage="Возвраты">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p1">P1</span>
@@ -794,7 +835,7 @@
     </div>
     <strong>1</strong>
   </header>
-  <article class="scenario-row" data-priority="P1" data-status="can_create_in_current_admin" data-stage="Качество">
+  <article class="scenario-row status-create" data-priority="P1" data-status="can_create_in_current_admin" data-stage="Качество">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p1">P1</span>
@@ -833,7 +874,7 @@
     </div>
     <strong>2</strong>
   </header>
-  <article class="scenario-row" data-priority="P2" data-status="requires_backend_event" data-stage="Возврат пользователя">
+  <article class="scenario-row status-backend" data-priority="P2" data-status="requires_backend_event" data-stage="Возврат пользователя">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p2">P2</span>
@@ -863,7 +904,7 @@
     <a class="link" href="templates/15_same_advisor_followup_offer/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
-<article class="scenario-row" data-priority="P2" data-status="requires_backend_event" data-stage="Возврат пользователя">
+<article class="scenario-row status-backend" data-priority="P2" data-status="requires_backend_event" data-stage="Возврат пользователя">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p2">P2</span>
@@ -902,7 +943,7 @@
     </div>
     <strong>2</strong>
   </header>
-  <article class="scenario-row" data-priority="P1" data-status="requires_backend_event" data-stage="Юридические и safety">
+  <article class="scenario-row status-backend" data-priority="P1" data-status="requires_backend_event" data-stage="Юридические и safety">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p1">P1</span>
@@ -932,7 +973,7 @@
     <a class="link" href="templates/18_safety_notice/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
-<article class="scenario-row" data-priority="P1" data-status="requires_backend_event" data-stage="Юридические и safety">
+<article class="scenario-row status-backend" data-priority="P1" data-status="requires_backend_event" data-stage="Юридические и safety">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p1">P1</span>
