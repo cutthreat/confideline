@@ -1,0 +1,1376 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confideline email scenarios panel</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --ink: #172033;
+      --muted: #667085;
+      --line: #d9e0ea;
+      --line-soft: #edf1f6;
+      --service: #126c78;
+      --create: #2f6f4e;
+      --backend: #9a5b16;
+      --p0: #b42318;
+      --p1: #7a5af8;
+      --p2: #31748f;
+      --code: #26364d;
+      --shadow: 0 14px 40px rgba(23, 32, 51, .08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 15px;
+      line-height: 1.45;
+    }
+    a { color: #2459a8; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code {
+      display: inline-block;
+      max-width: 100%;
+      padding: 2px 6px;
+      border: 1px solid #d7dfec;
+      border-radius: 5px;
+      background: #f8fafc;
+      color: var(--code);
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+    .shell { max-width: 1440px; margin: 0 auto; padding: 22px 24px 44px; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(245, 247, 251, .94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+    }
+    .title h1 { margin: 0; font-size: 22px; line-height: 1.2; letter-spacing: 0; }
+    .title p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+    .filters { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    .filters button {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--ink);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .filters button.active { background: #172033; border-color: #172033; color: #fff; }
+    .summary {
+      display: grid;
+      grid-template-columns: 1.2fr repeat(4, minmax(130px, .6fr));
+      gap: 12px;
+      margin: 18px 0;
+    }
+    .summary .lead, .metric, .lane {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+    .summary .lead { padding: 18px; }
+    .summary .lead h2 { margin: 0 0 8px; font-size: 18px; }
+    .summary .lead p { margin: 0; color: var(--muted); }
+    .metric { padding: 14px 16px; }
+    .metric span { display: block; color: var(--muted); font-size: 12px; text-transform: uppercase; font-weight: 700; }
+    .metric strong { display: block; margin-top: 5px; font-size: 28px; line-height: 1; }
+    .quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0 0 18px;
+    }
+    .quick-links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      text-decoration: none;
+      box-shadow: var(--shadow);
+      font-size: 13px;
+    }
+    .lanes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0; }
+    .lane { padding: 16px; border-top: 4px solid var(--line); box-shadow: none; }
+    .lane.status-update { border-top-color: var(--service); }
+    .lane.status-create { border-top-color: var(--create); }
+    .lane.status-backend { border-top-color: var(--backend); }
+    .lane h3 { margin: 0; font-size: 15px; }
+    .lane > strong { display: block; margin: 8px 0 10px; font-size: 26px; }
+    .lane ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+    .lane li { display: grid; gap: 2px; padding-top: 8px; border-top: 1px solid var(--line-soft); }
+    .lane li strong { font-size: 13px; }
+    .lane li span { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+    .stage-section {
+      margin-top: 18px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .stage-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfe;
+    }
+    .stage-head p { margin: 0 0 4px; color: var(--muted); font-size: 12px; text-transform: uppercase; font-weight: 700; }
+    .stage-head h2 { margin: 0; font-size: 18px; }
+    .stage-head strong {
+      min-width: 38px;
+      height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      background: #eef4ff;
+      color: #2459a8;
+    }
+    .scenario-row {
+      display: grid;
+      grid-template-columns: minmax(360px, .92fr) minmax(420px, 1.08fr);
+      gap: 20px;
+      padding: 18px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+    .scenario-row:last-child { border-bottom: 0; }
+    .scenario-topline { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .scenario-topline h3 { margin: 0; font-size: 17px; line-height: 1.25; }
+    .scenario-index, .priority, .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 7px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .scenario-index { background: #eef1f6; color: #516070; }
+    .priority-p0 { background: #fff1f0; color: var(--p0); }
+    .priority-p1 { background: #f2efff; color: var(--p1); }
+    .priority-p2 { background: #edf8fb; color: var(--p2); }
+    .badge.status-update { background: #e7f6f7; color: var(--service); }
+    .badge.status-create { background: #edf8f0; color: var(--create); }
+    .badge.status-backend { background: #fff5e6; color: var(--backend); }
+    .role { margin: 10px 0 14px; color: var(--muted); }
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .settings-grid div {
+      min-width: 0;
+      padding: 9px;
+      border: 1px solid var(--line-soft);
+      border-radius: 6px;
+      background: #fbfcfe;
+    }
+    .settings-grid span {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+    .scenario-side .subject {
+      padding: 10px 12px;
+      border-left: 4px solid #2459a8;
+      background: #f4f7fc;
+      border-radius: 5px;
+      font-weight: 800;
+    }
+    dl { margin: 12px 0 0; display: grid; grid-template-columns: 84px 1fr; gap: 8px 12px; }
+    dt { color: var(--muted); font-size: 12px; font-weight: 800; text-transform: uppercase; }
+    dd { margin: 0; }
+    .variables { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+    .link { display: inline-block; margin-top: 12px; font-weight: 800; }
+    .data-section {
+      margin-top: 22px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .data-section header { padding: 16px 18px; border-bottom: 1px solid var(--line); background: #fbfcfe; }
+    .data-section h2 { margin: 0; font-size: 18px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 900px; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--line-soft); text-align: left; vertical-align: top; }
+    th { color: var(--muted); font-size: 12px; text-transform: uppercase; background: #fbfcfe; }
+    td { font-size: 13px; }
+    .scenario-row.hidden, .stage-section.hidden { display: none; }
+    @media (max-width: 980px) {
+      .topbar-inner, .summary, .lanes, .scenario-row { grid-template-columns: 1fr; }
+      .filters { justify-content: flex-start; }
+      .settings-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      .shell, .topbar-inner { padding-left: 14px; padding-right: 14px; }
+      .settings-grid, dl { grid-template-columns: 1fr; }
+      .scenario-row { padding: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="title">
+        <h1>Панель сценариев email-уведомлений Confideline</h1>
+        <p>RU-версия для внедрения: текущая кастомная админка, сценарии онлайн-консультации через чат, переменные, backend-проверки и тесты. Обновлено: 2026-05-28 21:13.</p>
+      </div>
+      <nav class="filters" aria-label="Фильтры сценариев">
+        <button type="button" class="active" data-filter="all">Все</button>
+        <button type="button" data-filter="P0">P0</button>
+        <button type="button" data-filter="P1">P1</button>
+        <button type="button" data-filter="P2">P2</button>
+        <button type="button" data-filter="existing_template">Обновить</button>
+        <button type="button" data-filter="can_create_in_current_admin">Создать</button>
+        <button type="button" data-filter="requires_backend_event">Backend</button>
+      </nav>
+    </div>
+  </header>
+  <main class="shell">
+    <section class="summary">
+      <div class="lead">
+        <h2>Решение по внедрению</h2>
+        <p>Импорт делится на существующие live-шаблоны, новые шаблоны в текущей админке и сценарии, где сначала нужен backend. Письма нельзя считать готовыми только потому, что событие есть в dropdown.</p>
+      </div>
+      <div class="metric"><span>Сценариев</span><strong>20</strong></div>
+      <div class="metric"><span>P0 / P1 / P2</span><strong>8/10/2</strong></div>
+      <div class="metric"><span>Обновить</span><strong>2</strong></div>
+      <div class="metric"><span>Создать / Backend</span><strong>9/9</strong></div>
+    </section>
+    <section class="quick-links" aria-label="Связанные панели">
+      <a href="EMAIL_FLOW_CHAINS_PANEL_RU.html">Flow-цепочки и пересечения</a>
+      <a href="TEMPLATE_SETTINGS_SCENARIOS_RU.html">Настройки шаблонов</a>
+      <a href="VARIABLES_GLOSSARY_RU.html">Словарь переменных</a>
+      <a href="TEMPLATES_PREVIEW_RU_EN.html">Превью RU/EN</a>
+    </section>
+    <section class="lanes">
+      <div class="lane status-update">
+  <h3>Обновить live</h3>
+  <strong>2</strong>
+  <ul><li><strong>Регистрация пользователя</strong><span>user.register id=3</span></li><li><strong>Подтверждение email</strong><span>user.email_confirmation id=4</span></li></ul>
+</div>
+<div class="lane status-create">
+  <h3>Создать в админке</h3>
+  <strong>9</strong>
+  <ul><li><strong>Оплата подтверждена</strong><span>payment.success</span></li><li><strong>Оплата не прошла</strong><span>payment.error</span></li><li><strong>Оплата начата, но не завершена</strong><span>payment.init</span></li><li><strong>Сообщение клиента принято</strong><span>message.received</span></li><li><strong>Эксперт ответил в чате</strong><span>message.received</span></li><li><strong>Поддержка ответила</strong><span>support.message.received</span></li><li><strong>Возврат подтвержден</strong><span>payment.refund</span></li><li><strong>Статус возврата обновлен</strong><span>payment.refund</span></li><li><strong>Попросить оценку консультации</strong><span>review.left</span></li></ul>
+</div>
+<div class="lane status-backend">
+  <h3>Сначала backend</h3>
+  <strong>9</strong>
+  <ul><li><strong>Сброс пароля</strong><span>user.password_recovery</span></li><li><strong>Изменение безопасности</strong><span>security.security_change</span></li><li><strong>Оплаченный чат без первого сообщения</strong><span>message.no_first_chat_message</span></li><li><strong>Ответ эксперта задерживается</strong><span>message.answer_delayed</span></li><li><strong>Обращение в поддержку создано</strong><span>support.ticket.opened</span></li><li><strong>Продолжить с тем же экспертом</strong><span>advisor.followup.offer</span></li><li><strong>Чат сохранен, можно вернуться</strong><span>message.chat_saved</span></li><li><strong>Важная информация о поддержке</strong><span>support.safety_notice</span></li><li><strong>Ограничение доступа по возрасту/правилам</strong><span>user.age_restricted</span></li></ul>
+</div>
+    </section>
+    <section class="stage-section" data-stage="Регистрация и доступ">
+  <header class="stage-head">
+    <div>
+      <p>Backend + QA</p>
+      <h2>Регистрация и доступ</h2>
+    </div>
+    <strong>4</strong>
+  </header>
+  <article class="scenario-row" data-priority="P0" data-status="existing_template" data-stage="Регистрация и доступ">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p0">P0</span>
+      <span class="scenario-index">00</span>
+      <h3>Регистрация пользователя</h3>
+      <span class="badge status-update">Обновить существующий live-шаблон</span>
+    </div>
+    <p class="role">Сервисное welcome-письмо после создания аккаунта.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>user.register</code></div>
+      <div><span>condition</span><code>0</code></div>
+      <div><span>delay</span><code>0</code></div>
+      <div><span>live</span><code>id=3</code></div>
+      <div><span>type</span><code>1</code></div>
+      <div><span>settings</span><code>0</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Добро пожаловать в {{siteName}}</div>
+    <dl>
+      <dt>Когда</dt><dd>Сразу. Пользователь создан; письмо не должно отправляться повторно для условий 1/3 days; подтверждение email обрабатывается отдельным user.email_confirmation.</dd>
+      <dt>Риск</dt><dd>Не смешивать с email confirmation и не загружать в id=1.</dd>
+      <dt>Gate</dt><dd>Перед записью проверить реальные переменные и отправку в queue для существующего шаблона.</dd>
+      <dt>Тест</dt><dd>Создать тестового пользователя; проверить welcome-письмо, затем отдельно проверить email confirmation.</dd>
+    </dl>
+    <div class="variables"><code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportEmail}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/00_user_registration/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+<article class="scenario-row" data-priority="P0" data-status="existing_template" data-stage="Регистрация и доступ">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p0">P0</span>
+      <span class="scenario-index">01</span>
+      <h3>Подтверждение email</h3>
+      <span class="badge status-update">Обновить существующий live-шаблон</span>
+    </div>
+    <p class="role">Критичное подтверждение адреса и доставляемости.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>user.email_confirmation</code></div>
+      <div><span>condition</span><code>0</code></div>
+      <div><span>delay</span><code>0</code></div>
+      <div><span>live</span><code>id=4</code></div>
+      <div><span>type</span><code>1</code></div>
+      <div><span>settings</span><code>0</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Подтвердите email для {{siteName}}</div>
+    <dl>
+      <dt>Когда</dt><dd>Сразу. У пользователя есть неподтвержденный email; confirmation token активен; письмо не отправлялось повторно слишком часто.</dd>
+      <dt>Риск</dt><dd>Проверить срок токена и переменную confirmationExpiresAt.</dd>
+      <dt>Gate</dt><dd>Перед записью проверить реальные переменные и отправку в queue для существующего шаблона.</dd>
+      <dt>Тест</dt><dd>Создать тестового пользователя или запросить повторное подтверждение email; проверить ссылку, срок действия и отсутствие Nebula в тексте.</dd>
+    </dl>
+    <div class="variables"><code>{{confirmationExpiresAt}}</code> <code>{{confirmUrl}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportEmail}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/01_email_confirmation/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+<article class="scenario-row" data-priority="P1" data-status="requires_backend_event" data-stage="Регистрация и доступ">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p1">P1</span>
+      <span class="scenario-index">02</span>
+      <h3>Сброс пароля</h3>
+      <span class="badge status-backend">Сначала backend event/trigger</span>
+    </div>
+    <p class="role">Критичное восстановление доступа.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>user.password_recovery</code></div>
+      <div><span>condition</span><code>0</code></div>
+      <div><span>delay</span><code>0</code></div>
+      <div><span>live</span><code>-</code></div>
+      <div><span>type</span><code>1</code></div>
+      <div><span>settings</span><code>0</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Сброс пароля для {{siteName}}</div>
+    <dl>
+      <dt>Когда</dt><dd>Сразу. Запрос восстановления создан; reset token активен; не превышен rate limit; email принадлежит найденному аккаунту или используется безопасный одинаковый ответ.</dd>
+      <dt>Риск</dt><dd>Нужен безопасный reset flow без раскрытия существования аккаунта.</dd>
+      <dt>Gate</dt><dd>Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.</dd>
+      <dt>Тест</dt><dd>Запросить восстановление пароля на тестовом аккаунте; проверить одноразовость ссылки, срок действия и отсутствие раскрытия существования аккаунта.</dd>
+    </dl>
+    <div class="variables"><code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{resetExpiresAt}}</code> <code>{{resetUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportEmail}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/02_password_reset/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+<article class="scenario-row" data-priority="P1" data-status="requires_backend_event" data-stage="Регистрация и доступ">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p1">P1</span>
+      <span class="scenario-index">03</span>
+      <h3>Изменение безопасности</h3>
+      <span class="badge status-backend">Сначала backend event/trigger</span>
+    </div>
+    <p class="role">Защита аккаунта после чувствительного изменения.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>security.security_change</code></div>
+      <div><span>condition</span><code>0</code></div>
+      <div><span>delay</span><code>0</code></div>
+      <div><span>live</span><code>-</code></div>
+      <div><span>type</span><code>1</code></div>
+      <div><span>settings</span><code>0</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Изменение безопасности в аккаунте {{siteName}}</div>
+    <dl>
+      <dt>Когда</dt><dd>Сразу. Изменение безопасности действительно сохранено; есть тип изменения, время, IP/устройство если это разрешено политикой приватности.</dd>
+      <dt>Риск</dt><dd>Не раскрывать лишние IP/device данные без privacy-основания.</dd>
+      <dt>Gate</dt><dd>Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.</dd>
+      <dt>Тест</dt><dd>Изменить пароль/2FA в тестовом аккаунте; проверить, что письмо не содержит лишних персональных или технических данных.</dd>
+    </dl>
+    <div class="variables"><code>{{accountSecurityUrl}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{securityChangedAt}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportEmail}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/03_security_change_alert/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+</section>
+<section class="stage-section" data-stage="Оплата">
+  <header class="stage-head">
+    <div>
+      <p>Backend payments + QA</p>
+      <h2>Оплата</h2>
+    </div>
+    <strong>3</strong>
+  </header>
+  <article class="scenario-row" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Оплата">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p0">P0</span>
+      <span class="scenario-index">04</span>
+      <h3>Оплата подтверждена</h3>
+      <span class="badge status-create">Можно создать в текущей админке</span>
+    </div>
+    <p class="role">Фиксация оплаты и переход к чату.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>payment.success</code></div>
+      <div><span>condition</span><code>0</code></div>
+      <div><span>delay</span><code>0</code></div>
+      <div><span>live</span><code>-</code></div>
+      <div><span>type</span><code>1</code></div>
+      <div><span>settings</span><code>0</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Оплата подтверждена: чат-консультация {{siteName}} готова</div>
+    <dl>
+      <dt>Когда</dt><dd>Сразу. Платеж имеет финальный success/paid status; заказ связан с консультацией; сумма и orderId доступны.</dd>
+      <dt>Риск</dt><dd>Нужна дедупликация webhook и реальные payment variables.</dd>
+      <dt>Gate</dt><dd>Event есть в dropdown, но программист должен доказать, что trigger реально вызывает очередь email.</dd>
+      <dt>Тест</dt><dd>Провести тестовую оплату/sandbox callback; проверить сумму, orderId, ссылку на чат и отсутствие дублей при повторном webhook.</dd>
+    </dl>
+    <div class="variables"><code>{{advisorName}}</code> <code>{{amount}}</code> <code>{{chatUrl}}</code> <code>{{currency}}</code> <code>{{firstResponseSla}}</code> <code>{{legalMerchantName}}</code> <code>{{merchantDescriptor}}</code> <code>{{orderId}}</code> <code>{{paidAt}}</code> <code>{{privacyUrl}}</code> <code>{{receiptUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportEmail}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/04_payment_success_receipt/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+<article class="scenario-row" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Оплата">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p0">P0</span>
+      <span class="scenario-index">05</span>
+      <h3>Оплата не прошла</h3>
+      <span class="badge status-create">Можно создать в текущей админке</span>
+    </div>
+    <p class="role">Возврат пользователя к оплате после ошибки.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>payment.error</code></div>
+      <div><span>condition</span><code>0</code></div>
+      <div><span>delay</span><code>0</code></div>
+      <div><span>live</span><code>-</code></div>
+      <div><span>type</span><code>1</code></div>
+      <div><span>settings</span><code>0</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Оплата не прошла</div>
+    <dl>
+      <dt>Когда</dt><dd>Сразу. Платеж в failed/error status; заказ не оплачен; доступна безопасная ссылка повторной оплаты.</dd>
+      <dt>Риск</dt><dd>Не слать на промежуточные provider-ошибки.</dd>
+      <dt>Gate</dt><dd>Event есть в dropdown, но программист должен доказать, что trigger реально вызывает очередь email.</dd>
+      <dt>Тест</dt><dd>Смоделировать failed payment; проверить один email на одну попытку и корректный retry URL.</dd>
+    </dl>
+    <div class="variables"><code>{{amount}}</code> <code>{{checkoutUrl}}</code> <code>{{currency}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportUrl}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/05_payment_failed/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+<article class="scenario-row" data-priority="P1" data-status="can_create_in_current_admin" data-stage="Оплата">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p1">P1</span>
+      <span class="scenario-index">06</span>
+      <h3>Оплата начата, но не завершена</h3>
+      <span class="badge status-create">Можно создать в текущей админке</span>
+    </div>
+    <p class="role">Мягкое восстановление незавершенной оплаты.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>payment.init</code></div>
+      <div><span>condition</span><code>0</code></div>
+      <div><span>delay</span><code>2</code></div>
+      <div><span>live</span><code>-</code></div>
+      <div><span>type</span><code>3</code></div>
+      <div><span>settings</span><code>1</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Вы можете завершить оплату чат-консультации</div>
+    <dl>
+      <dt>Когда</dt><dd>+2 часа. Payment init создан; success/error/refund не наступили; нет более свежей успешной оплаты по этому заказу; пользователь не отписан от таких писем.</dd>
+      <dt>Риск</dt><dd>Отправлять только если заказ остался unpaid после delay.</dd>
+      <dt>Gate</dt><dd>Event есть в dropdown, но программист должен доказать, что trigger реально вызывает очередь email.</dd>
+      <dt>Тест</dt><dd>Создать платеж и не завершать его; через тестовый delay проверить, что письмо уходит только для unpaid order. При success/error до delay письмо должно быть отменено.</dd>
+    </dl>
+    <div class="variables"><code>{{amount}}</code> <code>{{checkoutUrl}}</code> <code>{{currency}}</code> <code>{{emailPreferencesUrl}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{termsUrl}}</code> <code>{{unsubscribeUrl}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/06_payment_started/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+</section>
+<section class="stage-section" data-stage="Чат-консультация">
+  <header class="stage-head">
+    <div>
+      <p>Backend chat + QA</p>
+      <h2>Чат-консультация</h2>
+    </div>
+    <strong>4</strong>
+  </header>
+  <article class="scenario-row" data-priority="P1" data-status="requires_backend_event" data-stage="Чат-консультация">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p1">P1</span>
+      <span class="scenario-index">07</span>
+      <h3>Оплаченный чат без первого сообщения</h3>
+      <span class="badge status-backend">Сначала backend event/trigger</span>
+    </div>
+    <p class="role">Доведение оплаченного чата до первого сообщения.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>message.no_first_chat_message</code></div>
+      <div><span>condition</span><code>5</code></div>
+      <div><span>delay</span><code>2</code></div>
+      <div><span>live</span><code>-</code></div>
+      <div><span>type</span><code>2</code></div>
+      <div><span>settings</span><code>0</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Чат с экспертом доступен - осталось написать сообщение</div>
+    <dl>
+      <dt>Когда</dt><dd>+2 часа. Чат оплачен и активен; от пользователя нет первого сообщения; консультация не закрыта; reminder еще не отправлялся.</dd>
+      <dt>Риск</dt><dd>Нужен backend job: оплатил, но не написал первое сообщение.</dd>
+      <dt>Gate</dt><dd>Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.</dd>
+      <dt>Тест</dt><dd>Оплатить тестовый чат и не писать сообщение; проверить отправку после delay и отсутствие письма, если сообщение появилось до delay.</dd>
+    </dl>
+    <div class="variables"><code>{{chatUrl}}</code> <code>{{legalMerchantName}}</code> <code>{{orderId}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportUrl}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/07_paid_chat_no_message_reminder/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+<article class="scenario-row" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Чат-консультация">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p0">P0</span>
+      <span class="scenario-index">08</span>
+      <h3>Сообщение клиента принято</h3>
+      <span class="badge status-create">Можно создать в текущей админке</span>
+    </div>
+    <p class="role">Подтверждение, что сообщение клиента принято.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>message.received</code></div>
+      <div><span>condition</span><code>0</code></div>
+      <div><span>delay</span><code>0</code></div>
+      <div><span>live</span><code>-</code></div>
+      <div><span>type</span><code>2</code></div>
+      <div><span>settings</span><code>0</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Сообщение принято: эксперт получил ваш чат</div>
+    <dl>
+      <dt>Когда</dt><dd>Сразу. Создано сообщение от клиента; чат активен; это не системное сообщение; событие не должно сработать на ответ эксперта.</dd>
+      <dt>Риск</dt><dd>Конфликтует с ответом эксперта без direction client -&gt; advisor.</dd>
+      <dt>Gate</dt><dd>Event есть в dropdown, но программист должен доказать, что trigger реально вызывает очередь email.</dd>
+      <dt>Тест</dt><dd>Отправить сообщение клиентом; проверить, что уходит это письмо, а не advisor_chat_reply_ready.</dd>
+    </dl>
+    <div class="variables"><code>{{advisorName}}</code> <code>{{answerDueAt}}</code> <code>{{chatUrl}}</code> <code>{{consultationId}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/08_chat_message_received/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+<article class="scenario-row" data-priority="P1" data-status="requires_backend_event" data-stage="Чат-консультация">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p1">P1</span>
+      <span class="scenario-index">09</span>
+      <h3>Ответ эксперта задерживается</h3>
+      <span class="badge status-backend">Сначала backend event/trigger</span>
+    </div>
+    <p class="role">Снижение тревоги при задержке ответа эксперта.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>message.answer_delayed</code></div>
+      <div><span>condition</span><code>0</code></div>
+      <div><span>delay</span><code>0</code></div>
+      <div><span>live</span><code>-</code></div>
+      <div><span>type</span><code>2</code></div>
+      <div><span>settings</span><code>0</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Статус чата: ответ задерживается</div>
+    <dl>
+      <dt>Когда</dt><dd>По SLA job. Есть активный оплаченный чат; клиент ждет ответа; SLA threshold достигнут; эксперт еще не ответил; письмо не отправлялось ранее по этой задержке.</dd>
+      <dt>Риск</dt><dd>Нужен SLA job, а не простое письмо по dropdown.</dd>
+      <dt>Gate</dt><dd>Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.</dd>
+      <dt>Тест</dt><dd>Создать чат без ответа эксперта и искусственно сдвинуть время; проверить одно письмо и отмену, если эксперт ответил.</dd>
+    </dl>
+    <div class="variables"><code>{{answerDueAt}}</code> <code>{{chatUrl}}</code> <code>{{consultationId}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportCaseId}}</code> <code>{{supportCaseUrl}}</code> <code>{{termsUrl}}</code> <code>{{updatedAnswerEta}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/09_chat_sla_delay/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+<article class="scenario-row" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Чат-консультация">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p0">P0</span>
+      <span class="scenario-index">10</span>
+      <h3>Эксперт ответил в чате</h3>
+      <span class="badge status-create">Можно создать в текущей админке</span>
+    </div>
+    <p class="role">Главное письмо возврата к готовому ответу эксперта.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>message.received</code></div>
+      <div><span>condition</span><code>0</code></div>
+      <div><span>delay</span><code>0</code></div>
+      <div><span>live</span><code>-</code></div>
+      <div><span>type</span><code>2</code></div>
+      <div><span>settings</span><code>0</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Эксперт ответил в чате</div>
+    <dl>
+      <dt>Когда</dt><dd>Сразу. Создан ответ эксперта; ответ видим клиенту; клиент не находится уже в активном чате/не получил realtime-уведомление в той же сессии.</dd>
+      <dt>Риск</dt><dd>Конфликтует с письмом клиента без direction advisor -&gt; client.</dd>
+      <dt>Gate</dt><dd>Event есть в dropdown, но программист должен доказать, что trigger реально вызывает очередь email.</dd>
+      <dt>Тест</dt><dd>Создать ответ эксперта; проверить, что письмо ушло клиенту и содержит ссылку на конкретный чат.</dd>
+    </dl>
+    <div class="variables"><code>{{advisorName}}</code> <code>{{chatUrl}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportEmail}}</code> <code>{{supportUrl}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/10_advisor_chat_reply_ready/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+</section>
+<section class="stage-section" data-stage="Поддержка">
+  <header class="stage-head">
+    <div>
+      <p>Backend support + QA</p>
+      <h2>Поддержка</h2>
+    </div>
+    <strong>2</strong>
+  </header>
+  <article class="scenario-row" data-priority="P1" data-status="requires_backend_event" data-stage="Поддержка">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p1">P1</span>
+      <span class="scenario-index">11</span>
+      <h3>Обращение в поддержку создано</h3>
+      <span class="badge status-backend">Сначала backend event/trigger</span>
+    </div>
+    <p class="role">Фиксация созданного обращения.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>support.ticket.opened</code></div>
+      <div><span>condition</span><code>0</code></div>
+      <div><span>delay</span><code>0</code></div>
+      <div><span>live</span><code>-</code></div>
+      <div><span>type</span><code>2</code></div>
+      <div><span>settings</span><code>0</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Обращение в поддержку создано</div>
+    <dl>
+      <dt>Когда</dt><dd>Сразу. Support case создан; есть supportCaseId; обращение доступно пользователю; письмо не дублируется при каждом комментарии.</dd>
+      <dt>Риск</dt><dd>Не отправлять по внутренним операторским заметкам.</dd>
+      <dt>Gate</dt><dd>Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.</dd>
+      <dt>Тест</dt><dd>Создать тестовое обращение; проверить номер, ссылку и отсутствие отправки при внутренней операторской заметке.</dd>
+    </dl>
+    <div class="variables"><code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportCaseId}}</code> <code>{{supportCaseUrl}}</code> <code>{{supportEmail}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/11_support_ticket_opened/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+<article class="scenario-row" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Поддержка">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p0">P0</span>
+      <span class="scenario-index">12</span>
+      <h3>Поддержка ответила</h3>
+      <span class="badge status-create">Можно создать в текущей админке</span>
+    </div>
+    <p class="role">Возврат к ответу поддержки.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>support.message.received</code></div>
+      <div><span>condition</span><code>0</code></div>
+      <div><span>delay</span><code>0</code></div>
+      <div><span>live</span><code>-</code></div>
+      <div><span>type</span><code>2</code></div>
+      <div><span>settings</span><code>0</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Поддержка ответила по обращению #{{supportCaseId}}</div>
+    <dl>
+      <dt>Когда</dt><dd>Сразу. Создан публичный ответ поддержки; есть supportCaseId; сообщение не является внутренней заметкой.</dd>
+      <dt>Риск</dt><dd>Нужен публичный ответ поддержки и ссылка на обращение.</dd>
+      <dt>Gate</dt><dd>Event есть в dropdown, но программист должен доказать, что trigger реально вызывает очередь email.</dd>
+      <dt>Тест</dt><dd>Ответить в тестовом тикете публичным сообщением; проверить письмо и ссылку на обращение.</dd>
+    </dl>
+    <div class="variables"><code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportCaseId}}</code> <code>{{supportCaseStatus}}</code> <code>{{supportCaseUrl}}</code> <code>{{supportEmail}}</code> <code>{{supportUpdatedAt}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/12_support_reply/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+</section>
+<section class="stage-section" data-stage="Возвраты">
+  <header class="stage-head">
+    <div>
+      <p>Backend payments/support + QA</p>
+      <h2>Возвраты</h2>
+    </div>
+    <strong>2</strong>
+  </header>
+  <article class="scenario-row" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Возвраты">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p0">P0</span>
+      <span class="scenario-index">13</span>
+      <h3>Возврат подтвержден</h3>
+      <span class="badge status-create">Можно создать в текущей админке</span>
+    </div>
+    <p class="role">Финансовое подтверждение возврата.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>payment.refund</code></div>
+      <div><span>condition</span><code>0</code></div>
+      <div><span>delay</span><code>0</code></div>
+      <div><span>live</span><code>-</code></div>
+      <div><span>type</span><code>2</code></div>
+      <div><span>settings</span><code>0</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Возврат по заказу #{{orderId}} подтверждён</div>
+    <dl>
+      <dt>Когда</dt><dd>Сразу. Refund имеет confirmed/processed status; сумма и orderId известны; событие дедуплицировано по refundId.</dd>
+      <dt>Риск</dt><dd>Общий payment.refund требует статуса confirmed/processed.</dd>
+      <dt>Gate</dt><dd>Event есть в dropdown, но программист должен доказать, что trigger реально вызывает очередь email.</dd>
+      <dt>Тест</dt><dd>Смоделировать refund confirmed; проверить сумму, orderId, refundEta и отсутствие дубля при повторном webhook.</dd>
+    </dl>
+    <div class="variables"><code>{{currency}}</code> <code>{{legalMerchantName}}</code> <code>{{orderId}}</code> <code>{{privacyUrl}}</code> <code>{{processorRefundId}}</code> <code>{{refundAmount}}</code> <code>{{refundEta}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportCaseUrl}}</code> <code>{{supportEmail}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/13_refund_confirmed/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+<article class="scenario-row" data-priority="P1" data-status="can_create_in_current_admin" data-stage="Возвраты">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p1">P1</span>
+      <span class="scenario-index">14</span>
+      <h3>Статус возврата обновлен</h3>
+      <span class="badge status-create">Можно создать в текущей админке</span>
+    </div>
+    <p class="role">Пользовательски значимое обновление возврата.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>payment.refund</code></div>
+      <div><span>condition</span><code>0</code></div>
+      <div><span>delay</span><code>0</code></div>
+      <div><span>live</span><code>-</code></div>
+      <div><span>type</span><code>2</code></div>
+      <div><span>settings</span><code>0</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Статус возврата обновлён</div>
+    <dl>
+      <dt>Когда</dt><dd>Сразу. Статус refund case изменился на пользовательски значимый; не отправлять на технические/внутренние статусы.</dd>
+      <dt>Риск</dt><dd>Не отправлять на технические внутренние статусы refund.</dd>
+      <dt>Gate</dt><dd>Event есть в dropdown, но программист должен доказать, что trigger реально вызывает очередь email.</dd>
+      <dt>Тест</dt><dd>Перевести refund case между пользовательскими статусами; проверить, что письмо не уходит на внутренние изменения.</dd>
+    </dl>
+    <div class="variables"><code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportCaseId}}</code> <code>{{supportCaseUrl}}</code> <code>{{supportUpdatedAt}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/14_refund_case_update/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+</section>
+<section class="stage-section" data-stage="Качество">
+  <header class="stage-head">
+    <div>
+      <p>PM + Backend + QA</p>
+      <h2>Качество</h2>
+    </div>
+    <strong>1</strong>
+  </header>
+  <article class="scenario-row" data-priority="P1" data-status="can_create_in_current_admin" data-stage="Качество">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p1">P1</span>
+      <span class="scenario-index">16</span>
+      <h3>Попросить оценку консультации</h3>
+      <span class="badge status-create">Можно создать в текущей админке</span>
+    </div>
+    <p class="role">Сбор оценки после консультации.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>review.left</code></div>
+      <div><span>condition</span><code>0</code></div>
+      <div><span>delay</span><code>24</code></div>
+      <div><span>live</span><code>-</code></div>
+      <div><span>type</span><code>3</code></div>
+      <div><span>settings</span><code>1</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Оцените опыт консультации в чате</div>
+    <dl>
+      <dt>Когда</dt><dd>+24 часа. Консультация завершена; review еще не оставлен; нет активной жалобы/refund по консультации; пользователь не отписан.</dd>
+      <dt>Риск</dt><dd>review.left семантически спорный: лучше review.request или строгая проверка.</dd>
+      <dt>Gate</dt><dd>Event есть в dropdown, но программист должен доказать, что trigger реально вызывает очередь email.</dd>
+      <dt>Тест</dt><dd>Завершить чат без отзыва; проверить письмо через delay. Затем оставить отзыв до delay и убедиться, что письмо не ушло.</dd>
+    </dl>
+    <div class="variables"><code>{{emailPreferencesUrl}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{reviewUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{termsUrl}}</code> <code>{{unsubscribeUrl}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/16_review_request/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+</section>
+<section class="stage-section" data-stage="Возврат пользователя">
+  <header class="stage-head">
+    <div>
+      <p>PM + Backend + QA</p>
+      <h2>Возврат пользователя</h2>
+    </div>
+    <strong>2</strong>
+  </header>
+  <article class="scenario-row" data-priority="P2" data-status="requires_backend_event" data-stage="Возврат пользователя">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p2">P2</span>
+      <span class="scenario-index">15</span>
+      <h3>Продолжить с тем же экспертом</h3>
+      <span class="badge status-backend">Сначала backend event/trigger</span>
+    </div>
+    <p class="role">Коммерческое продолжение с тем же экспертом.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>advisor.followup.offer</code></div>
+      <div><span>condition</span><code>0</code></div>
+      <div><span>delay</span><code>72</code></div>
+      <div><span>live</span><code>-</code></div>
+      <div><span>type</span><code>3</code></div>
+      <div><span>settings</span><code>1</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Можно продолжить чат с {{advisorName}}</div>
+    <dl>
+      <dt>Когда</dt><dd>+72 часа. Чат завершен; эксперт доступен; нет открытого активного чата; пользователь не отписан; тематика не запрещает follow-up.</dd>
+      <dt>Риск</dt><dd>Нужны opt-out, доступность эксперта и отсутствие активного чата.</dd>
+      <dt>Gate</dt><dd>Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.</dd>
+      <dt>Тест</dt><dd>Закрыть тестовый чат; проверить отправку через 72 часа только при разрешенном follow-up и активных user settings.</dd>
+    </dl>
+    <div class="variables"><code>{{advisorName}}</code> <code>{{chatUrl}}</code> <code>{{emailPreferencesUrl}}</code> <code>{{followupOfferUrl}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{termsUrl}}</code> <code>{{unsubscribeUrl}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/15_same_advisor_followup_offer/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+<article class="scenario-row" data-priority="P2" data-status="requires_backend_event" data-stage="Возврат пользователя">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p2">P2</span>
+      <span class="scenario-index">17</span>
+      <h3>Чат сохранен, можно вернуться</h3>
+      <span class="badge status-backend">Сначала backend event/trigger</span>
+    </div>
+    <p class="role">Мягкий возврат к сохраненной ценности чата.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>message.chat_saved</code></div>
+      <div><span>condition</span><code>0</code></div>
+      <div><span>delay</span><code>48</code></div>
+      <div><span>live</span><code>-</code></div>
+      <div><span>type</span><code>3</code></div>
+      <div><span>settings</span><code>1</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Ваш чат с экспертом сохранён</div>
+    <dl>
+      <dt>Когда</dt><dd>+48 часов. Чат завершен и доступен в кабинете; нет удаления/возврата/спора; пользователь не отписан.</dd>
+      <dt>Риск</dt><dd>Не отправлять при refund, споре или удаленном чате.</dd>
+      <dt>Gate</dt><dd>Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.</dd>
+      <dt>Тест</dt><dd>Закрыть чат и дождаться/смоделировать 48 часов; проверить ссылку на сохраненный чат и respect user settings.</dd>
+    </dl>
+    <div class="variables"><code>{{chatUrl}}</code> <code>{{emailPreferencesUrl}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{termsUrl}}</code> <code>{{unsubscribeUrl}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/17_d2_chat_reflection/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+</section>
+<section class="stage-section" data-stage="Юридические и safety">
+  <header class="stage-head">
+    <div>
+      <p>PM/legal + Backend + QA</p>
+      <h2>Юридические и safety</h2>
+    </div>
+    <strong>2</strong>
+  </header>
+  <article class="scenario-row" data-priority="P1" data-status="requires_backend_event" data-stage="Юридические и safety">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p1">P1</span>
+      <span class="scenario-index">18</span>
+      <h3>Важная информация о поддержке</h3>
+      <span class="badge status-backend">Сначала backend event/trigger</span>
+    </div>
+    <p class="role">Важное сервисное предупреждение или инструкция.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>support.safety_notice</code></div>
+      <div><span>condition</span><code>0</code></div>
+      <div><span>delay</span><code>0</code></div>
+      <div><span>live</span><code>-</code></div>
+      <div><span>type</span><code>1</code></div>
+      <div><span>settings</span><code>0</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Важная информация о поддержке</div>
+    <dl>
+      <dt>Когда</dt><dd>Сразу. Есть подтвержденное safety-событие; текст соответствует юридически утвержденному сценарию; не раскрывает чувствительные подробности.</dd>
+      <dt>Риск</dt><dd>Текст и триггер требуют юридического согласования.</dd>
+      <dt>Gate</dt><dd>Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.</dd>
+      <dt>Тест</dt><dd>Смоделировать safety flow; проверить, что письмо уходит только адресату и не содержит лишних деталей.</dd>
+    </dl>
+    <div class="variables"><code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportEmail}}</code> <code>{{supportUrl}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/18_safety_notice/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+<article class="scenario-row" data-priority="P1" data-status="requires_backend_event" data-stage="Юридические и safety">
+  <div class="scenario-main">
+    <div class="scenario-topline">
+      <span class="priority priority-p1">P1</span>
+      <span class="scenario-index">19</span>
+      <h3>Ограничение доступа по возрасту/правилам</h3>
+      <span class="badge status-backend">Сначала backend event/trigger</span>
+    </div>
+    <p class="role">Юридически аккуратное ограничение доступа.</p>
+    <div class="settings-grid">
+      <div><span>event</span><code>user.age_restricted</code></div>
+      <div><span>condition</span><code>0</code></div>
+      <div><span>delay</span><code>0</code></div>
+      <div><span>live</span><code>-</code></div>
+      <div><span>type</span><code>1</code></div>
+      <div><span>settings</span><code>0</code></div>
+    </div>
+  </div>
+  <div class="scenario-side">
+    <div class="subject">Доступ к сервису ограничен</div>
+    <dl>
+      <dt>Когда</dt><dd>Сразу. Решение об ограничении принято надежным процессом; пользовательский аккаунт/сессия ограничены; есть ссылка поддержки.</dd>
+      <dt>Риск</dt><dd>Нельзя раскрывать спорные детали ограничения.</dd>
+      <dt>Gate</dt><dd>Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.</dd>
+      <dt>Тест</dt><dd>На тестовом аккаунте применить ограничение; проверить письмо, поддержку и отсутствие деталей, которые нельзя раскрывать.</dd>
+    </dl>
+    <div class="variables"><code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportEmail}}</code> <code>{{supportUrl}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
+    <a class="link" href="templates/19_minor_or_age_restriction_notice/ru/body_email_html.html">RU HTML</a>
+  </div>
+</article>
+</section>
+    <section class="data-section">
+      <header><h2>Backend-first события</h2></header>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Приоритет</th><th>Сценарий</th><th>event_name</th><th>Backend gate</th><th>Тест</th></tr></thead>
+          <tbody><tr>
+  <td>P1</td>
+  <td>Сброс пароля</td>
+  <td><code>user.password_recovery</code></td>
+  <td>Запрос восстановления создан; reset token активен; не превышен rate limit; email принадлежит найденному аккаунту или используется безопасный одинаковый ответ.</td>
+  <td>Запросить восстановление пароля на тестовом аккаунте; проверить одноразовость ссылки, срок действия и отсутствие раскрытия существования аккаунта.</td>
+</tr>
+<tr>
+  <td>P1</td>
+  <td>Изменение безопасности</td>
+  <td><code>security.security_change</code></td>
+  <td>Изменение безопасности действительно сохранено; есть тип изменения, время, IP/устройство если это разрешено политикой приватности.</td>
+  <td>Изменить пароль/2FA в тестовом аккаунте; проверить, что письмо не содержит лишних персональных или технических данных.</td>
+</tr>
+<tr>
+  <td>P1</td>
+  <td>Оплаченный чат без первого сообщения</td>
+  <td><code>message.no_first_chat_message</code></td>
+  <td>Чат оплачен и активен; от пользователя нет первого сообщения; консультация не закрыта; reminder еще не отправлялся.</td>
+  <td>Оплатить тестовый чат и не писать сообщение; проверить отправку после delay и отсутствие письма, если сообщение появилось до delay.</td>
+</tr>
+<tr>
+  <td>P1</td>
+  <td>Ответ эксперта задерживается</td>
+  <td><code>message.answer_delayed</code></td>
+  <td>Есть активный оплаченный чат; клиент ждет ответа; SLA threshold достигнут; эксперт еще не ответил; письмо не отправлялось ранее по этой задержке.</td>
+  <td>Создать чат без ответа эксперта и искусственно сдвинуть время; проверить одно письмо и отмену, если эксперт ответил.</td>
+</tr>
+<tr>
+  <td>P1</td>
+  <td>Обращение в поддержку создано</td>
+  <td><code>support.ticket.opened</code></td>
+  <td>Support case создан; есть supportCaseId; обращение доступно пользователю; письмо не дублируется при каждом комментарии.</td>
+  <td>Создать тестовое обращение; проверить номер, ссылку и отсутствие отправки при внутренней операторской заметке.</td>
+</tr>
+<tr>
+  <td>P2</td>
+  <td>Продолжить с тем же экспертом</td>
+  <td><code>advisor.followup.offer</code></td>
+  <td>Чат завершен; эксперт доступен; нет открытого активного чата; пользователь не отписан; тематика не запрещает follow-up.</td>
+  <td>Закрыть тестовый чат; проверить отправку через 72 часа только при разрешенном follow-up и активных user settings.</td>
+</tr>
+<tr>
+  <td>P2</td>
+  <td>Чат сохранен, можно вернуться</td>
+  <td><code>message.chat_saved</code></td>
+  <td>Чат завершен и доступен в кабинете; нет удаления/возврата/спора; пользователь не отписан.</td>
+  <td>Закрыть чат и дождаться/смоделировать 48 часов; проверить ссылку на сохраненный чат и respect user settings.</td>
+</tr>
+<tr>
+  <td>P1</td>
+  <td>Важная информация о поддержке</td>
+  <td><code>support.safety_notice</code></td>
+  <td>Есть подтвержденное safety-событие; текст соответствует юридически утвержденному сценарию; не раскрывает чувствительные подробности.</td>
+  <td>Смоделировать safety flow; проверить, что письмо уходит только адресату и не содержит лишних деталей.</td>
+</tr>
+<tr>
+  <td>P1</td>
+  <td>Ограничение доступа по возрасту/правилам</td>
+  <td><code>user.age_restricted</code></td>
+  <td>Решение об ограничении принято надежным процессом; пользовательский аккаунт/сессия ограничены; есть ссылка поддержки.</td>
+  <td>На тестовом аккаунте применить ограничение; проверить письмо, поддержку и отсутствие деталей, которые нельзя раскрывать.</td>
+</tr></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="data-section">
+      <header><h2>Новые и неподтвержденные переменные</h2></header>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Переменная</th><th>Шаблонов</th><th>Статус</th><th>Действие</th></tr></thead>
+          <tbody><tr>
+  <td><code>{{accountSecurityUrl}}</code></td>
+  <td>1</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{advisorName}}</code></td>
+  <td>4</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{amount}}</code></td>
+  <td>3</td>
+  <td>unconfirmed_existing_event_variable</td>
+  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+</tr>
+<tr>
+  <td><code>{{answerDueAt}}</code></td>
+  <td>2</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{chatUrl}}</code></td>
+  <td>7</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{checkoutUrl}}</code></td>
+  <td>2</td>
+  <td>unconfirmed_existing_event_variable</td>
+  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+</tr>
+<tr>
+  <td><code>{{confirmationExpiresAt}}</code></td>
+  <td>1</td>
+  <td>unconfirmed_existing_event_variable</td>
+  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+</tr>
+<tr>
+  <td><code>{{consultationId}}</code></td>
+  <td>2</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{currency}}</code></td>
+  <td>4</td>
+  <td>unconfirmed_existing_event_variable</td>
+  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+</tr>
+<tr>
+  <td><code>{{emailPreferencesUrl}}</code></td>
+  <td>4</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{firstResponseSla}}</code></td>
+  <td>1</td>
+  <td>unconfirmed_existing_event_variable</td>
+  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+</tr>
+<tr>
+  <td><code>{{followupOfferUrl}}</code></td>
+  <td>1</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{legalMerchantName}}</code></td>
+  <td>20</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{merchantDescriptor}}</code></td>
+  <td>1</td>
+  <td>unconfirmed_existing_event_variable</td>
+  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+</tr>
+<tr>
+  <td><code>{{orderId}}</code></td>
+  <td>3</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{paidAt}}</code></td>
+  <td>1</td>
+  <td>unconfirmed_existing_event_variable</td>
+  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+</tr>
+<tr>
+  <td><code>{{privacyUrl}}</code></td>
+  <td>20</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{processorRefundId}}</code></td>
+  <td>1</td>
+  <td>unconfirmed_existing_event_variable</td>
+  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+</tr>
+<tr>
+  <td><code>{{receiptUrl}}</code></td>
+  <td>1</td>
+  <td>unconfirmed_existing_event_variable</td>
+  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+</tr>
+<tr>
+  <td><code>{{refundAmount}}</code></td>
+  <td>1</td>
+  <td>unconfirmed_existing_event_variable</td>
+  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+</tr>
+<tr>
+  <td><code>{{refundEta}}</code></td>
+  <td>1</td>
+  <td>unconfirmed_existing_event_variable</td>
+  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+</tr>
+<tr>
+  <td><code>{{refundPolicyUrl}}</code></td>
+  <td>20</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{resetExpiresAt}}</code></td>
+  <td>1</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{resetUrl}}</code></td>
+  <td>1</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{reviewUrl}}</code></td>
+  <td>1</td>
+  <td>unconfirmed_existing_event_variable</td>
+  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+</tr>
+<tr>
+  <td><code>{{securityChangedAt}}</code></td>
+  <td>1</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{siteUrl}}</code></td>
+  <td>20</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{supportCaseId}}</code></td>
+  <td>4</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{supportCaseStatus}}</code></td>
+  <td>1</td>
+  <td>unconfirmed_existing_event_variable</td>
+  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+</tr>
+<tr>
+  <td><code>{{supportCaseUrl}}</code></td>
+  <td>5</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{supportEmail}}</code></td>
+  <td>11</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{supportUpdatedAt}}</code></td>
+  <td>2</td>
+  <td>unconfirmed_existing_event_variable</td>
+  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+</tr>
+<tr>
+  <td><code>{{supportUrl}}</code></td>
+  <td>5</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{termsUrl}}</code></td>
+  <td>20</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{unsubscribeUrl}}</code></td>
+  <td>4</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr>
+<tr>
+  <td><code>{{updatedAnswerEta}}</code></td>
+  <td>1</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
+</tr></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="data-section">
+      <header><h2>Текущие live-шаблоны Confideline</h2></header>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>event_name</th><th>condition</th><th>delay</th><th>subject</th><th>live variables</th></tr></thead>
+          <tbody><tr>
+  <td>1</td>
+  <td>user.register</td>
+  <td>1</td>
+  <td>24</td>
+  <td>Welcome to site</td>
+  <td>{{confirmUrl}}, {{password}}, {{siteName}}, {{userName}}</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td>user.register</td>
+  <td>2</td>
+  <td>72</td>
+  <td>Welcome to site</td>
+  <td>{{confirmUrl}}, {{password}}, {{siteName}}, {{userName}}</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>user.register</td>
+  <td>0</td>
+  <td></td>
+  <td>Welcome to site</td>
+  <td>{{confirmUrl}}, {{password}}, {{siteName}}, {{userName}}</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>user.email_confirmation</td>
+  <td>0</td>
+  <td></td>
+  <td>Welcome to site</td>
+  <td>{{confirmUrl}}, {{siteName}}, {{userName}}</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td>user.email_reconfirmation</td>
+  <td>0</td>
+  <td></td>
+  <td>Reconfirmation Email</td>
+  <td>{{confirmUrl}}, {{siteName}}</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td>profile.viewed</td>
+  <td>0</td>
+  <td></td>
+  <td>New profile view</td>
+  <td>{{senderAvatarUrl}}, {{senderName}}, {{senderProfileUrl}}, {{subject}}</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td>like.received</td>
+  <td>0</td>
+  <td></td>
+  <td>Like received</td>
+  <td>{{senderAvatarUrl}}, {{senderName}}, {{senderProfileUrl}}, {{subject}}</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td>gift.received</td>
+  <td>0</td>
+  <td></td>
+  <td>Gift received</td>
+  <td>{{senderAvatarUrl}}, {{senderName}}, {{senderProfileUrl}}, {{subject}}</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td>photo.access.request</td>
+  <td>0</td>
+  <td></td>
+  <td>Request access to private photos</td>
+  <td>{{privatePhotosLink}}, {{senderAvatarUrl}}, {{senderName}}, {{senderProfileUrl}}, {{subject}}</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td>photo.access.decision</td>
+  <td>0</td>
+  <td></td>
+  <td>Private photos access</td>
+  <td>{{senderAvatarUrl}}, {{senderName}}, {{senderProfileUrl}}, {{subject}}</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td>group.access.request</td>
+  <td>0</td>
+  <td></td>
+  <td>Request access to private group</td>
+  <td>{{privateGroupRequestLink}}, {{senderAvatarUrl}}, {{senderName}}, {{senderProfileUrl}}, {{subject}}</td>
+</tr></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <script>
+    const buttons = Array.from(document.querySelectorAll('[data-filter]'));
+    const rows = Array.from(document.querySelectorAll('.scenario-row'));
+    const sections = Array.from(document.querySelectorAll('.stage-section'));
+    function applyFilter(value) {
+      buttons.forEach(btn => btn.classList.toggle('active', btn.dataset.filter === value));
+      rows.forEach(row => {
+        const visible = value === 'all' || row.dataset.priority === value || row.dataset.status === value;
+        row.classList.toggle('hidden', !visible);
+      });
+      sections.forEach(section => {
+        const hasVisible = Array.from(section.querySelectorAll('.scenario-row')).some(row => !row.classList.contains('hidden'));
+        section.classList.toggle('hidden', !hasVisible);
+      });
+    }
+    buttons.forEach(btn => btn.addEventListener('click', () => applyFilter(btn.dataset.filter)));
+  </script>
+</body>
+</html>

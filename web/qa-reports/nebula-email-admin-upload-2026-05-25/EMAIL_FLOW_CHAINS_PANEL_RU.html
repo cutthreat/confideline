@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flow-цепочки email-уведомлений Confideline</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --ink: #172033;
+      --muted: #647084;
+      --line: #dce3ef;
+      --line-soft: #edf1f6;
+      --brand: #6a39dc;
+      --accent: #21a6a1;
+      --warn: #b56a00;
+      --shadow: 0 14px 40px rgba(23, 32, 51, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.52;
+    }
+    .topbar {
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 28px 24px 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: end;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: 30px; line-height: 1.18; letter-spacing: 0; }
+    .topbar p { max-width: 780px; margin-bottom: 0; color: var(--muted); }
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    .nav a {
+      color: var(--ink);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      background: #fbfcfe;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .mode-toggle {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .mode-toggle button {
+      min-height: 36px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+    }
+    .mode-toggle button.active {
+      border-color: var(--brand);
+      background: #f0eefb;
+      color: #402391;
+      font-weight: 700;
+    }
+    body:not(.igor-mode) .igor-only { display: none !important; }
+    .shell { max-width: 1240px; margin: 0 auto; padding: 24px; }
+    .summary {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) repeat(3, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .lead, .metric, .rule-grid article, .flow-card, .matrix {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+    .lead { padding: 20px; }
+    .lead h2 { margin-bottom: 8px; font-size: 20px; }
+    .lead p { margin-bottom: 0; color: var(--muted); }
+    .metric { padding: 18px; }
+    .metric span { display: block; color: var(--muted); font-size: 12px; text-transform: uppercase; }
+    .metric strong { display: block; margin-top: 8px; font-size: 24px; }
+    .rule-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 18px 0;
+    }
+    .rule-grid article { padding: 16px; }
+    .rule-grid h3 { margin-bottom: 8px; font-size: 15px; }
+    .rule-grid p { margin-bottom: 0; color: var(--muted); font-size: 14px; }
+    .flow-card { margin: 18px 0; overflow: hidden; }
+    .flow-card header {
+      padding: 18px 20px;
+      border-top: 5px solid var(--brand);
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfe;
+    }
+    .flow-card header p {
+      margin-bottom: 8px;
+      color: var(--accent);
+      font-size: 12px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .flow-card h2 { margin-bottom: 8px; font-size: 22px; }
+    .flow-card header strong { display: block; max-width: 860px; font-size: 15px; }
+    .flow-rule {
+      margin: 18px 20px;
+      padding: 12px 14px;
+      border-left: 4px solid var(--accent);
+      background: #f4fbfb;
+      color: #294b4b;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; min-width: 900px; border-collapse: collapse; }
+    th, td { padding: 11px 12px; border-bottom: 1px solid var(--line-soft); text-align: left; vertical-align: top; }
+    th { color: var(--muted); background: #fbfcfe; font-size: 12px; text-transform: uppercase; }
+    td { font-size: 13px; }
+    td span, td small { display: block; margin-top: 5px; color: var(--muted); }
+    code {
+      background: #f0eefb;
+      color: #402391;
+      border-radius: 5px;
+      padding: 2px 5px;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 12px;
+    }
+    .intersections { padding: 16px 20px 20px; }
+    .intersections h3 { margin-bottom: 10px; font-size: 16px; }
+    .intersections ul { margin: 0; padding-left: 20px; color: var(--muted); }
+    .intersections li + li { margin-top: 6px; }
+    .matrix { margin-top: 18px; overflow: hidden; }
+    .matrix header { padding: 16px 20px; border-bottom: 1px solid var(--line); background: #fbfcfe; }
+    .matrix h2 { margin-bottom: 0; font-size: 20px; }
+    .sources { color: var(--muted); }
+    .sources a { color: #402391; }
+    @media (max-width: 980px) {
+      .topbar-inner, .summary, .rule-grid { grid-template-columns: 1fr; }
+      .nav { justify-content: flex-start; }
+    }
+    @media (max-width: 560px) {
+      .topbar-inner, .shell { padding-left: 14px; padding-right: 14px; }
+      h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div>
+        <h1>Flow-цепочки email-уведомлений Confideline</h1>
+        <p>Порядок срабатывания, пересечения, отмены и suppression-правила для внедрения email-шаблонов онлайн-консультации через чат. Обновлено: 2026-05-28 21:08.</p>
+        <div class="mode-toggle" aria-label="Режим просмотра">
+          <button type="button" class="active" data-mode="clean">Кратко</button>
+          <button type="button" data-mode="igor">Для Игоря</button>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Навигация">
+        <a href="SCENARIOS_IMPLEMENTATION_PANEL_RU.html">Панель сценариев</a>
+        <a href="TEMPLATE_SETTINGS_SCENARIOS_RU.html">Настройки шаблонов</a>
+        <a href="VARIABLES_GLOSSARY_RU.html">Словарь переменных</a>
+        <a href="TEMPLATES_PREVIEW_RU_EN.html">Превью писем</a>
+      </nav>
+    </div>
+  </header>
+  <main class="shell">
+    <section class="summary">
+      <div class="lead">
+        <h2>Решение по цепочкам</h2>
+        <p>Сценарии могут пересекаться. Поэтому delayed email не является гарантированной отправкой: перед отправкой нужно повторно проверить состояние и отменить письмо, если более позднее событие уже закрыло потребность. В режиме «Для Игоря» открываются event_name, backend-gates и queue-ключи.</p>
+      </div>
+      <div class="metric"><span>Flow-цепочек</span><strong>5</strong></div>
+      <div class="metric"><span>Правил</span><strong>6</strong></div>
+      <div class="metric"><span>Отмен/suppression</span><strong>9</strong></div>
+    </section>
+    <section class="rule-grid">
+        <article class="">
+          <h3>Отложенные письма проверяют состояние дважды</h3>
+          <p>При постановке в очередь фиксируется execute_at, но перед отправкой cron/job обязан заново проверить бизнес-состояние.</p>
+        </article>
+        <article class="igor-only">
+          <h3>Событие в dropdown не равно рабочему trigger</h3>
+          <p>event_name из админки считается готовым только после проверки queue-binding в backend-коде.</p>
+        </article>
+        <article class="igor-only">
+          <h3>Дедупликация обязательна</h3>
+          <p>Минимальный ключ: userId + templateKey + entityId/orderId/chatId/refundId + eventVersion/status.</p>
+        </article>
+        <article class="">
+          <h3>Service/security/payment письма не блокируются маркетинговым opt-out</h3>
+          <p>Marketing/lifecycle письма respect user settings, unsubscribeUrl и count_user_settings.</p>
+        </article>
+        <article class="igor-only">
+          <h3>Колокольчик и email должны иметь согласованное время</h3>
+          <p>Если notification связан с delayed email, использовать visible_at=execute_at либо явно принять продуктово, что bell появляется сразу.</p>
+        </article>
+        <article class="igor-only">
+          <h3>Общие event_name требуют context</h3>
+          <p>message.received требует direction; payment.refund требует refund_status; review.left не должен использоваться как review request без строгого gate.</p>
+        </article>
+    </section>
+    <section class="flow-card" id="registration_access">
+      <header>
+        <p>Flow</p>
+        <h2>Регистрация и доступ</h2>
+        <strong>Дать пользователю доступ, подтвердить email и не смешать welcome, confirmation и legacy follow-up.</strong>
+      </header>
+      <div class="flow-rule">Welcome и email confirmation являются разными письмами. Legacy follow-up по user.register с условиями 1/3 дня не должен дублировать базовую регистрацию.</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Шаг</th><th>Смысл</th><th>Шаблон</th><th>Отмена/skip</th><th class="igor-only">event_name</th><th class="igor-only">Backend gate</th><th class="igor-only">Queue</th><th class="igor-only">Для Игоря</th></tr></thead>
+          <tbody>
+          <tr>
+            <td><strong>1</strong><span>сразу</span></td>
+            <td>создан аккаунт<small>Сервисный старт. Не продает, не заменяет подтверждение email.</small></td>
+            <td><code>user_registration</code></td>
+            <td>пропустить при повторной регистрации/дубликате события</td>
+            <td class="igor-only"><code>user.register</code></td>
+            <td class="igor-only">пользователь создан впервые; не legacy follow-up; не повторная отправка</td>
+            <td class="igor-only"><code>dedupe: userId + user_registration + registrationVersion</code></td>
+            <td class="igor-only">Обновлять live id=3, не id=1/id=2. Проверить legacy follow-up условия.</td>
+          </tr>
+          <tr>
+            <td><strong>2</strong><span>сразу</span></td>
+            <td>email не подтвержден или запрошено повторное подтверждение<small>Критичный double opt-in/access step. Нельзя блокировать маркетинговым opt-out.</small></td>
+            <td><code>email_confirmation</code></td>
+            <td>не слать, если email уже подтвержден до выполнения очереди</td>
+            <td class="igor-only"><code>user.email_confirmation</code></td>
+            <td class="igor-only">token активен; confirmationExpiresAt доступен; throttling соблюден</td>
+            <td class="igor-only"><code>dedupe: userId + email_confirmation + emailHash + tokenVersion</code></td>
+            <td class="igor-only">Обновлять live id=4. Проверить confirmUrl и срок token.</td>
+          </tr>
+          <tr>
+            <td><strong>3</strong><span>по запросу</span></td>
+            <td>пользователь запросил восстановление доступа<small>Security письмо. Приоритет выше всех маркетинговых и lifecycle ограничений.</small></td>
+            <td><code>password_reset</code></td>
+            <td>не блокировать маркетинговыми настройками; пропустить старый token после нового запроса</td>
+            <td class="igor-only"><code>user.password_recovery</code></td>
+            <td class="igor-only">reset token активен; rate limit соблюден; ответ UI не раскрывает существование аккаунта</td>
+            <td class="igor-only"><code>dedupe: userId/emailHash + password_reset + resetTokenVersion</code></td>
+            <td class="igor-only">Добавить/подтвердить event и renderer variables resetUrl/resetExpiresAt.</td>
+          </tr>
+          <tr>
+            <td><strong>4</strong><span>сразу</span></td>
+            <td>изменен пароль, email, 2FA или чувствительная настройка<small>Security письмо. Минимум деталей, только полезное действие и поддержка.</small></td>
+            <td><code>security_change_alert</code></td>
+            <td>не раскрывать лишние IP/device данные без privacy-основания</td>
+            <td class="igor-only"><code>security.security_change</code></td>
+            <td class="igor-only">изменение сохранено; есть тип изменения и безопасное время события</td>
+            <td class="igor-only"><code>dedupe: userId + security_change_alert + changeId</code></td>
+            <td class="igor-only">Добавить event security.security_change и whitelist типов security-событий.</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="intersections">
+        <h3>Пересечения</h3>
+        <ul><li>id=1 и id=2 в live-админке являются отложенными registration follow-up, а базовый welcome соответствует id=3.</li>
+<li>Email confirmation не заменяет welcome: оба могут уйти после регистрации, но только confirmation содержит confirmUrl.</li>
+<li>Подтверждение email должно отменять/подавлять legacy follow-up, если его цель - вернуть неподтвержденного или неактивного пользователя.</li></ul>
+      </div>
+    </section>
+    <section class="flow-card" id="payment_checkout">
+      <header>
+        <p>Flow</p>
+        <h2>Оплата и незавершенный checkout</h2>
+        <strong>Зафиксировать оплату, восстановить незавершенную оплату и не отправить взаимоисключающие письма.</strong>
+      </header>
+      <div class="flow-rule">payment.init ставит delayed recovery через 2 часа. payment.success или финальный payment.error должны закрыть эту ветку для конкретной попытки оплаты.</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Шаг</th><th>Смысл</th><th>Шаблон</th><th>Отмена/skip</th><th class="igor-only">event_name</th><th class="igor-only">Backend gate</th><th class="igor-only">Queue</th><th class="igor-only">Для Игоря</th></tr></thead>
+          <tbody>
+          <tr>
+            <td><strong>1</strong><span>+2 часа</span></td>
+            <td>создана платежная попытка, пользователь не завершил оплату<small>Abandoned checkout recovery: +2 часа, только если заказ все еще unpaid.</small></td>
+            <td><code>payment_started</code></td>
+            <td>отменить при payment.success, финальном payment.error, новом оплаченном order или refund</td>
+            <td class="igor-only"><code>payment.init</code></td>
+            <td class="igor-only">заказ все еще unpaid; нет success/error по более свежей попытке; пользователь допускает lifecycle письма</td>
+            <td class="igor-only"><code>dedupe: userId + payment_started + orderId + paymentAttemptId</code></td>
+            <td class="igor-only">Delay=2. Queue item отменяется success/error/refund по orderId/paymentAttemptId.</td>
+          </tr>
+          <tr>
+            <td><strong>2</strong><span>сразу</span></td>
+            <td>провайдер подтвердил финальный paid status<small>Post-purchase service письмо: чек, статус, переход в чат, отмена abandoned checkout.</small></td>
+            <td><code>payment_success_receipt</code></td>
+            <td>отменить pending payment_started по orderId; не слать повторно при повторном webhook</td>
+            <td class="igor-only"><code>payment.success</code></td>
+            <td class="igor-only">webhook дедуплицирован; orderId, amount, currency, receiptUrl, chatUrl доступны</td>
+            <td class="igor-only"><code>dedupe: userId + payment_success_receipt + orderId + paidStatusVersion</code></td>
+            <td class="igor-only">Webhook idempotency обязателен. После success отменить payment_started.</td>
+          </tr>
+          <tr>
+            <td><strong>3</strong><span>сразу</span></td>
+            <td>финальная ошибка платежной попытки<small>Recovery без давления: отправлять только на финальный failed/error.</small></td>
+            <td><code>payment_failed</code></td>
+            <td>не слать, если по этому order уже есть success; отменить pending payment_started для этой попытки</td>
+            <td class="igor-only"><code>payment.error</code></td>
+            <td class="igor-only">ошибка финальная, а не промежуточный provider status; checkoutUrl безопасен</td>
+            <td class="igor-only"><code>dedupe: userId + payment_failed + paymentAttemptId + finalErrorCode</code></td>
+            <td class="igor-only">Фильтровать только финальный failed/error, не provider pending.</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="intersections">
+        <h3>Пересечения</h3>
+        <ul><li>payment_started пересекается с payment_success_receipt и payment_failed: delayed письмо должно повторно проверить состояние перед отправкой.</li>
+<li>Один order может иметь несколько paymentAttemptId; письмо об успехе дедуплицируется по orderId, ошибка - по конкретной финальной попытке.</li>
+<li>После payment.success начинается чат-цепочка: открывается чат и может планироваться reminder о первом сообщении.</li></ul>
+      </div>
+    </section>
+    <section class="flow-card" id="paid_chat_consultation">
+      <header>
+        <p>Flow</p>
+        <h2>Оплаченная чат-консультация</h2>
+        <strong>Довести пользователя от оплаты до первого сообщения, удержать доверие во время ожидания и вернуть к ответу эксперта.</strong>
+      </header>
+      <div class="flow-rule">На текущем этапе консультация только через онлайн-чат. Все письма должны быть привязаны к chatId/consultationId и учитывать направление сообщения.</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Шаг</th><th>Смысл</th><th>Шаблон</th><th>Отмена/skip</th><th class="igor-only">event_name</th><th class="igor-only">Backend gate</th><th class="igor-only">Queue</th><th class="igor-only">Для Игоря</th></tr></thead>
+          <tbody>
+          <tr>
+            <td><strong>1</strong><span>+2 часа после payment.success/open chat</span></td>
+            <td>оплаченный чат открыт, но клиент не отправил первое сообщение<small>Activation reminder: пользователь уже оплатил, но не сделал ключевое действие.</small></td>
+            <td><code>paid_chat_no_message_reminder</code></td>
+            <td>отменить при первом сообщении клиента, refund, закрытии/ограничении чата</td>
+            <td class="igor-only"><code>message.no_first_chat_message</code></td>
+            <td class="igor-only">чат активен; нет первого client message; консультация не закрыта; reminder еще не отправлялся</td>
+            <td class="igor-only"><code>dedupe: userId + paid_chat_no_message_reminder + chatId</code></td>
+            <td class="igor-only">Нужен job: paid chat + no first client message. Отмена на first message.</td>
+          </tr>
+          <tr>
+            <td><strong>2</strong><span>сразу</span></td>
+            <td>клиент отправил сообщение эксперту<small>Transactional reassurance: сообщение принято; снижает тревогу после оплаты.</small></td>
+            <td><code>chat_message_received</code></td>
+            <td>не слать на ответ эксперта; отменить pending paid_chat_no_message_reminder</td>
+            <td class="igor-only"><code>message.received</code></td>
+            <td class="igor-only">message.direction = client_to_advisor; сообщение не системное; chatId активен</td>
+            <td class="igor-only"><code>dedupe: userId + chat_message_received + messageId</code></td>
+            <td class="igor-only">message.received требует direction=client_to_advisor.</td>
+          </tr>
+          <tr>
+            <td><strong>3</strong><span>по SLA job</span></td>
+            <td>клиент ждет, SLA нарушен или близок к нарушению<small>Service recovery: честно объясняет задержку до обращения в поддержку.</small></td>
+            <td><code>chat_sla_delay</code></td>
+            <td>отменить при ответе эксперта, refund, safety block, закрытии чата</td>
+            <td class="igor-only"><code>message.answer_delayed</code></td>
+            <td class="igor-only">нет видимого ответа эксперта; SLA threshold достигнут; чат не закрыт</td>
+            <td class="igor-only"><code>dedupe: userId + chat_sla_delay + chatId + slaWindow</code></td>
+            <td class="igor-only">SLA job создает event только если advisor answer все еще отсутствует.</td>
+          </tr>
+          <tr>
+            <td><strong>4</strong><span>сразу</span></td>
+            <td>эксперт опубликовал ответ клиенту<small>Главное возвращающее письмо: ответ готов, CTA ведет в конкретный чат.</small></td>
+            <td><code>advisor_chat_reply_ready</code></td>
+            <td>не слать на client_to_advisor; отменить pending chat_sla_delay</td>
+            <td class="igor-only"><code>message.received</code></td>
+            <td class="igor-only">message.direction = advisor_to_client; ответ видим клиенту; chatUrl ведет в нужный чат</td>
+            <td class="igor-only"><code>dedupe: userId + advisor_chat_reply_ready + advisorMessageId</code></td>
+            <td class="igor-only">message.received требует direction=advisor_to_client. Отменить SLA-delay.</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="intersections">
+        <h3>Пересечения</h3>
+        <ul><li>message.received нельзя использовать без direction/context: иначе chat_message_received и advisor_chat_reply_ready конфликтуют.</li>
+<li>Ответ эксперта должен отменять SLA-delay письмо; первое сообщение клиента должно отменять no-message reminder.</li>
+<li>Refund, safety notice или age restriction прерывают чат-ветку и подавляют удерживающие письма.</li></ul>
+      </div>
+    </section>
+    <section class="flow-card" id="support_refund_safety">
+      <header>
+        <p>Flow</p>
+        <h2>Поддержка, возвраты и safety</h2>
+        <strong>Аккуратно обработать спорные и сервисные ситуации без маркетингового давления.</strong>
+      </header>
+      <div class="flow-rule">Support/refund/safety события могут прерывать платежные, чатовые и retention-цепочки. Эти письма не должны зависеть от маркетингового opt-out.</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Шаг</th><th>Смысл</th><th>Шаблон</th><th>Отмена/skip</th><th class="igor-only">event_name</th><th class="igor-only">Backend gate</th><th class="igor-only">Queue</th><th class="igor-only">Для Игоря</th></tr></thead>
+          <tbody>
+          <tr>
+            <td><strong>1</strong><span>сразу</span></td>
+            <td>создано обращение в поддержку<small>Service confirmation: номер обращения и ожидание ответа.</small></td>
+            <td><code>support_ticket_opened</code></td>
+            <td>не дублировать при каждом комментарии</td>
+            <td class="igor-only"><code>support.ticket.opened</code></td>
+            <td class="igor-only">есть supportCaseId; обращение видно пользователю; это не внутренняя заметка</td>
+            <td class="igor-only"><code>dedupe: userId + support_ticket_opened + supportCaseId</code></td>
+            <td class="igor-only">Не отправлять на internal note или автослужебные события.</td>
+          </tr>
+          <tr>
+            <td><strong>2</strong><span>сразу</span></td>
+            <td>поддержка опубликовала ответ пользователю<small>Service return: пользователь видит, что поддержка ответила.</small></td>
+            <td><code>support_reply</code></td>
+            <td>не слать на внутренние статусы и operator-only комментарии</td>
+            <td class="igor-only"><code>support.message.received</code></td>
+            <td class="igor-only">ответ публичный; не internal note; supportUrl доступен</td>
+            <td class="igor-only"><code>dedupe: userId + support_reply + supportMessageId</code></td>
+            <td class="igor-only">Только public support reply; нужен supportCaseUrl/supportMessageId.</td>
+          </tr>
+          <tr>
+            <td><strong>3</strong><span>сразу</span></td>
+            <td>значимое пользовательское обновление refund case<small>Service status update: только значимые статусы, не внутренние provider-события.</small></td>
+            <td><code>refund_case_update</code></td>
+            <td>не слать на технические provider/internal статусы</td>
+            <td class="igor-only"><code>payment.refund</code></td>
+            <td class="igor-only">refund_status не финальный, но видимый пользователю; есть refundEta/supportUrl</td>
+            <td class="igor-only"><code>dedupe: userId + refund_case_update + refundId + status</code></td>
+            <td class="igor-only">payment.refund требует refund_status != final и user_visible=true.</td>
+          </tr>
+          <tr>
+            <td><strong>4</strong><span>сразу</span></td>
+            <td>refund confirmed/processed<small>Financial trust: финальный статус возврата, сумма и сроки.</small></td>
+            <td><code>refund_confirmed</code></td>
+            <td>после финального refund подавить review/follow-up/reflection по этой консультации</td>
+            <td class="igor-only"><code>payment.refund</code></td>
+            <td class="igor-only">финальный статус возврата; refundAmount, orderId, processorRefundId доступны</td>
+            <td class="igor-only"><code>dedupe: userId + refund_confirmed + refundId + finalStatus</code></td>
+            <td class="igor-only">payment.refund требует final confirmed/processed; затем подавить retention.</td>
+          </tr>
+          <tr>
+            <td><strong>5</strong><span>сразу</span></td>
+            <td>safety/legal ограничение или важная инструкция<small></small></td>
+            <td><code>safety_notice / minor_or_age_restriction_notice</code></td>
+            <td>подавить маркетинг, review/follow-up/reflection и спорные чатовые письма</td>
+            <td class="igor-only"><code>support.safety_notice / user.age_restricted</code></td>
+            <td class="igor-only">триггер подтвержден; текст согласован; нет лишних чувствительных деталей</td>
+            <td class="igor-only"><code>dedupe: userId + noticeTemplate + safetyCaseId</code></td>
+            <td class="igor-only"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="intersections">
+        <h3>Пересечения</h3>
+        <ul><li>payment.refund должен разделяться по status/context: update и confirmed не являются одним письмом.</li>
+<li>Support публичный ответ и internal note должны быть разными событиями или иметь явный флаг visibility.</li>
+<li>Safety/age restriction является стоп-сигналом для коммерческих цепочек.</li></ul>
+      </div>
+    </section>
+    <section class="flow-card" id="retention_quality">
+      <header>
+        <p>Flow</p>
+        <h2>Качество и возврат после консультации</h2>
+        <strong>Собрать оценку и мягко вернуть пользователя без спама и давления.</strong>
+      </header>
+      <div class="flow-rule">Retention-письма идут каскадом: review +24h, D2 reflection +48h, same advisor follow-up +72h. Они не должны приходить одновременно.</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Шаг</th><th>Смысл</th><th>Шаблон</th><th>Отмена/skip</th><th class="igor-only">event_name</th><th class="igor-only">Backend gate</th><th class="igor-only">Queue</th><th class="igor-only">Для Игоря</th></tr></thead>
+          <tbody>
+          <tr>
+            <td><strong>1</strong><span>+24 часа после завершения консультации</span></td>
+            <td>консультация завершена, отзыва еще нет<small>Quality loop: не раньше +24ч, отменять при оставленном отзыве, refund или жалобе.</small></td>
+            <td><code>review_request</code></td>
+            <td>отменить при review left, refund, complaint, safety/age restriction</td>
+            <td class="igor-only"><code>review.left сейчас в dropdown; рекомендованный backend event: review.request</code></td>
+            <td class="igor-only">нет review; нет жалобы/refund/safety; пользователь допускает lifecycle письма</td>
+            <td class="igor-only"><code>dedupe: userId + review_request + chatId</code></td>
+            <td class="igor-only">Лучше добавить review.request. Если оставить review.left, нужен строгий gate no_review_yet.</td>
+          </tr>
+          <tr>
+            <td><strong>2</strong><span>+48 часов после завершения/сохранения чата</span></td>
+            <td>чат сохранен и доступен в кабинете<small>Value reminder: +48ч, мягкий возврат к сохраненному чату без давления.</small></td>
+            <td><code>d2_chat_reflection</code></td>
+            <td>отменить при refund, active dispute, удалении чата, safety restriction</td>
+            <td class="igor-only"><code>message.chat_saved</code></td>
+            <td class="igor-only">чат доступен; нет refund/dispute/deletion; пользователь допускает lifecycle письма</td>
+            <td class="igor-only"><code>dedupe: userId + d2_chat_reflection + chatId</code></td>
+            <td class="igor-only">Нужен message.chat_saved/lifecycle event и suppression refund/dispute/delete.</td>
+          </tr>
+          <tr>
+            <td><strong>3</strong><span>+72 часа после завершения консультации</span></td>
+            <td>повторная консультация с тем же экспертом уместна<small>Commercial follow-up: +72ч, после quality/value писем и только при уместности.</small></td>
+            <td><code>same_advisor_followup_offer</code></td>
+            <td>отменить при новой активной консультации, opt-out, refund, complaint, safety restriction</td>
+            <td class="igor-only"><code>advisor.followup.offer</code></td>
+            <td class="igor-only">эксперт доступен; нет активного чата; нет refund/complaint/safety; пользователь допускает маркетинг</td>
+            <td class="igor-only"><code>dedupe: userId + same_advisor_followup_offer + advisorId + lastChatId</code></td>
+            <td class="igor-only">Нужен advisor.followup.offer, advisor availability, no active chat, opt-out check.</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="intersections">
+        <h3>Пересечения</h3>
+        <ul><li>Это самая рискованная ветка по частоте писем: нельзя ставить review и follow-up на один delay.</li>
+<li>review.left в текущем dropdown звучит как факт оставленного отзыва; для запроса оценки лучше добавить review.request.</li>
+<li>Любой refund/support complaint/safety должен подавлять retention по этой консультации.</li></ul>
+      </div>
+    </section>
+    <section class="matrix">
+      <header><h2>Матрица отмен и suppression</h2></header>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Событие</th><th>Отменяет/подавляет</th><th>Entity</th><th>Почему</th></tr></thead>
+          <tbody>
+          <tr>
+            <td><code>payment.success</code></td>
+            <td><code>payment_started</code></td>
+            <td><code>orderId/paymentAttemptId</code></td>
+            <td>оплата уже успешна, abandoned checkout больше не актуален</td>
+          </tr>
+          <tr>
+            <td><code>payment.error</code></td>
+            <td><code>payment_started</code></td>
+            <td><code>paymentAttemptId</code></td>
+            <td>попытка оплаты финально завершилась ошибкой</td>
+          </tr>
+          <tr>
+            <td><code>first client message</code></td>
+            <td><code>paid_chat_no_message_reminder</code></td>
+            <td><code>chatId</code></td>
+            <td>пользователь уже написал в оплаченный чат</td>
+          </tr>
+          <tr>
+            <td><code>advisor reply</code></td>
+            <td><code>chat_sla_delay</code></td>
+            <td><code>chatId</code></td>
+            <td>задержка ответа больше не актуальна</td>
+          </tr>
+          <tr>
+            <td><code>review left</code></td>
+            <td><code>review_request</code></td>
+            <td><code>chatId</code></td>
+            <td>оценка уже оставлена</td>
+          </tr>
+          <tr>
+            <td><code>refund confirmed/update</code></td>
+            <td><code>review_request, d2_chat_reflection, same_advisor_followup_offer</code></td>
+            <td><code>orderId/chatId</code></td>
+            <td>финансовый спор делает retention неуместным</td>
+          </tr>
+          <tr>
+            <td><code>safety/age restriction</code></td>
+            <td><code>marketing/lifecycle/chat follow-up</code></td>
+            <td><code>userId/safetyCaseId</code></td>
+            <td>юридический или safety стоп-сигнал выше маркетинга</td>
+          </tr>
+          <tr>
+            <td><code>new active chat</code></td>
+            <td><code>same_advisor_followup_offer</code></td>
+            <td><code>userId/advisorId</code></td>
+            <td>не предлагать продолжение, когда активный чат уже есть</td>
+          </tr>
+          <tr>
+            <td><code>email confirmed/login/chat activity</code></td>
+            <td><code>legacy user.register follow-up id=1/id=2 if applicable</code></td>
+            <td><code>userId</code></td>
+            <td>отложенные no-login/welcome сценарии больше не соответствуют состоянию</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section class="matrix igor-only">
+      <header><h2>Основания из email-маркетинга</h2></header>
+      <div class="intersections sources">
+        <ul>        <li><a href="https://academy.klaviyo.com/en-us/best-practices/best-practices-for-flows">Klaviyo Academy</a> - Ключевые lifecycle-flow, split logic, разные шаблоны под разные цели, минимум 1 день между маркетинговыми письмами.</li>
+        <li><a href="https://www.klaviyo.com/blog/how-to-schedule-marketing-emails">Klaviyo scheduling</a> - Abandoned checkout/payment recovery лучше запускать не мгновенно, а через 2-4 часа и отменять после покупки.</li>
+        <li><a href="https://knowledge.hubspot.com/marketing-email/overview-of-email-deliverability">HubSpot deliverability</a> - Персонализация, ограничение частоты и сегментация поддерживают доставляемость и снижают перегрузку пользователя.</li>
+        <li><a href="https://www.litmus.com/blog/ultimate-guide-accessible-emails">Litmus accessibility</a> - Live HTML text, читаемые размеры, line-height и отступы важны для email-доступности.</li>
+        <li><a href="https://www.litmus.com/dark-mode-email-best-practices">Litmus dark mode</a> - Письма должны проверяться в light/dark mode, потому что email-клиенты по-разному инвертируют цвета.</li></ul>
+      </div>
+    </section>
+  </main>
+  <script>
+    const buttons = Array.from(document.querySelectorAll('[data-mode]'));
+    function setMode(mode) {
+      document.body.classList.toggle('igor-mode', mode === 'igor');
+      buttons.forEach((button) => button.classList.toggle('active', button.dataset.mode === mode));
+    }
+    buttons.forEach((button) => button.addEventListener('click', () => setMode(button.dataset.mode)));
+  </script>
+</body>
+</html>

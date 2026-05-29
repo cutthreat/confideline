@@ -1,0 +1,121 @@
+# Flow-цепочки email-уведомлений
+
+Дата обновления: 2026-05-28 21:08
+
+Скоуп: только онлайн-консультация через чат. Документ фиксирует не внешний вид писем, а порядок срабатывания, пересечения, отмены, suppression-правила и backend-gates.
+
+## Основания из email-маркетинга
+
+- **Klaviyo Academy:** Ключевые lifecycle-flow, split logic, разные шаблоны под разные цели, минимум 1 день между маркетинговыми письмами. (https://academy.klaviyo.com/en-us/best-practices/best-practices-for-flows)
+- **Klaviyo scheduling:** Abandoned checkout/payment recovery лучше запускать не мгновенно, а через 2-4 часа и отменять после покупки. (https://www.klaviyo.com/blog/how-to-schedule-marketing-emails)
+- **HubSpot deliverability:** Персонализация, ограничение частоты и сегментация поддерживают доставляемость и снижают перегрузку пользователя. (https://knowledge.hubspot.com/marketing-email/overview-of-email-deliverability)
+- **Litmus accessibility:** Live HTML text, читаемые размеры, line-height и отступы важны для email-доступности. (https://www.litmus.com/blog/ultimate-guide-accessible-emails)
+- **Litmus dark mode:** Письма должны проверяться в light/dark mode, потому что email-клиенты по-разному инвертируют цвета. (https://www.litmus.com/dark-mode-email-best-practices)
+
+## Глобальные правила
+
+- **Отложенные письма проверяют состояние дважды:** При постановке в очередь фиксируется execute_at, но перед отправкой cron/job обязан заново проверить бизнес-состояние.
+- **Событие в dropdown не равно рабочему trigger:** event_name из админки считается готовым только после проверки queue-binding в backend-коде.
+- **Дедупликация обязательна:** Минимальный ключ: userId + templateKey + entityId/orderId/chatId/refundId + eventVersion/status.
+- **Service/security/payment письма не блокируются маркетинговым opt-out:** Marketing/lifecycle письма respect user settings, unsubscribeUrl и count_user_settings.
+- **Колокольчик и email должны иметь согласованное время:** Если notification связан с delayed email, использовать visible_at=execute_at либо явно принять продуктово, что bell появляется сразу.
+- **Общие event_name требуют context:** message.received требует direction; payment.refund требует refund_status; review.left не должен использоваться как review request без строгого gate.
+
+## Регистрация и доступ
+
+- Роль: Дать пользователю доступ, подтвердить email и не смешать welcome, confirmation и legacy follow-up.
+- Правило: Welcome и email confirmation являются разными письмами. Legacy follow-up по user.register с условиями 1/3 дня не должен дублировать базовую регистрацию.
+
+| # | Когда | template_key | Пользовательский смысл | Backend gate | Отмена/пропуск | Действие для Игоря |
+|---|---|---|---|---|---|---|
+| 1 | сразу | user_registration | Сервисный старт. Не продает, не заменяет подтверждение email. | пользователь создан впервые; не legacy follow-up; не повторная отправка | пропустить при повторной регистрации/дубликате события | Обновлять live id=3, не id=1/id=2. Проверить legacy follow-up условия. |
+| 2 | сразу | email_confirmation | Критичный double opt-in/access step. Нельзя блокировать маркетинговым opt-out. | token активен; confirmationExpiresAt доступен; throttling соблюден | не слать, если email уже подтвержден до выполнения очереди | Обновлять live id=4. Проверить confirmUrl и срок token. |
+| 3 | по запросу | password_reset | Security письмо. Приоритет выше всех маркетинговых и lifecycle ограничений. | reset token активен; rate limit соблюден; ответ UI не раскрывает существование аккаунта | не блокировать маркетинговыми настройками; пропустить старый token после нового запроса | Добавить/подтвердить event и renderer variables resetUrl/resetExpiresAt. |
+| 4 | сразу | security_change_alert | Security письмо. Минимум деталей, только полезное действие и поддержка. | изменение сохранено; есть тип изменения и безопасное время события | не раскрывать лишние IP/device данные без privacy-основания | Добавить event security.security_change и whitelist типов security-событий. |
+
+Пересечения:
+- id=1 и id=2 в live-админке являются отложенными registration follow-up, а базовый welcome соответствует id=3.
+- Email confirmation не заменяет welcome: оба могут уйти после регистрации, но только confirmation содержит confirmUrl.
+- Подтверждение email должно отменять/подавлять legacy follow-up, если его цель - вернуть неподтвержденного или неактивного пользователя.
+
+## Оплата и незавершенный checkout
+
+- Роль: Зафиксировать оплату, восстановить незавершенную оплату и не отправить взаимоисключающие письма.
+- Правило: payment.init ставит delayed recovery через 2 часа. payment.success или финальный payment.error должны закрыть эту ветку для конкретной попытки оплаты.
+
+| # | Когда | template_key | Пользовательский смысл | Backend gate | Отмена/пропуск | Действие для Игоря |
+|---|---|---|---|---|---|---|
+| 1 | +2 часа | payment_started | Abandoned checkout recovery: +2 часа, только если заказ все еще unpaid. | заказ все еще unpaid; нет success/error по более свежей попытке; пользователь допускает lifecycle письма | отменить при payment.success, финальном payment.error, новом оплаченном order или refund | Delay=2. Queue item отменяется success/error/refund по orderId/paymentAttemptId. |
+| 2 | сразу | payment_success_receipt | Post-purchase service письмо: чек, статус, переход в чат, отмена abandoned checkout. | webhook дедуплицирован; orderId, amount, currency, receiptUrl, chatUrl доступны | отменить pending payment_started по orderId; не слать повторно при повторном webhook | Webhook idempotency обязателен. После success отменить payment_started. |
+| 3 | сразу | payment_failed | Recovery без давления: отправлять только на финальный failed/error. | ошибка финальная, а не промежуточный provider status; checkoutUrl безопасен | не слать, если по этому order уже есть success; отменить pending payment_started для этой попытки | Фильтровать только финальный failed/error, не provider pending. |
+
+Пересечения:
+- payment_started пересекается с payment_success_receipt и payment_failed: delayed письмо должно повторно проверить состояние перед отправкой.
+- Один order может иметь несколько paymentAttemptId; письмо об успехе дедуплицируется по orderId, ошибка - по конкретной финальной попытке.
+- После payment.success начинается чат-цепочка: открывается чат и может планироваться reminder о первом сообщении.
+
+## Оплаченная чат-консультация
+
+- Роль: Довести пользователя от оплаты до первого сообщения, удержать доверие во время ожидания и вернуть к ответу эксперта.
+- Правило: На текущем этапе консультация только через онлайн-чат. Все письма должны быть привязаны к chatId/consultationId и учитывать направление сообщения.
+
+| # | Когда | template_key | Пользовательский смысл | Backend gate | Отмена/пропуск | Действие для Игоря |
+|---|---|---|---|---|---|---|
+| 1 | +2 часа после payment.success/open chat | paid_chat_no_message_reminder | Activation reminder: пользователь уже оплатил, но не сделал ключевое действие. | чат активен; нет первого client message; консультация не закрыта; reminder еще не отправлялся | отменить при первом сообщении клиента, refund, закрытии/ограничении чата | Нужен job: paid chat + no first client message. Отмена на first message. |
+| 2 | сразу | chat_message_received | Transactional reassurance: сообщение принято; снижает тревогу после оплаты. | message.direction = client_to_advisor; сообщение не системное; chatId активен | не слать на ответ эксперта; отменить pending paid_chat_no_message_reminder | message.received требует direction=client_to_advisor. |
+| 3 | по SLA job | chat_sla_delay | Service recovery: честно объясняет задержку до обращения в поддержку. | нет видимого ответа эксперта; SLA threshold достигнут; чат не закрыт | отменить при ответе эксперта, refund, safety block, закрытии чата | SLA job создает event только если advisor answer все еще отсутствует. |
+| 4 | сразу | advisor_chat_reply_ready | Главное возвращающее письмо: ответ готов, CTA ведет в конкретный чат. | message.direction = advisor_to_client; ответ видим клиенту; chatUrl ведет в нужный чат | не слать на client_to_advisor; отменить pending chat_sla_delay | message.received требует direction=advisor_to_client. Отменить SLA-delay. |
+
+Пересечения:
+- message.received нельзя использовать без direction/context: иначе chat_message_received и advisor_chat_reply_ready конфликтуют.
+- Ответ эксперта должен отменять SLA-delay письмо; первое сообщение клиента должно отменять no-message reminder.
+- Refund, safety notice или age restriction прерывают чат-ветку и подавляют удерживающие письма.
+
+## Поддержка, возвраты и safety
+
+- Роль: Аккуратно обработать спорные и сервисные ситуации без маркетингового давления.
+- Правило: Support/refund/safety события могут прерывать платежные, чатовые и retention-цепочки. Эти письма не должны зависеть от маркетингового opt-out.
+
+| # | Когда | template_key | Пользовательский смысл | Backend gate | Отмена/пропуск | Действие для Игоря |
+|---|---|---|---|---|---|---|
+| 1 | сразу | support_ticket_opened | Service confirmation: номер обращения и ожидание ответа. | есть supportCaseId; обращение видно пользователю; это не внутренняя заметка | не дублировать при каждом комментарии | Не отправлять на internal note или автослужебные события. |
+| 2 | сразу | support_reply | Service return: пользователь видит, что поддержка ответила. | ответ публичный; не internal note; supportUrl доступен | не слать на внутренние статусы и operator-only комментарии | Только public support reply; нужен supportCaseUrl/supportMessageId. |
+| 3 | сразу | refund_case_update | Service status update: только значимые статусы, не внутренние provider-события. | refund_status не финальный, но видимый пользователю; есть refundEta/supportUrl | не слать на технические provider/internal статусы | payment.refund требует refund_status != final и user_visible=true. |
+| 4 | сразу | refund_confirmed | Financial trust: финальный статус возврата, сумма и сроки. | финальный статус возврата; refundAmount, orderId, processorRefundId доступны | после финального refund подавить review/follow-up/reflection по этой консультации | payment.refund требует final confirmed/processed; затем подавить retention. |
+| 5 | сразу | safety_notice / minor_or_age_restriction_notice |  | триггер подтвержден; текст согласован; нет лишних чувствительных деталей | подавить маркетинг, review/follow-up/reflection и спорные чатовые письма |  |
+
+Пересечения:
+- payment.refund должен разделяться по status/context: update и confirmed не являются одним письмом.
+- Support публичный ответ и internal note должны быть разными событиями или иметь явный флаг visibility.
+- Safety/age restriction является стоп-сигналом для коммерческих цепочек.
+
+## Качество и возврат после консультации
+
+- Роль: Собрать оценку и мягко вернуть пользователя без спама и давления.
+- Правило: Retention-письма идут каскадом: review +24h, D2 reflection +48h, same advisor follow-up +72h. Они не должны приходить одновременно.
+
+| # | Когда | template_key | Пользовательский смысл | Backend gate | Отмена/пропуск | Действие для Игоря |
+|---|---|---|---|---|---|---|
+| 1 | +24 часа после завершения консультации | review_request | Quality loop: не раньше +24ч, отменять при оставленном отзыве, refund или жалобе. | нет review; нет жалобы/refund/safety; пользователь допускает lifecycle письма | отменить при review left, refund, complaint, safety/age restriction | Лучше добавить review.request. Если оставить review.left, нужен строгий gate no_review_yet. |
+| 2 | +48 часов после завершения/сохранения чата | d2_chat_reflection | Value reminder: +48ч, мягкий возврат к сохраненному чату без давления. | чат доступен; нет refund/dispute/deletion; пользователь допускает lifecycle письма | отменить при refund, active dispute, удалении чата, safety restriction | Нужен message.chat_saved/lifecycle event и suppression refund/dispute/delete. |
+| 3 | +72 часа после завершения консультации | same_advisor_followup_offer | Commercial follow-up: +72ч, после quality/value писем и только при уместности. | эксперт доступен; нет активного чата; нет refund/complaint/safety; пользователь допускает маркетинг | отменить при новой активной консультации, opt-out, refund, complaint, safety restriction | Нужен advisor.followup.offer, advisor availability, no active chat, opt-out check. |
+
+Пересечения:
+- Это самая рискованная ветка по частоте писем: нельзя ставить review и follow-up на один delay.
+- review.left в текущем dropdown звучит как факт оставленного отзыва; для запроса оценки лучше добавить review.request.
+- Любой refund/support complaint/safety должен подавлять retention по этой консультации.
+
+## Матрица отмен и suppression
+
+| Событие | Отменяет/подавляет | Entity | Почему |
+|---|---|---|---|
+| payment.success | payment_started | orderId/paymentAttemptId | оплата уже успешна, abandoned checkout больше не актуален |
+| payment.error | payment_started | paymentAttemptId | попытка оплаты финально завершилась ошибкой |
+| first client message | paid_chat_no_message_reminder | chatId | пользователь уже написал в оплаченный чат |
+| advisor reply | chat_sla_delay | chatId | задержка ответа больше не актуальна |
+| review left | review_request | chatId | оценка уже оставлена |
+| refund confirmed/update | review_request, d2_chat_reflection, same_advisor_followup_offer | orderId/chatId | финансовый спор делает retention неуместным |
+| safety/age restriction | marketing/lifecycle/chat follow-up | userId/safetyCaseId | юридический или safety стоп-сигнал выше маркетинга |
+| new active chat | same_advisor_followup_offer | userId/advisorId | не предлагать продолжение, когда активный чат уже есть |
+| email confirmed/login/chat activity | legacy user.register follow-up id=1/id=2 if applicable | userId | отложенные no-login/welcome сценарии больше не соответствуют состоянию |
+
