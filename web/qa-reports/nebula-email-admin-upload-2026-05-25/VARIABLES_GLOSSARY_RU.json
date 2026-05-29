@@ -17,7 +17,7 @@
     "status": "new_or_event_scoped",
     "templates_count": 4,
     "templates": "advisor_chat_reply_ready, chat_message_received, payment_success_receipt, same_advisor_followup_offer",
-    "events": "advisor.followup.offer, message.received, payment.success",
+    "events": "advisor.followup.offer, message.client_submitted, message.received, payment.success",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Это не менеджер поддержки и не бренд. Если в коде сущность называется expert/consultant, маппинг можно оставить в шаблоне как advisorName или согласованно переименовать в expertName отдельной задачей."
   },
@@ -39,7 +39,7 @@
     "status": "new_or_event_scoped",
     "templates_count": 2,
     "templates": "chat_message_received, chat_sla_delay",
-    "events": "message.answer_delayed, message.received",
+    "events": "message.answer_delayed, message.client_submitted",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Должно учитывать timezone пользователя или явно заданную timezone сервиса."
   },
@@ -50,7 +50,7 @@
     "status": "new_or_event_scoped",
     "templates_count": 7,
     "templates": "advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, paid_chat_no_message_reminder, payment_success_receipt, same_advisor_followup_offer",
-    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.success",
+    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.client_submitted, message.no_first_chat_message, message.received, payment.success",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Должен вести в конкретный чат, не просто на главную кабинета."
   },
@@ -94,7 +94,7 @@
     "status": "new_or_event_scoped",
     "templates_count": 2,
     "templates": "chat_message_received, chat_sla_delay",
-    "events": "message.answer_delayed, message.received",
+    "events": "message.answer_delayed, message.client_submitted",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Показывать пользователю только если ID реально используется в поддержке."
   },
@@ -116,7 +116,7 @@
     "status": "new_or_event_scoped",
     "templates_count": 4,
     "templates": "d2_chat_reflection, payment_started, review_request, same_advisor_followup_offer",
-    "events": "advisor.followup.offer, message.chat_saved, payment.init, review.left",
+    "events": "advisor.followup.offer, message.chat_saved, payment.init, review.request",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Нужен для lifecycle/marketing писем, не для критичных security/payment писем."
   },
@@ -149,7 +149,7 @@
     "status": "new_or_event_scoped",
     "templates_count": 20,
     "templates": "advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, email_confirmation, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened, user_registration",
-    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.success, review.left, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
+    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.client_submitted, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Для footer/legal. Не равно маркетинговому названию бренда."
   },
@@ -193,7 +193,7 @@
     "status": "new_or_event_scoped",
     "templates_count": 20,
     "templates": "advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, email_confirmation, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened, user_registration",
-    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.success, review.left, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
+    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.client_submitted, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Footer/legal. Должен быть доступен для RU и EN."
   },
@@ -248,7 +248,7 @@
     "status": "new_or_event_scoped",
     "templates_count": 20,
     "templates": "advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, email_confirmation, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened, user_registration",
-    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.success, review.left, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
+    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.client_submitted, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Footer/legal. Должен открываться без авторизации."
   },
@@ -278,11 +278,11 @@
     "variable": "reviewUrl",
     "meaning": "URL формы отзыва о консультации",
     "backend_source": "review_flow.reviewUrl",
-    "status": "unconfirmed_existing_event",
+    "status": "new_or_event_scoped",
     "templates_count": 1,
     "templates": "review_request",
-    "events": "review.left",
-    "action": "Подтвердить в production-коде для существующего event или заменить на доступную переменную.",
+    "events": "review.request",
+    "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Создавать только если review еще не оставлен и нет refund/complaint/safety."
   },
   {
@@ -303,7 +303,7 @@
     "status": "confirmed_live_id1",
     "templates_count": 20,
     "templates": "advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, email_confirmation, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened, user_registration",
-    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.success, review.left, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
+    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.client_submitted, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
     "action": "Проверить доступность в конкретном event; переменная подтверждена только по live id=1.",
     "note": "Заменяет жесткое рабочее название проекта. Подтвержден по live id=1."
   },
@@ -314,7 +314,7 @@
     "status": "new_or_event_scoped",
     "templates_count": 20,
     "templates": "advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, email_confirmation, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened, user_registration",
-    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.success, review.left, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
+    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.client_submitted, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Использовать как fallback, но CTA должен вести на конкретную сущность, если она есть."
   },
@@ -325,7 +325,7 @@
     "status": "new_or_event_scoped",
     "templates_count": 4,
     "templates": "chat_sla_delay, refund_case_update, support_reply, support_ticket_opened",
-    "events": "message.answer_delayed, payment.refund, support.message.received, support.ticket.opened",
+    "events": "message.answer_delayed, payment.refund.update, support.message.received, support.ticket.opened",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Показывать, если по нему поддержка реально ищет тикет."
   },
@@ -347,7 +347,7 @@
     "status": "new_or_event_scoped",
     "templates_count": 5,
     "templates": "chat_sla_delay, refund_case_update, refund_confirmed, support_reply, support_ticket_opened",
-    "events": "message.answer_delayed, payment.refund, support.message.received, support.ticket.opened",
+    "events": "message.answer_delayed, payment.refund, payment.refund.update, support.message.received, support.ticket.opened",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Должен вести к обращению, не к общей поддержке."
   },
@@ -366,11 +366,11 @@
     "variable": "supportUpdatedAt",
     "meaning": "Дата/время обновления обращения",
     "backend_source": "support_case.updatedAt",
-    "status": "unconfirmed_existing_event",
+    "status": "new_or_event_scoped",
     "templates_count": 2,
     "templates": "refund_case_update, support_reply",
-    "events": "payment.refund, support.message.received",
-    "action": "Подтвердить в production-коде для существующего event или заменить на доступную переменную.",
+    "events": "payment.refund.update, support.message.received",
+    "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Показывать только для пользовательски видимых обновлений."
   },
   {
@@ -391,7 +391,7 @@
     "status": "new_or_event_scoped",
     "templates_count": 20,
     "templates": "advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, email_confirmation, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened, user_registration",
-    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.success, review.left, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
+    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.client_submitted, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Footer/legal. Должен открываться без авторизации."
   },
@@ -402,7 +402,7 @@
     "status": "new_or_event_scoped",
     "templates_count": 4,
     "templates": "d2_chat_reflection, payment_started, review_request, same_advisor_followup_offer",
-    "events": "advisor.followup.offer, message.chat_saved, payment.init, review.left",
+    "events": "advisor.followup.offer, message.chat_saved, payment.init, review.request",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Нужен для lifecycle/marketing. Не применять как блокировку service/security/payment писем."
   },
@@ -424,7 +424,7 @@
     "status": "confirmed_live_id1",
     "templates_count": 20,
     "templates": "advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, email_confirmation, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened, user_registration",
-    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.success, review.left, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
+    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.client_submitted, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
     "action": "Проверить доступность в конкретном event; переменная подтверждена только по live id=1.",
     "note": "Подтвержден по live id=1. Должен иметь fallback без пустоты."
   }

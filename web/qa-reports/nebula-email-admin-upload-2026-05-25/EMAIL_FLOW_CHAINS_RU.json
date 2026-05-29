@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-29 21:00",
+  "generated_at": "2026-05-29 21:38",
   "scope": "Email flow chains for online chat consultation only",
   "package": "email-admin-upload-ready",
   "global_rules": [
@@ -25,7 +25,7 @@
     },
     {
       "rule": "Общие event_name требуют context",
-      "details": "message.received требует direction; payment.refund требует refund_status; review.left не должен использоваться как review request без строгого gate."
+      "details": "message.client_submitted и message.received разделяют направление чата; payment.refund.update и payment.refund разделяют промежуточный и финальный refund; review.request и review.left разделяют запрос и факт отзыва."
     }
   ],
   "email_marketing_sources": [
@@ -171,11 +171,11 @@
         {
           "n": 2,
           "timing": "сразу",
-          "event_name": "message.received",
+          "event_name": "message.client_submitted",
           "template_key": "chat_message_received",
           "trigger": "клиент отправил сообщение эксперту",
-          "backend_gate": "message.direction = client_to_advisor; сообщение не системное; chatId активен",
-          "cancel_or_skip": "не слать на ответ эксперта; отменить pending paid_chat_no_message_reminder",
+          "backend_gate": "создано видимое client_to_advisor сообщение; сообщение не системное; chatId активен",
+          "cancel_or_skip": "не слать на ответ эксперта; отдельное событие убирает конфликт с advisor_chat_reply_ready; отменить pending paid_chat_no_message_reminder",
           "queue_policy": "dedupe: userId + chat_message_received + messageId"
         },
         {
@@ -200,7 +200,7 @@
         }
       ],
       "intersections": [
-        "message.received нельзя использовать без direction/context: иначе chat_message_received и advisor_chat_reply_ready конфликтуют.",
+        "message.client_submitted и message.received должны быть разными событиями; если backend использует один MessageManager event, он обязан разнести direction до выбора шаблона.",
         "Ответ эксперта должен отменять SLA-delay письмо; первое сообщение клиента должно отменять no-message reminder.",
         "Refund, safety notice или age restriction прерывают чат-ветку и подавляют удерживающие письма."
       ]
@@ -234,7 +234,7 @@
         {
           "n": 3,
           "timing": "сразу",
-          "event_name": "payment.refund",
+          "event_name": "payment.refund.update",
           "template_key": "refund_case_update",
           "trigger": "значимое пользовательское обновление refund case",
           "backend_gate": "refund_status не финальный, но видимый пользователю; есть refundEta/supportUrl",
@@ -263,7 +263,7 @@
         }
       ],
       "intersections": [
-        "payment.refund должен разделяться по status/context: update и confirmed не являются одним письмом.",
+        "payment.refund.update и payment.refund должны быть разными событиями/статусами: update и confirmed не являются одним письмом.",
         "Support публичный ответ и internal note должны быть разными событиями или иметь явный флаг visibility.",
         "Safety/age restriction является стоп-сигналом для коммерческих цепочек."
       ]
@@ -277,11 +277,11 @@
         {
           "n": 1,
           "timing": "+24 часа после завершения консультации",
-          "event_name": "review.left сейчас в dropdown; рекомендованный backend event: review.request",
+          "event_name": "review.request",
           "template_key": "review_request",
           "trigger": "консультация завершена, отзыва еще нет",
           "backend_gate": "нет review; нет жалобы/refund/safety; пользователь допускает lifecycle письма",
-          "cancel_or_skip": "отменить при review left, refund, complaint, safety/age restriction",
+          "cancel_or_skip": "отменить при review.left, refund, complaint, safety/age restriction",
           "queue_policy": "dedupe: userId + review_request + chatId"
         },
         {
@@ -307,7 +307,7 @@
       ],
       "intersections": [
         "Это самая рискованная ветка по частоте писем: нельзя ставить review и follow-up на один delay.",
-        "review.left в текущем dropdown звучит как факт оставленного отзыва; для запроса оценки лучше добавить review.request.",
+        "review.request нужен для запроса оценки; review.left является фактом оставленного отзыва и должен отменять pending request.",
         "Любой refund/support complaint/safety должен подавлять retention по этой консультации."
       ]
     }

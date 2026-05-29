@@ -244,7 +244,7 @@
     <div class="topbar-inner">
       <div class="title">
         <h1>Панель сценариев email-уведомлений Confideline</h1>
-        <p>RU-версия для внедрения: текущая кастомная админка, сценарии онлайн-консультации через чат, переменные, backend-проверки и тесты. Обновлено: 2026-05-28 21:13.</p>
+        <p>RU-версия для внедрения: текущая кастомная админка, сценарии онлайн-консультации через чат, переменные, backend-проверки и тесты. Обновлено: 2026-05-29 21:40.</p>
       </div>
       <nav class="filters" aria-label="Фильтры сценариев">
         <button type="button" class="active" data-filter="all">Все</button>
@@ -283,7 +283,7 @@
 <div class="lane status-create">
   <h3>Создать в админке</h3>
   <strong>9</strong>
-  <ul><li><strong>Оплата подтверждена</strong><span>payment.success</span></li><li><strong>Оплата не прошла</strong><span>payment.error</span></li><li><strong>Оплата начата, но не завершена</strong><span>payment.init</span></li><li><strong>Сообщение клиента принято</strong><span>message.received</span></li><li><strong>Эксперт ответил в чате</strong><span>message.received</span></li><li><strong>Поддержка ответила</strong><span>support.message.received</span></li><li><strong>Возврат подтвержден</strong><span>payment.refund</span></li><li><strong>Статус возврата обновлен</strong><span>payment.refund</span></li><li><strong>Попросить оценку консультации</strong><span>review.left</span></li></ul>
+  <ul><li><strong>Оплата подтверждена</strong><span>payment.success</span></li><li><strong>Оплата не прошла</strong><span>payment.error</span></li><li><strong>Оплата начата, но не завершена</strong><span>payment.init</span></li><li><strong>Сообщение клиента принято</strong><span>message.client_submitted</span></li><li><strong>Эксперт ответил в чате</strong><span>message.received</span></li><li><strong>Поддержка ответила</strong><span>support.message.received</span></li><li><strong>Возврат подтвержден</strong><span>payment.refund</span></li><li><strong>Статус возврата обновлен</strong><span>payment.refund.update</span></li><li><strong>Попросить оценку консультации</strong><span>review.request</span></li></ul>
 </div>
 <div class="lane status-backend">
   <h3>Сначала backend</h3>
@@ -353,7 +353,7 @@
       <dt>Когда</dt><dd>Сразу. У пользователя есть неподтвержденный email; confirmation token активен; письмо не отправлялось повторно слишком часто.</dd>
       <dt>Риск</dt><dd>Проверить срок токена и переменную confirmationExpiresAt.</dd>
       <dt>Gate</dt><dd>Перед записью проверить реальные переменные и отправку в queue для существующего шаблона.</dd>
-      <dt>Тест</dt><dd>Создать тестового пользователя или запросить повторное подтверждение email; проверить ссылку, срок действия и отсутствие жесткого рабочего названия проекта в тексте.</dd>
+      <dt>Тест</dt><dd>Создать тестового пользователя или запросить повторное подтверждение email; проверить ссылку, срок действия и отсутствие жестко прошитого бренда в тексте.</dd>
     </dl>
     <div class="variables"><code>{{confirmationExpiresAt}}</code> <code>{{confirmUrl}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportEmail}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
     <a class="link" href="templates/01_email_confirmation/ru/body_email_html.html">RU HTML</a>
@@ -567,7 +567,7 @@
     </div>
     <p class="role">Подтверждение, что сообщение клиента принято.</p>
     <div class="settings-grid">
-      <div><span>event</span><code>message.received</code></div>
+      <div><span>event</span><code>message.client_submitted</code></div>
       <div><span>condition</span><code>0</code></div>
       <div><span>delay</span><code>0</code></div>
       <div><span>live</span><code>-</code></div>
@@ -765,7 +765,7 @@
     </div>
     <p class="role">Пользовательски значимое обновление возврата.</p>
     <div class="settings-grid">
-      <div><span>event</span><code>payment.refund</code></div>
+      <div><span>event</span><code>payment.refund.update</code></div>
       <div><span>condition</span><code>0</code></div>
       <div><span>delay</span><code>0</code></div>
       <div><span>live</span><code>-</code></div>
@@ -804,7 +804,7 @@
     </div>
     <p class="role">Сбор оценки после консультации.</p>
     <div class="settings-grid">
-      <div><span>event</span><code>review.left</code></div>
+      <div><span>event</span><code>review.request</code></div>
       <div><span>condition</span><code>0</code></div>
       <div><span>delay</span><code>24</code></div>
       <div><span>live</span><code>-</code></div>
@@ -1374,4 +1374,3 @@
   </script>
 </body>
 </html>
-

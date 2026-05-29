@@ -1,4 +1,4 @@
-# Сценарии и настройки email-шаблонов
+﻿# Сценарии и настройки email-шаблонов
 
 Дата: 2026-05-27
 
@@ -6,7 +6,7 @@
 
 ## Общие правила настройки
 
-- subject_email должен оставаться с переменными {{...}}, без жесткой привязки к рабочему названию проекта.
+- subject_email должен оставаться с переменными {{...}}, без жесткой привязки к рабочему/проектному названию.
 - event_name - ключ события, но для отправки нужен реальный backend-trigger.
 - condition_id использовать только если существующее условие точно совпадает с бизнес-гейтом. Для большинства новых сценариев правильнее проверять условие в backend job.
 - delay трактовать как задержку перед финальной проверкой состояния. По live-шаблону id=1 похоже на часы, но единицу должен подтвердить production-код EmailTemplate.
@@ -29,15 +29,15 @@
 | 5 | payment_failed | После финального отказа платежа или ошибки, когда пользователь может повторить попытку. | payment.error | 0 | 0 | payment_failed | проверить trigger |
 | 6 | payment_started | Через 2 часа после начала оплаты, только если заказ остался неоплаченным. | payment.init | 0 | 2 | payment_started_not_completed | проверить trigger |
 | 7 | paid_chat_no_message_reminder | Через 2 часа после оплаты/открытия чата, если пользователь так и не написал первое сообщение. | message.no_first_chat_message | 5 | 2 | paid_chat_no_message_after_delay | нужен backend event |
-| 8 | chat_message_received | Сразу после отправки пользователем сообщения в чат, обычно первого или важного сообщения. | message.received | 0 | 0 | customer_chat_message_submitted | проверить trigger |
+| 8 | chat_message_received | Сразу после отправки пользователем сообщения в чат, обычно первого или важного сообщения. | message.client_submitted | 0 | 0 | customer_chat_message_submitted | нужен backend event |
 | 9 | chat_sla_delay | Когда SLA ответа нарушен или приближается к нарушению, а ответа эксперта все еще нет. | message.answer_delayed | 0 | 0 | chat_answer_sla_delay_detected | нужен backend event |
 | 10 | advisor_chat_reply_ready | Сразу после публикации ответа эксперта клиенту. | message.received | 0 | 0 | advisor_chat_reply_created | проверить trigger |
 | 11 | support_ticket_opened | Сразу после создания обращения пользователем или оператором от имени пользователя. | support.ticket.opened | 0 | 0 | support_ticket_opened | нужен backend event |
 | 12 | support_reply | Сразу после публичного ответа поддержки пользователю. | support.message.received | 0 | 0 | support_reply_created | проверить trigger |
 | 13 | refund_confirmed | После финального подтверждения возврата платежным или финансовым контуром. | payment.refund | 0 | 0 | refund_confirmed | проверить trigger |
-| 14 | refund_case_update | Когда по возврату появляется значимое изменение статуса, но это еще не финальное подтверждение. | payment.refund | 0 | 0 | refund_case_updated | проверить trigger |
+| 14 | refund_case_update | Когда по возврату появляется значимое изменение статуса, но это еще не финальное подтверждение. | payment.refund.update | 0 | 0 | refund_case_updated | нужен backend event |
 | 15 | same_advisor_followup_offer | Через 72 часа после завершения консультации, если повторная консультация разрешена и уместна. | advisor.followup.offer | 0 | 72 | same_advisor_followup_allowed | нужен backend event |
-| 16 | review_request | Через 24 часа после завершения консультации, если отзыв еще не оставлен. | review.left | 0 | 24 | review_request_allowed | проверить trigger |
+| 16 | review_request | Через 24 часа после завершения консультации, если отзыв еще не оставлен. | review.request | 0 | 24 | review_request_allowed | нужен backend event |
 | 17 | d2_chat_reflection | Через 48 часов после завершения/сохранения чата. | message.chat_saved | 0 | 48 | d2_chat_reflection_allowed | нужен backend event |
 | 18 | safety_notice | По событию safety/support flow: предупреждение, важная инструкция, ограничение или безопасный канал связи. | support.safety_notice | 0 | 0 | safety_flow_notice | нужен backend event |
 | 19 | minor_or_age_restriction_notice | Сразу после решения ограничить доступ к сервису по возрасту или правилам платформы. | user.age_restricted | 0 | 0 | minor_or_age_restricted | нужен backend event |
@@ -73,7 +73,7 @@
 - **Почему такие настройки:** Сервисное письмо, без учета пользовательских email-настроек, без задержки и без дополнительных условий.
 - **Backend-гейт:** У пользователя есть неподтвержденный email; confirmation token активен; письмо не отправлялось повторно слишком часто.
 - **Решение по внедрению:** Можно импортировать первым, но backend-trigger все равно подтвердить в актуальном коде.
-- **Проверка:** Создать тестового пользователя или запросить повторное подтверждение email; проверить ссылку, срок действия и отсутствие жесткого рабочего названия проекта в тексте.
+- **Проверка:** Создать тестового пользователя или запросить повторное подтверждение email; проверить ссылку, срок действия и отсутствие жестко прошитого бренда в тексте.
 - **Переменные:** confirmationExpiresAt, confirmUrl, legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportEmail, termsUrl, userName
 
 ### 2. Сброс пароля (password_reset)
@@ -177,14 +177,14 @@
 - **Когда отправлять:** Сразу после отправки пользователем сообщения в чат, обычно первого или важного сообщения.
 - **Зачем:** Снимает тревогу после оплаты: пользователь понимает, что сообщение принято и эксперт его увидит.
 - **Subject:** Сообщение принято: эксперт получил ваш чат
-- **event_name:** message.received
+- **event_name:** message.client_submitted
 - **condition_id:** 0
 - **delay:** 0
 - **source_trigger:** customer_chat_message_submitted
 - **type_id / settings:** 2 / count_user_settings=0
-- **Почему такие настройки:** Поведенческое уведомление, delay 0, condition 0. Нужно отличать направление client -> advisor.
+- **Почему такие настройки:** Поведенческое уведомление, delay 0, condition 0. Нужен отдельный event для подтверждения сообщения клиента.
 - **Backend-гейт:** Создано сообщение от клиента; чат активен; это не системное сообщение; событие не должно сработать на ответ эксперта.
-- **Решение по внедрению:** Event message.received есть в dropdown, но нужен direction/context, иначе конфликт с письмом ответа эксперта.
+- **Решение по внедрению:** Нужен новый backend event message.client_submitted, чтобы не конфликтовать с message.received для ответа эксперта.
 - **Проверка:** Отправить сообщение клиентом; проверить, что уходит это письмо, а не advisor_chat_reply_ready.
 - **Переменные:** advisorName, answerDueAt, chatUrl, consultationId, legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, termsUrl, userName
 
@@ -216,7 +216,7 @@
 - **type_id / settings:** 2 / count_user_settings=0
 - **Почему такие настройки:** Поведенческое уведомление, delay 0, condition 0. Нужно отличать направление advisor -> client.
 - **Backend-гейт:** Создан ответ эксперта; ответ видим клиенту; клиент не находится уже в активном чате/не получил realtime-уведомление в той же сессии.
-- **Решение по внедрению:** Event message.received есть в dropdown, но нужен direction/context или отдельный event, чтобы не конфликтовать с chat_message_received.
+- **Решение по внедрению:** Можно использовать message.received только если backend отправляет его получателю ответа эксперта; иначе нужен direction/context.
 - **Проверка:** Создать ответ эксперта; проверить, что письмо ушло клиенту и содержит ссылку на конкретный чат.
 - **Переменные:** advisorName, chatUrl, legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportEmail, supportUrl, termsUrl, userName
 
@@ -273,14 +273,14 @@
 - **Когда отправлять:** Когда по возврату появляется значимое изменение статуса, но это еще не финальное подтверждение.
 - **Зачем:** Держит пользователя в курсе спорного/длинного финансового процесса.
 - **Subject:** Статус возврата обновлён
-- **event_name:** payment.refund
+- **event_name:** payment.refund.update
 - **condition_id:** 0
 - **delay:** 0
 - **source_trigger:** refund_case_updated
 - **type_id / settings:** 2 / count_user_settings=0
 - **Почему такие настройки:** Поведенческое финансовое письмо, delay 0, condition 0.
 - **Backend-гейт:** Статус refund case изменился на пользовательски значимый; не отправлять на технические/внутренние статусы.
-- **Решение по внедрению:** Текущий event payment.refund общий; желательно status/context или отдельный event для update.
+- **Решение по внедрению:** Нужен отдельный backend event payment.refund.update, чтобы не конфликтовать с финальным payment.refund.
 - **Проверка:** Перевести refund case между пользовательскими статусами; проверить, что письмо не уходит на внутренние изменения.
 - **Переменные:** legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportCaseId, supportCaseUrl, supportUpdatedAt, termsUrl, userName
 
@@ -305,14 +305,14 @@
 - **Когда отправлять:** Через 24 часа после завершения консультации, если отзыв еще не оставлен.
 - **Зачем:** Собирает обратную связь и помогает контролировать качество экспертов.
 - **Subject:** Оцените опыт консультации в чате
-- **event_name:** review.left
+- **event_name:** review.request
 - **condition_id:** 0
 - **delay:** 24
 - **source_trigger:** review_request_allowed
 - **type_id / settings:** 3 / count_user_settings=1
-- **Почему такие настройки:** Маркетингово-поведенческое письмо: type_id 3, count_user_settings 1, event review.left сейчас спорный, delay 24.
+- **Почему такие настройки:** Маркетингово-поведенческое письмо: type_id 3, count_user_settings 1, event review.request, delay 24.
 - **Backend-гейт:** Консультация завершена; review еще не оставлен; нет активной жалобы/refund по консультации; пользователь не отписан.
-- **Решение по внедрению:** Event review.left в dropdown звучит как 'отзыв оставлен', поэтому для request лучше отдельный review.request или строгая проверка текущей логики.
+- **Решение по внедрению:** Нужен отдельный backend event review.request; review.left остается событием уже оставленного отзыва и должен отменять pending request.
 - **Проверка:** Завершить чат без отзыва; проверить письмо через delay. Затем оставить отзыв до delay и убедиться, что письмо не ушло.
 - **Переменные:** emailPreferencesUrl, legalMerchantName, privacyUrl, refundPolicyUrl, reviewUrl, siteName, siteUrl, termsUrl, unsubscribeUrl, userName
 
@@ -363,4 +363,3 @@
 - **Решение по внедрению:** Нужен backend event user.age_restricted и юридическое подтверждение формулировок.
 - **Проверка:** На тестовом аккаунте применить ограничение; проверить письмо, поддержку и отсутствие деталей, которые нельзя раскрывать.
 - **Переменные:** legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportEmail, supportUrl, termsUrl, userName
-

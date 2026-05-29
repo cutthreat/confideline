@@ -10,7 +10,7 @@
 
 1. `BACKEND_EMAIL_EVENTS_CONTRACT_RU.html` - фактические `event_name`, `available_params`, `condition_id` и сверка каждого предложенного шаблона с текущим кодовым контрактом.
 2. `EVENT_VARIABLE_COMPATIBILITY_RU.csv` - машинная таблица: какие переменные уже доступны в выбранном event, а какие нужно добавить в backend payload.
-3. `IGOR_BACKEND_TODO_RU.html` - отдельная страница для Игоря: недостающие переменные и события, что запрограммировать, priority и acceptance.
+3. `IGOR_BACKEND_TASKS_RU.html` - отдельная страница для Игоря: недостающие переменные и события, что запрограммировать, priority и acceptance.
 4. `IGOR_MISSING_BACKEND_VARIABLES_RU.csv` - машинный список переменных, которых нет в `available_params` конкретных событий.
 5. `IGOR_MISSING_BACKEND_EVENTS_RU.csv` - машинный список событий, которых нет в текущем backend-контракте.
 6. `BILINGUAL_UPLOAD_GUIDE_RU.md` - структура RU/EN папок и порядок внедрения языков.
@@ -90,7 +90,7 @@
 ```text
 Ты работаешь в репозитории Confideline. Нужно внедрить текущий пакет email-шаблонов из переданного ZIP/папки.
 
-Сначала прочитай BACKEND_EMAIL_EVENTS_CONTRACT_RU.html, IGOR_BACKEND_TODO_RU.html, IGOR_MISSING_BACKEND_VARIABLES_RU.csv, EVENT_VARIABLE_COMPATIBILITY_RU.csv, BILINGUAL_UPLOAD_GUIDE_RU.md, CODEX_PROGRAMMER_HANDOFF_RU.md, VARIABLES_CONTRACT_RU.md, EMAIL_NOTIFICATION_LOGIC_RU.md, TEMPLATE_SETTINGS_SCENARIOS_RU.md, ADMIN_UPLOAD_INDEX_RU_EN.json, ADMIN_UPLOAD_GUIDE_RU.md и INTEGRATION_STATUS_RU.md.
+Сначала прочитай BACKEND_EMAIL_EVENTS_CONTRACT_RU.html, IGOR_BACKEND_TASKS_RU.html, IGOR_MISSING_BACKEND_VARIABLES_RU.csv, EVENT_VARIABLE_COMPATIBILITY_RU.csv, BILINGUAL_UPLOAD_GUIDE_RU.md, CODEX_PROGRAMMER_HANDOFF_RU.md, VARIABLES_CONTRACT_RU.md, EMAIL_NOTIFICATION_LOGIC_RU.md, TEMPLATE_SETTINGS_SCENARIOS_RU.md, ADMIN_UPLOAD_INDEX_RU_EN.json, ADMIN_UPLOAD_GUIDE_RU.md и INTEGRATION_STATUS_RU.md.
 
 Задача:
 1. Найди актуальную модель/таблицу EmailTemplate, текущие event_name, condition_id, delay и механизм отправки email.

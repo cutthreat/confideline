@@ -69,9 +69,4 @@
 
 ## Артефакты проверки
 
-- Полная таблица live-записей: `H:\GPT-Codex\Confideline\email_templates\admin-live-audit-2026-05-28\LIVE_CUSTOM_EXISTING_TEMPLATES_FULL_2026-05-28.csv`
-- Сверка пакета с live: `H:\GPT-Codex\Confideline\email_templates\admin-live-audit-2026-05-28\PACKAGE_VS_LIVE_CUSTOM_RECONCILIATION_2026-05-28.csv`
-- JSON-сводка: `H:\GPT-Codex\Confideline\email_templates\admin-live-audit-2026-05-28\LIVE_CUSTOM_RECONCILIATION_SUMMARY_2026-05-28.json`
-- Скрин index: `H:\GPT-Codex\Confideline\email_templates\admin-live-audit-2026-05-28\email-template-index-live-20260528.png`
-- Скрин `id=1`: `H:\GPT-Codex\Confideline\email_templates\admin-live-audit-2026-05-28\manhattan-capture-20260528-152608-confideline-email-template-id1-live-20260528.png`
-- Скрин `id=4`: `H:\GPT-Codex\Confideline\email_templates\admin-live-audit-2026-05-28\manhattan-capture-20260528-152446-confideline-email-template-id4-live-20260528.png`
+Внутренние live-аудит файлы и скриншоты сохранены в рабочем контуре проекта. В клиентский пакет они не включены: для внедрения достаточно этой сводки, `BACKEND_EMAIL_EVENTS_CONTRACT_RU.html`, `EVENT_VARIABLE_COMPATIBILITY_RU.csv` и `IGOR_BACKEND_TASKS_RU.html`.

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
@@ -134,7 +134,7 @@
       <section><h3>Зачем</h3><p>Закрывает базовый доступ и доставляемость: пользователь подтверждает адрес, а сервис получает рабочий email для критичных уведомлений.</p></section>
       <section><h3>Почему такие настройки</h3><p>Сервисное письмо, без учета пользовательских email-настроек, без задержки и без дополнительных условий.</p></section>
       <section><h3>Backend-гейт</h3><p>У пользователя есть неподтвержденный email; confirmation token активен; письмо не отправлялось повторно слишком часто.</p></section>
-      <section><h3>Проверка</h3><p>Создать тестового пользователя или запросить повторное подтверждение email; проверить ссылку, срок действия и отсутствие жесткого рабочего названия проекта в тексте.</p></section>
+      <section><h3>Проверка</h3><p>Создать тестового пользователя или запросить повторное подтверждение email; проверить ссылку, срок действия и отсутствие жестко прошитого бренда в тексте.</p></section>
     </article>
     <article class="card" id="scenario-2">
       <header>
@@ -281,11 +281,11 @@
           <h2>Сообщение клиента принято</h2>
           <p class="key">chat_message_received</p>
         </div>
-        <span class="badge ok">event есть в dropdown, trigger проверить</span>
+        <span class="badge warn">нужен backend event</span>
       </header>
       <div class="settings">
         <div><span>subject</span><code>Сообщение принято: эксперт получил ваш чат</code></div>
-        <div><span>event_name</span><code>message.received</code></div>
+        <div><span>event_name</span><code>message.client_submitted</code></div>
         <div><span>condition_id</span><code>0</code></div>
         <div><span>delay</span><code>0</code></div>
         <div><span>source_trigger</span><code>customer_chat_message_submitted</code></div>
@@ -293,7 +293,7 @@
       </div>
       <section><h3>Когда</h3><p>Сразу после отправки пользователем сообщения в чат, обычно первого или важного сообщения.</p></section>
       <section><h3>Зачем</h3><p>Снимает тревогу после оплаты: пользователь понимает, что сообщение принято и эксперт его увидит.</p></section>
-      <section><h3>Почему такие настройки</h3><p>Поведенческое уведомление, delay 0, condition 0. Нужно отличать направление client -&gt; advisor.</p></section>
+      <section><h3>Почему такие настройки</h3><p>Поведенческое уведомление, delay 0, condition 0. Нужен отдельный event для подтверждения сообщения клиента.</p></section>
       <section><h3>Backend-гейт</h3><p>Создано сообщение от клиента; чат активен; это не системное сообщение; событие не должно сработать на ответ эксперта.</p></section>
       <section><h3>Проверка</h3><p>Отправить сообщение клиентом; проверить, что уходит это письмо, а не advisor_chat_reply_ready.</p></section>
     </article>
@@ -419,11 +419,11 @@
           <h2>Статус возврата обновлен</h2>
           <p class="key">refund_case_update</p>
         </div>
-        <span class="badge ok">event есть в dropdown, trigger проверить</span>
+        <span class="badge warn">нужен backend event</span>
       </header>
       <div class="settings">
         <div><span>subject</span><code>Статус возврата обновлён</code></div>
-        <div><span>event_name</span><code>payment.refund</code></div>
+        <div><span>event_name</span><code>payment.refund.update</code></div>
         <div><span>condition_id</span><code>0</code></div>
         <div><span>delay</span><code>0</code></div>
         <div><span>source_trigger</span><code>refund_case_updated</code></div>
@@ -465,11 +465,11 @@
           <h2>Попросить оценку консультации</h2>
           <p class="key">review_request</p>
         </div>
-        <span class="badge ok">event есть в dropdown, trigger проверить</span>
+        <span class="badge warn">нужен backend event</span>
       </header>
       <div class="settings">
         <div><span>subject</span><code>Оцените опыт консультации в чате</code></div>
-        <div><span>event_name</span><code>review.left</code></div>
+        <div><span>event_name</span><code>review.request</code></div>
         <div><span>condition_id</span><code>0</code></div>
         <div><span>delay</span><code>24</code></div>
         <div><span>source_trigger</span><code>review_request_allowed</code></div>
@@ -477,7 +477,7 @@
       </div>
       <section><h3>Когда</h3><p>Через 24 часа после завершения консультации, если отзыв еще не оставлен.</p></section>
       <section><h3>Зачем</h3><p>Собирает обратную связь и помогает контролировать качество экспертов.</p></section>
-      <section><h3>Почему такие настройки</h3><p>Маркетингово-поведенческое письмо: type_id 3, count_user_settings 1, event review.left сейчас спорный, delay 24.</p></section>
+      <section><h3>Почему такие настройки</h3><p>Маркетингово-поведенческое письмо: type_id 3, count_user_settings 1, event review.request, delay 24.</p></section>
       <section><h3>Backend-гейт</h3><p>Консультация завершена; review еще не оставлен; нет активной жалобы/refund по консультации; пользователь не отписан.</p></section>
       <section><h3>Проверка</h3><p>Завершить чат без отзыва; проверить письмо через delay. Затем оставить отзыв до delay и убедиться, что письмо не ушло.</p></section>
     </article>

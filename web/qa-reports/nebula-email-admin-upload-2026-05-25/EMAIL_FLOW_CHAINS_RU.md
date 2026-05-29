@@ -1,6 +1,6 @@
 # Flow-цепочки email-уведомлений
 
-Дата обновления: 2026-05-29 21:00
+Дата обновления: 2026-05-29 21:38
 
 Скоуп: только онлайн-консультация через чат. Документ фиксирует не внешний вид писем, а порядок срабатывания, пересечения, отмены, suppression-правила и backend-gates.
 
@@ -19,7 +19,7 @@
 - **Дедупликация обязательна:** Минимальный ключ: userId + templateKey + entityId/orderId/chatId/refundId + eventVersion/status.
 - **Service/security/payment письма не блокируются маркетинговым opt-out:** Marketing/lifecycle письма respect user settings, unsubscribeUrl и count_user_settings.
 - **Колокольчик и email должны иметь согласованное время:** Если notification связан с delayed email, использовать visible_at=execute_at либо явно принять продуктово, что bell появляется сразу.
-- **Общие event_name требуют context:** message.received требует direction; payment.refund требует refund_status; review.left не должен использоваться как review request без строгого gate.
+- **Общие event_name требуют context:** message.client_submitted и message.received разделяют направление чата; payment.refund.update и payment.refund разделяют промежуточный и финальный refund; review.request и review.left разделяют запрос и факт отзыва.
 
 ## Регистрация и доступ
 
@@ -62,12 +62,12 @@
 | # | Когда | template_key | Пользовательский смысл | Backend gate | Отмена/пропуск | Действие для Игоря |
 |---|---|---|---|---|---|---|
 | 1 | +2 часа после payment.success/open chat | paid_chat_no_message_reminder | Activation reminder: пользователь уже оплатил, но не сделал ключевое действие. | чат активен; нет первого client message; консультация не закрыта; reminder еще не отправлялся | отменить при первом сообщении клиента, refund, закрытии/ограничении чата | Нужен job: paid chat + no first client message. Отмена на first message. |
-| 2 | сразу | chat_message_received | Transactional reassurance: сообщение принято; снижает тревогу после оплаты. | message.direction = client_to_advisor; сообщение не системное; chatId активен | не слать на ответ эксперта; отменить pending paid_chat_no_message_reminder | message.received требует direction=client_to_advisor. |
+| 2 | сразу | chat_message_received | Transactional reassurance: сообщение принято; снижает тревогу после оплаты. | создано видимое client_to_advisor сообщение; сообщение не системное; chatId активен | не слать на ответ эксперта; отдельное событие убирает конфликт с advisor_chat_reply_ready; отменить pending paid_chat_no_message_reminder | Нужен новый event message.client_submitted либо backend-разводка client_to_advisor до выбора шаблона. |
 | 3 | по SLA job | chat_sla_delay | Service recovery: честно объясняет задержку до обращения в поддержку. | нет видимого ответа эксперта; SLA threshold достигнут; чат не закрыт | отменить при ответе эксперта, refund, safety block, закрытии чата | SLA job создает event только если advisor answer все еще отсутствует. |
 | 4 | сразу | advisor_chat_reply_ready | Главное возвращающее письмо: ответ готов, CTA ведет в конкретный чат. | message.direction = advisor_to_client; ответ видим клиенту; chatUrl ведет в нужный чат | не слать на client_to_advisor; отменить pending chat_sla_delay | message.received требует direction=advisor_to_client. Отменить SLA-delay. |
 
 Пересечения:
-- message.received нельзя использовать без direction/context: иначе chat_message_received и advisor_chat_reply_ready конфликтуют.
+- message.client_submitted и message.received должны быть разными событиями; если backend использует один MessageManager event, он обязан разнести direction до выбора шаблона.
 - Ответ эксперта должен отменять SLA-delay письмо; первое сообщение клиента должно отменять no-message reminder.
 - Refund, safety notice или age restriction прерывают чат-ветку и подавляют удерживающие письма.
 
@@ -80,12 +80,12 @@
 |---|---|---|---|---|---|---|
 | 1 | сразу | support_ticket_opened | Service confirmation: номер обращения и ожидание ответа. | есть supportCaseId; обращение видно пользователю; это не внутренняя заметка | не дублировать при каждом комментарии | Не отправлять на internal note или автослужебные события. |
 | 2 | сразу | support_reply | Service return: пользователь видит, что поддержка ответила. | ответ публичный; не internal note; supportUrl доступен | не слать на внутренние статусы и operator-only комментарии | Только public support reply; нужен supportCaseUrl/supportMessageId. |
-| 3 | сразу | refund_case_update | Service status update: только значимые статусы, не внутренние provider-события. | refund_status не финальный, но видимый пользователю; есть refundEta/supportUrl | не слать на технические provider/internal статусы | payment.refund требует refund_status != final и user_visible=true. |
+| 3 | сразу | refund_case_update | Service status update: только значимые статусы, не внутренние provider-события. | refund_status не финальный, но видимый пользователю; есть refundEta/supportUrl | не слать на технические provider/internal статусы | Нужен новый event payment.refund.update либо backend-разводка промежуточного user-visible refund status до выбора шаблона. |
 | 4 | сразу | refund_confirmed | Financial trust: финальный статус возврата, сумма и сроки. | финальный статус возврата; refundAmount, orderId, processorRefundId доступны | после финального refund подавить review/follow-up/reflection по этой консультации | payment.refund требует final confirmed/processed; затем подавить retention. |
 | 5 | сразу | safety_notice / minor_or_age_restriction_notice |  | триггер подтвержден; текст согласован; нет лишних чувствительных деталей | подавить маркетинг, review/follow-up/reflection и спорные чатовые письма |  |
 
 Пересечения:
-- payment.refund должен разделяться по status/context: update и confirmed не являются одним письмом.
+- payment.refund.update и payment.refund должны быть разными событиями/статусами: update и confirmed не являются одним письмом.
 - Support публичный ответ и internal note должны быть разными событиями или иметь явный флаг visibility.
 - Safety/age restriction является стоп-сигналом для коммерческих цепочек.
 
@@ -96,13 +96,13 @@
 
 | # | Когда | template_key | Пользовательский смысл | Backend gate | Отмена/пропуск | Действие для Игоря |
 |---|---|---|---|---|---|---|
-| 1 | +24 часа после завершения консультации | review_request | Quality loop: не раньше +24ч, отменять при оставленном отзыве, refund или жалобе. | нет review; нет жалобы/refund/safety; пользователь допускает lifecycle письма | отменить при review left, refund, complaint, safety/age restriction | Лучше добавить review.request. Если оставить review.left, нужен строгий gate no_review_yet. |
+| 1 | +24 часа после завершения консультации | review_request | Quality loop: не раньше +24ч, отменять при оставленном отзыве, refund или жалобе. | нет review; нет жалобы/refund/safety; пользователь допускает lifecycle письма | отменить при review.left, refund, complaint, safety/age restriction | Нужен новый event review.request. review.left используется только как факт отзыва и отменяет pending request. |
 | 2 | +48 часов после завершения/сохранения чата | d2_chat_reflection | Value reminder: +48ч, мягкий возврат к сохраненному чату без давления. | чат доступен; нет refund/dispute/deletion; пользователь допускает lifecycle письма | отменить при refund, active dispute, удалении чата, safety restriction | Нужен message.chat_saved/lifecycle event и suppression refund/dispute/delete. |
 | 3 | +72 часа после завершения консультации | same_advisor_followup_offer | Commercial follow-up: +72ч, после quality/value писем и только при уместности. | эксперт доступен; нет активного чата; нет refund/complaint/safety; пользователь допускает маркетинг | отменить при новой активной консультации, opt-out, refund, complaint, safety restriction | Нужен advisor.followup.offer, advisor availability, no active chat, opt-out check. |
 
 Пересечения:
 - Это самая рискованная ветка по частоте писем: нельзя ставить review и follow-up на один delay.
-- review.left в текущем dropdown звучит как факт оставленного отзыва; для запроса оценки лучше добавить review.request.
+- review.request нужен для запроса оценки; review.left является фактом оставленного отзыва и должен отменять pending request.
 - Любой refund/support complaint/safety должен подавлять retention по этой консультации.
 
 ## Матрица отмен и suppression

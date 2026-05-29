@@ -171,7 +171,7 @@
     <div class="topbar-inner">
       <div>
         <h1>Flow-цепочки email-уведомлений Confideline</h1>
-        <p>Порядок срабатывания, пересечения, отмены и suppression-правила для внедрения email-шаблонов онлайн-консультации через чат. Обновлено: 2026-05-29 21:00.</p>
+        <p>Порядок срабатывания, пересечения, отмены и suppression-правила для внедрения email-шаблонов онлайн-консультации через чат. Обновлено: 2026-05-29 21:38.</p>
         <div class="mode-toggle" aria-label="Режим просмотра">
           <button type="button" class="active" data-mode="clean">Кратко</button>
           <button type="button" data-mode="igor">Для Игоря</button>
@@ -218,7 +218,7 @@
         </article>
         <article class="igor-only">
           <h3>Общие event_name требуют context</h3>
-          <p>message.received требует direction; payment.refund требует refund_status; review.left не должен использоваться как review request без строгого gate.</p>
+          <p>message.client_submitted и message.received разделяют направление чата; payment.refund.update и payment.refund разделяют промежуточный и финальный refund; review.request и review.left разделяют запрос и факт отзыва.</p>
         </article>
     </section>
     <section class="flow-card" id="registration_access">
@@ -358,11 +358,11 @@
             <td><strong>2</strong><span>сразу</span></td>
             <td>клиент отправил сообщение эксперту<small>Transactional reassurance: сообщение принято; снижает тревогу после оплаты.</small></td>
             <td><code>chat_message_received</code></td>
-            <td>не слать на ответ эксперта; отменить pending paid_chat_no_message_reminder</td>
-            <td class="igor-only"><code>message.received</code></td>
-            <td class="igor-only">message.direction = client_to_advisor; сообщение не системное; chatId активен</td>
+            <td>не слать на ответ эксперта; отдельное событие убирает конфликт с advisor_chat_reply_ready; отменить pending paid_chat_no_message_reminder</td>
+            <td class="igor-only"><code>message.client_submitted</code></td>
+            <td class="igor-only">создано видимое client_to_advisor сообщение; сообщение не системное; chatId активен</td>
             <td class="igor-only"><code>dedupe: userId + chat_message_received + messageId</code></td>
-            <td class="igor-only">message.received требует direction=client_to_advisor.</td>
+            <td class="igor-only">Нужен новый event message.client_submitted либо backend-разводка client_to_advisor до выбора шаблона.</td>
           </tr>
           <tr>
             <td><strong>3</strong><span>по SLA job</span></td>
@@ -389,7 +389,7 @@
       </div>
       <div class="intersections">
         <h3>Пересечения</h3>
-        <ul><li>message.received нельзя использовать без direction/context: иначе chat_message_received и advisor_chat_reply_ready конфликтуют.</li>
+        <ul><li>message.client_submitted и message.received должны быть разными событиями; если backend использует один MessageManager event, он обязан разнести direction до выбора шаблона.</li>
 <li>Ответ эксперта должен отменять SLA-delay письмо; первое сообщение клиента должно отменять no-message reminder.</li>
 <li>Refund, safety notice или age restriction прерывают чат-ветку и подавляют удерживающие письма.</li></ul>
       </div>
@@ -430,10 +430,10 @@
             <td>значимое пользовательское обновление refund case<small>Service status update: только значимые статусы, не внутренние provider-события.</small></td>
             <td><code>refund_case_update</code></td>
             <td>не слать на технические provider/internal статусы</td>
-            <td class="igor-only"><code>payment.refund</code></td>
+            <td class="igor-only"><code>payment.refund.update</code></td>
             <td class="igor-only">refund_status не финальный, но видимый пользователю; есть refundEta/supportUrl</td>
             <td class="igor-only"><code>dedupe: userId + refund_case_update + refundId + status</code></td>
-            <td class="igor-only">payment.refund требует refund_status != final и user_visible=true.</td>
+            <td class="igor-only">Нужен новый event payment.refund.update либо backend-разводка промежуточного user-visible refund status до выбора шаблона.</td>
           </tr>
           <tr>
             <td><strong>4</strong><span>сразу</span></td>
@@ -460,7 +460,7 @@
       </div>
       <div class="intersections">
         <h3>Пересечения</h3>
-        <ul><li>payment.refund должен разделяться по status/context: update и confirmed не являются одним письмом.</li>
+        <ul><li>payment.refund.update и payment.refund должны быть разными событиями/статусами: update и confirmed не являются одним письмом.</li>
 <li>Support публичный ответ и internal note должны быть разными событиями или иметь явный флаг visibility.</li>
 <li>Safety/age restriction является стоп-сигналом для коммерческих цепочек.</li></ul>
       </div>
@@ -480,11 +480,11 @@
             <td><strong>1</strong><span>+24 часа после завершения консультации</span></td>
             <td>консультация завершена, отзыва еще нет<small>Quality loop: не раньше +24ч, отменять при оставленном отзыве, refund или жалобе.</small></td>
             <td><code>review_request</code></td>
-            <td>отменить при review left, refund, complaint, safety/age restriction</td>
-            <td class="igor-only"><code>review.left сейчас в dropdown; рекомендованный backend event: review.request</code></td>
+            <td>отменить при review.left, refund, complaint, safety/age restriction</td>
+            <td class="igor-only"><code>review.request</code></td>
             <td class="igor-only">нет review; нет жалобы/refund/safety; пользователь допускает lifecycle письма</td>
             <td class="igor-only"><code>dedupe: userId + review_request + chatId</code></td>
-            <td class="igor-only">Лучше добавить review.request. Если оставить review.left, нужен строгий gate no_review_yet.</td>
+            <td class="igor-only">Нужен новый event review.request. review.left используется только как факт отзыва и отменяет pending request.</td>
           </tr>
           <tr>
             <td><strong>2</strong><span>+48 часов после завершения/сохранения чата</span></td>
@@ -512,7 +512,7 @@
       <div class="intersections">
         <h3>Пересечения</h3>
         <ul><li>Это самая рискованная ветка по частоте писем: нельзя ставить review и follow-up на один delay.</li>
-<li>review.left в текущем dropdown звучит как факт оставленного отзыва; для запроса оценки лучше добавить review.request.</li>
+<li>review.request нужен для запроса оценки; review.left является фактом оставленного отзыва и должен отменять pending request.</li>
 <li>Любой refund/support complaint/safety должен подавлять retention по этой консультации.</li></ul>
       </div>
     </section>
