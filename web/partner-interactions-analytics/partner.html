@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Кабинет партнера - активность анкет</title>
+  <link rel="stylesheet" href="assets/partner-interactions.css">
+</head>
+<body data-audience="partner" data-partner-id="15">
+<div class="app-shell">
+  <header class="topbar">
+    <a class="brand" href="#"><strong>Confi</strong>deline</a>
+    <button class="nav-toggle" type="button" aria-label="Переключить навигацию"></button>
+    <div class="admin-user"><span>GI</span><strong>Gin001</strong></div>
+  </header>
+
+  <aside class="sidebar partner-sidebar">
+    <nav>
+      <div class="menu-section">Рабочий стол</div>
+      <a class="active" href="#"><span>A</span>Активность</a>
+      <a href="#"><span>E</span>Анкеты экспертов</a>
+      <a href="#"><span>M</span>Сообщения<b>new</b></a>
+      <a href="#"><span>P</span>Фото</a>
+      <div class="menu-section">Аккаунт</div>
+      <a href="#"><span>S</span>Настройки</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <section class="page-head">
+      <div>
+        <h1>Активность закрепленных анкет</h1>
+        <p>Контроль действий между клиентами и экспертными анкетами, которыми управляет текущий партнер.</p>
+      </div>
+      <ol>
+        <li>Кабинет партнера</li>
+        <li>Активность</li>
+      </ol>
+    </section>
+
+    <section class="notice debug-only" id="warnings"></section>
+
+    <section class="panel filters partner-filters" aria-label="Фильтры">
+      <input type="hidden" id="partnerId" value="15">
+      <label>
+        <span>Эксперт</span>
+        <select id="expertId">
+          <option value="0" selected>Все анкеты</option>
+        </select>
+      </label>
+      <label>
+        <span>Период</span>
+        <select id="period">
+          <option value="today">Сегодня</option>
+          <option value="7d" selected>7 дней</option>
+          <option value="30d">30 дней</option>
+          <option value="all">Весь период</option>
+        </select>
+      </label>
+      <label>
+        <span>Направление</span>
+        <select id="direction">
+          <option value="all" selected>Все направления</option>
+          <option value="client_to_expert">Клиент -> эксперт</option>
+          <option value="expert_to_client">Эксперт -> клиент</option>
+        </select>
+      </label>
+      <label class="wide">
+        <span>Клиент</span>
+        <input id="query" placeholder="Имя, username или ID клиента">
+      </label>
+      <label>
+        <span>Мин. действий</span>
+        <input id="minActions" type="number" min="0" value="0">
+      </label>
+      <label>
+        <span>Сортировка</span>
+        <select id="sort">
+          <option value="total_desc" selected>Всего действий, по убыванию</option>
+          <option value="total_asc">Всего действий, по возрастанию</option>
+          <option value="profileViews_desc">Просмотры анкет, по убыванию</option>
+          <option value="favorites_desc">Избранное, по убыванию</option>
+          <option value="chatStarts_desc">Старты диалога, по убыванию</option>
+          <option value="clientMessages_desc">Сообщения клиентов, по убыванию</option>
+          <option value="expertReplies_desc">Ответы экспертов, по убыванию</option>
+          <option value="paidConsultations_desc">Оплаты консультаций, по убыванию</option>
+          <option value="repeatRequests_desc">Повторные обращения, по убыванию</option>
+          <option value="blocks_desc">Блокировки, по убыванию</option>
+          <option value="reports_desc">Жалобы, по убыванию</option>
+        </select>
+      </label>
+      <button type="button" id="apply">Показать</button>
+    </section>
+
+    <section class="panel simulator debug-only" aria-label="Симулятор">
+      <header>
+        <div>
+          <h2>Симулятор переменных</h2>
+          <p>Внутренние тестовые действия для локально сгенерированных событий.</p>
+        </div>
+        <div class="sim-actions">
+          <button type="button" id="randomFilters">Случайные фильтры</button>
+          <button type="button" id="sendPayload">Отправить тестовый пакет</button>
+          <button type="button" id="addEvent">Добавить событие</button>
+          <button type="button" id="addBatch">Добавить 10 событий</button>
+          <button type="button" id="autoStream">Автопоток</button>
+          <button type="button" id="resetFixture">Сбросить</button>
+        </div>
+      </header>
+      <div class="sim-grid">
+        <div>
+          <h3>Тестовый пакет запроса</h3>
+          <pre id="payloadLog">{}</pre>
+        </div>
+        <div>
+          <h3>Сгенерированные события</h3>
+          <ol id="eventLog"></ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="summary-grid" aria-label="Краткая сводка">
+      <div class="panel metric metric-blue" title="Количество закрепленных анкет экспертов в выбранной выборке"><i>Анк.</i><div><span>Анкеты экспертов</span><strong id="metricExperts">0</strong></div></div>
+      <div class="panel metric metric-green" title="Количество направленных пар клиент - эксперт"><i>Пары</i><div><span>Пары взаимодействий</span><strong id="metricPairs">0</strong></div></div>
+      <div class="panel metric metric-yellow" title="Все сообщения в выбранной выборке"><i>Сооб.</i><div><span>Сообщения</span><strong id="metricMessages">0</strong></div></div>
+      <div class="panel metric metric-red" title="Сумма всех активных действий"><i>Дейст.</i><div><span>Всего действий</span><strong id="metricActions">0</strong></div></div>
+      <div class="panel quality-card" title="Уникальные клиенты по закрепленным анкетам"><span>Активные клиенты</span><strong id="qualityClients">0</strong></div>
+      <div class="panel quality-card" title="Диалоги, начатые клиентами"><span>Диалоги клиентов</span><strong id="qualityClientDialogs">0</strong></div>
+      <div class="panel quality-card" title="Диалоги клиентов, где эксперт ответил"><span>С ответом</span><strong id="qualityAnswered">0</strong></div>
+      <div class="panel quality-card" title="Диалоги клиентов без ответа эксперта"><span>Без ответа</span><strong id="qualityNoAnswer">0</strong></div>
+      <div class="panel quality-card" title="Доля клиентских диалогов с ответом эксперта"><span>Доля ответа</span><strong id="qualityResponseRate">Нет</strong></div>
+      <div class="panel quality-card" title="Сообщения эксперта клиенту без входящего сообщения клиента"><span>Исходящие без клиента</span><strong id="qualityOutboundOnly">0</strong></div>
+      <div class="panel risk-card" title="Жалобы клиентов или экспертов"><span>Жалобы</span><strong id="riskReports">0</strong></div>
+      <div class="panel risk-card" title="Блокировки между клиентом и экспертом"><span>Блокировки</span><strong id="riskBlocks">0</strong></div>
+      <div class="panel risk-card" title="Оплаченные консультации по закрепленным анкетам"><span>Оплаты консультаций</span><strong id="riskPaidConsultations">0</strong></div>
+      <div class="panel risk-card" title="Пары с десятью и более действиями за период"><span>Активные пары 10+</span><strong id="riskHighActivity">0</strong></div>
+    </section>
+
+    <section class="panel meta debug-only">
+      <dl>
+        <dt>Режим</dt><dd id="mode">партнер</dd>
+        <dt>Период</dt><dd id="range">-</dd>
+        <dt>Источник назначений</dt><dd id="assignmentSource">-</dd>
+      </dl>
+    </section>
+
+    <section class="view-tabs" aria-label="Виды отчета">
+      <button type="button" class="active" data-tab="table">Таблица</button>
+      <button type="button" data-tab="charts">Графики</button>
+    </section>
+
+    <section class="panel chart-panel tab-panel" data-panel="charts" hidden>
+      <header>
+        <h2 id="chartTitle">Сравнение активности</h2>
+        <span id="chartScope">-</span>
+      </header>
+      <div class="chart-controls" aria-label="Настройки графика">
+        <label><span>Показатель</span><select id="chartMetric"></select></label>
+        <label><span>Разрез</span><select id="chartDimension"></select></label>
+        <label><span>Тип графика</span><select id="chartType"></select></label>
+        <label><span>Сравнение</span><select id="chartCompare"></select></label>
+        <label><span>Группировка</span><select id="chartGranularity"></select></label>
+        <label class="wide"><span>Кого сравнить</span><div id="chartEntities" class="checkbox-list" role="group" aria-label="Участники сравнения"></div></label>
+      </div>
+      <div class="chart-workspace" id="chartGrid"></div>
+      <footer id="chartInsight">-</footer>
+    </section>
+
+    <section class="panel table-panel tab-panel" data-panel="table">
+      <header>
+        <h2>Действия клиентов и экспертов по закрепленным анкетам</h2>
+        <div><span id="partnerBadge">Gin001</span><span id="periodBadge">7 дней</span><span id="rowCount">0 строк</span></div>
+      </header>
+      <div class="action-legend" id="actionLegend" aria-label="Легенда действий"></div>
+      <div class="table-scroll">
+        <table id="interactionTable">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <footer class="table-footer">
+        <span>Партнер видит только свои закрепленные анкеты; фильтр по эксперту нужен для работы с 5-30 анкетами.</span>
+        <div class="pager">
+          <label><span>Показывать</span><select id="pageSize"><option value="50" selected>50</option><option value="100">100</option><option value="250">250</option><option value="500">500</option></select></label>
+          <button type="button" id="prevPage">Назад</button><strong id="pageInfo">0-0 из 0</strong><button type="button" id="nextPage">Вперед</button>
+        </div>
+      </footer>
+    </section>
+  </main>
+</div>
+<script src="assets/partner-interactions-analytics.js"></script>
+<script src="assets/partner-interactions-simulator.js"></script>
+<script src="assets/partner-interactions.js"></script>
+</body>
+</html>

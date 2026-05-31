@@ -1,0 +1,34 @@
+# Partner interactions offline test
+
+- Status: PASS
+- URL: http://127.0.0.1:8095/index.html
+- Partner URL: http://127.0.0.1:8095/partner.html
+- Expert URL: http://127.0.0.1:8095/expert.html
+- Page status: 200
+- Partner page status: 200
+- Expert page status: 200
+- Fixture status: 200
+- Analytics status: PASS
+- Analytics cases: 6
+- Simulator status: PASS
+- Simulator generated events: 25
+- Large-scale status: PASS
+- User-flow status: PASS
+- User-flow checks: 22
+- Fixture events: 23
+- Fixture assignments: 3
+- Fixture users: 8
+- External reference hits: 0
+- Analytics report: H:\GPT-Codex\Confideline\Analitica\offline-test-env\reports\partner-interactions-analytics-report.json
+- Simulator report: H:\GPT-Codex\Confideline\Analitica\offline-test-env\reports\partner-interactions-simulator-report.json
+- Large-scale report: H:\GPT-Codex\Confideline\Analitica\offline-test-env\reports\partner-interactions-large-scale-report.json
+- User-flow report: H:\GPT-Codex\Confideline\Analitica\offline-test-env\reports\partner-interactions-user-flow-report.json
+- Desktop screenshot: H:\GPT-Codex\Confideline\Analitica\offline-test-env\screenshots\partner-interactions-offline-desktop.png
+- Mobile screenshot: H:\GPT-Codex\Confideline\Analitica\offline-test-env\screenshots\partner-interactions-offline-mobile.png
+- Partner desktop screenshot: H:\GPT-Codex\Confideline\Analitica\offline-test-env\screenshots\partner-interactions-partner-desktop.png
+- Partner mobile screenshot: H:\GPT-Codex\Confideline\Analitica\offline-test-env\screenshots\partner-interactions-partner-mobile.png
+- Expert desktop screenshot: H:\GPT-Codex\Confideline\Analitica\offline-test-env\screenshots\partner-interactions-expert-desktop.png
+- Expert mobile screenshot: H:\GPT-Codex\Confideline\Analitica\offline-test-env\screenshots\partner-interactions-expert-mobile.png
+- Admin charts screenshot: H:\GPT-Codex\Confideline\Analitica\offline-test-env\screenshots\partner-interactions-admin-charts-desktop.png
+- Partner charts screenshot: H:\GPT-Codex\Confideline\Analitica\offline-test-env\screenshots\partner-interactions-partner-charts-desktop.png
+- Expert charts mobile screenshot: H:\GPT-Codex\Confideline\Analitica\offline-test-env\screenshots\partner-interactions-expert-charts-mobile.png
