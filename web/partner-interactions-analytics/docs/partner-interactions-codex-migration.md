@@ -74,6 +74,30 @@ Production migration rule:
 - use browser JS only for UI state, tab switching, AJAX refresh, and chart rendering;
 - do not expose debug simulator in production.
 
+Final UX decisions from the approved handoff:
+
+- Keep three separate role pages, not one universal screen with hidden controls.
+- Admin may choose Partner, expert questionnaire and client.
+- Partner must not see a free Partner selector; scope comes from current user and `chief-under`.
+- Expert must not see Partner or foreign expert selectors; scope comes from the current expert questionnaire.
+- Do not keep legacy dating/photo/gift menu items or metrics in these pages.
+- Use compact sort labels in selects: `Metric ↑/↓`.
+- Keep the action legend readable with wrapped two-line labels.
+- Keep charts compact: fixed chart height, side legend, short insight line, comparison table below.
+- Keep technical docs, simulator, mock payload and debug diagnostics outside the normal production UI.
+
+Current public handoff panel:
+
+```text
+https://cutthreat.github.io/confideline/web/partner-interactions-analytics/
+```
+
+Current final UX commit:
+
+```text
+2739ec5 Finalize partner analytics role UX
+```
+
 ## Filters
 
 All variants:
@@ -161,8 +185,6 @@ Partner:
 Expert:
 
 - compare clients of current expert questionnaire.
-
-Required chart cards:
 
 Required chart controls:
 

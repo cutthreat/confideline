@@ -100,6 +100,25 @@ For a fast logic-only run after screenshots have already been refreshed:
 - `Таблица`: строки пар `кто -> кому`, сортировка по каждому столбцу, пагинация, поиск и фильтры.
 - `Графики`: role-aware отчет в стиле конструктора аналитики: показатель, разрез, тип графика, сравнение, группировка и множественный выбор участников.
 
+## Финальный UX/UI проход
+
+Финальный ролевой проход выполнен 2026-06-01 и опубликован в GitHub Pages.
+
+Проверены скриншотами:
+
+- админ: таблица и графики;
+- Партнер: таблица и графики;
+- эксперт: таблица и графики.
+
+Финальные решения:
+
+- у каждой роли отдельная страница и своя область данных;
+- ролевые меню очищены от нерелевантных dating/photo-разделов;
+- сортировки укорочены до читаемого формата `Показатель ↑/↓`;
+- легенда действий не обрезает длинные подписи;
+- графики компактные и пригодны для сравнения, а не выглядят как технический прототип;
+- рабочий интерфейс не содержит ТЗ, debug payload и simulator без `?debug=1`.
+
 ## Документация для программиста
 
 Основные документы:
@@ -147,4 +166,11 @@ https://cutthreat.github.io/confideline/web/partner-interactions-analytics/
 - `screenshots/partner-interactions-expert-mobile.png`
 - `screenshots/partner-interactions-admin-charts-desktop.png`
 - `screenshots/partner-interactions-partner-charts-desktop.png`
+- `screenshots/partner-interactions-expert-charts-desktop.png`
 - `screenshots/partner-interactions-expert-charts-mobile.png`
+- `screenshots/role-final-pass-after/admin-table.png`
+- `screenshots/role-final-pass-after/admin-charts.png`
+- `screenshots/role-final-pass-after/partner-table.png`
+- `screenshots/role-final-pass-after/partner-charts.png`
+- `screenshots/role-final-pass-after/expert-table.png`
+- `screenshots/role-final-pass-after/expert-charts.png`
