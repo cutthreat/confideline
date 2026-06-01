@@ -558,17 +558,22 @@
   }
 
   function renderLineChart(comparison) {
-    const width = 820;
-    const height = 280;
-    const padding = { left: 46, right: 92, top: 18, bottom: 34 };
+    const width = 760;
+    const height = 236;
+    const padding = { left: 52, right: 76, top: 16, bottom: 34 };
     const allPoints = comparison.rows.flatMap(row => row.series.concat(state.chartCompare === 'previous' ? row.previousSeries : []));
     const max = Math.max(...allPoints.map(point => point.value), 1);
     const count = Math.max(...comparison.rows.map(row => row.series.length), 1);
     const x = index => padding.left + (count === 1 ? 0 : index * (width - padding.left - padding.right) / (count - 1));
     const y = value => height - padding.bottom - value / max * (height - padding.top - padding.bottom);
-    const grid = [0, .25, .5, .75, 1].map(part => {
+    const gridParts = [0, .25, .5, .75, 1];
+    const grid = gridParts.map(part => {
       const yy = y(max * part);
       return '<line x1="' + padding.left + '" y1="' + yy + '" x2="' + (width - padding.right) + '" y2="' + yy + '" class="grid-line"></line>';
+    }).join('');
+    const valueLabels = gridParts.map(part => {
+      const value = Math.round(max * part);
+      return '<text x="' + (padding.left - 8) + '" y="' + (y(max * part) + 4) + '">' + formatValue(value) + '</text>';
     }).join('');
     const lines = comparison.rows.map((row, index) => {
       const color = chartColor(index);
@@ -586,7 +591,7 @@
 
     return '<div class="line-chart-card"><header><h3>' + escapeHtml(comparison.metric) + '</h3><span>' + escapeHtml(chartCompareLabel()) + '</span></header>' +
       '<svg class="line-chart" viewBox="0 0 ' + width + ' ' + height + '" role="img" aria-label="График сравнения">' +
-      grid + lines + '<g class="axis-labels">' + labels + '</g></svg></div>';
+      grid + '<g class="value-labels">' + valueLabels + '</g>' + lines + '<g class="axis-labels">' + labels + '</g></svg></div>';
   }
 
   function renderCompareBars(rows) {
