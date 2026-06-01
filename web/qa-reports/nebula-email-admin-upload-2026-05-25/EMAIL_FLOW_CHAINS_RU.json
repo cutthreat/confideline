@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-29 21:38",
+  "generated_at": "2026-06-01 12:18",
   "scope": "Email flow chains for online chat consultation only",
   "package": "email-admin-upload-ready",
   "global_rules": [
@@ -25,7 +25,7 @@
     },
     {
       "rule": "Общие event_name требуют context",
-      "details": "message.client_submitted и message.received разделяют направление чата; payment.refund.update и payment.refund разделяют промежуточный и финальный refund; review.request и review.left разделяют запрос и факт отзыва."
+      "details": "message.received в Nebula MVP означает ответ эксперта клиенту; payment.refund.update и payment.refund разделяют промежуточный и финальный refund; review.request и review.left разделяют запрос и факт отзыва."
     }
   ],
   "email_marketing_sources": [
@@ -170,16 +170,6 @@
         },
         {
           "n": 2,
-          "timing": "сразу",
-          "event_name": "message.client_submitted",
-          "template_key": "chat_message_received",
-          "trigger": "клиент отправил сообщение эксперту",
-          "backend_gate": "создано видимое client_to_advisor сообщение; сообщение не системное; chatId активен",
-          "cancel_or_skip": "не слать на ответ эксперта; отдельное событие убирает конфликт с advisor_chat_reply_ready; отменить pending paid_chat_no_message_reminder",
-          "queue_policy": "dedupe: userId + chat_message_received + messageId"
-        },
-        {
-          "n": 3,
           "timing": "по SLA job",
           "event_name": "message.answer_delayed",
           "template_key": "chat_sla_delay",
@@ -189,19 +179,19 @@
           "queue_policy": "dedupe: userId + chat_sla_delay + chatId + slaWindow"
         },
         {
-          "n": 4,
+          "n": 3,
           "timing": "сразу",
           "event_name": "message.received",
           "template_key": "advisor_chat_reply_ready",
           "trigger": "эксперт опубликовал ответ клиенту",
-          "backend_gate": "message.direction = advisor_to_client; ответ видим клиенту; chatUrl ведет в нужный чат",
-          "cancel_or_skip": "не слать на client_to_advisor; отменить pending chat_sla_delay",
+          "backend_gate": "message.received в текущем MVP означает ответ эксперта клиенту; ответ видим клиенту; chatUrl ведет в нужный чат",
+          "cancel_or_skip": "отменить pending chat_sla_delay",
           "queue_policy": "dedupe: userId + advisor_chat_reply_ready + advisorMessageId"
         }
       ],
       "intersections": [
-        "message.client_submitted и message.received должны быть разными событиями; если backend использует один MessageManager event, он обязан разнести direction до выбора шаблона.",
-        "Ответ эксперта должен отменять SLA-delay письмо; первое сообщение клиента должно отменять no-message reminder.",
+        "message.received в Nebula MVP используется только как email-событие ответа эксперта клиенту.",
+        "Ответ эксперта должен отменять SLA-delay письмо; первое сообщение клиента должно отменять no-message reminder без отдельного email пользователю.",
         "Refund, safety notice или age restriction прерывают чат-ветку и подавляют удерживающие письма."
       ]
     },

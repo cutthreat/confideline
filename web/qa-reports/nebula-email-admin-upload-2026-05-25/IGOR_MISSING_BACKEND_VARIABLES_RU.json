@@ -6,24 +6,11 @@
     "meaning": "Имя эксперта/консультанта, назначенного на конкретную чат-консультацию",
     "backend_source": "consultation.assignedAdvisor.displayName",
     "implementation_task": "Передать display name эксперта/консультанта, назначенного на консультацию.",
-    "templates_count": 4,
-    "templates": "advisor_chat_reply_ready, chat_message_received, payment_success_receipt, same_advisor_followup_offer",
-    "events": "advisor.followup.offer, message.client_submitted, message.received, payment.success",
-    "usage_rows": "advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_message_received / message.client_submitted / condition=0 / delay=0 | payment_success_receipt / payment.success / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72",
+    "templates_count": 3,
+    "templates": "advisor_chat_reply_ready, payment_success_receipt, same_advisor_followup_offer",
+    "events": "advisor.followup.offer, message.received, payment.success",
+    "usage_rows": "advisor_chat_reply_ready / message.received / condition=0 / delay=0 | payment_success_receipt / payment.success / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72",
     "acceptance": "В render-тесте для всех перечисленных шаблонов переменная {{advisorName}} не пустая, корректно экранируется и имеет fallback."
-  },
-  {
-    "priority": "P0",
-    "variable": "answerDueAt",
-    "category": "chat",
-    "meaning": "Плановое время ответа эксперта по SLA",
-    "backend_source": "consultation.sla.answerDueAt",
-    "implementation_task": "Передать человекочитаемое плановое время ответа по SLA с учетом timezone.",
-    "templates_count": 2,
-    "templates": "chat_message_received, chat_sla_delay",
-    "events": "message.answer_delayed, message.client_submitted",
-    "usage_rows": "chat_message_received / message.client_submitted / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0",
-    "acceptance": "В render-тесте для всех перечисленных шаблонов переменная {{answerDueAt}} не пустая, корректно экранируется и имеет fallback."
   },
   {
     "priority": "P0",
@@ -32,24 +19,11 @@
     "meaning": "URL конкретного чата/консультации в кабинете",
     "backend_source": "consultation.chatUrl",
     "implementation_task": "Сформировать абсолютную ссылку на конкретный чат/консультацию, не на общий кабинет.",
-    "templates_count": 7,
-    "templates": "advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, paid_chat_no_message_reminder, payment_success_receipt, same_advisor_followup_offer",
-    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.client_submitted, message.no_first_chat_message, message.received, payment.success",
-    "usage_rows": "advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_message_received / message.client_submitted / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | payment_success_receipt / payment.success / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72",
+    "templates_count": 6,
+    "templates": "advisor_chat_reply_ready, chat_sla_delay, d2_chat_reflection, paid_chat_no_message_reminder, payment_success_receipt, same_advisor_followup_offer",
+    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.success",
+    "usage_rows": "advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | payment_success_receipt / payment.success / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72",
     "acceptance": "В render-тесте для всех перечисленных шаблонов переменная {{chatUrl}} не пустая, корректно экранируется и имеет fallback."
-  },
-  {
-    "priority": "P0",
-    "variable": "consultationId",
-    "category": "chat",
-    "meaning": "Внутренний ID консультации/чата",
-    "backend_source": "consultation.id",
-    "implementation_task": "Передать ID консультации/чата, если он используется в поддержке и отображении.",
-    "templates_count": 2,
-    "templates": "chat_message_received, chat_sla_delay",
-    "events": "message.answer_delayed, message.client_submitted",
-    "usage_rows": "chat_message_received / message.client_submitted / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0",
-    "acceptance": "В render-тесте для всех перечисленных шаблонов переменная {{consultationId}} не пустая, корректно экранируется и имеет fallback."
   },
   {
     "priority": "P0",
@@ -66,28 +40,15 @@
   },
   {
     "priority": "P0",
-    "variable": "siteName",
-    "category": "global_config",
-    "meaning": "Название сайта/бренда",
-    "backend_source": "global_config.siteName",
-    "implementation_task": "Передать название сайта/бренда из глобальной конфигурации в render context каждого email event.",
-    "templates_count": 12,
-    "templates": "chat_message_received, chat_sla_delay, d2_chat_reflection, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, refund_case_update, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_ticket_opened",
-    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.client_submitted, message.no_first_chat_message, payment.refund.update, review.request, security.security_change, support.safety_notice, support.ticket.opened, user.age_restricted, user.password_recovery",
-    "usage_rows": "chat_message_received / message.client_submitted / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | refund_case_update / payment.refund.update / condition=0 / delay=0 | review_request / review.request / condition=0 / delay=24 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0",
-    "acceptance": "В render-тесте для всех перечисленных шаблонов переменная {{siteName}} не пустая, корректно экранируется и имеет fallback."
-  },
-  {
-    "priority": "P0",
     "variable": "siteUrl",
     "category": "global_config",
     "meaning": "Базовый URL сайта/личного кабинета",
     "backend_source": "global_config.siteUrl",
     "implementation_task": "Передать базовый публичный URL сайта/кабинета из глобальной конфигурации.",
-    "templates_count": 18,
-    "templates": "advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened",
-    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.client_submitted, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.password_recovery",
-    "usage_rows": "advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_message_received / message.client_submitted / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | payment_failed / payment.error / condition=0 / delay=0 | payment_started / payment.init / condition=0 / delay=2 | payment_success_receipt / payment.success / condition=0 / delay=0 | refund_case_update / payment.refund.update / condition=0 / delay=0 | refund_confirmed / payment.refund / condition=0 / delay=0 | review_request / review.request / condition=0 / delay=24 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_reply / support.message.received / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0",
+    "templates_count": 17,
+    "templates": "advisor_chat_reply_ready, chat_sla_delay, d2_chat_reflection, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened",
+    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.password_recovery",
+    "usage_rows": "advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | payment_failed / payment.error / condition=0 / delay=0 | payment_started / payment.init / condition=0 / delay=2 | payment_success_receipt / payment.success / condition=0 / delay=0 | refund_case_update / payment.refund.update / condition=0 / delay=0 | refund_confirmed / payment.refund / condition=0 / delay=0 | review_request / review.request / condition=0 / delay=24 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_reply / support.message.received / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0",
     "acceptance": "В render-тесте для всех перечисленных шаблонов переменная {{siteUrl}} не пустая, корректно экранируется и имеет fallback."
   },
   {
@@ -110,10 +71,10 @@
     "meaning": "Юридическое имя продавца/сервиса",
     "backend_source": "global_config.legalMerchantName",
     "implementation_task": "Передать юридическое имя продавца/сервиса из глобальной конфигурации.",
-    "templates_count": 18,
-    "templates": "advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened",
-    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.client_submitted, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.password_recovery",
-    "usage_rows": "advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_message_received / message.client_submitted / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | payment_failed / payment.error / condition=0 / delay=0 | payment_started / payment.init / condition=0 / delay=2 | payment_success_receipt / payment.success / condition=0 / delay=0 | refund_case_update / payment.refund.update / condition=0 / delay=0 | refund_confirmed / payment.refund / condition=0 / delay=0 | review_request / review.request / condition=0 / delay=24 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_reply / support.message.received / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0",
+    "templates_count": 17,
+    "templates": "advisor_chat_reply_ready, chat_sla_delay, d2_chat_reflection, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened",
+    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.password_recovery",
+    "usage_rows": "advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | payment_failed / payment.error / condition=0 / delay=0 | payment_started / payment.init / condition=0 / delay=2 | payment_success_receipt / payment.success / condition=0 / delay=0 | refund_case_update / payment.refund.update / condition=0 / delay=0 | refund_confirmed / payment.refund / condition=0 / delay=0 | review_request / review.request / condition=0 / delay=24 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_reply / support.message.received / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0",
     "acceptance": "В render-тесте для всех перечисленных шаблонов переменная {{legalMerchantName}} не пустая, корректно экранируется и имеет fallback."
   },
   {
@@ -123,10 +84,10 @@
     "meaning": "URL политики приватности",
     "backend_source": "legal_config.privacyUrl",
     "implementation_task": "Передать публичную ссылку на политику приватности.",
-    "templates_count": 18,
-    "templates": "advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened",
-    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.client_submitted, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.password_recovery",
-    "usage_rows": "advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_message_received / message.client_submitted / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | payment_failed / payment.error / condition=0 / delay=0 | payment_started / payment.init / condition=0 / delay=2 | payment_success_receipt / payment.success / condition=0 / delay=0 | refund_case_update / payment.refund.update / condition=0 / delay=0 | refund_confirmed / payment.refund / condition=0 / delay=0 | review_request / review.request / condition=0 / delay=24 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_reply / support.message.received / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0",
+    "templates_count": 17,
+    "templates": "advisor_chat_reply_ready, chat_sla_delay, d2_chat_reflection, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened",
+    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.password_recovery",
+    "usage_rows": "advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | payment_failed / payment.error / condition=0 / delay=0 | payment_started / payment.init / condition=0 / delay=2 | payment_success_receipt / payment.success / condition=0 / delay=0 | refund_case_update / payment.refund.update / condition=0 / delay=0 | refund_confirmed / payment.refund / condition=0 / delay=0 | review_request / review.request / condition=0 / delay=24 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_reply / support.message.received / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0",
     "acceptance": "В render-тесте для всех перечисленных шаблонов переменная {{privacyUrl}} не пустая, корректно экранируется и имеет fallback."
   },
   {
@@ -136,10 +97,10 @@
     "meaning": "URL правил возврата",
     "backend_source": "legal_config.refundPolicyUrl",
     "implementation_task": "Передать публичную ссылку на правила возврата.",
-    "templates_count": 18,
-    "templates": "advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened",
-    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.client_submitted, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.password_recovery",
-    "usage_rows": "advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_message_received / message.client_submitted / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | payment_failed / payment.error / condition=0 / delay=0 | payment_started / payment.init / condition=0 / delay=2 | payment_success_receipt / payment.success / condition=0 / delay=0 | refund_case_update / payment.refund.update / condition=0 / delay=0 | refund_confirmed / payment.refund / condition=0 / delay=0 | review_request / review.request / condition=0 / delay=24 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_reply / support.message.received / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0",
+    "templates_count": 17,
+    "templates": "advisor_chat_reply_ready, chat_sla_delay, d2_chat_reflection, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened",
+    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.password_recovery",
+    "usage_rows": "advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | payment_failed / payment.error / condition=0 / delay=0 | payment_started / payment.init / condition=0 / delay=2 | payment_success_receipt / payment.success / condition=0 / delay=0 | refund_case_update / payment.refund.update / condition=0 / delay=0 | refund_confirmed / payment.refund / condition=0 / delay=0 | review_request / review.request / condition=0 / delay=24 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_reply / support.message.received / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0",
     "acceptance": "В render-тесте для всех перечисленных шаблонов переменная {{refundPolicyUrl}} не пустая, корректно экранируется и имеет fallback."
   },
   {
@@ -149,10 +110,10 @@
     "meaning": "URL пользовательских условий",
     "backend_source": "legal_config.termsUrl",
     "implementation_task": "Передать публичную ссылку на пользовательские условия.",
-    "templates_count": 18,
-    "templates": "advisor_chat_reply_ready, chat_message_received, chat_sla_delay, d2_chat_reflection, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened",
-    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.client_submitted, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.password_recovery",
-    "usage_rows": "advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_message_received / message.client_submitted / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | payment_failed / payment.error / condition=0 / delay=0 | payment_started / payment.init / condition=0 / delay=2 | payment_success_receipt / payment.success / condition=0 / delay=0 | refund_case_update / payment.refund.update / condition=0 / delay=0 | refund_confirmed / payment.refund / condition=0 / delay=0 | review_request / review.request / condition=0 / delay=24 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_reply / support.message.received / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0",
+    "templates_count": 17,
+    "templates": "advisor_chat_reply_ready, chat_sla_delay, d2_chat_reflection, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened",
+    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.password_recovery",
+    "usage_rows": "advisor_chat_reply_ready / message.received / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | payment_failed / payment.error / condition=0 / delay=0 | payment_started / payment.init / condition=0 / delay=2 | payment_success_receipt / payment.success / condition=0 / delay=0 | refund_case_update / payment.refund.update / condition=0 / delay=0 | refund_confirmed / payment.refund / condition=0 / delay=0 | review_request / review.request / condition=0 / delay=24 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_reply / support.message.received / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0",
     "acceptance": "В render-тесте для всех перечисленных шаблонов переменная {{termsUrl}} не пустая, корректно экранируется и имеет fallback."
   },
   {
@@ -338,19 +299,6 @@
     "acceptance": "В render-тесте для всех перечисленных шаблонов переменная {{supportUrl}} не пустая, корректно экранируется и имеет fallback."
   },
   {
-    "priority": "P0",
-    "variable": "userName",
-    "category": "user",
-    "meaning": "Имя пользователя для персонализации",
-    "backend_source": "user.displayName",
-    "implementation_task": "Передать display name пользователя с безопасным fallback, если имя пустое.",
-    "templates_count": 12,
-    "templates": "chat_message_received, chat_sla_delay, d2_chat_reflection, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, refund_case_update, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_ticket_opened",
-    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.client_submitted, message.no_first_chat_message, payment.refund.update, review.request, security.security_change, support.safety_notice, support.ticket.opened, user.age_restricted, user.password_recovery",
-    "usage_rows": "chat_message_received / message.client_submitted / condition=0 / delay=0 | chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | refund_case_update / payment.refund.update / condition=0 / delay=0 | review_request / review.request / condition=0 / delay=24 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0",
-    "acceptance": "В render-тесте для всех перечисленных шаблонов переменная {{userName}} не пустая, корректно экранируется и имеет fallback."
-  },
-  {
     "priority": "P1",
     "variable": "resetExpiresAt",
     "category": "auth",
@@ -378,6 +326,32 @@
   },
   {
     "priority": "P1",
+    "variable": "answerDueAt",
+    "category": "chat",
+    "meaning": "Плановое время ответа эксперта по SLA",
+    "backend_source": "consultation.sla.answerDueAt",
+    "implementation_task": "Передать человекочитаемое плановое время ответа по SLA с учетом timezone.",
+    "templates_count": 1,
+    "templates": "chat_sla_delay",
+    "events": "message.answer_delayed",
+    "usage_rows": "chat_sla_delay / message.answer_delayed / condition=0 / delay=0",
+    "acceptance": "В render-тесте для всех перечисленных шаблонов переменная {{answerDueAt}} не пустая, корректно экранируется и имеет fallback."
+  },
+  {
+    "priority": "P1",
+    "variable": "consultationId",
+    "category": "chat",
+    "meaning": "Внутренний ID консультации/чата",
+    "backend_source": "consultation.id",
+    "implementation_task": "Передать ID консультации/чата, если он используется в поддержке и отображении.",
+    "templates_count": 1,
+    "templates": "chat_sla_delay",
+    "events": "message.answer_delayed",
+    "usage_rows": "chat_sla_delay / message.answer_delayed / condition=0 / delay=0",
+    "acceptance": "В render-тесте для всех перечисленных шаблонов переменная {{consultationId}} не пустая, корректно экранируется и имеет fallback."
+  },
+  {
+    "priority": "P1",
     "variable": "updatedAnswerEta",
     "category": "chat",
     "meaning": "Обновленный прогноз ответа при задержке SLA",
@@ -388,6 +362,19 @@
     "events": "message.answer_delayed",
     "usage_rows": "chat_sla_delay / message.answer_delayed / condition=0 / delay=0",
     "acceptance": "В render-тесте для всех перечисленных шаблонов переменная {{updatedAnswerEta}} не пустая, корректно экранируется и имеет fallback."
+  },
+  {
+    "priority": "P1",
+    "variable": "siteName",
+    "category": "global_config",
+    "meaning": "Название сайта/бренда",
+    "backend_source": "global_config.siteName",
+    "implementation_task": "Передать название сайта/бренда из глобальной конфигурации в render context каждого email event.",
+    "templates_count": 11,
+    "templates": "chat_sla_delay, d2_chat_reflection, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, refund_case_update, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_ticket_opened",
+    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, payment.refund.update, review.request, security.security_change, support.safety_notice, support.ticket.opened, user.age_restricted, user.password_recovery",
+    "usage_rows": "chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | refund_case_update / payment.refund.update / condition=0 / delay=0 | review_request / review.request / condition=0 / delay=24 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0",
+    "acceptance": "В render-тесте для всех перечисленных шаблонов переменная {{siteName}} не пустая, корректно экранируется и имеет fallback."
   },
   {
     "priority": "P1",
@@ -427,6 +414,19 @@
     "events": "security.security_change",
     "usage_rows": "security_change_alert / security.security_change / condition=0 / delay=0",
     "acceptance": "В render-тесте для всех перечисленных шаблонов переменная {{securityChangedAt}} не пустая, корректно экранируется и имеет fallback."
+  },
+  {
+    "priority": "P1",
+    "variable": "userName",
+    "category": "user",
+    "meaning": "Имя пользователя для персонализации",
+    "backend_source": "user.displayName",
+    "implementation_task": "Передать display name пользователя с безопасным fallback, если имя пустое.",
+    "templates_count": 11,
+    "templates": "chat_sla_delay, d2_chat_reflection, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, refund_case_update, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_ticket_opened",
+    "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, payment.refund.update, review.request, security.security_change, support.safety_notice, support.ticket.opened, user.age_restricted, user.password_recovery",
+    "usage_rows": "chat_sla_delay / message.answer_delayed / condition=0 / delay=0 | d2_chat_reflection / message.chat_saved / condition=0 / delay=48 | minor_or_age_restriction_notice / user.age_restricted / condition=0 / delay=0 | paid_chat_no_message_reminder / message.no_first_chat_message / condition=5 / delay=2 | password_reset / user.password_recovery / condition=0 / delay=0 | refund_case_update / payment.refund.update / condition=0 / delay=0 | review_request / review.request / condition=0 / delay=24 | safety_notice / support.safety_notice / condition=0 / delay=0 | same_advisor_followup_offer / advisor.followup.offer / condition=0 / delay=72 | security_change_alert / security.security_change / condition=0 / delay=0 | support_ticket_opened / support.ticket.opened / condition=0 / delay=0",
+    "acceptance": "В render-тесте для всех перечисленных шаблонов переменная {{userName}} не пустая, корректно экранируется и имеет fallback."
   },
   {
     "priority": "P1",

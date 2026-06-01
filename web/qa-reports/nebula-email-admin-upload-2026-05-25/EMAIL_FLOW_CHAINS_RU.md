@@ -1,6 +1,6 @@
 # Flow-цепочки email-уведомлений
 
-Дата обновления: 2026-05-29 21:38
+Дата обновления: 2026-06-01 12:18
 
 Скоуп: только онлайн-консультация через чат. Документ фиксирует не внешний вид писем, а порядок срабатывания, пересечения, отмены, suppression-правила и backend-gates.
 
@@ -19,7 +19,7 @@
 - **Дедупликация обязательна:** Минимальный ключ: userId + templateKey + entityId/orderId/chatId/refundId + eventVersion/status.
 - **Service/security/payment письма не блокируются маркетинговым opt-out:** Marketing/lifecycle письма respect user settings, unsubscribeUrl и count_user_settings.
 - **Колокольчик и email должны иметь согласованное время:** Если notification связан с delayed email, использовать visible_at=execute_at либо явно принять продуктово, что bell появляется сразу.
-- **Общие event_name требуют context:** message.client_submitted и message.received разделяют направление чата; payment.refund.update и payment.refund разделяют промежуточный и финальный refund; review.request и review.left разделяют запрос и факт отзыва.
+- **Общие event_name требуют context:** message.received в Nebula MVP означает ответ эксперта клиенту; payment.refund.update и payment.refund разделяют промежуточный и финальный refund; review.request и review.left разделяют запрос и факт отзыва.
 
 ## Регистрация и доступ
 
@@ -62,13 +62,12 @@
 | # | Когда | template_key | Пользовательский смысл | Backend gate | Отмена/пропуск | Действие для Игоря |
 |---|---|---|---|---|---|---|
 | 1 | +2 часа после payment.success/open chat | paid_chat_no_message_reminder | Activation reminder: пользователь уже оплатил, но не сделал ключевое действие. | чат активен; нет первого client message; консультация не закрыта; reminder еще не отправлялся | отменить при первом сообщении клиента, refund, закрытии/ограничении чата | Нужен job: paid chat + no first client message. Отмена на first message. |
-| 2 | сразу | chat_message_received | Transactional reassurance: сообщение принято; снижает тревогу после оплаты. | создано видимое client_to_advisor сообщение; сообщение не системное; chatId активен | не слать на ответ эксперта; отдельное событие убирает конфликт с advisor_chat_reply_ready; отменить pending paid_chat_no_message_reminder | Нужен новый event message.client_submitted либо backend-разводка client_to_advisor до выбора шаблона. |
-| 3 | по SLA job | chat_sla_delay | Service recovery: честно объясняет задержку до обращения в поддержку. | нет видимого ответа эксперта; SLA threshold достигнут; чат не закрыт | отменить при ответе эксперта, refund, safety block, закрытии чата | SLA job создает event только если advisor answer все еще отсутствует. |
-| 4 | сразу | advisor_chat_reply_ready | Главное возвращающее письмо: ответ готов, CTA ведет в конкретный чат. | message.direction = advisor_to_client; ответ видим клиенту; chatUrl ведет в нужный чат | не слать на client_to_advisor; отменить pending chat_sla_delay | message.received требует direction=advisor_to_client. Отменить SLA-delay. |
+| 2 | по SLA job | chat_sla_delay | Service recovery: честно объясняет задержку до обращения в поддержку. | нет видимого ответа эксперта; SLA threshold достигнут; чат не закрыт | отменить при ответе эксперта, refund, safety block, закрытии чата | SLA job создает event только если advisor answer все еще отсутствует. |
+| 3 | сразу | advisor_chat_reply_ready | Главное возвращающее письмо: ответ готов, CTA ведет в конкретный чат. | message.received в текущем MVP означает ответ эксперта клиенту; ответ видим клиенту; chatUrl ведет в нужный чат | отменить pending chat_sla_delay | Использовать текущий MESSAGE_RECEIVED / message.received как ответ эксперта клиенту. Отменить SLA-delay. |
 
 Пересечения:
-- message.client_submitted и message.received должны быть разными событиями; если backend использует один MessageManager event, он обязан разнести direction до выбора шаблона.
-- Ответ эксперта должен отменять SLA-delay письмо; первое сообщение клиента должно отменять no-message reminder.
+- message.received в Nebula MVP используется только как email-событие ответа эксперта клиенту.
+- Ответ эксперта должен отменять SLA-delay письмо; первое сообщение клиента должно отменять no-message reminder без отдельного email пользователю.
 - Refund, safety notice или age restriction прерывают чат-ветку и подавляют удерживающие письма.
 
 ## Поддержка, возвраты и safety

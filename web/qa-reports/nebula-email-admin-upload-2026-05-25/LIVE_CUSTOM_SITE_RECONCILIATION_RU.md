@@ -46,24 +46,23 @@
 | 5 | payment_failed | `payment.error` | 0 | event есть, шаблона нет | создать новый шаблон |
 | 6 | payment_started | `payment.init` | 0 | event есть, шаблона нет | создать новый шаблон |
 | 7 | paid_chat_no_message_reminder | `message.no_first_chat_message` | 5 | нет event в dropdown | нужен backend event/trigger |
-| 8 | chat_message_received | `message.received` | 0 | event есть, шаблона нет | создать новый шаблон, проверить direction |
-| 9 | chat_sla_delay | `message.answer_delayed` | 0 | нет event в dropdown | нужен backend event/trigger |
-| 10 | advisor_chat_reply_ready | `message.received` | 0 | event есть, шаблона нет | создать новый шаблон, проверить direction |
-| 11 | support_ticket_opened | `support.ticket.opened` | 0 | нет event в dropdown | нужен backend event/trigger |
-| 12 | support_reply | `support.message.received` | 0 | event есть, шаблона нет | создать новый шаблон |
-| 13 | refund_confirmed | `payment.refund` | 0 | event есть, шаблона нет | создать новый шаблон, проверить refund context |
-| 14 | refund_case_update | `payment.refund` | 0 | event есть, шаблона нет | создать новый шаблон, проверить refund context |
-| 15 | same_advisor_followup_offer | `advisor.followup.offer` | 0 | нет event в dropdown | нужен backend event/trigger |
-| 16 | review_request | `review.left` | 0 | event есть, шаблона нет | создать новый шаблон, но event семантически спорный |
-| 17 | d2_chat_reflection | `message.chat_saved` | 0 | нет event в dropdown | нужен backend event/trigger |
-| 18 | safety_notice | `support.safety_notice` | 0 | нет event в dropdown | нужен backend event/trigger |
-| 19 | minor_or_age_restriction_notice | `user.age_restricted` | 0 | нет event в dropdown | нужен backend event/trigger |
+| 8 | chat_sla_delay | `message.answer_delayed` | 0 | нет event в dropdown | нужен backend event/trigger |
+| 9 | advisor_chat_reply_ready | `message.received` | 0 | event есть, шаблона нет | создать новый шаблон; в MVP это ответ эксперта клиенту |
+| 10 | support_ticket_opened | `support.ticket.opened` | 0 | нет event в dropdown | нужен backend event/trigger |
+| 11 | support_reply | `support.message.received` | 0 | event есть, шаблона нет | создать новый шаблон |
+| 12 | refund_confirmed | `payment.refund` | 0 | event есть, шаблона нет | создать новый шаблон, проверить refund context |
+| 13 | refund_case_update | `payment.refund.update` | 0 | нет event в dropdown | нужен backend event/trigger |
+| 14 | same_advisor_followup_offer | `advisor.followup.offer` | 0 | нет event в dropdown | нужен backend event/trigger |
+| 15 | review_request | `review.request` | 0 | нет event в dropdown | нужен backend event/trigger |
+| 16 | d2_chat_reflection | `message.chat_saved` | 0 | нет event в dropdown | нужен backend event/trigger |
+| 17 | safety_notice | `support.safety_notice` | 0 | нет event в dropdown | нужен backend event/trigger |
+| 18 | minor_or_age_restriction_notice | `user.age_restricted` | 0 | нет event в dropdown | нужен backend event/trigger |
 
 ## Риски, которые программист должен закрыть
 
-- `message.received` используется и для входящего, и для ответа эксперта только если backend передает направление сообщения. Без direction/context два наших сценария конфликтуют.
-- `payment.refund` общий: для `refund_confirmed` и `refund_case_update` нужен статус/context, иначе письма могут дублироваться или уходить не в тот момент.
-- `review.left` по названию выглядит как событие "отзыв оставлен", а не "попросить отзыв". Для request лучше отдельное событие или строгая проверка текущей логики.
+- `message.received` в Nebula MVP используется только для `advisor_chat_reply_ready`: других email-сообщений, кроме ответа эксперта клиенту, не заводим.
+- `payment.refund` общий: для `refund_confirmed` используется финальный возврат; для промежуточных обновлений нужен отдельный `payment.refund.update`.
+- Для запроса отзыва нужен `review.request`; `review.left` остается событием факта оставленного отзыва и не должен подменять request.
 - Все live-шаблоны сейчас имеют `count_user_settings=true`. Для критичных сервисных писем пакета рекомендовано `count_user_settings=0`, но это нужно подтвердить по реальному backend-смыслу поля.
 - Текущие live-переменные старых шаблонов в основном dating/YouDate. Новые переменные пакета нужно внедрять отдельно по `VARIABLES_CONTRACT_RU.md`.
 

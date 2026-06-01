@@ -378,7 +378,7 @@
     <div class="topbar-inner">
       <div class="title">
         <h1>Панель сценариев email-уведомлений Confideline</h1>
-        <p>RU-версия для внедрения: текущая кастомная админка, сценарии онлайн-консультации через чат, переменные, backend-проверки и тесты. Обновлено: 2026-05-29 21:58.</p>
+        <p>RU-версия для внедрения: текущая кастомная админка, сценарии онлайн-консультации через чат, переменные, backend-проверки и тесты. Обновлено: 2026-06-01 12:18.</p>
       </div>
       <nav class="filters" aria-label="Фильтры сценариев">
         <button type="button" class="active" data-filter="all">Все</button>
@@ -397,10 +397,10 @@
         <h2>Решение по внедрению</h2>
         <p>Импорт делится на существующие live-шаблоны, новые шаблоны в текущей админке и сценарии, где сначала нужен backend. Письма нельзя считать готовыми только потому, что событие есть в dropdown.</p>
       </div>
-      <div class="metric"><span>Сценариев</span><strong>20</strong></div>
-      <div class="metric"><span>P0 / P1 / P2</span><strong>8/10/2</strong></div>
+      <div class="metric"><span>Сценариев</span><strong>19</strong></div>
+      <div class="metric"><span>P0 / P1 / P2</span><strong>7/10/2</strong></div>
       <div class="metric"><span>Обновить</span><strong>2</strong></div>
-      <div class="metric"><span>Создать / Backend</span><strong>9/9</strong></div>
+      <div class="metric"><span>Создать / Backend</span><strong>8/9</strong></div>
     </section>
     <section class="quick-links" aria-label="Связанные панели">
       <a href="START_HERE_FOR_IGOR_RU.html">Начать здесь для Игоря</a>
@@ -422,8 +422,8 @@
 </div>
 <div class="lane status-create">
   <h3>Создать в админке</h3>
-  <strong>9</strong>
-  <ul><li><strong>Оплата подтверждена</strong><span>payment.success</span></li><li><strong>Оплата не прошла</strong><span>payment.error</span></li><li><strong>Оплата начата, но не завершена</strong><span>payment.init</span></li><li><strong>Сообщение клиента принято</strong><span>message.client_submitted</span></li><li><strong>Эксперт ответил в чате</strong><span>message.received</span></li><li><strong>Поддержка ответила</strong><span>support.message.received</span></li><li><strong>Возврат подтвержден</strong><span>payment.refund</span></li><li><strong>Статус возврата обновлен</strong><span>payment.refund.update</span></li><li><strong>Попросить оценку консультации</strong><span>review.request</span></li></ul>
+  <strong>8</strong>
+  <ul><li><strong>Оплата подтверждена</strong><span>payment.success</span></li><li><strong>Оплата не прошла</strong><span>payment.error</span></li><li><strong>Оплата начата, но не завершена</strong><span>payment.init</span></li><li><strong>Эксперт ответил в чате</strong><span>message.received</span></li><li><strong>Поддержка ответила</strong><span>support.message.received</span></li><li><strong>Возврат подтвержден</strong><span>payment.refund</span></li><li><strong>Статус возврата обновлен</strong><span>payment.refund.update</span></li><li><strong>Попросить оценку консультации</strong><span>review.request</span></li></ul>
 </div>
 <div class="lane status-backend">
   <h3>Сначала backend</h3>
@@ -665,7 +665,7 @@
       <p>Backend chat + QA</p>
       <h2>Чат-консультация</h2>
     </div>
-    <strong>4</strong>
+    <strong>3</strong>
   </header>
   <article class="scenario-row status-backend" data-priority="P1" data-status="requires_backend_event" data-stage="Чат-консультация">
   <div class="scenario-main">
@@ -697,41 +697,11 @@
     <a class="link" href="templates/07_paid_chat_no_message_reminder/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
-<article class="scenario-row status-create" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Чат-консультация">
-  <div class="scenario-main">
-    <div class="scenario-topline">
-      <span class="priority priority-p0">P0</span>
-      <span class="scenario-index">08</span>
-      <h3>Сообщение клиента принято</h3>
-      <span class="badge status-create">Можно создать в текущей админке</span>
-    </div>
-    <p class="role">Подтверждение, что сообщение клиента принято.</p>
-    <div class="settings-grid">
-      <div><span>event</span><code>message.client_submitted</code></div>
-      <div><span>condition</span><code>0</code></div>
-      <div><span>delay</span><code>0</code></div>
-      <div><span>live</span><code>-</code></div>
-      <div><span>type</span><code>2</code></div>
-      <div><span>settings</span><code>0</code></div>
-    </div>
-  </div>
-  <div class="scenario-side">
-    <div class="subject">Сообщение принято: эксперт получил ваш чат</div>
-    <dl>
-      <dt>Когда</dt><dd>Сразу. Создано сообщение от клиента; чат активен; это не системное сообщение; событие не должно сработать на ответ эксперта.</dd>
-      <dt>Риск</dt><dd>Конфликтует с ответом эксперта без direction client -&gt; advisor.</dd>
-      <dt>Gate</dt><dd>Event есть в dropdown, но программист должен доказать, что trigger реально вызывает очередь email.</dd>
-      <dt>Тест</dt><dd>Отправить сообщение клиентом; проверить, что уходит это письмо, а не advisor_chat_reply_ready.</dd>
-    </dl>
-    <div class="variables"><code>{{advisorName}}</code> <code>{{answerDueAt}}</code> <code>{{chatUrl}}</code> <code>{{consultationId}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
-    <a class="link" href="templates/08_chat_message_received/ru/body_email_html.html">RU HTML</a>
-  </div>
-</article>
 <article class="scenario-row status-backend" data-priority="P1" data-status="requires_backend_event" data-stage="Чат-консультация">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p1">P1</span>
-      <span class="scenario-index">09</span>
+      <span class="scenario-index">08</span>
       <h3>Ответ эксперта задерживается</h3>
       <span class="badge status-backend">Сначала backend event/trigger</span>
     </div>
@@ -754,18 +724,18 @@
       <dt>Тест</dt><dd>Создать чат без ответа эксперта и искусственно сдвинуть время; проверить одно письмо и отмену, если эксперт ответил.</dd>
     </dl>
     <div class="variables"><code>{{answerDueAt}}</code> <code>{{chatUrl}}</code> <code>{{consultationId}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportCaseId}}</code> <code>{{supportCaseUrl}}</code> <code>{{termsUrl}}</code> <code>{{updatedAnswerEta}}</code> <code>{{userName}}</code></div>
-    <a class="link" href="templates/09_chat_sla_delay/ru/body_email_html.html">RU HTML</a>
+    <a class="link" href="templates/08_chat_sla_delay/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
 <article class="scenario-row status-create" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Чат-консультация">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p0">P0</span>
-      <span class="scenario-index">10</span>
+      <span class="scenario-index">09</span>
       <h3>Эксперт ответил в чате</h3>
       <span class="badge status-create">Можно создать в текущей админке</span>
     </div>
-    <p class="role">Главное письмо возврата к готовому ответу эксперта.</p>
+    <p class="role">Главное письмо возврата к готовому ответу эксперта; в MVP это существующее MESSAGE_RECEIVED / message.received.</p>
     <div class="settings-grid">
       <div><span>event</span><code>message.received</code></div>
       <div><span>condition</span><code>0</code></div>
@@ -779,12 +749,12 @@
     <div class="subject">Эксперт ответил в чате</div>
     <dl>
       <dt>Когда</dt><dd>Сразу. Создан ответ эксперта; ответ видим клиенту; клиент не находится уже в активном чате/не получил realtime-уведомление в той же сессии.</dd>
-      <dt>Риск</dt><dd>Конфликтует с письмом клиента без direction advisor -&gt; client.</dd>
+      <dt>Риск</dt><dd>Не заводить отдельный client-message event: в MVP email уходит только на ответ эксперта клиенту.</dd>
       <dt>Gate</dt><dd>Event есть в dropdown, но программист должен доказать, что trigger реально вызывает очередь email.</dd>
       <dt>Тест</dt><dd>Создать ответ эксперта; проверить, что письмо ушло клиенту и содержит ссылку на конкретный чат.</dd>
     </dl>
     <div class="variables"><code>{{advisorName}}</code> <code>{{chatUrl}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportEmail}}</code> <code>{{supportUrl}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
-    <a class="link" href="templates/10_advisor_chat_reply_ready/ru/body_email_html.html">RU HTML</a>
+    <a class="link" href="templates/09_advisor_chat_reply_ready/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
 </section>
@@ -800,7 +770,7 @@
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p1">P1</span>
-      <span class="scenario-index">11</span>
+      <span class="scenario-index">10</span>
       <h3>Обращение в поддержку создано</h3>
       <span class="badge status-backend">Сначала backend event/trigger</span>
     </div>
@@ -823,14 +793,14 @@
       <dt>Тест</dt><dd>Создать тестовое обращение; проверить номер, ссылку и отсутствие отправки при внутренней операторской заметке.</dd>
     </dl>
     <div class="variables"><code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportCaseId}}</code> <code>{{supportCaseUrl}}</code> <code>{{supportEmail}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
-    <a class="link" href="templates/11_support_ticket_opened/ru/body_email_html.html">RU HTML</a>
+    <a class="link" href="templates/10_support_ticket_opened/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
 <article class="scenario-row status-create" data-priority="P0" data-status="can_create_in_current_admin" data-stage="Поддержка">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p0">P0</span>
-      <span class="scenario-index">12</span>
+      <span class="scenario-index">11</span>
       <h3>Поддержка ответила</h3>
       <span class="badge status-create">Можно создать в текущей админке</span>
     </div>
@@ -853,7 +823,7 @@
       <dt>Тест</dt><dd>Ответить в тестовом тикете публичным сообщением; проверить письмо и ссылку на обращение.</dd>
     </dl>
     <div class="variables"><code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportCaseId}}</code> <code>{{supportCaseStatus}}</code> <code>{{supportCaseUrl}}</code> <code>{{supportEmail}}</code> <code>{{supportUpdatedAt}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
-    <a class="link" href="templates/12_support_reply/ru/body_email_html.html">RU HTML</a>
+    <a class="link" href="templates/11_support_reply/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
 </section>
@@ -869,7 +839,7 @@
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p0">P0</span>
-      <span class="scenario-index">13</span>
+      <span class="scenario-index">12</span>
       <h3>Возврат подтвержден</h3>
       <span class="badge status-create">Можно создать в текущей админке</span>
     </div>
@@ -892,14 +862,14 @@
       <dt>Тест</dt><dd>Смоделировать refund confirmed; проверить сумму, orderId, refundEta и отсутствие дубля при повторном webhook.</dd>
     </dl>
     <div class="variables"><code>{{currency}}</code> <code>{{legalMerchantName}}</code> <code>{{orderId}}</code> <code>{{privacyUrl}}</code> <code>{{processorRefundId}}</code> <code>{{refundAmount}}</code> <code>{{refundEta}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportCaseUrl}}</code> <code>{{supportEmail}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
-    <a class="link" href="templates/13_refund_confirmed/ru/body_email_html.html">RU HTML</a>
+    <a class="link" href="templates/12_refund_confirmed/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
 <article class="scenario-row status-create" data-priority="P1" data-status="can_create_in_current_admin" data-stage="Возвраты">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p1">P1</span>
-      <span class="scenario-index">14</span>
+      <span class="scenario-index">13</span>
       <h3>Статус возврата обновлен</h3>
       <span class="badge status-create">Можно создать в текущей админке</span>
     </div>
@@ -922,7 +892,7 @@
       <dt>Тест</dt><dd>Перевести refund case между пользовательскими статусами; проверить, что письмо не уходит на внутренние изменения.</dd>
     </dl>
     <div class="variables"><code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportCaseId}}</code> <code>{{supportCaseUrl}}</code> <code>{{supportUpdatedAt}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
-    <a class="link" href="templates/14_refund_case_update/ru/body_email_html.html">RU HTML</a>
+    <a class="link" href="templates/13_refund_case_update/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
 </section>
@@ -938,7 +908,7 @@
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p1">P1</span>
-      <span class="scenario-index">16</span>
+      <span class="scenario-index">15</span>
       <h3>Попросить оценку консультации</h3>
       <span class="badge status-create">Можно создать в текущей админке</span>
     </div>
@@ -961,7 +931,7 @@
       <dt>Тест</dt><dd>Завершить чат без отзыва; проверить письмо через delay. Затем оставить отзыв до delay и убедиться, что письмо не ушло.</dd>
     </dl>
     <div class="variables"><code>{{emailPreferencesUrl}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{reviewUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{termsUrl}}</code> <code>{{unsubscribeUrl}}</code> <code>{{userName}}</code></div>
-    <a class="link" href="templates/16_review_request/ru/body_email_html.html">RU HTML</a>
+    <a class="link" href="templates/15_review_request/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
 </section>
@@ -977,7 +947,7 @@
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p2">P2</span>
-      <span class="scenario-index">15</span>
+      <span class="scenario-index">14</span>
       <h3>Продолжить с тем же экспертом</h3>
       <span class="badge status-backend">Сначала backend event/trigger</span>
     </div>
@@ -1000,14 +970,14 @@
       <dt>Тест</dt><dd>Закрыть тестовый чат; проверить отправку через 72 часа только при разрешенном follow-up и активных user settings.</dd>
     </dl>
     <div class="variables"><code>{{advisorName}}</code> <code>{{chatUrl}}</code> <code>{{emailPreferencesUrl}}</code> <code>{{followupOfferUrl}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{termsUrl}}</code> <code>{{unsubscribeUrl}}</code> <code>{{userName}}</code></div>
-    <a class="link" href="templates/15_same_advisor_followup_offer/ru/body_email_html.html">RU HTML</a>
+    <a class="link" href="templates/14_same_advisor_followup_offer/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
 <article class="scenario-row status-backend" data-priority="P2" data-status="requires_backend_event" data-stage="Возврат пользователя">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p2">P2</span>
-      <span class="scenario-index">17</span>
+      <span class="scenario-index">16</span>
       <h3>Чат сохранен, можно вернуться</h3>
       <span class="badge status-backend">Сначала backend event/trigger</span>
     </div>
@@ -1030,7 +1000,7 @@
       <dt>Тест</dt><dd>Закрыть чат и дождаться/смоделировать 48 часов; проверить ссылку на сохраненный чат и respect user settings.</dd>
     </dl>
     <div class="variables"><code>{{chatUrl}}</code> <code>{{emailPreferencesUrl}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{termsUrl}}</code> <code>{{unsubscribeUrl}}</code> <code>{{userName}}</code></div>
-    <a class="link" href="templates/17_d2_chat_reflection/ru/body_email_html.html">RU HTML</a>
+    <a class="link" href="templates/16_d2_chat_reflection/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
 </section>
@@ -1046,7 +1016,7 @@
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p1">P1</span>
-      <span class="scenario-index">18</span>
+      <span class="scenario-index">17</span>
       <h3>Важная информация о поддержке</h3>
       <span class="badge status-backend">Сначала backend event/trigger</span>
     </div>
@@ -1069,14 +1039,14 @@
       <dt>Тест</dt><dd>Смоделировать safety flow; проверить, что письмо уходит только адресату и не содержит лишних деталей.</dd>
     </dl>
     <div class="variables"><code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportEmail}}</code> <code>{{supportUrl}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
-    <a class="link" href="templates/18_safety_notice/ru/body_email_html.html">RU HTML</a>
+    <a class="link" href="templates/17_safety_notice/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
 <article class="scenario-row status-backend" data-priority="P1" data-status="requires_backend_event" data-stage="Юридические и safety">
   <div class="scenario-main">
     <div class="scenario-topline">
       <span class="priority priority-p1">P1</span>
-      <span class="scenario-index">19</span>
+      <span class="scenario-index">18</span>
       <h3>Ограничение доступа по возрасту/правилам</h3>
       <span class="badge status-backend">Сначала backend event/trigger</span>
     </div>
@@ -1099,7 +1069,7 @@
       <dt>Тест</dt><dd>На тестовом аккаунте применить ограничение; проверить письмо, поддержку и отсутствие деталей, которые нельзя раскрывать.</dd>
     </dl>
     <div class="variables"><code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportEmail}}</code> <code>{{supportUrl}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></div>
-    <a class="link" href="templates/19_minor_or_age_restriction_notice/ru/body_email_html.html">RU HTML</a>
+    <a class="link" href="templates/18_minor_or_age_restriction_notice/ru/body_email_html.html">RU HTML</a>
   </div>
 </article>
 </section>
@@ -1187,51 +1157,51 @@
 </tr>
 <tr>
   <td><code>{{advisorName}}</code></td>
-  <td>4</td>
+  <td>3</td>
   <td>candidate_new_or_event_scoped</td>
   <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{amount}}</code></td>
   <td>3</td>
-  <td>unconfirmed_existing_event_variable</td>
-  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{answerDueAt}}</code></td>
-  <td>2</td>
+  <td>1</td>
   <td>candidate_new_or_event_scoped</td>
   <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{chatUrl}}</code></td>
-  <td>7</td>
+  <td>6</td>
   <td>candidate_new_or_event_scoped</td>
   <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{checkoutUrl}}</code></td>
   <td>2</td>
-  <td>unconfirmed_existing_event_variable</td>
-  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{confirmationExpiresAt}}</code></td>
   <td>1</td>
-  <td>unconfirmed_existing_event_variable</td>
-  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{consultationId}}</code></td>
-  <td>2</td>
+  <td>1</td>
   <td>candidate_new_or_event_scoped</td>
   <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{currency}}</code></td>
   <td>4</td>
-  <td>unconfirmed_existing_event_variable</td>
-  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{emailPreferencesUrl}}</code></td>
@@ -1242,8 +1212,8 @@
 <tr>
   <td><code>{{firstResponseSla}}</code></td>
   <td>1</td>
-  <td>unconfirmed_existing_event_variable</td>
-  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{followupOfferUrl}}</code></td>
@@ -1253,15 +1223,15 @@
 </tr>
 <tr>
   <td><code>{{legalMerchantName}}</code></td>
-  <td>20</td>
+  <td>19</td>
   <td>candidate_new_or_event_scoped</td>
   <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{merchantDescriptor}}</code></td>
   <td>1</td>
-  <td>unconfirmed_existing_event_variable</td>
-  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{orderId}}</code></td>
@@ -1272,42 +1242,42 @@
 <tr>
   <td><code>{{paidAt}}</code></td>
   <td>1</td>
-  <td>unconfirmed_existing_event_variable</td>
-  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{privacyUrl}}</code></td>
-  <td>20</td>
+  <td>19</td>
   <td>candidate_new_or_event_scoped</td>
   <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{processorRefundId}}</code></td>
   <td>1</td>
-  <td>unconfirmed_existing_event_variable</td>
-  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{receiptUrl}}</code></td>
   <td>1</td>
-  <td>unconfirmed_existing_event_variable</td>
-  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{refundAmount}}</code></td>
   <td>1</td>
-  <td>unconfirmed_existing_event_variable</td>
-  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{refundEta}}</code></td>
   <td>1</td>
-  <td>unconfirmed_existing_event_variable</td>
-  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{refundPolicyUrl}}</code></td>
-  <td>20</td>
+  <td>19</td>
   <td>candidate_new_or_event_scoped</td>
   <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
@@ -1326,8 +1296,8 @@
 <tr>
   <td><code>{{reviewUrl}}</code></td>
   <td>1</td>
-  <td>unconfirmed_existing_event_variable</td>
-  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{securityChangedAt}}</code></td>
@@ -1337,7 +1307,7 @@
 </tr>
 <tr>
   <td><code>{{siteUrl}}</code></td>
-  <td>20</td>
+  <td>19</td>
   <td>candidate_new_or_event_scoped</td>
   <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
@@ -1350,8 +1320,8 @@
 <tr>
   <td><code>{{supportCaseStatus}}</code></td>
   <td>1</td>
-  <td>unconfirmed_existing_event_variable</td>
-  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{supportCaseUrl}}</code></td>
@@ -1368,8 +1338,8 @@
 <tr>
   <td><code>{{supportUpdatedAt}}</code></td>
   <td>2</td>
-  <td>unconfirmed_existing_event_variable</td>
-  <td>Подтвердить в актуальном production-коде для существующего event; если переменной нет, заменить или добавить backend-контракт.</td>
+  <td>candidate_new_or_event_scoped</td>
+  <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
 <tr>
   <td><code>{{supportUrl}}</code></td>
@@ -1379,7 +1349,7 @@
 </tr>
 <tr>
   <td><code>{{termsUrl}}</code></td>
-  <td>20</td>
+  <td>19</td>
   <td>candidate_new_or_event_scoped</td>
   <td>Считать новой/неподтвержденной до проверки backend-контракта; при отсутствии добавить в код вместе с event/queue.</td>
 </tr>
@@ -1514,8 +1484,5 @@
   </script>
 </body>
 </html>
-
-
-
 
 

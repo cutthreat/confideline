@@ -270,7 +270,7 @@
     <div class="topbar-inner">
       <div>
         <h1>Flow-цепочки email-уведомлений Confideline</h1>
-        <p>Порядок срабатывания, пересечения, отмены и suppression-правила для внедрения email-шаблонов онлайн-консультации через чат. Обновлено: 2026-05-29 21:38.</p>
+        <p>Порядок срабатывания, пересечения, отмены и suppression-правила для внедрения email-шаблонов онлайн-консультации через чат. Обновлено: 2026-06-01 12:18.</p>
         <div class="mode-toggle" aria-label="Режим просмотра">
           <button type="button" class="active" data-mode="clean">Кратко</button>
           <button type="button" data-mode="igor">Для Игоря</button>
@@ -317,7 +317,7 @@
         </article>
         <article class="igor-only">
           <h3>Общие event_name требуют context</h3>
-          <p>message.client_submitted и message.received разделяют направление чата; payment.refund.update и payment.refund разделяют промежуточный и финальный refund; review.request и review.left разделяют запрос и факт отзыва.</p>
+          <p>message.received в Nebula MVP означает ответ эксперта клиенту; payment.refund.update и payment.refund разделяют промежуточный и финальный refund; review.request и review.left разделяют запрос и факт отзыва.</p>
         </article>
     </section>
     <section class="flow-card" id="registration_access">
@@ -454,17 +454,7 @@
             <td class="igor-only">Нужен job: paid chat + no first client message. Отмена на first message.</td>
           </tr>
           <tr>
-            <td><strong>2</strong><span>сразу</span></td>
-            <td>клиент отправил сообщение эксперту<small>Transactional reassurance: сообщение принято; снижает тревогу после оплаты.</small></td>
-            <td><code>chat_message_received</code></td>
-            <td>не слать на ответ эксперта; отдельное событие убирает конфликт с advisor_chat_reply_ready; отменить pending paid_chat_no_message_reminder</td>
-            <td class="igor-only"><code>message.client_submitted</code></td>
-            <td class="igor-only">создано видимое client_to_advisor сообщение; сообщение не системное; chatId активен</td>
-            <td class="igor-only"><code>dedupe: userId + chat_message_received + messageId</code></td>
-            <td class="igor-only">Нужен новый event message.client_submitted либо backend-разводка client_to_advisor до выбора шаблона.</td>
-          </tr>
-          <tr>
-            <td><strong>3</strong><span>по SLA job</span></td>
+            <td><strong>2</strong><span>по SLA job</span></td>
             <td>клиент ждет, SLA нарушен или близок к нарушению<small>Service recovery: честно объясняет задержку до обращения в поддержку.</small></td>
             <td><code>chat_sla_delay</code></td>
             <td>отменить при ответе эксперта, refund, safety block, закрытии чата</td>
@@ -474,22 +464,22 @@
             <td class="igor-only">SLA job создает event только если advisor answer все еще отсутствует.</td>
           </tr>
           <tr>
-            <td><strong>4</strong><span>сразу</span></td>
+            <td><strong>3</strong><span>сразу</span></td>
             <td>эксперт опубликовал ответ клиенту<small>Главное возвращающее письмо: ответ готов, CTA ведет в конкретный чат.</small></td>
             <td><code>advisor_chat_reply_ready</code></td>
-            <td>не слать на client_to_advisor; отменить pending chat_sla_delay</td>
+            <td>отменить pending chat_sla_delay</td>
             <td class="igor-only"><code>message.received</code></td>
-            <td class="igor-only">message.direction = advisor_to_client; ответ видим клиенту; chatUrl ведет в нужный чат</td>
+            <td class="igor-only">message.received в текущем MVP означает ответ эксперта клиенту; ответ видим клиенту; chatUrl ведет в нужный чат</td>
             <td class="igor-only"><code>dedupe: userId + advisor_chat_reply_ready + advisorMessageId</code></td>
-            <td class="igor-only">message.received требует direction=advisor_to_client. Отменить SLA-delay.</td>
+            <td class="igor-only">Использовать текущий MESSAGE_RECEIVED / message.received как ответ эксперта клиенту. Отменить SLA-delay.</td>
           </tr>
           </tbody>
         </table>
       </div>
       <div class="intersections">
         <h3>Пересечения</h3>
-        <ul><li>message.client_submitted и message.received должны быть разными событиями; если backend использует один MessageManager event, он обязан разнести direction до выбора шаблона.</li>
-<li>Ответ эксперта должен отменять SLA-delay письмо; первое сообщение клиента должно отменять no-message reminder.</li>
+        <ul><li>message.received в Nebula MVP используется только как email-событие ответа эксперта клиенту.</li>
+<li>Ответ эксперта должен отменять SLA-delay письмо; первое сообщение клиента должно отменять no-message reminder без отдельного email пользователю.</li>
 <li>Refund, safety notice или age restriction прерывают чат-ветку и подавляют удерживающие письма.</li></ul>
       </div>
     </section>
@@ -700,8 +690,5 @@
   </script>
 </body>
 </html>
-
-
-
 
 

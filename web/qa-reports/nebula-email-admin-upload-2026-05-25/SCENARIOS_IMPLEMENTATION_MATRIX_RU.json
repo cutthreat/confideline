@@ -321,46 +321,6 @@
   },
   {
     "sort": 8,
-    "key": "chat_message_received",
-    "name": "Сообщение клиента принято",
-    "stage": "Чат-консультация",
-    "priority": "P0",
-    "role": "Подтверждение, что сообщение клиента принято.",
-    "flow": "Сразу",
-    "type_id": "2",
-    "type_label": "behavior",
-    "count_user_settings": "0",
-    "event_name": "message.client_submitted",
-    "condition_id": "0",
-    "delay": "0",
-    "subject_email": "Сообщение принято: эксперт получил ваш чат",
-    "live_status": "can_create_in_current_admin",
-    "live_status_label": "Можно создать в текущей админке",
-    "existing_live_template_id": "",
-    "admin_action": "create_new_template_with_existing_event",
-    "backend_gate": "Создано сообщение от клиента; чат активен; это не системное сообщение; событие не должно сработать на ответ эксперта.",
-    "implementation_gate": "Event есть в dropdown, но программист должен доказать, что trigger реально вызывает очередь email.",
-    "risk": "Конфликтует с ответом эксперта без direction client -> advisor.",
-    "test_scenario": "Отправить сообщение клиентом; проверить, что уходит это письмо, а не advisor_chat_reply_ready.",
-    "variables": [
-      "advisorName",
-      "answerDueAt",
-      "chatUrl",
-      "consultationId",
-      "legalMerchantName",
-      "privacyUrl",
-      "refundPolicyUrl",
-      "siteName",
-      "siteUrl",
-      "termsUrl",
-      "userName"
-    ],
-    "variables_count": 11,
-    "folder": "templates/08_chat_message_received",
-    "owner": "Backend chat + QA"
-  },
-  {
-    "sort": 9,
     "key": "chat_sla_delay",
     "name": "Ответ эксперта задерживается",
     "stage": "Чат-консультация",
@@ -398,16 +358,16 @@
       "userName"
     ],
     "variables_count": 13,
-    "folder": "templates/09_chat_sla_delay",
+    "folder": "templates/08_chat_sla_delay",
     "owner": "Backend chat + QA"
   },
   {
-    "sort": 10,
+    "sort": 9,
     "key": "advisor_chat_reply_ready",
     "name": "Эксперт ответил в чате",
     "stage": "Чат-консультация",
     "priority": "P0",
-    "role": "Главное письмо возврата к готовому ответу эксперта.",
+    "role": "Главное письмо возврата к готовому ответу эксперта; в MVP это существующее MESSAGE_RECEIVED / message.received.",
     "flow": "Сразу",
     "type_id": "2",
     "type_label": "behavior",
@@ -422,7 +382,7 @@
     "admin_action": "create_new_template_with_existing_event",
     "backend_gate": "Создан ответ эксперта; ответ видим клиенту; клиент не находится уже в активном чате/не получил realtime-уведомление в той же сессии.",
     "implementation_gate": "Event есть в dropdown, но программист должен доказать, что trigger реально вызывает очередь email.",
-    "risk": "Конфликтует с письмом клиента без direction advisor -> client.",
+    "risk": "Не заводить отдельный client-message event: в MVP email уходит только на ответ эксперта клиенту.",
     "test_scenario": "Создать ответ эксперта; проверить, что письмо ушло клиенту и содержит ссылку на конкретный чат.",
     "variables": [
       "advisorName",
@@ -438,11 +398,11 @@
       "userName"
     ],
     "variables_count": 11,
-    "folder": "templates/10_advisor_chat_reply_ready",
+    "folder": "templates/09_advisor_chat_reply_ready",
     "owner": "Backend chat + QA"
   },
   {
-    "sort": 11,
+    "sort": 10,
     "key": "support_ticket_opened",
     "name": "Обращение в поддержку создано",
     "stage": "Поддержка",
@@ -477,11 +437,11 @@
       "userName"
     ],
     "variables_count": 10,
-    "folder": "templates/11_support_ticket_opened",
+    "folder": "templates/10_support_ticket_opened",
     "owner": "Backend support + QA"
   },
   {
-    "sort": 12,
+    "sort": 11,
     "key": "support_reply",
     "name": "Поддержка ответила",
     "stage": "Поддержка",
@@ -518,11 +478,11 @@
       "userName"
     ],
     "variables_count": 12,
-    "folder": "templates/12_support_reply",
+    "folder": "templates/11_support_reply",
     "owner": "Backend support + QA"
   },
   {
-    "sort": 13,
+    "sort": 12,
     "key": "refund_confirmed",
     "name": "Возврат подтвержден",
     "stage": "Возвраты",
@@ -561,11 +521,11 @@
       "userName"
     ],
     "variables_count": 14,
-    "folder": "templates/13_refund_confirmed",
+    "folder": "templates/12_refund_confirmed",
     "owner": "Backend payments/support + QA"
   },
   {
-    "sort": 14,
+    "sort": 13,
     "key": "refund_case_update",
     "name": "Статус возврата обновлен",
     "stage": "Возвраты",
@@ -600,11 +560,11 @@
       "userName"
     ],
     "variables_count": 10,
-    "folder": "templates/14_refund_case_update",
+    "folder": "templates/13_refund_case_update",
     "owner": "Backend payments/support + QA"
   },
   {
-    "sort": 15,
+    "sort": 14,
     "key": "same_advisor_followup_offer",
     "name": "Продолжить с тем же экспертом",
     "stage": "Возврат пользователя",
@@ -641,11 +601,11 @@
       "userName"
     ],
     "variables_count": 12,
-    "folder": "templates/15_same_advisor_followup_offer",
+    "folder": "templates/14_same_advisor_followup_offer",
     "owner": "PM + Backend + QA"
   },
   {
-    "sort": 16,
+    "sort": 15,
     "key": "review_request",
     "name": "Попросить оценку консультации",
     "stage": "Качество",
@@ -680,11 +640,11 @@
       "userName"
     ],
     "variables_count": 10,
-    "folder": "templates/16_review_request",
+    "folder": "templates/15_review_request",
     "owner": "PM + Backend + QA"
   },
   {
-    "sort": 17,
+    "sort": 16,
     "key": "d2_chat_reflection",
     "name": "Чат сохранен, можно вернуться",
     "stage": "Возврат пользователя",
@@ -719,11 +679,11 @@
       "userName"
     ],
     "variables_count": 10,
-    "folder": "templates/17_d2_chat_reflection",
+    "folder": "templates/16_d2_chat_reflection",
     "owner": "PM + Backend + QA"
   },
   {
-    "sort": 18,
+    "sort": 17,
     "key": "safety_notice",
     "name": "Важная информация о поддержке",
     "stage": "Юридические и safety",
@@ -757,11 +717,11 @@
       "userName"
     ],
     "variables_count": 9,
-    "folder": "templates/18_safety_notice",
+    "folder": "templates/17_safety_notice",
     "owner": "PM/legal + Backend + QA"
   },
   {
-    "sort": 19,
+    "sort": 18,
     "key": "minor_or_age_restriction_notice",
     "name": "Ограничение доступа по возрасту/правилам",
     "stage": "Юридические и safety",
@@ -795,7 +755,7 @@
       "userName"
     ],
     "variables_count": 9,
-    "folder": "templates/19_minor_or_age_restriction_notice",
+    "folder": "templates/18_minor_or_age_restriction_notice",
     "owner": "PM/legal + Backend + QA"
   }
 ]
