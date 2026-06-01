@@ -1,0 +1,24 @@
+role,test_case,expected_result,evidence_status
+agent,Open /en/admin/user/info?id=103 assigned expert,ALLOW,Prepared ids; needs agent session
+agent,Open /en/admin/user/info?id=104 assigned expert,ALLOW,Prepared ids; needs agent session
+agent,Open /en/admin/user/info?id=105 assigned expert,ALLOW,Prepared ids; needs agent session
+agent,Open /en/admin/user/info?id=184 unassigned expert,DENY,Prepared negative id; needs agent session
+agent,Open /en/admin/chief-under/index?userId=12 own scope,ALLOW,Prepared own id; needs agent session
+agent,Open чужой /en/admin/chief-under/index?userId=<otherAgentId>,DENY,Needs agent session
+agent,Open /en/admin/settings/role,DENY,Needs agent session
+agent,Open /en/admin/settings/payment,DENY,Needs agent session
+agent,Open /en/admin/log/index,DENY,Needs agent session
+agent-moder,Manage /en/admin/chief-under/index?userId=<agentId>,ALLOW,Needs role session
+agent-moder,Open /en/admin/message/chat global chat,DENY,Needs role session
+balance,Open /en/admin/balance-transaction/index,ALLOW,Needs role session
+balance,Open /en/admin/message/chat,DENY,Needs role session
+payment-moderator,Open /en/admin/order/index,ALLOW,Needs role session
+payment-moderator,Open provider secret settings,DENY,Needs role session and safe route definition
+support,Open /en/admin/support/index,ALLOW,Needs role session
+support,Open /en/admin/message/index without support case,DENY,Needs role session and case-bound scope
+content-moder,Open /en/admin/news/index,ALLOW,Needs role session
+content-moder,Open raw PHP page edit without guard,DENY,Needs role session and raw PHP guard
+user-moderator,Open /en/admin/report/index,ALLOW,Needs role session
+user-moderator,Open /en/admin/order/index,DENY,Needs role session
+super-admin,Open Kristy baseline 5 URLs,ALLOW,Passed 5/5 ACCESS_OK
+super-admin,Open admin direct-url baseline,ALLOW,Passed 15 ACCESS_OK + 1 HTTP_OK_UNKNOWN_BODY for env-php
