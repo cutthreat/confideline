@@ -6,24 +6,27 @@
 
 Внедрить русские и английские email-шаблоны для сценариев онлайн-консультации через чат в текущую систему `EmailTemplate` без ручного переписывания каждого письма и без потери совместимости с существующей админкой.
 
+Основной язык внедрения: **English**. Русский язык остается вторым языком локализации и нужен для просмотра/согласования смысла.
+
 ## Что Codex должен прочитать первым
 
-1. `START_HERE_FOR_IGOR_RU.html` - главный вход для программиста: порядок действий, группы внедрения, новые backend events, файлы для Codex и стоп-условия.
-2. `SCENARIOS_IMPLEMENTATION_PANEL_RU.html` - основная веб-панель сценариев: приоритеты, live-статус, настройки, backend-gates, переменные и тесты.
-3. `BACKEND_EMAIL_EVENTS_CONTRACT_RU.html` - фактические `event_name`, `available_params`, `condition_id` и сверка каждого предложенного шаблона с текущим кодовым контрактом.
-4. `EVENT_VARIABLE_COMPATIBILITY_RU.csv` - машинная таблица: какие переменные уже доступны в выбранном event, а какие нужно добавить в backend payload.
-5. `IGOR_BACKEND_TASKS_RU.html` - отдельная страница для Игоря: недостающие переменные и события, что запрограммировать, priority и acceptance.
-6. `ADMIN_UPLOAD_INDEX_RU_EN.json` - машинная карта всех шаблонов в двух языках.
-7. `EMAIL_FLOW_CHAINS_PANEL_RU.html` - flow-цепочки, пересечения, отмены delayed email и suppression-правила.
-8. `VARIABLES_GLOSSARY_RU.html` - табличный поисковый словарь переменных: значение, backend source, usage, статус.
-9. `IGOR_MISSING_BACKEND_VARIABLES_RU.csv` и `IGOR_MISSING_BACKEND_EVENTS_RU.csv` - машинные списки того, что нужно добавить в backend.
-10. `templates/*/en/admin-meta.json` и `templates/*/ru/admin-meta.json` - переменные, event, condition, delay и язык.
-11. `templates/*/{en,ru}/subject_email.txt`, `body_email_html.html`, `body_email_txt.txt`, `comment_about.txt` - значения для записи в модель.
+1. `START_HERE_FOR_DEVELOPER_EN.html` - главный English-first вход для программиста: порядок действий, группы внедрения, новые backend events, файлы для Codex и стоп-условия.
+2. `FILE_STRUCTURE_FOR_IMPORT_EN.html` - единый стандарт файлов: один сценарий, две языковые папки, одинаковые имена файлов.
+3. `ADMIN_UPLOAD_INDEX_RU_EN.json` - машинная карта всех шаблонов в двух языках; EN является основной версией.
+4. `SCENARIOS_IMPLEMENTATION_PANEL_RU.html` - веб-панель сценариев: приоритеты, live-статус, настройки, backend-gates, переменные и тесты.
+5. `BACKEND_EMAIL_EVENTS_CONTRACT_RU.html` - фактические `event_name`, `available_params`, `condition_id` и сверка каждого предложенного шаблона с текущим кодовым контрактом.
+6. `EVENT_VARIABLE_COMPATIBILITY_RU.csv` - машинная таблица: какие переменные уже доступны в выбранном event, а какие нужно добавить в backend payload.
+7. `IGOR_BACKEND_TASKS_RU.html` - отдельная страница для Игоря: недостающие переменные и события, что запрограммировать, priority и acceptance.
+8. `EMAIL_FLOW_CHAINS_PANEL_RU.html` - flow-цепочки, пересечения, отмены delayed email и suppression-правила.
+9. `VARIABLES_GLOSSARY_RU.html` - табличный поисковый словарь переменных: значение, backend source, usage, статус.
+10. `IGOR_MISSING_BACKEND_VARIABLES_RU.csv` и `IGOR_MISSING_BACKEND_EVENTS_RU.csv` - машинные списки того, что нужно добавить в backend.
+11. `templates/*/en/admin-meta.json` и `templates/*/ru/admin-meta.json` - переменные, event, condition, delay и язык.
+12. `templates/*/{en,ru}/subject_email.txt`, `body_email_html.html`, `body_email_txt.txt`, `comment_about.txt` - значения для записи в модель.
 
 ## Правильный сценарий работы
 
 1. Программист дает Codex доступ к актуальному репозиторию сайта и локальному окружению.
-2. Codex открывает `START_HERE_FOR_IGOR_RU.html` и фиксирует три группы: обновить существующие, создать после проверки, сначала backend.
+2. Codex открывает `START_HERE_FOR_DEVELOPER_EN.html` и `FILE_STRUCTURE_FOR_IMPORT_EN.html`, затем фиксирует три группы: обновить существующие, создать после проверки, сначала backend.
 3. Codex находит актуальный production-код `EmailTemplate`, модель, миграции, seed/import-механизм и текущие обработчики email-событий.
 4. Codex проверяет доступные переменные каждого текущего template/event по `EVENT_VARIABLE_COMPATIBILITY_RU.csv`. Новые переменные не добавлять в текст самовольно; если они нужны, оформить отдельное изменение backend-кода.
 5. Codex сравнивает `ADMIN_UPLOAD_INDEX_RU_EN.json` с реальными `event_name`, `condition_id`, переменными, языковой моделью и queue-binding в коде/БД.

@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Developer start guide for Confideline email templates</title>
+  <style>
+    :root { --ink:#172033; --muted:#667085; --line:#d9e2ef; --bg:#f5f7fb; --panel:#fff; --brand:#6338d8; --good:#027a48; --warn:#a15c00; --bad:#b42318; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:Arial,Helvetica,sans-serif; line-height:1.5; }
+    main { max-width:1180px; margin:0 auto; padding:28px 22px 48px; }
+    h1 { margin:0 0 10px; font-size:32px; line-height:1.15; letter-spacing:0; }
+    h2 { margin:32px 0 12px; font-size:22px; line-height:1.25; }
+    h3 { margin:0 0 8px; font-size:18px; }
+    p { margin:0 0 12px; color:#344054; }
+    a { color:#2459a8; }
+    code, pre { font-family:Consolas,Menlo,monospace; }
+    code { padding:2px 5px; border:1px solid var(--line); border-radius:5px; background:#fff; }
+    pre { white-space:pre-wrap; overflow:auto; padding:16px; border-radius:8px; background:#111827; color:#f9fafb; }
+    .lead { max-width:900px; color:var(--muted); }
+    .notice { padding:16px 18px; border:1px solid var(--line); border-left:5px solid var(--brand); border-radius:8px; background:#fff; }
+    .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin:18px 0; }
+    .grid.two { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .card { padding:16px; border:1px solid var(--line); border-radius:8px; background:#fff; box-shadow:0 10px 28px rgba(23,32,51,.06); }
+    .card strong { display:block; font-size:24px; }
+    .card span, small { display:block; color:var(--muted); font-size:13px; }
+    .legend { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0 0; }
+    .legend span { display:inline-flex; align-items:center; gap:7px; padding:6px 10px; border:1px solid var(--line); border-radius:999px; background:#fff; font-size:13px; color:var(--muted); }
+    .legend i { width:12px; height:12px; border-radius:3px; display:inline-block; }
+    .legend .existing i { background:#dff8ea; border:1px solid #6fcf97; }
+    .legend .create i { background:#fff5e6; border:1px solid #e9b36b; }
+    .legend .backend i { background:#fff1f0; border:1px solid #f97066; }
+    .flow { counter-reset:step; display:grid; gap:12px; }
+    .step { position:relative; padding:16px 16px 16px 56px; background:#fff; border:1px solid var(--line); border-radius:8px; }
+    .step:before { counter-increment:step; content:counter(step); position:absolute; left:16px; top:16px; width:28px; height:28px; border-radius:50%; background:var(--brand); color:#fff; display:grid; place-items:center; font-weight:700; }
+    table { width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    th, td { padding:10px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; font-size:14px; }
+    th { background:#eef3f9; color:#475467; font-size:12px; text-transform:uppercase; }
+    tr:last-child td { border-bottom:0; }
+    tr.row-existing td { background:#f0fbf4; border-bottom-color:#c7eed8; }
+    tr.row-existing td:first-child { box-shadow:inset 5px 0 0 var(--good); }
+    tr.row-create td { background:#fffaf2; }
+    tr.row-backend td { background:#fff6f5; }
+    .badge { display:inline-block; min-width:34px; padding:3px 8px; border-radius:999px; background:#ece7ff; color:#4220a8; font-weight:700; font-size:12px; text-align:center; }
+    @media (max-width:900px) { .grid, .grid.two { grid-template-columns:1fr; } table { display:block; overflow-x:auto; } h1 { font-size:26px; } }
+/* package-navigation-css:start */
+.package-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(255,255,255,.96);
+  border-bottom: 1px solid #d9e2ef;
+  box-shadow: 0 8px 24px rgba(23,32,51,.06);
+  backdrop-filter: blur(10px);
+}
+.package-nav-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 10px 22px;
+  display: grid;
+  grid-template-columns: minmax(220px, .38fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+}
+.package-brand strong {
+  display: block;
+  color: #172033;
+  font-size: 14px;
+  line-height: 1.2;
+}
+.package-brand span {
+  display: block;
+  margin-top: 2px;
+  color: #667085;
+  font-size: 12px;
+}
+.package-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.package-nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 6px 9px;
+  border: 1px solid #d9e2ef;
+  border-radius: 7px;
+  background: #fff;
+  color: #172033;
+  text-decoration: none;
+  font: 700 12px/1.2 Arial, Helvetica, sans-serif;
+}
+.package-nav-link:hover { text-decoration: none; border-color: #6338d8; color: #4220a8; }
+.package-nav-link.is-active { background: #6338d8; border-color: #6338d8; color: #fff; }
+.package-breadcrumbs {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 22px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  color: #667085;
+  font: 700 12px/1.2 Arial, Helvetica, sans-serif;
+}
+.package-breadcrumbs a { color: #2459a8; text-decoration: none; }
+.package-breadcrumbs a:after { content: "/"; margin-left: 7px; color: #98a2b3; }
+.package-breadcrumbs span { color: #344054; }
+@media (max-width: 980px) {
+  .package-nav-inner { grid-template-columns: 1fr; gap: 8px; padding: 10px 14px; }
+  .package-nav-links { justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; }
+  .package-nav-link { white-space: nowrap; }
+  .package-breadcrumbs { padding: 0 14px 10px; }
+}
+/* package-navigation-css:end */
+</style>
+</head>
+<body>
+<!-- package-navigation:start -->
+<nav class="package-nav" aria-label="Навигация по пакету">
+  <div class="package-nav-inner">
+    <div class="package-brand">
+      <strong>Confideline Email Package</strong>
+      <span>English primary, Russian localization</span>
+    </div>
+    <div class="package-nav-links">
+      <a class="package-nav-link" href="index.html">Home</a>
+      <a class="package-nav-link is-active" href="START_HERE_FOR_DEVELOPER_EN.html">Start EN</a>
+      <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_EN.html">Files EN</a>
+      <a class="package-nav-link" href="START_HERE_FOR_IGOR_RU.html">Start RU</a>
+      <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_RU.html">Files RU</a>
+      <a class="package-nav-link" href="SCENARIOS_IMPLEMENTATION_PANEL_RU.html">Scenarios</a>
+      <a class="package-nav-link" href="EMAIL_FLOW_CHAINS_PANEL_RU.html">Flow</a>
+      <a class="package-nav-link" href="BACKEND_EMAIL_EVENTS_CONTRACT_RU.html">Backend</a>
+      <a class="package-nav-link" href="IGOR_BACKEND_TASKS_RU.html">Tasks</a>
+      <a class="package-nav-link" href="VARIABLES_GLOSSARY_RU.html">Variables</a>
+      <a class="package-nav-link" href="TEMPLATE_SETTINGS_SCENARIOS_RU.html">Settings</a>
+      <a class="package-nav-link" href="TEMPLATES_PREVIEW_RU_EN.html">Preview</a>
+      <a class="package-nav-link" href="VARIABLES_CONTRACT_RU.html">Contract</a>
+    </div>
+  </div>
+  <div class="package-breadcrumbs" aria-label="Хлебные крошки">
+    <a href="index.html">Home</a><span>Developer Start</span>
+  </div>
+</nav>
+<!-- package-navigation:end -->
+<main>
+  <h1>Developer start guide for email templates</h1>
+  <p class="lead">This is the primary entry point for implementation. English is the main product language. Russian templates remain in the package only as a second localization and for easier review by the product owner.</p>
+
+  <section class="notice">
+    <strong>Main rule:</strong> a value in the admin dropdown is not proof that the email can be sent. For each template, confirm the backend event, render payload, queue-binding, delay rules, and cancellation/suppression logic.
+  </section>
+
+  <div class="grid">
+    <div class="card"><strong>2</strong><span>Update existing live templates first</span></div>
+    <div class="card"><strong>9</strong><span>Create after backend trigger/payload check</span></div>
+    <div class="card"><strong>9</strong><span>Backend-first templates</span></div>
+  </div>
+  <div class="legend">
+    <span class="existing"><i></i>Green: template already exists in the system, update the live record</span>
+    <span class="create"><i></i>Yellow: create only after backend verification</span>
+    <span class="backend"><i></i>Red: implement backend first</span>
+  </div>
+
+  <h2>Implementation route</h2>
+  <div class="flow">
+    <div class="step"><h3>Start with the file structure</h3><p>Open <a href="FILE_STRUCTURE_FOR_IMPORT_EN.html">File structure</a>. Every scenario has one folder with two language folders: <code>en/</code> and <code>ru/</code>.</p></div>
+    <div class="step"><h3>Find the real EmailTemplate mechanism</h3><p>Confirm the model/table, language storage, fields, queue, delay handling, and event binding in the current codebase.</p></div>
+    <div class="step"><h3>Update existing live templates first</h3><p>Start with registration and email confirmation because they already exist and are easiest to render-test safely.</p></div>
+    <div class="step"><h3>Do not fake missing backend events</h3><p>If an event or variable is missing, implement the backend first instead of importing a nice-looking but non-working template.</p></div>
+    <div class="step"><h3>Render-test both languages</h3><p>English is primary. Russian is a second localization. Both must render without empty links, undefined variables, or broken Handlebars blocks.</p></div>
+  </div>
+
+  <h2>Implementation order</h2>
+  <table>
+    <thead><tr><th>Priority</th><th>Template</th><th>event_name</th><th>condition</th><th>delay</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr class="row-existing">
+<td><span class="badge">P0</span></td>
+<td><strong>user_registration</strong><small>Регистрация пользователя</small></td>
+<td><code>user.register</code></td>
+<td>0</td>
+<td>0</td>
+<td>Update existing live id=3</td>
+</tr>
+<tr class="row-existing">
+<td><span class="badge">P0</span></td>
+<td><strong>email_confirmation</strong><small>Подтверждение email</small></td>
+<td><code>user.email_confirmation</code></td>
+<td>0</td>
+<td>0</td>
+<td>Update existing live id=4</td>
+</tr>
+<tr class="row-create">
+<td><span class="badge">P0</span></td>
+<td><strong>advisor_chat_reply_ready</strong><small>Эксперт ответил в чате</small></td>
+<td><code>message.received</code></td>
+<td>0</td>
+<td>0</td>
+<td>Create after backend check</td>
+</tr>
+<tr class="row-create">
+<td><span class="badge">P0</span></td>
+<td><strong>support_reply</strong><small>Поддержка ответила</small></td>
+<td><code>support.message.received</code></td>
+<td>0</td>
+<td>0</td>
+<td>Create after backend check</td>
+</tr>
+<tr class="row-create">
+<td><span class="badge">P0</span></td>
+<td><strong>refund_confirmed</strong><small>Возврат подтвержден</small></td>
+<td><code>payment.refund</code></td>
+<td>0</td>
+<td>0</td>
+<td>Create after backend check</td>
+</tr>
+<tr class="row-create">
+<td><span class="badge">P0</span></td>
+<td><strong>payment_success_receipt</strong><small>Оплата подтверждена</small></td>
+<td><code>payment.success</code></td>
+<td>0</td>
+<td>0</td>
+<td>Create after backend check</td>
+</tr>
+<tr class="row-create">
+<td><span class="badge">P0</span></td>
+<td><strong>payment_failed</strong><small>Оплата не прошла</small></td>
+<td><code>payment.error</code></td>
+<td>0</td>
+<td>0</td>
+<td>Create after backend check</td>
+</tr>
+<tr class="row-create">
+<td><span class="badge">P0</span></td>
+<td><strong>chat_message_received</strong><small>Сообщение клиента принято</small></td>
+<td><code>message.client_submitted</code></td>
+<td>0</td>
+<td>0</td>
+<td>Create after backend check</td>
+</tr>
+<tr class="row-backend">
+<td><span class="badge">P1</span></td>
+<td><strong>support_ticket_opened</strong><small>Обращение в поддержку создано</small></td>
+<td><code>support.ticket.opened</code></td>
+<td>0</td>
+<td>0</td>
+<td>Backend first</td>
+</tr>
+<tr class="row-create">
+<td><span class="badge">P1</span></td>
+<td><strong>refund_case_update</strong><small>Статус возврата обновлен</small></td>
+<td><code>payment.refund.update</code></td>
+<td>0</td>
+<td>0</td>
+<td>Create after backend check</td>
+</tr>
+<tr class="row-create">
+<td><span class="badge">P1</span></td>
+<td><strong>review_request</strong><small>Попросить оценку консультации</small></td>
+<td><code>review.request</code></td>
+<td>0</td>
+<td>24</td>
+<td>Create after backend check</td>
+</tr>
+<tr class="row-backend">
+<td><span class="badge">P1</span></td>
+<td><strong>safety_notice</strong><small>Важная информация о поддержке</small></td>
+<td><code>support.safety_notice</code></td>
+<td>0</td>
+<td>0</td>
+<td>Backend first</td>
+</tr>
+<tr class="row-backend">
+<td><span class="badge">P1</span></td>
+<td><strong>minor_or_age_restriction_notice</strong><small>Ограничение доступа по возрасту/правилам</small></td>
+<td><code>user.age_restricted</code></td>
+<td>0</td>
+<td>0</td>
+<td>Backend first</td>
+</tr>
+<tr class="row-backend">
+<td><span class="badge">P1</span></td>
+<td><strong>password_reset</strong><small>Сброс пароля</small></td>
+<td><code>user.password_recovery</code></td>
+<td>0</td>
+<td>0</td>
+<td>Backend first</td>
+</tr>
+<tr class="row-backend">
+<td><span class="badge">P1</span></td>
+<td><strong>security_change_alert</strong><small>Изменение безопасности</small></td>
+<td><code>security.security_change</code></td>
+<td>0</td>
+<td>0</td>
+<td>Backend first</td>
+</tr>
+<tr class="row-create">
+<td><span class="badge">P1</span></td>
+<td><strong>payment_started</strong><small>Оплата начата, но не завершена</small></td>
+<td><code>payment.init</code></td>
+<td>0</td>
+<td>2</td>
+<td>Create after backend check</td>
+</tr>
+<tr class="row-backend">
+<td><span class="badge">P1</span></td>
+<td><strong>paid_chat_no_message_reminder</strong><small>Оплаченный чат без первого сообщения</small></td>
+<td><code>message.no_first_chat_message</code></td>
+<td>5</td>
+<td>2</td>
+<td>Backend first</td>
+</tr>
+<tr class="row-backend">
+<td><span class="badge">P1</span></td>
+<td><strong>chat_sla_delay</strong><small>Ответ эксперта задерживается</small></td>
+<td><code>message.answer_delayed</code></td>
+<td>0</td>
+<td>0</td>
+<td>Backend first</td>
+</tr>
+<tr class="row-backend">
+<td><span class="badge">P2</span></td>
+<td><strong>same_advisor_followup_offer</strong><small>Продолжить с тем же экспертом</small></td>
+<td><code>advisor.followup.offer</code></td>
+<td>0</td>
+<td>72</td>
+<td>Backend first</td>
+</tr>
+<tr class="row-backend">
+<td><span class="badge">P2</span></td>
+<td><strong>d2_chat_reflection</strong><small>Чат сохранен, можно вернуться</small></td>
+<td><code>message.chat_saved</code></td>
+<td>0</td>
+<td>48</td>
+<td>Backend first</td>
+</tr>
+
+    </tbody>
+  </table>
+
+  <h2>Backend-first events</h2>
+  <table>
+    <thead><tr><th>Priority</th><th>event_name</th><th>Template</th><th>Acceptance</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge">P0</span></td><td><code>message.client_submitted</code></td><td>chat_message_received</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>message.answer_delayed</code></td><td>chat_sla_delay</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>message.no_first_chat_message</code></td><td>paid_chat_no_message_reminder</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>payment.refund.update</code></td><td>refund_case_update</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>review.request</code></td><td>review_request</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>security.security_change</code></td><td>security_change_alert</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>support.safety_notice</code></td><td>safety_notice</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>support.ticket.opened</code></td><td>support_ticket_opened</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>user.age_restricted</code></td><td>minor_or_age_restriction_notice</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>user.password_recovery</code></td><td>password_reset</td><td></td></tr>
+<tr><td><span class="badge">P2</span></td><td><code>advisor.followup.offer</code></td><td>same_advisor_followup_offer</td><td></td></tr>
+<tr><td><span class="badge">P2</span></td><td><code>message.chat_saved</code></td><td>d2_chat_reflection</td><td></td></tr>
+
+    </tbody>
+  </table>
+
+  <h2>Files for Codex</h2>
+  <div class="grid two">
+    <div class="card"><strong>Minimum implementation context</strong><span>START_HERE_FOR_DEVELOPER_EN.html, FILE_STRUCTURE_FOR_IMPORT_EN.html, ADMIN_UPLOAD_INDEX_RU_EN.json, EVENT_VARIABLE_COMPATIBILITY_RU.csv, IGOR_MISSING_BACKEND_VARIABLES_RU.csv, IGOR_MISSING_BACKEND_EVENTS_RU.csv, templates/*/{en,ru}/admin-meta.json.</span></div>
+    <div class="card"><strong>Review context</strong><span>SCENARIOS_IMPLEMENTATION_PANEL_RU.html, TEMPLATES_PREVIEW_RU_EN.html, VARIABLES_GLOSSARY_RU.html, EMAIL_FLOW_CHAINS_PANEL_RU.html.</span></div>
+  </div>
+
+  <h2>Prompt for Codex</h2>
+  <pre>You are working in the Confideline repository. Integrate the current email-template package.
+
+Primary language: English. Russian files are secondary localization/review files.
+
+Use START_HERE_FOR_DEVELOPER_EN.html and FILE_STRUCTURE_FOR_IMPORT_EN.html first.
+Then inspect ADMIN_UPLOAD_INDEX_RU_EN.json, EVENT_VARIABLE_COMPATIBILITY_RU.csv, IGOR_MISSING_BACKEND_VARIABLES_RU.csv, IGOR_MISSING_BACKEND_EVENTS_RU.csv, EMAIL_FLOW_CHAINS_RU.json, and templates/*/{en,ru}/admin-meta.json.
+
+Do not import templates with missing backend events as ready. Implement or confirm event, payload, queue-binding, delay cancellation, and render variables first.</pre>
+</main>
+</body>
+</html>
+
+
+

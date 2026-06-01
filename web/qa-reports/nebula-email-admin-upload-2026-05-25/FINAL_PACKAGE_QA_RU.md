@@ -12,7 +12,8 @@
 |---|---:|---|
 | Русские шаблоны | PASS | 20 шаблонов |
 | Английские шаблоны | PASS | 20 шаблонов |
-| HTML-тела писем | PASS | 60 файлов body/source/wrapped |
+| Основной язык внедрения | PASS | English primary, Russian secondary localization/review |
+| HTML-тела писем | PASS | 40 языковых файлов body_email_html.html: 20 EN + 20 RU |
 | Индекс RU/EN | PASS | 40 строк: 20 RU + 20 EN |
 | Дубли настроек админки | PASS | 0 дублей по event_name + condition_id + delay |
 | Битые ссылки на вкладках | PASS | 0 битых ссылок |
@@ -21,6 +22,8 @@
 | Справочник переменных | PASS | 39 строк, табличный HTML + CSV + JSON |
 | Список backend-доработок | PASS | Отдельная вкладка для Игоря + CSV/JSON |
 | Стартовая панель для программиста | PASS | `START_HERE_FOR_IGOR_RU.html`: порядок внедрения, группы шаблонов, файлы для Codex и стоп-условия |
+| English-first старт | PASS | `START_HERE_FOR_DEVELOPER_EN.html` и `FILE_STRUCTURE_FOR_IMPORT_EN.html` |
+| Единая структура файлов | PASS | В папках сценариев нет корневых дублей; файлы лежат только в `en/` и `ru/` |
 
 ## Ключевые логические исправления
 
@@ -63,12 +66,13 @@
 
 Программист вместе с Codex должен идти не по визуальному списку, а по связке:
 
-1. `SCENARIOS_IMPLEMENTATION_PANEL_RU.html`
-2. `START_HERE_FOR_IGOR_RU.html`
-3. `BACKEND_EMAIL_EVENTS_CONTRACT_RU.html`
-4. `EVENT_VARIABLE_COMPATIBILITY_RU.csv`
-5. `IGOR_BACKEND_TASKS_RU.html`
-6. `ADMIN_UPLOAD_INDEX_RU_EN.json`
-7. `templates/*/admin-meta.json`
+1. `START_HERE_FOR_DEVELOPER_EN.html`
+2. `FILE_STRUCTURE_FOR_IMPORT_EN.html`
+3. `ADMIN_UPLOAD_INDEX_RU_EN.json`
+4. `SCENARIOS_IMPLEMENTATION_PANEL_RU.html`
+5. `BACKEND_EMAIL_EVENTS_CONTRACT_RU.html`
+6. `EVENT_VARIABLE_COMPATIBILITY_RU.csv`
+7. `IGOR_BACKEND_TASKS_RU.html`
+8. `templates/*/{en,ru}/admin-meta.json`
 
 Сначала обновляются 2 существующих live-шаблона. Остальные шаблоны загружаются только после проверки event binding, condition, delay и доступности переменных.
