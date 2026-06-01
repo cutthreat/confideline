@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Content variables implementation notes</title>
+<style>
+body{margin:0;background:#f5f7fb;color:#172033;font-family:Arial,Helvetica,sans-serif;line-height:1.5}main{max-width:1180px;margin:0 auto;padding:24px 22px 56px}.hero,.panel{background:#fff;border:1px solid #d9e2ef;border-radius:8px;margin-bottom:16px;padding:18px}.hero h1{margin:0 0 8px;font-size:28px}.hero p{margin:0;color:#475467}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card{border:1px solid #d9e2ef;border-radius:8px;padding:14px;background:#fbfcfe}.card h3{margin:0 0 8px;font-size:16px}.card p{margin:0;color:#475467}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:960px}th,td{padding:10px;border-bottom:1px solid #edf1f7;text-align:left;vertical-align:top;font-size:13px}th{background:#f8fafc;color:#344054;text-transform:uppercase;font-size:11px}code{background:#f2f4f7;border:1px solid #d9e2ef;border-radius:5px;padding:2px 5px}.ok{color:#176b48;font-weight:700}.warn{color:#a15c00;font-weight:700}.bad{color:#a33a3a;font-weight:700}@media(max-width:800px){.grid{grid-template-columns:1fr}main{padding:16px 12px}}
+/* package-navigation-css:start */
+.package-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(255,255,255,.96);
+  border-bottom: 1px solid #d9e2ef;
+  box-shadow: 0 8px 24px rgba(23,32,51,.06);
+  backdrop-filter: blur(10px);
+}
+.package-nav-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 10px 22px;
+  display: grid;
+  grid-template-columns: minmax(220px, .38fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+}
+.package-brand strong {
+  display: block;
+  color: #172033;
+  font-size: 14px;
+  line-height: 1.2;
+}
+.package-brand span {
+  display: block;
+  margin-top: 2px;
+  color: #667085;
+  font-size: 12px;
+}
+.package-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.package-nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 6px 9px;
+  border: 1px solid #d9e2ef;
+  border-radius: 7px;
+  background: #fff;
+  color: #172033;
+  text-decoration: none;
+  font: 700 12px/1.2 Arial, Helvetica, sans-serif;
+}
+.package-nav-link:hover { text-decoration: none; border-color: #6338d8; color: #4220a8; }
+.package-nav-link.is-active { background: #6338d8; border-color: #6338d8; color: #fff; }
+.package-breadcrumbs {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 22px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  color: #667085;
+  font: 700 12px/1.2 Arial, Helvetica, sans-serif;
+}
+.package-breadcrumbs a { color: #2459a8; text-decoration: none; }
+.package-breadcrumbs a:after { content: "/"; margin-left: 7px; color: #98a2b3; }
+.package-breadcrumbs span { color: #344054; }
+@media (max-width: 980px) {
+  .package-nav-inner { grid-template-columns: 1fr; gap: 8px; padding: 10px 14px; }
+  .package-nav-links { justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; }
+  .package-nav-link { white-space: nowrap; }
+  .package-breadcrumbs { padding: 0 14px 10px; }
+}
+/* package-navigation-css:end */
+</style>
+</head>
+<body>
+<!-- package-navigation:start -->
+<nav class="package-nav" aria-label="Навигация по пакету">
+  <div class="package-nav-inner">
+    <div class="package-brand">
+      <strong>Confideline Email Package</strong>
+      <span>English primary, Russian localization</span>
+    </div>
+    <div class="package-nav-links">
+      <a class="package-nav-link" href="index.html">Home</a>
+      <a class="package-nav-link" href="START_HERE_FOR_DEVELOPER_EN.html">Start EN</a>
+      <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_EN.html">Files EN</a>
+      <a class="package-nav-link" href="START_HERE_FOR_IGOR_RU.html">Start RU</a>
+      <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_RU.html">Files RU</a>
+      <a class="package-nav-link" href="TEMPLATE_EVENT_STANDARD_RU.html">Standard</a>
+      <a class="package-nav-link" href="SCENARIOS_IMPLEMENTATION_PANEL_RU.html">Scenarios</a>
+      <a class="package-nav-link" href="EMAIL_FLOW_CHAINS_PANEL_RU.html">Flow</a>
+      <a class="package-nav-link" href="BACKEND_EMAIL_EVENTS_CONTRACT_RU.html">Backend</a>
+      <a class="package-nav-link" href="IGOR_BACKEND_TASKS_RU.html">Tasks</a>
+      <a class="package-nav-link" href="VARIABLES_GLOSSARY_RU.html">Variables</a>
+      <a class="package-nav-link" href="VARIABLE_TRANSLATION_REGISTER_RU.html">Var i18n</a>
+      <a class="package-nav-link" href="CONTENT_VARIABLE_ADMIN_MOCKUP_RU.html">Admin UI</a>
+      <a class="package-nav-link is-active" href="CONTENT_VARIABLE_ADMIN_IMPLEMENTATION_NOTES_RU.html">Admin Notes</a>
+      <a class="package-nav-link" href="TEMPLATE_SETTINGS_SCENARIOS_RU.html">Settings</a>
+      <a class="package-nav-link" href="TEMPLATES_PREVIEW_RU_EN.html">Preview</a>
+      <a class="package-nav-link" href="VARIABLES_CONTRACT_RU.html">Contract</a>
+    </div>
+  </div>
+  <div class="package-breadcrumbs" aria-label="Хлебные крошки">
+    <a href="index.html">Home</a><span>Content Variables Notes</span>
+  </div>
+</nav>
+<!-- package-navigation:end -->
+<main>
+<section class="hero">
+<h1>Content variables: implementation notes</h1>
+<p>Эта страница не является частью боевого UI. Здесь собраны пояснения для программиста по мультиязычности, сценариям проверки и backend-контракту.</p>
+</section>
+<section class="panel">
+<h2>Что взято из текущей админки</h2>
+<div class="grid">
+<article class="card"><h3>Layout</h3><p><code>main.php</code>: <code>hold-transition skin-youdate fixed sidebar-mini</code>, <code>main-header</code>, <code>main-sidebar</code>, <code>content-wrapper</code>, <code>content-header</code>, <code>content</code>.</p></article>
+<article class="card"><h3>UI pattern</h3><p><code>box</code>, <code>box-primary</code>, <code>box-solid box-nav</code>, <code>table table-vcenter</code>, <code>form-control</code>, <code>btn btn-primary</code>, <code>label</code>, <code>small-box</code>.</p></article>
+<article class="card"><h3>Current language model</h3><p><code>LanguageController</code> uses <code>list</code>, <code>translate</code>, <code>save</code>. Data model: <code>language</code>, <code>language_source</code>, <code>language_translate</code>.</p></article>
+<article class="card"><h3>Translator settings</h3><p><code>System -> Translator</code> remains provider configuration. Content variable values must live in a separate registry, not in provider settings.</p></article>
+</div>
+</section>
+<section class="panel">
+<h2>Backend contract</h2>
+<div class="table-wrap"><table><thead><tr><th>Entity</th><th>Purpose</th><th>Fields</th></tr></thead><tbody>
+<tr><td><code>content_variable</code></td><td>Key registry</td><td><code>key</code>, <code>policy</code>, <code>value_type</code>, <code>scope</code>, <code>html_allowed</code>, <code>active</code>, <code>fallback_language</code>, <code>description</code></td></tr>
+<tr><td><code>content_variable_translation</code></td><td>Language values</td><td><code>variable_id</code>, <code>language</code>, <code>value</code>, <code>status</code>, <code>updated_by</code></td></tr>
+<tr><td><code>content_variable_usage</code></td><td>Usage badges</td><td><code>variable_id</code>, <code>surface</code>, <code>entity_id</code>, <code>field</code>, <code>required</code></td></tr>
+<tr><td><code>content_variable_history</code></td><td>Audit trail</td><td><code>variable_id</code>, <code>language</code>, <code>old_value</code>, <code>new_value</code>, <code>created_by</code>, <code>created_at</code></td></tr>
+</tbody></table></div>
+</section>
+<section class="panel">
+<h2>Scenario checks</h2>
+<div class="table-wrap"><table><thead><tr><th>Scenario</th><th>Expected behavior</th><th>Status in mockup</th></tr></thead><tbody>
+<tr><td>Translate HTML block</td><td><code>{{whatWeOfferBlock}}</code> has EN source and language values; HTML is allowed only with whitelist.</td><td class="ok">Covered</td></tr>
+<tr><td>Non-translatable brand/config</td><td><code>{{siteName}}</code>, URLs and IDs are substituted, not translated.</td><td class="ok">Covered</td></tr>
+<tr><td>Enum label</td><td><code>{{paymentMethod}}</code> stores a code and displays localized label by language.</td><td class="ok">Covered</td></tr>
+<tr><td>Blocked geo inline</td><td><code>{{cityName}}</code>, <code>{{countryName}}</code>, <code>{{serviceName}}</code> are warned/blocked in SEO sentences.</td><td class="ok">Covered</td></tr>
+<tr><td>Missing translation</td><td>Audit warns before production activation when a translatable key lacks active language values.</td><td class="ok">Covered</td></tr>
+<tr><td>Email template resolver</td><td>Email form uses registry picker, but event payload still validates <code>available_params</code>.</td><td class="warn">Backend implementation required</td></tr>
+</tbody></table></div>
+</section>
+<section class="panel">
+<h2>Implementation rule</h2>
+<p>Не переносить подсказки из этой страницы в боевой UI. Боевой экран должен остаться чистым: таблица, фильтры, модальное редактирование, переводы, usage и audit. Все пояснения для Codex/Игоря остаются здесь.</p>
+</section>
+</main>
+<!-- package-variable-tooltips:start -->
+<script src="variable-tooltips.js"></script>
+<!-- package-variable-tooltips:end -->
+<!-- package-comments:start -->
+<script src="comments-system.js"></script>
+<!-- package-comments:end -->
+</body>
+</html>

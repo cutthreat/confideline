@@ -3,1095 +3,433 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Content variables admin mockup</title>
+<title>Content variables</title>
 <style>
 :root {
-  --ink:#172033;
-  --muted:#667085;
-  --soft:#f5f7fb;
-  --panel:#fff;
-  --line:#d9e2ef;
-  --line-strong:#c8d3e3;
-  --brand:#6338d8;
-  --teal:#168484;
-  --green:#176b48;
-  --amber:#a15c00;
-  --red:#a33a3a;
-  --blue:#155c8a;
-  --shadow:0 18px 52px rgba(23,32,51,.10);
+  --blue:#3c8dbc;
+  --nav:#222d32;
+  --nav2:#1a2226;
+  --navText:#b8c7ce;
+  --skin:#445b93;
+  --green:#00a65a;
+  --yellow:#f39c12;
+  --red:#dd4b39;
+  --aqua:#00c0ef;
+  --purple:#605ca8;
+  --border:#d2d6de;
+  --body:#ecf0f5;
+  --text:#333;
 }
-* { box-sizing:border-box; }
-html { scroll-behavior:smooth; }
-body {
-  margin:0;
-  background:var(--soft);
-  color:var(--ink);
-  font-family:Arial,Helvetica,sans-serif;
-  line-height:1.5;
-}
-button, input, select, textarea { font:inherit; }
-button { cursor:pointer; }
-code {
-  display:inline-flex;
-  align-items:center;
-  min-height:22px;
-  padding:1px 6px;
-  border:1px solid #d7dfea;
-  border-radius:5px;
-  background:#f8fafc;
-  color:#172033;
-  font-family:Consolas,Menlo,monospace;
-  font-size:12px;
-}
-.admin-shell {
-  display:grid;
-  grid-template-columns:244px minmax(0,1fr);
-  min-height:calc(100vh - 74px);
-}
-.admin-sidebar {
-  background:#111827;
-  color:#d1d5db;
-  border-right:1px solid #0b1220;
-  padding:18px 14px;
-}
-.admin-brand {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  min-height:44px;
-  margin-bottom:18px;
-}
-.admin-brand-mark {
-  display:grid;
-  place-items:center;
-  width:34px;
-  height:34px;
-  border-radius:8px;
-  background:#fff;
-  color:#111827;
-  font-weight:800;
-}
-.admin-brand strong { display:block; color:#fff; line-height:1.1; }
-.admin-brand span { display:block; color:#9ca3af; font-size:12px; }
-.side-group { margin:16px 0 8px; color:#8b949e; font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
-.side-link {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  min-height:36px;
-  padding:8px 10px;
-  border-radius:7px;
-  color:#d1d5db;
-  text-decoration:none;
-  font-size:13px;
-  font-weight:700;
-}
-.side-link:hover { background:#1f2937; color:#fff; }
-.side-link.active { background:#6338d8; color:#fff; }
-.side-count {
-  min-width:24px;
-  padding:1px 7px;
-  border-radius:999px;
-  background:rgba(255,255,255,.14);
-  color:inherit;
-  text-align:center;
-  font-size:11px;
-}
-.admin-main { min-width:0; }
-.admin-topbar {
-  position:sticky;
-  top:73px;
-  z-index:20;
-  display:grid;
-  grid-template-columns:minmax(0,1fr) auto;
-  gap:16px;
-  align-items:center;
-  padding:14px 22px;
-  background:rgba(245,247,251,.94);
-  border-bottom:1px solid var(--line);
-  backdrop-filter:blur(10px);
-}
-.breadcrumbs {
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  color:var(--muted);
-  font-size:12px;
-  font-weight:700;
-}
-.breadcrumbs span:not(:last-child)::after { content:"/"; margin-left:8px; color:#98a2b3; }
-.top-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
-.btn {
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-height:34px;
-  padding:7px 11px;
-  border:1px solid var(--line-strong);
-  border-radius:7px;
-  background:#fff;
-  color:var(--ink);
-  text-decoration:none;
-  font-weight:800;
-  font-size:12px;
-}
-.btn:hover { border-color:var(--brand); color:#4220a8; }
-.btn.primary { background:var(--brand); border-color:var(--brand); color:#fff; }
-.btn.ghost { background:transparent; }
-.btn.danger { border-color:#f0b7b7; color:var(--red); }
-.content-wrap {
-  max-width:1480px;
-  margin:0 auto;
-  padding:22px;
-}
-.page-head {
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 360px;
-  gap:18px;
-  align-items:stretch;
-  margin-bottom:16px;
-}
-.title-panel,
-.status-panel,
-.workspace-panel,
-.inspector,
-.audit-card,
-.schema-card {
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:8px;
-  box-shadow:0 10px 32px rgba(23,32,51,.05);
-}
-.title-panel { padding:22px; }
-.eyebrow {
-  display:inline-flex;
-  align-items:center;
-  min-height:24px;
-  margin-bottom:10px;
-  padding:3px 8px;
-  border:1px solid #b8dcff;
-  border-radius:999px;
-  background:#eef7ff;
-  color:#164b7a;
-  font-size:11px;
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:.04em;
-}
-h1 { margin:0 0 8px; font-size:28px; line-height:1.16; letter-spacing:0; }
-.lead { margin:0; max-width:880px; color:#475467; }
-.status-panel { padding:16px; }
-.status-row {
-  display:grid;
-  grid-template-columns:auto minmax(0,1fr);
-  gap:10px;
-  align-items:start;
-  padding:10px 0;
-  border-bottom:1px solid #edf1f7;
-}
-.status-row:last-child { border-bottom:0; }
-.status-dot {
-  width:9px;
-  height:9px;
-  margin-top:6px;
-  border-radius:50%;
-  background:var(--green);
-}
-.status-dot.warn { background:var(--amber); }
-.status-row strong { display:block; font-size:13px; }
-.status-row span { display:block; color:var(--muted); font-size:12px; }
-.metrics {
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:10px;
-  margin-bottom:16px;
-}
-.metric {
-  min-height:84px;
-  padding:14px;
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:8px;
-}
-.metric strong { display:block; font-size:26px; line-height:1; margin-bottom:7px; }
-.metric span { display:block; color:var(--muted); font-size:12px; }
-.workspace-grid {
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 380px;
-  gap:16px;
-  align-items:start;
-}
-.workspace-panel { overflow:hidden; }
-.panel-head {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:14px;
-  padding:14px 16px;
-  border-bottom:1px solid #e7edf6;
-}
-.panel-head h2 { margin:0; font-size:18px; }
-.panel-head p { margin:3px 0 0; color:var(--muted); font-size:12px; }
-.tabs {
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
-  padding:10px 16px;
-  border-bottom:1px solid #e7edf6;
-  background:#fbfcfe;
-}
-.tab {
-  min-height:32px;
-  padding:6px 10px;
-  border:1px solid var(--line);
-  border-radius:7px;
-  background:#fff;
-  color:#344054;
-  font-weight:800;
-  font-size:12px;
-}
-.tab[aria-selected="true"] { background:var(--ink); border-color:var(--ink); color:#fff; }
-.toolbar {
-  display:grid;
-  grid-template-columns:minmax(220px,1fr) 170px 170px auto;
-  gap:8px;
-  padding:12px 16px;
-  border-bottom:1px solid #e7edf6;
-}
-.field {
-  display:grid;
-  gap:5px;
-}
-.field label {
-  color:#475467;
-  font-size:11px;
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:.04em;
-}
-.field input,
-.field select,
-.field textarea {
-  width:100%;
-  min-height:36px;
-  border:1px solid var(--line-strong);
-  border-radius:7px;
-  background:#fff;
-  padding:7px 9px;
-  color:var(--ink);
-}
-.field textarea { min-height:86px; resize:vertical; line-height:1.45; }
-.table-wrap { overflow:auto; }
-table { width:100%; border-collapse:collapse; min-width:980px; }
-th, td {
-  padding:11px 12px;
-  border-bottom:1px solid #edf1f7;
-  text-align:left;
-  vertical-align:top;
-  font-size:13px;
-}
-th {
-  position:sticky;
-  top:0;
-  z-index:2;
-  background:#f8fafc;
-  color:#344054;
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:.04em;
-}
-td input {
-  width:100%;
-  min-width:220px;
-  min-height:34px;
-  border:1px solid var(--line-strong);
-  border-radius:7px;
-  padding:6px 8px;
-}
-tr.variable-row { cursor:pointer; }
-tr.variable-row:hover td { background:#fbfcff; }
-tr.variable-row:focus-visible td { outline:2px solid #8f73e6; outline-offset:-2px; }
-tr.variable-row.selected td { background:#f4f1ff; }
-.badge {
-  display:inline-flex;
-  align-items:center;
-  min-height:22px;
-  margin:0 4px 4px 0;
-  padding:2px 7px;
-  border-radius:999px;
-  background:#eef7ff;
-  border:1px solid #b8dcff;
-  color:#164b7a;
-  font-size:11px;
-  font-weight:800;
-  white-space:nowrap;
-}
-.badge.email { background:#f4f1ff; border-color:#d9ccff; color:#4220a8; }
-.badge.seo { background:#ecfdf3; border-color:#a7e6c3; color:#027a48; }
-.badge.notifications { background:#fff4e5; border-color:#ffd7a8; color:#9a5b00; }
-.policy {
-  display:inline-flex;
-  min-height:24px;
-  padding:3px 8px;
-  border-radius:999px;
-  font-size:11px;
-  font-weight:800;
-  white-space:nowrap;
-}
-.translate,.enum_i18n,.locale_phrase { background:#ecfdf3; color:#027a48; }
-.blocked_inline,.control_flag { background:#fff4e5; color:#9a5b00; }
-.locale_format { background:#eef7ff; color:#155c8a; }
-.not_translate_url,.not_translate_id,.not_translate_name,.not_translate_payload { background:#f2f4f7; color:#475467; }
-.inspector {
-  position:sticky;
-  top:144px;
-  overflow:hidden;
-}
-.inspector-head {
-  padding:16px;
-  border-bottom:1px solid #e7edf6;
-}
-.inspector-head small {
-  display:block;
-  color:var(--muted);
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:.04em;
-}
-.inspector-head h2 {
-  margin:5px 0 0;
-  font-size:20px;
-  line-height:1.2;
-  word-break:break-word;
-}
-.inspector-body { padding:14px 16px 16px; display:grid; gap:12px; }
-.two-col { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-.muted { color:var(--muted); }
-.mini-list {
-  display:grid;
-  gap:8px;
-  margin:0;
-  padding:0;
-  list-style:none;
-}
-.mini-list li {
-  padding:9px 10px;
-  border:1px solid #e7edf6;
-  border-radius:7px;
-  background:#fbfcfe;
-  font-size:12px;
-}
-.tab-panel { display:none; }
-.tab-panel.active { display:block; }
-.split {
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
-  padding:16px;
-}
-.schema-card { padding:15px; box-shadow:none; }
-.schema-card h3 { margin:0 0 8px; font-size:15px; }
-.schema-card p { margin:0; color:#475467; font-size:13px; }
-.schema-card ul { margin:10px 0 0; padding-left:18px; color:#475467; font-size:13px; }
-.audit-grid {
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
-  padding:16px;
-}
-.audit-card {
-  padding:15px;
-  box-shadow:none;
-}
-.audit-title {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom:8px;
-}
-.audit-title strong { font-size:14px; }
-.audit-card p { margin:0; color:#475467; font-size:13px; }
-.status-pill {
-  display:inline-flex;
-  min-height:23px;
-  padding:3px 8px;
-  border-radius:999px;
-  font-size:11px;
-  font-weight:800;
-}
-.status-pill.ok { background:#ecfdf3; color:#027a48; }
-.status-pill.warn { background:#fff4e5; color:#9a5b00; }
-.status-pill.block { background:#fff1f1; color:#a33a3a; }
-.empty {
-  padding:28px;
-  color:var(--muted);
-  text-align:center;
-}
-.dev-only { display:none; }
-body.igor-mode .dev-only { display:block; }
-body.igor-mode .tab.dev-only { display:inline-flex; }
-body.igor-mode tr.dev-only { display:table-row; }
-.drawer-actions {
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-}
-.toast {
-  position:fixed;
-  right:18px;
-  bottom:18px;
-  z-index:10000;
-  display:none;
-  max-width:360px;
-  padding:12px 14px;
-  border:1px solid var(--line);
-  border-radius:8px;
-  background:#111827;
-  color:#fff;
-  box-shadow:var(--shadow);
-  font-size:13px;
-}
-.toast.show { display:block; }
-@media (max-width:1180px) {
-  .admin-shell { grid-template-columns:1fr; }
-  .admin-sidebar { display:none; }
-  .admin-topbar { top:73px; grid-template-columns:1fr; }
-  .page-head, .workspace-grid { grid-template-columns:1fr; }
-  .inspector { position:static; }
-}
-@media (max-width:820px) {
-  .content-wrap { padding:14px 12px 40px; }
-  .metrics, .split, .audit-grid { grid-template-columns:1fr; }
-  .toolbar { grid-template-columns:1fr; }
-  h1 { font-size:23px; }
-}
-/* package-navigation-css:start */
-.package-nav {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background: rgba(255,255,255,.96);
-  border-bottom: 1px solid #d9e2ef;
-  box-shadow: 0 8px 24px rgba(23,32,51,.06);
-  backdrop-filter: blur(10px);
-}
-.package-nav-inner {
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 10px 22px;
-  display: grid;
-  grid-template-columns: minmax(220px, .38fr) minmax(0, 1fr);
-  gap: 16px;
-  align-items: center;
-}
-.package-brand strong {
-  display: block;
-  color: #172033;
-  font-size: 14px;
-  line-height: 1.2;
-}
-.package-brand span {
-  display: block;
-  margin-top: 2px;
-  color: #667085;
-  font-size: 12px;
-}
-.package-nav-links {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 6px;
-}
-.package-nav-link {
-  display: inline-flex;
-  align-items: center;
-  min-height: 32px;
-  padding: 6px 9px;
-  border: 1px solid #d9e2ef;
-  border-radius: 7px;
-  background: #fff;
-  color: #172033;
-  text-decoration: none;
-  font: 700 12px/1.2 Arial, Helvetica, sans-serif;
-}
-.package-nav-link:hover { text-decoration: none; border-color: #6338d8; color: #4220a8; }
-.package-nav-link.is-active { background: #6338d8; border-color: #6338d8; color: #fff; }
-.package-breadcrumbs {
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 0 22px 10px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  color: #667085;
-  font: 700 12px/1.2 Arial, Helvetica, sans-serif;
-}
-.package-breadcrumbs a { color: #2459a8; text-decoration: none; }
-.package-breadcrumbs a:after { content: "/"; margin-left: 7px; color: #98a2b3; }
-.package-breadcrumbs span { color: #344054; }
-@media (max-width: 980px) {
-  .package-nav-inner { grid-template-columns: 1fr; gap: 8px; padding: 10px 14px; }
-  .package-nav-links { justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; }
-  .package-nav-link { white-space: nowrap; }
-  .package-breadcrumbs { padding: 0 14px 10px; }
-}
-/* package-navigation-css:end */
+*{box-sizing:border-box}
+body{margin:0;background:var(--body);color:var(--text);font-family:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:14px;line-height:1.42857143}
+a{color:#3c8dbc;text-decoration:none}
+a:hover{text-decoration:underline}
+.wrapper{min-height:100vh;background:var(--body)}
+.main-header{position:fixed;top:0;right:0;left:0;z-index:1030;height:50px;background:var(--skin)}
+.main-header .logo{float:left;width:230px;height:50px;padding:0 15px;background:#3b4f82;color:#fff;text-align:center;font-size:20px;font-weight:700;line-height:50px}
+.main-header .navbar{margin-left:230px;height:50px}
+.sidebar-toggle{float:left;width:50px;height:50px;color:#fff;text-align:center;font-size:18px;line-height:50px}
+.navbar-custom-menu{float:right;height:50px}
+.navbar-search{float:left;margin:8px 20px 0 0;display:flex}
+.navbar-search input{width:225px;height:34px;border:0;border-radius:4px 0 0 4px;padding:6px 12px}
+.navbar-search button{height:34px;border:0;border-radius:0 4px 4px 0;background:#367fa9;color:#fff;padding:0 12px}
+.user-menu{float:left;color:#fff;padding:15px 18px;font-weight:600}
+.main-sidebar{position:fixed;top:50px;bottom:0;left:0;width:230px;background:var(--nav);overflow:auto}
+.sidebar-menu{margin:0;padding:0;list-style:none}
+.sidebar-menu li.header{padding:12px 15px;color:#4b646f;background:var(--nav2);font-size:12px;text-transform:uppercase}
+.sidebar-menu a{display:block;padding:12px 15px;color:var(--navText);font-weight:500}
+.sidebar-menu a:hover,.sidebar-menu li.active>a{background:#1e282c;color:#fff;text-decoration:none}
+.sidebar-menu .fa{width:20px;margin-right:7px;text-align:center}
+.sidebar-menu .label{float:right;margin-top:1px}
+.label{display:inline;padding:.25em .6em .3em;border-radius:.25em;color:#fff;font-size:75%;font-weight:700}
+.label-success{background:#00a65a}.label-primary{background:#3c8dbc}.label-warning{background:#f39c12}.label-danger{background:#dd4b39}.label-default{background:#777}
+.content-wrapper{margin-left:230px;padding-top:50px;min-height:100vh}
+.content-header{position:relative;padding:15px 15px 0}
+.content-header h1{margin:0;font-size:24px;font-weight:400}
+.breadcrumb{position:absolute;top:15px;right:15px;margin:0;padding:7px 5px;background:transparent;font-size:12px;list-style:none}
+.breadcrumb li{display:inline;color:#777}
+.breadcrumb li+li:before{content:">";padding:0 6px;color:#aaa}
+.content{padding:15px}
+.row{margin-left:-15px;margin-right:-15px}
+.row:after,.row:before,.box-body:after,.box-body:before{display:table;content:" "}.row:after,.box-body:after{clear:both}
+[class^=col-]{float:left;position:relative;min-height:1px;padding-left:15px;padding-right:15px}
+.col-sm-2{width:16.6667%}.col-sm-3{width:25%}.col-sm-4{width:33.3333%}.col-sm-5{width:41.6667%}.col-sm-6{width:50%}.col-sm-7{width:58.3333%}.col-sm-8{width:66.6667%}.col-sm-9{width:75%}.col-sm-12{width:100%}
+.box{position:relative;margin-bottom:20px;width:100%;background:#fff;border-radius:3px;border-top:3px solid #d2d6de;box-shadow:0 1px 1px rgba(0,0,0,.1)}
+.box-primary{border-top-color:#3c8dbc}.box-success{border-top-color:#00a65a}.box-warning{border-top-color:#f39c12}.box-danger{border-top-color:#dd4b39}.box-solid{border-top:0}
+.box-header{display:block;position:relative;padding:10px;border-bottom:1px solid #f4f4f4;color:#444}
+.box-header.with-border{border-bottom:1px solid #f4f4f4}
+.box-title{display:inline-block;margin:0;font-size:18px;font-weight:400;line-height:1}
+.box-tools{position:absolute;right:10px;top:5px}
+.box-body{padding:10px}
+.box-footer{padding:10px;background:#fff;border-top:1px solid #f4f4f4}
+.box-nav .nav-pills{margin:0;padding:0;list-style:none}.box-nav .nav-pills li{float:left}.box-nav .nav-pills a{display:block;padding:10px 15px;color:#444}.box-nav .nav-pills li.active a{background:#3c8dbc;color:#fff}
+.box-actions{text-align:right}.no-padding{padding:0!important}.clearfix:after{content:"";display:block;clear:both}
+.small-box{position:relative;display:block;margin-bottom:15px;border-radius:3px;color:#fff;overflow:hidden}
+.small-box>.inner{padding:10px}.small-box h3{z-index:5;margin:0 0 10px;font-size:30px;font-weight:700;white-space:nowrap}.small-box p{font-size:13px}.small-box .icon{position:absolute;right:12px;top:8px;z-index:0;color:rgba(0,0,0,.15);font-size:56px}
+.bg-aqua{background:#00c0ef!important}.bg-green{background:#00a65a!important}.bg-yellow{background:#f39c12!important}.bg-red{background:#dd4b39!important}
+.form-group{margin-bottom:15px}.control-label{display:inline-block;max-width:100%;margin-bottom:5px;font-weight:700}
+.form-control{display:block;width:100%;height:34px;padding:6px 12px;border:1px solid #d2d6de;border-radius:0;background:#fff;color:#555;font-size:14px;line-height:1.42857143}
+textarea.form-control{height:auto;min-height:86px;resize:vertical}
+.help-block{display:block;margin-top:5px;margin-bottom:10px;color:#737373;font-size:12px}
+.checkbox label{font-weight:400}
+.btn{display:inline-block;margin-bottom:0;padding:6px 12px;border:1px solid transparent;border-radius:3px;text-align:center;white-space:nowrap;vertical-align:middle;font-size:14px;font-weight:400;line-height:1.42857143;cursor:pointer}
+.btn:hover{text-decoration:none}.btn-sm{padding:5px 10px;font-size:12px}.btn-lg{padding:10px 16px;font-size:18px}
+.btn-primary{background:#3c8dbc;border-color:#367fa9;color:#fff}.btn-success{background:#00a65a;border-color:#008d4c;color:#fff}.btn-warning{background:#f39c12;border-color:#e08e0b;color:#fff}.btn-danger{background:#dd4b39;border-color:#d73925;color:#fff}.btn-default{background:#f4f4f4;border-color:#ddd;color:#444}
+.table-responsive{min-height:.01%;overflow-x:auto}.table{width:100%;max-width:100%;margin-bottom:0;border-collapse:collapse;background:#fff}.table>thead>tr>th,.table>tbody>tr>td{padding:8px;border-top:1px solid #f4f4f4;vertical-align:middle;text-align:left}.table>thead>tr>th{border-bottom:2px solid #f4f4f4;color:#555;font-weight:700}.table-vcenter>tbody>tr>td{vertical-align:middle}.table-hover>tbody>tr:hover{background:#f9fafc}
+.text-right{text-align:right}.text-muted{color:#777}.text-success{color:#008d4c}.text-warning{color:#e08e0b}.text-danger{color:#d73925}.pull-right{float:right}.pull-left{float:left}
+.progress{height:12px;margin:0;border-radius:2px;background:#f5f5f5;box-shadow:inset 0 1px 2px rgba(0,0,0,.1);overflow:hidden}.progress-bar{float:left;height:100%;background:#3c8dbc}
+.callout{margin:0 0 15px;padding:15px 20px 15px 15px;border-left:5px solid #eee;background:#fff}.callout-info{border-color:#00c0ef}.callout-warning{border-color:#f39c12}.callout h4{margin:0 0 5px;font-weight:600}.callout p{margin:0;color:#555}
+.alert{padding:10px 15px;margin-bottom:15px;border-radius:3px}.alert-success{background:#dff0d8;color:#3c763d}.alert-warning{background:#fcf8e3;color:#8a6d3b}.hidden{display:none!important}
+.variable-key{font-family:Consolas,Menlo,monospace;background:#f7f7f7;border:1px solid #ddd;border-radius:3px;padding:2px 5px;color:#333}.usage-badges .label{margin-right:4px}.policy-pill{display:inline-block;min-width:92px;text-align:center}
+.modal-backdrop{position:fixed;top:0;right:0;bottom:0;left:0;z-index:1040;background:rgba(0,0,0,.45);display:none}.modal{position:fixed;top:0;right:0;bottom:0;left:0;z-index:1050;display:none;overflow:auto}.modal-dialog{width:900px;max-width:calc(100% - 30px);margin:30px auto}.modal-content{background:#fff;border-radius:4px;box-shadow:0 3px 9px rgba(0,0,0,.5);overflow:hidden}.modal-header,.modal-footer{padding:15px;border-bottom:1px solid #e5e5e5}.modal-footer{border-top:1px solid #e5e5e5;border-bottom:0;text-align:right}.modal-title{margin:0;font-size:18px}.close{float:right;border:0;background:transparent;font-size:24px;line-height:1;cursor:pointer}.modal-body{padding:15px}.modal.open,.modal-backdrop.open{display:block}
+.nav-tabs{margin:0 0 15px;padding-left:0;border-bottom:1px solid #ddd;list-style:none}.nav-tabs>li{float:left;margin-bottom:-1px}.nav-tabs>li>a{display:block;padding:10px 15px;border:1px solid transparent;border-radius:4px 4px 0 0;color:#444}.nav-tabs>li.active>a{border:1px solid #ddd;border-bottom-color:#fff;background:#fff;color:#555}.tab-content>.tab-pane{display:none}.tab-content>.tab-pane.active{display:block}
+.toast{position:fixed;right:20px;bottom:20px;z-index:1060;display:none;min-width:260px;padding:12px 15px;border-radius:3px;background:#00a65a;color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.18)}.toast.open{display:block}
+@media(max-width:900px){.main-header .logo,.main-sidebar{width:0;display:none}.main-header .navbar,.content-wrapper{margin-left:0}.breadcrumb{position:static;margin-top:6px}.col-sm-2,.col-sm-3,.col-sm-4,.col-sm-5,.col-sm-6,.col-sm-7,.col-sm-8,.col-sm-9{width:100%}.box-actions{text-align:left;margin-top:8px}.navbar-search{display:none}.modal-dialog{margin:10px auto}}
 </style>
 </head>
-<body>
-<!-- package-navigation:start -->
-<nav class="package-nav" aria-label="Навигация по пакету">
-  <div class="package-nav-inner">
-    <div class="package-brand">
-      <strong>Confideline Email Package</strong>
-      <span>English primary, Russian localization</span>
-    </div>
-    <div class="package-nav-links">
-      <a class="package-nav-link" href="index.html">Home</a>
-      <a class="package-nav-link" href="START_HERE_FOR_DEVELOPER_EN.html">Start EN</a>
-      <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_EN.html">Files EN</a>
-      <a class="package-nav-link" href="START_HERE_FOR_IGOR_RU.html">Start RU</a>
-      <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_RU.html">Files RU</a>
-      <a class="package-nav-link" href="TEMPLATE_EVENT_STANDARD_RU.html">Standard</a>
-      <a class="package-nav-link" href="SCENARIOS_IMPLEMENTATION_PANEL_RU.html">Scenarios</a>
-      <a class="package-nav-link" href="EMAIL_FLOW_CHAINS_PANEL_RU.html">Flow</a>
-      <a class="package-nav-link" href="BACKEND_EMAIL_EVENTS_CONTRACT_RU.html">Backend</a>
-      <a class="package-nav-link" href="IGOR_BACKEND_TASKS_RU.html">Tasks</a>
-      <a class="package-nav-link" href="VARIABLES_GLOSSARY_RU.html">Variables</a>
-      <a class="package-nav-link" href="VARIABLE_TRANSLATION_REGISTER_RU.html">Var i18n</a>
-      <a class="package-nav-link is-active" href="CONTENT_VARIABLE_ADMIN_MOCKUP_RU.html">Admin UI</a>
-      <a class="package-nav-link" href="TEMPLATE_SETTINGS_SCENARIOS_RU.html">Settings</a>
-      <a class="package-nav-link" href="TEMPLATES_PREVIEW_RU_EN.html">Preview</a>
-      <a class="package-nav-link" href="VARIABLES_CONTRACT_RU.html">Contract</a>
-    </div>
-  </div>
-  <div class="package-breadcrumbs" aria-label="Хлебные крошки">
-    <a href="index.html">Home</a><span>Content Variables Admin</span>
-  </div>
-</nav>
-<!-- package-navigation:end -->
-<main class="admin-shell">
-  <aside class="admin-sidebar" aria-label="Admin navigation mockup">
-    <div class="admin-brand"><div class="admin-brand-mark">C</div><div><strong>Confideline</strong><span>Admin console</span></div></div>
-    <div class="side-group">Main</div>
-    <a class="side-link" href="#"><span>Dashboard</span></a>
-    <a class="side-link" href="#"><span>Users</span></a>
-    <a class="side-link" href="#"><span>Orders</span></a>
-    <div class="side-group">Content</div>
-    <a class="side-link" href="#"><span>Pages</span></a>
-    <a class="side-link" href="#"><span>SEO countries</span></a>
-    <a class="side-link" href="#"><span>SEO cities</span></a>
-    <a class="side-link" href="#"><span>Email templates</span><span class="side-count">19</span></a>
-    <a class="side-link" href="#"><span>Notifications</span></a>
-    <div class="side-group">System</div>
-    <a class="side-link" href="#"><span>Settings</span></a>
-    <a class="side-link" href="#"><span>Translator</span></a>
-    <a class="side-link active" href="#"><span>Content variables</span><span class="side-count">79</span></a>
-    <a class="side-link" href="#"><span>Languages</span></a>
+<body class="hold-transition skin-youdate fixed sidebar-mini">
+<div class="wrapper">
+  <header class="main-header">
+    <a href="#" class="logo">YouDate</a>
+    <nav class="navbar navbar-static-top" role="navigation">
+      <a href="#" class="sidebar-toggle">☰</a>
+      <div class="navbar-custom-menu">
+        <form class="navbar-search"><input type="search" placeholder="Поиск"><button type="button">🔍</button></form>
+        <div class="user-menu">admin ▾</div>
+      </div>
+    </nav>
+  </header>
+  <aside class="main-sidebar">
+    <section class="sidebar">
+      <ul class="sidebar-menu">
+        <li><a href="#"><span class="fa">⚙</span> Главное</a></li>
+        <li class="header">Содержимое</li>
+        <li><a href="#"><span class="fa">👥</span> Партнеры</a></li>
+        <li><a href="#"><span class="fa">👤</span> Пользователи</a></li>
+        <li><a href="#"><span class="fa">💳</span> Финансы</a></li>
+        <li><a href="#"><span class="fa">☝</span> Поддержка</a></li>
+        <li><a href="#"><span class="fa">✉</span> Сообщения</a></li>
+        <li><a href="#"><span class="fa">🖼</span> Фотографии <span class="label label-success">43</span></a></li>
+        <li><a href="#"><span class="fa">📄</span> Pages</a></li>
+        <li><a href="#"><span class="fa">🌐</span> Languages</a></li>
+        <li class="header">Система</li>
+        <li><a href="#"><span class="fa">⚙</span> Настройки</a></li>
+        <li><a href="#"><span class="fa">🌐</span> Translator</a></li>
+        <li class="active"><a href="#"><span class="fa">{} </span> Content variables <span class="label label-primary">79</span></a></li>
+        <li><a href="#"><span class="fa">📧</span> Email Templates</a></li>
+      </ul>
+    </section>
   </aside>
+  <div class="content-wrapper">
+    <section class="content-header">
+      <h1>Content variables</h1>
+      <ol class="breadcrumb">
+        <li>Administration</li><li>System</li><li>Content variables</li>
+      </ol>
+    </section>
+    <section class="content">
+      <div id="page-alert" class="alert alert-success hidden"></div>
 
-  <section class="admin-main">
-    <div class="admin-topbar">
-      <div class="breadcrumbs" aria-label="Admin breadcrumbs">
-        <span>System</span><span>Content variables</span><span>Registry</span>
+      <div class="box box-solid box-nav">
+        <div class="box-body no-padding clearfix">
+          <div class="row">
+            <div class="col-sm-7">
+              <ul class="nav-pills pull-left">
+                <li class="active"><a href="#" data-section="registry">Variables</a></li>
+                <li><a href="#" data-section="translations">Translations</a></li>
+                <li><a href="#" data-section="usage">Usage</a></li>
+                <li><a href="#" data-section="audit">Audit</a></li>
+              </ul>
+            </div>
+            <div class="col-sm-5">
+              <div class="box-actions">
+                <button type="button" class="btn btn-primary btn-sm" id="createBtn">Create variable</button>
+                <button type="button" class="btn btn-default btn-sm" id="importBtn">Import CSV</button>
+                <button type="button" class="btn btn-default btn-sm" id="exportBtn">Export CSV</button>
+                <button type="button" class="btn btn-warning btn-sm" id="auditBtn">Run audit</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="top-actions">
-        <button class="btn ghost" type="button" id="igorToggle">For Igor: off</button>
-        <button class="btn" type="button" id="copyContractBtn">Copy route contract</button>
-        <button class="btn primary" type="button" id="exportBtn">Export visible JSON</button>
+
+      <div class="row">
+        <div class="col-sm-3"><div class="small-box bg-aqua"><div class="inner"><h3>79</h3><p>Total variables</p></div><div class="icon">{}</div></div></div>
+        <div class="col-sm-3"><div class="small-box bg-green"><div class="inner"><h3>13</h3><p>Translated values</p></div><div class="icon">A</div></div></div>
+        <div class="col-sm-3"><div class="small-box bg-yellow"><div class="inner"><h3>10</h3><p>Guarded keys</p></div><div class="icon">!</div></div></div>
+        <div class="col-sm-3"><div class="small-box bg-red"><div class="inner"><h3 id="auditIssues">4</h3><p>Audit warnings</p></div><div class="icon">✓</div></div></div>
+      </div>
+
+      <section id="section-registry" class="admin-section">
+        <div class="box box-primary">
+          <div class="box-header with-border">
+            <h3 class="box-title">Variables registry</h3>
+            <div class="box-tools"><span id="resultCount" class="label label-primary">79 records</span></div>
+          </div>
+          <div class="box-body">
+            <div class="row">
+              <div class="col-sm-4"><div class="form-group"><label class="control-label" for="filterSearch">Search</label><input id="filterSearch" class="form-control" type="search" placeholder="Key, meaning, usage"></div></div>
+              <div class="col-sm-3"><div class="form-group"><label class="control-label" for="filterPolicy">Policy</label><select id="filterPolicy" class="form-control"><option value="">All policies</option></select></div></div>
+              <div class="col-sm-3"><div class="form-group"><label class="control-label" for="filterSurface">Usage</label><select id="filterSurface" class="form-control"><option value="">All surfaces</option><option>Email</option><option>SEO</option><option>Notifications</option></select></div></div>
+              <div class="col-sm-2"><div class="form-group"><label class="control-label">&nbsp;</label><button class="btn btn-default form-control" id="resetFilters" type="button">Reset</button></div></div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-vcenter table-hover">
+              <thead><tr><th style="width:220px">Key</th><th style="width:150px">Policy</th><th style="width:140px">Type</th><th>Usage</th><th>Meaning</th><th style="width:150px" class="text-right">Actions</th></tr></thead>
+              <tbody id="variablesBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="section-translations" class="admin-section hidden">
+        <div class="box box-success">
+          <div class="box-header with-border"><h3 class="box-title">Translation values</h3></div>
+          <div class="box-body">
+            <div class="callout callout-info"><h4>Language model</h4><p>English is the source value. Active languages receive a value row only for variables with Translate value, Enum dictionary or Localized phrase policy.</p></div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-vcenter">
+              <thead><tr><th>Key</th><th>Policy</th><th>English source</th><th>Russian</th><th>Spanish</th><th>Status</th></tr></thead>
+              <tbody id="translationsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="section-usage" class="admin-section hidden">
+        <div class="box box-primary">
+          <div class="box-header with-border"><h3 class="box-title">Usage map</h3></div>
+          <div class="box-body">
+            <div class="row">
+              <div class="col-sm-4"><div class="callout callout-info"><h4>Email templates</h4><p>Template forms use the registry for picker, validation and tooltips. Values are resolved by event context.</p></div></div>
+              <div class="col-sm-4"><div class="callout callout-info"><h4>SEO pages</h4><p>Whole localized blocks are allowed. Inline geo nouns stay guarded because grammar depends on language.</p></div></div>
+              <div class="col-sm-4"><div class="callout callout-info"><h4>Notifications</h4><p>Notification text uses the same resolver and the same variable dictionary.</p></div></div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-vcenter"><thead><tr><th>Surface</th><th>Variables</th><th>Validation rule</th></tr></thead><tbody>
+              <tr><td><span class="label label-primary">Email</span></td><td><span class="variable-key">{{siteName}}</span> <span class="variable-key">{{confirmUrl}}</span> <span class="variable-key">{{supportCaseStatus}}</span></td><td>Must exist in registry and be allowed by event available_params.</td></tr>
+              <tr><td><span class="label label-success">SEO</span></td><td><span class="variable-key">{{whatWeOfferBlock}}</span> <span class="variable-key">{{geoServiceListBlock}}</span> <span class="variable-key">{{cityName}}</span></td><td>Whole blocks are allowed; inline city/country/service variables are blocked by audit.</td></tr>
+              <tr><td><span class="label label-warning">Notifications</span></td><td><span class="variable-key">{{upgradeLink}}</span> <span class="variable-key">{{siteName}}</span></td><td>Use resolver output, not duplicated notification-only dictionary.</td></tr>
+            </tbody></table>
+          </div>
+        </div>
+      </section>
+
+      <section id="section-audit" class="admin-section hidden">
+        <div class="box box-warning">
+          <div class="box-header with-border"><h3 class="box-title">Audit</h3></div>
+          <div class="box-body">
+            <div id="auditSummary" class="alert alert-warning">Audit has not been run in this session.</div>
+            <table class="table table-vcenter">
+              <thead><tr><th>Check</th><th>Status</th><th>Result</th></tr></thead>
+              <tbody>
+                <tr><td>Unknown variables</td><td><span class="label label-success">OK</span></td><td>No unknown keys in current registry snapshot.</td></tr>
+                <tr><td>Missing translations</td><td><span class="label label-warning">Warning</span></td><td>13 values require language rows before production activation.</td></tr>
+                <tr><td>Blocked inline SEO variables</td><td><span class="label label-danger">Guarded</span></td><td>10 variables must stay blocked or conditional.</td></tr>
+                <tr><td>HTML whitelist</td><td><span class="label label-warning">Required</span></td><td>HTML blocks need server-side sanitization before saving.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="box-footer"><button type="button" id="auditBtnFooter" class="btn btn-warning">Run audit</button></div>
+        </div>
+      </section>
+    </section>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop"></div>
+<div class="modal" id="variableModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" id="modalClose">×</button>
+        <h4 class="modal-title" id="modalTitle">Update variable</h4>
+      </div>
+      <div class="modal-body">
+        <ul class="nav-tabs clearfix">
+          <li class="active"><a href="#" data-modal-tab="general">General</a></li>
+          <li><a href="#" data-modal-tab="translations">Translations</a></li>
+          <li><a href="#" data-modal-tab="usage">Usage</a></li>
+          <li><a href="#" data-modal-tab="history">History</a></li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="modal-general">
+            <div class="row">
+              <div class="col-sm-6"><div class="form-group"><label class="control-label" for="modalKey">Key</label><input id="modalKey" class="form-control" readonly></div></div>
+              <div class="col-sm-3"><div class="form-group"><label class="control-label" for="modalPolicy">Policy</label><select id="modalPolicy" class="form-control"></select></div></div>
+              <div class="col-sm-3"><div class="form-group"><label class="control-label" for="modalType">Type</label><input id="modalType" class="form-control"></div></div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6"><div class="form-group"><label class="control-label" for="modalScope">Scope</label><input id="modalScope" class="form-control"></div></div>
+              <div class="col-sm-3"><div class="form-group"><label class="control-label" for="modalFallback">Fallback language</label><select id="modalFallback" class="form-control"></select></div></div>
+              <div class="col-sm-3"><div class="form-group"><label class="control-label">Flags</label><div class="checkbox"><label><input id="modalActive" type="checkbox" checked> Active</label></div><div class="checkbox"><label><input id="modalHtmlAllowed" type="checkbox"> HTML allowed</label></div></div></div>
+            </div>
+            <div class="form-group"><label class="control-label" for="modalMeaning">Description</label><textarea id="modalMeaning" class="form-control"></textarea></div>
+            <div class="form-group"><label class="control-label" for="modalRecommendation">Save rule</label><textarea id="modalRecommendation" class="form-control"></textarea></div>
+          </div>
+          <div class="tab-pane" id="modal-translations">
+            <div id="translationUnavailable" class="alert alert-warning hidden">This variable is not translated. It is substituted from config, route, payload or formatter.</div>
+            <div id="translationFields"></div>
+          </div>
+          <div class="tab-pane" id="modal-usage">
+            <table class="table table-vcenter"><thead><tr><th>Usage</th><th>Surface</th><th>Rule</th></tr></thead><tbody id="modalUsage"></tbody></table>
+          </div>
+          <div class="tab-pane" id="modal-history">
+            <table class="table table-vcenter"><thead><tr><th>Date</th><th>User</th><th>Change</th></tr></thead><tbody id="modalHistory"></tbody></table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" id="modalCancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="modalSave">Save</button>
       </div>
     </div>
-
-    <div class="content-wrap">
-      <section class="page-head">
-        <div class="title-panel">
-          <span class="eyebrow">System -> Content variables</span>
-          <h1>Content variables / Переменные контента</h1>
-          <p class="lead">Макет отдельного раздела админки для ключей, переводимых значений, usage badges, зависимостей и аудита. Email templates, SEO pages и notifications только используют этот реестр, но не владеют им.</p>
-        </div>
-        <div class="status-panel">
-          <div class="status-row"><span class="status-dot"></span><div><strong>Central ownership</strong><span>Один владелец переменных вместо дублирования в email/SEO формах.</span></div></div>
-          <div class="status-row"><span class="status-dot"></span><div><strong>English master value</strong><span>EN как основное значение, остальные языки как переводы.</span></div></div>
-          <div class="status-row"><span class="status-dot warn"></span><div><strong>Guarded inline SEO</strong><span>Страны, города и услуги не вставляются в предложения без языковой логики.</span></div></div>
-        </div>
-      </section>
-
-      <section class="metrics" aria-label="Variable metrics">
-        <div class="metric"><strong>79</strong><span>Total keys in current register</span></div>
-        <div class="metric"><strong>13</strong><span>Need i18n panel values</span></div>
-        <div class="metric"><strong>10</strong><span>Blocked or conditional inline keys</span></div>
-        <div class="metric"><strong>56</strong><span>Substitute or format, not translate</span></div>
-      </section>
-
-      <section class="workspace-grid">
-        <div class="workspace-panel">
-          <div class="panel-head">
-            <div><h2>Variable workspace</h2><p>Оператор видит рабочую таблицу, разработчик видит контракты и guardrails в режиме For Igor.</p></div>
-            <span class="status-pill ok" id="resultCounter">79 visible</span>
-          </div>
-          <div class="tabs" role="tablist" aria-label="Content variable tabs">
-            <button class="tab" type="button" role="tab" aria-selected="true" data-tab="registry">Registry</button>
-            <button class="tab" type="button" role="tab" aria-selected="false" data-tab="translations">Translations</button>
-            <button class="tab" type="button" role="tab" aria-selected="false" data-tab="usage">Usage</button>
-            <button class="tab" type="button" role="tab" aria-selected="false" data-tab="dependencies">Dependencies</button>
-            <button class="tab" type="button" role="tab" aria-selected="false" data-tab="audit">Audit</button>
-            <button class="tab dev-only" type="button" role="tab" aria-selected="false" data-tab="integration">For Igor</button>
-          </div>
-
-          <section class="tab-panel active" id="tab-registry" role="tabpanel">
-            <div class="toolbar">
-              <div class="field"><label for="searchInput">Search</label><input id="searchInput" type="search" placeholder="key, meaning, policy, usage..."></div>
-              <div class="field"><label for="policyFilter">Policy</label><select id="policyFilter"><option value="all">All policies</option></select></div>
-              <div class="field"><label for="surfaceFilter">Surface</label><select id="surfaceFilter"><option value="all">All surfaces</option><option value="Email">Email</option><option value="SEO">SEO</option><option value="Notifications">Notifications</option></select></div>
-              <div class="field"><label>&nbsp;</label><button class="btn" type="button" id="resetFiltersBtn">Reset</button></div>
-            </div>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>Key</th><th>Policy</th><th>Type</th><th>Usage</th><th>Meaning</th><th>Recommendation</th></tr></thead>
-                <tbody id="registryBody"></tbody>
-              </table>
-            </div>
-          </section>
-
-          <section class="tab-panel" id="tab-translations" role="tabpanel">
-            <div class="split">
-              <article class="schema-card">
-                <h3>Translation rule</h3>
-                <p>Ключи не переводятся. Переводятся только значения переменных с политиками <code>translate</code>, <code>enum_i18n</code> и <code>locale_phrase</code>. Для HTML-блоков нужен whitelist тегов.</p>
-              </article>
-              <article class="schema-card">
-                <h3>Fallback rule</h3>
-                <p>Если перевод отсутствует, показываем EN master только для безопасных service/admin значений. Для публичного SEO/email текста отсутствие перевода должно попадать в audit.</p>
-              </article>
-            </div>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>Key</th><th>Policy</th><th>EN master</th><th>RU value</th><th>Status</th></tr></thead>
-                <tbody id="translationBody"></tbody>
-              </table>
-            </div>
-          </section>
-
-          <section class="tab-panel" id="tab-usage" role="tabpanel">
-            <div class="split">
-              <article class="schema-card">
-                <h3>Where the same key is used</h3>
-                <p>Usage badges должны подтягиваться сканером из email templates, SEO fields, notification templates и global settings. Это защищает от удаления переменной, которая используется в другом контуре.</p>
-              </article>
-              <article class="schema-card">
-                <h3>Context helper</h3>
-                <p>В формах Email templates и Geo SEO нужен не отдельный словарь, а sidebar с доступными переменными, подсказками и статусом перевода из этого центрального раздела.</p>
-              </article>
-            </div>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>Surface</th><th>Variable examples</th><th>Admin place</th><th>Rule</th></tr></thead>
-                <tbody>
-                  <tr><td><span class="badge email">Email</span></td><td><code>{{siteName}}</code> <code>{{confirmUrl}}</code> <code>{{supportCaseStatus}}</code></td><td>Email templates -> update</td><td>Template form inserts variables, central registry owns definitions.</td></tr>
-                  <tr><td><span class="badge seo">SEO</span></td><td><code>{{whatWeOfferBlock}}</code> <code>{{geoServiceListBlock}}</code> <code>{{cityName}}</code></td><td>SEO countries / SEO cities</td><td>Whole blocks are allowed; inline geo nouns are blocked without page-specific grammar.</td></tr>
-                  <tr><td><span class="badge notifications">Notifications</span></td><td><code>{{upgradeLink}}</code> <code>{{siteName}}</code></td><td>Notifications</td><td>Notification text can use the same resolver and the same variable dictionary.</td></tr>
-                  <tr><td><span class="badge">Settings</span></td><td><code>{{siteName}}</code> <code>{{siteUrl}}</code></td><td>System -> Settings</td><td>Scalar config remains in settings, but usage and tooltips are registered here.</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          <section class="tab-panel" id="tab-dependencies" role="tabpanel">
-            <div class="split">
-              <article class="schema-card">
-                <h3>Resolver order</h3>
-                <ul>
-                  <li>1. Load template/page/notification context.</li>
-                  <li>2. Resolve configured content variables by locale.</li>
-                  <li>3. Format date, money, duration and enum labels.</li>
-                  <li>4. Validate required keys and block unknown variables.</li>
-                  <li>5. Render final HTML/text and save audit result.</li>
-                </ul>
-              </article>
-              <article class="schema-card">
-                <h3>Blocked dependency</h3>
-                <p><code>{{cityName}}</code>, <code>{{countryName}}</code>, <code>{{serviceName}}</code> and similar keys must not be used as universal inline replacements in SEO sentences. Use localized page fields or complete blocks.</p>
-              </article>
-              <article class="schema-card">
-                <h3>Allowed nested variables</h3>
-                <p>HTML blocks may reference safe config values like <code>{{siteName}}</code> or <code>{{supportEmail}}</code> only if the dependency is declared and tested by the audit.</p>
-              </article>
-              <article class="schema-card">
-                <h3>History</h3>
-                <p>Every value change should keep old value, new value, language, editor, reason and timestamp. This mockup saves local draft history to show the expected UX.</p>
-              </article>
-            </div>
-          </section>
-
-          <section class="tab-panel" id="tab-audit" role="tabpanel">
-            <div class="audit-grid">
-              <article class="audit-card"><div class="audit-title"><strong>Unknown variables</strong><span class="status-pill ok">No issue in mock data</span></div><p>At save time, forms should reject keys that are not in Content variables or event available_params.</p></article>
-              <article class="audit-card"><div class="audit-title"><strong>Missing translations</strong><span class="status-pill warn">13 candidates</span></div><p>Translate, enum_i18n and locale_phrase values need language-level status and fallback behavior.</p></article>
-              <article class="audit-card"><div class="audit-title"><strong>Blocked inline variables</strong><span class="status-pill block">10 guarded</span></div><p>Geo nouns and service names are marked as blocked/conditional to prevent grammar and SEO text damage.</p></article>
-              <article class="audit-card"><div class="audit-title"><strong>Email renderer contract</strong><span class="status-pill warn">Backend gate</span></div><p>Email templates should pass required variable checks per event_name before they can be activated.</p></article>
-              <article class="audit-card"><div class="audit-title"><strong>HTML whitelist</strong><span class="status-pill warn">Required</span></div><p>HTML blocks must allow only safe tags and attributes. No script, iframe, event attributes or arbitrary CSS.</p></article>
-              <article class="audit-card"><div class="audit-title"><strong>Usage scanner</strong><span class="status-pill warn" id="auditTime">Not run in this session</span></div><p>Scanner should refresh usage badges from templates, SEO records, notification templates and settings.</p></article>
-            </div>
-            <div style="padding:0 16px 16px"><button class="btn primary" type="button" id="runAuditBtn">Run mock audit</button></div>
-          </section>
-
-          <section class="tab-panel dev-only" id="tab-integration" role="tabpanel">
-            <div class="split">
-              <article class="schema-card">
-                <h3>Recommended routes</h3>
-                <p><code>/admin/content-variable/index</code><br><code>/admin/content-variable/update?id=...</code><br><code>/admin/content-variable/usage?id=...</code><br><code>/admin/content-variable/audit</code></p>
-              </article>
-              <article class="schema-card">
-                <h3>Tables</h3>
-                <p><code>content_variable</code>, <code>content_variable_translation</code>, <code>content_variable_usage</code>, <code>content_variable_dependency</code>, <code>content_variable_history</code>.</p>
-              </article>
-              <article class="schema-card">
-                <h3>Email template form</h3>
-                <p>Show variable picker and warnings inside <code>/admin/email-template/update</code>, but keep definitions in this central section.</p>
-              </article>
-              <article class="schema-card">
-                <h3>SEO forms</h3>
-                <p>Country/city SEO forms should warn when blocked inline variables are used and suggest whole-block variables.</p>
-              </article>
-            </div>
-          </section>
-        </div>
-
-        <aside class="inspector" aria-label="Selected variable">
-          <div class="inspector-head">
-            <small>Selected variable</small>
-            <h2 id="selectedKey">{{siteName}}</h2>
-          </div>
-          <div class="inspector-body">
-            <div class="two-col">
-              <div class="field"><label>Policy</label><select id="selectedPolicy"></select></div>
-              <div class="field"><label>Value type</label><input id="selectedType" type="text"></div>
-            </div>
-            <div class="field"><label>Meaning</label><textarea id="selectedMeaning"></textarea></div>
-            <div class="field"><label>Recommendation</label><textarea id="selectedRecommendation"></textarea></div>
-            <div class="field"><label>Usage badges</label><div id="selectedUsage"></div></div>
-            <div class="drawer-actions">
-              <button class="btn primary" type="button" id="saveDraftBtn">Save local draft</button>
-              <button class="btn" type="button" id="copyVariableBtn">Copy key</button>
-              <button class="btn danger" type="button" id="clearDraftBtn">Clear draft</button>
-            </div>
-            <div>
-              <strong style="font-size:13px">Local history</strong>
-              <ul class="mini-list" id="historyList"><li>No local changes yet.</li></ul>
-            </div>
-          </div>
-        </aside>
-      </section>
-    </div>
-  </section>
-</main>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script id="adminVariableData" type="application/json">{"generatedAt":"2026-06-01T13:48:53.015Z","stats":{"total":79,"i18n":13,"blocked":10,"noTranslate":56},"variables":[{"key":"accountSecurityUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL раздела безопасности аккаунта","usage_badges":["Email: 15 / files 11"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"advisorName","policy":"not_translate_name","value_type":"Name/Text from entity","scope":"Entity/Config","meaning":"Имя эксперта/консультанта, назначенного на конкретную чат-консультацию","usage_badges":["Email: 56 / files 33"],"recommendation":"Не переводить как системную переменную. Если это системный заголовок, он должен быть отдельным ключом i18n, а не user/entity value."},{"key":"amount","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"Сумма платежа или заказа в человекочитаемом виде","usage_badges":["Email: 29 / files 15"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"answerDueAt","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"Плановое время ответа эксперта по SLA","usage_badges":["Email: 15 / files 11"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"chatUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL конкретного чата/консультации в кабинете","usage_badges":["Email: 60 / files 31"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"checkoutUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL возврата к незавершенной оплате","usage_badges":["Email: 24 / files 15"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"cityName","policy":"blocked_inline","value_type":"Geo noun/service","scope":"SEO guard","meaning":"Location names require case, article, preposition, gender, and language-specific wording in RU/ES/IT/DE/PT. Replacing them inline can break grammar and SEO readability.","usage_badges":["SEO: 1 / files 1"],"recommendation":"Не делать inline-переменной: риск падежей, артиклей, рода и SEO-естественности. Использовать page-specific текст или whole-block."},{"key":"code","policy":"not_translate_id","value_type":"ID/Secret/Code","scope":"Backend payload","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не переводить; подставлять как техническое значение, код или безопасный ID."},{"key":"confirmationExpiresAt","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"Дата/время истечения ссылки подтверждения email","usage_badges":["Email: 26 / files 13"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"confirmUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL подтверждения email","usage_badges":["Email: 18 / files 9"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"consultationFormat","policy":"blocked_inline","value_type":"Geo noun/service","scope":"SEO guard","meaning":"Service and format names change form in natural sentences and in compound phrases. Use whole localized blocks instead.","usage_badges":["SEO: 1 / files 1"],"recommendation":"Не делать inline-переменной: риск падежей, артиклей, рода и SEO-естественности. Использовать page-specific текст или whole-block."},{"key":"consultationId","policy":"not_translate_id","value_type":"ID/Secret/Code","scope":"Backend payload","meaning":"Внутренний ID консультации/чата","usage_badges":["Email: 15 / files 11"],"recommendation":"Не переводить; подставлять как техническое значение, код или безопасный ID."},{"key":"countryName","policy":"blocked_inline","value_type":"Geo noun/service","scope":"SEO guard","meaning":"Location names require case, article, preposition, gender, and language-specific wording in RU/ES/IT/DE/PT. Replacing them inline can break grammar and SEO readability.","usage_badges":["SEO: 1 / files 1"],"recommendation":"Не делать inline-переменной: риск падежей, артиклей, рода и SEO-естественности. Использовать page-specific текст или whole-block."},{"key":"credits","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"currency","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"Валюта платежа/возврата","usage_badges":["Email: 42 / files 23"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"email","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"emailPreferencesUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL настроек email-уведомлений","usage_badges":["Email: 50 / files 23"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"errorMessage","policy":"enum_i18n","value_type":"Enum-label","scope":"Email/Payment","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Ошибку платежа нельзя тянуть сырой строкой провайдера; нужен код ошибки -> локализованный user-safe текст."},{"key":"expiresAt","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"expiresIn","policy":"locale_phrase","value_type":"Короткая фраза","scope":"Security","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Время действия кода/ссылки нужно локализовать как duration label."},{"key":"firstResponseSla","policy":"locale_phrase","value_type":"Короткая фраза","scope":"Email/Chat","meaning":"Обещанный срок первого ответа эксперта","usage_badges":["Email: 15 / files 11"],"recommendation":"SLA вроде “within 24 hours” должен быть локализованной фразой или форматтером duration."},{"key":"followupOfferUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL предложения продолжить консультацию с тем же экспертом","usage_badges":["Email: 15 / files 11"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"geoServiceListBlock","policy":"translate","value_type":"HTML-блок","scope":"SEO","meaning":"Whole localized service list block only. Useful for standardizing Tarot, astrology, natal chart, synastry, relocation and astrocartography lists without touching grammar inside page sentences.","usage_badges":["SEO: 5977 / files 2061"],"recommendation":"Переводимый список услуг для geo-страниц; не использовать inline в предложениях."},{"key":"geoType","policy":"blocked_inline","value_type":"Geo noun/service","scope":"SEO guard","meaning":"Country/city nouns and surrounding phrases differ by language and sentence position.","usage_badges":["SEO: 1 / files 1"],"recommendation":"Не делать inline-переменной: риск падежей, артиклей, рода и SEO-естественности. Использовать page-specific текст или whole-block."},{"key":"groupName","policy":"not_translate_name","value_type":"Name/Text from entity","scope":"Entity/Config","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не переводить как системную переменную. Если это системный заголовок, он должен быть отдельным ключом i18n, а не user/entity value."},{"key":"informationalDisclaimerBlock","policy":"translate","value_type":"HTML-блок","scope":"SEO","meaning":"Whole localized disclaimer paragraph/block only. Useful for centrally controlling no-guarantee and informational-language wording.","usage_badges":["SEO: 5995 / files 2057"],"recommendation":"Переводимый информационный дисклеймер; централизованно контролирует юридически аккуратную формулировку."},{"key":"legalMerchantName","policy":"not_translate_name","value_type":"Name/Text from entity","scope":"Entity/Config","meaning":"Юридическое имя продавца/сервиса","usage_badges":["Email: 184 / files 83"],"recommendation":"Не переводить как системную переменную. Если это системный заголовок, он должен быть отдельным ключом i18n, а не user/entity value."},{"key":"locationName","policy":"blocked_inline","value_type":"Geo noun/service","scope":"SEO guard","meaning":"Location names require case, article, preposition, gender, and language-specific wording in RU/ES/IT/DE/PT. Replacing them inline can break grammar and SEO readability.","usage_badges":["SEO: 2 / files 1"],"recommendation":"Не делать inline-переменной: риск падежей, артиклей, рода и SEO-естественности. Использовать page-specific текст или whole-block."},{"key":"locationType","policy":"blocked_inline","value_type":"Geo noun/service","scope":"SEO guard","meaning":"Country/city nouns and surrounding phrases differ by language and sentence position.","usage_badges":["SEO: 1 / files 1"],"recommendation":"Не делать inline-переменной: риск падежей, артиклей, рода и SEO-естественности. Использовать page-specific текст или whole-block."},{"key":"loginUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"","usage_badges":["Email: 2 / files 1"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"mainService","policy":"blocked_inline","value_type":"Geo noun/service","scope":"SEO guard","meaning":"Service and format names change form in natural sentences and in compound phrases. Use whole localized blocks instead.","usage_badges":["SEO: 1 / files 1"],"recommendation":"Не делать inline-переменной: риск падежей, артиклей, рода и SEO-естественности. Использовать page-specific текст или whole-block."},{"key":"merchantDescriptor","policy":"not_translate_name","value_type":"Name/Text from entity","scope":"Entity/Config","meaning":"Дескриптор продавца в выписке/чеке","usage_badges":["Email: 15 / files 11"],"recommendation":"Не переводить как системную переменную. Если это системный заголовок, он должен быть отдельным ключом i18n, а не user/entity value."},{"key":"noPhotoAccess","policy":"control_flag","value_type":"Boolean/control","scope":"Renderer","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не выводить пользователю как текст. Использовать только для условных блоков; текст блока переводится в самом шаблоне."},{"key":"orderId","policy":"not_translate_id","value_type":"ID/Secret/Code","scope":"Backend payload","meaning":"ID заказа/платежа","usage_badges":["Email: 56 / files 33"],"recommendation":"Не переводить; подставлять как техническое значение, код или безопасный ID."},{"key":"paidAt","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"Дата/время успешной оплаты","usage_badges":["Email: 15 / files 11"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"paidGroupLink","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"password","policy":"not_translate_id","value_type":"ID/Secret/Code","scope":"Backend payload","meaning":"","usage_badges":["Email: 4 / files 2"],"recommendation":"Не переводить; подставлять как техническое значение, код или безопасный ID."},{"key":"paymentMethod","policy":"enum_i18n","value_type":"Enum-label","scope":"Email/Payment","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Способ оплаты должен быть label из справочника методов оплаты по языку."},{"key":"photoAccess","policy":"control_flag","value_type":"Boolean/control","scope":"Renderer","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не выводить пользователю как текст. Использовать только для условных блоков; текст блока переводится в самом шаблоне."},{"key":"postUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"privacyUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL политики приватности","usage_badges":["Email: 170 / files 79"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"privateGroupRequestLink","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"","usage_badges":["Email: 2 / files 2"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"privatePhotosLink","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"","usage_badges":["Email: 2 / files 2"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"processorRefundId","policy":"not_translate_id","value_type":"ID/Secret/Code","scope":"Backend payload","meaning":"ID возврата в платежном провайдере","usage_badges":["Email: 15 / files 11"],"recommendation":"Не переводить; подставлять как техническое значение, код или безопасный ID."},{"key":"rating","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"reason","policy":"enum_i18n","value_type":"Enum-label","scope":"Email","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Причина списания/действия должна быть кодом причины -> локализованным текстом."},{"key":"receiptUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL чека/квитанции","usage_badges":["Email: 15 / files 11"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"refundAmount","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"Сумма возврата","usage_badges":["Email: 15 / files 11"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"refundEta","policy":"locale_phrase","value_type":"Короткая фраза","scope":"Email/Payment","meaning":"Ожидаемый срок поступления возврата","usage_badges":["Email: 15 / files 11"],"recommendation":"ETA возврата вроде “3-10 business days” должен быть локализованной фразой."},{"key":"refundPolicyUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL правил возврата","usage_badges":["Email: 176 / files 79"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"renewUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"","usage_badges":["Email: 2 / files 1"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"resetExpiresAt","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"Дата/время истечения ссылки сброса пароля","usage_badges":["Email: 29 / files 17"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"resetUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL сброса пароля","usage_badges":["Email: 15 / files 11"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"reviewText","policy":"not_translate_name","value_type":"Name/Text from entity","scope":"Entity/Config","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не переводить как системную переменную. Если это системный заголовок, он должен быть отдельным ключом i18n, а не user/entity value."},{"key":"reviewUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL формы отзыва о консультации","usage_badges":["Email: 15 / files 11"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"securityChangedAt","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"Дата/время изменения настройки безопасности","usage_badges":["Email: 15 / files 11"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"senderAvatarUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"","usage_badges":["Email: 14 / files 2"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"senderName","policy":"not_translate_name","value_type":"Name/Text from entity","scope":"Entity/Config","meaning":"","usage_badges":["Email: 14 / files 2"],"recommendation":"Не переводить как системную переменную. Если это системный заголовок, он должен быть отдельным ключом i18n, а не user/entity value."},{"key":"senderProfileUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"","usage_badges":["Email: 14 / files 2"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"serviceName","policy":"blocked_inline","value_type":"Geo noun/service","scope":"SEO guard","meaning":"Service and format names change form in natural sentences and in compound phrases. Use whole localized blocks instead.","usage_badges":["SEO: 1 / files 1"],"recommendation":"Не делать inline-переменной: риск падежей, артиклей, рода и SEO-естественности. Использовать page-specific текст или whole-block."},{"key":"showPassword","policy":"not_translate_id","value_type":"ID/Secret/Code","scope":"Backend payload","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не переводить; подставлять как техническое значение, код или безопасный ID."},{"key":"siteMetaDescription","policy":"translate","value_type":"Короткий текст","scope":"SEO","meaning":"Global default meta description. Not used for page-specific geo SEO text replacements.","usage_badges":["SEO: 1 / files 1"],"recommendation":"Глобальный meta description по языкам, не заменяет page-specific SEO description."},{"key":"siteMetaKeywords","policy":"translate","value_type":"Короткий текст","scope":"SEO","meaning":"Global default meta keywords. Not used for page-specific geo SEO text replacements.","usage_badges":["SEO: 1 / files 1"],"recommendation":"Глобальные meta keywords по языкам, если используются в настройках сайта."},{"key":"siteName","policy":"not_translate_name","value_type":"Name/Text from entity","scope":"Entity/Config","meaning":"Название сайта/бренда","usage_badges":["SEO: 15278 / files 2371","Email: 373 / files 100"],"recommendation":"Не переводить как системную переменную. Если это системный заголовок, он должен быть отдельным ключом i18n, а не user/entity value."},{"key":"siteUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"Базовый URL сайта/личного кабинета","usage_badges":["SEO: 1271 / files 1112","Email: 146 / files 47"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"subject","policy":"not_translate_name","value_type":"Name/Text from entity","scope":"Entity/Config","meaning":"","usage_badges":["Email: 15 / files 2"],"recommendation":"Не переводить как системную переменную. Если это системный заголовок, он должен быть отдельным ключом i18n, а не user/entity value."},{"key":"supportCaseId","policy":"not_translate_id","value_type":"ID/Secret/Code","scope":"Backend payload","meaning":"ID обращения в поддержку","usage_badges":["Email: 65 / files 37"],"recommendation":"Не переводить; подставлять как техническое значение, код или безопасный ID."},{"key":"supportCaseStatus","policy":"enum_i18n","value_type":"Enum-label","scope":"Email/Support","meaning":"Пользовательский статус обращения","usage_badges":["Email: 15 / files 11"],"recommendation":"Публичный статус обращения должен выводиться из словаря статусов по языку, не внутренний код."},{"key":"supportCaseUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL конкретного обращения в поддержку","usage_badges":["Email: 51 / files 27"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"supportEmail","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"Email поддержки","usage_badges":["Email: 150 / files 51"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"supportUpdatedAt","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"Дата/время обновления обращения","usage_badges":["Email: 24 / files 15"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"supportUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL раздела поддержки","usage_badges":["Email: 52 / files 27"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"termsUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL пользовательских условий","usage_badges":["Email: 170 / files 79"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"transactionId","policy":"not_translate_id","value_type":"ID/Secret/Code","scope":"Backend payload","meaning":"","usage_badges":["Email: 2 / files 1"],"recommendation":"Не переводить; подставлять как техническое значение, код или безопасный ID."},{"key":"unsubscribeUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL отписки от marketing/lifecycle писем","usage_badges":["Email: 50 / files 23"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"updatedAnswerEta","policy":"locale_phrase","value_type":"Короткая фраза","scope":"Email/Chat","meaning":"Обновленный прогноз ответа при задержке SLA","usage_badges":["Email: 15 / files 11"],"recommendation":"Обновленный ETA ответа должен быть локализованной фразой, рассчитанной backend."},{"key":"upgradeLink","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"Ссылка/HTML-якорь на upgrade/premium действие в runtime-уведомлениях.","usage_badges":["Notifications: 8 / files 2"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"userName","policy":"not_translate_name","value_type":"Name/Text from entity","scope":"Entity/Config","meaning":"Имя пользователя для персонализации","usage_badges":["Email: 199 / files 85"],"recommendation":"Не переводить как системную переменную. Если это системный заголовок, он должен быть отдельным ключом i18n, а не user/entity value."},{"key":"whatWeOfferBlock","policy":"translate","value_type":"HTML-блок","scope":"SEO","meaning":"Whole localized HTML block only. Useful if the CMS renderer can output a ready language-specific block without inserting words into a sentence.","usage_badges":["SEO: 6001 / files 2065"],"recommendation":"Переводимый стандартный SEO-блок: хранить EN master + переводы, разрешить HTML только whitelist."}]}</script>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script id="contentVariableData" type="application/json">{"variables":[{"key":"accountSecurityUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL раздела безопасности аккаунта","usage_badges":["Email: 15 / files 11"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"advisorName","policy":"not_translate_name","value_type":"Name/Text from entity","scope":"Entity/Config","meaning":"Имя эксперта/консультанта, назначенного на конкретную чат-консультацию","usage_badges":["Email: 56 / files 33"],"recommendation":"Не переводить как системную переменную. Если это системный заголовок, он должен быть отдельным ключом i18n, а не user/entity value."},{"key":"amount","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"Сумма платежа или заказа в человекочитаемом виде","usage_badges":["Email: 29 / files 15"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"answerDueAt","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"Плановое время ответа эксперта по SLA","usage_badges":["Email: 15 / files 11"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"chatUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL конкретного чата/консультации в кабинете","usage_badges":["Email: 60 / files 31"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"checkoutUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL возврата к незавершенной оплате","usage_badges":["Email: 24 / files 15"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"cityName","policy":"blocked_inline","value_type":"Geo noun/service","scope":"SEO guard","meaning":"Location names require case, article, preposition, gender, and language-specific wording in RU/ES/IT/DE/PT. Replacing them inline can break grammar and SEO readability.","usage_badges":["SEO: 1 / files 1"],"recommendation":"Не делать inline-переменной: риск падежей, артиклей, рода и SEO-естественности. Использовать page-specific текст или whole-block."},{"key":"code","policy":"not_translate_id","value_type":"ID/Secret/Code","scope":"Backend payload","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не переводить; подставлять как техническое значение, код или безопасный ID."},{"key":"confirmationExpiresAt","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"Дата/время истечения ссылки подтверждения email","usage_badges":["Email: 26 / files 13"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"confirmUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL подтверждения email","usage_badges":["Email: 18 / files 9"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"consultationFormat","policy":"blocked_inline","value_type":"Geo noun/service","scope":"SEO guard","meaning":"Service and format names change form in natural sentences and in compound phrases. Use whole localized blocks instead.","usage_badges":["SEO: 1 / files 1"],"recommendation":"Не делать inline-переменной: риск падежей, артиклей, рода и SEO-естественности. Использовать page-specific текст или whole-block."},{"key":"consultationId","policy":"not_translate_id","value_type":"ID/Secret/Code","scope":"Backend payload","meaning":"Внутренний ID консультации/чата","usage_badges":["Email: 15 / files 11"],"recommendation":"Не переводить; подставлять как техническое значение, код или безопасный ID."},{"key":"countryName","policy":"blocked_inline","value_type":"Geo noun/service","scope":"SEO guard","meaning":"Location names require case, article, preposition, gender, and language-specific wording in RU/ES/IT/DE/PT. Replacing them inline can break grammar and SEO readability.","usage_badges":["SEO: 1 / files 1"],"recommendation":"Не делать inline-переменной: риск падежей, артиклей, рода и SEO-естественности. Использовать page-specific текст или whole-block."},{"key":"credits","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"currency","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"Валюта платежа/возврата","usage_badges":["Email: 42 / files 23"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"email","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"emailPreferencesUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL настроек email-уведомлений","usage_badges":["Email: 50 / files 23"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"errorMessage","policy":"enum_i18n","value_type":"Enum-label","scope":"Email/Payment","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Ошибку платежа нельзя тянуть сырой строкой провайдера; нужен код ошибки -> локализованный user-safe текст."},{"key":"expiresAt","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"expiresIn","policy":"locale_phrase","value_type":"Короткая фраза","scope":"Security","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Время действия кода/ссылки нужно локализовать как duration label."},{"key":"firstResponseSla","policy":"locale_phrase","value_type":"Короткая фраза","scope":"Email/Chat","meaning":"Обещанный срок первого ответа эксперта","usage_badges":["Email: 15 / files 11"],"recommendation":"SLA вроде “within 24 hours” должен быть локализованной фразой или форматтером duration."},{"key":"followupOfferUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL предложения продолжить консультацию с тем же экспертом","usage_badges":["Email: 15 / files 11"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"geoServiceListBlock","policy":"translate","value_type":"HTML-блок","scope":"SEO","meaning":"Whole localized service list block only. Useful for standardizing Tarot, astrology, natal chart, synastry, relocation and astrocartography lists without touching grammar inside page sentences.","usage_badges":["SEO: 5977 / files 2061"],"recommendation":"Переводимый список услуг для geo-страниц; не использовать inline в предложениях."},{"key":"geoType","policy":"blocked_inline","value_type":"Geo noun/service","scope":"SEO guard","meaning":"Country/city nouns and surrounding phrases differ by language and sentence position.","usage_badges":["SEO: 1 / files 1"],"recommendation":"Не делать inline-переменной: риск падежей, артиклей, рода и SEO-естественности. Использовать page-specific текст или whole-block."},{"key":"groupName","policy":"not_translate_name","value_type":"Name/Text from entity","scope":"Entity/Config","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не переводить как системную переменную. Если это системный заголовок, он должен быть отдельным ключом i18n, а не user/entity value."},{"key":"informationalDisclaimerBlock","policy":"translate","value_type":"HTML-блок","scope":"SEO","meaning":"Whole localized disclaimer paragraph/block only. Useful for centrally controlling no-guarantee and informational-language wording.","usage_badges":["SEO: 5995 / files 2057"],"recommendation":"Переводимый информационный дисклеймер; централизованно контролирует юридически аккуратную формулировку."},{"key":"legalMerchantName","policy":"not_translate_name","value_type":"Name/Text from entity","scope":"Entity/Config","meaning":"Юридическое имя продавца/сервиса","usage_badges":["Email: 184 / files 83"],"recommendation":"Не переводить как системную переменную. Если это системный заголовок, он должен быть отдельным ключом i18n, а не user/entity value."},{"key":"locationName","policy":"blocked_inline","value_type":"Geo noun/service","scope":"SEO guard","meaning":"Location names require case, article, preposition, gender, and language-specific wording in RU/ES/IT/DE/PT. Replacing them inline can break grammar and SEO readability.","usage_badges":["SEO: 2 / files 1"],"recommendation":"Не делать inline-переменной: риск падежей, артиклей, рода и SEO-естественности. Использовать page-specific текст или whole-block."},{"key":"locationType","policy":"blocked_inline","value_type":"Geo noun/service","scope":"SEO guard","meaning":"Country/city nouns and surrounding phrases differ by language and sentence position.","usage_badges":["SEO: 1 / files 1"],"recommendation":"Не делать inline-переменной: риск падежей, артиклей, рода и SEO-естественности. Использовать page-specific текст или whole-block."},{"key":"loginUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"","usage_badges":["Email: 2 / files 1"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"mainService","policy":"blocked_inline","value_type":"Geo noun/service","scope":"SEO guard","meaning":"Service and format names change form in natural sentences and in compound phrases. Use whole localized blocks instead.","usage_badges":["SEO: 1 / files 1"],"recommendation":"Не делать inline-переменной: риск падежей, артиклей, рода и SEO-естественности. Использовать page-specific текст или whole-block."},{"key":"merchantDescriptor","policy":"not_translate_name","value_type":"Name/Text from entity","scope":"Entity/Config","meaning":"Дескриптор продавца в выписке/чеке","usage_badges":["Email: 15 / files 11"],"recommendation":"Не переводить как системную переменную. Если это системный заголовок, он должен быть отдельным ключом i18n, а не user/entity value."},{"key":"noPhotoAccess","policy":"control_flag","value_type":"Boolean/control","scope":"Renderer","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не выводить пользователю как текст. Использовать только для условных блоков; текст блока переводится в самом шаблоне."},{"key":"orderId","policy":"not_translate_id","value_type":"ID/Secret/Code","scope":"Backend payload","meaning":"ID заказа/платежа","usage_badges":["Email: 56 / files 33"],"recommendation":"Не переводить; подставлять как техническое значение, код или безопасный ID."},{"key":"paidAt","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"Дата/время успешной оплаты","usage_badges":["Email: 15 / files 11"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"paidGroupLink","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"password","policy":"not_translate_id","value_type":"ID/Secret/Code","scope":"Backend payload","meaning":"","usage_badges":["Email: 4 / files 2"],"recommendation":"Не переводить; подставлять как техническое значение, код или безопасный ID."},{"key":"paymentMethod","policy":"enum_i18n","value_type":"Enum-label","scope":"Email/Payment","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Способ оплаты должен быть label из справочника методов оплаты по языку."},{"key":"photoAccess","policy":"control_flag","value_type":"Boolean/control","scope":"Renderer","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не выводить пользователю как текст. Использовать только для условных блоков; текст блока переводится в самом шаблоне."},{"key":"postUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"privacyUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL политики приватности","usage_badges":["Email: 170 / files 79"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"privateGroupRequestLink","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"","usage_badges":["Email: 2 / files 2"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"privatePhotosLink","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"","usage_badges":["Email: 2 / files 2"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"processorRefundId","policy":"not_translate_id","value_type":"ID/Secret/Code","scope":"Backend payload","meaning":"ID возврата в платежном провайдере","usage_badges":["Email: 15 / files 11"],"recommendation":"Не переводить; подставлять как техническое значение, код или безопасный ID."},{"key":"rating","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"reason","policy":"enum_i18n","value_type":"Enum-label","scope":"Email","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Причина списания/действия должна быть кодом причины -> локализованным текстом."},{"key":"receiptUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL чека/квитанции","usage_badges":["Email: 15 / files 11"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"refundAmount","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"Сумма возврата","usage_badges":["Email: 15 / files 11"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"refundEta","policy":"locale_phrase","value_type":"Короткая фраза","scope":"Email/Payment","meaning":"Ожидаемый срок поступления возврата","usage_badges":["Email: 15 / files 11"],"recommendation":"ETA возврата вроде “3-10 business days” должен быть локализованной фразой."},{"key":"refundPolicyUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL правил возврата","usage_badges":["Email: 176 / files 79"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"renewUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"","usage_badges":["Email: 2 / files 1"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"resetExpiresAt","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"Дата/время истечения ссылки сброса пароля","usage_badges":["Email: 29 / files 17"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"resetUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL сброса пароля","usage_badges":["Email: 15 / files 11"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"reviewText","policy":"not_translate_name","value_type":"Name/Text from entity","scope":"Entity/Config","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не переводить как системную переменную. Если это системный заголовок, он должен быть отдельным ключом i18n, а не user/entity value."},{"key":"reviewUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL формы отзыва о консультации","usage_badges":["Email: 15 / files 11"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"securityChangedAt","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"Дата/время изменения настройки безопасности","usage_badges":["Email: 15 / files 11"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"senderAvatarUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"","usage_badges":["Email: 14 / files 2"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"senderName","policy":"not_translate_name","value_type":"Name/Text from entity","scope":"Entity/Config","meaning":"","usage_badges":["Email: 14 / files 2"],"recommendation":"Не переводить как системную переменную. Если это системный заголовок, он должен быть отдельным ключом i18n, а не user/entity value."},{"key":"senderProfileUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"","usage_badges":["Email: 14 / files 2"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"serviceName","policy":"blocked_inline","value_type":"Geo noun/service","scope":"SEO guard","meaning":"Service and format names change form in natural sentences and in compound phrases. Use whole localized blocks instead.","usage_badges":["SEO: 1 / files 1"],"recommendation":"Не делать inline-переменной: риск падежей, артиклей, рода и SEO-естественности. Использовать page-specific текст или whole-block."},{"key":"showPassword","policy":"not_translate_id","value_type":"ID/Secret/Code","scope":"Backend payload","meaning":"","usage_badges":["Email: 1 / files 1"],"recommendation":"Не переводить; подставлять как техническое значение, код или безопасный ID."},{"key":"siteMetaDescription","policy":"translate","value_type":"Короткий текст","scope":"SEO","meaning":"Global default meta description. Not used for page-specific geo SEO text replacements.","usage_badges":["SEO: 1 / files 1"],"recommendation":"Глобальный meta description по языкам, не заменяет page-specific SEO description."},{"key":"siteMetaKeywords","policy":"translate","value_type":"Короткий текст","scope":"SEO","meaning":"Global default meta keywords. Not used for page-specific geo SEO text replacements.","usage_badges":["SEO: 1 / files 1"],"recommendation":"Глобальные meta keywords по языкам, если используются в настройках сайта."},{"key":"siteName","policy":"not_translate_name","value_type":"Name/Text from entity","scope":"Entity/Config","meaning":"Название сайта/бренда","usage_badges":["SEO: 15278 / files 2371","Email: 373 / files 100"],"recommendation":"Не переводить как системную переменную. Если это системный заголовок, он должен быть отдельным ключом i18n, а не user/entity value."},{"key":"siteUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"Базовый URL сайта/личного кабинета","usage_badges":["SEO: 1271 / files 1112","Email: 146 / files 47"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"subject","policy":"not_translate_name","value_type":"Name/Text from entity","scope":"Entity/Config","meaning":"","usage_badges":["Email: 15 / files 2"],"recommendation":"Не переводить как системную переменную. Если это системный заголовок, он должен быть отдельным ключом i18n, а не user/entity value."},{"key":"supportCaseId","policy":"not_translate_id","value_type":"ID/Secret/Code","scope":"Backend payload","meaning":"ID обращения в поддержку","usage_badges":["Email: 65 / files 37"],"recommendation":"Не переводить; подставлять как техническое значение, код или безопасный ID."},{"key":"supportCaseStatus","policy":"enum_i18n","value_type":"Enum-label","scope":"Email/Support","meaning":"Пользовательский статус обращения","usage_badges":["Email: 15 / files 11"],"recommendation":"Публичный статус обращения должен выводиться из словаря статусов по языку, не внутренний код."},{"key":"supportCaseUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL конкретного обращения в поддержку","usage_badges":["Email: 51 / files 27"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"supportEmail","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"Email поддержки","usage_badges":["Email: 150 / files 51"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"supportUpdatedAt","policy":"locale_format","value_type":"Date/Money/Number","scope":"Formatter","meaning":"Дата/время обновления обращения","usage_badges":["Email: 24 / files 15"],"recommendation":"Не хранить перевод как строку; форматировать backend/render-сервисом по языку и timezone."},{"key":"supportUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL раздела поддержки","usage_badges":["Email: 52 / files 27"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"termsUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL пользовательских условий","usage_badges":["Email: 170 / files 79"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"transactionId","policy":"not_translate_id","value_type":"ID/Secret/Code","scope":"Backend payload","meaning":"","usage_badges":["Email: 2 / files 1"],"recommendation":"Не переводить; подставлять как техническое значение, код или безопасный ID."},{"key":"unsubscribeUrl","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"URL отписки от marketing/lifecycle писем","usage_badges":["Email: 50 / files 23"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"updatedAnswerEta","policy":"locale_phrase","value_type":"Короткая фраза","scope":"Email/Chat","meaning":"Обновленный прогноз ответа при задержке SLA","usage_badges":["Email: 15 / files 11"],"recommendation":"Обновленный ETA ответа должен быть локализованной фразой, рассчитанной backend."},{"key":"upgradeLink","policy":"not_translate_url","value_type":"URL/Email","scope":"Config/Route","meaning":"Ссылка/HTML-якорь на upgrade/premium действие в runtime-уведомлениях.","usage_badges":["Notifications: 8 / files 2"],"recommendation":"Не переводить; хранить как URL/email. Для ссылок переводится anchor text в шаблоне, не значение переменной."},{"key":"userName","policy":"not_translate_name","value_type":"Name/Text from entity","scope":"Entity/Config","meaning":"Имя пользователя для персонализации","usage_badges":["Email: 199 / files 85"],"recommendation":"Не переводить как системную переменную. Если это системный заголовок, он должен быть отдельным ключом i18n, а не user/entity value."},{"key":"whatWeOfferBlock","policy":"translate","value_type":"HTML-блок","scope":"SEO","meaning":"Whole localized HTML block only. Useful if the CMS renderer can output a ready language-specific block without inserting words into a sentence.","usage_badges":["SEO: 6001 / files 2065"],"recommendation":"Переводимый стандартный SEO-блок: хранить EN master + переводы, разрешить HTML только whitelist."}],"stats":{"total":79,"i18n":13,"blocked":10,"noTranslate":56},"policyLabels":{"translate":"Translate value","enum_i18n":"Enum dictionary","locale_phrase":"Localized phrase","locale_format":"Locale formatter","blocked_inline":"Blocked inline","control_flag":"Control flag","not_translate_url":"URL / email","not_translate_id":"ID / code","not_translate_name":"Name / payload","not_translate_payload":"Payload"},"languages":[{"id":"en-US","name":"English","status":"Active","source":true},{"id":"ru-RU","name":"Russian","status":"Active","source":false},{"id":"es-ES","name":"Spanish","status":"Active","source":false},{"id":"de-DE","name":"German","status":"Beta","source":false}]}</script>
 <script>
 (function(){
-  var parsed = JSON.parse(document.getElementById('adminVariableData').textContent);
-  var variables = parsed.variables;
-  var policies = {"translate":"Translate","enum_i18n":"Enum i18n","locale_phrase":"Locale phrase","locale_format":"Locale format","blocked_inline":"Blocked inline","control_flag":"Control flag","not_translate_url":"URL / email","not_translate_id":"ID / code","not_translate_name":"Name / payload","not_translate_payload":"Payload"};
+  var state = JSON.parse(document.getElementById('contentVariableData').textContent);
+  var variables = state.variables;
   var selected = variables[0];
   var visible = variables.slice();
-  var draftsKey = 'confideline.contentVariableAdminMockup.drafts.v1';
-  var historyKey = 'confideline.contentVariableAdminMockup.history.v1';
-  var el = {
-    body: document.body,
-    search: document.getElementById('searchInput'),
-    policy: document.getElementById('policyFilter'),
-    surface: document.getElementById('surfaceFilter'),
-    registryBody: document.getElementById('registryBody'),
-    translationBody: document.getElementById('translationBody'),
-    counter: document.getElementById('resultCounter'),
-    selectedKey: document.getElementById('selectedKey'),
-    selectedPolicy: document.getElementById('selectedPolicy'),
-    selectedType: document.getElementById('selectedType'),
-    selectedMeaning: document.getElementById('selectedMeaning'),
-    selectedRecommendation: document.getElementById('selectedRecommendation'),
-    selectedUsage: document.getElementById('selectedUsage'),
-    history: document.getElementById('historyList'),
-    toast: document.getElementById('toast')
-  };
+  var policies = state.policyLabels;
+  var filterSearch = document.getElementById('filterSearch');
+  var filterPolicy = document.getElementById('filterPolicy');
+  var filterSurface = document.getElementById('filterSurface');
+  var body = document.getElementById('variablesBody');
+  var translationsBody = document.getElementById('translationsBody');
+  var resultCount = document.getElementById('resultCount');
+  var modal = document.getElementById('variableModal');
+  var backdrop = document.getElementById('modalBackdrop');
+  var toast = document.getElementById('toast');
+  var alertBox = document.getElementById('page-alert');
 
-  function escapeHtml(value) {
-    return String(value == null ? '' : value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+  function esc(value){ return String(value == null ? '' : value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function labelClass(policy){
+    if (['translate','enum_i18n','locale_phrase'].indexOf(policy) !== -1) return 'label-success';
+    if (['blocked_inline','control_flag'].indexOf(policy) !== -1) return 'label-warning';
+    if (policy === 'locale_format') return 'label-primary';
+    return 'label-default';
   }
-
-  function loadJson(key, fallback) {
-    try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
-    catch (err) { return fallback; }
+  function usageLabels(item){
+    var list = item.usage_badges || [];
+    if (!list.length) return '<span class="text-muted">No usage</span>';
+    return '<span class="usage-badges">' + list.map(function(badge){
+      var cls = badge.indexOf('SEO:') === 0 ? 'label-success' : badge.indexOf('Notifications:') === 0 ? 'label-warning' : badge.indexOf('Email:') === 0 ? 'label-primary' : 'label-default';
+      return '<span class="label ' + cls + '">' + esc(badge) + '</span>';
+    }).join(' ') + '</span>';
   }
-
-  function saveJson(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
+  function showToast(message){
+    toast.textContent = message; toast.classList.add('open');
+    clearTimeout(showToast.t); showToast.t = setTimeout(function(){ toast.classList.remove('open'); }, 2200);
   }
-
-  function showToast(message) {
-    el.toast.textContent = message;
-    el.toast.classList.add('show');
-    clearTimeout(showToast.timer);
-    showToast.timer = setTimeout(function(){ el.toast.classList.remove('show'); }, 2600);
+  function showAlert(message){
+    alertBox.textContent = message; alertBox.classList.remove('hidden');
+    clearTimeout(showAlert.t); showAlert.t = setTimeout(function(){ alertBox.classList.add('hidden'); }, 3500);
   }
-
-  function badgeClass(label) {
-    if (/^Email/.test(label)) return 'email';
-    if (/^SEO/.test(label)) return 'seo';
-    if (/^Notifications/.test(label)) return 'notifications';
-    return '';
-  }
-
-  function renderBadges(list) {
-    if (!list || !list.length) return '<span class="muted">No usage found</span>';
-    return list.map(function(label){
-      return '<span class="badge ' + badgeClass(label) + '">' + escapeHtml(label) + '</span>';
-    }).join(' ');
-  }
-
-  function policyLabel(policy) {
-    return policies[policy] || policy;
-  }
-
-  function populateSelects() {
-    Object.keys(policies).forEach(function(policy) {
-      var option = document.createElement('option');
-      option.value = policy;
-      option.textContent = policyLabel(policy);
-      el.policy.appendChild(option);
-
-      var option2 = document.createElement('option');
-      option2.value = policy;
-      option2.textContent = policyLabel(policy);
-      el.selectedPolicy.appendChild(option2);
+  function populatePolicies(){
+    Object.keys(policies).forEach(function(key){
+      var o = document.createElement('option'); o.value = key; o.textContent = policies[key]; filterPolicy.appendChild(o);
+      var m = document.createElement('option'); m.value = key; m.textContent = policies[key]; document.getElementById('modalPolicy').appendChild(m);
+    });
+    state.languages.forEach(function(lang){
+      var o = document.createElement('option'); o.value = lang.id; o.textContent = lang.name + ' (' + lang.id + ')'; document.getElementById('modalFallback').appendChild(o);
     });
   }
-
-  function matchesFilters(item) {
-    var query = el.search.value.trim().toLowerCase();
-    var policy = el.policy.value;
-    var surface = el.surface.value;
-    var haystack = [
-      item.key,
-      item.policy,
-      item.value_type,
-      item.scope,
-      item.meaning,
-      item.recommendation,
-      (item.usage_badges || []).join(' ')
-    ].join(' ').toLowerCase();
-    if (policy !== 'all' && item.policy !== policy) return false;
-    if (surface !== 'all' && !(item.usage_badges || []).some(function(badge){ return badge.indexOf(surface + ':') === 0; })) return false;
-    if (query && haystack.indexOf(query) === -1) return false;
+  function matches(item){
+    var q = filterSearch.value.trim().toLowerCase();
+    var policy = filterPolicy.value;
+    var surface = filterSurface.value;
+    var text = [item.key,item.policy,item.value_type,item.scope,item.meaning,item.recommendation,(item.usage_badges||[]).join(' ')].join(' ').toLowerCase();
+    if (policy && item.policy !== policy) return false;
+    if (surface && !(item.usage_badges || []).some(function(b){ return b.indexOf(surface + ':') === 0; })) return false;
+    if (q && text.indexOf(q) === -1) return false;
     return true;
   }
-
-  function renderRegistry() {
-    visible = variables.filter(matchesFilters);
-    el.counter.textContent = visible.length + ' visible';
-    if (!visible.length) {
-      el.registryBody.innerHTML = '<tr><td colspan="6" class="empty">No variables match the current filters.</td></tr>';
-      return;
-    }
-    el.registryBody.innerHTML = visible.map(function(item) {
-      var isSelected = selected && item.key === selected.key ? ' selected' : '';
-      return '<tr class="variable-row' + isSelected + '" tabindex="0" role="button" data-key="' + escapeHtml(item.key) + '" data-comment-id="content-variable-' + escapeHtml(item.key) + '">' +
-        '<td><code>{{' + escapeHtml(item.key) + '}}</code></td>' +
-        '<td><span class="policy ' + escapeHtml(item.policy) + '">' + escapeHtml(policyLabel(item.policy)) + '</span></td>' +
-        '<td>' + escapeHtml(item.value_type || '') + '<br><span class="muted">' + escapeHtml(item.scope || '') + '</span></td>' +
-        '<td>' + renderBadges(item.usage_badges) + '</td>' +
-        '<td>' + escapeHtml(item.meaning || '') + '</td>' +
-        '<td>' + escapeHtml(item.recommendation || '') + '</td>' +
+  function renderTable(){
+    visible = variables.filter(matches);
+    resultCount.textContent = visible.length + ' records';
+    if (!visible.length) { body.innerHTML = '<tr><td colspan="6" class="text-muted">No records found.</td></tr>'; return; }
+    body.innerHTML = visible.map(function(item){
+      return '<tr data-key="' + esc(item.key) + '">' +
+        '<td><span class="variable-key">{{' + esc(item.key) + '}}</span></td>' +
+        '<td><span class="label policy-pill ' + labelClass(item.policy) + '">' + esc(policies[item.policy] || item.policy) + '</span></td>' +
+        '<td>' + esc(item.value_type || '') + '<br><span class="text-muted">' + esc(item.scope || '') + '</span></td>' +
+        '<td>' + usageLabels(item) + '</td>' +
+        '<td>' + esc(item.meaning || item.recommendation || '') + '</td>' +
+        '<td class="text-right"><button type="button" class="btn btn-sm btn-default" data-action="edit">Edit</button> <button type="button" class="btn btn-sm btn-primary" data-action="translate">Translate</button></td>' +
       '</tr>';
     }).join('');
   }
-
-  function renderTranslations() {
-    var candidates = variables.filter(function(item){ return ['translate','enum_i18n','locale_phrase'].indexOf(item.policy) !== -1; });
-    el.translationBody.innerHTML = candidates.map(function(item) {
-      var ruValue = item.policy === 'translate' ? 'RU value managed by translator/editor' : 'RU label from dictionary';
-      var enValue = item.meaning || item.recommendation || item.key;
-      return '<tr data-comment-id="translation-' + escapeHtml(item.key) + '">' +
-        '<td><code>{{' + escapeHtml(item.key) + '}}</code></td>' +
-        '<td><span class="policy ' + escapeHtml(item.policy) + '">' + escapeHtml(policyLabel(item.policy)) + '</span></td>' +
-        '<td>' + escapeHtml(enValue) + '</td>' +
-        '<td><input type="text" value="' + escapeHtml(ruValue) + '" aria-label="RU value for ' + escapeHtml(item.key) + '"></td>' +
-        '<td><span class="status-pill warn">Needs backend storage</span></td>' +
-      '</tr>';
+  function renderTranslations(){
+    var list = variables.filter(function(item){ return ['translate','enum_i18n','locale_phrase'].indexOf(item.policy) !== -1; });
+    translationsBody.innerHTML = list.map(function(item){
+      return '<tr><td><span class="variable-key">{{' + esc(item.key) + '}}</span></td>' +
+        '<td><span class="label ' + labelClass(item.policy) + '">' + esc(policies[item.policy]) + '</span></td>' +
+        '<td><textarea class="form-control" rows="2">' + esc(item.meaning || item.key) + '</textarea></td>' +
+        '<td><textarea class="form-control" rows="2">RU value</textarea></td>' +
+        '<td><textarea class="form-control" rows="2">ES value</textarea></td>' +
+        '<td><span class="label label-warning">Draft</span></td></tr>';
     }).join('');
   }
-
-  function selectVariable(key) {
-    selected = variables.find(function(item){ return item.key === key; }) || selected;
-    renderInspector();
-    renderRegistry();
+  function setModalTab(name){
+    Array.prototype.forEach.call(document.querySelectorAll('[data-modal-tab]'), function(a){ a.parentNode.classList.toggle('active', a.getAttribute('data-modal-tab') === name); });
+    Array.prototype.forEach.call(document.querySelectorAll('.tab-pane'), function(p){ p.classList.toggle('active', p.id === 'modal-' + name); });
   }
-
-  function renderInspector() {
-    if (!selected) return;
-    var drafts = loadJson(draftsKey, {});
-    var draft = drafts[selected.key] || selected;
-    el.selectedKey.textContent = '{{' + selected.key + '}}';
-    el.selectedPolicy.value = draft.policy || selected.policy || '';
-    el.selectedType.value = draft.value_type || selected.value_type || '';
-    el.selectedMeaning.value = draft.meaning || selected.meaning || '';
-    el.selectedRecommendation.value = draft.recommendation || selected.recommendation || '';
-    el.selectedUsage.innerHTML = renderBadges(selected.usage_badges || []);
-    renderHistory();
-  }
-
-  function renderHistory() {
-    var history = loadJson(historyKey, []);
-    var rows = history.filter(function(item){ return selected && item.key === selected.key; }).slice(-5).reverse();
-    if (!rows.length) {
-      el.history.innerHTML = '<li>No local changes yet.</li>';
-      return;
-    }
-    el.history.innerHTML = rows.map(function(item) {
-      return '<li><strong>' + escapeHtml(item.time) + '</strong><br>' + escapeHtml(item.note) + '</li>';
+  function openModal(key, tab){
+    selected = variables.find(function(item){ return item.key === key; }) || variables[0];
+    document.getElementById('modalTitle').textContent = 'Update variable: {{' + selected.key + '}}';
+    document.getElementById('modalKey').value = '{{' + selected.key + '}}';
+    document.getElementById('modalPolicy').value = selected.policy;
+    document.getElementById('modalType').value = selected.value_type || '';
+    document.getElementById('modalScope').value = selected.scope || '';
+    document.getElementById('modalFallback').value = 'en-US';
+    document.getElementById('modalHtmlAllowed').checked = selected.value_type === 'HTML-блок';
+    document.getElementById('modalMeaning').value = selected.meaning || '';
+    document.getElementById('modalRecommendation').value = selected.recommendation || '';
+    var canTranslate = ['translate','enum_i18n','locale_phrase'].indexOf(selected.policy) !== -1;
+    document.getElementById('translationUnavailable').classList.toggle('hidden', canTranslate);
+    document.getElementById('translationFields').innerHTML = canTranslate ? state.languages.map(function(lang){
+      return '<div class="form-group"><label class="control-label">' + esc(lang.name) + ' (' + esc(lang.id) + ')' + (lang.source ? ' - source' : '') + '</label><textarea class="form-control" rows="3">' + esc(lang.source ? (selected.meaning || selected.key) : '') + '</textarea></div>';
+    }).join('') : '';
+    document.getElementById('modalUsage').innerHTML = (selected.usage_badges || ['No usage']).map(function(badge){
+      var surface = String(badge).split(':')[0];
+      return '<tr><td>' + usageLabels({ usage_badges:[badge] }) + '</td><td>' + esc(surface) + '</td><td>Validate before save and before render.</td></tr>';
     }).join('');
+    document.getElementById('modalHistory').innerHTML = '<tr><td>2026-06-01</td><td>admin</td><td>Registry snapshot imported from email/SEO package.</td></tr><tr><td>2026-06-01</td><td>admin</td><td>Policy set to ' + esc(policies[selected.policy] || selected.policy) + '.</td></tr>';
+    setModalTab(tab || 'general');
+    modal.classList.add('open'); backdrop.classList.add('open');
   }
-
-  function saveDraft() {
-    if (!selected) return;
-    var drafts = loadJson(draftsKey, {});
-    drafts[selected.key] = {
-      key: selected.key,
-      policy: el.selectedPolicy.value,
-      value_type: el.selectedType.value,
-      meaning: el.selectedMeaning.value,
-      recommendation: el.selectedRecommendation.value
-    };
-    saveJson(draftsKey, drafts);
-    var history = loadJson(historyKey, []);
-    history.push({
-      key: selected.key,
-      time: new Date().toLocaleString(),
-      note: 'Local prototype draft saved for ' + selected.key
-    });
-    saveJson(historyKey, history.slice(-200));
-    renderHistory();
-    showToast('Local draft saved for {{' + selected.key + '}}');
+  function closeModal(){ modal.classList.remove('open'); backdrop.classList.remove('open'); }
+  function showSection(name){
+    Array.prototype.forEach.call(document.querySelectorAll('.admin-section'), function(section){ section.classList.toggle('hidden', section.id !== 'section-' + name); });
+    Array.prototype.forEach.call(document.querySelectorAll('.nav-pills li'), function(li){ li.classList.toggle('active', li.querySelector('a').getAttribute('data-section') === name); });
   }
-
-  function clearDraft() {
-    if (!selected) return;
-    var drafts = loadJson(draftsKey, {});
-    delete drafts[selected.key];
-    saveJson(draftsKey, drafts);
-    renderInspector();
-    showToast('Local draft cleared for {{' + selected.key + '}}');
+  function runAudit(){
+    document.getElementById('auditIssues').textContent = '3';
+    document.getElementById('auditSummary').className = 'alert alert-success';
+    document.getElementById('auditSummary').textContent = 'Audit completed. Unknown variables: 0. Missing translation candidates: ' + state.stats.i18n + '. Guarded inline variables: ' + state.stats.blocked + '.';
+    showAlert('Audit completed');
   }
-
-  function exportVisible() {
-    var blob = new Blob([JSON.stringify(visible, null, 2)], { type:'application/json' });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = 'content-variable-visible-export.json';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-    showToast('Visible JSON exported');
-  }
-
-  function copyText(text, message) {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function(){ showToast(message); }, function(){ fallbackCopy(text, message); });
-    } else {
-      fallbackCopy(text, message);
-    }
-  }
-
-  function fallbackCopy(text, message) {
-    var area = document.createElement('textarea');
-    area.value = text;
-    area.setAttribute('readonly', 'readonly');
-    area.style.position = 'fixed';
-    area.style.left = '-9999px';
-    document.body.appendChild(area);
-    area.select();
-    document.execCommand('copy');
-    area.remove();
-    showToast(message);
-  }
-
-  function activateTab(id) {
-    document.querySelectorAll('.tab').forEach(function(item){
-      item.setAttribute('aria-selected', item.getAttribute('data-tab') === id ? 'true' : 'false');
-    });
-    document.querySelectorAll('.tab-panel').forEach(function(panel){
-      panel.classList.toggle('active', panel.id === 'tab-' + id);
-    });
-  }
-
-  function setupTabs() {
-    document.querySelectorAll('.tab').forEach(function(tab) {
-      tab.addEventListener('click', function() {
-        var id = tab.getAttribute('data-tab');
-        activateTab(id);
-      });
-    });
-  }
-
-  populateSelects();
-  renderRegistry();
-  renderTranslations();
-  renderInspector();
-  setupTabs();
-
-  el.search.addEventListener('input', renderRegistry);
-  el.policy.addEventListener('change', renderRegistry);
-  el.surface.addEventListener('change', renderRegistry);
-  document.getElementById('resetFiltersBtn').addEventListener('click', function(){
-    el.search.value = '';
-    el.policy.value = 'all';
-    el.surface.value = 'all';
-    renderRegistry();
-  });
-  el.registryBody.addEventListener('click', function(event) {
-    var row = event.target.closest('tr[data-key]');
-    if (row) selectVariable(row.getAttribute('data-key'));
-  });
-  el.registryBody.addEventListener('keydown', function(event) {
-    if (event.key !== 'Enter' && event.key !== ' ') return;
-    var row = event.target.closest('tr[data-key]');
-    if (!row) return;
-    event.preventDefault();
-    selectVariable(row.getAttribute('data-key'));
-  });
-  document.getElementById('saveDraftBtn').addEventListener('click', saveDraft);
-  document.getElementById('clearDraftBtn').addEventListener('click', clearDraft);
-  document.getElementById('copyVariableBtn').addEventListener('click', function(){
-    if (selected) copyText('{{' + selected.key + '}}', 'Variable key copied');
-  });
-  document.getElementById('exportBtn').addEventListener('click', exportVisible);
-  document.getElementById('copyContractBtn').addEventListener('click', function(){
-    copyText('System -> Content variables; routes: /admin/content-variable/index, /admin/content-variable/update, /admin/content-variable/audit; owner: central registry; consumers: email templates, SEO pages, notifications, settings.', 'Route contract copied');
-  });
-  document.getElementById('igorToggle').addEventListener('click', function() {
-    var on = !document.body.classList.contains('igor-mode');
-    document.body.classList.toggle('igor-mode', on);
-    this.textContent = on ? 'For Igor: on' : 'For Igor: off';
-    if (!on && document.getElementById('tab-integration').classList.contains('active')) activateTab('registry');
-    showToast(on ? 'Developer implementation details are visible' : 'Developer implementation details are hidden');
-  });
-  document.getElementById('runAuditBtn').addEventListener('click', function(){
-    document.getElementById('auditTime').textContent = 'Mock run: ' + new Date().toLocaleTimeString();
-    showToast('Mock audit completed');
-  });
+  populatePolicies(); renderTable(); renderTranslations();
+  filterSearch.addEventListener('input', renderTable); filterPolicy.addEventListener('change', renderTable); filterSurface.addEventListener('change', renderTable);
+  document.getElementById('resetFilters').addEventListener('click', function(){ filterSearch.value=''; filterPolicy.value=''; filterSurface.value=''; renderTable(); });
+  body.addEventListener('click', function(e){ var btn=e.target.closest('button[data-action]'); if(!btn) return; var row=e.target.closest('tr[data-key]'); openModal(row.getAttribute('data-key'), btn.getAttribute('data-action') === 'translate' ? 'translations' : 'general'); });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-section]'), function(a){ a.addEventListener('click', function(e){ e.preventDefault(); showSection(a.getAttribute('data-section')); }); });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-modal-tab]'), function(a){ a.addEventListener('click', function(e){ e.preventDefault(); setModalTab(a.getAttribute('data-modal-tab')); }); });
+  document.getElementById('modalClose').addEventListener('click', closeModal); document.getElementById('modalCancel').addEventListener('click', closeModal); backdrop.addEventListener('click', closeModal);
+  document.getElementById('modalSave').addEventListener('click', function(){ closeModal(); showAlert('Variable saved'); });
+  document.getElementById('createBtn').addEventListener('click', function(){ openModal(variables[0].key, 'general'); document.getElementById('modalTitle').textContent = 'Create variable'; document.getElementById('modalKey').value = '{{newVariableKey}}'; });
+  document.getElementById('importBtn').addEventListener('click', function(){ showToast('CSV import opens the standard upload form'); });
+  document.getElementById('exportBtn').addEventListener('click', function(){ showToast('CSV export prepared'); });
+  document.getElementById('auditBtn').addEventListener('click', function(){ showSection('audit'); runAudit(); });
+  document.getElementById('auditBtnFooter').addEventListener('click', runAudit);
 })();
 </script>
-<!-- package-variable-tooltips:start -->
-<script src="variable-tooltips.js"></script>
-<!-- package-variable-tooltips:end -->
-
 </body>
 </html>
-
