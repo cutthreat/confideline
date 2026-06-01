@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-01 12:18",
+  "generated_at": "2026-06-01 12:37",
   "scope": "Email flow chains for online chat consultation only",
   "package": "email-admin-upload-ready",
   "global_rules": [
@@ -86,21 +86,21 @@
           "n": 3,
           "timing": "по запросу",
           "event_name": "user.password_recovery",
-          "template_key": "password_reset",
+          "template_key": "user_password_recovery",
           "trigger": "пользователь запросил восстановление доступа",
           "backend_gate": "reset token активен; rate limit соблюден; ответ UI не раскрывает существование аккаунта",
           "cancel_or_skip": "не блокировать маркетинговыми настройками; пропустить старый token после нового запроса",
-          "queue_policy": "dedupe: userId/emailHash + password_reset + resetTokenVersion"
+          "queue_policy": "dedupe: userId/emailHash + user_password_recovery + resetTokenVersion"
         },
         {
           "n": 4,
           "timing": "сразу",
           "event_name": "security.security_change",
-          "template_key": "security_change_alert",
+          "template_key": "security_change",
           "trigger": "изменен пароль, email, 2FA или чувствительная настройка",
           "backend_gate": "изменение сохранено; есть тип изменения и безопасное время события",
           "cancel_or_skip": "не раскрывать лишние IP/device данные без privacy-основания",
-          "queue_policy": "dedupe: userId + security_change_alert + changeId"
+          "queue_policy": "dedupe: userId + security_change + changeId"
         }
       ],
       "intersections": [
@@ -119,35 +119,35 @@
           "n": 1,
           "timing": "+2 часа",
           "event_name": "payment.init",
-          "template_key": "payment_started",
+          "template_key": "payment_init",
           "trigger": "создана платежная попытка, пользователь не завершил оплату",
           "backend_gate": "заказ все еще unpaid; нет success/error по более свежей попытке; пользователь допускает lifecycle письма",
           "cancel_or_skip": "отменить при payment.success, финальном payment.error, новом оплаченном order или refund",
-          "queue_policy": "dedupe: userId + payment_started + orderId + paymentAttemptId"
+          "queue_policy": "dedupe: userId + payment_init + orderId + paymentAttemptId"
         },
         {
           "n": 2,
           "timing": "сразу",
           "event_name": "payment.success",
-          "template_key": "payment_success_receipt",
+          "template_key": "payment_success",
           "trigger": "провайдер подтвердил финальный paid status",
           "backend_gate": "webhook дедуплицирован; orderId, amount, currency, receiptUrl, chatUrl доступны",
-          "cancel_or_skip": "отменить pending payment_started по orderId; не слать повторно при повторном webhook",
-          "queue_policy": "dedupe: userId + payment_success_receipt + orderId + paidStatusVersion"
+          "cancel_or_skip": "отменить pending payment_init по orderId; не слать повторно при повторном webhook",
+          "queue_policy": "dedupe: userId + payment_success + orderId + paidStatusVersion"
         },
         {
           "n": 3,
           "timing": "сразу",
           "event_name": "payment.error",
-          "template_key": "payment_failed",
+          "template_key": "payment_error",
           "trigger": "финальная ошибка платежной попытки",
           "backend_gate": "ошибка финальная, а не промежуточный provider status; checkoutUrl безопасен",
-          "cancel_or_skip": "не слать, если по этому order уже есть success; отменить pending payment_started для этой попытки",
-          "queue_policy": "dedupe: userId + payment_failed + paymentAttemptId + finalErrorCode"
+          "cancel_or_skip": "не слать, если по этому order уже есть success; отменить pending payment_init для этой попытки",
+          "queue_policy": "dedupe: userId + payment_error + paymentAttemptId + finalErrorCode"
         }
       ],
       "intersections": [
-        "payment_started пересекается с payment_success_receipt и payment_failed: delayed письмо должно повторно проверить состояние перед отправкой.",
+        "payment_init пересекается с payment_success и payment_error: delayed письмо должно повторно проверить состояние перед отправкой.",
         "Один order может иметь несколько paymentAttemptId; письмо об успехе дедуплицируется по orderId, ошибка - по конкретной финальной попытке.",
         "После payment.success начинается чат-цепочка: открывается чат и может планироваться reminder о первом сообщении."
       ]
@@ -162,31 +162,31 @@
           "n": 1,
           "timing": "+2 часа после payment.success/open chat",
           "event_name": "message.no_first_chat_message",
-          "template_key": "paid_chat_no_message_reminder",
+          "template_key": "message_no_first_chat_message",
           "trigger": "оплаченный чат открыт, но клиент не отправил первое сообщение",
           "backend_gate": "чат активен; нет первого client message; консультация не закрыта; reminder еще не отправлялся",
           "cancel_or_skip": "отменить при первом сообщении клиента, refund, закрытии/ограничении чата",
-          "queue_policy": "dedupe: userId + paid_chat_no_message_reminder + chatId"
+          "queue_policy": "dedupe: userId + message_no_first_chat_message + chatId"
         },
         {
           "n": 2,
           "timing": "по SLA job",
           "event_name": "message.answer_delayed",
-          "template_key": "chat_sla_delay",
+          "template_key": "message_answer_delayed",
           "trigger": "клиент ждет, SLA нарушен или близок к нарушению",
           "backend_gate": "нет видимого ответа эксперта; SLA threshold достигнут; чат не закрыт",
           "cancel_or_skip": "отменить при ответе эксперта, refund, safety block, закрытии чата",
-          "queue_policy": "dedupe: userId + chat_sla_delay + chatId + slaWindow"
+          "queue_policy": "dedupe: userId + message_answer_delayed + chatId + slaWindow"
         },
         {
           "n": 3,
           "timing": "сразу",
           "event_name": "message.received",
-          "template_key": "advisor_chat_reply_ready",
+          "template_key": "message_received",
           "trigger": "эксперт опубликовал ответ клиенту",
           "backend_gate": "message.received в текущем MVP означает ответ эксперта клиенту; ответ видим клиенту; chatUrl ведет в нужный чат",
-          "cancel_or_skip": "отменить pending chat_sla_delay",
-          "queue_policy": "dedupe: userId + advisor_chat_reply_ready + advisorMessageId"
+          "cancel_or_skip": "отменить pending message_answer_delayed",
+          "queue_policy": "dedupe: userId + message_received + advisorMessageId"
         }
       ],
       "intersections": [
@@ -215,37 +215,37 @@
           "n": 2,
           "timing": "сразу",
           "event_name": "support.message.received",
-          "template_key": "support_reply",
+          "template_key": "support_message_received",
           "trigger": "поддержка опубликовала ответ пользователю",
           "backend_gate": "ответ публичный; не internal note; supportUrl доступен",
           "cancel_or_skip": "не слать на внутренние статусы и operator-only комментарии",
-          "queue_policy": "dedupe: userId + support_reply + supportMessageId"
+          "queue_policy": "dedupe: userId + support_message_received + supportMessageId"
         },
         {
           "n": 3,
           "timing": "сразу",
           "event_name": "payment.refund.update",
-          "template_key": "refund_case_update",
+          "template_key": "payment_refund_update",
           "trigger": "значимое пользовательское обновление refund case",
           "backend_gate": "refund_status не финальный, но видимый пользователю; есть refundEta/supportUrl",
           "cancel_or_skip": "не слать на технические provider/internal статусы",
-          "queue_policy": "dedupe: userId + refund_case_update + refundId + status"
+          "queue_policy": "dedupe: userId + payment_refund_update + refundId + status"
         },
         {
           "n": 4,
           "timing": "сразу",
           "event_name": "payment.refund",
-          "template_key": "refund_confirmed",
+          "template_key": "payment_refund",
           "trigger": "refund confirmed/processed",
           "backend_gate": "финальный статус возврата; refundAmount, orderId, processorRefundId доступны",
           "cancel_or_skip": "после финального refund подавить review/follow-up/reflection по этой консультации",
-          "queue_policy": "dedupe: userId + refund_confirmed + refundId + finalStatus"
+          "queue_policy": "dedupe: userId + payment_refund + refundId + finalStatus"
         },
         {
           "n": 5,
           "timing": "сразу",
           "event_name": "support.safety_notice / user.age_restricted",
-          "template_key": "safety_notice / minor_or_age_restriction_notice",
+          "template_key": "support_safety_notice / user_age_restricted",
           "trigger": "safety/legal ограничение или важная инструкция",
           "backend_gate": "триггер подтвержден; текст согласован; нет лишних чувствительных деталей",
           "cancel_or_skip": "подавить маркетинг, review/follow-up/reflection и спорные чатовые письма",
@@ -278,21 +278,21 @@
           "n": 2,
           "timing": "+48 часов после завершения/сохранения чата",
           "event_name": "message.chat_saved",
-          "template_key": "d2_chat_reflection",
+          "template_key": "message_chat_saved",
           "trigger": "чат сохранен и доступен в кабинете",
           "backend_gate": "чат доступен; нет refund/dispute/deletion; пользователь допускает lifecycle письма",
           "cancel_or_skip": "отменить при refund, active dispute, удалении чата, safety restriction",
-          "queue_policy": "dedupe: userId + d2_chat_reflection + chatId"
+          "queue_policy": "dedupe: userId + message_chat_saved + chatId"
         },
         {
           "n": 3,
           "timing": "+72 часа после завершения консультации",
           "event_name": "advisor.followup.offer",
-          "template_key": "same_advisor_followup_offer",
+          "template_key": "advisor_followup_offer",
           "trigger": "повторная консультация с тем же экспертом уместна",
           "backend_gate": "эксперт доступен; нет активного чата; нет refund/complaint/safety; пользователь допускает маркетинг",
           "cancel_or_skip": "отменить при новой активной консультации, opt-out, refund, complaint, safety restriction",
-          "queue_policy": "dedupe: userId + same_advisor_followup_offer + advisorId + lastChatId"
+          "queue_policy": "dedupe: userId + advisor_followup_offer + advisorId + lastChatId"
         }
       ],
       "intersections": [
@@ -305,25 +305,25 @@
   "intersections": [
     {
       "source": "payment.success",
-      "cancels": "payment_started",
+      "cancels": "payment_init",
       "entity": "orderId/paymentAttemptId",
       "reason": "оплата уже успешна, abandoned checkout больше не актуален"
     },
     {
       "source": "payment.error",
-      "cancels": "payment_started",
+      "cancels": "payment_init",
       "entity": "paymentAttemptId",
       "reason": "попытка оплаты финально завершилась ошибкой"
     },
     {
       "source": "first client message",
-      "cancels": "paid_chat_no_message_reminder",
+      "cancels": "message_no_first_chat_message",
       "entity": "chatId",
       "reason": "пользователь уже написал в оплаченный чат"
     },
     {
       "source": "advisor reply",
-      "cancels": "chat_sla_delay",
+      "cancels": "message_answer_delayed",
       "entity": "chatId",
       "reason": "задержка ответа больше не актуальна"
     },
@@ -335,7 +335,7 @@
     },
     {
       "source": "refund confirmed/update",
-      "cancels": "review_request, d2_chat_reflection, same_advisor_followup_offer",
+      "cancels": "review_request, message_chat_saved, advisor_followup_offer",
       "entity": "orderId/chatId",
       "reason": "финансовый спор делает retention неуместным"
     },
@@ -347,7 +347,7 @@
     },
     {
       "source": "new active chat",
-      "cancels": "same_advisor_followup_offer",
+      "cancels": "advisor_followup_offer",
       "entity": "userId/advisorId",
       "reason": "не предлагать продолжение, когда активный чат уже есть"
     },

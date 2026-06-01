@@ -51,7 +51,7 @@
     .links a strong { display:block; }
     .links a span { display:block; color:var(--muted); font-size:13px; }
     @media (max-width:900px) { .grid, .grid.two, .links { grid-template-columns:1fr; } h1 { font-size:26px; } table { display:block; overflow-x:auto; } }
-/* package-navigation-css:start */
+  /* package-navigation-css:start */
 .package-nav {
   position: sticky;
   top: 0;
@@ -138,6 +138,7 @@
       <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_EN.html">Files EN</a>
       <a class="package-nav-link is-active" href="START_HERE_FOR_IGOR_RU.html">Start RU</a>
       <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_RU.html">Files RU</a>
+      <a class="package-nav-link" href="TEMPLATE_EVENT_STANDARD_RU.html">Standard</a>
       <a class="package-nav-link" href="SCENARIOS_IMPLEMENTATION_PANEL_RU.html">Scenarios</a>
       <a class="package-nav-link" href="EMAIL_FLOW_CHAINS_PANEL_RU.html">Flow</a>
       <a class="package-nav-link" href="BACKEND_EMAIL_EVENTS_CONTRACT_RU.html">Backend</a>
@@ -153,7 +154,7 @@
   </div>
 </nav>
 <!-- package-navigation:end -->
-<header>
+  <header>
     <h1>Старт внедрения email-шаблонов для Игоря</h1>
     <p class="lead">Это главный вход в пакет. Он объясняет порядок действий для человека-программиста и показывает, какие шаблоны можно переносить в админку сразу, а какие сначала требуют backend-событий, переменных и проверки очереди.</p>
   </header>
@@ -165,8 +166,8 @@
     <h2>Состояние пакета</h2>
     <div class="grid">
       <div class="card ok"><div class="metric">2</div><strong>Обновить существующие</strong><span>Можно начать с live-шаблонов после проверки render и переменных.</span></div>
-      <div class="card mid"><div class="metric">8</div><strong>Создать после проверки</strong><span>Нужна сверка event binding, payload и queue, затем импорт в админку.</span></div>
-      <div class="card block"><div class="metric">9</div><strong>Сначала backend</strong><span>Нельзя считать готовыми до реализации событий, payload и отмен pending-писем.</span></div>
+      <div class="card mid"><div class="metric">6</div><strong>Создать после проверки</strong><span>Нужна сверка event binding, payload и queue, затем импорт в админку.</span></div>
+      <div class="card block"><div class="metric">11</div><strong>Сначала backend</strong><span>Нельзя считать готовыми до реализации событий, payload и отмен pending-писем.</span></div>
     </div>
     <div class="legend" aria-label="Легенда цветов">
       <span class="existing"><i></i>Зеленый: шаблон уже есть в системе, обновлять существующую запись</span>
@@ -218,7 +219,7 @@
 </tr>
 <tr class="row-create">
 <td><span class="badge">P0</span></td>
-<td><strong>Поддержка ответила</strong><small>support_reply</small></td>
+<td><strong>Поддержка ответила</strong><small>support_message_received</small></td>
 <td><code>support.message.received</code></td>
 <td>0</td>
 <td>0</td>
@@ -227,7 +228,7 @@
 </tr>
 <tr class="row-create">
 <td><span class="badge">P0</span></td>
-<td><strong>Возврат подтвержден</strong><small>refund_confirmed</small></td>
+<td><strong>Возврат подтвержден</strong><small>payment_refund</small></td>
 <td><code>payment.refund</code></td>
 <td>0</td>
 <td>0</td>
@@ -236,7 +237,7 @@
 </tr>
 <tr class="row-create">
 <td><span class="badge">P0</span></td>
-<td><strong>Оплата подтверждена</strong><small>payment_success_receipt</small></td>
+<td><strong>Оплата подтверждена</strong><small>payment_success</small></td>
 <td><code>payment.success</code></td>
 <td>0</td>
 <td>0</td>
@@ -245,7 +246,7 @@
 </tr>
 <tr class="row-create">
 <td><span class="badge">P0</span></td>
-<td><strong>Оплата не прошла</strong><small>payment_failed</small></td>
+<td><strong>Оплата не прошла</strong><small>payment_error</small></td>
 <td><code>payment.error</code></td>
 <td>0</td>
 <td>0</td>
@@ -254,7 +255,7 @@
 </tr>
 <tr class="row-create">
 <td><span class="badge">P0</span></td>
-<td><strong>Эксперт ответил в чате</strong><small>advisor_chat_reply_ready</small></td>
+<td><strong>Эксперт ответил в чате</strong><small>message_received</small></td>
 <td><code>message.received</code></td>
 <td>0</td>
 <td>0</td>
@@ -270,27 +271,27 @@
 <td>Сначала backend</td>
 <td>Создать тестовое обращение; проверить номер, ссылку и отсутствие отправки при внутренней операторской заметке.</td>
 </tr>
-<tr class="row-create">
+<tr class="row-backend">
 <td><span class="badge">P1</span></td>
-<td><strong>Статус возврата обновлен</strong><small>refund_case_update</small></td>
+<td><strong>Статус возврата обновлен</strong><small>payment_refund_update</small></td>
 <td><code>payment.refund.update</code></td>
 <td>0</td>
 <td>0</td>
-<td>Создать в админке после проверки</td>
+<td>Сначала backend</td>
 <td>Перевести refund case между пользовательскими статусами; проверить, что письмо не уходит на внутренние изменения.</td>
 </tr>
-<tr class="row-create">
+<tr class="row-backend">
 <td><span class="badge">P1</span></td>
 <td><strong>Попросить оценку консультации</strong><small>review_request</small></td>
 <td><code>review.request</code></td>
 <td>0</td>
 <td>24</td>
-<td>Создать в админке после проверки</td>
+<td>Сначала backend</td>
 <td>Завершить чат без отзыва; проверить письмо через delay. Затем оставить отзыв до delay и убедиться, что письмо не ушло.</td>
 </tr>
 <tr class="row-backend">
 <td><span class="badge">P1</span></td>
-<td><strong>Важная информация о поддержке</strong><small>safety_notice</small></td>
+<td><strong>Важная информация о поддержке</strong><small>support_safety_notice</small></td>
 <td><code>support.safety_notice</code></td>
 <td>0</td>
 <td>0</td>
@@ -299,7 +300,7 @@
 </tr>
 <tr class="row-backend">
 <td><span class="badge">P1</span></td>
-<td><strong>Ограничение доступа по возрасту/правилам</strong><small>minor_or_age_restriction_notice</small></td>
+<td><strong>Ограничение доступа по возрасту/правилам</strong><small>user_age_restricted</small></td>
 <td><code>user.age_restricted</code></td>
 <td>0</td>
 <td>0</td>
@@ -308,7 +309,7 @@
 </tr>
 <tr class="row-backend">
 <td><span class="badge">P1</span></td>
-<td><strong>Сброс пароля</strong><small>password_reset</small></td>
+<td><strong>Сброс пароля</strong><small>user_password_recovery</small></td>
 <td><code>user.password_recovery</code></td>
 <td>0</td>
 <td>0</td>
@@ -317,7 +318,7 @@
 </tr>
 <tr class="row-backend">
 <td><span class="badge">P1</span></td>
-<td><strong>Изменение безопасности</strong><small>security_change_alert</small></td>
+<td><strong>Изменение безопасности</strong><small>security_change</small></td>
 <td><code>security.security_change</code></td>
 <td>0</td>
 <td>0</td>
@@ -326,7 +327,7 @@
 </tr>
 <tr class="row-create">
 <td><span class="badge">P1</span></td>
-<td><strong>Оплата начата, но не завершена</strong><small>payment_started</small></td>
+<td><strong>Оплата начата, но не завершена</strong><small>payment_init</small></td>
 <td><code>payment.init</code></td>
 <td>0</td>
 <td>2</td>
@@ -335,7 +336,7 @@
 </tr>
 <tr class="row-backend">
 <td><span class="badge">P1</span></td>
-<td><strong>Оплаченный чат без первого сообщения</strong><small>paid_chat_no_message_reminder</small></td>
+<td><strong>Оплаченный чат без первого сообщения</strong><small>message_no_first_chat_message</small></td>
 <td><code>message.no_first_chat_message</code></td>
 <td>5</td>
 <td>2</td>
@@ -344,7 +345,7 @@
 </tr>
 <tr class="row-backend">
 <td><span class="badge">P1</span></td>
-<td><strong>Ответ эксперта задерживается</strong><small>chat_sla_delay</small></td>
+<td><strong>Ответ эксперта задерживается</strong><small>message_answer_delayed</small></td>
 <td><code>message.answer_delayed</code></td>
 <td>0</td>
 <td>0</td>
@@ -353,7 +354,7 @@
 </tr>
 <tr class="row-backend">
 <td><span class="badge">P2</span></td>
-<td><strong>Продолжить с тем же экспертом</strong><small>same_advisor_followup_offer</small></td>
+<td><strong>Продолжить с тем же экспертом</strong><small>advisor_followup_offer</small></td>
 <td><code>advisor.followup.offer</code></td>
 <td>0</td>
 <td>72</td>
@@ -362,7 +363,7 @@
 </tr>
 <tr class="row-backend">
 <td><span class="badge">P2</span></td>
-<td><strong>Чат сохранен, можно вернуться</strong><small>d2_chat_reflection</small></td>
+<td><strong>Чат сохранен, можно вернуться</strong><small>message_chat_saved</small></td>
 <td><code>message.chat_saved</code></td>
 <td>0</td>
 <td>48</td>
@@ -378,17 +379,17 @@
     <table>
       <thead><tr><th>Приоритет</th><th>event_name</th><th>Шаблон</th><th>Acceptance</th></tr></thead>
       <tbody>
-        <tr><td><span class="badge">P1</span></td><td><code>message.answer_delayed</code></td><td>chat_sla_delay</td><td></td></tr>
-<tr><td><span class="badge">P1</span></td><td><code>message.no_first_chat_message</code></td><td>paid_chat_no_message_reminder</td><td></td></tr>
-<tr><td><span class="badge">P1</span></td><td><code>payment.refund.update</code></td><td>refund_case_update</td><td></td></tr>
+        <tr><td><span class="badge">P1</span></td><td><code>message.answer_delayed</code></td><td>message_answer_delayed</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>message.no_first_chat_message</code></td><td>message_no_first_chat_message</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>payment.refund.update</code></td><td>payment_refund_update</td><td></td></tr>
 <tr><td><span class="badge">P1</span></td><td><code>review.request</code></td><td>review_request</td><td></td></tr>
-<tr><td><span class="badge">P1</span></td><td><code>security.security_change</code></td><td>security_change_alert</td><td></td></tr>
-<tr><td><span class="badge">P1</span></td><td><code>support.safety_notice</code></td><td>safety_notice</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>security.security_change</code></td><td>security_change</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>support.safety_notice</code></td><td>support_safety_notice</td><td></td></tr>
 <tr><td><span class="badge">P1</span></td><td><code>support.ticket.opened</code></td><td>support_ticket_opened</td><td></td></tr>
-<tr><td><span class="badge">P1</span></td><td><code>user.age_restricted</code></td><td>minor_or_age_restriction_notice</td><td></td></tr>
-<tr><td><span class="badge">P1</span></td><td><code>user.password_recovery</code></td><td>password_reset</td><td></td></tr>
-<tr><td><span class="badge">P2</span></td><td><code>advisor.followup.offer</code></td><td>same_advisor_followup_offer</td><td></td></tr>
-<tr><td><span class="badge">P2</span></td><td><code>message.chat_saved</code></td><td>d2_chat_reflection</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>user.age_restricted</code></td><td>user_age_restricted</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>user.password_recovery</code></td><td>user_password_recovery</td><td></td></tr>
+<tr><td><span class="badge">P2</span></td><td><code>advisor.followup.offer</code></td><td>advisor_followup_offer</td><td></td></tr>
+<tr><td><span class="badge">P2</span></td><td><code>message.chat_saved</code></td><td>message_chat_saved</td><td></td></tr>
 
       </tbody>
     </table>
@@ -420,5 +421,4 @@
   </main>
 </body>
 </html>
-
 

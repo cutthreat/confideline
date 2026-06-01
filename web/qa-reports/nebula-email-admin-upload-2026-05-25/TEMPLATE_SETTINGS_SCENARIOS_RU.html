@@ -132,6 +132,7 @@
       <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_EN.html">Files EN</a>
       <a class="package-nav-link" href="START_HERE_FOR_IGOR_RU.html">Start RU</a>
       <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_RU.html">Files RU</a>
+      <a class="package-nav-link" href="TEMPLATE_EVENT_STANDARD_RU.html">Standard</a>
       <a class="package-nav-link" href="SCENARIOS_IMPLEMENTATION_PANEL_RU.html">Scenarios</a>
       <a class="package-nav-link" href="EMAIL_FLOW_CHAINS_PANEL_RU.html">Flow</a>
       <a class="package-nav-link" href="BACKEND_EMAIL_EVENTS_CONTRACT_RU.html">Backend</a>
@@ -156,22 +157,22 @@
         <a href="#scenario-0">00. user_registration</a>
         <a href="#scenario-1">01. email_confirmation</a>
         <a href="#scenario-10">10. support_ticket_opened</a>
-        <a href="#scenario-11">11. support_reply</a>
-        <a href="#scenario-12">12. refund_confirmed</a>
-        <a href="#scenario-13">13. refund_case_update</a>
-        <a href="#scenario-14">14. same_advisor_followup_offer</a>
+        <a href="#scenario-11">11. support_message_received</a>
+        <a href="#scenario-12">12. payment_refund</a>
+        <a href="#scenario-13">13. payment_refund_update</a>
+        <a href="#scenario-14">14. advisor_followup_offer</a>
         <a href="#scenario-15">15. review_request</a>
-        <a href="#scenario-16">16. d2_chat_reflection</a>
-        <a href="#scenario-17">17. safety_notice</a>
-        <a href="#scenario-18">18. minor_or_age_restriction_notice</a>
-        <a href="#scenario-2">02. password_reset</a>
-        <a href="#scenario-3">03. security_change_alert</a>
-        <a href="#scenario-4">04. payment_success_receipt</a>
-        <a href="#scenario-5">05. payment_failed</a>
-        <a href="#scenario-6">06. payment_started</a>
-        <a href="#scenario-7">07. paid_chat_no_message_reminder</a>
-        <a href="#scenario-8">08. chat_sla_delay</a>
-        <a href="#scenario-9">09. advisor_chat_reply_ready</a>
+        <a href="#scenario-16">16. message_chat_saved</a>
+        <a href="#scenario-17">17. support_safety_notice</a>
+        <a href="#scenario-18">18. user_age_restricted</a>
+        <a href="#scenario-2">02. user_password_recovery</a>
+        <a href="#scenario-3">03. security_change</a>
+        <a href="#scenario-4">04. payment_success</a>
+        <a href="#scenario-5">05. payment_error</a>
+        <a href="#scenario-6">06. payment_init</a>
+        <a href="#scenario-7">07. message_no_first_chat_message</a>
+        <a href="#scenario-8">08. message_answer_delayed</a>
+        <a href="#scenario-9">09. message_received</a>
       </div>
     </aside>
     <main>
@@ -195,7 +196,7 @@
           <h2>Регистрация пользователя</h2>
           <p class="key">user_registration</p>
         </div>
-        <span class="badge warn">нужен backend event</span>
+        <span class="badge ok">event есть в dropdown, trigger проверить</span>
       </header>
       <div class="settings">
         <div><span>subject</span><code>Добро пожаловать в {{siteName}}</code></div>
@@ -218,7 +219,7 @@
           <h2>Подтверждение email</h2>
           <p class="key">email_confirmation</p>
         </div>
-        <span class="badge warn">нужен backend event</span>
+        <span class="badge ok">event есть в dropdown, trigger проверить</span>
       </header>
       <div class="settings">
         <div><span>subject</span><code>Подтвердите email для {{siteName}}</code></div>
@@ -262,16 +263,16 @@
         <div>
           <p class="num">11</p>
           <h2>Поддержка ответила</h2>
-          <p class="key">support_reply</p>
+          <p class="key">support_message_received</p>
         </div>
-        <span class="badge warn">нужен backend event</span>
+        <span class="badge ok">event есть в dropdown, trigger проверить</span>
       </header>
       <div class="settings">
         <div><span>subject</span><code>Поддержка ответила по обращению #{{supportCaseId}}</code></div>
         <div><span>event_name</span><code>support.message.received</code></div>
         <div><span>condition_id</span><code>0</code></div>
         <div><span>delay</span><code>0</code></div>
-        <div><span>source_trigger</span><code>support_reply_created</code></div>
+        <div><span>source_trigger</span><code>support_message_received_created</code></div>
         <div><span>type/settings</span><code>2 / count_user_settings=0</code></div>
       </div>
       <section><h3>Когда</h3><p>Сразу после публичного ответа поддержки пользователю.</p></section>
@@ -285,16 +286,16 @@
         <div>
           <p class="num">12</p>
           <h2>Возврат подтвержден</h2>
-          <p class="key">refund_confirmed</p>
+          <p class="key">payment_refund</p>
         </div>
-        <span class="badge warn">нужен backend event</span>
+        <span class="badge ok">event есть в dropdown, trigger проверить</span>
       </header>
       <div class="settings">
         <div><span>subject</span><code>Возврат по заказу #{{orderId}} подтверждён</code></div>
         <div><span>event_name</span><code>payment.refund</code></div>
         <div><span>condition_id</span><code>0</code></div>
         <div><span>delay</span><code>0</code></div>
-        <div><span>source_trigger</span><code>refund_confirmed</code></div>
+        <div><span>source_trigger</span><code>payment_refund</code></div>
         <div><span>type/settings</span><code>2 / count_user_settings=0</code></div>
       </div>
       <section><h3>Когда</h3><p>После финального подтверждения возврата платежным или финансовым контуром.</p></section>
@@ -308,7 +309,7 @@
         <div>
           <p class="num">13</p>
           <h2>Статус возврата обновлен</h2>
-          <p class="key">refund_case_update</p>
+          <p class="key">payment_refund_update</p>
         </div>
         <span class="badge warn">нужен backend event</span>
       </header>
@@ -317,7 +318,7 @@
         <div><span>event_name</span><code>payment.refund.update</code></div>
         <div><span>condition_id</span><code>0</code></div>
         <div><span>delay</span><code>0</code></div>
-        <div><span>source_trigger</span><code>refund_case_updated</code></div>
+        <div><span>source_trigger</span><code>payment_refund_updated</code></div>
         <div><span>type/settings</span><code>2 / count_user_settings=0</code></div>
       </div>
       <section><h3>Когда</h3><p>Когда по возврату появляется значимое изменение статуса, но это еще не финальное подтверждение.</p></section>
@@ -331,7 +332,7 @@
         <div>
           <p class="num">14</p>
           <h2>Продолжить с тем же экспертом</h2>
-          <p class="key">same_advisor_followup_offer</p>
+          <p class="key">advisor_followup_offer</p>
         </div>
         <span class="badge warn">нужен backend event</span>
       </header>
@@ -377,7 +378,7 @@
         <div>
           <p class="num">16</p>
           <h2>Чат сохранен, можно вернуться</h2>
-          <p class="key">d2_chat_reflection</p>
+          <p class="key">message_chat_saved</p>
         </div>
         <span class="badge warn">нужен backend event</span>
       </header>
@@ -386,7 +387,7 @@
         <div><span>event_name</span><code>message.chat_saved</code></div>
         <div><span>condition_id</span><code>0</code></div>
         <div><span>delay</span><code>48</code></div>
-        <div><span>source_trigger</span><code>d2_chat_reflection_allowed</code></div>
+        <div><span>source_trigger</span><code>message_chat_saved_allowed</code></div>
         <div><span>type/settings</span><code>3 / count_user_settings=1</code></div>
       </div>
       <section><h3>Когда</h3><p>Через 48 часов после завершения/сохранения чата.</p></section>
@@ -400,7 +401,7 @@
         <div>
           <p class="num">17</p>
           <h2>Важная информация о поддержке</h2>
-          <p class="key">safety_notice</p>
+          <p class="key">support_safety_notice</p>
         </div>
         <span class="badge warn">нужен backend event</span>
       </header>
@@ -423,7 +424,7 @@
         <div>
           <p class="num">18</p>
           <h2>Ограничение доступа по возрасту/правилам</h2>
-          <p class="key">minor_or_age_restriction_notice</p>
+          <p class="key">user_age_restricted</p>
         </div>
         <span class="badge warn">нужен backend event</span>
       </header>
@@ -446,7 +447,7 @@
         <div>
           <p class="num">02</p>
           <h2>Сброс пароля</h2>
-          <p class="key">password_reset</p>
+          <p class="key">user_password_recovery</p>
         </div>
         <span class="badge warn">нужен backend event</span>
       </header>
@@ -455,7 +456,7 @@
         <div><span>event_name</span><code>user.password_recovery</code></div>
         <div><span>condition_id</span><code>0</code></div>
         <div><span>delay</span><code>0</code></div>
-        <div><span>source_trigger</span><code>password_reset_requested</code></div>
+        <div><span>source_trigger</span><code>user_password_recovery_requested</code></div>
         <div><span>type/settings</span><code>1 / count_user_settings=0</code></div>
       </div>
       <section><h3>Когда</h3><p>Сразу после запроса восстановления пароля.</p></section>
@@ -469,7 +470,7 @@
         <div>
           <p class="num">03</p>
           <h2>Изменение безопасности</h2>
-          <p class="key">security_change_alert</p>
+          <p class="key">security_change</p>
         </div>
         <span class="badge warn">нужен backend event</span>
       </header>
@@ -492,9 +493,9 @@
         <div>
           <p class="num">04</p>
           <h2>Оплата подтверждена</h2>
-          <p class="key">payment_success_receipt</p>
+          <p class="key">payment_success</p>
         </div>
-        <span class="badge warn">нужен backend event</span>
+        <span class="badge ok">event есть в dropdown, trigger проверить</span>
       </header>
       <div class="settings">
         <div><span>subject</span><code>Оплата подтверждена: чат-консультация {{siteName}} готова</code></div>
@@ -515,16 +516,16 @@
         <div>
           <p class="num">05</p>
           <h2>Оплата не прошла</h2>
-          <p class="key">payment_failed</p>
+          <p class="key">payment_error</p>
         </div>
-        <span class="badge warn">нужен backend event</span>
+        <span class="badge ok">event есть в dropdown, trigger проверить</span>
       </header>
       <div class="settings">
         <div><span>subject</span><code>Оплата не прошла</code></div>
         <div><span>event_name</span><code>payment.error</code></div>
         <div><span>condition_id</span><code>0</code></div>
         <div><span>delay</span><code>0</code></div>
-        <div><span>source_trigger</span><code>payment_failed</code></div>
+        <div><span>source_trigger</span><code>payment_error</code></div>
         <div><span>type/settings</span><code>1 / count_user_settings=0</code></div>
       </div>
       <section><h3>Когда</h3><p>После финального отказа платежа или ошибки, когда пользователь может повторить попытку.</p></section>
@@ -538,16 +539,16 @@
         <div>
           <p class="num">06</p>
           <h2>Оплата начата, но не завершена</h2>
-          <p class="key">payment_started</p>
+          <p class="key">payment_init</p>
         </div>
-        <span class="badge warn">нужен backend event</span>
+        <span class="badge ok">event есть в dropdown, trigger проверить</span>
       </header>
       <div class="settings">
         <div><span>subject</span><code>Вы можете завершить оплату чат-консультации</code></div>
         <div><span>event_name</span><code>payment.init</code></div>
         <div><span>condition_id</span><code>0</code></div>
         <div><span>delay</span><code>2</code></div>
-        <div><span>source_trigger</span><code>payment_started_not_completed</code></div>
+        <div><span>source_trigger</span><code>payment_init_not_completed</code></div>
         <div><span>type/settings</span><code>3 / count_user_settings=1</code></div>
       </div>
       <section><h3>Когда</h3><p>Через 2 часа после начала оплаты, только если заказ остался неоплаченным.</p></section>
@@ -561,7 +562,7 @@
         <div>
           <p class="num">07</p>
           <h2>Оплаченный чат без первого сообщения</h2>
-          <p class="key">paid_chat_no_message_reminder</p>
+          <p class="key">message_no_first_chat_message</p>
         </div>
         <span class="badge warn">нужен backend event</span>
       </header>
@@ -584,7 +585,7 @@
         <div>
           <p class="num">08</p>
           <h2>Ответ эксперта задерживается</h2>
-          <p class="key">chat_sla_delay</p>
+          <p class="key">message_answer_delayed</p>
         </div>
         <span class="badge warn">нужен backend event</span>
       </header>
@@ -607,9 +608,9 @@
         <div>
           <p class="num">09</p>
           <h2>Эксперт ответил в чате</h2>
-          <p class="key">advisor_chat_reply_ready</p>
+          <p class="key">message_received</p>
         </div>
-        <span class="badge warn">нужен backend event</span>
+        <span class="badge ok">event есть в dropdown, trigger проверить</span>
       </header>
       <div class="settings">
         <div><span>subject</span><code>Эксперт ответил в чате</code></div>
@@ -629,4 +630,5 @@
   </div>
 </body>
 </html>
+
 

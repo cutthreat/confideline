@@ -130,6 +130,7 @@
       <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_EN.html">Files EN</a>
       <a class="package-nav-link" href="START_HERE_FOR_IGOR_RU.html">Start RU</a>
       <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_RU.html">Files RU</a>
+      <a class="package-nav-link" href="TEMPLATE_EVENT_STANDARD_RU.html">Standard</a>
       <a class="package-nav-link" href="SCENARIOS_IMPLEMENTATION_PANEL_RU.html">Scenarios</a>
       <a class="package-nav-link" href="EMAIL_FLOW_CHAINS_PANEL_RU.html">Flow</a>
       <a class="package-nav-link" href="BACKEND_EMAIL_EVENTS_CONTRACT_RU.html">Backend</a>
@@ -155,8 +156,8 @@
 
   <div class="grid">
     <div class="card"><strong>2</strong><span>Update existing live templates first</span></div>
-    <div class="card"><strong>8</strong><span>Create after backend trigger/payload check</span></div>
-    <div class="card"><strong>9</strong><span>Backend-first templates</span></div>
+    <div class="card"><strong>16</strong><span>Create after backend trigger/payload check</span></div>
+    <div class="card"><strong>1</strong><span>Backend-first templates</span></div>
   </div>
   <div class="legend">
     <span class="existing"><i></i>Green: template already exists in the system, update the live record</span>
@@ -195,7 +196,7 @@
 </tr>
 <tr class="row-create">
 <td><span class="badge">P0</span></td>
-<td><strong>support_reply</strong><small>Поддержка ответила</small></td>
+<td><strong>support_message_received</strong><small>Поддержка ответила</small></td>
 <td><code>support.message.received</code></td>
 <td>0</td>
 <td>0</td>
@@ -203,7 +204,7 @@
 </tr>
 <tr class="row-create">
 <td><span class="badge">P0</span></td>
-<td><strong>refund_confirmed</strong><small>Возврат подтвержден</small></td>
+<td><strong>payment_refund</strong><small>Возврат подтвержден</small></td>
 <td><code>payment.refund</code></td>
 <td>0</td>
 <td>0</td>
@@ -211,7 +212,7 @@
 </tr>
 <tr class="row-create">
 <td><span class="badge">P0</span></td>
-<td><strong>payment_success_receipt</strong><small>Оплата подтверждена</small></td>
+<td><strong>payment_success</strong><small>Оплата подтверждена</small></td>
 <td><code>payment.success</code></td>
 <td>0</td>
 <td>0</td>
@@ -219,7 +220,7 @@
 </tr>
 <tr class="row-create">
 <td><span class="badge">P0</span></td>
-<td><strong>payment_failed</strong><small>Оплата не прошла</small></td>
+<td><strong>payment_error</strong><small>Оплата не прошла</small></td>
 <td><code>payment.error</code></td>
 <td>0</td>
 <td>0</td>
@@ -227,7 +228,7 @@
 </tr>
 <tr class="row-create">
 <td><span class="badge">P0</span></td>
-<td><strong>advisor_chat_reply_ready</strong><small>Эксперт ответил в чате</small></td>
+<td><strong>message_received</strong><small>Эксперт ответил в чате</small></td>
 <td><code>message.received</code></td>
 <td>0</td>
 <td>0</td>
@@ -243,7 +244,7 @@
 </tr>
 <tr class="row-create">
 <td><span class="badge">P1</span></td>
-<td><strong>refund_case_update</strong><small>Статус возврата обновлен</small></td>
+<td><strong>payment_refund_update</strong><small>Статус возврата обновлен</small></td>
 <td><code>payment.refund.update</code></td>
 <td>0</td>
 <td>0</td>
@@ -257,77 +258,77 @@
 <td>24</td>
 <td>Create after backend check</td>
 </tr>
-<tr class="row-backend">
+<tr class="row-create">
 <td><span class="badge">P1</span></td>
-<td><strong>safety_notice</strong><small>Важная информация о поддержке</small></td>
+<td><strong>support_safety_notice</strong><small>Важная информация о поддержке</small></td>
 <td><code>support.safety_notice</code></td>
 <td>0</td>
 <td>0</td>
-<td>Backend first</td>
-</tr>
-<tr class="row-backend">
-<td><span class="badge">P1</span></td>
-<td><strong>minor_or_age_restriction_notice</strong><small>Ограничение доступа по возрасту/правилам</small></td>
-<td><code>user.age_restricted</code></td>
-<td>0</td>
-<td>0</td>
-<td>Backend first</td>
-</tr>
-<tr class="row-backend">
-<td><span class="badge">P1</span></td>
-<td><strong>password_reset</strong><small>Сброс пароля</small></td>
-<td><code>user.password_recovery</code></td>
-<td>0</td>
-<td>0</td>
-<td>Backend first</td>
-</tr>
-<tr class="row-backend">
-<td><span class="badge">P1</span></td>
-<td><strong>security_change_alert</strong><small>Изменение безопасности</small></td>
-<td><code>security.security_change</code></td>
-<td>0</td>
-<td>0</td>
-<td>Backend first</td>
+<td>Create after backend check</td>
 </tr>
 <tr class="row-create">
 <td><span class="badge">P1</span></td>
-<td><strong>payment_started</strong><small>Оплата начата, но не завершена</small></td>
+<td><strong>user_age_restricted</strong><small>Ограничение доступа по возрасту/правилам</small></td>
+<td><code>user.age_restricted</code></td>
+<td>0</td>
+<td>0</td>
+<td>Create after backend check</td>
+</tr>
+<tr class="row-create">
+<td><span class="badge">P1</span></td>
+<td><strong>user_password_recovery</strong><small>Сброс пароля</small></td>
+<td><code>user.password_recovery</code></td>
+<td>0</td>
+<td>0</td>
+<td>Create after backend check</td>
+</tr>
+<tr class="row-create">
+<td><span class="badge">P1</span></td>
+<td><strong>security_change</strong><small>Изменение безопасности</small></td>
+<td><code>security.security_change</code></td>
+<td>0</td>
+<td>0</td>
+<td>Create after backend check</td>
+</tr>
+<tr class="row-create">
+<td><span class="badge">P1</span></td>
+<td><strong>payment_init</strong><small>Оплата начата, но не завершена</small></td>
 <td><code>payment.init</code></td>
 <td>0</td>
 <td>2</td>
 <td>Create after backend check</td>
 </tr>
-<tr class="row-backend">
+<tr class="row-create">
 <td><span class="badge">P1</span></td>
-<td><strong>paid_chat_no_message_reminder</strong><small>Оплаченный чат без первого сообщения</small></td>
+<td><strong>message_no_first_chat_message</strong><small>Оплаченный чат без первого сообщения</small></td>
 <td><code>message.no_first_chat_message</code></td>
 <td>5</td>
 <td>2</td>
-<td>Backend first</td>
+<td>Create after backend check</td>
 </tr>
-<tr class="row-backend">
+<tr class="row-create">
 <td><span class="badge">P1</span></td>
-<td><strong>chat_sla_delay</strong><small>Ответ эксперта задерживается</small></td>
+<td><strong>message_answer_delayed</strong><small>Ответ эксперта задерживается</small></td>
 <td><code>message.answer_delayed</code></td>
 <td>0</td>
 <td>0</td>
-<td>Backend first</td>
+<td>Create after backend check</td>
 </tr>
-<tr class="row-backend">
+<tr class="row-create">
 <td><span class="badge">P2</span></td>
-<td><strong>same_advisor_followup_offer</strong><small>Продолжить с тем же экспертом</small></td>
+<td><strong>advisor_followup_offer</strong><small>Продолжить с тем же экспертом</small></td>
 <td><code>advisor.followup.offer</code></td>
 <td>0</td>
 <td>72</td>
-<td>Backend first</td>
+<td>Create after backend check</td>
 </tr>
-<tr class="row-backend">
+<tr class="row-create">
 <td><span class="badge">P2</span></td>
-<td><strong>d2_chat_reflection</strong><small>Чат сохранен, можно вернуться</small></td>
+<td><strong>message_chat_saved</strong><small>Чат сохранен, можно вернуться</small></td>
 <td><code>message.chat_saved</code></td>
 <td>0</td>
 <td>48</td>
-<td>Backend first</td>
+<td>Create after backend check</td>
 </tr>
 
     </tbody>
@@ -337,17 +338,17 @@
   <table>
     <thead><tr><th>Priority</th><th>event_name</th><th>Template</th><th>Acceptance</th></tr></thead>
     <tbody>
-      <tr><td><span class="badge">P1</span></td><td><code>message.answer_delayed</code></td><td>chat_sla_delay</td><td></td></tr>
-<tr><td><span class="badge">P1</span></td><td><code>message.no_first_chat_message</code></td><td>paid_chat_no_message_reminder</td><td></td></tr>
-<tr><td><span class="badge">P1</span></td><td><code>payment.refund.update</code></td><td>refund_case_update</td><td></td></tr>
+      <tr><td><span class="badge">P1</span></td><td><code>message.answer_delayed</code></td><td>message_answer_delayed</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>message.no_first_chat_message</code></td><td>message_no_first_chat_message</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>payment.refund.update</code></td><td>payment_refund_update</td><td></td></tr>
 <tr><td><span class="badge">P1</span></td><td><code>review.request</code></td><td>review_request</td><td></td></tr>
-<tr><td><span class="badge">P1</span></td><td><code>security.security_change</code></td><td>security_change_alert</td><td></td></tr>
-<tr><td><span class="badge">P1</span></td><td><code>support.safety_notice</code></td><td>safety_notice</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>security.security_change</code></td><td>security_change</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>support.safety_notice</code></td><td>support_safety_notice</td><td></td></tr>
 <tr><td><span class="badge">P1</span></td><td><code>support.ticket.opened</code></td><td>support_ticket_opened</td><td></td></tr>
-<tr><td><span class="badge">P1</span></td><td><code>user.age_restricted</code></td><td>minor_or_age_restriction_notice</td><td></td></tr>
-<tr><td><span class="badge">P1</span></td><td><code>user.password_recovery</code></td><td>password_reset</td><td></td></tr>
-<tr><td><span class="badge">P2</span></td><td><code>advisor.followup.offer</code></td><td>same_advisor_followup_offer</td><td></td></tr>
-<tr><td><span class="badge">P2</span></td><td><code>message.chat_saved</code></td><td>d2_chat_reflection</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>user.age_restricted</code></td><td>user_age_restricted</td><td></td></tr>
+<tr><td><span class="badge">P1</span></td><td><code>user.password_recovery</code></td><td>user_password_recovery</td><td></td></tr>
+<tr><td><span class="badge">P2</span></td><td><code>advisor.followup.offer</code></td><td>advisor_followup_offer</td><td></td></tr>
+<tr><td><span class="badge">P2</span></td><td><code>message.chat_saved</code></td><td>message_chat_saved</td><td></td></tr>
 
     </tbody>
   </table>
@@ -370,5 +371,6 @@ Do not import templates with missing backend events as ready. Implement or confi
 </main>
 </body>
 </html>
+
 
 

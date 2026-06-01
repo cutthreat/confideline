@@ -11,7 +11,7 @@ Flow-цепочки настроены как поведенческие lifecyc
 | Практика | Как применено в пакете |
 |---|---|
 | Lifecycle flows должны иметь разные цели и шаблоны | Сервисные письма, checkout recovery, чатовые уведомления, support/refund/safety и retention разделены по цепочкам. |
-| Timing нужно адаптировать под бизнес-цикл | `payment_started` переведен на +2 часа, а retention разведен на +24/+48/+72 часа. |
+| Timing нужно адаптировать под бизнес-цикл | `payment_init` переведен на +2 часа, а retention разведен на +24/+48/+72 часа. |
 | Не перегружать пользователя письмами | Для marketing/lifecycle ветки выдержан минимум 1 день между письмами; refund/safety подавляет retention. |
 | Поведение пользователя важнее статичного delay | Оплата, первое сообщение, ответ эксперта, review, refund и safety отменяют связанные pending-письма. |
 | Deliverability зависит от релевантности и частоты | Service/security/payment письма не смешиваются с marketing; lifecycle письма respect user settings и unsubscribe. |
@@ -29,10 +29,11 @@ Flow-цепочки настроены как поведенческие lifecyc
 
 | Сценарий | Решение | Причина |
 |---|---|---|
-| `payment_started` | Delay `2` часа | Ближе к норме abandoned checkout 2-4 часа и меньше риск раздражения после начала оплаты. |
+| `payment_init` | Delay `2` часа | Ближе к норме abandoned checkout 2-4 часа и меньше риск раздражения после начала оплаты. |
 | `review_request` | +24 часа | Дает пользователю время после консультации и не мешает service/refund flow. |
-| `d2_chat_reflection` | +48 часов | Мягкий возврат к ценности чата, не одновременно с review. |
-| `same_advisor_followup_offer` | +72 часа | Коммерческое письмо идет последним, после quality/value касаний. |
+| `message_chat_saved` | +48 часов | Мягкий возврат к ценности чата, не одновременно с review. |
+| `advisor_followup_offer` | +72 часа | Коммерческое письмо идет последним, после quality/value касаний. |
 | `review.left` | Требует проверки или замены на `review.request` | Текущее имя события похоже на факт оставленного отзыва, а не на просьбу оставить отзыв. |
 | `message.received` | Требует `direction` | Один event обслуживает два разных письма: сообщение клиента и ответ эксперта. |
 | `payment.refund` | Требует `refund_status` | Update и confirmed refund должны вести к разным письмам. |
+

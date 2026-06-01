@@ -251,6 +251,7 @@
       <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_EN.html">Files EN</a>
       <a class="package-nav-link" href="START_HERE_FOR_IGOR_RU.html">Start RU</a>
       <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_RU.html">Files RU</a>
+      <a class="package-nav-link" href="TEMPLATE_EVENT_STANDARD_RU.html">Standard</a>
       <a class="package-nav-link" href="SCENARIOS_IMPLEMENTATION_PANEL_RU.html">Scenarios</a>
       <a class="package-nav-link is-active" href="EMAIL_FLOW_CHAINS_PANEL_RU.html">Flow</a>
       <a class="package-nav-link" href="BACKEND_EMAIL_EVENTS_CONTRACT_RU.html">Backend</a>
@@ -270,7 +271,7 @@
     <div class="topbar-inner">
       <div>
         <h1>Flow-цепочки email-уведомлений Confideline</h1>
-        <p>Порядок срабатывания, пересечения, отмены и suppression-правила для внедрения email-шаблонов онлайн-консультации через чат. Обновлено: 2026-06-01 12:18.</p>
+        <p>Порядок срабатывания, пересечения, отмены и suppression-правила для внедрения email-шаблонов онлайн-консультации через чат. Обновлено: 2026-06-01 12:37.</p>
         <div class="mode-toggle" aria-label="Режим просмотра">
           <button type="button" class="active" data-mode="clean">Кратко</button>
           <button type="button" data-mode="igor">Для Игоря</button>
@@ -354,21 +355,21 @@
           <tr>
             <td><strong>3</strong><span>по запросу</span></td>
             <td>пользователь запросил восстановление доступа<small>Security письмо. Приоритет выше всех маркетинговых и lifecycle ограничений.</small></td>
-            <td><code>password_reset</code></td>
+            <td><code>user_password_recovery</code></td>
             <td>не блокировать маркетинговыми настройками; пропустить старый token после нового запроса</td>
             <td class="igor-only"><code>user.password_recovery</code></td>
             <td class="igor-only">reset token активен; rate limit соблюден; ответ UI не раскрывает существование аккаунта</td>
-            <td class="igor-only"><code>dedupe: userId/emailHash + password_reset + resetTokenVersion</code></td>
+            <td class="igor-only"><code>dedupe: userId/emailHash + user_password_recovery + resetTokenVersion</code></td>
             <td class="igor-only">Добавить/подтвердить event и renderer variables resetUrl/resetExpiresAt.</td>
           </tr>
           <tr>
             <td><strong>4</strong><span>сразу</span></td>
             <td>изменен пароль, email, 2FA или чувствительная настройка<small>Security письмо. Минимум деталей, только полезное действие и поддержка.</small></td>
-            <td><code>security_change_alert</code></td>
+            <td><code>security_change</code></td>
             <td>не раскрывать лишние IP/device данные без privacy-основания</td>
             <td class="igor-only"><code>security.security_change</code></td>
             <td class="igor-only">изменение сохранено; есть тип изменения и безопасное время события</td>
-            <td class="igor-only"><code>dedupe: userId + security_change_alert + changeId</code></td>
+            <td class="igor-only"><code>dedupe: userId + security_change + changeId</code></td>
             <td class="igor-only">Добавить event security.security_change и whitelist типов security-событий.</td>
           </tr>
           </tbody>
@@ -395,31 +396,31 @@
           <tr>
             <td><strong>1</strong><span>+2 часа</span></td>
             <td>создана платежная попытка, пользователь не завершил оплату<small>Abandoned checkout recovery: +2 часа, только если заказ все еще unpaid.</small></td>
-            <td><code>payment_started</code></td>
+            <td><code>payment_init</code></td>
             <td>отменить при payment.success, финальном payment.error, новом оплаченном order или refund</td>
             <td class="igor-only"><code>payment.init</code></td>
             <td class="igor-only">заказ все еще unpaid; нет success/error по более свежей попытке; пользователь допускает lifecycle письма</td>
-            <td class="igor-only"><code>dedupe: userId + payment_started + orderId + paymentAttemptId</code></td>
+            <td class="igor-only"><code>dedupe: userId + payment_init + orderId + paymentAttemptId</code></td>
             <td class="igor-only">Delay=2. Queue item отменяется success/error/refund по orderId/paymentAttemptId.</td>
           </tr>
           <tr>
             <td><strong>2</strong><span>сразу</span></td>
             <td>провайдер подтвердил финальный paid status<small>Post-purchase service письмо: чек, статус, переход в чат, отмена abandoned checkout.</small></td>
-            <td><code>payment_success_receipt</code></td>
-            <td>отменить pending payment_started по orderId; не слать повторно при повторном webhook</td>
+            <td><code>payment_success</code></td>
+            <td>отменить pending payment_init по orderId; не слать повторно при повторном webhook</td>
             <td class="igor-only"><code>payment.success</code></td>
             <td class="igor-only">webhook дедуплицирован; orderId, amount, currency, receiptUrl, chatUrl доступны</td>
-            <td class="igor-only"><code>dedupe: userId + payment_success_receipt + orderId + paidStatusVersion</code></td>
-            <td class="igor-only">Webhook idempotency обязателен. После success отменить payment_started.</td>
+            <td class="igor-only"><code>dedupe: userId + payment_success + orderId + paidStatusVersion</code></td>
+            <td class="igor-only">Webhook idempotency обязателен. После success отменить payment_init.</td>
           </tr>
           <tr>
             <td><strong>3</strong><span>сразу</span></td>
             <td>финальная ошибка платежной попытки<small>Recovery без давления: отправлять только на финальный failed/error.</small></td>
-            <td><code>payment_failed</code></td>
-            <td>не слать, если по этому order уже есть success; отменить pending payment_started для этой попытки</td>
+            <td><code>payment_error</code></td>
+            <td>не слать, если по этому order уже есть success; отменить pending payment_init для этой попытки</td>
             <td class="igor-only"><code>payment.error</code></td>
             <td class="igor-only">ошибка финальная, а не промежуточный provider status; checkoutUrl безопасен</td>
-            <td class="igor-only"><code>dedupe: userId + payment_failed + paymentAttemptId + finalErrorCode</code></td>
+            <td class="igor-only"><code>dedupe: userId + payment_error + paymentAttemptId + finalErrorCode</code></td>
             <td class="igor-only">Фильтровать только финальный failed/error, не provider pending.</td>
           </tr>
           </tbody>
@@ -427,7 +428,7 @@
       </div>
       <div class="intersections">
         <h3>Пересечения</h3>
-        <ul><li>payment_started пересекается с payment_success_receipt и payment_failed: delayed письмо должно повторно проверить состояние перед отправкой.</li>
+        <ul><li>payment_init пересекается с payment_success и payment_error: delayed письмо должно повторно проверить состояние перед отправкой.</li>
 <li>Один order может иметь несколько paymentAttemptId; письмо об успехе дедуплицируется по orderId, ошибка - по конкретной финальной попытке.</li>
 <li>После payment.success начинается чат-цепочка: открывается чат и может планироваться reminder о первом сообщении.</li></ul>
       </div>
@@ -446,31 +447,31 @@
           <tr>
             <td><strong>1</strong><span>+2 часа после payment.success/open chat</span></td>
             <td>оплаченный чат открыт, но клиент не отправил первое сообщение<small>Activation reminder: пользователь уже оплатил, но не сделал ключевое действие.</small></td>
-            <td><code>paid_chat_no_message_reminder</code></td>
+            <td><code>message_no_first_chat_message</code></td>
             <td>отменить при первом сообщении клиента, refund, закрытии/ограничении чата</td>
             <td class="igor-only"><code>message.no_first_chat_message</code></td>
             <td class="igor-only">чат активен; нет первого client message; консультация не закрыта; reminder еще не отправлялся</td>
-            <td class="igor-only"><code>dedupe: userId + paid_chat_no_message_reminder + chatId</code></td>
+            <td class="igor-only"><code>dedupe: userId + message_no_first_chat_message + chatId</code></td>
             <td class="igor-only">Нужен job: paid chat + no first client message. Отмена на first message.</td>
           </tr>
           <tr>
             <td><strong>2</strong><span>по SLA job</span></td>
             <td>клиент ждет, SLA нарушен или близок к нарушению<small>Service recovery: честно объясняет задержку до обращения в поддержку.</small></td>
-            <td><code>chat_sla_delay</code></td>
+            <td><code>message_answer_delayed</code></td>
             <td>отменить при ответе эксперта, refund, safety block, закрытии чата</td>
             <td class="igor-only"><code>message.answer_delayed</code></td>
             <td class="igor-only">нет видимого ответа эксперта; SLA threshold достигнут; чат не закрыт</td>
-            <td class="igor-only"><code>dedupe: userId + chat_sla_delay + chatId + slaWindow</code></td>
+            <td class="igor-only"><code>dedupe: userId + message_answer_delayed + chatId + slaWindow</code></td>
             <td class="igor-only">SLA job создает event только если advisor answer все еще отсутствует.</td>
           </tr>
           <tr>
             <td><strong>3</strong><span>сразу</span></td>
             <td>эксперт опубликовал ответ клиенту<small>Главное возвращающее письмо: ответ готов, CTA ведет в конкретный чат.</small></td>
-            <td><code>advisor_chat_reply_ready</code></td>
-            <td>отменить pending chat_sla_delay</td>
+            <td><code>message_received</code></td>
+            <td>отменить pending message_answer_delayed</td>
             <td class="igor-only"><code>message.received</code></td>
             <td class="igor-only">message.received в текущем MVP означает ответ эксперта клиенту; ответ видим клиенту; chatUrl ведет в нужный чат</td>
-            <td class="igor-only"><code>dedupe: userId + advisor_chat_reply_ready + advisorMessageId</code></td>
+            <td class="igor-only"><code>dedupe: userId + message_received + advisorMessageId</code></td>
             <td class="igor-only">Использовать текущий MESSAGE_RECEIVED / message.received как ответ эксперта клиенту. Отменить SLA-delay.</td>
           </tr>
           </tbody>
@@ -507,37 +508,37 @@
           <tr>
             <td><strong>2</strong><span>сразу</span></td>
             <td>поддержка опубликовала ответ пользователю<small>Service return: пользователь видит, что поддержка ответила.</small></td>
-            <td><code>support_reply</code></td>
+            <td><code>support_message_received</code></td>
             <td>не слать на внутренние статусы и operator-only комментарии</td>
             <td class="igor-only"><code>support.message.received</code></td>
             <td class="igor-only">ответ публичный; не internal note; supportUrl доступен</td>
-            <td class="igor-only"><code>dedupe: userId + support_reply + supportMessageId</code></td>
+            <td class="igor-only"><code>dedupe: userId + support_message_received + supportMessageId</code></td>
             <td class="igor-only">Только public support reply; нужен supportCaseUrl/supportMessageId.</td>
           </tr>
           <tr>
             <td><strong>3</strong><span>сразу</span></td>
             <td>значимое пользовательское обновление refund case<small>Service status update: только значимые статусы, не внутренние provider-события.</small></td>
-            <td><code>refund_case_update</code></td>
+            <td><code>payment_refund_update</code></td>
             <td>не слать на технические provider/internal статусы</td>
             <td class="igor-only"><code>payment.refund.update</code></td>
             <td class="igor-only">refund_status не финальный, но видимый пользователю; есть refundEta/supportUrl</td>
-            <td class="igor-only"><code>dedupe: userId + refund_case_update + refundId + status</code></td>
+            <td class="igor-only"><code>dedupe: userId + payment_refund_update + refundId + status</code></td>
             <td class="igor-only">Нужен новый event payment.refund.update либо backend-разводка промежуточного user-visible refund status до выбора шаблона.</td>
           </tr>
           <tr>
             <td><strong>4</strong><span>сразу</span></td>
             <td>refund confirmed/processed<small>Financial trust: финальный статус возврата, сумма и сроки.</small></td>
-            <td><code>refund_confirmed</code></td>
+            <td><code>payment_refund</code></td>
             <td>после финального refund подавить review/follow-up/reflection по этой консультации</td>
             <td class="igor-only"><code>payment.refund</code></td>
             <td class="igor-only">финальный статус возврата; refundAmount, orderId, processorRefundId доступны</td>
-            <td class="igor-only"><code>dedupe: userId + refund_confirmed + refundId + finalStatus</code></td>
+            <td class="igor-only"><code>dedupe: userId + payment_refund + refundId + finalStatus</code></td>
             <td class="igor-only">payment.refund требует final confirmed/processed; затем подавить retention.</td>
           </tr>
           <tr>
             <td><strong>5</strong><span>сразу</span></td>
             <td>safety/legal ограничение или важная инструкция<small></small></td>
-            <td><code>safety_notice / minor_or_age_restriction_notice</code></td>
+            <td><code>support_safety_notice / user_age_restricted</code></td>
             <td>подавить маркетинг, review/follow-up/reflection и спорные чатовые письма</td>
             <td class="igor-only"><code>support.safety_notice / user.age_restricted</code></td>
             <td class="igor-only">триггер подтвержден; текст согласован; нет лишних чувствительных деталей</td>
@@ -578,21 +579,21 @@
           <tr>
             <td><strong>2</strong><span>+48 часов после завершения/сохранения чата</span></td>
             <td>чат сохранен и доступен в кабинете<small>Value reminder: +48ч, мягкий возврат к сохраненному чату без давления.</small></td>
-            <td><code>d2_chat_reflection</code></td>
+            <td><code>message_chat_saved</code></td>
             <td>отменить при refund, active dispute, удалении чата, safety restriction</td>
             <td class="igor-only"><code>message.chat_saved</code></td>
             <td class="igor-only">чат доступен; нет refund/dispute/deletion; пользователь допускает lifecycle письма</td>
-            <td class="igor-only"><code>dedupe: userId + d2_chat_reflection + chatId</code></td>
+            <td class="igor-only"><code>dedupe: userId + message_chat_saved + chatId</code></td>
             <td class="igor-only">Нужен message.chat_saved/lifecycle event и suppression refund/dispute/delete.</td>
           </tr>
           <tr>
             <td><strong>3</strong><span>+72 часа после завершения консультации</span></td>
             <td>повторная консультация с тем же экспертом уместна<small>Commercial follow-up: +72ч, после quality/value писем и только при уместности.</small></td>
-            <td><code>same_advisor_followup_offer</code></td>
+            <td><code>advisor_followup_offer</code></td>
             <td>отменить при новой активной консультации, opt-out, refund, complaint, safety restriction</td>
             <td class="igor-only"><code>advisor.followup.offer</code></td>
             <td class="igor-only">эксперт доступен; нет активного чата; нет refund/complaint/safety; пользователь допускает маркетинг</td>
-            <td class="igor-only"><code>dedupe: userId + same_advisor_followup_offer + advisorId + lastChatId</code></td>
+            <td class="igor-only"><code>dedupe: userId + advisor_followup_offer + advisorId + lastChatId</code></td>
             <td class="igor-only">Нужен advisor.followup.offer, advisor availability, no active chat, opt-out check.</td>
           </tr>
           </tbody>
@@ -613,25 +614,25 @@
           <tbody>
           <tr>
             <td><code>payment.success</code></td>
-            <td><code>payment_started</code></td>
+            <td><code>payment_init</code></td>
             <td><code>orderId/paymentAttemptId</code></td>
             <td>оплата уже успешна, abandoned checkout больше не актуален</td>
           </tr>
           <tr>
             <td><code>payment.error</code></td>
-            <td><code>payment_started</code></td>
+            <td><code>payment_init</code></td>
             <td><code>paymentAttemptId</code></td>
             <td>попытка оплаты финально завершилась ошибкой</td>
           </tr>
           <tr>
             <td><code>first client message</code></td>
-            <td><code>paid_chat_no_message_reminder</code></td>
+            <td><code>message_no_first_chat_message</code></td>
             <td><code>chatId</code></td>
             <td>пользователь уже написал в оплаченный чат</td>
           </tr>
           <tr>
             <td><code>advisor reply</code></td>
-            <td><code>chat_sla_delay</code></td>
+            <td><code>message_answer_delayed</code></td>
             <td><code>chatId</code></td>
             <td>задержка ответа больше не актуальна</td>
           </tr>
@@ -643,7 +644,7 @@
           </tr>
           <tr>
             <td><code>refund confirmed/update</code></td>
-            <td><code>review_request, d2_chat_reflection, same_advisor_followup_offer</code></td>
+            <td><code>review_request, message_chat_saved, advisor_followup_offer</code></td>
             <td><code>orderId/chatId</code></td>
             <td>финансовый спор делает retention неуместным</td>
           </tr>
@@ -655,7 +656,7 @@
           </tr>
           <tr>
             <td><code>new active chat</code></td>
-            <td><code>same_advisor_followup_offer</code></td>
+            <td><code>advisor_followup_offer</code></td>
             <td><code>userId/advisorId</code></td>
             <td>не предлагать продолжение, когда активный чат уже есть</td>
           </tr>
@@ -690,5 +691,6 @@
   </script>
 </body>
 </html>
+
 
 

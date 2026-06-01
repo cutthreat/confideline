@@ -17,7 +17,7 @@
     "live_status": "existing_template",
     "live_status_label": "Обновить существующий live-шаблон",
     "existing_live_template_id": "3",
-    "admin_action": "update_existing_id_3",
+    "admin_action": "update_existing_template",
     "backend_gate": "Пользователь создан; письмо не должно отправляться повторно для условий 1/3 days; подтверждение email обрабатывается отдельным user.email_confirmation.",
     "implementation_gate": "Перед записью проверить реальные переменные и отправку в queue для существующего шаблона.",
     "risk": "Не смешивать с email confirmation и не загружать в id=1.",
@@ -54,7 +54,7 @@
     "live_status": "existing_template",
     "live_status_label": "Обновить существующий live-шаблон",
     "existing_live_template_id": "4",
-    "admin_action": "update_existing_id_4",
+    "admin_action": "update_existing_template",
     "backend_gate": "У пользователя есть неподтвержденный email; confirmation token активен; письмо не отправлялось повторно слишком часто.",
     "implementation_gate": "Перед записью проверить реальные переменные и отправку в queue для существующего шаблона.",
     "risk": "Проверить срок токена и переменную confirmationExpiresAt.",
@@ -77,7 +77,7 @@
   },
   {
     "sort": 2,
-    "key": "password_reset",
+    "key": "user_password_recovery",
     "name": "Сброс пароля",
     "stage": "Регистрация и доступ",
     "priority": "P1",
@@ -93,7 +93,7 @@
     "live_status": "requires_backend_event",
     "live_status_label": "Сначала backend event/trigger",
     "existing_live_template_id": "",
-    "admin_action": "add_backend_event_to_dropdown_and_trigger",
+    "admin_action": "backend_first_then_create_template",
     "backend_gate": "Запрос восстановления создан; reset token активен; не превышен rate limit; email принадлежит найденному аккаунту или используется безопасный одинаковый ответ.",
     "implementation_gate": "Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.",
     "risk": "Нужен безопасный reset flow без раскрытия существования аккаунта.",
@@ -111,12 +111,12 @@
       "userName"
     ],
     "variables_count": 10,
-    "folder": "templates/02_password_reset",
+    "folder": "templates/02_user_password_recovery",
     "owner": "Backend + QA"
   },
   {
     "sort": 3,
-    "key": "security_change_alert",
+    "key": "security_change",
     "name": "Изменение безопасности",
     "stage": "Регистрация и доступ",
     "priority": "P1",
@@ -132,7 +132,7 @@
     "live_status": "requires_backend_event",
     "live_status_label": "Сначала backend event/trigger",
     "existing_live_template_id": "",
-    "admin_action": "add_backend_event_to_dropdown_and_trigger",
+    "admin_action": "backend_first_then_create_template",
     "backend_gate": "Изменение безопасности действительно сохранено; есть тип изменения, время, IP/устройство если это разрешено политикой приватности.",
     "implementation_gate": "Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.",
     "risk": "Не раскрывать лишние IP/device данные без privacy-основания.",
@@ -150,12 +150,12 @@
       "userName"
     ],
     "variables_count": 10,
-    "folder": "templates/03_security_change_alert",
+    "folder": "templates/03_security_change",
     "owner": "Backend + QA"
   },
   {
     "sort": 4,
-    "key": "payment_success_receipt",
+    "key": "payment_success",
     "name": "Оплата подтверждена",
     "stage": "Оплата",
     "priority": "P0",
@@ -196,12 +196,12 @@
       "userName"
     ],
     "variables_count": 17,
-    "folder": "templates/04_payment_success_receipt",
+    "folder": "templates/04_payment_success",
     "owner": "Backend payments + QA"
   },
   {
     "sort": 5,
-    "key": "payment_failed",
+    "key": "payment_error",
     "name": "Оплата не прошла",
     "stage": "Оплата",
     "priority": "P0",
@@ -236,12 +236,12 @@
       "userName"
     ],
     "variables_count": 11,
-    "folder": "templates/05_payment_failed",
+    "folder": "templates/05_payment_error",
     "owner": "Backend payments + QA"
   },
   {
     "sort": 6,
-    "key": "payment_started",
+    "key": "payment_init",
     "name": "Оплата начата, но не завершена",
     "stage": "Оплата",
     "priority": "P1",
@@ -277,12 +277,12 @@
       "userName"
     ],
     "variables_count": 12,
-    "folder": "templates/06_payment_started",
+    "folder": "templates/06_payment_init",
     "owner": "Backend payments + QA"
   },
   {
     "sort": 7,
-    "key": "paid_chat_no_message_reminder",
+    "key": "message_no_first_chat_message",
     "name": "Оплаченный чат без первого сообщения",
     "stage": "Чат-консультация",
     "priority": "P1",
@@ -298,7 +298,7 @@
     "live_status": "requires_backend_event",
     "live_status_label": "Сначала backend event/trigger",
     "existing_live_template_id": "",
-    "admin_action": "add_backend_event_to_dropdown_and_trigger",
+    "admin_action": "backend_first_then_create_template",
     "backend_gate": "Чат оплачен и активен; от пользователя нет первого сообщения; консультация не закрыта; reminder еще не отправлялся.",
     "implementation_gate": "Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.",
     "risk": "Нужен backend job: оплатил, но не написал первое сообщение.",
@@ -316,12 +316,12 @@
       "userName"
     ],
     "variables_count": 10,
-    "folder": "templates/07_paid_chat_no_message_reminder",
+    "folder": "templates/07_message_no_first_chat_message",
     "owner": "Backend chat + QA"
   },
   {
     "sort": 8,
-    "key": "chat_sla_delay",
+    "key": "message_answer_delayed",
     "name": "Ответ эксперта задерживается",
     "stage": "Чат-консультация",
     "priority": "P1",
@@ -337,7 +337,7 @@
     "live_status": "requires_backend_event",
     "live_status_label": "Сначала backend event/trigger",
     "existing_live_template_id": "",
-    "admin_action": "add_backend_event_to_dropdown_and_trigger",
+    "admin_action": "backend_first_then_create_template",
     "backend_gate": "Есть активный оплаченный чат; клиент ждет ответа; SLA threshold достигнут; эксперт еще не ответил; письмо не отправлялось ранее по этой задержке.",
     "implementation_gate": "Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.",
     "risk": "Нужен SLA job, а не простое письмо по dropdown.",
@@ -358,12 +358,12 @@
       "userName"
     ],
     "variables_count": 13,
-    "folder": "templates/08_chat_sla_delay",
+    "folder": "templates/08_message_answer_delayed",
     "owner": "Backend chat + QA"
   },
   {
     "sort": 9,
-    "key": "advisor_chat_reply_ready",
+    "key": "message_received",
     "name": "Эксперт ответил в чате",
     "stage": "Чат-консультация",
     "priority": "P0",
@@ -398,7 +398,7 @@
       "userName"
     ],
     "variables_count": 11,
-    "folder": "templates/09_advisor_chat_reply_ready",
+    "folder": "templates/09_message_received",
     "owner": "Backend chat + QA"
   },
   {
@@ -419,7 +419,7 @@
     "live_status": "requires_backend_event",
     "live_status_label": "Сначала backend event/trigger",
     "existing_live_template_id": "",
-    "admin_action": "add_backend_event_to_dropdown_and_trigger",
+    "admin_action": "backend_first_then_create_template",
     "backend_gate": "Support case создан; есть supportCaseId; обращение доступно пользователю; письмо не дублируется при каждом комментарии.",
     "implementation_gate": "Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.",
     "risk": "Не отправлять по внутренним операторским заметкам.",
@@ -442,7 +442,7 @@
   },
   {
     "sort": 11,
-    "key": "support_reply",
+    "key": "support_message_received",
     "name": "Поддержка ответила",
     "stage": "Поддержка",
     "priority": "P0",
@@ -478,12 +478,12 @@
       "userName"
     ],
     "variables_count": 12,
-    "folder": "templates/11_support_reply",
+    "folder": "templates/11_support_message_received",
     "owner": "Backend support + QA"
   },
   {
     "sort": 12,
-    "key": "refund_confirmed",
+    "key": "payment_refund",
     "name": "Возврат подтвержден",
     "stage": "Возвраты",
     "priority": "P0",
@@ -521,12 +521,12 @@
       "userName"
     ],
     "variables_count": 14,
-    "folder": "templates/12_refund_confirmed",
+    "folder": "templates/12_payment_refund",
     "owner": "Backend payments/support + QA"
   },
   {
     "sort": 13,
-    "key": "refund_case_update",
+    "key": "payment_refund_update",
     "name": "Статус возврата обновлен",
     "stage": "Возвраты",
     "priority": "P1",
@@ -539,12 +539,12 @@
     "condition_id": "0",
     "delay": "0",
     "subject_email": "Статус возврата обновлён",
-    "live_status": "can_create_in_current_admin",
-    "live_status_label": "Можно создать в текущей админке",
+    "live_status": "requires_backend_event",
+    "live_status_label": "Сначала backend event/trigger",
     "existing_live_template_id": "",
-    "admin_action": "create_new_template_with_existing_event",
+    "admin_action": "backend_first_then_create_template",
     "backend_gate": "Статус refund case изменился на пользовательски значимый; не отправлять на технические/внутренние статусы.",
-    "implementation_gate": "Event есть в dropdown, но программист должен доказать, что trigger реально вызывает очередь email.",
+    "implementation_gate": "Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.",
     "risk": "Не отправлять на технические внутренние статусы refund.",
     "test_scenario": "Перевести refund case между пользовательскими статусами; проверить, что письмо не уходит на внутренние изменения.",
     "variables": [
@@ -560,12 +560,12 @@
       "userName"
     ],
     "variables_count": 10,
-    "folder": "templates/13_refund_case_update",
+    "folder": "templates/13_payment_refund_update",
     "owner": "Backend payments/support + QA"
   },
   {
     "sort": 14,
-    "key": "same_advisor_followup_offer",
+    "key": "advisor_followup_offer",
     "name": "Продолжить с тем же экспертом",
     "stage": "Возврат пользователя",
     "priority": "P2",
@@ -581,7 +581,7 @@
     "live_status": "requires_backend_event",
     "live_status_label": "Сначала backend event/trigger",
     "existing_live_template_id": "",
-    "admin_action": "add_backend_event_to_dropdown_and_trigger",
+    "admin_action": "backend_first_then_create_template",
     "backend_gate": "Чат завершен; эксперт доступен; нет открытого активного чата; пользователь не отписан; тематика не запрещает follow-up.",
     "implementation_gate": "Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.",
     "risk": "Нужны opt-out, доступность эксперта и отсутствие активного чата.",
@@ -601,7 +601,7 @@
       "userName"
     ],
     "variables_count": 12,
-    "folder": "templates/14_same_advisor_followup_offer",
+    "folder": "templates/14_advisor_followup_offer",
     "owner": "PM + Backend + QA"
   },
   {
@@ -619,12 +619,12 @@
     "condition_id": "0",
     "delay": "24",
     "subject_email": "Оцените опыт консультации в чате",
-    "live_status": "can_create_in_current_admin",
-    "live_status_label": "Можно создать в текущей админке",
+    "live_status": "requires_backend_event",
+    "live_status_label": "Сначала backend event/trigger",
     "existing_live_template_id": "",
-    "admin_action": "create_new_template_with_existing_event",
+    "admin_action": "backend_first_then_create_template",
     "backend_gate": "Консультация завершена; review еще не оставлен; нет активной жалобы/refund по консультации; пользователь не отписан.",
-    "implementation_gate": "Event есть в dropdown, но программист должен доказать, что trigger реально вызывает очередь email.",
+    "implementation_gate": "Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.",
     "risk": "review.left семантически спорный: лучше review.request или строгая проверка.",
     "test_scenario": "Завершить чат без отзыва; проверить письмо через delay. Затем оставить отзыв до delay и убедиться, что письмо не ушло.",
     "variables": [
@@ -645,7 +645,7 @@
   },
   {
     "sort": 16,
-    "key": "d2_chat_reflection",
+    "key": "message_chat_saved",
     "name": "Чат сохранен, можно вернуться",
     "stage": "Возврат пользователя",
     "priority": "P2",
@@ -661,7 +661,7 @@
     "live_status": "requires_backend_event",
     "live_status_label": "Сначала backend event/trigger",
     "existing_live_template_id": "",
-    "admin_action": "add_backend_event_to_dropdown_and_trigger",
+    "admin_action": "backend_first_then_create_template",
     "backend_gate": "Чат завершен и доступен в кабинете; нет удаления/возврата/спора; пользователь не отписан.",
     "implementation_gate": "Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.",
     "risk": "Не отправлять при refund, споре или удаленном чате.",
@@ -679,12 +679,12 @@
       "userName"
     ],
     "variables_count": 10,
-    "folder": "templates/16_d2_chat_reflection",
+    "folder": "templates/16_message_chat_saved",
     "owner": "PM + Backend + QA"
   },
   {
     "sort": 17,
-    "key": "safety_notice",
+    "key": "support_safety_notice",
     "name": "Важная информация о поддержке",
     "stage": "Юридические и safety",
     "priority": "P1",
@@ -700,7 +700,7 @@
     "live_status": "requires_backend_event",
     "live_status_label": "Сначала backend event/trigger",
     "existing_live_template_id": "",
-    "admin_action": "add_backend_event_to_dropdown_and_trigger",
+    "admin_action": "backend_first_then_create_template",
     "backend_gate": "Есть подтвержденное safety-событие; текст соответствует юридически утвержденному сценарию; не раскрывает чувствительные подробности.",
     "implementation_gate": "Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.",
     "risk": "Текст и триггер требуют юридического согласования.",
@@ -717,12 +717,12 @@
       "userName"
     ],
     "variables_count": 9,
-    "folder": "templates/17_safety_notice",
+    "folder": "templates/17_support_safety_notice",
     "owner": "PM/legal + Backend + QA"
   },
   {
     "sort": 18,
-    "key": "minor_or_age_restriction_notice",
+    "key": "user_age_restricted",
     "name": "Ограничение доступа по возрасту/правилам",
     "stage": "Юридические и safety",
     "priority": "P1",
@@ -738,7 +738,7 @@
     "live_status": "requires_backend_event",
     "live_status_label": "Сначала backend event/trigger",
     "existing_live_template_id": "",
-    "admin_action": "add_backend_event_to_dropdown_and_trigger",
+    "admin_action": "backend_first_then_create_template",
     "backend_gate": "Решение об ограничении принято надежным процессом; пользовательский аккаунт/сессия ограничены; есть ссылка поддержки.",
     "implementation_gate": "Нельзя импортировать как готовое письмо: сначала добавить event, trigger, queue-binding и variables.",
     "risk": "Нельзя раскрывать спорные детали ограничения.",
@@ -755,7 +755,7 @@
       "userName"
     ],
     "variables_count": 9,
-    "folder": "templates/18_minor_or_age_restriction_notice",
+    "folder": "templates/18_user_age_restricted",
     "owner": "PM/legal + Backend + QA"
   }
 ]

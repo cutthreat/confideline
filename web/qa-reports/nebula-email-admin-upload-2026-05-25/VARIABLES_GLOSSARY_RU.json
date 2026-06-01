@@ -5,10 +5,10 @@
     "backend_source": "route_builder/account",
     "status": "new_or_event_scoped",
     "templates_count": 1,
-    "templates": "security_change_alert",
+    "templates": "security_change",
     "events": "security.security_change",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
-    "note": "Для security_change_alert. Не подставлять общий siteUrl, если нет отдельного раздела безопасности."
+    "note": "Для security_change. Не подставлять общий siteUrl, если нет отдельного раздела безопасности."
   },
   {
     "variable": "advisorName",
@@ -16,7 +16,7 @@
     "backend_source": "consultation.assignedAdvisor.displayName",
     "status": "new_or_event_scoped",
     "templates_count": 3,
-    "templates": "advisor_chat_reply_ready, payment_success_receipt, same_advisor_followup_offer",
+    "templates": "advisor_followup_offer, message_received, payment_success",
     "events": "advisor.followup.offer, message.received, payment.success",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Это не менеджер поддержки и не бренд. Если в коде сущность называется expert/consultant, маппинг можно оставить в шаблоне как advisorName или согласованно переименовать в expertName отдельной задачей."
@@ -27,7 +27,7 @@
     "backend_source": "payment_order.amount",
     "status": "new_or_event_scoped",
     "templates_count": 3,
-    "templates": "payment_failed, payment_started, payment_success_receipt",
+    "templates": "payment_error, payment_init, payment_success",
     "events": "payment.error, payment.init, payment.success",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Форматировать на backend: 19.99, без сырого minor-unit значения."
@@ -38,7 +38,7 @@
     "backend_source": "consultation.sla.answerDueAt",
     "status": "new_or_event_scoped",
     "templates_count": 1,
-    "templates": "chat_sla_delay",
+    "templates": "message_answer_delayed",
     "events": "message.answer_delayed",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Должно учитывать timezone пользователя или явно заданную timezone сервиса."
@@ -49,7 +49,7 @@
     "backend_source": "consultation.chatUrl",
     "status": "new_or_event_scoped",
     "templates_count": 6,
-    "templates": "advisor_chat_reply_ready, chat_sla_delay, d2_chat_reflection, paid_chat_no_message_reminder, payment_success_receipt, same_advisor_followup_offer",
+    "templates": "advisor_followup_offer, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_success",
     "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.success",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Должен вести в конкретный чат, не просто на главную кабинета."
@@ -60,7 +60,7 @@
     "backend_source": "payment_order.checkoutUrl",
     "status": "new_or_event_scoped",
     "templates_count": 2,
-    "templates": "payment_failed, payment_started",
+    "templates": "payment_error, payment_init",
     "events": "payment.error, payment.init",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Должен быть безопасным и привязанным к актуальной unpaid попытке."
@@ -93,7 +93,7 @@
     "backend_source": "consultation.id",
     "status": "new_or_event_scoped",
     "templates_count": 1,
-    "templates": "chat_sla_delay",
+    "templates": "message_answer_delayed",
     "events": "message.answer_delayed",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Показывать пользователю только если ID реально используется в поддержке."
@@ -104,7 +104,7 @@
     "backend_source": "payment_order.currency",
     "status": "new_or_event_scoped",
     "templates_count": 4,
-    "templates": "payment_failed, payment_started, payment_success_receipt, refund_confirmed",
+    "templates": "payment_error, payment_init, payment_refund, payment_success",
     "events": "payment.error, payment.init, payment.refund, payment.success",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Форматировать вместе с amount по правилам платежного контура."
@@ -115,7 +115,7 @@
     "backend_source": "user.emailPreferencesUrl",
     "status": "new_or_event_scoped",
     "templates_count": 4,
-    "templates": "d2_chat_reflection, payment_started, review_request, same_advisor_followup_offer",
+    "templates": "advisor_followup_offer, message_chat_saved, payment_init, review_request",
     "events": "advisor.followup.offer, message.chat_saved, payment.init, review.request",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Нужен для lifecycle/marketing писем, не для критичных security/payment писем."
@@ -126,7 +126,7 @@
     "backend_source": "consultation.sla.firstResponseLabel",
     "status": "new_or_event_scoped",
     "templates_count": 1,
-    "templates": "payment_success_receipt",
+    "templates": "payment_success",
     "events": "payment.success",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Например: 'до 24 часов'. Не использовать, если SLA не подтвержден продуктово."
@@ -137,7 +137,7 @@
     "backend_source": "lifecycle_offer.followupOfferUrl",
     "status": "new_or_event_scoped",
     "templates_count": 1,
-    "templates": "same_advisor_followup_offer",
+    "templates": "advisor_followup_offer",
     "events": "advisor.followup.offer",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Создавать только если follow-up разрешен и эксперт доступен."
@@ -148,7 +148,7 @@
     "backend_source": "global_config.legalMerchantName",
     "status": "new_or_event_scoped",
     "templates_count": 19,
-    "templates": "advisor_chat_reply_ready, chat_sla_delay, d2_chat_reflection, email_confirmation, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened, user_registration",
+    "templates": "advisor_followup_offer, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration",
     "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Для footer/legal. Не равно маркетинговому названию бренда."
@@ -159,7 +159,7 @@
     "backend_source": "payment_merchant.descriptor",
     "status": "new_or_event_scoped",
     "templates_count": 1,
-    "templates": "payment_success_receipt",
+    "templates": "payment_success",
     "events": "payment.success",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Использовать только если платежный провайдер реально возвращает/хранит это значение."
@@ -170,7 +170,7 @@
     "backend_source": "payment_order.id",
     "status": "new_or_event_scoped",
     "templates_count": 3,
-    "templates": "paid_chat_no_message_reminder, payment_success_receipt, refund_confirmed",
+    "templates": "message_no_first_chat_message, payment_refund, payment_success",
     "events": "message.no_first_chat_message, payment.refund, payment.success",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Должен совпадать с тем, что поддержка может найти."
@@ -181,7 +181,7 @@
     "backend_source": "payment_order.paidAt",
     "status": "new_or_event_scoped",
     "templates_count": 1,
-    "templates": "payment_success_receipt",
+    "templates": "payment_success",
     "events": "payment.success",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Форматировать в понятном виде, без сырого timestamp."
@@ -192,7 +192,7 @@
     "backend_source": "legal_config.privacyUrl",
     "status": "new_or_event_scoped",
     "templates_count": 19,
-    "templates": "advisor_chat_reply_ready, chat_sla_delay, d2_chat_reflection, email_confirmation, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened, user_registration",
+    "templates": "advisor_followup_offer, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration",
     "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Footer/legal. Должен быть доступен для RU и EN."
@@ -203,7 +203,7 @@
     "backend_source": "refund.processorRefundId",
     "status": "new_or_event_scoped",
     "templates_count": 1,
-    "templates": "refund_confirmed",
+    "templates": "payment_refund",
     "events": "payment.refund",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Показывать только если он полезен пользователю/поддержке."
@@ -214,7 +214,7 @@
     "backend_source": "payment_order.receiptUrl",
     "status": "new_or_event_scoped",
     "templates_count": 1,
-    "templates": "payment_success_receipt",
+    "templates": "payment_success",
     "events": "payment.success",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Если чека нет, шаблон нужно адаптировать, а не оставлять пустую ссылку."
@@ -225,7 +225,7 @@
     "backend_source": "refund.amount",
     "status": "new_or_event_scoped",
     "templates_count": 1,
-    "templates": "refund_confirmed",
+    "templates": "payment_refund",
     "events": "payment.refund",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Форматировать вместе с currency."
@@ -236,7 +236,7 @@
     "backend_source": "refund.etaLabel",
     "status": "new_or_event_scoped",
     "templates_count": 1,
-    "templates": "refund_confirmed",
+    "templates": "payment_refund",
     "events": "payment.refund",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Например: 'обычно 3-10 рабочих дней'. Не обещать точную дату без основания."
@@ -247,7 +247,7 @@
     "backend_source": "legal_config.refundPolicyUrl",
     "status": "new_or_event_scoped",
     "templates_count": 19,
-    "templates": "advisor_chat_reply_ready, chat_sla_delay, d2_chat_reflection, email_confirmation, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened, user_registration",
+    "templates": "advisor_followup_offer, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration",
     "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Footer/legal. Должен открываться без авторизации."
@@ -255,10 +255,10 @@
   {
     "variable": "resetExpiresAt",
     "meaning": "Дата/время истечения ссылки сброса пароля",
-    "backend_source": "password_reset_token.expiresAt",
+    "backend_source": "user_password_recovery_token.expiresAt",
     "status": "new_or_event_scoped",
     "templates_count": 1,
-    "templates": "password_reset",
+    "templates": "user_password_recovery",
     "events": "user.password_recovery",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Нужно для security UX и ограничения повторных запросов."
@@ -266,10 +266,10 @@
   {
     "variable": "resetUrl",
     "meaning": "URL сброса пароля",
-    "backend_source": "password_reset_token.url",
+    "backend_source": "user_password_recovery_token.url",
     "status": "new_or_event_scoped",
     "templates_count": 1,
-    "templates": "password_reset",
+    "templates": "user_password_recovery",
     "events": "user.password_recovery",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Не логировать и не раскрывать вне письма."
@@ -291,7 +291,7 @@
     "backend_source": "security_event.changedAt",
     "status": "new_or_event_scoped",
     "templates_count": 1,
-    "templates": "security_change_alert",
+    "templates": "security_change",
     "events": "security.security_change",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Без лишних IP/device деталей, если privacy-основание не подтверждено."
@@ -302,7 +302,7 @@
     "backend_source": "global_config.siteName",
     "status": "confirmed_live_id1",
     "templates_count": 19,
-    "templates": "advisor_chat_reply_ready, chat_sla_delay, d2_chat_reflection, email_confirmation, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened, user_registration",
+    "templates": "advisor_followup_offer, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration",
     "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
     "action": "Проверить доступность в конкретном event; переменная подтверждена только по live id=1.",
     "note": "Заменяет жесткое рабочее название проекта. Подтвержден по live id=1."
@@ -313,7 +313,7 @@
     "backend_source": "global_config.siteUrl",
     "status": "new_or_event_scoped",
     "templates_count": 19,
-    "templates": "advisor_chat_reply_ready, chat_sla_delay, d2_chat_reflection, email_confirmation, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened, user_registration",
+    "templates": "advisor_followup_offer, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration",
     "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Использовать как fallback, но CTA должен вести на конкретную сущность, если она есть."
@@ -324,7 +324,7 @@
     "backend_source": "support_case.id",
     "status": "new_or_event_scoped",
     "templates_count": 4,
-    "templates": "chat_sla_delay, refund_case_update, support_reply, support_ticket_opened",
+    "templates": "message_answer_delayed, payment_refund_update, support_message_received, support_ticket_opened",
     "events": "message.answer_delayed, payment.refund.update, support.message.received, support.ticket.opened",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Показывать, если по нему поддержка реально ищет тикет."
@@ -335,7 +335,7 @@
     "backend_source": "support_case.publicStatus",
     "status": "new_or_event_scoped",
     "templates_count": 1,
-    "templates": "support_reply",
+    "templates": "support_message_received",
     "events": "support.message.received",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Не использовать внутренние статусы операторов."
@@ -346,7 +346,7 @@
     "backend_source": "support_case.url",
     "status": "new_or_event_scoped",
     "templates_count": 5,
-    "templates": "chat_sla_delay, refund_case_update, refund_confirmed, support_reply, support_ticket_opened",
+    "templates": "message_answer_delayed, payment_refund, payment_refund_update, support_message_received, support_ticket_opened",
     "events": "message.answer_delayed, payment.refund, payment.refund.update, support.message.received, support.ticket.opened",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Должен вести к обращению, не к общей поддержке."
@@ -357,7 +357,7 @@
     "backend_source": "global_config.supportEmail",
     "status": "new_or_event_scoped",
     "templates_count": 11,
-    "templates": "advisor_chat_reply_ready, email_confirmation, minor_or_age_restriction_notice, password_reset, payment_success_receipt, refund_confirmed, safety_notice, security_change_alert, support_reply, support_ticket_opened, user_registration",
+    "templates": "email_confirmation, message_received, payment_refund, payment_success, security_change, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration",
     "events": "message.received, payment.refund, payment.success, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Footer/service fallback."
@@ -368,7 +368,7 @@
     "backend_source": "support_case.updatedAt",
     "status": "new_or_event_scoped",
     "templates_count": 2,
-    "templates": "refund_case_update, support_reply",
+    "templates": "payment_refund_update, support_message_received",
     "events": "payment.refund.update, support.message.received",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Показывать только для пользовательски видимых обновлений."
@@ -379,7 +379,7 @@
     "backend_source": "route_builder.support",
     "status": "new_or_event_scoped",
     "templates_count": 5,
-    "templates": "advisor_chat_reply_ready, minor_or_age_restriction_notice, paid_chat_no_message_reminder, payment_failed, safety_notice",
+    "templates": "message_no_first_chat_message, message_received, payment_error, support_safety_notice, user_age_restricted",
     "events": "message.no_first_chat_message, message.received, payment.error, support.safety_notice, user.age_restricted",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Fallback для сценариев, где нет конкретного supportCaseUrl."
@@ -390,7 +390,7 @@
     "backend_source": "legal_config.termsUrl",
     "status": "new_or_event_scoped",
     "templates_count": 19,
-    "templates": "advisor_chat_reply_ready, chat_sla_delay, d2_chat_reflection, email_confirmation, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened, user_registration",
+    "templates": "advisor_followup_offer, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration",
     "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Footer/legal. Должен открываться без авторизации."
@@ -401,7 +401,7 @@
     "backend_source": "unsubscribe.url",
     "status": "new_or_event_scoped",
     "templates_count": 4,
-    "templates": "d2_chat_reflection, payment_started, review_request, same_advisor_followup_offer",
+    "templates": "advisor_followup_offer, message_chat_saved, payment_init, review_request",
     "events": "advisor.followup.offer, message.chat_saved, payment.init, review.request",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Нужен для lifecycle/marketing. Не применять как блокировку service/security/payment писем."
@@ -412,7 +412,7 @@
     "backend_source": "consultation.sla.updatedAnswerEta",
     "status": "new_or_event_scoped",
     "templates_count": 1,
-    "templates": "chat_sla_delay",
+    "templates": "message_answer_delayed",
     "events": "message.answer_delayed",
     "action": "Добавить или подтвердить в backend payload/render context вместе с event/queue.",
     "note": "Использовать только если SLA job умеет рассчитать новый честный ETA."
@@ -423,7 +423,7 @@
     "backend_source": "user.displayName",
     "status": "confirmed_live_id1",
     "templates_count": 19,
-    "templates": "advisor_chat_reply_ready, chat_sla_delay, d2_chat_reflection, email_confirmation, minor_or_age_restriction_notice, paid_chat_no_message_reminder, password_reset, payment_failed, payment_started, payment_success_receipt, refund_case_update, refund_confirmed, review_request, safety_notice, same_advisor_followup_offer, security_change_alert, support_reply, support_ticket_opened, user_registration",
+    "templates": "advisor_followup_offer, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration",
     "events": "advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register",
     "action": "Проверить доступность в конкретном event; переменная подтверждена только по live id=1.",
     "note": "Подтвержден по live id=1. Должен иметь fallback без пустоты."

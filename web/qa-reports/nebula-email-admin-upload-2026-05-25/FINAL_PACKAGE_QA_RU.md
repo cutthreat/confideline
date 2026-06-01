@@ -4,7 +4,7 @@
 
 ## Итог
 
-Пакет приведен к текущей MVP-логике: email-сценарий `advisor_chat_reply_ready` использует существующее backend-событие `MESSAGE_RECEIVED / message.received`, потому что других email-сообщений, кроме ответа эксперта клиенту, на текущем этапе нет. Отдельный сценарий сообщения клиента удален из пакета.
+Пакет приведен к текущей MVP-логике: email-сценарий `message_received` использует существующее backend-событие `MESSAGE_RECEIVED / message.received`, потому что других email-сообщений, кроме ответа эксперта клиенту, на текущем этапе нет. Отдельный сценарий сообщения клиента удален из пакета.
 
 ## Что проверено
 
@@ -15,17 +15,18 @@
 | HTML-тела писем | PASS | 38 языковых файлов body_email_html.html: 19 EN + 19 RU |
 | Индекс RU/EN | PASS | 38 строк: 19 EN + 19 RU |
 | Сценарии | PASS | 19 сценариев |
-| Chat event logic | PASS | `advisor_chat_reply_ready` = `message.received`; отдельного события для сообщения клиента нет |
+| Chat event logic | PASS | `message_received` = `message.received`; отдельного события для сообщения клиента нет |
 | Единая структура файлов | PASS | В папках сценариев нет корневых дублей; файлы лежат только в `en/` и `ru/` |
 | Справочник переменных | PASS | 39 строк, табличный HTML + CSV + JSON |
 | Список backend-доработок | PASS | Отдельная вкладка для Игоря + CSV/JSON |
 | English-first старт | PASS | `START_HERE_FOR_DEVELOPER_EN.html` и `FILE_STRUCTURE_FOR_IMPORT_EN.html` |
+| Naming-standard | PASS | `TEMPLATE_EVENT_STANDARD_RU.html/csv/json`: все template_key приведены к backend title/constant/event_name |
 
 ## Ключевые логические исправления
 
 | Сценарий | Решение |
 |---|---|
-| Ответ эксперта клиенту | `message.received`; использовать текущий `MESSAGE_RECEIVED` |
+| Ответ эксперта клиенту | `message_received` / `message.received`; использовать текущий `MESSAGE_RECEIVED` |
 | Сообщение клиента в чат | Не выделять в email-шаблон; отдельный backend event для сообщения клиента не нужен |
 | Промежуточное обновление возврата | `payment.refund.update`, отдельно от финального refund |
 | Финальный возврат | `payment.refund` |
@@ -45,17 +46,17 @@
 
 | Приоритет | event_name | Шаблон |
 |---|---|---|
-| P1 | `message.answer_delayed` | `chat_sla_delay` |
-| P1 | `message.no_first_chat_message` | `paid_chat_no_message_reminder` |
-| P1 | `payment.refund.update` | `refund_case_update` |
+| P1 | `message.answer_delayed` | `message_answer_delayed` |
+| P1 | `message.no_first_chat_message` | `message_no_first_chat_message` |
+| P1 | `payment.refund.update` | `payment_refund_update` |
 | P1 | `review.request` | `review_request` |
-| P1 | `security.security_change` | `security_change_alert` |
-| P1 | `support.safety_notice` | `safety_notice` |
+| P1 | `security.security_change` | `security_change` |
+| P1 | `support.safety_notice` | `support_safety_notice` |
 | P1 | `support.ticket.opened` | `support_ticket_opened` |
-| P1 | `user.age_restricted` | `minor_or_age_restriction_notice` |
-| P1 | `user.password_recovery` | `password_reset` |
-| P2 | `advisor.followup.offer` | `same_advisor_followup_offer` |
-| P2 | `message.chat_saved` | `d2_chat_reflection` |
+| P1 | `user.age_restricted` | `user_age_restricted` |
+| P1 | `user.password_recovery` | `user_password_recovery` |
+| P2 | `advisor.followup.offer` | `advisor_followup_offer` |
+| P2 | `message.chat_saved` | `message_chat_saved` |
 
 ## Правило внедрения
 
@@ -71,4 +72,7 @@
 8. `templates/*/{en,ru}/admin-meta.json`
 
 Сначала обновляются 2 существующих live-шаблона. Остальные шаблоны загружаются только после проверки event binding, condition, delay и доступности переменных.
+
+
+
 

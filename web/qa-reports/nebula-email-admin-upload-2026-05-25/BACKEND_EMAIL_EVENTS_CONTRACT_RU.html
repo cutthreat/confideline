@@ -26,7 +26,7 @@
     .st-event_missing .badge, .badge.st-event_missing { color:var(--bad); background:#fdecec; }
     pre { white-space:pre-wrap; color:#344054; background:#f8fafc; border:1px solid var(--line); border-radius:8px; padding:12px; font-size:12px; max-height:260px; overflow:auto; }
     @media (max-width:900px) { .cards { grid-template-columns:1fr 1fr; } h1 { font-size:24px; } }
-  /* package-navigation-css:start */
+/* package-navigation-css:start */
 .package-nav {
   position: sticky;
   top: 0;
@@ -113,6 +113,7 @@
       <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_EN.html">Files EN</a>
       <a class="package-nav-link" href="START_HERE_FOR_IGOR_RU.html">Start RU</a>
       <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_RU.html">Files RU</a>
+      <a class="package-nav-link" href="TEMPLATE_EVENT_STANDARD_RU.html">Standard</a>
       <a class="package-nav-link" href="SCENARIOS_IMPLEMENTATION_PANEL_RU.html">Scenarios</a>
       <a class="package-nav-link" href="EMAIL_FLOW_CHAINS_PANEL_RU.html">Flow</a>
       <a class="package-nav-link is-active" href="BACKEND_EMAIL_EVENTS_CONTRACT_RU.html">Backend</a>
@@ -128,7 +129,7 @@
   </div>
 </nav>
 <!-- package-navigation:end -->
-  <header>
+<header>
     <h1>Фактический backend-контракт email-уведомлений</h1>
     <p class="lead">Сверка предложенного комплекта с реальными <code>event_name</code>, <code>available_params</code> и <code>condition_id</code>, которые сейчас есть в механизме email-шаблонов.</p>
     <nav class="nav">
@@ -180,7 +181,7 @@
           <td>Такого event_name нет в текущем списке; нельзя загружать как готовый шаблон без backend-доработки.<small>Нет в текущем enum/dropdown.</small></td>
         </tr>
         <tr class="st-needs_event_or_payload">
-          <td><strong>11. support_reply</strong><small>Поддержка ответила по обращению #{{supportCaseId}}</small></td>
+          <td><strong>11. support_message_received</strong><small>Поддержка ответила по обращению #{{supportCaseId}}</small></td>
           <td><code>support.message.received</code><small>condition=0, delay=0</small></td>
           <td><span class="badge st-needs_event_or_payload">needs_event_or_payload</span></td>
           <td><code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportCaseId}}</code> <code>{{supportCaseStatus}}</code> <code>{{supportCaseUrl}}</code> <code>{{supportEmail}}</code> <code>{{supportUpdatedAt}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></td>
@@ -188,7 +189,7 @@
           <td>Event есть, но payload слишком бедный для предложенного письма; нужен расширенный context или отдельный event.<small>Событие есть в списке, но источник не привязан к конкретному Yii event. Для тикета не хватает supportCaseId.</small></td>
         </tr>
         <tr class="st-needs_event_or_payload">
-          <td><strong>12. refund_confirmed</strong><small>Возврат по заказу #{{orderId}} подтверждён</small></td>
+          <td><strong>12. payment_refund</strong><small>Возврат по заказу #{{orderId}} подтверждён</small></td>
           <td><code>payment.refund</code><small>condition=0, delay=0</small></td>
           <td><span class="badge st-needs_event_or_payload">needs_event_or_payload</span></td>
           <td><code>{{currency}}</code> <code>{{legalMerchantName}}</code> <code>{{orderId}}</code> <code>{{privacyUrl}}</code> <code>{{processorRefundId}}</code> <code>{{refundAmount}}</code> <code>{{refundEta}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportCaseUrl}}</code> <code>{{supportEmail}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></td>
@@ -196,7 +197,7 @@
           <td>Event есть, но payload слишком бедный для предложенного письма; нужен расширенный context или отдельный event.<small>Событие есть в списке, но источник не привязан к конкретному Yii event. Нужно различать refund update и confirmed.</small></td>
         </tr>
         <tr class="st-event_missing">
-          <td><strong>13. refund_case_update</strong><small>Статус возврата обновлён</small></td>
+          <td><strong>13. payment_refund_update</strong><small>Статус возврата обновлён</small></td>
           <td><code>payment.refund.update</code><small>condition=0, delay=0</small></td>
           <td><span class="badge st-event_missing">event_missing</span></td>
           <td><code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportCaseId}}</code> <code>{{supportCaseUrl}}</code> <code>{{supportUpdatedAt}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></td>
@@ -204,7 +205,7 @@
           <td>Такого event_name нет в текущем списке; нельзя загружать как готовый шаблон без backend-доработки.<small>Нет в текущем enum/dropdown.</small></td>
         </tr>
         <tr class="st-event_missing">
-          <td><strong>14. same_advisor_followup_offer</strong><small>Можно продолжить чат с {{advisorName}}</small></td>
+          <td><strong>14. advisor_followup_offer</strong><small>Можно продолжить чат с {{advisorName}}</small></td>
           <td><code>advisor.followup.offer</code><small>condition=0, delay=72</small></td>
           <td><span class="badge st-event_missing">event_missing</span></td>
           <td><code>{{advisorName}}</code> <code>{{chatUrl}}</code> <code>{{emailPreferencesUrl}}</code> <code>{{followupOfferUrl}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{termsUrl}}</code> <code>{{unsubscribeUrl}}</code> <code>{{userName}}</code></td>
@@ -220,7 +221,7 @@
           <td>Такого event_name нет в текущем списке; нельзя загружать как готовый шаблон без backend-доработки.<small>Нет в текущем enum/dropdown.</small></td>
         </tr>
         <tr class="st-event_missing">
-          <td><strong>16. d2_chat_reflection</strong><small>Ваш чат с экспертом сохранён</small></td>
+          <td><strong>16. message_chat_saved</strong><small>Ваш чат с экспертом сохранён</small></td>
           <td><code>message.chat_saved</code><small>condition=0, delay=48</small></td>
           <td><span class="badge st-event_missing">event_missing</span></td>
           <td><code>{{chatUrl}}</code> <code>{{emailPreferencesUrl}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{termsUrl}}</code> <code>{{unsubscribeUrl}}</code> <code>{{userName}}</code></td>
@@ -228,7 +229,7 @@
           <td>Такого event_name нет в текущем списке; нельзя загружать как готовый шаблон без backend-доработки.<small>Нет в текущем enum/dropdown.</small></td>
         </tr>
         <tr class="st-event_missing">
-          <td><strong>17. safety_notice</strong><small>Важная информация о поддержке</small></td>
+          <td><strong>17. support_safety_notice</strong><small>Важная информация о поддержке</small></td>
           <td><code>support.safety_notice</code><small>condition=0, delay=0</small></td>
           <td><span class="badge st-event_missing">event_missing</span></td>
           <td><code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportEmail}}</code> <code>{{supportUrl}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></td>
@@ -236,7 +237,7 @@
           <td>Такого event_name нет в текущем списке; нельзя загружать как готовый шаблон без backend-доработки.<small>Нет в текущем enum/dropdown.</small></td>
         </tr>
         <tr class="st-event_missing">
-          <td><strong>18. minor_or_age_restriction_notice</strong><small>Доступ к сервису ограничен</small></td>
+          <td><strong>18. user_age_restricted</strong><small>Доступ к сервису ограничен</small></td>
           <td><code>user.age_restricted</code><small>condition=0, delay=0</small></td>
           <td><span class="badge st-event_missing">event_missing</span></td>
           <td><code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportEmail}}</code> <code>{{supportUrl}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></td>
@@ -244,7 +245,7 @@
           <td>Такого event_name нет в текущем списке; нельзя загружать как готовый шаблон без backend-доработки.<small>Нет в текущем enum/dropdown.</small></td>
         </tr>
         <tr class="st-event_missing">
-          <td><strong>2. password_reset</strong><small>Сброс пароля для {{siteName}}</small></td>
+          <td><strong>2. user_password_recovery</strong><small>Сброс пароля для {{siteName}}</small></td>
           <td><code>user.password_recovery</code><small>condition=0, delay=0</small></td>
           <td><span class="badge st-event_missing">event_missing</span></td>
           <td><code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{resetExpiresAt}}</code> <code>{{resetUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportEmail}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></td>
@@ -252,7 +253,7 @@
           <td>Такого event_name нет в текущем списке; нельзя загружать как готовый шаблон без backend-доработки.<small>Нет в текущем enum/dropdown.</small></td>
         </tr>
         <tr class="st-event_missing">
-          <td><strong>3. security_change_alert</strong><small>Изменение безопасности в аккаунте {{siteName}}</small></td>
+          <td><strong>3. security_change</strong><small>Изменение безопасности в аккаунте {{siteName}}</small></td>
           <td><code>security.security_change</code><small>condition=0, delay=0</small></td>
           <td><span class="badge st-event_missing">event_missing</span></td>
           <td><code>{{accountSecurityUrl}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{securityChangedAt}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportEmail}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></td>
@@ -260,7 +261,7 @@
           <td>Такого event_name нет в текущем списке; нельзя загружать как готовый шаблон без backend-доработки.<small>Нет в текущем enum/dropdown.</small></td>
         </tr>
         <tr class="st-needs_event_or_payload">
-          <td><strong>4. payment_success_receipt</strong><small>Оплата подтверждена: чат-консультация {{siteName}} готова</small></td>
+          <td><strong>4. payment_success</strong><small>Оплата подтверждена: чат-консультация {{siteName}} готова</small></td>
           <td><code>payment.success</code><small>condition=0, delay=0</small></td>
           <td><span class="badge st-needs_event_or_payload">needs_event_or_payload</span></td>
           <td><code>{{advisorName}}</code> <code>{{amount}}</code> <code>{{chatUrl}}</code> <code>{{currency}}</code> <code>{{firstResponseSla}}</code> <code>{{legalMerchantName}}</code> <code>{{merchantDescriptor}}</code> <code>{{orderId}}</code> <code>{{paidAt}}</code> <code>{{privacyUrl}}</code> <code>{{receiptUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportEmail}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></td>
@@ -268,7 +269,7 @@
           <td>Event есть, но payload слишком бедный для предложенного письма; нужен расширенный context или отдельный event.<small>Событие есть в списке, но источник не привязан к конкретному Yii event. Для квитанции не хватает orderId/receiptUrl/chatUrl/paidAt.</small></td>
         </tr>
         <tr class="st-needs_event_or_payload">
-          <td><strong>5. payment_failed</strong><small>Оплата не прошла</small></td>
+          <td><strong>5. payment_error</strong><small>Оплата не прошла</small></td>
           <td><code>payment.error</code><small>condition=0, delay=0</small></td>
           <td><span class="badge st-needs_event_or_payload">needs_event_or_payload</span></td>
           <td><code>{{amount}}</code> <code>{{checkoutUrl}}</code> <code>{{currency}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportUrl}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></td>
@@ -276,7 +277,7 @@
           <td>Event есть, но payload слишком бедный для предложенного письма; нужен расширенный context или отдельный event.<small>Событие есть в списке, но источник не привязан к конкретному Yii event. Для retry не хватает checkoutUrl/currency.</small></td>
         </tr>
         <tr class="st-needs_event_or_payload">
-          <td><strong>6. payment_started</strong><small>Вы можете завершить оплату чат-консультации</small></td>
+          <td><strong>6. payment_init</strong><small>Вы можете завершить оплату чат-консультации</small></td>
           <td><code>payment.init</code><small>condition=0, delay=2</small></td>
           <td><span class="badge st-needs_event_or_payload">needs_event_or_payload</span></td>
           <td><code>{{amount}}</code> <code>{{checkoutUrl}}</code> <code>{{currency}}</code> <code>{{emailPreferencesUrl}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{termsUrl}}</code> <code>{{unsubscribeUrl}}</code> <code>{{userName}}</code></td>
@@ -284,7 +285,7 @@
           <td>Event есть, но payload слишком бедный для предложенного письма; нужен расширенный context или отдельный event.<small>Событие есть в списке, но источник не привязан к конкретному Yii event. Для восстановления оплаты не хватает checkoutUrl/orderId.</small></td>
         </tr>
         <tr class="st-event_missing">
-          <td><strong>7. paid_chat_no_message_reminder</strong><small>Чат с экспертом доступен - осталось написать сообщение</small></td>
+          <td><strong>7. message_no_first_chat_message</strong><small>Чат с экспертом доступен - осталось написать сообщение</small></td>
           <td><code>message.no_first_chat_message</code><small>condition=5, delay=2</small></td>
           <td><span class="badge st-event_missing">event_missing</span></td>
           <td><code>{{chatUrl}}</code> <code>{{legalMerchantName}}</code> <code>{{orderId}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportUrl}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></td>
@@ -292,7 +293,7 @@
           <td>Такого event_name нет в текущем списке; нельзя загружать как готовый шаблон без backend-доработки.<small>Нет в текущем enum/dropdown.</small></td>
         </tr>
         <tr class="st-event_missing">
-          <td><strong>8. chat_sla_delay</strong><small>Статус чата: ответ задерживается</small></td>
+          <td><strong>8. message_answer_delayed</strong><small>Статус чата: ответ задерживается</small></td>
           <td><code>message.answer_delayed</code><small>condition=0, delay=0</small></td>
           <td><span class="badge st-event_missing">event_missing</span></td>
           <td><code>{{answerDueAt}}</code> <code>{{chatUrl}}</code> <code>{{consultationId}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportCaseId}}</code> <code>{{supportCaseUrl}}</code> <code>{{termsUrl}}</code> <code>{{updatedAnswerEta}}</code> <code>{{userName}}</code></td>
@@ -300,7 +301,7 @@
           <td>Такого event_name нет в текущем списке; нельзя загружать как готовый шаблон без backend-доработки.<small>Нет в текущем enum/dropdown.</small></td>
         </tr>
         <tr class="st-needs_event_or_payload">
-          <td><strong>9. advisor_chat_reply_ready</strong><small>Эксперт ответил в чате</small></td>
+          <td><strong>9. message_received</strong><small>Эксперт ответил в чате</small></td>
           <td><code>message.received</code><small>condition=0, delay=0</small></td>
           <td><span class="badge st-needs_event_or_payload">needs_event_or_payload</span></td>
           <td><code>{{advisorName}}</code> <code>{{chatUrl}}</code> <code>{{legalMerchantName}}</code> <code>{{privacyUrl}}</code> <code>{{refundPolicyUrl}}</code> <code>{{siteName}}</code> <code>{{siteUrl}}</code> <code>{{supportEmail}}</code> <code>{{supportUrl}}</code> <code>{{termsUrl}}</code> <code>{{userName}}</code></td>
@@ -557,4 +558,6 @@
   </main>
 </body>
 </html>
+
+
 

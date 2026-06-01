@@ -29,9 +29,10 @@
 - Для загрузки на сайт использовать `ADMIN_UPLOAD_INDEX_RU_EN.csv` или `ADMIN_UPLOAD_INDEX_RU_EN.json`.
 - Поле `folder` в `ADMIN_UPLOAD_INDEX_RU_EN.*` всегда указывает на конкретную языковую папку: `/en` или `/ru`.
 - Поле `folder` в `SCENARIOS_IMPLEMENTATION_MATRIX_RU.*` обозначает только папку сценария и не является папкой для копирования полей письма.
+- Единый стандарт имен зафиксирован в `TEMPLATE_EVENT_STANDARD_RU.html/csv/json`: `template_key` и папка максимально следуют backend title/constant/event_name.
 - Сначала внедрять EN, затем RU как локализацию той же логики.
 - Если backend-событие или переменная отсутствует, шаблон не загружать молча: сначала закрыть задачу из `IGOR_BACKEND_TASKS_RU.html`.
-- Чат-сценарий `advisor_chat_reply_ready` использует текущий `MESSAGE_RECEIVED / message.received`: в MVP нет отдельного email-события для сообщения клиента.
+- Чат-сценарий `message_received` использует текущий `MESSAGE_RECEIVED / message.received`: в MVP нет отдельного email-события для сообщения клиента.
 
 ## Проверки
 
@@ -39,10 +40,12 @@
 - `validate-nebula-admin-upload-ready-bilingual.ps1`: pass.
 - Проверка локальных HTML-ссылок: 0 битых ссылок.
 - Проверка старых и технических следов: 0 критичных совпадений.
-- Проверка старой чат-логики: отдельный шаблон сообщения клиента отсутствует, `advisor_chat_reply_ready` привязан к `message.received`.
+- Проверка старой чат-логики: отдельный шаблон сообщения клиента отсутствует, `message_received` привязан к `message.received`.
 - Проверка Nebula knowledge quality gate: pass.
 
 ## Итог
 
 Пакет считается готовым для передачи программисту и Codex-связке: структура единая, английский маршрут основной, русские шаблоны сохранены для проверки и локализации, старые корневые дубли убраны.
+
+
 

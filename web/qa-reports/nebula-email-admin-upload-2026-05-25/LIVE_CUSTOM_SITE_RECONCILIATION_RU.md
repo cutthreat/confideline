@@ -40,28 +40,28 @@
 |---:|---|---|---:|---|---|
 | 0 | user_registration | `user.register` | 0 | есть `id=3` | обновлять `id=3` |
 | 1 | email_confirmation | `user.email_confirmation` | 0 | есть `id=4` | обновлять `id=4` |
-| 2 | password_reset | `user.password_recovery` | 0 | нет event в dropdown | нужен backend event/trigger |
-| 3 | security_change_alert | `security.security_change` | 0 | нет event в dropdown | нужен backend event/trigger |
-| 4 | payment_success_receipt | `payment.success` | 0 | event есть, шаблона нет | создать новый шаблон |
-| 5 | payment_failed | `payment.error` | 0 | event есть, шаблона нет | создать новый шаблон |
-| 6 | payment_started | `payment.init` | 0 | event есть, шаблона нет | создать новый шаблон |
-| 7 | paid_chat_no_message_reminder | `message.no_first_chat_message` | 5 | нет event в dropdown | нужен backend event/trigger |
-| 8 | chat_sla_delay | `message.answer_delayed` | 0 | нет event в dropdown | нужен backend event/trigger |
-| 9 | advisor_chat_reply_ready | `message.received` | 0 | event есть, шаблона нет | создать новый шаблон; в MVP это ответ эксперта клиенту |
+| 2 | user_password_recovery | `user.password_recovery` | 0 | нет event в dropdown | нужен backend event/trigger |
+| 3 | security_change | `security.security_change` | 0 | нет event в dropdown | нужен backend event/trigger |
+| 4 | payment_success | `payment.success` | 0 | event есть, шаблона нет | создать новый шаблон |
+| 5 | payment_error | `payment.error` | 0 | event есть, шаблона нет | создать новый шаблон |
+| 6 | payment_init | `payment.init` | 0 | event есть, шаблона нет | создать новый шаблон |
+| 7 | message_no_first_chat_message | `message.no_first_chat_message` | 5 | нет event в dropdown | нужен backend event/trigger |
+| 8 | message_answer_delayed | `message.answer_delayed` | 0 | нет event в dropdown | нужен backend event/trigger |
+| 9 | message_received | `message.received` | 0 | event есть, шаблона нет | создать новый шаблон; в MVP это ответ эксперта клиенту |
 | 10 | support_ticket_opened | `support.ticket.opened` | 0 | нет event в dropdown | нужен backend event/trigger |
-| 11 | support_reply | `support.message.received` | 0 | event есть, шаблона нет | создать новый шаблон |
-| 12 | refund_confirmed | `payment.refund` | 0 | event есть, шаблона нет | создать новый шаблон, проверить refund context |
-| 13 | refund_case_update | `payment.refund.update` | 0 | нет event в dropdown | нужен backend event/trigger |
-| 14 | same_advisor_followup_offer | `advisor.followup.offer` | 0 | нет event в dropdown | нужен backend event/trigger |
+| 11 | support_message_received | `support.message.received` | 0 | event есть, шаблона нет | создать новый шаблон |
+| 12 | payment_refund | `payment.refund` | 0 | event есть, шаблона нет | создать новый шаблон, проверить refund context |
+| 13 | payment_refund_update | `payment.refund.update` | 0 | нет event в dropdown | нужен backend event/trigger |
+| 14 | advisor_followup_offer | `advisor.followup.offer` | 0 | нет event в dropdown | нужен backend event/trigger |
 | 15 | review_request | `review.request` | 0 | нет event в dropdown | нужен backend event/trigger |
-| 16 | d2_chat_reflection | `message.chat_saved` | 0 | нет event в dropdown | нужен backend event/trigger |
-| 17 | safety_notice | `support.safety_notice` | 0 | нет event в dropdown | нужен backend event/trigger |
-| 18 | minor_or_age_restriction_notice | `user.age_restricted` | 0 | нет event в dropdown | нужен backend event/trigger |
+| 16 | message_chat_saved | `message.chat_saved` | 0 | нет event в dropdown | нужен backend event/trigger |
+| 17 | support_safety_notice | `support.safety_notice` | 0 | нет event в dropdown | нужен backend event/trigger |
+| 18 | user_age_restricted | `user.age_restricted` | 0 | нет event в dropdown | нужен backend event/trigger |
 
 ## Риски, которые программист должен закрыть
 
-- `message.received` в Nebula MVP используется только для `advisor_chat_reply_ready`: других email-сообщений, кроме ответа эксперта клиенту, не заводим.
-- `payment.refund` общий: для `refund_confirmed` используется финальный возврат; для промежуточных обновлений нужен отдельный `payment.refund.update`.
+- `message.received` в Nebula MVP используется только для `message_received`: других email-сообщений, кроме ответа эксперта клиенту, не заводим.
+- `payment.refund` общий: для `payment_refund` используется финальный возврат; для промежуточных обновлений нужен отдельный `payment.refund.update`.
 - Для запроса отзыва нужен `review.request`; `review.left` остается событием факта оставленного отзыва и не должен подменять request.
 - Все live-шаблоны сейчас имеют `count_user_settings=true`. Для критичных сервисных писем пакета рекомендовано `count_user_settings=0`, но это нужно подтвердить по реальному backend-смыслу поля.
 - Текущие live-переменные старых шаблонов в основном dating/YouDate. Новые переменные пакета нужно внедрять отдельно по `VARIABLES_CONTRACT_RU.md`.
@@ -69,3 +69,5 @@
 ## Артефакты проверки
 
 Внутренние live-аудит файлы и скриншоты сохранены в рабочем контуре проекта. В клиентский пакет они не включены: для внедрения достаточно этой сводки, `BACKEND_EMAIL_EVENTS_CONTRACT_RU.html`, `EVENT_VARIABLE_COMPATIBILITY_RU.csv` и `IGOR_BACKEND_TASKS_RU.html`.
+
+

@@ -54,8 +54,9 @@ Live-шаблон id=1 использует Handlebars-подобный синт
 
 Первый импорт не должен начинаться с `id=1`: базовый `user_registration` соответствует live-записи `id=3` (`user.register`, `No conditions`). `id=1` и `id=2` - это отложенные registration follow-up с условиями `1 day` и `3 days`.
 
-Retention-ветка разведена по времени, чтобы письма не приходили одновременно: `review_request` через 24 часа, `d2_chat_reflection` через 48 часов, `same_advisor_followup_offer` через 72 часа.
+Retention-ветка разведена по времени, чтобы письма не приходили одновременно: `review_request` через 24 часа, `message_chat_saved` через 48 часов, `advisor_followup_offer` через 72 часа.
 
 ## Оставшийся риск
 
 Не все сценарии уже имеют backend event в текущем списке `event_name`. В `ADMIN_UPLOAD_INDEX_RU_EN.csv`, `ADMIN_UPLOAD_INDEX_RU.csv` и `admin-meta.json` поле `needs_new_backend_event=true` отмечает такие сценарии.
+
