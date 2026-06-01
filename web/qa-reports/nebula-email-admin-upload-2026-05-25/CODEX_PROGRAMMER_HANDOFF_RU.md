@@ -12,16 +12,17 @@
 
 1. `START_HERE_FOR_DEVELOPER_EN.html` - главный English-first вход для программиста: порядок действий, группы внедрения, новые backend events, файлы для Codex и стоп-условия.
 2. `FILE_STRUCTURE_FOR_IMPORT_EN.html` - единый стандарт файлов: один сценарий, две языковые папки, одинаковые имена файлов.
-3. `ADMIN_UPLOAD_INDEX_RU_EN.json` - машинная карта всех шаблонов в двух языках; EN является основной версией.
-4. `SCENARIOS_IMPLEMENTATION_PANEL_RU.html` - веб-панель сценариев: приоритеты, live-статус, настройки, backend-gates, переменные и тесты.
-5. `BACKEND_EMAIL_EVENTS_CONTRACT_RU.html` - фактические `event_name`, `available_params`, `condition_id` и сверка каждого предложенного шаблона с текущим кодовым контрактом.
-6. `EVENT_VARIABLE_COMPATIBILITY_RU.csv` - машинная таблица: какие переменные уже доступны в выбранном event, а какие нужно добавить в backend payload.
-7. `IGOR_BACKEND_TASKS_RU.html` - отдельная страница для Игоря: недостающие переменные и события, что запрограммировать, priority и acceptance.
-8. `EMAIL_FLOW_CHAINS_PANEL_RU.html` - flow-цепочки, пересечения, отмены delayed email и suppression-правила.
-9. `VARIABLES_GLOSSARY_RU.html` - табличный поисковый словарь переменных: значение, backend source, usage, статус.
-10. `IGOR_MISSING_BACKEND_VARIABLES_RU.csv` и `IGOR_MISSING_BACKEND_EVENTS_RU.csv` - машинные списки того, что нужно добавить в backend.
-11. `templates/*/en/admin-meta.json` и `templates/*/ru/admin-meta.json` - переменные, event, condition, delay и язык.
-12. `templates/*/{en,ru}/subject_email.txt`, `body_email_html.html`, `body_email_txt.txt`, `comment_about.txt` - значения для записи в модель.
+3. `EMAIL_HTML_CODING_GUIDELINES_RU.md` - обязательный регламент для верстки HTML e-mail: таблицы, inline CSS, VML CTA и деградация в почтовых клиентах.
+4. `ADMIN_UPLOAD_INDEX_RU_EN.json` - машинная карта всех шаблонов в двух языках; EN является основной версией.
+5. `SCENARIOS_IMPLEMENTATION_PANEL_RU.html` - веб-панель сценариев: приоритеты, live-статус, настройки, backend-gates, переменные и тесты.
+6. `BACKEND_EMAIL_EVENTS_CONTRACT_RU.html` - фактические `event_name`, `available_params`, `condition_id` и сверка каждого предложенного шаблона с текущим кодовым контрактом.
+7. `EVENT_VARIABLE_COMPATIBILITY_RU.csv` - машинная таблица: какие переменные уже доступны в выбранном event, а какие нужно добавить в backend payload.
+8. `IGOR_BACKEND_TASKS_RU.html` - отдельная страница для Игоря: недостающие переменные и события, что запрограммировать, priority и acceptance.
+9. `EMAIL_FLOW_CHAINS_PANEL_RU.html` - flow-цепочки, пересечения, отмены delayed email и suppression-правила.
+10. `VARIABLES_GLOSSARY_RU.html` - табличный поисковый словарь переменных: значение, backend source, usage, статус.
+11. `IGOR_MISSING_BACKEND_VARIABLES_RU.csv` и `IGOR_MISSING_BACKEND_EVENTS_RU.csv` - машинные списки того, что нужно добавить в backend.
+12. `templates/*/en/admin-meta.json` и `templates/*/ru/admin-meta.json` - переменные, event, condition, delay и язык.
+13. `templates/*/{en,ru}/subject_email.txt`, `body_email_html.html`, `body_email_txt.txt`, `comment_about.txt` - значения для записи в модель.
 
 ## Правильный сценарий работы
 
@@ -31,6 +32,7 @@
 4. Codex проверяет доступные переменные каждого текущего template/event по `EVENT_VARIABLE_COMPATIBILITY_RU.csv`. Новые переменные не добавлять в текст самовольно; если они нужны, оформить отдельное изменение backend-кода.
 5. Codex сравнивает `ADMIN_UPLOAD_INDEX_RU_EN.json` с реальными `event_name`, `condition_id`, переменными, языковой моделью и queue-binding в коде/БД.
 6. Сначала внедряются только два существующих live-шаблона: `user_registration` и `email_confirmation`, если тестовый render проходит.
+   На 2026-06-01 именно эти два шаблона в EN/RU уже переведены в e-mail-safe HTML: табличная сетка, критичные inline-стили, preheader, VML fallback для CTA в Outlook и без `doctype/html/head/body` в `body_email_html.html`.
 7. Шаблоны из группы `Создать после проверки` можно импортировать только после подтверждения, что backend реально вызывает соответствующий `event_name` и ставит письмо в очередь.
 8. Шаблоны из группы `Сначала backend` нельзя просто добавить в админку как красивые письма: сначала нужно реализовать или подтвердить backend-trigger, payload и queue.
 9. Импорт учитывать как EN-first процесс: сначала английский текст из `templates/*/en/`, затем русский перевод из `templates/*/ru/`.
