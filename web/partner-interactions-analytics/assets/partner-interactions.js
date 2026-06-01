@@ -434,13 +434,13 @@
     if (audience === 'admin') {
       return [
         { value: 'partner', label: 'Партнеры' },
-        { value: 'expert', label: 'Экспертные анкеты' },
+        { value: 'expert', label: 'Анкеты' },
         { value: 'client', label: 'Клиенты' }
       ];
     }
     if (audience === 'partner') {
       return [
-        { value: 'expert', label: 'Закрепленные анкеты' },
+        { value: 'expert', label: 'Анкеты' },
         { value: 'client', label: 'Клиенты' }
       ];
     }
@@ -749,7 +749,7 @@
 
     const top = comparison.rows.slice().sort((a, b) => b.value - a.value)[0];
     const response = result.qualitySummary.responseRate === null ? 'нет данных' : result.qualitySummary.responseRate + '%';
-    return 'Главный срез: ' + top.label + ' - ' + formatValue(top.value) + ' по показателю "' + getMetricLabel(state.chartMetric) + '". Для эзотерических консультаций обязательно сопоставляем объем с долей ответа ' + response + ', жалобами и блокировками: это контроль качества сопровождения, а не просто счетчик активности.';
+    return 'Лидер: ' + top.label + ' - ' + formatValue(top.value) + ' по показателю "' + getMetricLabel(state.chartMetric) + '". Контроль качества: доля ответа ' + response + ', жалобы и блокировки.';
   }
 
   function splitPair(row) {
