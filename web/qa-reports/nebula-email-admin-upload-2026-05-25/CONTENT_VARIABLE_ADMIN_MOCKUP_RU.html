@@ -508,8 +508,13 @@ paymentStripeWebhookSecret=whsec_confideline_sandbox_local_only</code>
   }
   function closeModal(){ modal.classList.remove('open'); backdrop.classList.remove('open'); }
   function showSection(name){
+    if (!document.getElementById('section-' + name)) name = 'registry';
     Array.prototype.forEach.call(document.querySelectorAll('.admin-section'), function(section){ section.classList.toggle('hidden', section.id !== 'section-' + name); });
     Array.prototype.forEach.call(document.querySelectorAll('.nav-pills li'), function(li){ li.classList.toggle('active', li.querySelector('a').getAttribute('data-section') === name); });
+  }
+  function sectionFromHash(){
+    var name = String(window.location.hash || '').replace(/^#/, '');
+    if (name && document.getElementById('section-' + name)) showSection(name);
   }
   function runAudit(){
     document.getElementById('auditIssues').textContent = '3';
@@ -521,7 +526,7 @@ paymentStripeWebhookSecret=whsec_confideline_sandbox_local_only</code>
   filterSearch.addEventListener('input', renderTable); filterPolicy.addEventListener('change', renderTable); filterSurface.addEventListener('change', renderTable);
   document.getElementById('resetFilters').addEventListener('click', function(){ filterSearch.value=''; filterPolicy.value=''; filterSurface.value=''; renderTable(); });
   body.addEventListener('click', function(e){ var btn=e.target.closest('button[data-action]'); if(!btn) return; var row=e.target.closest('tr[data-key]'); openModal(row.getAttribute('data-key'), btn.getAttribute('data-action') === 'translate' ? 'translations' : 'general'); });
-  Array.prototype.forEach.call(document.querySelectorAll('[data-section]'), function(a){ a.addEventListener('click', function(e){ e.preventDefault(); showSection(a.getAttribute('data-section')); }); });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-section]'), function(a){ a.addEventListener('click', function(e){ e.preventDefault(); var name = a.getAttribute('data-section'); showSection(name); if (history.replaceState) history.replaceState(null, '', '#' + name); }); });
   Array.prototype.forEach.call(document.querySelectorAll('[data-modal-tab]'), function(a){ a.addEventListener('click', function(e){ e.preventDefault(); setModalTab(a.getAttribute('data-modal-tab')); }); });
   document.getElementById('modalClose').addEventListener('click', closeModal); document.getElementById('modalCancel').addEventListener('click', closeModal); backdrop.addEventListener('click', closeModal);
   document.getElementById('modalSave').addEventListener('click', function(){ closeModal(); showAlert('Variable saved'); });
@@ -530,6 +535,8 @@ paymentStripeWebhookSecret=whsec_confideline_sandbox_local_only</code>
   document.getElementById('exportBtn').addEventListener('click', function(){ showToast('CSV export prepared'); });
   document.getElementById('auditBtn').addEventListener('click', function(){ showSection('audit'); runAudit(); });
   document.getElementById('auditBtnFooter').addEventListener('click', runAudit);
+  window.addEventListener('hashchange', sectionFromHash);
+  sectionFromHash();
 })();
 </script>
 </body>
