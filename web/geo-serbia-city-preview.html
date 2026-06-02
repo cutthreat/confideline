@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confideline | Serbia city preview</title>
+  <link rel="stylesheet" href="css/home.css">
+  <style>
+    :root {
+      --cl-violet: #6130cf;
+      --cl-pink: #d95086;
+      --cl-ink: #18243a;
+      --cl-muted: #65758f;
+      --cl-surface: #ffffff;
+      --cl-line: #dde5f2;
+    }
+
+    body.cl-geo-preview {
+      margin: 0;
+      background: #f4f6fa;
+      color: var(--cl-ink);
+      font-family: Arial, sans-serif;
+    }
+
+    .cl-geo-preview .cl-wrapper,
+    .cl-geo-preview .cl-content {
+      min-height: 100vh;
+      background: #f4f6fa;
+    }
+
+    .cl-geo-preview .cl-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: linear-gradient(135deg, rgba(97, 48, 207, .98), rgba(201, 74, 128, .98));
+      box-shadow: 0 12px 30px rgba(34, 22, 68, .16);
+    }
+
+    .cl-geo-preview .cl-header .container,
+    .cl-geo-preview .cl-footer .container,
+    .cl-geo-shell {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding-left: 18px;
+      padding-right: 18px;
+    }
+
+    .cl-geo-preview .cl-header__navbar {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .cl-geo-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .cl-geo-brand:hover {
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .cl-geo-brand img {
+      display: block;
+      width: 118px;
+      height: auto;
+    }
+
+    .cl-geo-brand span {
+      border-left: 1px solid rgba(255, 255, 255, .32);
+      padding-left: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .cl-geo-nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid transparent;
+      min-height: 42px;
+      padding: 10px 18px;
+      color: #fff;
+      font-size: 14px;
+      line-height: 1.2;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background-color .18s ease, border-color .18s ease, color .18s ease;
+    }
+
+    .btn:hover {
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: #2f6cf6;
+      border-color: #2f6cf6;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #255bd2;
+      border-color: #255bd2;
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: #f45f96;
+      border-color: #f45f96;
+      color: #fff;
+    }
+
+    .btn-secondary:hover {
+      background: #df4d83;
+      border-color: #df4d83;
+      color: #fff;
+    }
+
+    .btn-outline-light {
+      background: transparent;
+      border-color: rgba(255, 255, 255, .7);
+      color: #fff;
+    }
+
+    .btn-outline-light:hover {
+      background: rgba(255, 255, 255, .16);
+      border-color: #fff;
+      color: #fff;
+    }
+
+    .btn-outline-primary {
+      background: transparent;
+      border-color: #2f6cf6;
+      color: #2f6cf6;
+    }
+
+    .btn-outline-primary:hover {
+      background: #2f6cf6;
+      color: #fff;
+    }
+
+    .btn-sm {
+      min-height: 36px;
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    .form-control {
+      display: block;
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid #d0d9e9;
+      border-radius: 8px;
+      background: #fff;
+      color: #2b3d59;
+      padding: 8px 10px;
+      font: inherit;
+    }
+
+    .cl-geo-nav .btn,
+    .geo-city-hero__actions .btn,
+    .geo-city-intake .btn {
+      border-radius: 8px;
+      font-weight: 700;
+    }
+
+    .cl-geo-nav .btn {
+      min-height: 36px;
+      padding: 8px 14px;
+      font-size: 13px;
+    }
+
+    .cl-geo-page {
+      padding: 28px 0 0;
+    }
+
+    .cl-geo-page .geo-city-hero {
+      position: relative;
+      min-height: calc(100svh - 118px);
+      border-radius: 0;
+      box-shadow: none;
+      isolation: isolate;
+    }
+
+    .cl-geo-page .geo-city-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(90deg, rgba(24, 22, 46, .82) 0%, rgba(46, 24, 77, .64) 44%, rgba(23, 24, 36, .18) 100%),
+        url("img/geo/serbia-belgrade-kalemegdan-preview.jpg") center / cover no-repeat;
+    }
+
+    .cl-geo-page .geo-page__hero-copy {
+      min-height: 470px;
+      max-width: 660px;
+      padding: 12px 0;
+    }
+
+    .cl-geo-page .geo-page__title {
+      max-width: 640px;
+      font-size: 54px;
+      line-height: 1.05;
+    }
+
+    .cl-geo-page .geo-page__lead {
+      max-width: 610px;
+      font-size: 19px;
+      line-height: 1.58;
+    }
+
+    .cl-geo-page .geo-page__media {
+      align-self: center;
+      min-height: 440px;
+      border: 1px solid rgba(255, 255, 255, .28);
+      background: rgba(255, 255, 255, .12);
+      box-shadow: 0 18px 45px rgba(17, 17, 32, .28);
+    }
+
+    .cl-geo-page .geo-page__media-img,
+    .geo-city-hero .geo-page__media-img {
+      object-fit: cover;
+    }
+
+    .cl-geo-page .geo-page__media-caption {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      border-radius: 8px;
+      background: rgba(14, 20, 34, .66);
+      color: #fff;
+      padding: 10px 12px;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .cl-geo-page .geo-city-intake {
+      margin-top: -28px;
+    }
+
+    .cl-geo-note {
+      margin-top: 10px;
+      color: #6c7b94;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .cl-geo-photo-band {
+      display: grid;
+      grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
+      gap: 24px;
+      align-items: center;
+      border: 1px solid var(--cl-line);
+      border-radius: 8px;
+      background: var(--cl-surface);
+      padding: 24px;
+    }
+
+    .cl-geo-photo-band__image {
+      margin: 0;
+      min-height: 420px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #e8edf5;
+    }
+
+    .cl-geo-photo-band__image img {
+      width: 100%;
+      height: 100%;
+      min-height: 420px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .cl-geo-photo-band__copy h2 {
+      margin: 0;
+      color: #17243b;
+      font-size: 30px;
+      line-height: 1.18;
+    }
+
+    .cl-geo-photo-band__copy p {
+      margin: 14px 0 0;
+      color: #53647f;
+      font-size: 16px;
+      line-height: 1.68;
+    }
+
+    .cl-geo-process {
+      counter-reset: step;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .cl-geo-process article {
+      counter-increment: step;
+      border-top: 1px solid #e2e8f2;
+      padding-top: 16px;
+    }
+
+    .cl-geo-process h3 {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin: 0;
+      color: #22324a;
+      font-size: 17px;
+      line-height: 1.28;
+    }
+
+    .cl-geo-process h3::before {
+      content: counter(step);
+      display: inline-grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: var(--cl-pink);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .cl-geo-process p {
+      margin: 10px 0 0;
+      color: #61728c;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .cl-geo-preview .cl-footer {
+      margin-top: 44px;
+      background: #d95086;
+      color: #fff;
+      padding: 42px 0;
+    }
+
+    .cl-geo-footer-grid {
+      display: grid;
+      grid-template-columns: 1.2fr .9fr .9fr;
+      gap: 34px;
+    }
+
+    .cl-geo-footer-grid h3 {
+      margin: 0 0 14px;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .cl-geo-footer-grid p,
+    .cl-geo-footer-grid a {
+      color: rgba(255, 255, 255, .86);
+      font-size: 14px;
+      line-height: 1.58;
+    }
+
+    .cl-geo-footer-grid a {
+      display: block;
+      margin-top: 8px;
+      text-decoration: none;
+    }
+
+    .cl-geo-footer-grid a:hover {
+      color: #fff;
+      text-decoration: none;
+    }
+
+    @media (max-width: 991.98px) {
+      .cl-geo-page .geo-city-hero {
+        min-height: auto;
+      }
+
+      .cl-geo-page .geo-page__title {
+        font-size: 38px;
+      }
+
+      .cl-geo-page .geo-page__hero-copy {
+        min-height: 0;
+      }
+
+      .cl-geo-page .geo-page__media {
+        min-height: 320px;
+      }
+
+      .cl-geo-photo-band,
+      .cl-geo-footer-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 767.98px) {
+      .cl-geo-preview .cl-header__navbar {
+        min-height: auto;
+        padding: 12px 0;
+        align-items: flex-start;
+      }
+
+      .cl-geo-brand {
+        align-items: flex-start;
+      }
+
+      .cl-geo-brand img {
+        width: 98px;
+      }
+
+      .cl-geo-brand span {
+        max-width: 120px;
+      }
+
+      .cl-geo-nav {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .cl-geo-nav .btn {
+        width: 100%;
+      }
+
+      .cl-geo-page {
+        padding-top: 18px;
+      }
+
+      .cl-geo-page .geo-page__title {
+        font-size: 31px;
+      }
+
+      .cl-geo-page .geo-page__lead {
+        font-size: 16px;
+      }
+
+      .cl-geo-process {
+        grid-template-columns: 1fr;
+      }
+
+      .cl-geo-photo-band {
+        padding: 18px;
+      }
+
+      .cl-geo-photo-band__image,
+      .cl-geo-photo-band__image img {
+        min-height: 280px;
+      }
+    }
+  </style>
+</head>
+<body class="cl-geo-preview">
+  <div class="cl-wrapper">
+    <div class="cl-content">
+      <header class="cl-header">
+        <div class="container">
+          <nav class="cl-header__navbar">
+            <a class="cl-geo-brand" href="https://confideline.com/" target="_blank" rel="noopener">
+              <img src="img/geo/youdate-logo.png" alt="YouDate">
+              <span>Confideline consultation preview</span>
+            </a>
+            <div class="cl-geo-nav" aria-label="Навигация">
+              <a class="btn btn-outline-light" href="https://confideline.com/login" target="_blank" rel="noopener">Войти</a>
+              <a class="btn btn-outline-light" href="https://confideline.com/registration/register" target="_blank" rel="noopener">Регистрация</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main class="cl-geo-page">
+        <div class="cl-geo-shell">
+          <div class="city-view geo-page geo-page--city">
+            <header class="geo-page__hero geo-city-hero">
+              <div class="geo-page__hero-copy">
+                <div class="geo-page__meta">
+                  <span>Эзотерическая консультация</span>
+                  <span>Belgrade, Serbia</span>
+                  <span>RS</span>
+                </div>
+                <h1 class="geo-page__title">Сербия: личная консультация о любви, выборе и переменах</h1>
+                <p class="geo-page__lead">Городская страница остается частью Confideline: приватный текстовый чат с консультантом по личному вопросу, локальный SEO-контекст и визуальный образ Сербии без копирования чужой продуктовой механики.</p>
+                <div class="geo-city-hero__actions">
+                  <a href="https://confideline.com/registration/register" class="btn btn-secondary" target="_blank" rel="noopener">Начать консультацию</a>
+                  <a href="#city-consultation-flow" class="btn btn-outline-light">Как это работает</a>
+                </div>
+              </div>
+
+              <figure class="geo-page__media">
+                <img src="img/geo/serbia-belgrade-kalemegdan-preview.jpg" class="geo-page__media-img" alt="Калемегдан и Белград, Сербия">
+                <figcaption class="geo-page__media-caption">Serbia preview photo: Kalemegdan, Belgrade. Используется как макетный asset, потому что в текущем Drive/CMS для Serbia/Belgrade фото не заполнены.</figcaption>
+              </figure>
+            </header>
+
+            <form class="geo-city-intake" action="https://confideline.com/registration/register" method="get">
+              <div class="geo-city-intake__grid">
+                <label>
+                  <span>Тема</span>
+                  <select class="form-control" name="topic">
+                    <option>Отношения</option>
+                    <option>Совместимость</option>
+                    <option>Прогноз</option>
+                    <option>Переезд</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Формат</span>
+                  <select class="form-control" name="format">
+                    <option>Текстовый чат</option>
+                    <option>Тот же консультант</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Город</span>
+                  <input class="form-control" type="text" name="city" value="Belgrade">
+                </label>
+                <label>
+                  <span>Когда удобно</span>
+                  <select class="form-control" name="timing">
+                    <option>Сейчас</option>
+                    <option>Позже сегодня</option>
+                  </select>
+                </label>
+                <button class="btn btn-primary" type="submit">Подобрать консультанта</button>
+              </div>
+              <p class="cl-geo-note">Это форма направления в consultation flow. Она не подбирает профили и не обещает результат.</p>
+            </form>
+
+            <div class="geo-page__layout">
+              <main class="geo-page__main">
+                <section class="geo-page__section" id="city-consultation-flow">
+                  <div class="geo-page__section-head">
+                    <h2>С чем приходят на консультацию: Белград, Сербия</h2>
+                    <p>Страница сохраняет идею локальной SEO-структуры, но ведет пользователя в безопасный разговор с консультантом Confideline.</p>
+                  </div>
+                  <div class="geo-city-ideas">
+                    <article class="geo-city-idea">
+                      <i class="fe fe-heart" aria-hidden="true"></i>
+                      <h3>Отношения и выбор</h3>
+                      <p>Разобрать паузу в общении, сомнение перед решением, конфликт или новый контакт без давления.</p>
+                    </article>
+                    <article class="geo-city-idea">
+                      <i class="fe fe-message-circle" aria-hidden="true"></i>
+                      <h3>Личный текстовый чат</h3>
+                      <p>Задать свой вопрос и получить ответ от консультанта в приватном формате, без публичной активности.</p>
+                    </article>
+                    <article class="geo-city-idea">
+                      <i class="fe fe-star" aria-hidden="true"></i>
+                      <h3>Астрология и совместимость</h3>
+                      <p>Посмотреть ситуацию через натальную карту, синастрию, прогноз или астрокартографию.</p>
+                    </article>
+                    <article class="geo-city-idea">
+                      <i class="fe fe-compass" aria-hidden="true"></i>
+                      <h3>Переезд и городская энергия</h3>
+                      <p>Использовать контекст Сербии для вопросов об адаптации, внутреннем состоянии и личных переменах.</p>
+                    </article>
+                  </div>
+                </section>
+
+                <section class="cl-geo-photo-band">
+                  <figure class="cl-geo-photo-band__image">
+                    <img src="img/geo/serbia-tara-banjska-stena-preview.jpg" alt="Вид на Tara National Park, Сербия">
+                  </figure>
+                  <div class="cl-geo-photo-band__copy">
+                    <h2>Сербия в макете показана реальными местами, а не абстрактными карточками</h2>
+                    <p>Визуальная роль фотографий - дать странице локальный сигнал: Белград как городской вход и Tara National Park как спокойный природный слой для темы выбора, восстановления и переезда.</p>
+                    <p>В продакшене эти изображения можно заменить на утвержденные CMS main/cover photo, когда для Serbia и Belgrade появятся фото в Drive.</p>
+                  </div>
+                </section>
+
+                <article class="geo-page__article">
+                  <h2>Онлайн консультация в Сербии</h2>
+                  <p>Confideline продает приватную консультацию, а не поиск человека из города. Страница города помогает пользователю быстро понять, что он может обратиться за эзотерической консультацией по личному вопросу, а локальный контекст Сербии остается частью SEO и атмосферы страницы.</p>
+                  <p>Для Белграда это может быть вопрос об отношениях, выборе между двумя сценариями, возвращении к разговору, переезде, совместимости или эмоциональном состоянии после перемен. Консультант отвечает в текстовом чате и не дает жестких обещаний.</p>
+
+                  <h2>Как это должно работать</h2>
+                  <div class="cl-geo-process">
+                    <article>
+                      <h3>Выбрать тему</h3>
+                      <p>Пользователь выбирает контекст: отношения, совместимость, прогноз или переезд.</p>
+                    </article>
+                    <article>
+                      <h3>Начать чат</h3>
+                      <p>Переход ведет в регистрацию или существующий consultation flow, а не в каталог профилей.</p>
+                    </article>
+                    <article>
+                      <h3>Получить ответ</h3>
+                      <p>Ответ остается человеческим, деликатным и ограниченным рамками консультации.</p>
+                    </article>
+                  </div>
+                </article>
+
+                <section class="geo-page__section">
+                  <div class="geo-page__section-head">
+                    <h2>Что важно в первом обращении</h2>
+                    <p>Блоки доверия должны поддерживать покупку консультации, а не повторять чужие продуктовые паттерны.</p>
+                  </div>
+                  <div class="geo-city-interests">
+                    <article class="geo-city-interest">
+                      <h3>Человеческий ответ</h3>
+                      <p>консультант отвечает по вашему вопросу, а не по общей заготовке</p>
+                    </article>
+                    <article class="geo-city-interest">
+                      <h3>Один понятный старт</h3>
+                      <p>без подписки, кредитной путаницы и скрытого автосписания</p>
+                    </article>
+                    <article class="geo-city-interest">
+                      <h3>Деликатные темы</h3>
+                      <p>отношения, сомнения и личные решения остаются в приватном чате</p>
+                    </article>
+                    <article class="geo-city-interest">
+                      <h3>Без жестких обещаний</h3>
+                      <p>формулировки остаются поддерживающими, без гарантий и давления</p>
+                    </article>
+                  </div>
+                </section>
+
+                <section class="geo-page__section">
+                  <div class="geo-page__section-head">
+                    <h2>Другие города Сербии</h2>
+                    <p>Навигация остается внутренней SEO-сеткой. Тексты городов должны подставляться из CMS.</p>
+                  </div>
+                  <div class="geo-city-links">
+                    <a href="#" class="geo-city-link">Novi Sad</a>
+                    <a href="#" class="geo-city-link">Nis</a>
+                    <a href="#" class="geo-city-link">Kragujevac</a>
+                    <a href="#" class="geo-city-link">Subotica</a>
+                    <a href="#" class="geo-city-link">Zemun</a>
+                  </div>
+                </section>
+              </main>
+
+              <aside class="geo-page__aside">
+                <h2 class="geo-page__aside-title">Город</h2>
+                <div class="geo-page__flag">
+                  <span>RS</span>
+                  <span>Serbia</span>
+                </div>
+                <dl class="geo-page__facts">
+                  <div>
+                    <dt>Preview page</dt>
+                    <dd>serbia / belgrade</dd>
+                  </div>
+                  <div>
+                    <dt>Product mode</dt>
+                    <dd>Consultation chat</dd>
+                  </div>
+                  <div>
+                    <dt>CMS фото</dt>
+                    <dd>в текущем индексе отсутствуют</dd>
+                  </div>
+                  <div>
+                    <dt>Preview assets</dt>
+                    <dd>Wikimedia Commons, Serbia-specific</dd>
+                  </div>
+                </dl>
+                <div class="geo-page__actions">
+                  <a href="https://confideline.com/country/serbia" class="btn btn-outline-primary btn-sm btn-block" target="_blank" rel="noopener">Открыть страну</a>
+                  <a href="https://confideline.com/city/belgrade" class="btn btn-primary btn-sm btn-block" target="_blank" rel="noopener">Открыть город</a>
+                  <a href="https://confideline.com/registration/register" class="btn btn-secondary btn-sm btn-block" target="_blank" rel="noopener">Начать консультацию</a>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="cl-footer">
+        <div class="container">
+          <div class="cl-geo-footer-grid">
+            <section>
+              <img src="img/geo/youdate-logo.png" alt="YouDate" width="126">
+              <p>Confideline использует текущий YouDate-шаблон как оболочку, но продуктовый смысл страницы - приватная эзотерическая консультация.</p>
+            </section>
+            <section>
+              <h3>Consultation</h3>
+              <a href="https://confideline.com/registration/register" target="_blank" rel="noopener">Start consultation</a>
+              <a href="https://confideline.com/country/serbia" target="_blank" rel="noopener">Serbia country page</a>
+              <a href="https://confideline.com/city/belgrade" target="_blank" rel="noopener">Belgrade city page</a>
+            </section>
+            <section>
+              <h3>Handoff</h3>
+              <p>Макет сделан как статический preview для согласования визуальной структуры и дальнейшей интеграции в Yii2 city template.</p>
+            </section>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>
