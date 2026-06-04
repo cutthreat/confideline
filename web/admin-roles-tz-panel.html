@@ -126,7 +126,7 @@
     <main>      <section class="panel is-active" id="tab-matrix">
         <div class="card wide" style="margin-bottom:14px">
           <h3>Финальное распределение прав</h3>
-          <p>Это рабочая таблица для настройки ролей: точные права, возможные расширения и короткая причина решения.</p>
+          <p>Это рабочая таблица для настройки ролей: точные права, возможные расширения и короткая причина решения. Формат: русский тайтл из админки и технический permission key в скобках.</p>
         </div>
         <div class="matrix">
           <table>
@@ -136,19 +136,19 @@
                 <td><code>super-admin</code></td>
                 <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="Полный root-доступ ко всей админке."><code>All</code></span></div></td>
                 <td>Не требуется.</td>
-                <td>Единственная роль полного владельца системы: роли, настройки, платежные ключи, raw PHP, аварийное восстановление.</td>
+                <td>Полный владелец системы: роли, настройки, платежные ключи, raw PHP, аварийное восстановление.</td>
               </tr>
               <tr>
                 <td><code>admin</code></td>
-                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="Смотреть пользователей и анкеты."><code>Пользователи-view (users-view)</code></span><span class="hint" tabindex="0" data-tip="Смотреть заказы без изменения платежей."><code>Заказы-view (orders-view)</code></span><span class="hint" tabindex="0" data-tip="Смотреть финансовые транзакции для контроля."><code>Balance transactions-view (balance_transaction-view)</code></span><span class="hint" tabindex="0" data-tip="Смотреть жалобы."><code>Жалобы-view (reports-view)</code></span><span class="hint" tabindex="0" data-tip="Смотреть верификации."><code>Верификации-view (verifications-view)</code></span><span class="hint" tabindex="0" data-tip="Смотреть обращения поддержки."><code>Поддержка-view (support-view)</code></span><span class="hint" tabindex="0" data-tip="Смотреть блокировки."><code>Баны-view (bans-view)</code></span><span class="hint" tabindex="0" data-tip="Смотреть фото-модерацию."><code>Фотографии-view (photos-view)</code></span></div></td>
-                <td><div class="perm-list"><span><code>Пользователи-update (users-update)</code></span><span><code>Жалобы-update (reports-update)</code></span><span><code>Верификации-update (verifications-update)</code></span><span><code>Поддержка-update (support-update)</code></span><span><code>Баны-update (bans-update)</code></span><span><code>Фотографии-update (photos-update)</code></span></div></td>
-                <td>Операционный администратор видит состояние сервиса и может подключаться к спорным ситуациям, но не получает root, роли, платежные секреты, raw PHP и глобальное удаление.</td>
+                <td><div class="perm-list"><span><code>Пользователи-view (users-view)</code></span><span><code>Пользователи-update (users-update)</code></span><span><code>Заказы-view (orders-view)</code></span><span><code>Balance transactions-view (balance_transaction-view)</code></span><span><code>Жалобы-view (reports-view)</code></span><span><code>Жалобы-update (reports-update)</code></span><span><code>Верификации-view (verifications-view)</code></span><span><code>Верификации-update (verifications-update)</code></span><span><code>Поддержка-view (support-view)</code></span><span><code>Поддержка-update (support-update)</code></span><span><code>Баны-view (bans-view)</code></span><span><code>Баны-update (bans-update)</code></span><span><code>Фотографии-view (photos-view)</code></span><span><code>Фотографии-update (photos-update)</code></span><span><code>Анкеты-view (chief_under-view)</code></span></div></td>
+                <td><div class="perm-list"><span><code>Сообщения-view (messages-view)</code></span><span><code>Партнеры-view (partners-view)</code></span></div>Только если операционному админу нужен контроль качества консультаций или агентских назначений. Не давать delete/balance/system.</td>
+                <td>Операционный администратор управляет сервисом, но не является root. Ему нужны рабочие очереди и статусы, а не платежные секреты, роли, raw PHP и глобальное удаление.</td>
               </tr>
               <tr>
                 <td><code>agent</code></td>
-                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="Агентский доступ к пользовательскому контуру."><code>Пользователи-agent (users-agent)</code></span><span class="hint" tabindex="0" data-tip="Просмотр назначенных экспертных анкет."><code>Анкеты-view (chief_under-view)</code></span><span class="hint" tabindex="0" data-tip="Доступ к сообщениям. Без backend scope слишком широкий."><code>Сообщения-all (messages-all)</code></span><span class="hint" tabindex="0" data-tip="Доступ к рабочему чату. Без backend scope слишком широкий."><code>Chat-all (chat-all)</code></span></div></td>
-                <td>Новые permission keys не добавлять. Обязательно добавить backend scope: только назначенные экспертные анкеты, чаты и paid sessions.</td>
-                <td>Агент должен вести платный чат от лица назначенных анкет. Он не должен видеть чужих экспертов, чужие консультации, финансы, роли и настройки.</td>
+                <td><div class="perm-list"><span><code>Пользователи-agent (users-agent)</code></span><span><code>Анкеты-view (chief_under-view)</code></span><span><code>Сообщения-all (messages-all)</code></span><span><code>Chat-all (chat-all)</code></span></div></td>
+                <td>Новые permission keys не добавлять. Обязательное условие: backend scope только на назначенные экспертные анкеты, чаты и paid sessions.</td>
+                <td>Агент ведет платный чат от лица назначенных анкет. Без backend scope <code>Сообщения-all</code> и <code>Chat-all</code> дают риск чужих клиентов и чужих консультаций.</td>
               </tr>
               <tr>
                 <td><code>agent-moder</code></td>
@@ -159,32 +159,32 @@
               <tr>
                 <td><code>balance</code></td>
                 <td><div class="perm-list"><span><code>Партнеры-view (partners-view)</code></span><span><code>Партнеры-balance (partners-balance)</code></span><span><code>Пользователи-view (users-view)</code></span><span><code>Пользователи-balance (users-balance)</code></span><span><code>Balance transactions-view (balance_transaction-view)</code></span><span><code>Заказы-view (orders-view)</code></span></div></td>
-                <td><div class="perm-list"><span><code>Balance transactions-all (balance_transaction-all)</code></span></div>Только если этой роли реально нужно делать корректировки, а не просто сверять.</td>
-                <td>Финансовая роль должна видеть балансы, начисления и заказы. Тексты консультаций, чат, роли и контент ей не нужны.</td>
+                <td><div class="perm-list"><span><code>Balance transactions-all (balance_transaction-all)</code></span></div>Только если роль реально делает ручные корректировки, а не сверку.</td>
+                <td>Финансы видят балансы, начисления и заказы. Тексты консультаций, чат, роли и контент им не нужны.</td>
               </tr>
               <tr>
                 <td><code>payment-moderator</code></td>
-                <td><div class="perm-list"><span class="badge red" title="В live сейчас нет выбранных module permissions">сейчас пусто → назначить:</span><span><code>Заказы-view (orders-view)</code></span><span><code>Balance transactions-view (balance_transaction-view)</code></span><span><code>Пользователи-view (users-view)</code></span></div></td>
-                <td><div class="perm-list"><span><code>Заказы-all (orders-all)</code></span><span><code>Пользователи-balance (users-balance)</code></span></div>Давать только если workflow оплаты/refund технически требует изменения статуса или баланса.</td>
-                <td>Платежный модератор проверяет оплату, возвраты и спорные платежи. Он не должен читать все консультации и не должен управлять ролями.</td>
+                <td><div class="perm-list"><span class="badge red" title="В live сейчас нет выбранных module permissions">сейчас пусто → назначить:</span><span><code>Заказы-all (orders-all)</code></span><span><code>Balance transactions-view (balance_transaction-view)</code></span><span><code>Пользователи-view (users-view)</code></span><span><code>Пользователи-balance (users-balance)</code></span></div></td>
+                <td><div class="perm-list"><span><code>Balance transactions-all (balance_transaction-all)</code></span></div>Только если payment workflow требует ручных финансовых корректировок. Иначе оставить view.</td>
+                <td>Платежный модератор должен не только смотреть заказ, но и закрывать платежный кейс в рамках order/payment workflow. Чаты, роли, контент и удаления ему не нужны.</td>
               </tr>
               <tr>
                 <td><code>support</code></td>
-                <td><div class="perm-list"><span class="badge red" title="В live сейчас нет выбранных module permissions">сейчас пусто → назначить:</span><span><code>Поддержка-view (support-view)</code></span><span><code>Поддержка-update (support-update)</code></span><span><code>Заказы-view (orders-view)</code></span><span><code>Пользователи-view (users-view)</code></span></div></td>
-                <td><div class="perm-list"><span><code>Жалобы-view (reports-view)</code></span><span><code>Сообщения-view (messages-view)</code></span></div><code>Сообщения-view</code> только по обращению и причине, не как глобальный transcript.</td>
+                <td><div class="perm-list"><span class="badge red" title="В live сейчас нет выбранных module permissions">сейчас пусто → назначить:</span><span><code>Поддержка-view (support-view)</code></span><span><code>Поддержка-update (support-update)</code></span><span><code>Заказы-view (orders-view)</code></span><span><code>Пользователи-view (users-view)</code></span><span><code>Жалобы-view (reports-view)</code></span></div></td>
+                <td><div class="perm-list"><span><code>Сообщения-view (messages-view)</code></span><span><code>Фотографии-view (photos-view)</code></span></div>Только по обращению и причине, не как глобальный transcript.</td>
                 <td>Первая линия поддержки решает обращения клиентов. Ей нужен контекст кейса, но не полный чат всех пользователей и не финансовое администрирование.</td>
               </tr>
               <tr>
                 <td><code>support-moder</code></td>
-                <td><div class="perm-list"><span class="badge red" title="В live сейчас нет выбранных module permissions">сейчас пусто → назначить:</span><span><code>Поддержка-all (support-all)</code></span><span><code>Заказы-view (orders-view)</code></span><span><code>Balance transactions-view (balance_transaction-view)</code></span><span><code>Пользователи-view (users-view)</code></span><span><code>Жалобы-view (reports-view)</code></span><span><code>Сообщения-view (messages-view)</code></span></div></td>
+                <td><div class="perm-list"><span class="badge red" title="В live сейчас нет выбранных module permissions">сейчас пусто → назначить:</span><span><code>Поддержка-all (support-all)</code></span><span><code>Заказы-view (orders-view)</code></span><span><code>Balance transactions-view (balance_transaction-view)</code></span><span><code>Пользователи-view (users-view)</code></span><span><code>Жалобы-all (reports-all)</code></span><span><code>Сообщения-view (messages-view)</code></span></div></td>
                 <td><div class="perm-list"><span><code>Заказы-all (orders-all)</code></span><span><code>Баны-view (bans-view)</code></span><span><code>Баны-update (bans-update)</code></span></div>Только для эскалаций, chargeback/refund и нарушений.</td>
-                <td>Старшая поддержка разбирает спорные кейсы. Доступ к transcript допустим только по делу, а не как общий просмотр всех консультаций.</td>
+                <td>Старшая поддержка разбирает спорные кейсы. Transcript допустим по делу, но не как свободный просмотр всех консультаций.</td>
               </tr>
               <tr>
                 <td><code>content-moder</code></td>
-                <td><div class="perm-list"><span class="badge red" title="В live сейчас нет выбранных module permissions">сейчас пусто → назначить:</span><span><code>Справка-all (help-all)</code></span><span><code>Новости-all (news-all)</code></span><span><code>Info block-all (info_block-all)</code></span><span><code>Языки-view (languages-view)</code></span><span><code>Языки-update (languages-update)</code></span></div></td>
-                <td><div class="perm-list"><span><code>Страницы-view (pages-view)</code></span><span><code>Страницы-update (pages-update)</code></span><span><code>Языки-all (languages-all)</code></span></div><code>Страницы-update</code> давать только если raw PHP защищен отдельно.</td>
-                <td>Контентная роль ведет справку, новости, инфоблоки и локализацию. Ей не нужны пользователи, чат, платежи и роли.</td>
+                <td><div class="perm-list"><span class="badge red" title="В live сейчас нет выбранных module permissions">сейчас пусто → назначить:</span><span><code>Справка-all (help-all)</code></span><span><code>Новости-all (news-all)</code></span><span><code>Info block-all (info_block-all)</code></span><span><code>Языки-view (languages-view)</code></span><span><code>Языки-update (languages-update)</code></span><span><code>Страницы-view (pages-view)</code></span></div></td>
+                <td><div class="perm-list"><span><code>Страницы-update (pages-update)</code></span><span><code>Языки-all (languages-all)</code></span></div><code>Страницы-update</code> давать только после защиты raw PHP или выделения safe pages.</td>
+                <td>Контентная роль ведет справку, новости, инфоблоки и локализацию. Ей не нужны пользователи, чат, платежи и роли. Страницы опасны из-за raw PHP.</td>
               </tr>
               <tr>
                 <td><code>user-moderator</code></td>
@@ -196,7 +196,7 @@
           </table>
         </div>
         <div class="callout"><strong>Правило чтения матрицы:</strong> в колонке “Существующие permission keys / доступ” указано то, что нужно выдать роли точно. Если у роли в live сейчас “без выбранных module permissions”, это не итоговое состояние, а проблема текущей настройки: роль нужно заполнить указанным набором. В колонке “Дополнительные права” указано то, что можно добавить только при подтвержденном процессе, чтобы не плодить новые роли.</div>
-        <div class="callout"><strong>Критично:</strong> для <code>agent</code> права <code>Сообщения-all (messages-all)</code> и <code>Chat-all (chat-all)</code> допустимы только при backend scope по назначенным анкетам и чатам.</div>
+        <div class="callout"><strong>Критично:</strong> для <code>agent</code> права <code>Сообщения-all (messages-all)</code> и <code>Chat-all (chat-all)</code> допустимы только при backend scope по назначенным анкетам и чатам. Для support/payment transcript и финансы должны открываться по кейсу, а не глобально.</div>
       </section>
       <section class="panel" id="tab-dictionary">
         <div class="grid two">
@@ -438,6 +438,7 @@
   </script>
 </body>
 </html>
+
 
 
 
