@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>События и уведомления · Синяя панель</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>.doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:22px;box-shadow:var(--shadow)}.lead{font-size:18px;color:var(--muted)}table{width:100%;border-collapse:collapse;font-size:14px;background:#fff}th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{font:900 11px Verdana,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:#514a61}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}.card{border:1px solid var(--line);border-radius:20px;padding:14px;background:#faf7ff}.card b{display:block;margin-bottom:6px}.shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.shots img{width:100%;border:1px solid var(--line);border-radius:18px}@media(max-width:760px){table{font-size:12px}.doc{padding:16px}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <a href="../cells/cell-pm-master-launch-plan-2026-06-04.html">← Назад к мастер-плану</a>
+  <section class="doc">
+    <div class="eyebrow">Раздел плана</div>
+    <h1>События и уведомления</h1>
+    <p class="lead">Какие сигналы нужны клиенту, исполнителю, агенту, модератору, поддержке и администратору.</p>
+    <table><tr><th>Событие</th><th>Кто запускает</th><th>Когда происходит</th><th>Кому важно</th><th>Зачем нужно</th><th>Как проверяем</th></tr><tr><td>user_registered</td><td>client</td><td>signup completed</td><td>client</td><td>account confirmation/start journey</td><td>template render + no-send log</td></tr>
+<tr><td>advisor_selected</td><td>client</td><td>client clicks advisor CTA</td><td>admin/analytics</td><td>advisor funnel metric</td><td>analytics event without sensitive text</td></tr>
+<tr><td>payment_success</td><td>payment</td><td>sandbox webhook/success return</td><td>client, admin</td><td>receipt and order proof</td><td>order id + receipt template</td></tr>
+<tr><td>payment_failed</td><td>payment</td><td>failed checkout</td><td>client</td><td>recover checkout</td><td>failed payment state</td></tr>
+<tr><td>paid_no_question_reminder</td><td>system</td><td>paid order without question after threshold</td><td>client</td><td>complete intake</td><td>scheduled reminder log</td></tr>
+<tr><td>question_submitted</td><td>client</td><td>question intake submitted</td><td>client, Ops</td><td>session enters assignment queue</td><td>session state submitted</td></tr>
+<tr><td>session_assigned</td><td>Ops/system</td><td>expert assigned</td><td>client, expert/agent</td><td>start SLA and delivery</td><td>assignment audit log</td></tr>
+<tr><td>expert_sla_warning</td><td>system</td><td>SLA threshold approaching</td><td>expert/agent, Ops</td><td>avoid overdue</td><td>warning appears in queue</td></tr>
+<tr><td>expert_sla_overdue</td><td>system</td><td>SLA exceeded</td><td>Ops, expert/agent</td><td>manual escalation/reassign</td><td>overdue escalation</td></tr>
+<tr><td>answer_draft_ready</td><td>expert/agent</td><td>answer drafted</td><td>moderator/QA if required</td><td>quality/safety review</td><td>QA review item</td></tr>
+<tr><td>answer_ready</td><td>system/expert</td><td>answer approved/sent</td><td>client</td><td>return to transcript</td><td>client notification + transcript</td></tr>
+<tr><td>low_rating</td><td>client</td><td>client rating below threshold</td><td>QA, Advisor Ops</td><td>quality review</td><td>QA case created</td></tr>
+<tr><td>support_ticket_opened</td><td>client/support</td><td>support form</td><td>support, client</td><td>manage issue</td><td>ticket linked to order/session</td></tr>
+<tr><td>refund_requested</td><td>client/support</td><td>refund request</td><td>support/finance, client</td><td>review refund</td><td>evidence bundle</td></tr>
+<tr><td>safety_flag_detected</td><td>system/moderator</td><td>forbidden topic/off-platform/risk</td><td>moderator/Ops</td><td>risk control</td><td>flag + action log</td></tr>
+<tr><td>expert_restricted</td><td>admin/moderator</td><td>quality/risk decision</td><td>Ops</td><td>stop bad assignment</td><td>restriction audit affects ranking</td></tr>
+<tr><td>follow_up_available</td><td>system</td><td>answer completed + cooldown</td><td>client</td><td>repeat purchase/LTV</td><td>CRM event + conversion tracking</td></tr>
+<tr><td>payout_accrued</td><td>system</td><td>completed session after hold/refund window</td><td>expert/agent/admin</td><td>earnings transparency</td><td>ledger entry</td></tr></table>
+  </section>
+</main>
+<script src="../assets/panel-ux.js"></script></body>
+</html>
+
+
+
+
+
+
+
+
