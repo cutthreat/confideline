@@ -3,37 +3,116 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Админка и операционный центр · Синяя панель</title>
+  <title>Операционный центр админки · Blue panel</title>
   <link rel="stylesheet" href="../style.css">
-  <style>.doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:22px;box-shadow:var(--shadow)}.lead{font-size:18px;color:var(--muted)}table{width:100%;border-collapse:collapse;font-size:14px;background:#fff}th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{font:900 11px Verdana,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:#514a61}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}.card{border:1px solid var(--line);border-radius:20px;padding:14px;background:#faf7ff}.card b{display:block;margin-bottom:6px}.shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.shots img{width:100%;border:1px solid var(--line);border-radius:18px}@media(max-width:760px){table{font-size:12px}.doc{padding:16px}}
+  <style>
+    .doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:var(--shadow)}
+    .lead{font-size:18px;color:var(--muted);max-width:1000px}.decision{border:1px solid var(--line);border-radius:24px;background:#fff8df;padding:18px;margin:16px 0}.decision h2{margin-top:0}
+    .status{display:inline-flex;border-radius:999px;padding:6px 9px;font:900 10px Verdana,sans-serif;text-transform:uppercase;white-space:nowrap}.red{background:#ffe1df;color:#8d1d12}.yellow{background:#fff0c0;color:#745000}.green{background:#dff5e8;color:#176032}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:16px 0}.card{border:1px solid var(--line);border-radius:20px;background:#faf7ff;padding:15px}.card b{display:block;color:#1f6b49;margin-bottom:6px}.card p{margin:0;color:var(--muted)}
+    .route{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:16px 0}.route div{border:1px solid var(--line);border-radius:16px;background:#fff;padding:12px;position:relative}.route div:after{content:'→';position:absolute;right:-11px;top:50%;transform:translateY(-50%);color:#1f6b49;font-weight:900}.route div:last-child:after{display:none}.route b{display:block;color:#1f6b49;margin-bottom:4px}.route span{display:block;color:var(--muted);font-size:13px}
+    .matrix{overflow:auto;border:1px solid var(--line);border-radius:22px;background:#fff;margin:16px 0}table{width:100%;min-width:1120px;border-collapse:collapse;font-size:14px}th,td{border-bottom:1px solid var(--line);padding:11px;text-align:left;vertical-align:top}th{font:900 10px Verdana,sans-serif;text-transform:uppercase;color:#514a61;background:#fbfaf7}.note{border:1px solid var(--line);border-radius:18px;background:#fbfaf7;padding:14px;line-height:1.55}.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:12px}.links a{display:block;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:13px;text-decoration:none;color:var(--ink)}.links strong{display:block;color:#1f6b49;margin-bottom:4px}.links span{display:block;color:var(--muted);font-size:13px}@media(max-width:950px){.route{grid-template-columns:1fr}.route div:after{display:none}}
   </style>
 </head>
 <body>
 <main class="wrap">
-  <a href="../cells/cell-pm-master-launch-plan-2026-06-04.html">← Назад к мастер-плану</a>
+  <a href="../index.html">← Blue panel</a>
   <section class="doc">
-    <div class="eyebrow">Раздел плана</div>
-    <h1>Админка и операционный центр</h1>
-    <p class="lead">Что должно быть в админке, чтобы команда могла управлять платными услугами.</p>
+    <div class="eyebrow">Админка · управление запуском · контроль проблем · команда</div>
+    <h1>Операционный центр админки</h1>
+    <p class="lead">Эта страница описывает, какой должна быть админка для запуска платной P2P-платформы: не набор разрозненных вкладок, а рабочий центр, где команда видит оплаченные консультации, назначение экспертов, просрочки, жалобы, возвраты, события, начисления и качество работы.</p>
+
+    <div class="decision">
+      <h2>Решение PM</h2>
+      <p><b>Админка должна быть центром управления сервисом.</b> Для старта не обязательно делать отдельный красивый кабинет для всех ролей, но в админке должны быть понятные очереди, статусы, быстрые действия, права доступа и журнал событий. Сейчас этот слой описан, но его сквозная готовность не доказана экранами и тестовым сценарием.</p>
+      <p><span class="status yellow">концепция собрана</span> <span class="status red">готовность не доказана</span> <span class="status red">блокирует спокойный запуск рекламы</span></p>
+    </div>
+
     <div class="grid">
-  <div class="card"><b>Платные сессии</b><p>Админка должна показывать все оплаченные услуги, статус, ответственного, SLA и проблемы.</p></div>
-  <div class="card"><b>Исполнители и агенты</b><p>Нужны роли, назначения, доступность, допуск к работе, ограничения и история действий.</p></div>
-  <div class="card"><b>Поддержка и возвраты</b><p>Каждый тикет и возврат должен быть связан с заказом, сессией, оплатой и перепиской.</p></div>
-  <div class="card"><b>Модерация</b><p>Должны быть проверки качества, жалобы, ограничения и решения по рисковым случаям.</p></div>
-  <div class="card"><b>Уведомления</b><p>Команда должна видеть сбои писем, просрочки, новые обращения и критичные события.</p></div>
-  <div class="card"><b>Аналитика</b><p>Нужны воронка, SLA, качество, возвраты, повторные покупки и экономика заказа.</p></div>
-</div><h2>Связанные рабочие контуры</h2><div class="grid"><a class="card" href="expert-agent-workspace-readiness.html"><b>Рабочее место эксперта и агента</b><p>Роли, консультации, чат, начисления, качество, видимость и ограничения.</p></a><a class="card" href="admin-chat-workspace-v2-handoff.html"><b>Admin chat workspace v2</b><p>Текущий web-контур чата для передачи Игорю.</p></a><a class="card" href="support-refund-readiness.html"><b>Поддержка, жалобы и возвраты</b><p>Как команда обрабатывает проблемы клиента до рекламы.</p></a></div><div class="grid"><a class="card" href="events.html"><b>События, уведомления и аналитика</b><p>Что админка должна фиксировать и показывать без ручного поиска.</p></a></div></section>
+      <div class="card"><b>Что уже есть как основание</b><p>Есть backend Confideline, админка, web-контур admin chat workspace v2, карта событий, поддержка/возвраты и рабочее место эксперта.</p></div>
+      <div class="card"><b>Что не доказано</b><p>Не подтверждено, что админ видит полный путь: заказ → вопрос → назначение → ответ → проблема → возврат → начисление.</p></div>
+      <div class="card"><b>Что критично</b><p>Проблемы должны попадать в очереди автоматически: без вопроса, без назначения, скоро дедлайн, просрочено, жалоба, возврат.</p></div>
+      <div class="card"><b>Что нельзя</b><p>Нельзя запускать трафик, если админ узнает о проблемах только из ручного поиска, сообщений клиента или случайного просмотра чата.</p></div>
+    </div>
+
+    <h2>Как админка должна вести команду</h2>
+    <div class="route">
+      <div><b>1. Утро</b><span>видим новые заказы, просрочки, жалобы и задачи дня</span></div>
+      <div><b>2. Назначение</b><span>назначаем эксперта/агента и запускаем срок ответа</span></div>
+      <div><b>3. Контроль</b><span>смотрим кто отвечает, кто завис, где нужна помощь</span></div>
+      <div><b>4. Проблема</b><span>жалоба, возврат или сбой попадают в отдельную очередь</span></div>
+      <div><b>5. Решение</b><span>переназначение, ответ, компенсация, ограничение, замечание</span></div>
+      <div><b>6. Отчет</b><span>качество, деньги, нагрузка и повтор видны в цифрах</span></div>
+    </div>
+
+    <h2>Главные очереди админки</h2>
+    <div class="matrix"><table><thead><tr><th>Очередь</th><th>Что попадает</th><th>Кто работает</th><th>Быстрое действие</th><th>Почему важно</th><th>Статус</th></tr></thead><tbody>
+      <tr><td>Новые оплаченные консультации</td><td>Заказы, где тестовая/реальная оплата успешна и нужен вопрос или назначение.</td><td>Админ, назначающий, поддержка.</td><td>Открыть заказ, проверить вопрос, назначить исполнителя.</td><td>Не потерять клиента сразу после оплаты.</td><td><span class="status red">нужно доказать</span></td></tr>
+      <tr><td>Оплатил, но не написал вопрос</td><td>Есть оплаченный заказ, но нет запроса клиента.</td><td>Поддержка, админ.</td><td>Отправить напоминание, открыть карточку клиента.</td><td>Клиент может забыть или не понять следующий шаг.</td><td><span class="status red">обязательно</span></td></tr>
+      <tr><td>Ожидает назначения</td><td>Вопрос есть, но эксперт/агент не назначен.</td><td>Админ, модератор.</td><td>Назначить, переназначить, поставить приоритет.</td><td>Без назначения срок ответа не управляется.</td><td><span class="status red">обязательно</span></td></tr>
+      <tr><td>Скоро дедлайн</td><td>Консультации, где срок ответа подходит к концу.</td><td>Эксперт, агент, модератор, админ.</td><td>Напомнить, помочь, переназначить, продлить с причиной.</td><td>Предотвращает жалобы до просрочки.</td><td><span class="status red">обязательно</span></td></tr>
+      <tr><td>Просрочено</td><td>Ответ не отправлен в срок.</td><td>Админ, поддержка, модератор.</td><td>Эскалация, переназначение, компенсация, замечание исполнителю.</td><td>Критично для доверия, возвратов и рекламной экономики.</td><td><span class="status red">обязательно</span></td></tr>
+      <tr><td>Жалобы и плохие ответы</td><td>Клиент недоволен, ответ не соответствует регламенту, есть риск возврата.</td><td>Поддержка, модератор, админ.</td><td>Открыть чат, оценить ответ, назначить решение.</td><td>Качество экспертов должно управляться фактами.</td><td><span class="status red">обязательно</span></td></tr>
+      <tr><td>Возвраты и споры</td><td>Refund request, chargeback risk, technical failure, paid-no-service.</td><td>Поддержка, админ, финансы.</td><td>Принять решение, зафиксировать причину, связать с заказом.</td><td>Без этого нельзя честно считать выручку и качество.</td><td><span class="status red">обязательно</span></td></tr>
+      <tr><td>Сбои уведомлений</td><td>Письмо/уведомление не сформировано или не ушло в no-send/test режиме.</td><td>Админ, support, разработчик.</td><td>Повторить, посмотреть лог, передать ошибку.</td><td>Клиент и эксперт не должны оставаться без статуса.</td><td><span class="status yellow">связать с email</span></td></tr>
+    </tbody></table></div>
+
+    <h2>Карточка консультации в админке</h2>
+    <div class="matrix"><table><thead><tr><th>Блок карточки</th><th>Что должно быть видно</th><th>Зачем нужно</th><th>Минимум для запуска</th></tr></thead><tbody>
+      <tr><td>Клиент и источник</td><td>Клиент, язык, страна/рынок, UTM/источник, дата регистрации.</td><td>Понимать контекст и считать рекламу.</td><td>Да</td></tr>
+      <tr><td>Заказ и оплата</td><td>Цена, статус оплаты, тестовый/реальный режим, ошибка, повтор оплаты.</td><td>Разбирать “оплатил, но не получил”.</td><td>Да</td></tr>
+      <tr><td>Вопрос клиента</td><td>Текст запроса, категория, выбранный эксперт/профиль, время создания.</td><td>Назначить правильного исполнителя и не потерять смысл вопроса.</td><td>Да</td></tr>
+      <tr><td>Исполнитель</td><td>Эксперт/агент, статус доступности, назначил кто, история переназначений.</td><td>Контролировать ответственность и нагрузку.</td><td>Да</td></tr>
+      <tr><td>Срок ответа</td><td>Дедлайн, осталось времени, просрочка, причина продления.</td><td>Управлять обещанием клиенту.</td><td>Да</td></tr>
+      <tr><td>Чат</td><td>Сообщения, черновик ответа, внутренние заметки, шаблоны, предупреждения.</td><td>Эксперт отвечает внутри платформы, админ видит контекст.</td><td>Да</td></tr>
+      <tr><td>События</td><td>Оплата, вопрос, назначение, ответ, уведомления, жалоба, возврат, ручные действия.</td><td>Видеть историю без догадок.</td><td>Да</td></tr>
+      <tr><td>Качество</td><td>Оценка клиента, замечание модератора, нарушение регламента, итог.</td><td>Поднимать сильных экспертов и ограничивать слабых.</td><td>Да</td></tr>
+      <tr><td>Начисление</td><td>Кому начислено, сумма/правило, статус, удержание, бонус/штраф.</td><td>Связать работу и оплату исполнителя.</td><td>После основного пути</td></tr>
+    </tbody></table></div>
+
+    <h2>Роли и права доступа</h2>
+    <div class="matrix"><table><thead><tr><th>Роль</th><th>Видит</th><th>Может делать</th><th>Не может делать</th></tr></thead><tbody>
+      <tr><td>Эксперт</td><td>Свои консультации, чат, дедлайн, подсказки, база знаний, качество, начисления.</td><td>Отвечать, уточнять, завершать, отмечать проблему.</td><td>Видеть чужие заказы, платежные данные, менять правила.</td></tr>
+      <tr><td>Агент</td><td>Назначенные анкеты/экспертов, свои консультации, чат, скрипты, начисления.</td><td>Вести переписку, передавать сложный кейс, отмечать статус.</td><td>Работать вне назначенной зоны и скрывать жалобы.</td></tr>
+      <tr><td>Модератор качества</td><td>Ответы, жалобы, просрочки, историю исполнителя.</td><td>Ставить замечания, отправлять на доработку, рекомендовать ограничения.</td><td>Самостоятельно менять деньги и юридические решения.</td></tr>
+      <tr><td>Поддержка</td><td>Тикеты, заказ, оплату, чат, исполнителя, историю решений.</td><td>Отвечать клиенту, связывать проблему с заказом, эскалировать.</td><td>Обещать возврат вне правил и редактировать ответ без следа.</td></tr>
+      <tr><td>Админ</td><td>Все очереди, заказы, роли, события, деньги, качество, видимость.</td><td>Назначать, переназначать, ограничивать, подтверждать, решать спор.</td><td>Делать непрозрачные ручные действия без лога и причины.</td></tr>
+    </tbody></table></div>
+
+    <h2>Отчеты операционного центра</h2>
+    <div class="matrix"><table><thead><tr><th>Отчет</th><th>Что показывает</th><th>Кому нужен</th><th>Решение, которое принимаем</th></tr></thead><tbody>
+      <tr><td>Сводка дня</td><td>Новые оплаты, ожидают назначения, скоро дедлайн, просрочено, жалобы, возвраты.</td><td>PM, админ, поддержка.</td><td>Что разбирать прямо сегодня.</td></tr>
+      <tr><td>Нагрузка экспертов</td><td>Активные консультации, среднее время ответа, просрочки, лимиты, доступность.</td><td>Админ, модератор, PM.</td><td>Кого нагружать, кого ставить на паузу.</td></tr>
+      <tr><td>Качество ответов</td><td>Оценки, жалобы, замечания, возвраты по причине качества.</td><td>Модератор, PM, школа экспертов.</td><td>Кого обучать, поднимать, ограничивать или отключать.</td></tr>
+      <tr><td>Деньги</td><td>Выручка, тестовые/реальные заказы, refund reserve, начисления, удержания.</td><td>PM, финансы, админ.</td><td>Можно ли включать трафик и какие правила оплаты исполнителей работают.</td></tr>
+      <tr><td>События и уведомления</td><td>События заказа, статус писем, ошибки уведомлений, no-send proof.</td><td>PM, Игорь, support.</td><td>Где клиент или эксперт остался без статуса.</td></tr>
+      <tr><td>Видимость экспертов</td><td>Кого показываем выше, кого ниже, кто скрыт, кто в паузе, причина изменения.</td><td>PM, админ, модератор.</td><td>Управлять выдачей не вручную “по ощущению”, а по качеству и доступности.</td></tr>
+    </tbody></table></div>
+
+    <h2>Что передать Игорю</h2>
+    <div class="matrix"><table><thead><tr><th>Пакет</th><th>Что нужно реализовать или подтвердить</th><th>Критерий приемки</th><th>Статус</th></tr></thead><tbody>
+      <tr><td>Очереди оператора</td><td>Списки новых, ожидающих назначения, скоро дедлайн, просроченных, жалоб и возвратов.</td><td>Админ открывает один экран и видит все критичные проблемы дня.</td><td><span class="status red">нужно сделать/доказать</span></td></tr>
+      <tr><td>Карточка консультации</td><td>Единая карточка заказа, вопроса, чата, исполнителя, событий и поддержки.</td><td>Из одного места открывается весь контекст консультации.</td><td><span class="status red">нужно сделать/доказать</span></td></tr>
+      <tr><td>Ручные действия с логом</td><td>Назначить, переназначить, продлить срок, заморозить, закрыть, отправить в поддержку.</td><td>Каждое действие имеет автора, время, причину и историю.</td><td><span class="status red">обязательно</span></td></tr>
+      <tr><td>События и уведомления</td><td>Связать действия админки с картой событий и no-send/email контуром.</td><td>По событию видно, какое уведомление должно сформироваться.</td><td><span class="status yellow">связать</span></td></tr>
+      <tr><td>Отчеты</td><td>Сводка дня, нагрузка экспертов, качество, деньги, поддержка, события.</td><td>PM может утром и вечером понять состояние сервиса.</td><td><span class="status red">нужно собрать</span></td></tr>
+      <tr><td>Права ролей</td><td>Эксперт, агент, модератор, поддержка, админ видят только свое.</td><td>Нет доступа к лишним заказам, платежам и чужим консультациям.</td><td><span class="status red">нужно доказать</span></td></tr>
+    </tbody></table></div>
+
+    <h2>Связанные страницы Blue panel</h2>
+    <div class="links">
+      <a href="paid-consultation-test-flow.html"><strong>Покупка консультации</strong><span>Какие статусы заказа и консультации должна видеть админка.</span></a>
+      <a href="events.html"><strong>События, уведомления и аналитика</strong><span>Что админка должна фиксировать и показывать без ручного поиска.</span></a>
+      <a href="expert-agent-workspace-readiness.html"><strong>Рабочее место эксперта</strong><span>Какие вкладки и права нужны экспертам, агентам и модераторам.</span></a>
+      <a href="support-refund-readiness.html"><strong>Поддержка и возвраты</strong><span>Как проблемы клиента должны попадать в support queue.</span></a>
+      <a href="admin-chat-workspace-v2-handoff.html"><strong>Admin chat workspace v2</strong><span>Готовый web-контур чата как основа передачи Игорю.</span></a>
+      <a href="first-sales-economics.html"><strong>Экономика первых продаж</strong><span>Какие отчеты нужны для стоимости клиента, нагрузки экспертов и возвратов.</span></a>
+    </div>
+
+    <h2>Итог</h2>
+    <div class="note"><p><b>Для запуска нам нужна админка-операторская, а не просто набор страниц.</b> Главный критерий: утром PM/админ открывает один контур и видит, где деньги, где клиент ждет, где эксперт просрочил, где жалоба, где возврат, где сломалось уведомление и кто должен действовать. Пока это не доказано экранами и тестовым сценарием, слой остается красным для рекламы и желтым для подготовки разработки.</p></div>
+  </section>
 </main>
-<script src="../assets/panel-ux.js"></script></body>
+<script src="../assets/panel-ux.js"></script>
+</body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
