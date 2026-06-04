@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Пакет Игорю: sandbox checkout → консультация · Blue panel</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:var(--shadow)}.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;margin-bottom:16px}.hero-main{background:linear-gradient(135deg,#17372f,#1f6b49);color:#fff;border-radius:30px;padding:24px}.hero-main h1,.hero-main p{color:#fff}.hero-main h1{font-size:46px;line-height:1;margin:8px 0 12px}.hero-side{border:1px solid var(--line);border-radius:30px;background:#fff8df;padding:18px}.hero-side b{display:block;color:#1f6b49;margin-bottom:6px}.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.badge{display:inline-flex;border-radius:999px;padding:7px 10px;font:900 11px Manrope,Verdana,sans-serif}.ok{background:#dff5e8;color:#176032}.warn{background:#fff0c0;color:#745000}.bad{background:#ffe1df;color:#8d1d12}.blue{background:#e5f1ff;color:#1b5a85}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:16px 0}.card{border:1px solid var(--line);border-radius:20px;background:#faf7ff;padding:15px}.card b{display:block;color:#1f6b49;margin-bottom:6px}.card p{margin:0;color:var(--muted)}.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:16px 0}.step{border:1px solid var(--line);border-radius:18px;background:#fff;padding:14px}.step .num{width:32px;height:32px;border-radius:11px;background:#1f6b49;color:#fff;display:grid;place-items:center;font:900 13px Manrope,Verdana,sans-serif;margin-bottom:8px}.step b{display:block;color:#1f6b49;margin-bottom:5px}.step span{display:block;color:var(--muted);font-size:13px}.matrix{overflow:auto;border:1px solid var(--line);border-radius:22px;background:#fff;margin:16px 0}table{width:100%;min-width:1240px;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:11px;text-align:left;vertical-align:top}th{font:900 10px Manrope,Verdana,sans-serif;text-transform:uppercase;background:#fbfaf7;color:#514a61}.status{display:inline-flex;border-radius:999px;padding:6px 9px;font:900 10px Manrope,Verdana,sans-serif;white-space:nowrap}.note{background:#fff8df;border:1px solid var(--line);border-radius:20px;padding:15px;line-height:1.55;margin:16px 0}.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:14px}.links a{display:block;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:14px;text-decoration:none;color:var(--ink)}.links strong{display:block;color:#1f6b49;margin-bottom:4px}.links span{display:block;color:var(--muted);font-size:13px}code{white-space:normal}@media(max-width:980px){.hero{grid-template-columns:1fr}.hero-main h1{font-size:36px}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <a href="igor-test-order-consultation-handoff.html">← Пакет тестового заказа</a>
+  <section class="hero">
+    <div class="hero-main">
+      <div class="eyebrow">co2p · пакет передачи Игорю</div>
+      <h1>Связать sandbox checkout с тестовой консультацией</h1>
+      <p>Платежная песочница уже доказана. Теперь нужно закрыть главный продуктовый разрыв: после fake success должен появиться не только завершенный платеж/баланс, а рабочая консультация с вопросом, админской видимостью, назначением эксперта, чатом, событиями и поддержкой.</p>
+      <div class="badges"><span class="badge ok">payment sandbox PASS</span><span class="badge warn">sandbox hook найден в source</span><span class="badge bad">consultation runtime RED</span></div>
+    </div>
+    <aside class="hero-side">
+      <b>PM-решение</b><p>Игорю нужно передавать не “сделать оплату”, а конкретную связку: fake payment success → order → question → consultation → expert/agent task → chat → no-send events → support.</p>
+      <b>Ограничения</b><p>Только local/test. Не production, не реальные Stripe keys, не реальные карты, не реальные письма.</p>
+    </aside>
+  </section>
+
+  <section class="doc">
+    <h2>Что уже найдено в коде</h2>
+    <div class="grid">
+      <div class="card"><b>Целевой вариант требует подтверждения</b><p>`Chat/README.md` говорит, что в `Confideline/Chat` несколько вариантов и нет единого canonical source по умолчанию.</p></div>
+      <div class="card"><b>Sandbox hook в BalanceController есть</b><p>`actionStripeCreateSession()` уже возвращает `checkoutUrl`, если задан `CONFIDELINE_STRIPE_API_BASE`.</p></div>
+      <div class="card"><b>Sandbox hook в StripeCheckout есть</b><p>`configureStripe()` уже переопределяет `Stripe::$apiBase` через env.</p></div>
+      <div class="card"><b>Success сейчас закрывает credits</b><p>`successPayment()` увеличивает баланс и переводит `Order` в `COMPLETED`, но консультация этим не доказана.</p></div>
+    </div>
+
+    <div class="note"><b>Ключевой вывод:</b> найденная кодовая база уже частично подготовлена к sandbox. Но бизнес-цель Nebula не “пополнить кредиты”, а “купить консультацию и получить ответ”. Поэтому нужно доказать или добавить доменную связку консультации после оплаты.</div>
+
+    <h2>Нужный маршрут</h2>
+    <div class="flow">
+      <div class="step"><div class="num">1</div><b>Услуга</b><span>Клиент выбирает консультацию, цену, срок и тему.</span></div>
+      <div class="step"><div class="num">2</div><b>Order</b><span>Создается тестовый/sandbox order с услугой и клиентом.</span></div>
+      <div class="step"><div class="num">3</div><b>Checkout</b><span>Открывается fake checkout через `checkoutUrl`.</span></div>
+      <div class="step"><div class="num">4</div><b>Fake success</b><span>Платежный intent успешен, order completed/test.</span></div>
+      <div class="step"><div class="num">5</div><b>Question</b><span>Вопрос клиента связан с order/consultation.</span></div>
+      <div class="step"><div class="num">6</div><b>Consultation</b><span>Создается рабочая сущность услуги со статусом и сроком.</span></div>
+      <div class="step"><div class="num">7</div><b>Admin</b><span>Админ видит карточку и problem states.</span></div>
+      <div class="step"><div class="num">8</div><b>Expert</b><span>Эксперт/агент получает задачу и отвечает в чате.</span></div>
+      <div class="step"><div class="num">9</div><b>Events/support</b><span>No-send события и тикет поддержки связаны с order.</span></div>
+    </div>
+
+    <h2>Что требуется Игорю</h2>
+    <div class="matrix"><table><thead><tr><th>Блок</th><th>Что найдено</th><th>Что требуется</th><th>Доказательство приемки</th><th>Статус</th></tr></thead><tbody>
+      <tr><td>Целевой source</td><td>Найден `youdate_extracted`, но canonical не подтвержден.</td><td>Подтвердить актуальный runtime-путь.</td><td>Комментарий/отметка в задаче или handoff.</td><td><span class="status warn">WARN</span></td></tr>
+      <tr><td>Sandbox checkoutUrl</td><td>`BalanceController` уже возвращает `checkoutUrl` при env.</td><td>Подтвердить в фактическом runtime.</td><td>JSON-ответ `/balance/stripe-create-session` с `checkoutUrl`.</td><td><span class="status warn">WARN</span></td></tr>
+      <tr><td>Stripe apiBase</td><td>`StripeCheckout` уже читает `CONFIDELINE_STRIPE_API_BASE`.</td><td>Поднять test runtime с `127.0.0.1:8787`.</td><td>Checkout session создана через локальный sandbox.</td><td><span class="status warn">WARN</span></td></tr>
+      <tr><td>Payment success</td><td>`successPayment()` завершает order и начисляет credits.</td><td>Добавить/подтвердить mapping к консультации.</td><td>Order + consultation после fake success.</td><td><span class="status bad">RED</span></td></tr>
+      <tr><td>Вопрос клиента</td><td>В payment flow вопрос не найден.</td><td>Сохранять question с `order_id`/`consultation_id`.</td><td>Вопрос открывается из карточки заказа/консультации.</td><td><span class="status bad">RED</span></td></tr>
+      <tr><td>Админская видимость</td><td>Есть admin order view и admin chat shell.</td><td>Показать test order, consultation и problem states.</td><td>Скрины очередей/карточки.</td><td><span class="status bad">RED</span></td></tr>
+      <tr><td>Эксперт/агент</td><td>Есть chat shell/preview.</td><td>Связать задачу исполнителя с consultation/order.</td><td>Скрин задачи эксперта/агента.</td><td><span class="status bad">RED</span></td></tr>
+      <tr><td>Чат</td><td>Есть message/chat функционал.</td><td>Закрепить чат за consultation/order.</td><td>Один chat id виден клиенту, исполнителю и админу.</td><td><span class="status bad">RED</span></td></tr>
+      <tr><td>No-send события</td><td>Email-пакет уже подготовлен отдельно.</td><td>Фиксировать события без реальных писем.</td><td>Лог событий по test order.</td><td><span class="status warn">WARN</span></td></tr>
+      <tr><td>Cancel/fail/refund</td><td>Sandbox умеет эти сценарии.</td><td>Не создавать оплаченную консультацию при cancel/fail; refund связать с support.</td><td>Скрины cancel/fail/refund состояний.</td><td><span class="status warn">WARN</span></td></tr>
+    </tbody></table></div>
+
+    <h2>Acceptance criteria</h2>
+    <div class="grid">
+      <div class="card"><b>Оплата</b><p>Fake checkout открывается через `checkoutUrl`; реальные деньги и Stripe не используются.</p></div>
+      <div class="card"><b>Заказ</b><p>После fake success order виден в админке как completed/test.</p></div>
+      <div class="card"><b>Консультация</b><p>Есть рабочая сущность консультации, связанная с order и вопросом клиента.</p></div>
+      <div class="card"><b>Исполнитель</b><p>Эксперт/агент получает задачу, срок, контекст и чат.</p></div>
+      <div class="card"><b>События</b><p>События фиксируются как no-send; реальные письма не уходят.</p></div>
+      <div class="card"><b>Проблемы</b><p>Cancel/fail/refund/support видны как problem states и не создают ложную продажу.</p></div>
+    </div>
+
+    <h2>Связанные материалы</h2>
+    <div class="links">
+      <a href="artifacts/IGOR_SANDBOX_CHECKOUT_TO_CONSULTATION_HANDOFF_2026_06_04.md"><strong>Markdown-пакет</strong><span>Текст для передачи Игорю.</span></a>
+      <a href="artifacts/IGOR_SANDBOX_CHECKOUT_TO_CONSULTATION_HANDOFF_2026_06_04.csv"><strong>CSV-пакет</strong><span>Табличная матрица блоков.</span></a>
+      <a href="test-order-sandbox-preflight-report.html"><strong>Preflight payment sandbox</strong><span>Что уже доказано локально.</span></a>
+      <a href="test-order-runtime-proof-plan.html"><strong>План runtime proof</strong><span>Какие скрины и факты нужны после внедрения.</span></a>
+      <a href="igor-test-order-consultation-handoff.html"><strong>Общий пакет тестового заказа</strong><span>Более широкий контекст заказа, вопроса, админки и support.</span></a>
+      <a href="email-notifications-handoff.html"><strong>Email/no-send события</strong><span>Связанный пакет уведомлений.</span></a>
+      <a href="expert-agent-workspace-handoff.html"><strong>Рабочее место эксперта</strong><span>Связанный пакет исполнителя и чата.</span></a>
+    </div>
+  </section>
+</main>
+<script src="../assets/panel-ux.js"></script>
+</body>
+</html>
