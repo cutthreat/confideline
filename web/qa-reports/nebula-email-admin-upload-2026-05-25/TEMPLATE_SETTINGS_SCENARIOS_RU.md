@@ -32,7 +32,9 @@
 | 16 | message_chat_saved | Через 48 часов после завершения/сохранения чата. | message.chat_saved | 0 | 48 | message_chat_saved_allowed | нужен backend event |
 | 17 | support_safety_notice | По событию safety/support flow: предупреждение, важная инструкция, ограничение или безопасный канал связи. | support.safety_notice | 0 | 0 | safety_flow_notice | нужен backend event |
 | 18 | user_age_restricted | Сразу после решения ограничить доступ к сервису по возрасту или правилам платформы. | user.age_restricted | 0 | 0 | minor_or_age_restricted | нужен backend event |
+| 19 | balance_topup_success | Сразу после финального подтверждения пополнения внутреннего баланса: Stripe, Unlimit или ручное начисление. | balance.topup.success | 0 | 0 | balance_topup_success | нужен backend event |
 | 2 | user_password_recovery | Сразу после запроса восстановления пароля. | user.password_recovery | 0 | 0 | user_password_recovery_requested | нужен backend event |
+| 20 | service_purchase_success | Сразу после покупки и активации конкретной услуги: Premium, пакет кредитов или другой платный продукт. | service.purchase.success | 0 | 0 | service_purchase_success | нужен backend event |
 | 3 | security_change | Сразу после изменения пароля, email, 2FA или другого чувствительного параметра аккаунта. | security.security_change | 0 | 0 | security_setting_changed | нужен backend event |
 | 4 | payment_success | Сразу после успешного подтверждения платежа платежным провайдером. | payment.success | 0 | 0 | payment_success | проверить trigger |
 | 5 | payment_error | После финального отказа платежа или ошибки, когда пользователь может повторить попытку. | payment.error | 0 | 0 | payment_error | проверить trigger |
@@ -219,6 +221,22 @@
 - **Проверка:** На тестовом аккаунте применить ограничение; проверить письмо, поддержку и отсутствие деталей, которые нельзя раскрывать.
 - **Переменные:** legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportEmail, supportUrl, termsUrl, userName
 
+### 19. Баланс пополнен (balance_topup_success)
+
+- **Когда отправлять:** Сразу после финального подтверждения пополнения внутреннего баланса: Stripe, Unlimit или ручное начисление.
+- **Зачем:** Финансовое сервисное письмо: пользователь видит сумму, способ пополнения и номер транзакции.
+- **Subject:** Ваш баланс {{siteName}} пополнен
+- **event_name:** balance.topup.success
+- **condition_id:** 0
+- **delay:** 0
+- **source_trigger:** balance_topup_success
+- **type_id / settings:** 1 / count_user_settings=0
+- **Почему такие настройки:** Сервисное финансовое письмо: type_id 1, count_user_settings 0, delay 0, condition 0.
+- **Backend-гейт:** Баланс реально увеличен; платеж/ручное пополнение финализировано; transactionId уникален; событие дедуплицировано.
+- **Решение по внедрению:** Нужен отдельный backend event balance.topup.success, чтобы не смешивать пополнение баланса с оплатой консультации или покупкой услуги.
+- **Проверка:** Пополнить тестовый баланс Stripe, Unlimit и вручную; проверить сумму, валюту, метод и отсутствие дублей при повторном webhook.
+- **Переменные:** amount, currency, legalMerchantName, paymentMethod, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportEmail, termsUrl, transactionId, userName
+
 ### 2. Сброс пароля (user_password_recovery)
 
 - **Когда отправлять:** Сразу после запроса восстановления пароля.
@@ -234,6 +252,22 @@
 - **Решение по внедрению:** Нужен backend event или привязка к текущему mailer восстановления пароля.
 - **Проверка:** Запросить восстановление пароля на тестовом аккаунте; проверить одноразовость ссылки, срок действия и отсутствие раскрытия существования аккаунта.
 - **Переменные:** legalMerchantName, privacyUrl, refundPolicyUrl, resetExpiresAt, resetUrl, siteName, siteUrl, supportEmail, termsUrl, userName
+
+### 20. Услуга приобретена (service_purchase_success)
+
+- **Когда отправлять:** Сразу после покупки и активации конкретной услуги: Premium, пакет кредитов или другой платный продукт.
+- **Зачем:** Финансовое сервисное письмо: пользователь понимает, какая услуга куплена, за какую сумму и по какой транзакции.
+- **Subject:** Покупка {{serviceName}} подтверждена
+- **event_name:** service.purchase.success
+- **condition_id:** 0
+- **delay:** 0
+- **source_trigger:** service_purchase_success
+- **type_id / settings:** 1 / count_user_settings=0
+- **Почему такие настройки:** Сервисное финансовое письмо: type_id 1, count_user_settings 0, delay 0, condition 0.
+- **Backend-гейт:** Услуга активирована или начислена; есть serviceName для языка письма; платеж финализирован; transactionId уникален.
+- **Решение по внедрению:** Нужен отдельный backend event service.purchase.success, чтобы не отправлять это письмо при пополнении баланса или оплате консультации.
+- **Проверка:** Купить Premium и пакет кредитов в тестовом контуре; проверить название услуги, сумму, метод, транзакцию и доступность услуги в кабинете.
+- **Переменные:** amount, currency, legalMerchantName, paymentMethod, privacyUrl, refundPolicyUrl, serviceName, siteName, siteUrl, supportEmail, termsUrl, transactionId, userName
 
 ### 3. Изменение безопасности (security_change)
 
