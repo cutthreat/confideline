@@ -3,45 +3,110 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>События и уведомления · Синяя панель</title>
+  <title>Карта событий, уведомлений и аналитики · Blue panel</title>
   <link rel="stylesheet" href="../style.css">
-  <style>.doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:22px;box-shadow:var(--shadow)}.lead{font-size:18px;color:var(--muted)}table{width:100%;border-collapse:collapse;font-size:14px;background:#fff}th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{font:900 11px Verdana,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:#514a61}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}.card{border:1px solid var(--line);border-radius:20px;padding:14px;background:#faf7ff}.card b{display:block;margin-bottom:6px}.shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.shots img{width:100%;border:1px solid var(--line);border-radius:18px}@media(max-width:760px){table{font-size:12px}.doc{padding:16px}}
+  <style>
+    .doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:var(--shadow)}
+    .lead{font-size:18px;color:var(--muted);max-width:1000px}.decision{border:1px solid var(--line);border-radius:24px;background:#fff8df;padding:18px;margin:16px 0}.decision h2{margin-top:0}
+    .status{display:inline-flex;border-radius:999px;padding:6px 9px;font:900 10px Verdana,sans-serif;text-transform:uppercase;white-space:nowrap}.red{background:#ffe1df;color:#8d1d12}.yellow{background:#fff0c0;color:#745000}.green{background:#dff5e8;color:#176032}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:16px 0}.card{border:1px solid var(--line);border-radius:20px;background:#faf7ff;padding:15px}.card b{display:block;color:#1f6b49;margin-bottom:6px}.card p{margin:0;color:var(--muted)}
+    .route{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:16px 0}.route div{border:1px solid var(--line);border-radius:16px;background:#fff;padding:12px;position:relative}.route div:after{content:'→';position:absolute;right:-11px;top:50%;transform:translateY(-50%);color:#1f6b49;font-weight:900}.route div:last-child:after{display:none}.route b{display:block;color:#1f6b49;margin-bottom:4px}.route span{display:block;color:var(--muted);font-size:13px}
+    .matrix{overflow:auto;border:1px solid var(--line);border-radius:22px;background:#fff;margin:16px 0}table{width:100%;min-width:1120px;border-collapse:collapse;font-size:14px}th,td{border-bottom:1px solid var(--line);padding:11px;text-align:left;vertical-align:top}th{font:900 10px Verdana,sans-serif;text-transform:uppercase;color:#514a61;background:#fbfaf7}.note{border:1px solid var(--line);border-radius:18px;background:#fbfaf7;padding:14px;line-height:1.55}.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:12px}.links a{display:block;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:13px;text-decoration:none;color:var(--ink)}.links strong{display:block;color:#1f6b49;margin-bottom:4px}.links span{display:block;color:var(--muted);font-size:13px}@media(max-width:950px){.route{grid-template-columns:1fr}.route div:after{display:none}}
   </style>
 </head>
 <body>
 <main class="wrap">
-  <a href="../cells/cell-pm-master-launch-plan-2026-06-04.html">← Назад к мастер-плану</a>
+  <a href="../index.html">← Blue panel</a>
   <section class="doc">
-    <div class="eyebrow">Раздел плана</div>
-    <h1>События и уведомления</h1>
-    <p class="lead">Какие сигналы нужны клиенту, исполнителю, агенту, модератору, поддержке и администратору.</p>
-    <table><tr><th>Событие</th><th>Кто запускает</th><th>Когда происходит</th><th>Кому важно</th><th>Зачем нужно</th><th>Как проверяем</th></tr><tr><td>user_registered</td><td>client</td><td>signup completed</td><td>client</td><td>account confirmation/start journey</td><td>template render + no-send log</td></tr>
-<tr><td>advisor_selected</td><td>client</td><td>client clicks advisor CTA</td><td>admin/analytics</td><td>advisor funnel metric</td><td>analytics event without sensitive text</td></tr>
-<tr><td>payment_success</td><td>payment</td><td>sandbox webhook/success return</td><td>client, admin</td><td>receipt and order proof</td><td>order id + receipt template</td></tr>
-<tr><td>payment_failed</td><td>payment</td><td>failed checkout</td><td>client</td><td>recover checkout</td><td>failed payment state</td></tr>
-<tr><td>paid_no_question_reminder</td><td>system</td><td>paid order without question after threshold</td><td>client</td><td>complete intake</td><td>scheduled reminder log</td></tr>
-<tr><td>question_submitted</td><td>client</td><td>question intake submitted</td><td>client, Ops</td><td>session enters assignment queue</td><td>session state submitted</td></tr>
-<tr><td>session_assigned</td><td>Ops/system</td><td>expert assigned</td><td>client, expert/agent</td><td>start SLA and delivery</td><td>assignment audit log</td></tr>
-<tr><td>expert_sla_warning</td><td>system</td><td>SLA threshold approaching</td><td>expert/agent, Ops</td><td>avoid overdue</td><td>warning appears in queue</td></tr>
-<tr><td>expert_sla_overdue</td><td>system</td><td>SLA exceeded</td><td>Ops, expert/agent</td><td>manual escalation/reassign</td><td>overdue escalation</td></tr>
-<tr><td>answer_draft_ready</td><td>expert/agent</td><td>answer drafted</td><td>moderator/QA if required</td><td>quality/safety review</td><td>QA review item</td></tr>
-<tr><td>answer_ready</td><td>system/expert</td><td>answer approved/sent</td><td>client</td><td>return to transcript</td><td>client notification + transcript</td></tr>
-<tr><td>low_rating</td><td>client</td><td>client rating below threshold</td><td>QA, Advisor Ops</td><td>quality review</td><td>QA case created</td></tr>
-<tr><td>support_ticket_opened</td><td>client/support</td><td>support form</td><td>support, client</td><td>manage issue</td><td>ticket linked to order/session</td></tr>
-<tr><td>refund_requested</td><td>client/support</td><td>refund request</td><td>support/finance, client</td><td>review refund</td><td>evidence bundle</td></tr>
-<tr><td>safety_flag_detected</td><td>system/moderator</td><td>forbidden topic/off-platform/risk</td><td>moderator/Ops</td><td>risk control</td><td>flag + action log</td></tr>
-<tr><td>expert_restricted</td><td>admin/moderator</td><td>quality/risk decision</td><td>Ops</td><td>stop bad assignment</td><td>restriction audit affects ranking</td></tr>
-<tr><td>follow_up_available</td><td>system</td><td>answer completed + cooldown</td><td>client</td><td>repeat purchase/LTV</td><td>CRM event + conversion tracking</td></tr>
-<tr><td>payout_accrued</td><td>system</td><td>completed session after hold/refund window</td><td>expert/agent/admin</td><td>earnings transparency</td><td>ledger entry</td></tr></table>
+    <div class="eyebrow">События · письма · админка · аналитика · контроль команды</div>
+    <h1>Карта событий, уведомлений и аналитики</h1>
+    <p class="lead">Эта страница описывает, какие важные действия должны фиксироваться в сервисе, кто должен их видеть и какие письма, уведомления, админские статусы и отчеты должны запускаться. Без этой карты мы не увидим, где теряем клиента, почему эксперт просрочил ответ и можно ли покупать рекламу.</p>
+
+    <div class="decision">
+      <h2>Решение PM</h2>
+      <p><b>События — это нервная система сервиса.</b> Для запуска с 5 экспертами недостаточно иметь чат и оплату. Нужно видеть весь путь: от клика рекламы до оплаты, вопроса, назначения эксперта, ответа, жалобы, возврата и повторной покупки.</p>
+      <p><span class="status yellow">карта собрана</span> <span class="status red">реализация не доказана полностью</span> <span class="status red">без этого нельзя измерять рекламу</span></p>
+    </div>
+
+    <div class="grid">
+      <div class="card"><b>Что уже есть как основание</b><p>Есть контур email-админки, карта покупки консультации, карта поддержки и понимание роли админки как операционного центра.</p></div>
+      <div class="card"><b>Что не доказано</b><p>Нет подтвержденной сквозной цепочки: событие произошло → письмо/уведомление сформировано → админ видит → аналитика считает.</p></div>
+      <div class="card"><b>Что передавать Игорю</b><p>Не список “event names”, а таблицу событий с получателями, переменными, экраном админки, логом и проверкой.</p></div>
+      <div class="card"><b>Что контролирует PM</b><p>Конверсию, стоимость клиента, срок ответа, качество, жалобы, возвраты, повторную покупку и загрузку экспертов.</p></div>
+    </div>
+
+    <h2>Как событие должно работать</h2>
+    <div class="route">
+      <div><b>1. Произошло</b><span>клиент, эксперт, платеж или админ совершил действие</span></div>
+      <div><b>2. Записалось</b><span>событие попало в журнал и связано с пользователем/заказом</span></div>
+      <div><b>3. Показалось</b><span>нужная роль видит статус в админке или кабинете</span></div>
+      <div><b>4. Уведомило</b><span>ушло письмо, внутреннее уведомление или напоминание</span></div>
+      <div><b>5. Посчиталось</b><span>попало в аналитику, экономику и отчет</span></div>
+      <div><b>6. Проверилось</b><span>есть no-send/log/test proof без реальной отправки клиентам</span></div>
+    </div>
+
+    <h2>Карта обязательных событий</h2>
+    <div class="matrix"><table><thead><tr><th>Область</th><th>Что произошло</th><th>Кто должен узнать</th><th>Что должно сработать</th><th>Где видно</th><th>Статус</th></tr></thead><tbody>
+      <tr><td>Реклама</td><td>Клиент пришел с кампании или органического источника.</td><td>PM, маркетинг, админ.</td><td>Сохранить UTM, источник, страницу входа, оффер.</td><td>Аналитика, карточка заказа, отчет теста.</td><td><span class="status red">нужно внедрить</span></td></tr>
+      <tr><td>Регистрация</td><td>Клиент создал аккаунт или вошел.</td><td>Клиент, админ, аналитика.</td><td>Сервисное письмо, статус пользователя, источник регистрации.</td><td>Профиль клиента, аналитика воронки.</td><td><span class="status yellow">частично есть</span></td></tr>
+      <tr><td>Оффер</td><td>Клиент выбрал услугу или эксперта.</td><td>PM, админ, аналитика.</td><td>Зафиксировать категорию, цену, профиль, CTA, язык.</td><td>События воронки, будущий заказ.</td><td><span class="status red">не доказано</span></td></tr>
+      <tr><td>Оплата</td><td>Заказ создан, оплата успешна, не прошла, отменена или ожидает.</td><td>Клиент, админ, поддержка, аналитика.</td><td>Экран статуса, письмо, запись в заказе, событие для рекламы.</td><td>Заказ, платежный журнал, поддержка, аналитика.</td><td><span class="status red">блокер до рекламы</span></td></tr>
+      <tr><td>Вопрос клиента</td><td>Клиент написал запрос после оплаты.</td><td>Админ, эксперт/агент, поддержка.</td><td>Связать вопрос с заказом, создать консультацию, запустить назначение.</td><td>Карточка консультации, чат, очередь назначения.</td><td><span class="status red">не доказано</span></td></tr>
+      <tr><td>Назначение</td><td>Эксперт или агент получил консультацию.</td><td>Исполнитель, админ, модератор.</td><td>Внутреннее уведомление, дедлайн, статус “в работе”.</td><td>Рабочее место эксперта, админская очередь.</td><td><span class="status red">нужно собрать</span></td></tr>
+      <tr><td>Ответ</td><td>Эксперт отправил ответ клиенту.</td><td>Клиент, админ, аналитика.</td><td>Письмо/уведомление клиенту, закрытие дедлайна, запрос оценки.</td><td>Чат, история консультации, отчет качества.</td><td><span class="status red">не доказано сквозно</span></td></tr>
+      <tr><td>Просрочка</td><td>Эксперт не ответил в срок.</td><td>Админ, модератор, поддержка, исполнитель.</td><td>Эскалация, напоминание, возможное переназначение.</td><td>Операционная панель, очередь проблем.</td><td><span class="status red">обязательно</span></td></tr>
+      <tr><td>Жалоба</td><td>Клиент недоволен ответом или не получил услугу.</td><td>Поддержка, админ, модератор.</td><td>Создать тикет, привязать заказ, чат, исполнителя и причину.</td><td>Support queue, карточка заказа, журнал решений.</td><td><span class="status red">обязательно</span></td></tr>
+      <tr><td>Возврат</td><td>Запрошен или одобрен refund/credit.</td><td>Поддержка, админ, финансы, PM.</td><td>Статус решения, причина, влияние на выручку и качество эксперта.</td><td>Финансы, поддержка, аналитика качества.</td><td><span class="status red">обязательно</span></td></tr>
+      <tr><td>Повтор</td><td>Клиент вернулся за новой консультацией.</td><td>PM, маркетинг, админ.</td><td>Отметить repeat, связать с прошлым опытом и источником.</td><td>Аналитика, LTV, профиль клиента.</td><td><span class="status yellow">после первого пути</span></td></tr>
+      <tr><td>Начисление</td><td>Эксперт/агент заработал за консультацию.</td><td>Исполнитель, админ, финансы.</td><td>Создать расчет, статус выплаты, связь с качеством и жалобами.</td><td>Рабочее место эксперта, финансы, админ.</td><td><span class="status red">нужно описать</span></td></tr>
+    </tbody></table></div>
+
+    <h2>Какие письма и уведомления нужны</h2>
+    <div class="matrix"><table><thead><tr><th>Получатель</th><th>Когда уведомлять</th><th>Что должно быть в сообщении</th><th>Правило безопасности</th></tr></thead><tbody>
+      <tr><td>Клиент</td><td>Регистрация, оплата, вопрос принят, ответ готов, проблема, решение поддержки, повторный повод.</td><td>Понятный статус, следующий шаг, срок ответа, ссылка на чат/заказ, поддержка.</td><td>Не раскрывать лишние личные данные, не обещать гарантированный результат.</td></tr>
+      <tr><td>Эксперт / агент</td><td>Назначена консультация, скоро дедлайн, просрочка, жалоба, замечание качества, начисление.</td><td>Что сделать, до какого времени, ссылка на чат, правила ответа.</td><td>Не показывать чужие консультации и платежные данные.</td></tr>
+      <tr><td>Админ / модератор</td><td>Новая оплаченная консультация, нет назначения, просрочка, жалоба, возврат, подозрительное поведение.</td><td>Событие, ответственный, дедлайн, риск, быстрые действия.</td><td>Все ручные действия должны иметь лог и причину.</td></tr>
+      <tr><td>Поддержка</td><td>Оплата без услуги, плохой ответ, неответ эксперта, технический сбой, refund request.</td><td>Заказ, клиент, чат, исполнитель, причина, история решений.</td><td>Не обещать возврат вне утвержденных правил.</td></tr>
+    </tbody></table></div>
+
+    <h2>Что должно считаться в отчетах</h2>
+    <div class="matrix"><table><thead><tr><th>Отчет</th><th>Что показывает</th><th>Зачем нужен</th><th>Минимальный статус</th></tr></thead><tbody>
+      <tr><td>Воронка клиента</td><td>Визит → регистрация → выбор услуги → тестовая оплата → вопрос → ответ → повтор.</td><td>Понять, где теряем людей.</td><td><span class="status red">нет сквозного proof</span></td></tr>
+      <tr><td>Экономика</td><td>Источник, расход, оплаты, возвраты, повтор, стоимость клиента, валовая прибыль.</td><td>Решить, можно ли покупать трафик.</td><td><span class="status red">нужно до теста</span></td></tr>
+      <tr><td>Работа экспертов</td><td>Назначено, принято, среднее время ответа, просрочки, жалобы, рейтинг качества.</td><td>Понять, кто справляется и кого поднимать выше.</td><td><span class="status red">нужно до запуска</span></td></tr>
+      <tr><td>Поддержка</td><td>Причины обращений, время реакции, решения, возвраты, повторные проблемы.</td><td>Снизить жалобы и риск chargeback.</td><td><span class="status red">нужно до рекламы</span></td></tr>
+      <tr><td>Email/уведомления</td><td>Что должно уйти, что сформировано, что не отправлено, где ошибка.</td><td>Не оставлять клиента и эксперта без статуса.</td><td><span class="status yellow">есть контур, нужна связка</span></td></tr>
+    </tbody></table></div>
+
+    <h2>Что передать Игорю</h2>
+    <div class="matrix"><table><thead><tr><th>Блок</th><th>Что нужно</th><th>Критерий приемки</th></tr></thead><tbody>
+      <tr><td>Журнал событий</td><td>Единый лог важных действий с привязкой к клиенту, заказу, консультации, исполнителю и источнику.</td><td>Админ может открыть заказ и увидеть историю событий.</td></tr>
+      <tr><td>События для писем</td><td>Разделить сервисные письма, внутренние уведомления, маркетинговые рассылки и no-send test.</td><td>Для каждого события видно: шаблон, переменные, получатель, статус отправки.</td></tr>
+      <tr><td>События для рекламы</td><td>Регистрация, начало покупки, тестовая покупка, успешный заказ, повторная покупка, возврат.</td><td>Можно передать события в аналитику и рекламные кабинеты без дублей.</td></tr>
+      <tr><td>Операционная панель</td><td>Очереди: без вопроса, без назначения, скоро дедлайн, просрочено, жалоба, refund.</td><td>Админ видит проблемы без ручного поиска.</td></tr>
+      <tr><td>Отчет эксперта</td><td>Сколько задач, скорость, качество, жалобы, начисления, ограничения видимости.</td><td>Можно управлять поднятием экспертов и обучением.</td></tr>
+    </tbody></table></div>
+
+    <h2>Внешние ориентиры</h2>
+    <div class="links">
+      <a href="https://support.google.com/analytics/answer/9267735?hl=ru"><strong>Google Analytics: рекомендуемые события</strong><span>Официальный список событий вроде sign_up, generate_lead, purchase, которые лучше использовать как стандартные там, где они подходят.</span></a>
+      <a href="https://support.google.com/google-ads/answer/12216424?hl=en"><strong>Google Ads: web conversions</strong><span>Официальное описание настройки web-конверсий, событий с value, transaction ID и custom parameters.</span></a>
+      <a href="https://ads.google.com/intl/en_us/intl/en_us/home/measurement/conversion-tracking/"><strong>Google Ads measurement</strong><span>Google описывает tagging, offline conversion import, enhanced conversions и consent mode как основу измерения рекламы.</span></a>
+    </div>
+
+    <h2>Связанные страницы Blue panel</h2>
+    <div class="links">
+      <a href="paid-consultation-test-flow.html"><strong>Покупка консультации</strong><span>Какие события нужны в пути заказа и ответа эксперта.</span></a>
+      <a href="first-sales-economics.html"><strong>Экономика первых продаж</strong><span>Какие события нужны, чтобы считать стоимость клиента и повтор.</span></a>
+      <a href="marketing-traffic-readiness.html"><strong>Готовность к рекламе</strong><span>Какие конверсии и ограничения нужны до трафика.</span></a>
+      <a href="expert-agent-workspace-readiness.html"><strong>Рабочее место эксперта</strong><span>Какие события нужны для сроков, качества, начислений и видимости.</span></a>
+      <a href="support-refund-readiness.html"><strong>Поддержка и возвраты</strong><span>Какие события нужны для жалоб, споров и возвратов.</span></a>
+    </div>
+
+    <h2>Итог</h2>
+    <div class="note"><p><b>Карта событий становится обязательной частью запуска.</b> До рекламы нужно доказать не только экраны, но и то, что важные действия записываются, видны нужным ролям, запускают письма/уведомления и попадают в отчеты. Иначе мы не сможем управлять стоимостью клиента, качеством экспертов и поддержкой.</p></div>
   </section>
 </main>
-<script src="../assets/panel-ux.js"></script></body>
+<script src="../assets/panel-ux.js"></script>
+</body>
 </html>
-
-
-
-
-
-
-
-
