@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Backend proof: платная консультация · Blue panel</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:var(--shadow)}.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;margin-bottom:16px}.hero-main{background:linear-gradient(135deg,#371816,#8d1d12);color:#fff;border-radius:30px;padding:24px}.hero-main h1,.hero-main p{color:#fff}.hero-main h1{font-size:46px;line-height:1;margin:8px 0 12px}.hero-side{border:1px solid var(--line);border-radius:30px;background:#fff8df;padding:18px}.hero-side b{display:block;color:#8d1d12;margin-bottom:6px}.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.badge{display:inline-flex;border-radius:999px;padding:7px 10px;font:900 11px Manrope,Verdana,sans-serif}.ok{background:#dff5e8;color:#176032}.warn{background:#fff0c0;color:#745000}.bad{background:#ffe1df;color:#8d1d12}.blue{background:#e5f1ff;color:#1b5a85}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:16px 0}.card{border:1px solid var(--line);border-radius:20px;background:#faf7ff;padding:15px}.card b{display:block;color:#1f6b49;margin-bottom:6px}.card p{margin:0;color:var(--muted)}.matrix{overflow:auto;border:1px solid var(--line);border-radius:22px;background:#fff;margin:16px 0}table{width:100%;min-width:1180px;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:11px;text-align:left;vertical-align:top}th{font:900 10px Manrope,Verdana,sans-serif;text-transform:uppercase;background:#fbfaf7;color:#514a61}.status{display:inline-flex;border-radius:999px;padding:6px 9px;font:900 10px Manrope,Verdana,sans-serif;white-space:nowrap}.note{background:#fff8df;border:1px solid var(--line);border-radius:20px;padding:15px;line-height:1.55;margin:16px 0}.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:14px}.links a{display:block;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:14px;text-decoration:none;color:var(--ink)}.links strong{display:block;color:#1f6b49;margin-bottom:4px}.links span{display:block;color:var(--muted);font-size:13px}code{white-space:normal}@media(max-width:980px){.hero{grid-template-columns:1fr}.hero-main h1{font-size:36px}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <a href="backend-admin-readiness-map.html">← Backend и админка</a>
+  <section class="hero">
+    <div class="hero-main">
+      <div class="eyebrow">Source proof · backend Nebula</div>
+      <h1>Платная консультация как backend-сущность не доказана</h1>
+      <p>Текущий YouDate/Confideline backend дает важную базу: пользователи, анкеты, сообщения, заявки экспертов, order/payment, админка и аналитика. Но платная консультация Nebula требует отдельного доменного слоя, который связывает оплату, вопрос клиента, исполнителя, чат, события, поддержку и качество.</p>
+      <div class="badges"><span class="badge ok">универсальная база есть</span><span class="badge warn">экспертский контур частично есть</span><span class="badge bad">consultation domain RED</span></div>
+    </div>
+    <aside class="hero-side">
+      <b>Проверенный source</b><p>`Confideline/Chat/youdate-2.0.2-yii2/Source/youdate_extracted/application`.</p>
+      <b>Ограничение</b><p>`Chat/README.md` говорит, что в `Confideline/Chat` несколько вариантов. Для внедрения Игорь должен подтвердить актуальный runtime source.</p>
+    </aside>
+  </section>
+
+  <section class="doc">
+    <h2>Короткий вывод PM</h2>
+    <div class="note"><b>Решение:</b> не считать существующие `Order + credits + Message` готовой платной консультацией. Это база платформы, но для Nebula MVP нужен минимальный service-layer: `Order → вопрос → консультация → назначение эксперта/агента → чат → события → поддержка/возврат → качество/начисление`.</div>
+
+    <h2>Что реально найдено</h2>
+    <div class="grid">
+      <div class="card"><b>Order/payment есть</b><p>`Order` хранит платежный статус и payment id; Stripe flow переводит order в `COMPLETED`.</p></div>
+      <div class="card"><b>Credits/balance есть</b><p>`successPayment()` увеличивает баланс пользователя. Это не равно покупке консультации.</p></div>
+      <div class="card"><b>ExpertApplication есть</b><p>Заявка эксперта и certification status есть, но модель сама говорит, что paid-session access не выдается.</p></div>
+      <div class="card"><b>Message/chat есть</b><p>Есть `Message`, `Conversation`, admin chat shell и expert CRM preview. Это транспорт, а не lifecycle консультации.</p></div>
+      <div class="card"><b>Analytics есть</b><p>`PartnerInteractionAnalyticsService` считает взаимодействия client/expert, но не оплаченные консультации.</p></div>
+      <div class="card"><b>Consultation не найдена</b><p>Модели `Consultation`, `Question`, `PaidSession` или явной связи с order не обнаружены.</p></div>
+    </div>
+
+    <h2>Матрица готовности backend-слоя</h2>
+    <div class="matrix"><table><thead><tr><th>Слой</th><th>Факт в текущем source</th><th>Вывод PM</th><th>Статус</th><th>Что делать дальше</th></tr></thead><tbody>
+      <tr><td>Order/payment</td><td>Есть `Order` и платежные статусы.</td><td>Платежная база есть, но она про credits/balance.</td><td><span class="status warn">Желтый</span></td><td>Связать order с consultation test_mode.</td></tr>
+      <tr><td>Credits/balance</td><td>`successPayment()` увеличивает credits и закрывает order.</td><td>Не является платной консультацией.</td><td><span class="status bad">Красный</span></td><td>Добавить доменную обработку покупки консультации.</td></tr>
+      <tr><td>Consultation model</td><td>Модель `Consultation/PaidSession` не найдена.</td><td>Главный domain gap Nebula.</td><td><span class="status bad">Красный</span></td><td>Создать минимальную сущность consultation.</td></tr>
+      <tr><td>Client question</td><td>Question модель/связь с order не найдена.</td><td>Вопрос клиента некуда надежно привязать.</td><td><span class="status bad">Красный</span></td><td>Добавить `question_text` или `ClientQuestion`.</td></tr>
+      <tr><td>Expert application</td><td>`ExpertApplication` есть.</td><td>Это intake эксперта, не рабочая консультация.</td><td><span class="status warn">Желтый</span></td><td>Использовать для допуска эксперта.</td></tr>
+      <tr><td>Admin application queue</td><td>`ExpertApplicationController` есть.</td><td>Покрывает заявки экспертов, не заказы клиентов.</td><td><span class="status warn">Желтый</span></td><td>Нужна очередь консультаций.</td></tr>
+      <tr><td>Partner interaction analytics</td><td>Есть агрегаты messages/gifts/likes/reports.</td><td>Это аналитика общения, не lifecycle paid consultation.</td><td><span class="status warn">Желтый</span></td><td>Добавить consultation metrics.</td></tr>
+      <tr><td>Admin chat preview</td><td>Есть iframe expert CRM preview.</td><td>Preview не доказывает runtime consultation.</td><td><span class="status warn">Желтый</span></td><td>Связать real chat/conversation с consultation_id.</td></tr>
+      <tr><td>Message/conversation</td><td>`Message` и `Conversation` есть.</td><td>Можно использовать как транспорт чата.</td><td><span class="status warn">Желтый</span></td><td>Привязать conversation к consultation/order.</td></tr>
+      <tr><td>Support/refund</td><td>Payment refund sandbox есть отдельно; support связь не найдена.</td><td>Операционный refund не закрыт.</td><td><span class="status bad">Красный</span></td><td>Добавить support/refund link to order/consultation.</td></tr>
+    </tbody></table></div>
+
+    <h2>Минимальная backend-модель для MVP</h2>
+    <div class="grid">
+      <div class="card"><b>consultation</b><p>`id`, `order_id`, `client_id`, `question_text`, `status`, `test_mode`, `created_at`.</p></div>
+      <div class="card"><b>assignment</b><p>`consultation_id`, `expert_id/agent_id`, `assigned_by`, `deadline_at`, `status`.</p></div>
+      <div class="card"><b>chat link</b><p>`consultation_id`, `conversation_id` или явная связь с thread/chat id.</p></div>
+      <div class="card"><b>events</b><p>`checkout_complete`, `question_submitted`, `consultation_created`, `expert_assigned`, `answer_sent`, `overdue`.</p></div>
+      <div class="card"><b>support</b><p>`ticket_id`, `order_id`, `consultation_id`, причина, решение, refund state.</p></div>
+      <div class="card"><b>quality/payments</b><p>оценка ответа, нарушение SLA, начисление исполнителю, удержание.</p></div>
+    </div>
+
+    <h2>Связанные материалы</h2>
+    <div class="links">
+      <a href="artifacts/BACKEND_CONSULTATION_DOMAIN_GAP_PROOF_2026_06_04.md"><strong>Markdown proof</strong><span>Факты и PM-вывод по source.</span></a>
+      <a href="artifacts/BACKEND_CONSULTATION_DOMAIN_GAP_PROOF_2026_06_04.csv"><strong>CSV матрица</strong><span>Табличная версия готовности backend-слоя.</span></a>
+      <a href="igor-sandbox-checkout-to-consultation-handoff.html"><strong>Пакет Игорю: sandbox → консультация</strong><span>Что передавать в разработку после этого вывода.</span></a>
+      <a href="expert-agent-workspace-handoff.html"><strong>Рабочее место эксперта</strong><span>Как исполнитель должен увидеть консультацию.</span></a>
+      <a href="support-refund-handoff.html"><strong>Поддержка и жалобы</strong><span>Как problem states должны связываться с консультацией.</span></a>
+      <a href="email-notifications-handoff.html"><strong>Email/no-send события</strong><span>Какие события нужны после создания консультации.</span></a>
+    </div>
+  </section>
+</main>
+<script src="../assets/panel-ux.js"></script>
+</body>
+</html>

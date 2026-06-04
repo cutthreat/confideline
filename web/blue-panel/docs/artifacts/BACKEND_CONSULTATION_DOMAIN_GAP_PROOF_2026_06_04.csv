@@ -1,0 +1,11 @@
+Слой,Факт в текущем source,Вывод PM,Статус,Что делать дальше
+Order/payment,Есть Order и Stripe/PayPal/Robokassa статусы NEW IN_PROGRESS COMPLETED CANCELLED,Платежная база есть но она про кредиты/баланс,Желтый,Связать order с consultation test_mode
+Credits/balance,successPayment увеличивает credits и закрывает order,Не является платной консультацией,Красный,Добавить доменную обработку purchase consultation
+Consultation model,Consultation/PaidSession модель не найдена,Главный domain gap Nebula,Красный,Создать минимальную сущность consultation
+Client question,Question модель/связь с order не найдена,Вопрос клиента некуда надежно привязать,Красный,Добавить question_text или ClientQuestion с order_id/consultation_id
+Expert application,ExpertApplication есть и имеет статусы заявки/сертификации,Это intake эксперта а не рабочая консультация,Желтый,Использовать для допуска эксперта но не вместо consultation
+Admin application queue,ExpertApplicationController есть,Покрывает заявки экспертов а не заказы клиентов,Желтый,Нужна очередь консультаций
+Partner interaction analytics,Есть аналитика сообщений между client/expert,Это аналитика dating/chat действий не lifecycle paid consultation,Желтый,Использовать как основу метрик но добавить consultation metrics
+Admin chat preview,Есть iframe expert CRM preview,Это макет/preview а не runtime сущность,Желтый,Связать real chat/conversation с consultation_id
+Message/conversation,Есть Message и Conversation,Можно использовать как транспорт чата,Желтый,Привязать conversation к consultation/order
+Support/refund,Payment refund sandbox есть отдельно но support связь с consultation не найдена,Операционный refund не закрыт,Красный,Добавить support/refund link to order/consultation
