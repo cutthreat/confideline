@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Карта сверки дизайна, функций и текстов Nebula · Blue panel</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:var(--shadow)}
+    .lead{font-size:18px;color:var(--muted);max-width:1020px}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:18px 0}.metric{border:1px solid var(--line);border-radius:20px;background:#fbfaf7;padding:16px}.metric b{display:block;font-size:32px;color:#1f6b49}.decision{border:1px solid var(--line);border-radius:24px;background:#fff8df;padding:18px;margin:16px 0}.status{display:inline-flex;border-radius:999px;padding:6px 9px;font:900 10px Verdana,sans-serif;text-transform:uppercase;white-space:nowrap}.green{background:#dff5e8;color:#176032}.yellow{background:#fff0c0;color:#745000}.red{background:#ffe1df;color:#8d1d12}.gray{background:#eee;color:#555}
+    .matrix{overflow:auto;border:1px solid var(--line);border-radius:22px;background:#fff;margin:16px 0}table{width:100%;min-width:1180px;border-collapse:collapse;font-size:14px}th,td{border-bottom:1px solid var(--line);padding:11px;text-align:left;vertical-align:top}th{font:900 10px Verdana,sans-serif;text-transform:uppercase;color:#514a61;background:#fbfaf7}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin:16px 0}.card{border:1px solid var(--line);border-radius:20px;background:#faf7ff;padding:15px}.card b{display:block;color:#1f6b49;margin-bottom:6px}.card p{margin:0;color:var(--muted)}.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:12px}.links a{display:block;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:13px;text-decoration:none;color:var(--ink)}.links strong{display:block;color:#1f6b49;margin-bottom:4px}.links span{display:block;color:var(--muted);font-size:13px}.note{border:1px solid var(--line);border-radius:18px;background:#fbfaf7;padding:14px;line-height:1.55}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <a href="../index.html">← Blue panel</a>
+  <section class="doc">
+    <div class="eyebrow">Дизайн · функции · тексты · проверка</div>
+    <h1>Карта сверки дизайна, функций и текстов Nebula</h1>
+    <p class="lead">Эта страница нужна, чтобы перестать смотреть на дизайн как на “красивые картинки”. Для каждого экрана мы должны понимать четыре вещи: страница есть в макете, функция есть или нужна в Confideline, тексты готовы, проблемные состояния можно проверить.</p>
+
+    <div class="stats">
+      <div class="metric"><b>74</b><span>экрана заявлены в Trello по Nebula</span></div>
+      <div class="metric"><b>20</b><span>публичных HTML-страниц найдено</span></div>
+      <div class="metric"><b>14</b><span>экранных групп извлечено из таблицы</span></div>
+      <div class="metric"><b>89</b><span>блоков найдено в таблице работ</span></div>
+    </div>
+
+    <div class="decision">
+      <h2>Решение PM</h2>
+      <p><b>Дизайн-слой уже не красная слепая зона, но он еще не готов к передаче в разработку целиком.</b> Найдены Figma, публичная верстка Nebula, Google Sheet и Trello-вложения. Не хватает полного экранного manifest: какая Figma-страница соответствует какой HTML-странице, какая функция в бекенде нужна, какой текст используется, какие состояния ошибки должны быть на экране.</p>
+      <p><span class="status yellow">источники найдены</span> <span class="status yellow">связка с бекендом не доказана</span> <span class="status red">нельзя отдавать всю пачку без сверки</span></p>
+    </div>
+
+    <h2>Что уже доказано</h2>
+    <div class="cards">
+      <div class="card"><b>Figma Nebula найдена</b><p>В Trello зафиксирована Figma “НЕБУЛА v.01-03-2026”; доступ/полный экспорт еще нужно проверить как источник по экрану.</p></div>
+      <div class="card"><b>Публичная верстка найдена</b><p>Есть site-map на GitHub Pages и 20 страниц Nebula: home, login, signup, коммерческие страницы, FAQ, Privacy, blog.</p></div>
+      <div class="card"><b>Таблица работ найдена</b><p>Из Google Sheet уже извлечены 14 экранных групп и 89 блоков, но это пока не равно готовности внедрения.</p></div>
+      <div class="card"><b>Есть рабочие контуры</b><p>Email-админка, чат в админке, проверочные отчеты и карта связки будущих страниц с бекендом уже опубликованы отдельно.</p></div>
+    </div>
+
+    <h2>Сверка по группам экранов</h2>
+    <div class="matrix"><table><thead><tr><th>Группа</th><th>Что есть в дизайне</th><th>Что нужно в Confideline</th><th>Какой контент нужен</th><th>Что проверить</th><th>Статус</th><th>Следующий шаг</th></tr></thead><tbody>
+      <tr><td>Главная и оффер</td><td>Публичные страницы home/index и popup-состояние.</td><td>Связка CTA с регистрацией, выбором услуги и тестовым заказом.</td><td>Оффер, доверие, формат консультации, срок ответа, ограничения услуги, FAQ.</td><td>Клик от оффера до регистрации/заказа без тупика.</td><td><span class="status yellow">частично</span></td><td>Сделать пакет: оффер → регистрация → тестовый заказ.</td></tr>
+      <tr><td>Регистрация и вход</td><td>login, signup step 1/2, восстановление пароля.</td><td>Авторизация, восстановление доступа, профиль клиента, защита от ошибок.</td><td>Поля, подсказки, ошибки, согласия, ссылки на документы.</td><td>Успех, ошибка email, слабый пароль, восстановление доступа, повторный вход.</td><td><span class="status yellow">частично</span></td><td>Сверить с текущими route Confideline и отчетами проверки auth.</td></tr>
+      <tr><td>Коммерческие страницы услуг</td><td>Psychic, tarot, palm, phone psychic, cheap, all, love, zodiac pages.</td><td>Каталог услуг, категории, цена, выбор эксперта/формата, переход к заказу.</td><td>SEO-тексты, FAQ, дисклеймеры, преимущества, CTA, блок доверия.</td><td>Каждая страница ведет в тот же платный путь, а не в отдельный тупик.</td><td><span class="status yellow">частично</span></td><td>Составить таблицу: страница → услуга → цена → CTA → заказ.</td></tr>
+      <tr><td>Личный кабинет клиента</td><td>В текущей публичной карте найден не полностью.</td><td>История заказов, вопрос, чат, статус консультации, поддержка, повтор.</td><td>Пустые состояния, статусы, инструкции клиенту, тексты поддержки.</td><td>После тестовой оплаты клиент видит вопрос, чат, ответ и проблему.</td><td><span class="status red">не доказано</span></td><td>Найти Figma/PNG/HTML для кабинета клиента или оформить задачу Антону.</td></tr>
+      <tr><td>Чат клиента и эксперта</td><td>Есть отдельные задачи и публичный контур чата в админке.</td><td>Привязка сообщений к консультации, ролям, срокам ответа и модерации.</td><td>Шаблоны ответа, подсказки, правила, предупреждения, перевод.</td><td>Вопрос → назначение → ответ → жалоба → закрытие.</td><td><span class="status yellow">частично</span></td><td>Связать с пакетом Игорю по тестовому заказу и консультации.</td></tr>
+      <tr><td>Рабочее место эксперта/агента</td><td>В публичной карте не доказано как отдельный кабинет.</td><td>Список задач, чат, дедлайн, инструкции, начисления, качество, настройки анкет.</td><td>Регламент, школа, чек-листы ответа, ограничения, подсказки.</td><td>Эксперт получает задачу, отвечает, видит статус и начисление.</td><td><span class="status red">не доказано</span></td><td>Сделать отдельный пакет экранов рабочего места эксперта.</td></tr>
+      <tr><td>Админка и операционные очереди</td><td>Дизайн Nebula напрямую не закрывает админку; есть отдельные веб-контуры.</td><td>Очереди заказов, назначение, просрочки, жалобы, возвраты, события, качество.</td><td>Названия статусов, шаблоны решений, причины жалоб и возвратов.</td><td>Админ видит все проблемы без ручного поиска.</td><td><span class="status yellow">частично</span></td><td>Вести как отдельный административный слой, не смешивать с публичным дизайном.</td></tr>
+      <tr><td>Документы и доверие</td><td>FAQ и privacy есть в публичной карте.</td><td>Страницы Terms, Privacy, Refund, Disclaimer, Support должны быть управляемы и актуальны.</td><td>HTML-ready тексты с переменными, дисклеймеры, правила возврата, ограничения эзотерических услуг.</td><td>Ссылки открываются, тексты не dating-legacy, есть понятный путь поддержки.</td><td><span class="status red">нужно переписать</span></td><td>Связать с юридическим HTML-пакетом и страницами Nebula.</td></tr>
+      <tr><td>Блог и прогрев</td><td>blog и blog input найдены в публичной карте.</td><td>Публикация/редактирование контента, SEO, переход из статьи в услугу.</td><td>Контент-план, категории, статьи, CTA, перелинковка, дисклеймеры.</td><td>Статья ведет к регистрации/заказу и не ломает доверие.</td><td><span class="status yellow">после главного пути</span></td><td>Не ставить выше платного пути консультации.</td></tr>
+    </tbody></table></div>
+
+    <h2>Стандарт сверки одной страницы</h2>
+    <div class="matrix"><table><thead><tr><th>Шаг</th><th>Вопрос PM</th><th>Что считается доказательством</th><th>Если доказательства нет</th></tr></thead><tbody>
+      <tr><td>1. Страница</td><td>Какая именно страница или экран?</td><td>Figma node/export, HTML-страница или скрин из утвержденного макета.</td><td>Пометить как “источник не найден” и не отдавать в разработку.</td></tr>
+      <tr><td>2. Действие пользователя</td><td>Что человек должен сделать на странице?</td><td>Описанный сценарий: прочитать, выбрать, зарегистрироваться, оплатить, написать вопрос.</td><td>Сформулировать сценарий до постановки задачи.</td></tr>
+      <tr><td>3. Бекенд</td><td>Какая функция Confideline должна это обслужить?</td><td>Route, админский экран, сущность заказа/чата/профиля, отчет проверки.</td><td>Ставить задачу Игорю не как “сверстать”, а как “связать с функцией”.</td></tr>
+      <tr><td>4. Тексты</td><td>Какие тексты и переменные нужны?</td><td>Готовый контент, FAQ, legal note, email copy, перевод, переменные.</td><td>Отдельно добрать контент до внедрения.</td></tr>
+      <tr><td>5. Ошибки</td><td>Что видит человек, если что-то пошло не так?</td><td>Пустое состояние, ошибка, нет доступа, оплата не прошла, эксперт не ответил, спор.</td><td>Добавить состояния в задачу и проверку.</td></tr>
+      <tr><td>6. Приемка</td><td>Как доказываем, что готово?</td><td>Скрин, публичная страница результата, тестовый сценарий, отчет тестировщика.</td><td>Не считать готовым.</td></tr>
+    </tbody></table></div>
+
+    <h2>Что это меняет в плане</h2>
+    <div class="note"><p><b>Дальше нельзя говорить “у нас есть дизайн” без привязки к функции.</b> Для разработки важна не сама картинка, а связка: экран → действие пользователя → функция Confideline → текст → ошибка → проверка. Эта карта становится правилом для всех задач по Nebula-фронту и кабинету.</p></div>
+
+    <h2>Артефакты и связанные страницы</h2>
+    <div class="links">
+      <a href="artifacts/NEBULA_DESIGN_FUNCTION_CONTENT_CROSSWALK_2026_06_04.csv"><strong>Таблица сверки</strong><span>Группы экранов, функции, контент, проверка и статус.</span></a>
+      <a href="nebula-design-source-contract.html"><strong>Дизайн-источники Nebula</strong><span>Figma, публичная верстка, Google Sheet и Trello-вложения.</span></a>
+      <a href="nebula-screen-contract.html"><strong>Экранный контракт</strong><span>14 экранных групп и 89 блоков из таблицы работ.</span></a>
+      <a href="backend-frontend-proof-map.html"><strong>Связь будущих страниц и бекенда</strong><span>Какие функции уже описаны и где не хватает доказательства.</span></a>
+      <a href="igor-test-order-consultation-handoff.html"><strong>Пакет Игорю: тестовый заказ</strong><span>Первый конкретный пакет, где дизайн и функция должны встретиться.</span></a>
+      <a href="legal-docs-readiness.html"><strong>Документы сайта</strong><span>Где нужны тексты, дисклеймеры и юридические страницы.</span></a>
+    </div>
+  </section>
+</main>
+<script src="../assets/panel-ux.js"></script>
+</body>
+</html>
