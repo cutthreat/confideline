@@ -16,7 +16,7 @@
     const current=normalizePath(location.href);
     nav.querySelectorAll('a').forEach(a=>{const href=normalizePath(a.href); if(href&&(current===href||current.endsWith('/'+href.split('/').pop()))){a.classList.add('active');a.setAttribute('aria-current','page');}});
   }
-  function isInteractive(el){return !!el.closest('a,button,input,textarea,select,summary,details,[role="button"],[role="link"]');}
+  function isInteractive(el){return !!el.closest('a,button,input,textarea,select,summary,details,[role="button"]');}
   function makeClickableCards(){
     const selectors=['.month','.card','.box','.metric','.task','.step','.principle','.outcome','.jstep','.doc-card','.link-row','.route-step','.next-panel','.action-strip','.primary-action','.now-card','.resource-list > a','.service-grid > a','.links > a'];
     document.querySelectorAll(selectors.join(',')).forEach(card=>{
@@ -34,6 +34,7 @@
   function markExternalAndFiles(){document.querySelectorAll('a[href]').forEach(a=>{const href=a.getAttribute('href')||''; if(/^https?:\/\//.test(href)&&!href.includes(location.host)) a.classList.add('external-link'); if(/\.(md|csv|json|pdf|docx?|xlsx?|png|jpg|jpeg|webp)$/i.test(href)) a.classList.add('file-link');});}
   ensureNav(); makeClickableCards(); markExternalAndFiles();
 })();
+
 
 
 
