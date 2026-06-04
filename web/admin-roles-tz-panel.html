@@ -113,7 +113,7 @@
 
     <main>
             <section class="panel is-active" id="tab-matrix">
-        <div class="matrix">
+C:\Users\alexeC:\Users\alexe        <div class="matrix">
           <table>
             <thead><tr><th>Роль</th><th>Существующие permission keys / доступ</th><th>Дополнительные права</th><th>Почему</th></tr></thead>
             <tbody>
@@ -381,14 +381,16 @@
       {group:'Info block', rows:[['Info block-all','info_block-all','Полный доступ к инфоблокам сайта.'],['Info block-view','info_block-view','Просмотр инфоблоков.'],['Info block-update','info_block-update','Изменение инфоблоков.'],['Info block-delete','info_block-delete','Удаление инфоблоков.']]}
     ];
     function renderAdminSettingsList(){
-      const root=document.getElementById('adminSettingsList');
-      if(!root) return;
-      root.innerHTML=adminPermissionGroups.map(g=>`<section class="admin-settings-group"><h4>${g.group}</h4><ul>${g.rows.map(r=>`<li><strong>${r[0]}</strong><code>${r[1]}</code><span>${r[2]}</span></li>`).join('')}</ul></section>`).join('');
+      const roots=document.querySelectorAll('.adminSettingsList');
+      if(!roots.length) return;
+      const markup=adminPermissionGroups.map(g=>`<section class="admin-settings-group"><h4>${g.group}</h4><ul>${g.rows.map(r=>`<li><strong>${r[0]}</strong><code>${r[1]}</code><span>${r[2]}</span></li>`).join('')}</ul></section>`).join('');
+      roots.forEach(root=>{ root.innerHTML=markup; });
     }
     if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', renderAdminSettingsList); else renderAdminSettingsList();
   </script>
 </body>
 </html>
+
 
 
 
