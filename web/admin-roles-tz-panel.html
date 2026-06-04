@@ -53,6 +53,7 @@
     .hint:hover::after,.hint:focus::after,.hint:hover::before,.hint:focus::before{opacity:1;transform:translateY(0)}
     .hint:focus{outline:2px solid rgba(47,114,216,.32);outline-offset:2px;border-radius:6px}
     .perm-list{display:flex;flex-wrap:wrap;gap:7px}.perm-list .hint{margin:1px 0}
+    .rights-toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 16px}.rights-toolbar input{min-width:280px;flex:1;padding:11px 13px;border:1px solid var(--line);border-radius:14px;font-size:14px}.rights-toolbar .pill{padding:10px 12px;border-radius:999px;background:#eef4fb;color:#294362;font-size:13px;font-weight:700}.rights-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.rights-card{padding:16px;border:1px solid var(--line);border-radius:18px;background:#fff}.rights-card h4{margin:0 0 8px;font-size:17px}.rights-card p{margin:0 0 10px;color:#53677f;font-size:13px;line-height:1.45}.rights-card table{min-width:0;border-radius:14px}.rights-card th,.rights-card td{font-size:12.5px;padding:9px}.rights-card code{font-weight:700}.rights-note{padding:14px 16px;border-radius:16px;background:#eef8f1;border:1px solid #cfe9d7;color:#244d33;line-height:1.45}.rights-muted{color:#6b7f96}.hidden-by-filter{display:none!important}@media (max-width:960px){.rights-grid{grid-template-columns:1fr}.rights-toolbar input{min-width:180px}}
     @media (max-width:1180px){.hero-grid,.grid,.grid.two,.metrics{grid-template-columns:1fr 1fr}} @media (max-width:760px){.roles-hero{padding:24px 16px 20px}.hero-grid,.grid,.grid.two,.metrics{grid-template-columns:1fr}.tabs,.panel,.metrics{padding-left:16px;padding-right:16px}}
   </style>
 </head>
@@ -278,8 +279,89 @@
       });
     });
   </script>
+  <script>
+    const simpleHint = {
+      'super-admin':'Полный владелец системы. Может все. Только для root-доступа.',
+      'admin':'Операционный администратор без root-настроек.',
+      'agent':'Агент отвечает клиентам от лица назначенных экспертных анкет.',
+      'agent-moder':'Настраивает связи агент -> экспертная анкета.',
+      'balance':'Финансовая роль: балансы и сверки без чтения консультаций.',
+      'payment-moderator':'Проверяет платежи и возвраты без системных секретов.',
+      'support':'Поддержка первой линии: обращения клиентов и доказательства по кейсу.',
+      'support-moder':'Старшая поддержка: спорные обращения и эскалации.',
+      'content-moder':'Контент сайта: справка, новости, страницы, инфоблоки.',
+      'user-moderator':'Модерация пользователей: жалобы, блокировки, верификации.',
+      'All':'Полный доступ ко всей админке. Не давать рабочим ролям.',
+      'без выбранных module permissions':'В live-роли нет выбранных чекбоксов прав. Доступ зависит от базовой роли и backend-логики.',
+      'assigned-only chat scope':'Серверное правило: агент видит только назначенные ему чаты.',
+      'canSendAsExpert':'Серверное правило: агент может писать только от назначенной экспертной анкеты.'
+    };
+    const actionText = {
+      all:'Полный доступ: смотреть, менять и выполнять специальные действия раздела.',
+      view:'Только просмотр раздела без изменений.',
+      update:'Изменение данных, статусов, подтверждений или настроек раздела.',
+      delete:'Удаление данных. Высокий риск, давать только точечно.',
+      balance:'Балансовые данные и финансовая часть раздела.',
+      agent:'Агентский доступ внутри пользовательского контура.'
+    };
+    const rightsGroups = [
+      {title:'Агенты / технически partners-*', prefix:'partners', items:['all','view','update','delete','balance'], meaning:'Агентский legacy-раздел. В интерфейсе называется “Партнеры”, но продуктово для нас это агентский контур.', give:'Давать только ролям, которые работают с агентами или их балансами. Не давать support/content/agent по умолчанию.'},
+      {title:'Пользователи users-*', prefix:'users', items:['all','view','update','delete','agent','balance'], meaning:'Пользователи, экспертные анкеты, профили, статусы и балансы.', give:'view — админам/модерации; update — только модерации/назначениям; delete и balance — строго ограниченно.'},
+      {title:'Группы groups-*', prefix:'groups', items:['all','view','update','delete'], meaning:'Группы пользователей и действия с ними.', give:'Обычно модерации или администратору. Удаление давать только при понятном процессе.'},
+      {title:'Сообщения messages-*', prefix:'messages', items:['all','view','update','delete'], meaning:'Сообщения, переписки, transcript, перевод и действия с сообщениями.', give:'Очень чувствительная зона. Агенту только при серверном ограничении на назначенные чаты; support — только по обращению.'},
+      {title:'Чат chat-*', prefix:'chat', items:['all'], meaning:'Рабочее пространство админ-чата: диалоги, очереди, отправка сообщений.', give:'Агенту только с assigned-only scope. Без scope это доступ к чужим чатам.'},
+      {title:'Фотографии photos-*', prefix:'photos', items:['all','view','update','delete'], meaning:'Очереди фото, подтверждение, приватность, удаление.', give:'Модерации пользователей. Support только если фото относится к обращению.'},
+      {title:'Заказы orders-*', prefix:'orders', items:['all','view'], meaning:'Заказы, платежные записи, статусы оплаты и refund-контекст.', give:'payment-moderator и balance. Не давать agent/content.'},
+      {title:'Балансовые транзакции balance_transaction-*', prefix:'balance_transaction', items:['all','view'], meaning:'Финансовые транзакции и начисления.', give:'Финансовым ролям. Не означает право читать чат.'},
+      {title:'Страницы pages-*', prefix:'pages', items:['all','view','update','delete'], meaning:'Страницы сайта. Опасная зона, потому что может включать raw PHP.', give:'Content только после отделения безопасного контента от raw PHP. Delete/all — минимально.'},
+      {title:'Справка help-*', prefix:'help', items:['all','view','update','delete'], meaning:'Раздел справки и категории справки.', give:'Content-moder. Delete — только старшему контент-админу.'},
+      {title:'Новости news-*', prefix:'news', items:['all','view','update','delete'], meaning:'Новости и публикации сайта.', give:'Content-moder. Delete — ограниченно.'},
+      {title:'Языки languages-*', prefix:'languages', items:['all','view','update','delete'], meaning:'Языки, переводы, локализация и SEO-тексты.', give:'Content/локализация. Delete/all — только ответственному администратору.'},
+      {title:'Жалобы reports-*', prefix:'reports', items:['all','view','update','delete'], meaning:'Жалобы и репорты пользователей.', give:'User-moderator и support по кейсу. Delete — только если процесс требует.'},
+      {title:'Верификации verifications-*', prefix:'verifications', items:['all','view','update','delete'], meaning:'Проверки и подтверждения пользователей/анкет.', give:'User-moderator. Update — для принятия/отклонения; delete — редко.'},
+      {title:'Подарки gifts-*', prefix:'gifts', items:['all','view','update','delete'], meaning:'Категории и элементы подарков. Это отдельный модуль, не часть платного чат-разбора.', give:'Только роли, которые обслуживают каталог подарков. В матрицу платного чата не включать.'},
+      {title:'Баны bans-*', prefix:'bans', items:['all','view','update','delete'], meaning:'Блокировки пользователей.', give:'User-moderator/support-moder. Нужен audit log: кто, кого и почему заблокировал.'},
+      {title:'Назначенные анкеты chief_under-*', prefix:'chief_under', items:['all','view','update','delete'], meaning:'Связь агент -> экспертная анкета. Ключевая зона для ограничения агента.', give:'agent-moder для управления назначениями; agent — максимум view и только свой scope.'},
+      {title:'Поддержка support-*', prefix:'support', items:['all','view','update','delete'], meaning:'Обращения поддержки, кейсы и обработка запросов.', give:'support/support-moder. Delete — обычно не нужен, лучше закрывать обращение статусом.'},
+      {title:'Инфоблоки info_block-*', prefix:'info_block', items:['all','view','update','delete'], meaning:'Контентные блоки сайта.', give:'Content-moder. Delete/all — ограниченно.'}
+    ];
+    function riskFor(action, prefix){
+      if (['delete','balance'].includes(action)) return 'Высокий риск.';
+      if (['messages','chat','chief_under','orders','balance_transaction','pages'].includes(prefix)) return 'Чувствительная зона.';
+      if (action === 'all') return 'Широкое право.';
+      return 'Обычный риск при корректном scope.';
+    }
+    function renderRightsCatalog(){
+      const root=document.getElementById('rightsCatalog');
+      if(!root) return;
+      root.innerHTML=rightsGroups.map(group=>{
+        const rows=group.items.map(action=>{
+          const key=`${group.prefix}-${action}`;
+          const hint=`${key}: ${actionText[action]} ${riskFor(action, group.prefix)} ${group.give}`;
+          return `<tr data-search="${key} ${group.title} ${group.meaning} ${group.give}"><td><span class="hint" tabindex="0" data-tip="${hint}"><code>${key}</code></span></td><td>${actionText[action]}</td><td>${group.give}</td></tr>`;
+        }).join('');
+        return `<section class="rights-card" data-search="${group.title} ${group.meaning} ${group.give}"><h4>${group.title}</h4><p>${group.meaning}</p><table><thead><tr><th>Настройка</th><th>Что дает</th><th>Кому давать</th></tr></thead><tbody>${rows}</tbody></table></section>`;
+      }).join('');
+      document.querySelectorAll('.hint').forEach(el=>{
+        const text=el.textContent.trim();
+        if(simpleHint[text]) el.setAttribute('data-tip', simpleHint[text]);
+      });
+      const search=document.getElementById('rightsSearch');
+      if(search){
+        search.addEventListener('input',()=>{
+          const q=search.value.trim().toLowerCase();
+          document.querySelectorAll('.rights-card').forEach(card=>{
+            card.classList.toggle('hidden-by-filter', q && !card.dataset.search.toLowerCase().includes(q) && !Array.from(card.querySelectorAll('tr[data-search]')).some(row=>row.dataset.search.toLowerCase().includes(q)));
+          });
+        });
+      }
+    }
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', renderRightsCatalog); else renderRightsCatalog();
+  </script>
 </body>
 </html>
+
+
 
 
 
