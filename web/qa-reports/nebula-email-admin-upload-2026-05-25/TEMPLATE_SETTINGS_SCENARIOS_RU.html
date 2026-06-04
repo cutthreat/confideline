@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
@@ -45,9 +45,112 @@
     section p { margin:0 0 14px; color:#465066; }
     @media (max-width:980px) { .layout { grid-template-columns:1fr; } aside { position:relative; height:auto; border-right:0; border-bottom:1px solid var(--line); } .nav { grid-template-columns:repeat(2,minmax(0,1fr)); } .rules { grid-template-columns:1fr; } .settings { grid-template-columns:1fr 1fr; } }
     @media (max-width:620px) { main { padding:22px 12px 42px; } .top h1 { font-size:30px; } .nav { grid-template-columns:1fr; } .card header { display:block; } .badge { margin-top:12px; } .settings { grid-template-columns:1fr; } }
-  </style>
+  /* package-navigation-css:start */
+.package-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(255,255,255,.96);
+  border-bottom: 1px solid #d9e2ef;
+  box-shadow: 0 8px 24px rgba(23,32,51,.06);
+  backdrop-filter: blur(10px);
+}
+.package-nav-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 10px 22px;
+  display: grid;
+  grid-template-columns: minmax(220px, .38fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+}
+.package-brand strong {
+  display: block;
+  color: #172033;
+  font-size: 14px;
+  line-height: 1.2;
+}
+.package-brand span {
+  display: block;
+  margin-top: 2px;
+  color: #667085;
+  font-size: 12px;
+}
+.package-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.package-nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 6px 9px;
+  border: 1px solid #d9e2ef;
+  border-radius: 7px;
+  background: #fff;
+  color: #172033;
+  text-decoration: none;
+  font: 700 12px/1.2 Arial, Helvetica, sans-serif;
+}
+.package-nav-link:hover { text-decoration: none; border-color: #6338d8; color: #4220a8; }
+.package-nav-link.is-active { background: #6338d8; border-color: #6338d8; color: #fff; }
+.package-breadcrumbs {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 22px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  color: #667085;
+  font: 700 12px/1.2 Arial, Helvetica, sans-serif;
+}
+.package-breadcrumbs a { color: #2459a8; text-decoration: none; }
+.package-breadcrumbs a:after { content: "/"; margin-left: 7px; color: #98a2b3; }
+.package-breadcrumbs span { color: #344054; }
+@media (max-width: 980px) {
+  .package-nav-inner { grid-template-columns: 1fr; gap: 8px; padding: 10px 14px; }
+  .package-nav-links { justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; }
+  .package-nav-link { white-space: nowrap; }
+  .package-breadcrumbs { padding: 0 14px 10px; }
+}
+/* package-navigation-css:end */
+</style>
 </head>
 <body>
+<!-- package-navigation:start -->
+<nav class="package-nav" aria-label="Навигация по пакету">
+  <div class="package-nav-inner">
+    <div class="package-brand">
+      <strong>Confideline Email Package</strong>
+      <span>English primary, Russian localization</span>
+    </div>
+    <div class="package-nav-links">
+      <a class="package-nav-link" href="index.html">Home</a>
+      <a class="package-nav-link" href="START_HERE_FOR_DEVELOPER_EN.html">Start EN</a>
+      <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_EN.html">Files EN</a>
+      <a class="package-nav-link" href="START_HERE_FOR_IGOR_RU.html">Start RU</a>
+      <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_RU.html">Files RU</a>
+      <a class="package-nav-link" href="TEMPLATE_EVENT_STANDARD_RU.html">Standard</a>
+      <a class="package-nav-link" href="SCENARIOS_IMPLEMENTATION_PANEL_RU.html">Scenarios</a>
+      <a class="package-nav-link" href="EMAIL_FLOW_CHAINS_PANEL_RU.html">Flow</a>
+      <a class="package-nav-link" href="BACKEND_EMAIL_EVENTS_CONTRACT_RU.html">Backend</a>
+      <a class="package-nav-link" href="IGOR_BACKEND_TASKS_RU.html">Tasks</a>
+      <a class="package-nav-link" href="VARIABLES_GLOSSARY_RU.html">Variables</a>
+      <a class="package-nav-link" href="VARIABLE_TRANSLATION_REGISTER_RU.html">Var i18n</a>
+      <a class="package-nav-link" href="CONTENT_VARIABLE_ADMIN_MOCKUP_RU.html">Admin UI</a>
+      <a class="package-nav-link" href="CONTENT_VARIABLE_ADMIN_IMPLEMENTATION_NOTES_RU.html">Admin Notes</a>
+      <a class="package-nav-link is-active" href="TEMPLATE_SETTINGS_SCENARIOS_RU.html">Settings</a>
+      <a class="package-nav-link" href="TEMPLATES_PREVIEW_RU_EN.html">Preview</a>
+      <a class="package-nav-link" href="VARIABLES_CONTRACT_RU.html">Contract</a>
+    </div>
+  </div>
+  <div class="package-breadcrumbs" aria-label="Хлебные крошки">
+    <a href="index.html">Home</a><span>Settings</span>
+  </div>
+</nav>
+<!-- package-navigation:end -->
   <div class="layout">
     <aside>
       <p class="kicker">Confideline / email settings</p>
@@ -56,25 +159,22 @@
       <div class="nav">
         <a href="#scenario-0">00. user_registration</a>
         <a href="#scenario-1">01. email_confirmation</a>
-        <a href="#scenario-10">10. support_ticket_opened</a>
-        <a href="#scenario-11">11. support_message_received</a>
-        <a href="#scenario-12">12. payment_refund</a>
-        <a href="#scenario-13">13. payment_refund_update</a>
-        <a href="#scenario-14">14. advisor_followup_offer</a>
-        <a href="#scenario-15">15. review_request</a>
-        <a href="#scenario-16">16. message_chat_saved</a>
-        <a href="#scenario-17">17. support_safety_notice</a>
-        <a href="#scenario-18">18. user_age_restricted</a>
-        <a href="#scenario-19">19. balance_topup_success</a>
+        <a href="#scenario-10">10. payment_refund_update</a>
+        <a href="#scenario-11">11. advisor_followup_offer</a>
+        <a href="#scenario-12">12. review_request</a>
+        <a href="#scenario-13">13. message_chat_saved</a>
+        <a href="#scenario-14">14. support_safety_notice</a>
+        <a href="#scenario-15">15. user_age_restricted</a>
+        <a href="#scenario-16">16. balance_topup_success</a>
+        <a href="#scenario-17">17. service_purchase_success</a>
         <a href="#scenario-2">02. user_password_recovery</a>
-        <a href="#scenario-20">20. service_purchase_success</a>
         <a href="#scenario-3">03. security_change</a>
-        <a href="#scenario-4">04. payment_success</a>
-        <a href="#scenario-5">05. payment_error</a>
-        <a href="#scenario-6">06. payment_init</a>
-        <a href="#scenario-7">07. message_no_first_chat_message</a>
-        <a href="#scenario-8">08. message_answer_delayed</a>
-        <a href="#scenario-9">09. message_received</a>
+        <a href="#scenario-4">04. message_no_first_chat_message</a>
+        <a href="#scenario-5">05. message_answer_delayed</a>
+        <a href="#scenario-6">06. message_received</a>
+        <a href="#scenario-7">07. support_ticket_opened</a>
+        <a href="#scenario-8">08. support_message_received</a>
+        <a href="#scenario-9">09. payment_refund</a>
       </div>
     </aside>
     <main>
@@ -141,75 +241,6 @@
       <header>
         <div>
           <p class="num">10</p>
-          <h2>Обращение в поддержку создано</h2>
-          <p class="key">support_ticket_opened</p>
-        </div>
-        <span class="badge warn">нужен backend event</span>
-      </header>
-      <div class="settings">
-        <div><span>subject</span><code>Обращение в поддержку создано</code></div>
-        <div><span>event_name</span><code>support.ticket.opened</code></div>
-        <div><span>condition_id</span><code>0</code></div>
-        <div><span>delay</span><code>0</code></div>
-        <div><span>source_trigger</span><code>support_ticket_opened</code></div>
-        <div><span>type/settings</span><code>2 / count_user_settings=0</code></div>
-      </div>
-      <section><h3>Когда</h3><p>Сразу после создания обращения пользователем или оператором от имени пользователя.</p></section>
-      <section><h3>Зачем</h3><p>Фиксирует факт обращения и снижает повторные обращения: пользователь знает номер и дальнейший путь.</p></section>
-      <section><h3>Почему такие настройки</h3><p>Поведенческое сервисное письмо, delay 0, condition 0, без маркетингового opt-out.</p></section>
-      <section><h3>Backend-гейт</h3><p>Support case создан; есть supportCaseId; обращение доступно пользователю; письмо не дублируется при каждом комментарии.</p></section>
-      <section><h3>Проверка</h3><p>Создать тестовое обращение; проверить номер, ссылку и отсутствие отправки при внутренней операторской заметке.</p></section>
-    </article>
-    <article class="card" id="scenario-11">
-      <header>
-        <div>
-          <p class="num">11</p>
-          <h2>Поддержка ответила</h2>
-          <p class="key">support_message_received</p>
-        </div>
-        <span class="badge ok">event есть в dropdown, trigger проверить</span>
-      </header>
-      <div class="settings">
-        <div><span>subject</span><code>Поддержка ответила по обращению #{{supportCaseId}}</code></div>
-        <div><span>event_name</span><code>support.message.received</code></div>
-        <div><span>condition_id</span><code>0</code></div>
-        <div><span>delay</span><code>0</code></div>
-        <div><span>source_trigger</span><code>support_message_received_created</code></div>
-        <div><span>type/settings</span><code>2 / count_user_settings=0</code></div>
-      </div>
-      <section><h3>Когда</h3><p>Сразу после публичного ответа поддержки пользователю.</p></section>
-      <section><h3>Зачем</h3><p>Возвращает пользователя к решению вопроса и уменьшает пропущенные ответы поддержки.</p></section>
-      <section><h3>Почему такие настройки</h3><p>Поведенческое сервисное письмо, delay 0, condition 0.</p></section>
-      <section><h3>Backend-гейт</h3><p>Создан публичный ответ поддержки; есть supportCaseId; сообщение не является внутренней заметкой.</p></section>
-      <section><h3>Проверка</h3><p>Ответить в тестовом тикете публичным сообщением; проверить письмо и ссылку на обращение.</p></section>
-    </article>
-    <article class="card" id="scenario-12">
-      <header>
-        <div>
-          <p class="num">12</p>
-          <h2>Возврат подтвержден</h2>
-          <p class="key">payment_refund</p>
-        </div>
-        <span class="badge ok">event есть в dropdown, trigger проверить</span>
-      </header>
-      <div class="settings">
-        <div><span>subject</span><code>Возврат по заказу #{{orderId}} подтверждён</code></div>
-        <div><span>event_name</span><code>payment.refund</code></div>
-        <div><span>condition_id</span><code>0</code></div>
-        <div><span>delay</span><code>0</code></div>
-        <div><span>source_trigger</span><code>payment_refund</code></div>
-        <div><span>type/settings</span><code>2 / count_user_settings=0</code></div>
-      </div>
-      <section><h3>Когда</h3><p>После финального подтверждения возврата платежным или финансовым контуром.</p></section>
-      <section><h3>Зачем</h3><p>Сервисное финансовое письмо: снижает тревогу по деньгам и фиксирует ожидания по срокам.</p></section>
-      <section><h3>Почему такие настройки</h3><p>Поведенческое/сервисное финансовое письмо, delay 0, condition 0, без маркетингового opt-out.</p></section>
-      <section><h3>Backend-гейт</h3><p>Refund имеет confirmed/processed status; сумма и orderId известны; событие дедуплицировано по refundId.</p></section>
-      <section><h3>Проверка</h3><p>Смоделировать refund confirmed; проверить сумму, orderId, refundEta и отсутствие дубля при повторном webhook.</p></section>
-    </article>
-    <article class="card" id="scenario-13">
-      <header>
-        <div>
-          <p class="num">13</p>
           <h2>Статус возврата обновлен</h2>
           <p class="key">payment_refund_update</p>
         </div>
@@ -229,10 +260,10 @@
       <section><h3>Backend-гейт</h3><p>Статус refund case изменился на пользовательски значимый; не отправлять на технические/внутренние статусы.</p></section>
       <section><h3>Проверка</h3><p>Перевести refund case между пользовательскими статусами; проверить, что письмо не уходит на внутренние изменения.</p></section>
     </article>
-    <article class="card" id="scenario-14">
+    <article class="card" id="scenario-11">
       <header>
         <div>
-          <p class="num">14</p>
+          <p class="num">11</p>
           <h2>Продолжить с тем же экспертом</h2>
           <p class="key">advisor_followup_offer</p>
         </div>
@@ -252,10 +283,10 @@
       <section><h3>Backend-гейт</h3><p>Чат завершен; эксперт доступен; нет открытого активного чата; пользователь не отписан; тематика не запрещает follow-up.</p></section>
       <section><h3>Проверка</h3><p>Закрыть тестовый чат; проверить отправку через 72 часа только при разрешенном follow-up и активных user settings.</p></section>
     </article>
-    <article class="card" id="scenario-15">
+    <article class="card" id="scenario-12">
       <header>
         <div>
-          <p class="num">15</p>
+          <p class="num">12</p>
           <h2>Попросить оценку консультации</h2>
           <p class="key">review_request</p>
         </div>
@@ -275,10 +306,10 @@
       <section><h3>Backend-гейт</h3><p>Консультация завершена; review еще не оставлен; нет активной жалобы/refund по консультации; пользователь не отписан.</p></section>
       <section><h3>Проверка</h3><p>Завершить чат без отзыва; проверить письмо через delay. Затем оставить отзыв до delay и убедиться, что письмо не ушло.</p></section>
     </article>
-    <article class="card" id="scenario-16">
+    <article class="card" id="scenario-13">
       <header>
         <div>
-          <p class="num">16</p>
+          <p class="num">13</p>
           <h2>Чат сохранен, можно вернуться</h2>
           <p class="key">message_chat_saved</p>
         </div>
@@ -298,10 +329,10 @@
       <section><h3>Backend-гейт</h3><p>Чат завершен и доступен в кабинете; нет удаления/возврата/спора; пользователь не отписан.</p></section>
       <section><h3>Проверка</h3><p>Закрыть чат и дождаться/смоделировать 48 часов; проверить ссылку на сохраненный чат и respect user settings.</p></section>
     </article>
-    <article class="card" id="scenario-17">
+    <article class="card" id="scenario-14">
       <header>
         <div>
-          <p class="num">17</p>
+          <p class="num">14</p>
           <h2>Важная информация о поддержке</h2>
           <p class="key">support_safety_notice</p>
         </div>
@@ -321,10 +352,10 @@
       <section><h3>Backend-гейт</h3><p>Есть подтвержденное safety-событие; текст соответствует юридически утвержденному сценарию; не раскрывает чувствительные подробности.</p></section>
       <section><h3>Проверка</h3><p>Смоделировать safety flow; проверить, что письмо уходит только адресату и не содержит лишних деталей.</p></section>
     </article>
-    <article class="card" id="scenario-18">
+    <article class="card" id="scenario-15">
       <header>
         <div>
-          <p class="num">18</p>
+          <p class="num">15</p>
           <h2>Ограничение доступа по возрасту/правилам</h2>
           <p class="key">user_age_restricted</p>
         </div>
@@ -344,10 +375,10 @@
       <section><h3>Backend-гейт</h3><p>Решение об ограничении принято надежным процессом; пользовательский аккаунт/сессия ограничены; есть ссылка поддержки.</p></section>
       <section><h3>Проверка</h3><p>На тестовом аккаунте применить ограничение; проверить письмо, поддержку и отсутствие деталей, которые нельзя раскрывать.</p></section>
     </article>
-    <article class="card" id="scenario-19">
+    <article class="card" id="scenario-16">
       <header>
         <div>
-          <p class="num">19</p>
+          <p class="num">16</p>
           <h2>Баланс пополнен</h2>
           <p class="key">balance_topup_success</p>
         </div>
@@ -366,6 +397,29 @@
       <section><h3>Почему такие настройки</h3><p>Сервисное финансовое письмо: type_id 1, count_user_settings 0, delay 0, condition 0.</p></section>
       <section><h3>Backend-гейт</h3><p>Баланс реально увеличен; платеж/ручное пополнение финализировано; transactionId уникален; событие дедуплицировано.</p></section>
       <section><h3>Проверка</h3><p>Пополнить тестовый баланс Stripe, Unlimit и вручную; проверить сумму, валюту, метод и отсутствие дублей при повторном webhook.</p></section>
+    </article>
+    <article class="card" id="scenario-17">
+      <header>
+        <div>
+          <p class="num">17</p>
+          <h2>Услуга приобретена</h2>
+          <p class="key">service_purchase_success</p>
+        </div>
+        <span class="badge warn">нужен backend event</span>
+      </header>
+      <div class="settings">
+        <div><span>subject</span><code>Покупка {{serviceName}} подтверждена</code></div>
+        <div><span>event_name</span><code>service.purchase.success</code></div>
+        <div><span>condition_id</span><code>0</code></div>
+        <div><span>delay</span><code>0</code></div>
+        <div><span>source_trigger</span><code>service_purchase_success</code></div>
+        <div><span>type/settings</span><code>1 / count_user_settings=0</code></div>
+      </div>
+      <section><h3>Когда</h3><p>Сразу после покупки и активации конкретной услуги: Premium, пакет кредитов или другой платный продукт.</p></section>
+      <section><h3>Зачем</h3><p>Финансовое сервисное письмо: пользователь понимает, какая услуга куплена, за какую сумму и по какой транзакции.</p></section>
+      <section><h3>Почему такие настройки</h3><p>Сервисное финансовое письмо: type_id 1, count_user_settings 0, delay 0, condition 0.</p></section>
+      <section><h3>Backend-гейт</h3><p>Услуга активирована или начислена; есть serviceName для языка письма; платеж финализирован; transactionId уникален.</p></section>
+      <section><h3>Проверка</h3><p>Купить Premium и пакет кредитов в тестовом контуре; проверить название услуги, сумму, метод, транзакцию и доступность услуги в кабинете.</p></section>
     </article>
     <article class="card" id="scenario-2">
       <header>
@@ -389,29 +443,6 @@
       <section><h3>Почему такие настройки</h3><p>Сервисное письмо, без opt-out, delay 0, condition 0. Не должно зависеть от маркетинговых настроек.</p></section>
       <section><h3>Backend-гейт</h3><p>Запрос восстановления создан; reset token активен; не превышен rate limit; email принадлежит найденному аккаунту или используется безопасный одинаковый ответ.</p></section>
       <section><h3>Проверка</h3><p>Запросить восстановление пароля на тестовом аккаунте; проверить одноразовость ссылки, срок действия и отсутствие раскрытия существования аккаунта.</p></section>
-    </article>
-    <article class="card" id="scenario-20">
-      <header>
-        <div>
-          <p class="num">20</p>
-          <h2>Услуга приобретена</h2>
-          <p class="key">service_purchase_success</p>
-        </div>
-        <span class="badge warn">нужен backend event</span>
-      </header>
-      <div class="settings">
-        <div><span>subject</span><code>Покупка {{serviceName}} подтверждена</code></div>
-        <div><span>event_name</span><code>service.purchase.success</code></div>
-        <div><span>condition_id</span><code>0</code></div>
-        <div><span>delay</span><code>0</code></div>
-        <div><span>source_trigger</span><code>service_purchase_success</code></div>
-        <div><span>type/settings</span><code>1 / count_user_settings=0</code></div>
-      </div>
-      <section><h3>Когда</h3><p>Сразу после покупки и активации конкретной услуги: Premium, пакет кредитов или другой платный продукт.</p></section>
-      <section><h3>Зачем</h3><p>Финансовое сервисное письмо: пользователь понимает, какая услуга куплена, за какую сумму и по какой транзакции.</p></section>
-      <section><h3>Почему такие настройки</h3><p>Сервисное финансовое письмо: type_id 1, count_user_settings 0, delay 0, condition 0.</p></section>
-      <section><h3>Backend-гейт</h3><p>Услуга активирована или начислена; есть serviceName для языка письма; платеж финализирован; transactionId уникален.</p></section>
-      <section><h3>Проверка</h3><p>Купить Premium и пакет кредитов в тестовом контуре; проверить название услуги, сумму, метод, транзакцию и доступность услуги в кабинете.</p></section>
     </article>
     <article class="card" id="scenario-3">
       <header>
@@ -440,75 +471,6 @@
       <header>
         <div>
           <p class="num">04</p>
-          <h2>Оплата подтверждена</h2>
-          <p class="key">payment_success</p>
-        </div>
-        <span class="badge ok">event есть в dropdown, trigger проверить</span>
-      </header>
-      <div class="settings">
-        <div><span>subject</span><code>Оплата подтверждена: чат-консультация {{siteName}} готова</code></div>
-        <div><span>event_name</span><code>payment.success</code></div>
-        <div><span>condition_id</span><code>0</code></div>
-        <div><span>delay</span><code>0</code></div>
-        <div><span>source_trigger</span><code>payment_success</code></div>
-        <div><span>type/settings</span><code>1 / count_user_settings=0</code></div>
-      </div>
-      <section><h3>Когда</h3><p>Сразу после успешного подтверждения платежа платежным провайдером.</p></section>
-      <section><h3>Зачем</h3><p>Дает пользователю уверенность, чек/статус оплаты и быстрый переход к чату с экспертом.</p></section>
-      <section><h3>Почему такие настройки</h3><p>Сервисное платежное письмо, delay 0, condition 0, без учета маркетинговых настроек.</p></section>
-      <section><h3>Backend-гейт</h3><p>Платеж имеет финальный success/paid status; заказ связан с консультацией; сумма и orderId доступны.</p></section>
-      <section><h3>Проверка</h3><p>Провести тестовую оплату/sandbox callback; проверить сумму, orderId, ссылку на чат и отсутствие дублей при повторном webhook.</p></section>
-    </article>
-    <article class="card" id="scenario-5">
-      <header>
-        <div>
-          <p class="num">05</p>
-          <h2>Оплата не прошла</h2>
-          <p class="key">payment_error</p>
-        </div>
-        <span class="badge ok">event есть в dropdown, trigger проверить</span>
-      </header>
-      <div class="settings">
-        <div><span>subject</span><code>Оплата не прошла</code></div>
-        <div><span>event_name</span><code>payment.error</code></div>
-        <div><span>condition_id</span><code>0</code></div>
-        <div><span>delay</span><code>0</code></div>
-        <div><span>source_trigger</span><code>payment_error</code></div>
-        <div><span>type/settings</span><code>1 / count_user_settings=0</code></div>
-      </div>
-      <section><h3>Когда</h3><p>После финального отказа платежа или ошибки, когда пользователь может повторить попытку.</p></section>
-      <section><h3>Зачем</h3><p>Снижает потерю оплачиваемого сценария: объясняет статус и дает аккуратный путь повторить оплату.</p></section>
-      <section><h3>Почему такие настройки</h3><p>Сервисное письмо, delay 0, condition 0. Не отправлять на каждую промежуточную provider-ошибку.</p></section>
-      <section><h3>Backend-гейт</h3><p>Платеж в failed/error status; заказ не оплачен; доступна безопасная ссылка повторной оплаты.</p></section>
-      <section><h3>Проверка</h3><p>Смоделировать failed payment; проверить один email на одну попытку и корректный retry URL.</p></section>
-    </article>
-    <article class="card" id="scenario-6">
-      <header>
-        <div>
-          <p class="num">06</p>
-          <h2>Оплата начата, но не завершена</h2>
-          <p class="key">payment_init</p>
-        </div>
-        <span class="badge ok">event есть в dropdown, trigger проверить</span>
-      </header>
-      <div class="settings">
-        <div><span>subject</span><code>Вы можете завершить оплату чат-консультации</code></div>
-        <div><span>event_name</span><code>payment.init</code></div>
-        <div><span>condition_id</span><code>0</code></div>
-        <div><span>delay</span><code>2</code></div>
-        <div><span>source_trigger</span><code>payment_init_not_completed</code></div>
-        <div><span>type/settings</span><code>3 / count_user_settings=1</code></div>
-      </div>
-      <section><h3>Когда</h3><p>Через 2 часа после начала оплаты, только если заказ остался неоплаченным.</p></section>
-      <section><h3>Зачем</h3><p>Аккуратное восстановление незавершенного платежа без давления: пользователь мог закрыть страницу или потерять ссылку.</p></section>
-      <section><h3>Почему такие настройки</h3><p>Маркетингово-поведенческое письмо: type_id 3, count_user_settings 1, event payment.init, delay 2, condition 0.</p></section>
-      <section><h3>Backend-гейт</h3><p>Payment init создан; success/error/refund не наступили; нет более свежей успешной оплаты по этому заказу; пользователь не отписан от таких писем.</p></section>
-      <section><h3>Проверка</h3><p>Создать платеж и не завершать его; через тестовый delay проверить, что письмо уходит только для unpaid order. При success/error до delay письмо должно быть отменено.</p></section>
-    </article>
-    <article class="card" id="scenario-7">
-      <header>
-        <div>
-          <p class="num">07</p>
           <h2>Оплаченный чат без первого сообщения</h2>
           <p class="key">message_no_first_chat_message</p>
         </div>
@@ -528,10 +490,10 @@
       <section><h3>Backend-гейт</h3><p>Чат оплачен и активен; от пользователя нет первого сообщения; консультация не закрыта; reminder еще не отправлялся.</p></section>
       <section><h3>Проверка</h3><p>Оплатить тестовый чат и не писать сообщение; проверить отправку после delay и отсутствие письма, если сообщение появилось до delay.</p></section>
     </article>
-    <article class="card" id="scenario-8">
+    <article class="card" id="scenario-5">
       <header>
         <div>
-          <p class="num">08</p>
+          <p class="num">05</p>
           <h2>Ответ эксперта задерживается</h2>
           <p class="key">message_answer_delayed</p>
         </div>
@@ -551,10 +513,10 @@
       <section><h3>Backend-гейт</h3><p>Есть активный оплаченный чат; клиент ждет ответа; SLA threshold достигнут; эксперт еще не ответил; письмо не отправлялось ранее по этой задержке.</p></section>
       <section><h3>Проверка</h3><p>Создать чат без ответа эксперта и искусственно сдвинуть время; проверить одно письмо и отмену, если эксперт ответил.</p></section>
     </article>
-    <article class="card" id="scenario-9">
+    <article class="card" id="scenario-6">
       <header>
         <div>
-          <p class="num">09</p>
+          <p class="num">06</p>
           <h2>Эксперт ответил в чате</h2>
           <p class="key">message_received</p>
         </div>
@@ -574,7 +536,82 @@
       <section><h3>Backend-гейт</h3><p>Создан ответ эксперта; ответ видим клиенту; клиент не находится уже в активном чате/не получил realtime-уведомление в той же сессии.</p></section>
       <section><h3>Проверка</h3><p>Создать ответ эксперта; проверить, что письмо ушло клиенту и содержит ссылку на конкретный чат.</p></section>
     </article>
+    <article class="card" id="scenario-7">
+      <header>
+        <div>
+          <p class="num">07</p>
+          <h2>Обращение в поддержку создано</h2>
+          <p class="key">support_ticket_opened</p>
+        </div>
+        <span class="badge warn">нужен backend event</span>
+      </header>
+      <div class="settings">
+        <div><span>subject</span><code>Обращение в поддержку создано</code></div>
+        <div><span>event_name</span><code>support.ticket.opened</code></div>
+        <div><span>condition_id</span><code>0</code></div>
+        <div><span>delay</span><code>0</code></div>
+        <div><span>source_trigger</span><code>support_ticket_opened</code></div>
+        <div><span>type/settings</span><code>2 / count_user_settings=0</code></div>
+      </div>
+      <section><h3>Когда</h3><p>Сразу после создания обращения пользователем или оператором от имени пользователя.</p></section>
+      <section><h3>Зачем</h3><p>Фиксирует факт обращения и снижает повторные обращения: пользователь знает номер и дальнейший путь.</p></section>
+      <section><h3>Почему такие настройки</h3><p>Поведенческое сервисное письмо, delay 0, condition 0, без маркетингового opt-out.</p></section>
+      <section><h3>Backend-гейт</h3><p>Support case создан; есть supportCaseId; обращение доступно пользователю; письмо не дублируется при каждом комментарии.</p></section>
+      <section><h3>Проверка</h3><p>Создать тестовое обращение; проверить номер, ссылку и отсутствие отправки при внутренней операторской заметке.</p></section>
+    </article>
+    <article class="card" id="scenario-8">
+      <header>
+        <div>
+          <p class="num">08</p>
+          <h2>Поддержка ответила</h2>
+          <p class="key">support_message_received</p>
+        </div>
+        <span class="badge ok">event есть в dropdown, trigger проверить</span>
+      </header>
+      <div class="settings">
+        <div><span>subject</span><code>Поддержка ответила по обращению #{{supportCaseId}}</code></div>
+        <div><span>event_name</span><code>support.message.received</code></div>
+        <div><span>condition_id</span><code>0</code></div>
+        <div><span>delay</span><code>0</code></div>
+        <div><span>source_trigger</span><code>support_message_received_created</code></div>
+        <div><span>type/settings</span><code>2 / count_user_settings=0</code></div>
+      </div>
+      <section><h3>Когда</h3><p>Сразу после публичного ответа поддержки пользователю.</p></section>
+      <section><h3>Зачем</h3><p>Возвращает пользователя к решению вопроса и уменьшает пропущенные ответы поддержки.</p></section>
+      <section><h3>Почему такие настройки</h3><p>Поведенческое сервисное письмо, delay 0, condition 0.</p></section>
+      <section><h3>Backend-гейт</h3><p>Создан публичный ответ поддержки; есть supportCaseId; сообщение не является внутренней заметкой.</p></section>
+      <section><h3>Проверка</h3><p>Ответить в тестовом тикете публичным сообщением; проверить письмо и ссылку на обращение.</p></section>
+    </article>
+    <article class="card" id="scenario-9">
+      <header>
+        <div>
+          <p class="num">09</p>
+          <h2>Возврат подтвержден</h2>
+          <p class="key">payment_refund</p>
+        </div>
+        <span class="badge ok">event есть в dropdown, trigger проверить</span>
+      </header>
+      <div class="settings">
+        <div><span>subject</span><code>Возврат по заказу #{{orderId}} подтверждён</code></div>
+        <div><span>event_name</span><code>payment.refund</code></div>
+        <div><span>condition_id</span><code>0</code></div>
+        <div><span>delay</span><code>0</code></div>
+        <div><span>source_trigger</span><code>payment_refund</code></div>
+        <div><span>type/settings</span><code>2 / count_user_settings=0</code></div>
+      </div>
+      <section><h3>Когда</h3><p>После финального подтверждения возврата платежным или финансовым контуром.</p></section>
+      <section><h3>Зачем</h3><p>Сервисное финансовое письмо: снижает тревогу по деньгам и фиксирует ожидания по срокам.</p></section>
+      <section><h3>Почему такие настройки</h3><p>Поведенческое/сервисное финансовое письмо, delay 0, condition 0, без маркетингового opt-out.</p></section>
+      <section><h3>Backend-гейт</h3><p>Refund имеет confirmed/processed status; сумма и orderId известны; событие дедуплицировано по refundId.</p></section>
+      <section><h3>Проверка</h3><p>Смоделировать refund confirmed; проверить сумму, orderId, refundEta и отсутствие дубля при повторном webhook.</p></section>
+    </article>
     </main>
   </div>
+<!-- package-variable-tooltips:start -->
+<script src="variable-tooltips.js"></script>
+<!-- package-variable-tooltips:end -->
+<!-- package-comments:start -->
+<script src="comments-system.js"></script>
+<!-- package-comments:end -->
 </body>
 </html>

@@ -51,7 +51,7 @@
     .links a strong { display:block; }
     .links a span { display:block; color:var(--muted); font-size:13px; }
     @media (max-width:900px) { .grid, .grid.two, .links { grid-template-columns:1fr; } h1 { font-size:26px; } table { display:block; overflow-x:auto; } }
-/* package-navigation-css:start */
+  /* package-navigation-css:start */
 .package-nav {
   position: sticky;
   top: 0;
@@ -157,7 +157,7 @@
   </div>
 </nav>
 <!-- package-navigation:end -->
-<header>
+  <header>
     <h1>Старт внедрения email-шаблонов для Игоря</h1>
     <p class="lead">Это главный вход в пакет. Он объясняет порядок действий для человека-программиста и показывает, какие шаблоны можно переносить в админку сразу, а какие сначала требуют backend-событий, переменных и проверки очереди.</p>
   </header>
@@ -169,8 +169,8 @@
     <h2>Состояние пакета</h2>
     <div class="grid">
       <div class="card ok"><div class="metric">2</div><strong>Обновить существующие</strong><span>Можно начать с live-шаблонов после проверки render и переменных.</span></div>
-      <div class="card mid"><div class="metric">6</div><strong>Создать после проверки</strong><span>Нужна сверка event binding, payload и queue, затем импорт в админку.</span></div>
-      <div class="card block"><div class="metric">11</div><strong>Сначала backend</strong><span>Нельзя считать готовыми до реализации событий, payload и отмен pending-писем.</span></div>
+      <div class="card mid"><div class="metric">3</div><strong>Создать после проверки</strong><span>Нужна сверка event binding, payload и queue, затем импорт в админку.</span></div>
+      <div class="card block"><div class="metric">13</div><strong>Сначала backend</strong><span>Нельзя считать готовыми до реализации событий, payload и отмен pending-писем.</span></div>
     </div>
     <div class="legend" aria-label="Легенда цветов">
       <span class="existing"><i></i>Зеленый: шаблон уже есть в системе, обновлять существующую запись</span>
@@ -220,6 +220,33 @@
 <td>Обновить live id=4</td>
 <td>Создать тестового пользователя или запросить повторное подтверждение email; проверить ссылку, срок действия и отсутствие жестко прошитого бренда в тексте.</td>
 </tr>
+<tr class="row-backend">
+<td><span class="badge">P0</span></td>
+<td><strong>Баланс пополнен</strong><small>balance_topup_success</small></td>
+<td><code>balance.topup.success</code></td>
+<td>0</td>
+<td>0</td>
+<td>Сначала backend</td>
+<td>Пополнить тестовый баланс Stripe, Unlimit и вручную; проверить сумму, валюту, метод и отсутствие дублей при повторном webhook.</td>
+</tr>
+<tr class="row-backend">
+<td><span class="badge">P0</span></td>
+<td><strong>Услуга приобретена</strong><small>service_purchase_success</small></td>
+<td><code>service.purchase.success</code></td>
+<td>0</td>
+<td>0</td>
+<td>Сначала backend</td>
+<td>Купить Premium и пакет кредитов в тестовом контуре; проверить название услуги, сумму, метод, транзакцию и доступность услуги в кабинете.</td>
+</tr>
+<tr class="row-create">
+<td><span class="badge">P0</span></td>
+<td><strong>Эксперт ответил в чате</strong><small>message_received</small></td>
+<td><code>message.received</code></td>
+<td>0</td>
+<td>0</td>
+<td>Создать в админке после проверки</td>
+<td>Создать ответ эксперта; проверить, что письмо ушло клиенту и содержит ссылку на конкретный чат.</td>
+</tr>
 <tr class="row-create">
 <td><span class="badge">P0</span></td>
 <td><strong>Поддержка ответила</strong><small>support_message_received</small></td>
@@ -237,42 +264,6 @@
 <td>0</td>
 <td>Создать в админке после проверки</td>
 <td>Смоделировать refund confirmed; проверить сумму, orderId, refundEta и отсутствие дубля при повторном webhook.</td>
-</tr>
-<tr class="row-create">
-<td><span class="badge">P0</span></td>
-<td><strong>Оплата подтверждена</strong><small>payment_success</small></td>
-<td><code>payment.success</code></td>
-<td>0</td>
-<td>0</td>
-<td>Создать в админке после проверки</td>
-<td>Провести тестовую оплату/sandbox callback; проверить сумму, orderId, ссылку на чат и отсутствие дублей при повторном webhook.</td>
-</tr>
-<tr class="row-create">
-<td><span class="badge">P0</span></td>
-<td><strong>Оплата не прошла</strong><small>payment_error</small></td>
-<td><code>payment.error</code></td>
-<td>0</td>
-<td>0</td>
-<td>Создать в админке после проверки</td>
-<td>Смоделировать failed payment; проверить один email на одну попытку и корректный retry URL.</td>
-</tr>
-<tr class="row-create">
-<td><span class="badge">P0</span></td>
-<td><strong>Эксперт ответил в чате</strong><small>message_received</small></td>
-<td><code>message.received</code></td>
-<td>0</td>
-<td>0</td>
-<td>Создать в админке после проверки</td>
-<td>Создать ответ эксперта; проверить, что письмо ушло клиенту и содержит ссылку на конкретный чат.</td>
-</tr>
-<tr class="row-backend">
-<td><span class="badge">P1</span></td>
-<td><strong>Обращение в поддержку создано</strong><small>support_ticket_opened</small></td>
-<td><code>support.ticket.opened</code></td>
-<td>0</td>
-<td>0</td>
-<td>Сначала backend</td>
-<td>Создать тестовое обращение; проверить номер, ссылку и отсутствие отправки при внутренней операторской заметке.</td>
 </tr>
 <tr class="row-backend">
 <td><span class="badge">P1</span></td>
@@ -328,15 +319,6 @@
 <td>Сначала backend</td>
 <td>Изменить пароль/2FA в тестовом аккаунте; проверить, что письмо не содержит лишних персональных или технических данных.</td>
 </tr>
-<tr class="row-create">
-<td><span class="badge">P1</span></td>
-<td><strong>Оплата начата, но не завершена</strong><small>payment_init</small></td>
-<td><code>payment.init</code></td>
-<td>0</td>
-<td>2</td>
-<td>Создать в админке после проверки</td>
-<td>Создать платеж и не завершать его; через тестовый delay проверить, что письмо уходит только для unpaid order. При success/error до delay письмо должно быть отменено.</td>
-</tr>
 <tr class="row-backend">
 <td><span class="badge">P1</span></td>
 <td><strong>Оплаченный чат без первого сообщения</strong><small>message_no_first_chat_message</small></td>
@@ -354,6 +336,15 @@
 <td>0</td>
 <td>Сначала backend</td>
 <td>Создать чат без ответа эксперта и искусственно сдвинуть время; проверить одно письмо и отмену, если эксперт ответил.</td>
+</tr>
+<tr class="row-backend">
+<td><span class="badge">P1</span></td>
+<td><strong>Обращение в поддержку создано</strong><small>support_ticket_opened</small></td>
+<td><code>support.ticket.opened</code></td>
+<td>0</td>
+<td>0</td>
+<td>Сначала backend</td>
+<td>Создать тестовое обращение; проверить номер, ссылку и отсутствие отправки при внутренней операторской заметке.</td>
 </tr>
 <tr class="row-backend">
 <td><span class="badge">P2</span></td>
@@ -392,7 +383,9 @@
 <tr><td><span class="badge">P1</span></td><td><code>user.age_restricted</code></td><td>user_age_restricted</td><td></td></tr>
 <tr><td><span class="badge">P1</span></td><td><code>user.password_recovery</code></td><td>user_password_recovery</td><td></td></tr>
 <tr><td><span class="badge">P2</span></td><td><code>advisor.followup.offer</code></td><td>advisor_followup_offer</td><td></td></tr>
+<tr><td><span class="badge">P2</span></td><td><code>balance.topup.success</code></td><td>balance_topup_success</td><td></td></tr>
 <tr><td><span class="badge">P2</span></td><td><code>message.chat_saved</code></td><td>message_chat_saved</td><td></td></tr>
+<tr><td><span class="badge">P2</span></td><td><code>service.purchase.success</code></td><td>service_purchase_success</td><td></td></tr>
 
       </tbody>
     </table>
@@ -430,12 +423,4 @@
 <!-- package-comments:end -->
 </body>
 </html>
-
-
-
-
-
-
-
-
 

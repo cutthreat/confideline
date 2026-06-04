@@ -33,54 +33,6 @@
   },
   {
     "sort": 10,
-    "key": "support_ticket_opened",
-    "subject": "Обращение в поддержку создано",
-    "event_name": "support.ticket.opened",
-    "event_exists": false,
-    "condition_id": 0,
-    "delay": 0,
-    "status": "event_missing",
-    "available_params": "",
-    "used_variables": "legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportCaseId, supportCaseUrl, supportEmail, termsUrl, userName",
-    "missing_variables": "legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportCaseId, supportCaseUrl, supportEmail, termsUrl, userName",
-    "extra_available_params": "",
-    "recommendation": "Такого event_name нет в текущем списке; нельзя загружать как готовый шаблон без backend-доработки.",
-    "backend_comment": "Нет в текущем enum/dropdown."
-  },
-  {
-    "sort": 11,
-    "key": "support_message_received",
-    "subject": "Поддержка ответила по обращению #{{supportCaseId}}",
-    "event_name": "support.message.received",
-    "event_exists": true,
-    "condition_id": 0,
-    "delay": 0,
-    "status": "needs_event_or_payload",
-    "available_params": "siteName, userName, subject, supportUrl",
-    "used_variables": "legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportCaseId, supportCaseStatus, supportCaseUrl, supportEmail, supportUpdatedAt, termsUrl, userName",
-    "missing_variables": "legalMerchantName, privacyUrl, refundPolicyUrl, siteUrl, supportCaseId, supportCaseStatus, supportCaseUrl, supportEmail, supportUpdatedAt, termsUrl",
-    "extra_available_params": "subject, supportUrl",
-    "recommendation": "Event есть, но payload слишком бедный для предложенного письма; нужен расширенный context или отдельный event.",
-    "backend_comment": "Событие есть в списке, но источник не привязан к конкретному Yii event. Для тикета не хватает supportCaseId."
-  },
-  {
-    "sort": 12,
-    "key": "payment_refund",
-    "subject": "Возврат по заказу #{{orderId}} подтверждён",
-    "event_name": "payment.refund",
-    "event_exists": true,
-    "condition_id": 0,
-    "delay": 0,
-    "status": "needs_event_or_payload",
-    "available_params": "siteName, userName, amount, transactionId",
-    "used_variables": "currency, legalMerchantName, orderId, privacyUrl, processorRefundId, refundAmount, refundEta, refundPolicyUrl, siteName, siteUrl, supportCaseUrl, supportEmail, termsUrl, userName",
-    "missing_variables": "currency, legalMerchantName, orderId, privacyUrl, processorRefundId, refundAmount, refundEta, refundPolicyUrl, siteUrl, supportCaseUrl, supportEmail, termsUrl",
-    "extra_available_params": "amount, transactionId",
-    "recommendation": "Event есть, но payload слишком бедный для предложенного письма; нужен расширенный context или отдельный event.",
-    "backend_comment": "Событие есть в списке, но источник не привязан к конкретному Yii event. Нужно различать refund update и confirmed."
-  },
-  {
-    "sort": 13,
     "key": "payment_refund_update",
     "subject": "Статус возврата обновлён",
     "event_name": "payment.refund.update",
@@ -96,7 +48,7 @@
     "backend_comment": "Нет в текущем enum/dropdown."
   },
   {
-    "sort": 14,
+    "sort": 11,
     "key": "advisor_followup_offer",
     "subject": "Можно продолжить чат с {{advisorName}}",
     "event_name": "advisor.followup.offer",
@@ -112,7 +64,7 @@
     "backend_comment": "Нет в текущем enum/dropdown."
   },
   {
-    "sort": 15,
+    "sort": 12,
     "key": "review_request",
     "subject": "Оцените опыт консультации в чате",
     "event_name": "review.request",
@@ -128,7 +80,7 @@
     "backend_comment": "Нет в текущем enum/dropdown."
   },
   {
-    "sort": 16,
+    "sort": 13,
     "key": "message_chat_saved",
     "subject": "Ваш чат с экспертом сохранён",
     "event_name": "message.chat_saved",
@@ -144,7 +96,7 @@
     "backend_comment": "Нет в текущем enum/dropdown."
   },
   {
-    "sort": 17,
+    "sort": 14,
     "key": "support_safety_notice",
     "subject": "Важная информация о поддержке",
     "event_name": "support.safety_notice",
@@ -160,7 +112,7 @@
     "backend_comment": "Нет в текущем enum/dropdown."
   },
   {
-    "sort": 18,
+    "sort": 15,
     "key": "user_age_restricted",
     "subject": "Доступ к сервису ограничен",
     "event_name": "user.age_restricted",
@@ -171,6 +123,38 @@
     "available_params": "",
     "used_variables": "legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportEmail, supportUrl, termsUrl, userName",
     "missing_variables": "legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportEmail, supportUrl, termsUrl, userName",
+    "extra_available_params": "",
+    "recommendation": "Такого event_name нет в текущем списке; нельзя загружать как готовый шаблон без backend-доработки.",
+    "backend_comment": "Нет в текущем enum/dropdown."
+  },
+  {
+    "sort": 16,
+    "key": "balance_topup_success",
+    "subject": "Ваш баланс {{siteName}} пополнен",
+    "event_name": "balance.topup.success",
+    "event_exists": false,
+    "condition_id": 0,
+    "delay": 0,
+    "status": "event_missing",
+    "available_params": "",
+    "used_variables": "amount, currency, legalMerchantName, paymentMethod, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportEmail, termsUrl, transactionId, userName",
+    "missing_variables": "amount, currency, legalMerchantName, paymentMethod, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportEmail, termsUrl, transactionId, userName",
+    "extra_available_params": "",
+    "recommendation": "Такого event_name нет в текущем списке; нельзя загружать как готовый шаблон без backend-доработки.",
+    "backend_comment": "Нет в текущем enum/dropdown."
+  },
+  {
+    "sort": 17,
+    "key": "service_purchase_success",
+    "subject": "Покупка {{serviceName}} подтверждена",
+    "event_name": "service.purchase.success",
+    "event_exists": false,
+    "condition_id": 0,
+    "delay": 0,
+    "status": "event_missing",
+    "available_params": "",
+    "used_variables": "amount, currency, legalMerchantName, paymentMethod, privacyUrl, refundPolicyUrl, serviceName, siteName, siteUrl, supportEmail, termsUrl, transactionId, userName",
+    "missing_variables": "amount, currency, legalMerchantName, paymentMethod, privacyUrl, refundPolicyUrl, serviceName, siteName, siteUrl, supportEmail, termsUrl, transactionId, userName",
     "extra_available_params": "",
     "recommendation": "Такого event_name нет в текущем списке; нельзя загружать как готовый шаблон без backend-доработки.",
     "backend_comment": "Нет в текущем enum/dropdown."
@@ -209,54 +193,6 @@
   },
   {
     "sort": 4,
-    "key": "payment_success",
-    "subject": "Оплата подтверждена: чат-консультация {{siteName}} готова",
-    "event_name": "payment.success",
-    "event_exists": true,
-    "condition_id": 0,
-    "delay": 0,
-    "status": "needs_event_or_payload",
-    "available_params": "siteName, userName, amount, currency, transactionId",
-    "used_variables": "advisorName, amount, chatUrl, currency, firstResponseSla, legalMerchantName, merchantDescriptor, orderId, paidAt, privacyUrl, receiptUrl, refundPolicyUrl, siteName, siteUrl, supportEmail, termsUrl, userName",
-    "missing_variables": "advisorName, chatUrl, firstResponseSla, legalMerchantName, merchantDescriptor, orderId, paidAt, privacyUrl, receiptUrl, refundPolicyUrl, siteUrl, supportEmail, termsUrl",
-    "extra_available_params": "transactionId",
-    "recommendation": "Event есть, но payload слишком бедный для предложенного письма; нужен расширенный context или отдельный event.",
-    "backend_comment": "Событие есть в списке, но источник не привязан к конкретному Yii event. Для квитанции не хватает orderId/receiptUrl/chatUrl/paidAt."
-  },
-  {
-    "sort": 5,
-    "key": "payment_error",
-    "subject": "Оплата не прошла",
-    "event_name": "payment.error",
-    "event_exists": true,
-    "condition_id": 0,
-    "delay": 0,
-    "status": "needs_event_or_payload",
-    "available_params": "siteName, userName, amount, errorMessage",
-    "used_variables": "amount, checkoutUrl, currency, legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportUrl, termsUrl, userName",
-    "missing_variables": "checkoutUrl, currency, legalMerchantName, privacyUrl, refundPolicyUrl, siteUrl, supportUrl, termsUrl",
-    "extra_available_params": "errorMessage",
-    "recommendation": "Event есть, но payload слишком бедный для предложенного письма; нужен расширенный context или отдельный event.",
-    "backend_comment": "Событие есть в списке, но источник не привязан к конкретному Yii event. Для retry не хватает checkoutUrl/currency."
-  },
-  {
-    "sort": 6,
-    "key": "payment_init",
-    "subject": "Вы можете завершить оплату чат-консультации",
-    "event_name": "payment.init",
-    "event_exists": true,
-    "condition_id": 0,
-    "delay": 2,
-    "status": "needs_event_or_payload",
-    "available_params": "siteName, userName, amount, currency, paymentMethod",
-    "used_variables": "amount, checkoutUrl, currency, emailPreferencesUrl, legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, termsUrl, unsubscribeUrl, userName",
-    "missing_variables": "checkoutUrl, emailPreferencesUrl, legalMerchantName, privacyUrl, refundPolicyUrl, siteUrl, termsUrl, unsubscribeUrl",
-    "extra_available_params": "paymentMethod",
-    "recommendation": "Event есть, но payload слишком бедный для предложенного письма; нужен расширенный context или отдельный event.",
-    "backend_comment": "Событие есть в списке, но источник не привязан к конкретному Yii event. Для восстановления оплаты не хватает checkoutUrl/orderId."
-  },
-  {
-    "sort": 7,
     "key": "message_no_first_chat_message",
     "subject": "Чат с экспертом доступен - осталось написать сообщение",
     "event_name": "message.no_first_chat_message",
@@ -272,7 +208,7 @@
     "backend_comment": "Нет в текущем enum/dropdown."
   },
   {
-    "sort": 8,
+    "sort": 5,
     "key": "message_answer_delayed",
     "subject": "Статус чата: ответ задерживается",
     "event_name": "message.answer_delayed",
@@ -288,7 +224,7 @@
     "backend_comment": "Нет в текущем enum/dropdown."
   },
   {
-    "sort": 9,
+    "sort": 6,
     "key": "message_received",
     "subject": "Эксперт ответил в чате",
     "event_name": "message.received",
@@ -302,5 +238,53 @@
     "extra_available_params": "",
     "recommendation": "Event есть, но payload слишком бедный для предложенного письма; нужен расширенный context или отдельный event.",
     "backend_comment": "В Nebula MVP использовать как ответ эксперта клиенту. Других email-сообщений в чате не заводим; для шаблона нужны chatUrl, advisorName и consultation context."
+  },
+  {
+    "sort": 7,
+    "key": "support_ticket_opened",
+    "subject": "Обращение в поддержку создано",
+    "event_name": "support.ticket.opened",
+    "event_exists": false,
+    "condition_id": 0,
+    "delay": 0,
+    "status": "event_missing",
+    "available_params": "",
+    "used_variables": "legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportCaseId, supportCaseUrl, supportEmail, termsUrl, userName",
+    "missing_variables": "legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportCaseId, supportCaseUrl, supportEmail, termsUrl, userName",
+    "extra_available_params": "",
+    "recommendation": "Такого event_name нет в текущем списке; нельзя загружать как готовый шаблон без backend-доработки.",
+    "backend_comment": "Нет в текущем enum/dropdown."
+  },
+  {
+    "sort": 8,
+    "key": "support_message_received",
+    "subject": "Поддержка ответила по обращению #{{supportCaseId}}",
+    "event_name": "support.message.received",
+    "event_exists": true,
+    "condition_id": 0,
+    "delay": 0,
+    "status": "needs_event_or_payload",
+    "available_params": "siteName, userName, subject, supportUrl",
+    "used_variables": "legalMerchantName, privacyUrl, refundPolicyUrl, siteName, siteUrl, supportCaseId, supportCaseStatus, supportCaseUrl, supportEmail, supportUpdatedAt, termsUrl, userName",
+    "missing_variables": "legalMerchantName, privacyUrl, refundPolicyUrl, siteUrl, supportCaseId, supportCaseStatus, supportCaseUrl, supportEmail, supportUpdatedAt, termsUrl",
+    "extra_available_params": "subject, supportUrl",
+    "recommendation": "Event есть, но payload слишком бедный для предложенного письма; нужен расширенный context или отдельный event.",
+    "backend_comment": "Событие есть в списке, но источник не привязан к конкретному Yii event. Для тикета не хватает supportCaseId."
+  },
+  {
+    "sort": 9,
+    "key": "payment_refund",
+    "subject": "Возврат по заказу #{{orderId}} подтверждён",
+    "event_name": "payment.refund",
+    "event_exists": true,
+    "condition_id": 0,
+    "delay": 0,
+    "status": "needs_event_or_payload",
+    "available_params": "siteName, userName, amount, transactionId",
+    "used_variables": "currency, legalMerchantName, orderId, privacyUrl, processorRefundId, refundAmount, refundEta, refundPolicyUrl, siteName, siteUrl, supportCaseUrl, supportEmail, termsUrl, userName",
+    "missing_variables": "currency, legalMerchantName, orderId, privacyUrl, processorRefundId, refundAmount, refundEta, refundPolicyUrl, siteUrl, supportCaseUrl, supportEmail, termsUrl",
+    "extra_available_params": "amount, transactionId",
+    "recommendation": "Event есть, но payload слишком бедный для предложенного письма; нужен расширенный context или отдельный event.",
+    "backend_comment": "Событие есть в списке, но источник не привязан к конкретному Yii event. Нужно различать refund update и confirmed."
   }
 ]

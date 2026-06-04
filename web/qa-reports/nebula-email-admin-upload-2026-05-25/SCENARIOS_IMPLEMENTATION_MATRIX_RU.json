@@ -155,133 +155,6 @@
   },
   {
     "sort": 4,
-    "key": "payment_success",
-    "name": "Оплата подтверждена",
-    "stage": "Оплата",
-    "priority": "P0",
-    "role": "Фиксация оплаты и переход к чату.",
-    "flow": "Сразу",
-    "type_id": "1",
-    "type_label": "service",
-    "count_user_settings": "0",
-    "event_name": "payment.success",
-    "condition_id": "0",
-    "delay": "0",
-    "subject_email": "Оплата подтверждена: чат-консультация {{siteName}} готова",
-    "live_status": "can_create_in_current_admin",
-    "live_status_label": "Можно создать в текущей админке",
-    "existing_live_template_id": "",
-    "admin_action": "create_new_template_with_existing_event",
-    "backend_gate": "Платеж имеет финальный success/paid status; заказ связан с консультацией; сумма и orderId доступны.",
-    "implementation_gate": "Event есть в dropdown, но программист должен доказать, что trigger реально вызывает очередь email.",
-    "risk": "Нужна дедупликация webhook и реальные payment variables.",
-    "test_scenario": "Провести тестовую оплату/sandbox callback; проверить сумму, orderId, ссылку на чат и отсутствие дублей при повторном webhook.",
-    "variables": [
-      "advisorName",
-      "amount",
-      "chatUrl",
-      "currency",
-      "firstResponseSla",
-      "legalMerchantName",
-      "merchantDescriptor",
-      "orderId",
-      "paidAt",
-      "privacyUrl",
-      "receiptUrl",
-      "refundPolicyUrl",
-      "siteName",
-      "siteUrl",
-      "supportEmail",
-      "termsUrl",
-      "userName"
-    ],
-    "variables_count": 17,
-    "folder": "templates/04_payment_success",
-    "owner": "Backend payments + QA"
-  },
-  {
-    "sort": 5,
-    "key": "payment_error",
-    "name": "Оплата не прошла",
-    "stage": "Оплата",
-    "priority": "P0",
-    "role": "Возврат пользователя к оплате после ошибки.",
-    "flow": "Сразу",
-    "type_id": "1",
-    "type_label": "service",
-    "count_user_settings": "0",
-    "event_name": "payment.error",
-    "condition_id": "0",
-    "delay": "0",
-    "subject_email": "Оплата не прошла",
-    "live_status": "can_create_in_current_admin",
-    "live_status_label": "Можно создать в текущей админке",
-    "existing_live_template_id": "",
-    "admin_action": "create_new_template_with_existing_event",
-    "backend_gate": "Платеж в failed/error status; заказ не оплачен; доступна безопасная ссылка повторной оплаты.",
-    "implementation_gate": "Event есть в dropdown, но программист должен доказать, что trigger реально вызывает очередь email.",
-    "risk": "Не слать на промежуточные provider-ошибки.",
-    "test_scenario": "Смоделировать failed payment; проверить один email на одну попытку и корректный retry URL.",
-    "variables": [
-      "amount",
-      "checkoutUrl",
-      "currency",
-      "legalMerchantName",
-      "privacyUrl",
-      "refundPolicyUrl",
-      "siteName",
-      "siteUrl",
-      "supportUrl",
-      "termsUrl",
-      "userName"
-    ],
-    "variables_count": 11,
-    "folder": "templates/05_payment_error",
-    "owner": "Backend payments + QA"
-  },
-  {
-    "sort": 6,
-    "key": "payment_init",
-    "name": "Оплата начата, но не завершена",
-    "stage": "Оплата",
-    "priority": "P1",
-    "role": "Мягкое восстановление незавершенной оплаты.",
-    "flow": "+2 часа",
-    "type_id": "3",
-    "type_label": "marketing",
-    "count_user_settings": "1",
-    "event_name": "payment.init",
-    "condition_id": "0",
-    "delay": "2",
-    "subject_email": "Вы можете завершить оплату чат-консультации",
-    "live_status": "can_create_in_current_admin",
-    "live_status_label": "Можно создать в текущей админке",
-    "existing_live_template_id": "",
-    "admin_action": "create_new_template_with_existing_event",
-    "backend_gate": "Payment init создан; success/error/refund не наступили; нет более свежей успешной оплаты по этому заказу; пользователь не отписан от таких писем.",
-    "implementation_gate": "Event есть в dropdown, но программист должен доказать, что trigger реально вызывает очередь email.",
-    "risk": "Отправлять только если заказ остался unpaid после delay.",
-    "test_scenario": "Создать платеж и не завершать его; через тестовый delay проверить, что письмо уходит только для unpaid order. При success/error до delay письмо должно быть отменено.",
-    "variables": [
-      "amount",
-      "checkoutUrl",
-      "currency",
-      "emailPreferencesUrl",
-      "legalMerchantName",
-      "privacyUrl",
-      "refundPolicyUrl",
-      "siteName",
-      "siteUrl",
-      "termsUrl",
-      "unsubscribeUrl",
-      "userName"
-    ],
-    "variables_count": 12,
-    "folder": "templates/06_payment_init",
-    "owner": "Backend payments + QA"
-  },
-  {
-    "sort": 7,
     "key": "message_no_first_chat_message",
     "name": "Оплаченный чат без первого сообщения",
     "stage": "Чат-консультация",
@@ -316,11 +189,11 @@
       "userName"
     ],
     "variables_count": 10,
-    "folder": "templates/07_message_no_first_chat_message",
+    "folder": "templates/04_message_no_first_chat_message",
     "owner": "Backend chat + QA"
   },
   {
-    "sort": 8,
+    "sort": 5,
     "key": "message_answer_delayed",
     "name": "Ответ эксперта задерживается",
     "stage": "Чат-консультация",
@@ -358,11 +231,11 @@
       "userName"
     ],
     "variables_count": 13,
-    "folder": "templates/08_message_answer_delayed",
+    "folder": "templates/05_message_answer_delayed",
     "owner": "Backend chat + QA"
   },
   {
-    "sort": 9,
+    "sort": 6,
     "key": "message_received",
     "name": "Эксперт ответил в чате",
     "stage": "Чат-консультация",
@@ -398,11 +271,11 @@
       "userName"
     ],
     "variables_count": 11,
-    "folder": "templates/09_message_received",
+    "folder": "templates/06_message_received",
     "owner": "Backend chat + QA"
   },
   {
-    "sort": 10,
+    "sort": 7,
     "key": "support_ticket_opened",
     "name": "Обращение в поддержку создано",
     "stage": "Поддержка",
@@ -437,11 +310,11 @@
       "userName"
     ],
     "variables_count": 10,
-    "folder": "templates/10_support_ticket_opened",
+    "folder": "templates/07_support_ticket_opened",
     "owner": "Backend support + QA"
   },
   {
-    "sort": 11,
+    "sort": 8,
     "key": "support_message_received",
     "name": "Поддержка ответила",
     "stage": "Поддержка",
@@ -478,11 +351,11 @@
       "userName"
     ],
     "variables_count": 12,
-    "folder": "templates/11_support_message_received",
+    "folder": "templates/08_support_message_received",
     "owner": "Backend support + QA"
   },
   {
-    "sort": 12,
+    "sort": 9,
     "key": "payment_refund",
     "name": "Возврат подтвержден",
     "stage": "Возвраты",
@@ -521,11 +394,11 @@
       "userName"
     ],
     "variables_count": 14,
-    "folder": "templates/12_payment_refund",
+    "folder": "templates/09_payment_refund",
     "owner": "Backend payments/support + QA"
   },
   {
-    "sort": 13,
+    "sort": 10,
     "key": "payment_refund_update",
     "name": "Статус возврата обновлен",
     "stage": "Возвраты",
@@ -560,11 +433,11 @@
       "userName"
     ],
     "variables_count": 10,
-    "folder": "templates/13_payment_refund_update",
+    "folder": "templates/10_payment_refund_update",
     "owner": "Backend payments/support + QA"
   },
   {
-    "sort": 14,
+    "sort": 11,
     "key": "advisor_followup_offer",
     "name": "Продолжить с тем же экспертом",
     "stage": "Возврат пользователя",
@@ -601,11 +474,11 @@
       "userName"
     ],
     "variables_count": 12,
-    "folder": "templates/14_advisor_followup_offer",
+    "folder": "templates/11_advisor_followup_offer",
     "owner": "PM + Backend + QA"
   },
   {
-    "sort": 15,
+    "sort": 12,
     "key": "review_request",
     "name": "Попросить оценку консультации",
     "stage": "Качество",
@@ -640,11 +513,11 @@
       "userName"
     ],
     "variables_count": 10,
-    "folder": "templates/15_review_request",
+    "folder": "templates/12_review_request",
     "owner": "PM + Backend + QA"
   },
   {
-    "sort": 16,
+    "sort": 13,
     "key": "message_chat_saved",
     "name": "Чат сохранен, можно вернуться",
     "stage": "Возврат пользователя",
@@ -679,11 +552,11 @@
       "userName"
     ],
     "variables_count": 10,
-    "folder": "templates/16_message_chat_saved",
+    "folder": "templates/13_message_chat_saved",
     "owner": "PM + Backend + QA"
   },
   {
-    "sort": 17,
+    "sort": 14,
     "key": "support_safety_notice",
     "name": "Важная информация о поддержке",
     "stage": "Юридические и safety",
@@ -717,11 +590,11 @@
       "userName"
     ],
     "variables_count": 9,
-    "folder": "templates/17_support_safety_notice",
+    "folder": "templates/14_support_safety_notice",
     "owner": "PM/legal + Backend + QA"
   },
   {
-    "sort": 18,
+    "sort": 15,
     "key": "user_age_restricted",
     "name": "Ограничение доступа по возрасту/правилам",
     "stage": "Юридические и safety",
@@ -755,11 +628,11 @@
       "userName"
     ],
     "variables_count": 9,
-    "folder": "templates/18_user_age_restricted",
+    "folder": "templates/15_user_age_restricted",
     "owner": "PM/legal + Backend + QA"
   },
   {
-    "sort": 19,
+    "sort": 16,
     "key": "balance_topup_success",
     "name": "Баланс пополнен",
     "stage": "Оплата",
@@ -796,11 +669,11 @@
       "userName"
     ],
     "variables_count": 12,
-    "folder": "templates/19_balance_topup_success",
+    "folder": "templates/16_balance_topup_success",
     "owner": "Backend payments + QA"
   },
   {
-    "sort": 20,
+    "sort": 17,
     "key": "service_purchase_success",
     "name": "Услуга приобретена",
     "stage": "Оплата",
@@ -838,7 +711,7 @@
       "userName"
     ],
     "variables_count": 13,
-    "folder": "templates/20_service_purchase_success",
+    "folder": "templates/17_service_purchase_success",
     "owner": "Backend payments + QA"
   }
 ]

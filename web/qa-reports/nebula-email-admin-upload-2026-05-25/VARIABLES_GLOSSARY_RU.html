@@ -35,9 +35,112 @@
     .new_or_event_scoped { background:var(--warn-bg); color:var(--warn); }
     .empty { display:none; padding:18px; color:var(--muted); }
     @media (max-width:900px) { .summary, .toolbar { grid-template-columns:1fr; } h1 { font-size:24px; } }
-  </style>
+  /* package-navigation-css:start */
+.package-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(255,255,255,.96);
+  border-bottom: 1px solid #d9e2ef;
+  box-shadow: 0 8px 24px rgba(23,32,51,.06);
+  backdrop-filter: blur(10px);
+}
+.package-nav-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 10px 22px;
+  display: grid;
+  grid-template-columns: minmax(220px, .38fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+}
+.package-brand strong {
+  display: block;
+  color: #172033;
+  font-size: 14px;
+  line-height: 1.2;
+}
+.package-brand span {
+  display: block;
+  margin-top: 2px;
+  color: #667085;
+  font-size: 12px;
+}
+.package-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.package-nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 6px 9px;
+  border: 1px solid #d9e2ef;
+  border-radius: 7px;
+  background: #fff;
+  color: #172033;
+  text-decoration: none;
+  font: 700 12px/1.2 Arial, Helvetica, sans-serif;
+}
+.package-nav-link:hover { text-decoration: none; border-color: #6338d8; color: #4220a8; }
+.package-nav-link.is-active { background: #6338d8; border-color: #6338d8; color: #fff; }
+.package-breadcrumbs {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 22px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  color: #667085;
+  font: 700 12px/1.2 Arial, Helvetica, sans-serif;
+}
+.package-breadcrumbs a { color: #2459a8; text-decoration: none; }
+.package-breadcrumbs a:after { content: "/"; margin-left: 7px; color: #98a2b3; }
+.package-breadcrumbs span { color: #344054; }
+@media (max-width: 980px) {
+  .package-nav-inner { grid-template-columns: 1fr; gap: 8px; padding: 10px 14px; }
+  .package-nav-links { justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; }
+  .package-nav-link { white-space: nowrap; }
+  .package-breadcrumbs { padding: 0 14px 10px; }
+}
+/* package-navigation-css:end */
+</style>
 </head>
 <body>
+<!-- package-navigation:start -->
+<nav class="package-nav" aria-label="Навигация по пакету">
+  <div class="package-nav-inner">
+    <div class="package-brand">
+      <strong>Confideline Email Package</strong>
+      <span>English primary, Russian localization</span>
+    </div>
+    <div class="package-nav-links">
+      <a class="package-nav-link" href="index.html">Home</a>
+      <a class="package-nav-link" href="START_HERE_FOR_DEVELOPER_EN.html">Start EN</a>
+      <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_EN.html">Files EN</a>
+      <a class="package-nav-link" href="START_HERE_FOR_IGOR_RU.html">Start RU</a>
+      <a class="package-nav-link" href="FILE_STRUCTURE_FOR_IMPORT_RU.html">Files RU</a>
+      <a class="package-nav-link" href="TEMPLATE_EVENT_STANDARD_RU.html">Standard</a>
+      <a class="package-nav-link" href="SCENARIOS_IMPLEMENTATION_PANEL_RU.html">Scenarios</a>
+      <a class="package-nav-link" href="EMAIL_FLOW_CHAINS_PANEL_RU.html">Flow</a>
+      <a class="package-nav-link" href="BACKEND_EMAIL_EVENTS_CONTRACT_RU.html">Backend</a>
+      <a class="package-nav-link" href="IGOR_BACKEND_TASKS_RU.html">Tasks</a>
+      <a class="package-nav-link is-active" href="VARIABLES_GLOSSARY_RU.html">Variables</a>
+      <a class="package-nav-link" href="VARIABLE_TRANSLATION_REGISTER_RU.html">Var i18n</a>
+      <a class="package-nav-link" href="CONTENT_VARIABLE_ADMIN_MOCKUP_RU.html">Admin UI</a>
+      <a class="package-nav-link" href="CONTENT_VARIABLE_ADMIN_IMPLEMENTATION_NOTES_RU.html">Admin Notes</a>
+      <a class="package-nav-link" href="TEMPLATE_SETTINGS_SCENARIOS_RU.html">Settings</a>
+      <a class="package-nav-link" href="TEMPLATES_PREVIEW_RU_EN.html">Preview</a>
+      <a class="package-nav-link" href="VARIABLES_CONTRACT_RU.html">Contract</a>
+    </div>
+  </div>
+  <div class="package-breadcrumbs" aria-label="Хлебные крошки">
+    <a href="index.html">Home</a><span>Variables Glossary</span>
+  </div>
+</nav>
+<!-- package-navigation:end -->
   <header class="topbar">
     <div class="topbar-inner">
       <h1>Справочник переменных email-шаблонов</h1>
@@ -53,9 +156,9 @@
   <main class="shell">
     <section class="summary">
       <div class="lead-card"><strong>advisorName</strong><p>Имя эксперта/консультанта, назначенного на конкретную чат-консультацию. Это не менеджер поддержки и не название сервиса.</p></div>
-      <div class="metric"><span>Всего</span><strong>42</strong></div>
+      <div class="metric"><span>Всего</span><strong>37</strong></div>
       <div class="metric"><span>Подтверждены id=1</span><strong>3</strong></div>
-      <div class="metric"><span>Нужно подтвердить</span><strong>39</strong></div>
+      <div class="metric"><span>Нужно подтвердить</span><strong>34</strong></div>
     </section>
     <section class="panel">
       <div class="toolbar">
@@ -80,22 +183,22 @@
             <td>security.security_change</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
-          <tr data-search="advisorname имя эксперта/консультанта, назначенного на конкретную чат-консультацию consultation.assignedadvisor.displayname new_or_event_scoped advisor_followup_offer, message_received, payment_success advisor.followup.offer, message.received, payment.success это не менеджер поддержки и не бренд. если в коде сущность называется expert/consultant, маппинг можно оставить в шаблоне как advisorname или согласованно переименовать в expertname отдельной задачей.">
+          <tr data-search="advisorname имя эксперта/консультанта, назначенного на конкретную чат-консультацию consultation.assignedadvisor.displayname new_or_event_scoped advisor_followup_offer, message_received advisor.followup.offer, message.received это не менеджер поддержки и не бренд. если в коде сущность называется expert/consultant, маппинг можно оставить в шаблоне как advisorname или согласованно переименовать в expertname отдельной задачей.">
             <td><code>advisorName</code></td>
             <td>Имя эксперта/консультанта, назначенного на конкретную чат-консультацию<small>Это не менеджер поддержки и не бренд. Если в коде сущность называется expert/consultant, маппинг можно оставить в шаблоне как advisorName или согласованно переименовать в expertName отдельной задачей.</small></td>
             <td><code>consultation.assignedAdvisor.displayName</code></td>
             <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
-            <td>advisor_followup_offer, message_received, payment_success</td>
-            <td>advisor.followup.offer, message.received, payment.success</td>
+            <td>advisor_followup_offer, message_received</td>
+            <td>advisor.followup.offer, message.received</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
-          <tr data-search="amount сумма платежа или заказа в человекочитаемом виде payment_order.amount new_or_event_scoped balance_topup_success, payment_error, payment_init, payment_success, service_purchase_success balance.topup.success, payment.error, payment.init, payment.success, service.purchase.success форматировать на backend: 19.99, без сырого minor-unit значения.">
+          <tr data-search="amount сумма платежа или заказа в человекочитаемом виде payment_order.amount new_or_event_scoped balance_topup_success, service_purchase_success balance.topup.success, service.purchase.success форматировать на backend: 19.99, без сырого minor-unit значения.">
             <td><code>amount</code></td>
             <td>Сумма платежа или заказа в человекочитаемом виде<small>Форматировать на backend: 19.99, без сырого minor-unit значения.</small></td>
             <td><code>payment_order.amount</code></td>
             <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
-            <td>balance_topup_success, payment_error, payment_init, payment_success, service_purchase_success</td>
-            <td>balance.topup.success, payment.error, payment.init, payment.success, service.purchase.success</td>
+            <td>balance_topup_success, service_purchase_success</td>
+            <td>balance.topup.success, service.purchase.success</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
           <tr data-search="answerdueat плановое время ответа эксперта по sla consultation.sla.answerdueat new_or_event_scoped message_answer_delayed message.answer_delayed должно учитывать timezone пользователя или явно заданную timezone сервиса.">
@@ -107,22 +210,13 @@
             <td>message.answer_delayed</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
-          <tr data-search="chaturl url конкретного чата/консультации в кабинете consultation.chaturl new_or_event_scoped advisor_followup_offer, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_success advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.success должен вести в конкретный чат, не просто на главную кабинета.">
+          <tr data-search="chaturl url конкретного чата/консультации в кабинете consultation.chaturl new_or_event_scoped advisor_followup_offer, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received должен вести в конкретный чат, не просто на главную кабинета.">
             <td><code>chatUrl</code></td>
             <td>URL конкретного чата/консультации в кабинете<small>Должен вести в конкретный чат, не просто на главную кабинета.</small></td>
             <td><code>consultation.chatUrl</code></td>
             <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
-            <td>advisor_followup_offer, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_success</td>
-            <td>advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.success</td>
-            <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
-          </tr>
-          <tr data-search="checkouturl url возврата к незавершенной оплате payment_order.checkouturl new_or_event_scoped payment_error, payment_init payment.error, payment.init должен быть безопасным и привязанным к актуальной unpaid попытке.">
-            <td><code>checkoutUrl</code></td>
-            <td>URL возврата к незавершенной оплате<small>Должен быть безопасным и привязанным к актуальной unpaid попытке.</small></td>
-            <td><code>payment_order.checkoutUrl</code></td>
-            <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
-            <td>payment_error, payment_init</td>
-            <td>payment.error, payment.init</td>
+            <td>advisor_followup_offer, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received</td>
+            <td>advisor.followup.offer, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
           <tr data-search="confirmationexpiresat дата/время истечения ссылки подтверждения email email_confirmation_token.expiresat new_or_event_scoped email_confirmation user.email_confirmation нужно для честного сервисного текста и повторной отправки confirmation.">
@@ -152,31 +246,22 @@
             <td>message.answer_delayed</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
-          <tr data-search="currency валюта платежа/возврата payment_order.currency new_or_event_scoped balance_topup_success, payment_error, payment_init, payment_refund, payment_success, service_purchase_success balance.topup.success, payment.error, payment.init, payment.refund, payment.success, service.purchase.success форматировать вместе с amount по правилам платежного контура.">
+          <tr data-search="currency валюта платежа/возврата payment_order.currency new_or_event_scoped balance_topup_success, payment_refund, service_purchase_success balance.topup.success, payment.refund, service.purchase.success форматировать вместе с amount по правилам платежного контура.">
             <td><code>currency</code></td>
             <td>Валюта платежа/возврата<small>Форматировать вместе с amount по правилам платежного контура.</small></td>
             <td><code>payment_order.currency</code></td>
             <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
-            <td>balance_topup_success, payment_error, payment_init, payment_refund, payment_success, service_purchase_success</td>
-            <td>balance.topup.success, payment.error, payment.init, payment.refund, payment.success, service.purchase.success</td>
+            <td>balance_topup_success, payment_refund, service_purchase_success</td>
+            <td>balance.topup.success, payment.refund, service.purchase.success</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
-          <tr data-search="emailpreferencesurl url настроек email-уведомлений user.emailpreferencesurl new_or_event_scoped advisor_followup_offer, message_chat_saved, payment_init, review_request advisor.followup.offer, message.chat_saved, payment.init, review.request нужен для lifecycle/marketing писем, не для критичных security/payment писем.">
+          <tr data-search="emailpreferencesurl url настроек email-уведомлений user.emailpreferencesurl new_or_event_scoped advisor_followup_offer, message_chat_saved, review_request advisor.followup.offer, message.chat_saved, review.request нужен для lifecycle/marketing писем, не для критичных security/payment писем.">
             <td><code>emailPreferencesUrl</code></td>
             <td>URL настроек email-уведомлений<small>Нужен для lifecycle/marketing писем, не для критичных security/payment писем.</small></td>
             <td><code>user.emailPreferencesUrl</code></td>
             <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
-            <td>advisor_followup_offer, message_chat_saved, payment_init, review_request</td>
-            <td>advisor.followup.offer, message.chat_saved, payment.init, review.request</td>
-            <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
-          </tr>
-          <tr data-search="firstresponsesla обещанный срок первого ответа эксперта consultation.sla.firstresponselabel new_or_event_scoped payment_success payment.success например: &#39;до 24 часов&#39;. не использовать, если sla не подтвержден продуктово.">
-            <td><code>firstResponseSla</code></td>
-            <td>Обещанный срок первого ответа эксперта<small>Например: &#39;до 24 часов&#39;. Не использовать, если SLA не подтвержден продуктово.</small></td>
-            <td><code>consultation.sla.firstResponseLabel</code></td>
-            <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
-            <td>payment_success</td>
-            <td>payment.success</td>
+            <td>advisor_followup_offer, message_chat_saved, review_request</td>
+            <td>advisor.followup.offer, message.chat_saved, review.request</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
           <tr data-search="followupofferurl url предложения продолжить консультацию с тем же экспертом lifecycle_offer.followupofferurl new_or_event_scoped advisor_followup_offer advisor.followup.offer создавать только если follow-up разрешен и эксперт доступен.">
@@ -188,40 +273,22 @@
             <td>advisor.followup.offer</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
-          <tr data-search="legalmerchantname юридическое имя продавца/сервиса global_config.legalmerchantname new_or_event_scoped advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register для footer/legal. не равно маркетинговому названию бренда.">
+          <tr data-search="legalmerchantname юридическое имя продавца/сервиса global_config.legalmerchantname new_or_event_scoped advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_refund, payment_refund_update, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.refund, payment.refund.update, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register для footer/legal. не равно маркетинговому названию бренда.">
             <td><code>legalMerchantName</code></td>
             <td>Юридическое имя продавца/сервиса<small>Для footer/legal. Не равно маркетинговому названию бренда.</small></td>
             <td><code>global_config.legalMerchantName</code></td>
             <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
-            <td>advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration</td>
-            <td>advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register</td>
+            <td>advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_refund, payment_refund_update, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration</td>
+            <td>advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.refund, payment.refund.update, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
-          <tr data-search="merchantdescriptor дескриптор продавца в выписке/чеке payment_merchant.descriptor new_or_event_scoped payment_success payment.success использовать только если платежный провайдер реально возвращает/хранит это значение.">
-            <td><code>merchantDescriptor</code></td>
-            <td>Дескриптор продавца в выписке/чеке<small>Использовать только если платежный провайдер реально возвращает/хранит это значение.</small></td>
-            <td><code>payment_merchant.descriptor</code></td>
-            <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
-            <td>payment_success</td>
-            <td>payment.success</td>
-            <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
-          </tr>
-          <tr data-search="orderid id заказа/платежа payment_order.id new_or_event_scoped message_no_first_chat_message, payment_refund, payment_success message.no_first_chat_message, payment.refund, payment.success должен совпадать с тем, что поддержка может найти.">
+          <tr data-search="orderid id заказа/платежа payment_order.id new_or_event_scoped message_no_first_chat_message, payment_refund message.no_first_chat_message, payment.refund должен совпадать с тем, что поддержка может найти.">
             <td><code>orderId</code></td>
             <td>ID заказа/платежа<small>Должен совпадать с тем, что поддержка может найти.</small></td>
             <td><code>payment_order.id</code></td>
             <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
-            <td>message_no_first_chat_message, payment_refund, payment_success</td>
-            <td>message.no_first_chat_message, payment.refund, payment.success</td>
-            <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
-          </tr>
-          <tr data-search="paidat дата/время успешной оплаты payment_order.paidat new_or_event_scoped payment_success payment.success форматировать в понятном виде, без сырого timestamp.">
-            <td><code>paidAt</code></td>
-            <td>Дата/время успешной оплаты<small>Форматировать в понятном виде, без сырого timestamp.</small></td>
-            <td><code>payment_order.paidAt</code></td>
-            <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
-            <td>payment_success</td>
-            <td>payment.success</td>
+            <td>message_no_first_chat_message, payment_refund</td>
+            <td>message.no_first_chat_message, payment.refund</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
           <tr data-search="paymentmethod пользовательское название метода оплаты или пополнения payment.method.label new_or_event_scoped balance_topup_success, service_purchase_success balance.topup.success, service.purchase.success передавать как локализованный label для языка письма: stripe, unlimit, manual/вручную. не выводить внутренний gateway code.">
@@ -233,13 +300,13 @@
             <td>balance.topup.success, service.purchase.success</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
-          <tr data-search="privacyurl url политики приватности legal_config.privacyurl new_or_event_scoped advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register footer/legal. должен быть доступен для ru и en.">
+          <tr data-search="privacyurl url политики приватности legal_config.privacyurl new_or_event_scoped advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_refund, payment_refund_update, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.refund, payment.refund.update, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register footer/legal. должен быть доступен для ru и en.">
             <td><code>privacyUrl</code></td>
             <td>URL политики приватности<small>Footer/legal. Должен быть доступен для RU и EN.</small></td>
             <td><code>legal_config.privacyUrl</code></td>
             <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
-            <td>advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration</td>
-            <td>advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register</td>
+            <td>advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_refund, payment_refund_update, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration</td>
+            <td>advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.refund, payment.refund.update, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
           <tr data-search="processorrefundid id возврата в платежном провайдере refund.processorrefundid new_or_event_scoped payment_refund payment.refund показывать только если он полезен пользователю/поддержке.">
@@ -249,15 +316,6 @@
             <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
             <td>payment_refund</td>
             <td>payment.refund</td>
-            <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
-          </tr>
-          <tr data-search="receipturl url чека/квитанции payment_order.receipturl new_or_event_scoped payment_success payment.success если чека нет, шаблон нужно адаптировать, а не оставлять пустую ссылку.">
-            <td><code>receiptUrl</code></td>
-            <td>URL чека/квитанции<small>Если чека нет, шаблон нужно адаптировать, а не оставлять пустую ссылку.</small></td>
-            <td><code>payment_order.receiptUrl</code></td>
-            <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
-            <td>payment_success</td>
-            <td>payment.success</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
           <tr data-search="refundamount сумма возврата refund.amount new_or_event_scoped payment_refund payment.refund форматировать вместе с currency.">
@@ -278,13 +336,13 @@
             <td>payment.refund</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
-          <tr data-search="refundpolicyurl url правил возврата legal_config.refundpolicyurl new_or_event_scoped advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register footer/legal. должен открываться без авторизации.">
+          <tr data-search="refundpolicyurl url правил возврата legal_config.refundpolicyurl new_or_event_scoped advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_refund, payment_refund_update, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.refund, payment.refund.update, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register footer/legal. должен открываться без авторизации.">
             <td><code>refundPolicyUrl</code></td>
             <td>URL правил возврата<small>Footer/legal. Должен открываться без авторизации.</small></td>
             <td><code>legal_config.refundPolicyUrl</code></td>
             <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
-            <td>advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration</td>
-            <td>advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register</td>
+            <td>advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_refund, payment_refund_update, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration</td>
+            <td>advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.refund, payment.refund.update, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
           <tr data-search="resetexpiresat дата/время истечения ссылки сброса пароля user_password_recovery_token.expiresat new_or_event_scoped user_password_recovery user.password_recovery нужно для security ux и ограничения повторных запросов.">
@@ -332,22 +390,22 @@
             <td>service.purchase.success</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
-          <tr data-search="sitename название сайта/бренда global_config.sitename confirmed_live_id1 advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register заменяет жесткое рабочее название проекта. подтвержден по live id=1.">
+          <tr data-search="sitename название сайта/бренда global_config.sitename confirmed_live_id1 advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_refund, payment_refund_update, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.refund, payment.refund.update, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register заменяет жесткое рабочее название проекта. подтвержден по live id=1.">
             <td><code>siteName</code></td>
             <td>Название сайта/бренда<small>Заменяет жесткое рабочее название проекта. Подтвержден по live id=1.</small></td>
             <td><code>global_config.siteName</code></td>
             <td><span class="status confirmed_live_id1">confirmed_live_id1</span></td>
-            <td>advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration</td>
-            <td>advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register</td>
+            <td>advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_refund, payment_refund_update, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration</td>
+            <td>advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.refund, payment.refund.update, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register</td>
             <td>Проверить доступность в конкретном event; переменная подтверждена только по live id=1.</td>
           </tr>
-          <tr data-search="siteurl базовый url сайта/личного кабинета global_config.siteurl new_or_event_scoped advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register использовать как fallback, но cta должен вести на конкретную сущность, если она есть.">
+          <tr data-search="siteurl базовый url сайта/личного кабинета global_config.siteurl new_or_event_scoped advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_refund, payment_refund_update, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.refund, payment.refund.update, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register использовать как fallback, но cta должен вести на конкретную сущность, если она есть.">
             <td><code>siteUrl</code></td>
             <td>Базовый URL сайта/личного кабинета<small>Использовать как fallback, но CTA должен вести на конкретную сущность, если она есть.</small></td>
             <td><code>global_config.siteUrl</code></td>
             <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
-            <td>advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration</td>
-            <td>advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register</td>
+            <td>advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_refund, payment_refund_update, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration</td>
+            <td>advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.refund, payment.refund.update, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
           <tr data-search="supportcaseid id обращения в поддержку support_case.id new_or_event_scoped message_answer_delayed, payment_refund_update, support_message_received, support_ticket_opened message.answer_delayed, payment.refund.update, support.message.received, support.ticket.opened показывать, если по нему поддержка реально ищет тикет.">
@@ -377,13 +435,13 @@
             <td>message.answer_delayed, payment.refund, payment.refund.update, support.message.received, support.ticket.opened</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
-          <tr data-search="supportemail email поддержки global_config.supportemail new_or_event_scoped balance_topup_success, email_confirmation, message_received, payment_refund, payment_success, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration balance.topup.success, message.received, payment.refund, payment.success, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register footer/service fallback.">
+          <tr data-search="supportemail email поддержки global_config.supportemail new_or_event_scoped balance_topup_success, email_confirmation, message_received, payment_refund, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration balance.topup.success, message.received, payment.refund, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register footer/service fallback.">
             <td><code>supportEmail</code></td>
             <td>Email поддержки<small>Footer/service fallback.</small></td>
             <td><code>global_config.supportEmail</code></td>
             <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
-            <td>balance_topup_success, email_confirmation, message_received, payment_refund, payment_success, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration</td>
-            <td>balance.topup.success, message.received, payment.refund, payment.success, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register</td>
+            <td>balance_topup_success, email_confirmation, message_received, payment_refund, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration</td>
+            <td>balance.topup.success, message.received, payment.refund, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
           <tr data-search="supportupdatedat дата/время обновления обращения support_case.updatedat new_or_event_scoped payment_refund_update, support_message_received payment.refund.update, support.message.received показывать только для пользовательски видимых обновлений.">
@@ -395,22 +453,22 @@
             <td>payment.refund.update, support.message.received</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
-          <tr data-search="supporturl url раздела поддержки route_builder.support new_or_event_scoped message_no_first_chat_message, message_received, payment_error, support_safety_notice, user_age_restricted message.no_first_chat_message, message.received, payment.error, support.safety_notice, user.age_restricted fallback для сценариев, где нет конкретного supportcaseurl.">
+          <tr data-search="supporturl url раздела поддержки route_builder.support new_or_event_scoped message_no_first_chat_message, message_received, support_safety_notice, user_age_restricted message.no_first_chat_message, message.received, support.safety_notice, user.age_restricted fallback для сценариев, где нет конкретного supportcaseurl.">
             <td><code>supportUrl</code></td>
             <td>URL раздела поддержки<small>Fallback для сценариев, где нет конкретного supportCaseUrl.</small></td>
             <td><code>route_builder.support</code></td>
             <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
-            <td>message_no_first_chat_message, message_received, payment_error, support_safety_notice, user_age_restricted</td>
-            <td>message.no_first_chat_message, message.received, payment.error, support.safety_notice, user.age_restricted</td>
+            <td>message_no_first_chat_message, message_received, support_safety_notice, user_age_restricted</td>
+            <td>message.no_first_chat_message, message.received, support.safety_notice, user.age_restricted</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
-          <tr data-search="termsurl url пользовательских условий legal_config.termsurl new_or_event_scoped advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register footer/legal. должен открываться без авторизации.">
+          <tr data-search="termsurl url пользовательских условий legal_config.termsurl new_or_event_scoped advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_refund, payment_refund_update, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.refund, payment.refund.update, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register footer/legal. должен открываться без авторизации.">
             <td><code>termsUrl</code></td>
             <td>URL пользовательских условий<small>Footer/legal. Должен открываться без авторизации.</small></td>
             <td><code>legal_config.termsUrl</code></td>
             <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
-            <td>advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration</td>
-            <td>advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register</td>
+            <td>advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_refund, payment_refund_update, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration</td>
+            <td>advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.refund, payment.refund.update, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
           <tr data-search="transactionid номер платежной или финансовой транзакции payment_transaction.publicid new_or_event_scoped balance_topup_success, service_purchase_success balance.topup.success, service.purchase.success должен быть понятен поддержке и безопасен для показа пользователю. не подставлять сырой private gateway token.">
@@ -422,13 +480,13 @@
             <td>balance.topup.success, service.purchase.success</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
-          <tr data-search="unsubscribeurl url отписки от marketing/lifecycle писем unsubscribe.url new_or_event_scoped advisor_followup_offer, message_chat_saved, payment_init, review_request advisor.followup.offer, message.chat_saved, payment.init, review.request нужен для lifecycle/marketing. не применять как блокировку service/security/payment писем.">
+          <tr data-search="unsubscribeurl url отписки от marketing/lifecycle писем unsubscribe.url new_or_event_scoped advisor_followup_offer, message_chat_saved, review_request advisor.followup.offer, message.chat_saved, review.request нужен для lifecycle/marketing. не применять как блокировку service/security/payment писем.">
             <td><code>unsubscribeUrl</code></td>
             <td>URL отписки от marketing/lifecycle писем<small>Нужен для lifecycle/marketing. Не применять как блокировку service/security/payment писем.</small></td>
             <td><code>unsubscribe.url</code></td>
             <td><span class="status new_or_event_scoped">new_or_event_scoped</span></td>
-            <td>advisor_followup_offer, message_chat_saved, payment_init, review_request</td>
-            <td>advisor.followup.offer, message.chat_saved, payment.init, review.request</td>
+            <td>advisor_followup_offer, message_chat_saved, review_request</td>
+            <td>advisor.followup.offer, message.chat_saved, review.request</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
           <tr data-search="updatedanswereta обновленный прогноз ответа при задержке sla consultation.sla.updatedanswereta new_or_event_scoped message_answer_delayed message.answer_delayed использовать только если sla job умеет рассчитать новый честный eta.">
@@ -440,13 +498,13 @@
             <td>message.answer_delayed</td>
             <td>Добавить или подтвердить в backend payload/render context вместе с event/queue.</td>
           </tr>
-          <tr data-search="username имя пользователя для персонализации user.displayname confirmed_live_id1 advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register подтвержден по live id=1. должен иметь fallback без пустоты.">
+          <tr data-search="username имя пользователя для персонализации user.displayname confirmed_live_id1 advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_refund, payment_refund_update, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.refund, payment.refund.update, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register подтвержден по live id=1. должен иметь fallback без пустоты.">
             <td><code>userName</code></td>
             <td>Имя пользователя для персонализации<small>Подтвержден по live id=1. Должен иметь fallback без пустоты.</small></td>
             <td><code>user.displayName</code></td>
             <td><span class="status confirmed_live_id1">confirmed_live_id1</span></td>
-            <td>advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_error, payment_init, payment_refund, payment_refund_update, payment_success, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration</td>
-            <td>advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.error, payment.init, payment.refund, payment.refund.update, payment.success, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register</td>
+            <td>advisor_followup_offer, balance_topup_success, email_confirmation, message_answer_delayed, message_chat_saved, message_no_first_chat_message, message_received, payment_refund, payment_refund_update, review_request, security_change, service_purchase_success, support_message_received, support_safety_notice, support_ticket_opened, user_age_restricted, user_password_recovery, user_registration</td>
+            <td>advisor.followup.offer, balance.topup.success, message.answer_delayed, message.chat_saved, message.no_first_chat_message, message.received, payment.refund, payment.refund.update, review.request, security.security_change, service.purchase.success, support.message.received, support.safety_notice, support.ticket.opened, user.age_restricted, user.email_confirmation, user.password_recovery, user.register</td>
             <td>Проверить доступность в конкретном event; переменная подтверждена только по live id=1.</td>
           </tr>
           </tbody>
@@ -476,5 +534,12 @@
     search.addEventListener('input', applyFilter);
     status.addEventListener('change', applyFilter);
   </script>
+<!-- package-variable-tooltips:start -->
+<script src="variable-tooltips.js"></script>
+<!-- package-variable-tooltips:end -->
+<!-- package-comments:start -->
+<script src="comments-system.js"></script>
+<!-- package-comments:end -->
 </body>
 </html>
+

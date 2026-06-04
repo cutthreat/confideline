@@ -1,6 +1,6 @@
 # Flow-цепочки email-уведомлений
 
-Дата обновления: 2026-06-01 12:37
+Дата обновления: 2026-06-04 17:06
 
 Скоуп: только онлайн-консультация через чат. Документ фиксирует не внешний вид писем, а порядок срабатывания, пересечения, отмены, suppression-правила и backend-gates.
 
@@ -38,21 +38,20 @@
 - Email confirmation не заменяет welcome: оба могут уйти после регистрации, но только confirmation содержит confirmUrl.
 - Подтверждение email должно отменять/подавлять legacy follow-up, если его цель - вернуть неподтвержденного или неактивного пользователя.
 
-## Оплата и незавершенный checkout
+## Пополнение баланса и покупка услуги
 
-- Роль: Зафиксировать оплату, восстановить незавершенную оплату и не отправить взаимоисключающие письма.
-- Правило: payment.init ставит delayed recovery через 2 часа. payment.success или финальный payment.error должны закрыть эту ветку для конкретной попытки оплаты.
+- Роль: Зафиксировать финансовое событие без лишних писем: подтвердить пополнение баланса или покупку конкретной услуги.
+- Правило: На текущем этапе используем две универсальные модели: баланс пополнен и услуга приобретена. Abandoned checkout и failed payment письма не входят в пакет.
 
 | # | Когда | template_key | Пользовательский смысл | Backend gate | Отмена/пропуск | Действие для Игоря |
 |---|---|---|---|---|---|---|
-| 1 | +2 часа | payment_init | Abandoned checkout recovery: +2 часа, только если заказ все еще unpaid. | заказ все еще unpaid; нет success/error по более свежей попытке; пользователь допускает lifecycle письма | отменить при payment.success, финальном payment.error, новом оплаченном order или refund | Delay=2. Queue item отменяется success/error/refund по orderId/paymentAttemptId. |
-| 2 | сразу | payment_success | Post-purchase service письмо: чек, статус, переход в чат, отмена abandoned checkout. | webhook дедуплицирован; orderId, amount, currency, receiptUrl, chatUrl доступны | отменить pending payment_init по orderId; не слать повторно при повторном webhook | Webhook idempotency обязателен. После success отменить payment_init. |
-| 3 | сразу | payment_error | Recovery без давления: отправлять только на финальный failed/error. | ошибка финальная, а не промежуточный provider status; checkoutUrl безопасен | не слать, если по этому order уже есть success; отменить pending payment_init для этой попытки | Фильтровать только финальный failed/error, не provider pending. |
+| 1 | сразу | balance_topup_success | Financial receipt: подтвердить пополнение баланса, сумму, метод и transactionId. | баланс увеличен; операция финализирована; amount/currency/paymentMethod/transactionId доступны | не отправлять при покупке услуги или оплате консультации без пополнения баланса | Нужен новый event balance.topup.success и явная классификация операции как top-up. |
+| 2 | сразу | service_purchase_success | Financial receipt: подтвердить покупку конкретной услуги и ее доступность. | serviceName локализован; услуга доступна пользователю; amount/currency/paymentMethod/transactionId доступны | не отправлять при простом пополнении баланса; не дублировать при повторном webhook | Нужен новый event service.purchase.success и локализованный serviceName. |
 
 Пересечения:
-- payment_init пересекается с payment_success и payment_error: delayed письмо должно повторно проверить состояние перед отправкой.
-- Один order может иметь несколько paymentAttemptId; письмо об успехе дедуплицируется по orderId, ошибка - по конкретной финальной попытке.
-- После payment.success начинается чат-цепочка: открывается чат и может планироваться reminder о первом сообщении.
+- balance_topup_success и service_purchase_success взаимоисключающие для одной операции: backend должен явно классифицировать тип финансового события.
+- Один transactionId не должен порождать оба письма.
+- Если купленная услуга открывает чат-консультацию, дальнейшая чат-цепочка начинается после service.purchase.success.
 
 ## Оплаченная чат-консультация
 
@@ -61,7 +60,7 @@
 
 | # | Когда | template_key | Пользовательский смысл | Backend gate | Отмена/пропуск | Действие для Игоря |
 |---|---|---|---|---|---|---|
-| 1 | +2 часа после payment.success/open chat | message_no_first_chat_message | Activation reminder: пользователь уже оплатил, но не сделал ключевое действие. | чат активен; нет первого client message; консультация не закрыта; reminder еще не отправлялся | отменить при первом сообщении клиента, refund, закрытии/ограничении чата | Нужен job: paid chat + no first client message. Отмена на first message. |
+| 1 | +2 часа после service.purchase.success/open chat | message_no_first_chat_message | Activation reminder: пользователь уже оплатил, но не сделал ключевое действие. | чат активен; нет первого client message; консультация не закрыта; reminder еще не отправлялся | отменить при первом сообщении клиента, refund, закрытии/ограничении чата | Нужен job: paid chat + no first client message. Отмена на first message. |
 | 2 | по SLA job | message_answer_delayed | Service recovery: честно объясняет задержку до обращения в поддержку. | нет видимого ответа эксперта; SLA threshold достигнут; чат не закрыт | отменить при ответе эксперта, refund, safety block, закрытии чата | SLA job создает event только если advisor answer все еще отсутствует. |
 | 3 | сразу | message_received | Главное возвращающее письмо: ответ готов, CTA ведет в конкретный чат. | message.received в текущем MVP означает ответ эксперта клиенту; ответ видим клиенту; chatUrl ведет в нужный чат | отменить pending message_answer_delayed | Использовать текущий MESSAGE_RECEIVED / message.received как ответ эксперта клиенту. Отменить SLA-delay. |
 
@@ -108,8 +107,8 @@
 
 | Событие | Отменяет/подавляет | Entity | Почему |
 |---|---|---|---|
-| payment.success | payment_init | orderId/paymentAttemptId | оплата уже успешна, abandoned checkout больше не актуален |
-| payment.error | payment_init | paymentAttemptId | попытка оплаты финально завершилась ошибкой |
+| balance.topup.success | service_purchase_success | transactionId | одна финансовая операция не должна одновременно считаться пополнением баланса и покупкой услуги |
+| service.purchase.success | balance_topup_success | transactionId | покупка услуги подтверждается отдельным письмом, без письма о пополнении баланса |
 | first client message | message_no_first_chat_message | chatId | пользователь уже написал в оплаченный чат |
 | advisor reply | message_answer_delayed | chatId | задержка ответа больше не актуальна |
 | review left | review_request | chatId | оценка уже оставлена |

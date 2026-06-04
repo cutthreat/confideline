@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-01 12:37",
+  "generated_at": "2026-06-04 17:06",
   "scope": "Email flow chains for online chat consultation only",
   "package": "email-admin-upload-ready",
   "global_rules": [
@@ -111,45 +111,35 @@
     },
     {
       "id": "payment_checkout",
-      "title": "Оплата и незавершенный checkout",
-      "business_role": "Зафиксировать оплату, восстановить незавершенную оплату и не отправить взаимоисключающие письма.",
-      "flow_rule": "payment.init ставит delayed recovery через 2 часа. payment.success или финальный payment.error должны закрыть эту ветку для конкретной попытки оплаты.",
+      "title": "Пополнение баланса и покупка услуги",
+      "business_role": "Зафиксировать финансовое событие без лишних писем: подтвердить пополнение баланса или покупку конкретной услуги.",
+      "flow_rule": "На текущем этапе используем две универсальные модели: баланс пополнен и услуга приобретена. Abandoned checkout и failed payment письма не входят в пакет.",
       "steps": [
         {
           "n": 1,
-          "timing": "+2 часа",
-          "event_name": "payment.init",
-          "template_key": "payment_init",
-          "trigger": "создана платежная попытка, пользователь не завершил оплату",
-          "backend_gate": "заказ все еще unpaid; нет success/error по более свежей попытке; пользователь допускает lifecycle письма",
-          "cancel_or_skip": "отменить при payment.success, финальном payment.error, новом оплаченном order или refund",
-          "queue_policy": "dedupe: userId + payment_init + orderId + paymentAttemptId"
+          "timing": "сразу",
+          "event_name": "balance.topup.success",
+          "template_key": "balance_topup_success",
+          "trigger": "баланс реально пополнен через Stripe, Unlimit или вручную",
+          "backend_gate": "баланс увеличен; операция финализирована; amount/currency/paymentMethod/transactionId доступны",
+          "cancel_or_skip": "не отправлять при покупке услуги или оплате консультации без пополнения баланса",
+          "queue_policy": "dedupe: userId + balance_topup_success + transactionId"
         },
         {
           "n": 2,
           "timing": "сразу",
-          "event_name": "payment.success",
-          "template_key": "payment_success",
-          "trigger": "провайдер подтвердил финальный paid status",
-          "backend_gate": "webhook дедуплицирован; orderId, amount, currency, receiptUrl, chatUrl доступны",
-          "cancel_or_skip": "отменить pending payment_init по orderId; не слать повторно при повторном webhook",
-          "queue_policy": "dedupe: userId + payment_success + orderId + paidStatusVersion"
-        },
-        {
-          "n": 3,
-          "timing": "сразу",
-          "event_name": "payment.error",
-          "template_key": "payment_error",
-          "trigger": "финальная ошибка платежной попытки",
-          "backend_gate": "ошибка финальная, а не промежуточный provider status; checkoutUrl безопасен",
-          "cancel_or_skip": "не слать, если по этому order уже есть success; отменить pending payment_init для этой попытки",
-          "queue_policy": "dedupe: userId + payment_error + paymentAttemptId + finalErrorCode"
+          "event_name": "service.purchase.success",
+          "template_key": "service_purchase_success",
+          "trigger": "услуга куплена и активирована: Premium, кредиты или другой платный продукт",
+          "backend_gate": "serviceName локализован; услуга доступна пользователю; amount/currency/paymentMethod/transactionId доступны",
+          "cancel_or_skip": "не отправлять при простом пополнении баланса; не дублировать при повторном webhook",
+          "queue_policy": "dedupe: userId + service_purchase_success + transactionId + serviceId"
         }
       ],
       "intersections": [
-        "payment_init пересекается с payment_success и payment_error: delayed письмо должно повторно проверить состояние перед отправкой.",
-        "Один order может иметь несколько paymentAttemptId; письмо об успехе дедуплицируется по orderId, ошибка - по конкретной финальной попытке.",
-        "После payment.success начинается чат-цепочка: открывается чат и может планироваться reminder о первом сообщении."
+        "balance_topup_success и service_purchase_success взаимоисключающие для одной операции: backend должен явно классифицировать тип финансового события.",
+        "Один transactionId не должен порождать оба письма.",
+        "Если купленная услуга открывает чат-консультацию, дальнейшая чат-цепочка начинается после service.purchase.success."
       ]
     },
     {
@@ -160,7 +150,7 @@
       "steps": [
         {
           "n": 1,
-          "timing": "+2 часа после payment.success/open chat",
+          "timing": "+2 часа после service.purchase.success/open chat",
           "event_name": "message.no_first_chat_message",
           "template_key": "message_no_first_chat_message",
           "trigger": "оплаченный чат открыт, но клиент не отправил первое сообщение",
@@ -304,16 +294,16 @@
   ],
   "intersections": [
     {
-      "source": "payment.success",
-      "cancels": "payment_init",
-      "entity": "orderId/paymentAttemptId",
-      "reason": "оплата уже успешна, abandoned checkout больше не актуален"
+      "source": "balance.topup.success",
+      "cancels": "service_purchase_success",
+      "entity": "transactionId",
+      "reason": "одна финансовая операция не должна одновременно считаться пополнением баланса и покупкой услуги"
     },
     {
-      "source": "payment.error",
-      "cancels": "payment_init",
-      "entity": "paymentAttemptId",
-      "reason": "попытка оплаты финально завершилась ошибкой"
+      "source": "service.purchase.success",
+      "cancels": "balance_topup_success",
+      "entity": "transactionId",
+      "reason": "покупка услуги подтверждается отдельным письмом, без письма о пополнении баланса"
     },
     {
       "source": "first client message",
