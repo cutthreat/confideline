@@ -113,45 +113,9 @@
 
     <main>
             <section class="panel is-active" id="tab-matrix">
-C:\Users\alexeC:\Users\alexe        <article class="card wide" id="homeAdminSettings" style="margin-bottom:14px">
-          <h3>Список настроек как в админке</h3>
-          <p>Это реальный список прав из формы <code>/ru/admin/role/update?id=2</code>. Слева заголовок группы из dropdown, затем название пункта как в выпадающем списке, затем технический ключ и простой смысл для настройки ролей.</p>
-                    <div class="mock-select-panel" aria-label="Визуальный список настроек как в админке">
-            <div class="mock-select-title">Update role permissions</div>
-            <div class="mock-select-control">
-              <div class="mock-chips">
-                <span class="mock-chip">Партнеры-all <span>×</span></span>
-                <span class="mock-chip">Пользователи-agent <span>×</span></span>
-                <span class="mock-chip">Сообщения-all <span>×</span></span>
-                <span class="mock-chip">Chat-all <span>×</span></span>
-                <span class="mock-chip">Анкеты-view <span>×</span></span>
-              </div>
-              <div class="mock-select-all">Выбрать все</div>
-            </div>
-            <div id="adminDropdownMock" class="mock-dropdown"></div>
-          </div><div class="adminSettingsList admin-settings-list"></div>
-          <p class="admin-settings-help"><strong>Главное правило:</strong> выбранный permission открывает раздел, но не всегда ограничивает доступ внутри раздела. Для агента, чатов, сообщений, заказов и анкет обязательно нужен backend scope по назначенному объекту.</p>
-        </article>        <article class="card wide" id="homeAdminSettings" style="margin-bottom:14px">
-          <h3>Список настроек как в админке</h3>
-          <p>Это реальный список прав из формы <code>/ru/admin/role/update?id=2</code>. Слева заголовок группы из dropdown, затем название пункта как в выпадающем списке, затем технический ключ и простой смысл для настройки ролей.</p>
-                    <div class="mock-select-panel" aria-label="Визуальный список настроек как в админке">
-            <div class="mock-select-title">Update role permissions</div>
-            <div class="mock-select-control">
-              <div class="mock-chips">
-                <span class="mock-chip">Партнеры-all <span>×</span></span>
-                <span class="mock-chip">Пользователи-agent <span>×</span></span>
-                <span class="mock-chip">Сообщения-all <span>×</span></span>
-                <span class="mock-chip">Chat-all <span>×</span></span>
-                <span class="mock-chip">Анкеты-view <span>×</span></span>
-              </div>
-              <div class="mock-select-all">Выбрать все</div>
-            </div>
-            <div id="adminDropdownMock" class="mock-dropdown"></div>
-          </div><div class="adminSettingsList admin-settings-list"></div>
-          <p class="admin-settings-help"><strong>Главное правило:</strong> выбранный permission открывает раздел, но не всегда ограничивает доступ внутри раздела. Для агента, чатов, сообщений, заказов и анкет обязательно нужен backend scope по назначенному объекту.</p>
-        </article>        <div class="matrix">
+C:\Users\alexeC:\Users\alexe        <div class="matrix">
           <table>
-            <thead><tr><th>Роль</th><th>Существующие permission keys / доступ</th><th>Дополнительные права</th><th>Почему</th></tr></thead>
+            <thead><tr><th>Роль</th><th>Права: тайтл из админки + permission key / доступ</th><th>Дополнительные права</th><th>Почему</th></tr></thead>
             <tbody>
               <tr>
                 <td><span class="hint" tabindex="0" data-tip="Полный системный владелец. Используется для аварийного доступа, ролей, платежных ключей, env/license/plugins и raw PHP."><code>super-admin</code></span></td>
@@ -434,8 +398,41 @@ C:\Users\alexeC:\Users\alexe        <article class="card wide" id="homeAdminSett
     }
     if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', renderAdminDropdownMock); else renderAdminDropdownMock();
   </script>
+  <script>
+    const matrixPermissionTitles = {
+      'partners-all':'Партнеры-all','partners-view':'Партнеры-view','partners-update':'Партнеры-update','partners-delete':'Партнеры-delete','partners-balance':'Партнеры-balance',
+      'users-all':'Пользователи-all','users-view':'Пользователи-view','users-update':'Пользователи-update','users-delete':'Пользователи-delete','users-agent':'Пользователи-agent','users-balance':'Пользователи-balance',
+      'groups-all':'Группы-all','groups-view':'Группы-view','groups-update':'Группы-update','groups-delete':'Группы-delete',
+      'messages-all':'Сообщения-all','messages-view':'Сообщения-view','messages-update':'Сообщения-update','messages-delete':'Сообщения-delete',
+      'chat-all':'Chat-all',
+      'photos-all':'Фотографии-all','photos-view':'Фотографии-view','photos-update':'Фотографии-update','photos-delete':'Фотографии-delete',
+      'orders-all':'Заказы-all','orders-view':'Заказы-view',
+      'balance_transaction-all':'Balance transactions-all','balance_transaction-view':'Balance transactions-view',
+      'pages-all':'Страницы-all','pages-view':'Страницы-view','pages-update':'Страницы-update','pages-delete':'Страницы-delete',
+      'help-all':'Справка-all','help-view':'Справка-view','help-update':'Справка-update','help-delete':'Справка-delete',
+      'news-all':'Новости-all','news-view':'Новости-view','news-update':'Новости-update','news-delete':'Новости-delete',
+      'languages-all':'Языки-all','languages-view':'Языки-view','languages-update':'Языки-update','languages-delete':'Языки-delete',
+      'reports-all':'Жалобы-all','reports-view':'Жалобы-view','reports-update':'Жалобы-update','reports-delete':'Жалобы-delete',
+      'verifications-all':'Верификации-all','verifications-view':'Верификации-view','verifications-update':'Верификации-update','verifications-delete':'Верификации-delete',
+      'gifts-all':'Подарки-all','gifts-view':'Подарки-view','gifts-update':'Подарки-update','gifts-delete':'Подарки-delete',
+      'bans-all':'Баны-all','bans-view':'Баны-view','bans-update':'Баны-update','bans-delete':'Баны-delete',
+      'chief_under-all':'Анкеты-all','chief_under-view':'Анкеты-view','chief_under-update':'Анкеты-update','chief_under-delete':'Анкеты-delete',
+      'support-all':'Поддержка-all','support-view':'Поддержка-view','support-update':'Поддержка-update','support-delete':'Поддержка-delete',
+      'info_block-all':'Info block-all','info_block-view':'Info block-view','info_block-update':'Info block-update','info_block-delete':'Info block-delete'
+    };
+    function applyMatrixPermissionTitles(){
+      document.querySelectorAll('#tab-matrix .perm-list code').forEach(code=>{
+        const key=code.textContent.trim();
+        if(!matrixPermissionTitles[key] || code.dataset.humanized) return;
+        code.textContent = `${matrixPermissionTitles[key]} (${key})`;
+        code.dataset.humanized = 'true';
+      });
+    }
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', applyMatrixPermissionTitles); else applyMatrixPermissionTitles();
+  </script>
 </body>
 </html>
+
 
 
 
