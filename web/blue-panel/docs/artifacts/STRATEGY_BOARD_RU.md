@@ -39,7 +39,7 @@
 | S6 | Операционная админка | Нужен operational dashboard: очереди, SLA, платежи, support, refund, QA, ограничения, видимость экспертов. | `cell-pm-master-launch-plan-2026-06-04.html#august` |
 | S7 | Юридический слой | HTML-ready документы с переменными, но публикация только после legal/payment/founder gate. | `cell-pm-master-launch-plan-2026-06-04.html#august` |
 | S8 | Маркетинг и экономика | Каналы включаем только после P0 readiness; нужны CAC/LTV модель, UTM, email-retention, stop rules. | `cell-pm-master-launch-plan-2026-06-04.html#september` |
-| S9 | Готовность MVP | MVP = не список страниц, а работающий end-to-end процесс с 5 экспертами и QA proof. | `cell-pm-master-launch-plan-2026-06-04.html#july` |
+| S9 | Готовность MVP | MVP = не список страниц, а работающий end-to-end процесс с 5 экспертами и подтверждение проверки. | `cell-pm-master-launch-plan-2026-06-04.html#july` |
 | S10 | Запуск | Сентябрь - controlled launch, не масштабирование. Ежедневно смотрим оплату, SLA, качество, support, refund, repeat. | `cell-pm-master-launch-plan-2026-06-04.html#september` |
 | S11 | Масштабирование | Октябрь - масштабирование только после подтверждения экономики, качества и операционной устойчивости. | `cell-pm-master-launch-plan-2026-06-04.html#october` |
 
@@ -79,3 +79,4 @@
 - Atlassian roadmap: https://www.atlassian.com/agile/project-management/project-roadmap
 - Atlassian stakeholder communications: https://www.atlassian.com/team-playbook/plays/stakeholder-communications-plan
 - NNGroup site map usability: https://media.nngroup.com/media/reports/free/Site_Map_Usability_2nd_Edition.pdf
+

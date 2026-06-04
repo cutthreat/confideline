@@ -18,5 +18,5 @@
 | R14 | Email | Email, уведомления, рассылки | Желтый | Собрать event map по клиенту/эксперту/admin/support/payments. |
 | R15 | Legal/content | Terms, Privacy, Refund, FAQ, дисклеймеры | Красный | Собрать пакет, не публиковать без founder/legal/payment approval. |
 | R16 | Маркетинг | Трафик, CAC/LTV, retention | Красный | Сформировать unit economics assumptions и pre-traffic gate. |
-| R17 | QA | Pre-launch QA и failure states | Желтый | Собрать P0 QA checklist: PASS/FAIL, owner, retest. |
+| R17 | QA | Проверка перед запуском рекламы и проблемные сценарии | Желтый | Собрать чек-лист проверки перед запуском рекламы: PASS/FAIL, owner, retest. |
 | R18 | Аналитика | Эксперт/агент/admin metrics | Красный | Сформировать analytics P0 requirements и связать с dashboard. |
