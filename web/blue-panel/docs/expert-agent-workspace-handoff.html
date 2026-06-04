@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Пакет Игорю: рабочее место эксперта и агента · Blue panel</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:var(--shadow)}
+    .lead{font-size:18px;color:var(--muted);max-width:1040px}.decision{border:1px solid var(--line);border-radius:24px;background:#fff8df;padding:18px;margin:16px 0}.decision h2{margin-top:0}.status{display:inline-flex;border-radius:999px;padding:6px 9px;font:900 10px Verdana,sans-serif;text-transform:uppercase;white-space:nowrap}.green{background:#dff5e8;color:#176032}.yellow{background:#fff0c0;color:#745000}.red{background:#ffe1df;color:#8d1d12}.blue{background:#e5f1ff;color:#1b5a85}
+    .flow{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin:18px 0}.step{position:relative;border:1px solid var(--line);border-radius:18px;background:#fff;padding:14px;min-height:120px}.step:after{content:'→';position:absolute;right:-12px;top:50%;transform:translateY(-50%);font-weight:900;color:#1f6b49}.step:last-child:after{display:none}.step b{display:block;color:#1f6b49;margin-bottom:6px}.step span{display:block;color:var(--muted);font-size:13px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:16px 0}.card{border:1px solid var(--line);border-radius:20px;background:#faf7ff;padding:15px}.card b{display:block;color:#1f6b49;margin-bottom:6px}.card p{margin:0;color:var(--muted)}
+    .matrix{overflow:auto;border:1px solid var(--line);border-radius:22px;background:#fff;margin:16px 0}table{width:100%;min-width:1180px;border-collapse:collapse;font-size:14px}th,td{border-bottom:1px solid var(--line);padding:11px;text-align:left;vertical-align:top}th{font:900 10px Verdana,sans-serif;text-transform:uppercase;color:#514a61;background:#fbfaf7}.note{border:1px solid var(--line);border-radius:18px;background:#fbfaf7;padding:14px;line-height:1.55}.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:12px}.links a{display:block;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:13px;text-decoration:none;color:var(--ink)}.links strong{display:block;color:#1f6b49;margin-bottom:4px}.links span{display:block;color:var(--muted);font-size:13px}@media(max-width:1150px){.flow{grid-template-columns:1fr 1fr}.step:after{display:none}}@media(max-width:700px){.flow{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <a href="../index.html">← Blue panel</a>
+  <section class="doc">
+    <div class="eyebrow">Передача в разработку · админка · эксперты · агенты</div>
+    <h1>Пакет Игорю: рабочее место эксперта и агента</h1>
+    <p class="lead">Этот пакет описывает, что нужно реализовать или подтвердить в админке, чтобы эксперт или агент мог принять назначенную консультацию, увидеть контекст клиента, ответить в чате, не нарушить регламент, получить замечание по качеству и увидеть тестовое начисление.</p>
+
+    <div class="decision">
+      <h2>Решение PM</h2>
+      <p><b>Для запуска не нужен отдельный красивый кабинет эксперта.</b> Можно работать через админку Confideline по ролям, если это выглядит для исполнителя как единое рабочее место: список консультаций, чат, срок ответа, база знаний, подсказки, качество, начисления и уведомления. Сейчас такой сквозной рабочий контур не доказан, поэтому он блокирует запуск с 5 экспертами.</p>
+      <p><span class="status red">блокирует работу экспертов</span> <span class="status yellow">готово как пакет для Игоря</span> <span class="status blue">через админку по ролям</span> <span class="status green">без реальных платежей</span></p>
+    </div>
+
+    <h2>Как должен идти рабочий день исполнителя</h2>
+    <div class="flow">
+      <div class="step"><b>1. Уведомление</b><span>Эксперт/агент видит новую назначенную консультацию.</span></div>
+      <div class="step"><b>2. Задача</b><span>Открывает карточку: клиент, вопрос, срок, тема, статус оплаты.</span></div>
+      <div class="step"><b>3. Контекст</b><span>Смотрит историю, профиль, язык, ограничения, предыдущие обращения.</span></div>
+      <div class="step"><b>4. Ответ</b><span>Пишет в привязанном чате, использует подсказки и правила.</span></div>
+      <div class="step"><b>5. Контроль</b><span>Система отслеживает срок, просрочку, жалобу и качество ответа.</span></div>
+      <div class="step"><b>6. Закрытие</b><span>Ответ отправлен, консультация закрыта или ушла в спор.</span></div>
+      <div class="step"><b>7. Начисление</b><span>Фиксируется тестовое начисление, бонус, удержание или причина отказа.</span></div>
+    </div>
+
+    <h2>Минимальные экраны и вкладки</h2>
+    <div class="matrix"><table><thead><tr><th>Экран / вкладка</th><th>Кто использует</th><th>Что должно быть внутри</th><th>Зачем нужно</th><th>Статус</th></tr></thead><tbody>
+      <tr><td>Мои консультации</td><td>Эксперт, агент</td><td>Новые, назначенные, в работе, просроченные, спорные, закрытые; фильтр по статусу и сроку.</td><td>Исполнитель сразу понимает, что делать первым.</td><td><span class="status red">нужно подтвердить</span></td></tr>
+      <tr><td>Карточка консультации</td><td>Эксперт, агент, админ, поддержка</td><td>Заказ, клиент, вопрос, тема, язык, срок, источник, исполнитель, статус, история действий.</td><td>Нельзя отвечать без полного контекста и связи с заказом.</td><td><span class="status red">критично</span></td></tr>
+      <tr><td>Чат консультации</td><td>Эксперт, агент, модератор</td><td>Сообщения, черновик, шаблоны, подсказки, предупреждения, перевод, заметки, статус отправки.</td><td>Основное рабочее место ответа клиенту.</td><td><span class="status yellow">есть отдельный web-контур</span></td></tr>
+      <tr><td>База знаний</td><td>Эксперт, агент</td><td>Регламент, школа, запреты, примеры хороших ответов, FAQ, инструкции по инструментам.</td><td>Эксперт не должен выходить из сайта за правилами и подсказками.</td><td><span class="status red">нужно собрать</span></td></tr>
+      <tr><td>Качество и замечания</td><td>Эксперт, модератор, админ</td><td>Оценки ответов, замечания, доработки, нарушения, санкции, история качества.</td><td>Без этого нельзя обучать и управлять видимостью экспертов.</td><td><span class="status red">нужно подтвердить</span></td></tr>
+      <tr><td>Начисления</td><td>Эксперт, агент, админ</td><td>Сумма, период, консультация, статус, удержания, бонусы, причина изменения.</td><td>Исполнитель понимает, за что получает деньги.</td><td><span class="status red">нужно подтвердить</span></td></tr>
+      <tr><td>Доступность и нагрузка</td><td>Эксперт, агент, админ</td><td>Онлайн/оффлайн, лимит активных консультаций, пауза, график, причина недоступности.</td><td>5 экспертов нельзя перегружать сверх емкости.</td><td><span class="status red">нужно подтвердить</span></td></tr>
+      <tr><td>Назначение анкет</td><td>Админ, агент</td><td>Какая анкета за кем закреплена, период, статус, история смены, причина назначения.</td><td>Нужно для стартовой модели, пока процессы отлаживаются.</td><td><span class="status yellow">временная модель</span></td></tr>
+    </tbody></table></div>
+
+    <h2>Роли и права</h2>
+    <div class="matrix"><table><thead><tr><th>Роль</th><th>Видит</th><th>Может делать</th><th>Не может делать</th></tr></thead><tbody>
+      <tr><td>Эксперт</td><td>Только свои консультации, чат, сроки, подсказки, свои начисления и замечания.</td><td>Отвечать, отправлять уточнение, помечать проблему, завершать ответ.</td><td>Видеть чужие консультации, менять выплаты, скрывать жалобы, выводить клиента наружу.</td></tr>
+      <tr><td>Агент</td><td>Назначенные анкеты и консультации своей зоны, чат, скрипты, подсказки, начисления.</td><td>Вести переписку по назначенной анкете, передать кейс эксперту/модератору, отметить статус.</td><td>Работать вне назначенных анкет, менять профиль без разрешения, удалять следы действий.</td></tr>
+      <tr><td>Модератор качества</td><td>Ответы, жалобы, просрочки, спорные кейсы, историю действий исполнителя.</td><td>Поставить замечание, отправить на доработку, снизить видимость по правилу, эскалировать.</td><td>Менять финансовые условия или юридическое решение по возврату.</td></tr>
+      <tr><td>Поддержка</td><td>Тикеты, заказ, консультацию, чат, платежный статус, причину проблемы.</td><td>Ответить клиенту, связать тикет, передать спор модератору/админу.</td><td>Редактировать экспертный ответ без следа, обещать возврат без правил.</td></tr>
+      <tr><td>Админ</td><td>Все консультации, роли, сроки, начисления, жалобы, видимость, события.</td><td>Назначать, переназначать, включать/отключать доступ, менять видимость, фиксировать решение.</td><td>Делать непрозрачные действия без причины и журнала.</td></tr>
+    </tbody></table></div>
+
+    <h2>Статусы, которые должны быть видны</h2>
+    <div class="matrix"><table><thead><tr><th>Статус</th><th>Что означает</th><th>Кто реагирует</th><th>Следующее действие</th></tr></thead><tbody>
+      <tr><td>Ожидает назначения</td><td>Есть оплаченный или тестовый заказ и вопрос, но нет исполнителя.</td><td>Админ/оператор.</td><td>Назначить эксперта или агента.</td></tr>
+      <tr><td>Назначена</td><td>Исполнитель выбран, срок ответа запущен.</td><td>Эксперт/агент.</td><td>Открыть карточку и начать работу.</td></tr>
+      <tr><td>В работе</td><td>Исполнитель открыл консультацию или пишет ответ.</td><td>Исполнитель, админ.</td><td>Контролировать срок и активность.</td></tr>
+      <tr><td>Нужно уточнение</td><td>Запрос клиента неполный или неясный.</td><td>Исполнитель, клиент, поддержка.</td><td>Отправить уточняющий вопрос и зафиксировать ожидание.</td></tr>
+      <tr><td>Просрочена</td><td>Срок ответа нарушен.</td><td>Админ, поддержка, исполнитель.</td><td>Эскалация, переназначение или компенсация по правилам.</td></tr>
+      <tr><td>Ответ отправлен</td><td>Клиент получил консультацию.</td><td>Клиент, исполнитель, админ.</td><td>Оценка качества, follow-up, начисление.</td></tr>
+      <tr><td>Спор / жалоба</td><td>Клиент недоволен или есть проблема.</td><td>Поддержка, модератор, админ.</td><td>Разбор, решение, фиксация результата.</td></tr>
+      <tr><td>Закрыта</td><td>Нет открытых проблем, итог зафиксирован.</td><td>Админ, аналитика, финансы.</td><td>Начисление, отчет, качество, повторная продажа.</td></tr>
+    </tbody></table></div>
+
+    <h2>События и уведомления</h2>
+    <div class="matrix"><table><thead><tr><th>Событие</th><th>Кому видно</th><th>Зачем нужно</th></tr></thead><tbody>
+      <tr><td>Консультация назначена</td><td>Эксперт/агент, админ</td><td>Исполнитель не пропускает новую работу.</td></tr>
+      <tr><td>Срок ответа скоро истекает</td><td>Исполнитель, админ</td><td>Предотвратить просрочку и жалобу.</td></tr>
+      <tr><td>Консультация просрочена</td><td>Исполнитель, админ, поддержка</td><td>Быстро переназначить или связаться с клиентом.</td></tr>
+      <tr><td>Ответ отправлен</td><td>Клиент, админ, аналитика</td><td>Запустить качество, начисление и повторную продажу.</td></tr>
+      <tr><td>Клиент пожаловался</td><td>Поддержка, модератор, админ</td><td>Разобрать качество и финансовое решение.</td></tr>
+      <tr><td>Начисление создано</td><td>Исполнитель, админ</td><td>Прозрачность выплат и удержаний.</td></tr>
+      <tr><td>Видимость изменена</td><td>Админ, модератор, исполнитель при необходимости</td><td>Не допускать скрытых решений без журнала.</td></tr>
+    </tbody></table></div>
+
+    <h2>Критерии приемки для Игоря</h2>
+    <div class="matrix"><table><thead><tr><th>№</th><th>Критерий</th><th>Доказательство</th></tr></thead><tbody>
+      <tr><td>1</td><td>Эксперт с ролью видит только свои назначенные консультации.</td><td>Скрин/отчет под ролью эксперта.</td></tr>
+      <tr><td>2</td><td>Агент видит только назначенные анкеты и связанные консультации.</td><td>Скрин/отчет под ролью агента.</td></tr>
+      <tr><td>3</td><td>Из консультации открываются заказ, вопрос, чат, срок, клиент, исполнитель и события.</td><td>Скрин карточки консультации.</td></tr>
+      <tr><td>4</td><td>Просрочка появляется в очереди админа и у исполнителя.</td><td>Тестовый сценарий просрочки.</td></tr>
+      <tr><td>5</td><td>Ответ эксперта фиксируется в чате и меняет статус консультации.</td><td>Скрин до/после ответа.</td></tr>
+      <tr><td>6</td><td>Жалоба клиента связана с консультацией, ответом и исполнителем.</td><td>Скрин тикета/жалобы.</td></tr>
+      <tr><td>7</td><td>После закрытия консультации создается тестовое начисление.</td><td>Скрин начисления с пометкой тест.</td></tr>
+      <tr><td>8</td><td>Изменение видимости или блокировка логируется с причиной.</td><td>Скрин журнала действий.</td></tr>
+    </tbody></table></div>
+
+    <h2>Что не входит в этот пакет</h2>
+    <div class="note"><p>Этот пакет не требует отдельного публичного кабинета эксперта, реальных выплат, реальных платежей и финального дизайна Nebula. Он описывает управляемое рабочее место внутри админки, достаточное для первых 5 экспертов и тестового запуска.</p></div>
+
+    <h2>Артефакты и связи</h2>
+    <div class="links">
+      <a href="artifacts/EXPERT_AGENT_WORKSPACE_HANDOFF_2026_06_04.csv"><strong>Таблица передачи Игорю</strong><span>Экраны, роли, статусы, события и критерии приемки.</span></a>
+      <a href="artifacts/EXPERT_AGENT_WORKSPACE_PM_DECISION_2026_06_04.md"><strong>Короткое решение PM</strong><span>Почему рабочее место через админку достаточно для старта.</span></a>
+      <a href="expert-agent-workspace-readiness.html"><strong>Рабочее место эксперта</strong><span>Общая карта готовности этого направления.</span></a>
+      <a href="igor-test-order-consultation-handoff.html"><strong>Пакет Игорю: тестовый заказ</strong><span>Связка заказа, вопроса, консультации и чата.</span></a>
+      <a href="admin-ops.html"><strong>Операционный центр админки</strong><span>Очереди и контроль для админа.</span></a>
+      <a href="expert-quality-moderation.html"><strong>Качество экспертов</strong><span>Замечания, санкции и видимость.</span></a>
+      <a href="expert-agent-compensation.html"><strong>Начисления экспертам</strong><span>Модель бонусов, удержаний и тестовых начислений.</span></a>
+      <a href="events.html"><strong>События и уведомления</strong><span>Что должно фиксироваться в логах и уведомлениях.</span></a>
+      <a href="june-plan.html#jun-07"><strong>План июня: рабочее место</strong><span>Месячная задача по экспертскому контуру.</span></a>
+    </div>
+  </section>
+</main>
+<script src="../assets/panel-ux.js"></script>
+</body>
+</html>
