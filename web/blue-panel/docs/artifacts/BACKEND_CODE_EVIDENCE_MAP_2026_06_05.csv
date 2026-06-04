@@ -1,0 +1,15 @@
+Слой;Статус для MVP;Что найдено;Факт;PM-вывод;Следующий шаг
+Пользователи и профили;зеленый;User/Profile/search/admin;models/User.php, models/Profile.php, forms/UserSearchForm.php;универсальная база аккаунтов есть;уточнить публичные/служебные поля эксперта
+Сообщения и диалоги;зеленый;message/conversation/attachments/counters;models/Message.php, models/Conversation.php, controllers/MessagesController.php;чатовая база есть;связать thread с order/service_session
+Админский чат оператора/агента;желтый;MessageController/MessageShellService/AdminAgentChatAsset/handoff;modules/admin/controllers/MessageController.php, admin-chat-workspace-v2;контур продуман, но часть очередей как handoff;подтвердить agent sees assigned consultation
+Переводы в экспертском чате;зеленый;MessageTranslation/settings/providers/actionTranslate;models/MessageTranslation.php, config/settings.php, MessageController actionTranslate;многоязычность предусмотрена;проверить no-send/runtime перевод
+Баланс и платежи;желтый;balance/transactions/Stripe/PayPal/Robokassa;BalanceController, StripePaymentForm, StripeTransaction;платежная база есть, checkout не доказан;готовить sandbox/no-real-payment QA
+Заказы;желтый;Order statuses/payment/data/admin;models/Order.php, admin/OrderController.php;модель заказа есть, но смысл консультации не доказан;добавить/подтвердить consultation layer
+Платная консультация;красный;единый lifecycle не найден как доказанный;поиск показал разрозненные кирпичи;главный runtime-разрыв;test order -> question -> assignment -> chat -> answer -> support -> events
+Заявка эксперта;желтый;ExpertApplication/status/certification_status;ExpertsController, ExpertApplication.php;intake есть, approval не равен certification;вести школу/допуск отдельно
+Уведомления;зеленый;Notification/manager/jobs/preview pack;Notification.php, NotificationManager.php, notification-preview-pack;механизм есть;доказать события консультации no-send preview
+Email / mailer;зеленый;AppMailer/UserMailer/email handoff;components/AppMailer.php, components/UserMailer.php;база писем есть;только no-send preview до запуска
+Жалобы/блокировки;желтый;Block/Report/admin filters;models/Block.php, models/Report.php, settings admin filters;модерационная база есть;связать жалобу с консультацией/качеством/видимостью
+Support/refund;красный;отдельный ticket/refund workflow не доказан;support-refund handoff pages;критично для первых клиентов;создать/подтвердить карточку обращения с order/chat/expert/payment
+Админская аналитика/SLA;желтый;dashboard mock/видимость SLA/revenue/refund;modules/admin/views/default/index-admin*.php;задумано, не доказано живыми данными;проверить после test order
+Сквозной запуск;красный;QA шаблон и checklist есть, runtime отчет пуст;test-order-runtime-fixtures-checklist.html, test-order-runtime-qa-report-template.html;трафик нельзя включать;выполнить test order QA
