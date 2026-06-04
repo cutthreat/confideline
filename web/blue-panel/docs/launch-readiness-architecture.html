@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Архитектура готовности запуска · Синяя панель</title>
   <link rel="stylesheet" href="../style.css">
-  <style>.doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:22px;box-shadow:var(--shadow)}.lead{font-size:18px;color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}.card{border:1px solid var(--line);border-radius:20px;padding:14px;background:#faf7ff}.card b{display:block;margin-bottom:6px}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{font:900 11px Verdana,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:#514a61}.ok{background:#e8fff2}.warn{background:#fff8df}.bad{background:#ffecec}.flow{font-size:17px;line-height:1.65;background:#fff8df;border:1px solid var(--line);border-radius:18px;padding:14px}</style>
+  <style>.doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:22px;box-shadow:var(--shadow)}.lead{font-size:18px;color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}.card{border:1px solid var(--line);border-radius:20px;padding:14px;background:#faf7ff}.card b{display:block;margin-bottom:6px}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left;ниша-align:top}th{font:900 11px Verdana,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:#514a61}.ok{background:#e8fff2}.warn{background:#fff8df}.bad{background:#ffecec}.flow{font-size:17px;line-height:1.65;background:#fff8df;border:1px solid var(--line);border-radius:18px;padding:14px}</style>
 </head>
 <body>
 <main class="wrap">
@@ -13,20 +13,20 @@
   <section class="doc">
     <div class="eyebrow">Архитектура готовности запуска</div>
     <h1>Архитектура готовности запуска YouDate / Nebula</h1>
-    <p class="lead">Цель: собрать проект в управляемую систему, где мы точно понимаем, что универсально для платформы, что относится к Nebula, что уже есть в backend/admin и что блокирует покупку трафика.</p>
+    <p class="lead">Цель: собрать проект в управляемую систему, где мы точно понимаем, что универсально для платформы, что относится к Nebula, что уже есть в бекенд/админка и что блокирует покупку трафика.</p>
 
     <div class="grid">
       <div class="card"><b>Главное правило</b><p>Сначала доводим универсальную платную P2P платформу, потом накладываем эзотерическую упаковку Nebula.</p></div>
       <div class="card"><b>Что не путаем</b><p>Dating-функции не выбрасываются автоматически. Мы отделяем универсальную механику от романтического смысла.</p></div>
-      <div class="card"><b>Как закрываем пробелы</b><p>Каждый пробел превращается в пакет передачи команде: смысл, макет, backend-связь, ТЗ, QA-документ.</p></div>
-      <div class="card"><b>Когда можно покупать трафик</b><p>Когда клиентский, экспертский, admin, support, payment, notification и QA контуры проходят обязательные сценарии.</p></div>
+      <div class="card"><b>Как закрываем пробелы</b><p>Каждый пробел превращается в пакет передачи команде: смысл, макет, связь с технической базой сайта, ТЗ, документ проверки.</p></div>
+      <div class="card"><b>Когда можно покупать трафик</b><p>Когда клиентский, экспертский, admin, поддержка, платежи, уведомления и проверка контуры проходят обязательные сценарии.</p></div>
     </div>
 
     <h2>Dating-логика против универсальной платформы</h2>
     <table>
       <thead><tr><th>Тип</th><th>Что входит</th><th>Решение</th></tr></thead>
       <tbody>
-        <tr><td class="ok">Универсально</td><td>Профили, поиск, фильтры, чат, избранное, online, рейтинг, отзывы, платежи, support, роли, уведомления, языки, логи, модерация.</td><td>Сохраняем и переименовываем под paid-service смысл.</td></tr>
+        <tr><td class="ok">Универсально</td><td>Профили, поиск, фильтры, чат, избранное, online, рейтинг, отзывы, платежи, поддержка, роли, уведомления, языки, логи, модерация.</td><td>Сохраняем и переименовываем под paid-service смысл.</td></tr>
         <tr><td class="bad">Dating-specific</td><td>Цель знакомства, взаимные лайки как романтический триггер, сексуальный/romantic copy, adult/dating legal wording, dating premium perks.</td><td>Удаляем из Nebula или заменяем сервисной логикой.</td></tr>
         <tr><td class="warn">Адаптируем</td><td>Boost, likes, profile views, pings, mass messages, premium, bots.</td><td>Превращаем в видимость экспертов, CRM, операционные очереди, сервисные пакеты и автоматизацию без обмана.</td></tr>
       </tbody>
@@ -36,12 +36,12 @@
     <table>
       <thead><tr><th>Контур</th><th>Что должно работать</th><th>Текущее основание</th><th>Что закрываем</th></tr></thead>
       <tbody>
-        <tr><td>Клиент</td><td>Оффер, выбор эксперта, оплата, вопрос, ответ, follow-up.</td><td>Oracle/Nebula дизайн, Confideline backend.</td><td>Связка frontend/backend, paid-service flow, убрать dating copy.</td></tr>
-        <tr><td>Эксперт</td><td>Задачи, чат, SLA, шаблоны, начисления.</td><td>Admin chat, users, messages.</td><td>Роль эксперта, очередь назначений, earnings, quality feedback.</td></tr>
-        <tr><td>Админ</td><td>Очереди, просрочки, платежи, возвраты, качество.</td><td>54 admin routes OK.</td><td>Единый operational dashboard и статусы сессий.</td></tr>
-        <tr><td>Support</td><td>Тикеты, жалобы, возвраты, macros.</td><td>Admin support route.</td><td>Связка ticket -> order/session/client/expert.</td></tr>
+        <tr><td>Клиент</td><td>Оффер, выбор эксперта, оплата, вопрос, ответ, follow-up.</td><td>Oracle/Nebula дизайн, бекенд Confideline.</td><td>Связка фронт/бекенд, путь платной услуги, убрать dating copy.</td></tr>
+        <tr><td>Эксперт</td><td>Задачи, чат, сроки ответа, шаблоны, начисления.</td><td>Admin chat, users, messages.</td><td>Роль эксперта, очередь назначений, earnings, quality feedback.</td></tr>
+        <tr><td>Админ</td><td>Очереди, просрочки, платежи, возвраты, качество.</td><td>54 admin routes OK.</td><td>Единый операционная панель и статусы сессий.</td></tr>
+        <tr><td>Support</td><td>Тикеты, жалобы, возвраты, macros.</td><td>Admin поддержка route.</td><td>Связка ticket -> order/session/client/expert.</td></tr>
         <tr><td>Маркетинг</td><td>UTM, email, retention, LTV, stop rules.</td><td>Исследования, Trello email cards.</td><td>CAC/LTV модель и запусковые лимиты.</td></tr>
-        <tr><td>QA</td><td>E2E тесты до покупки трафика.</td><td>QA tester reports.</td><td>сценарии по ролям и подтверждения скриншотами.</td></tr>
+        <tr><td>Проверка</td><td>сквозные тесты до покупки трафика.</td><td>отчеты тестировщика.</td><td>сценарии по ролям и подтверждения скриншотами.</td></tr>
       </tbody>
     </table>
 
@@ -54,21 +54,21 @@
     <table>
       <thead><tr><th>Направление</th><th>Результат июня</th></tr></thead>
       <tbody>
-        <tr><td>Email/уведомления</td><td>Единый пакет передачи команде по событиям, шаблонам, no-send проверке, admin управлению и QA.</td></tr>
-        <tr><td>Admin chat</td><td>Платный chat/session lifecycle: статусы, SLA, очередь, подсказки, QA, support.</td></tr>
+        <tr><td>Email/уведомления</td><td>Единый пакет передачи команде по событиям, шаблонам, проверке без отправки писем, admin управлению и проверка.</td></tr>
+        <tr><td>Admin chat</td><td>Платный chat/session lifecycle: статусы, сроки ответа, очередь, подсказки, проверка, поддержка.</td></tr>
         <tr><td>Экспертский доступ</td><td>Роль, видимые вкладки, назначенные задачи, начисления, настройки, назначение анкет.</td></tr>
         <tr><td>Школа экспертов</td><td>Панель обучения на базе Trello уроков, PbExpert training и Google tests/forms.</td></tr>
-        <tr><td>Регламент</td><td>Owned YouDate/N regulation: поведение, ответы, запреты, SLA, продажи, санкции.</td></tr>
-        <tr><td>Admin visibility</td><td>операционная панель запуска: sessions, SLA, payments, refunds, support, quality.</td></tr>
+        <tr><td>Регламент</td><td>Owned YouDate/N regulation: поведение, ответы, запреты, сроки ответа, продажи, санкции.</td></tr>
+        <tr><td>Admin visibility</td><td>операционная панель запуска: sessions, сроки ответа, платежиs, refunds, поддержка, quality.</td></tr>
         <tr><td>Проблемные сценарии и проверка</td><td>Матрица сбоев и тестовые сценарии до трафика.</td></tr>
-        <tr><td>Legal/content package</td><td>HTML-ready пакет документов с переменными и отдельным legal точка согласования.</td></tr>
+        <tr><td>Legal/content package</td><td>готовый HTML-пакет документов с переменными и отдельным legal точка согласования.</td></tr>
       </tbody>
     </table>
 
     <h2>Документы и источники</h2>
     <ul>
       <li><a href="artifacts/LAUNCH_READINESS_ARCHITECTURE_RU.md">Полный Markdown-документ</a></li>
-      <li><a href="artifacts/P0_LAUNCH_READINESS_FUNCTIONAL_MATRIX_RU.csv">Функциональная матрица запуска</a></li>`n      <li><a href="artifacts/trello-key-cards-comments-redacted-2026-06-04.json">Trello: ключевые карточки с комментариями</a></li>`n      <li><a href="artifacts/trello-training-filter-redacted-2026-06-04.json">Trello: фильтр обучения</a></li>`n      <li><a href="artifacts/trello-email-filter-redacted-2026-06-04.json">Trello: фильтр email</a></li>
+      <li><a href="artifacts/запусковый минимум_LAUNCH_READINESS_FUNCTIONAL_MATRIX_RU.csv">Функциональная матрица запуска</a></li>`n      <li><a href="artifacts/trello-key-cards-comments-redacted-2026-06-04.json">Trello: ключевые карточки с комментариями</a></li>`n      <li><a href="artifacts/trello-training-filter-redacted-2026-06-04.json">Trello: фильтр обучения</a></li>`n      <li><a href="artifacts/trello-email-filter-redacted-2026-06-04.json">Trello: фильтр email</a></li>
       <li><a href="https://trello.com/c/Z3gdn6rU">Trello: обучение Nebula</a></li>
       <li><a href="https://trello.com/c/tHaAg57o">Trello: email-рассылка из админки</a></li>
       <li><a href="https://www.ftc.gov/legal-library/browse/rules/negative-option-rule">FTC: Negative Option Rule</a></li>
@@ -78,6 +78,7 @@
 </main>
 <script src="../assets/panel-ux.js"></script></body>
 </html>
+
 
 
 

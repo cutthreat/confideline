@@ -11,7 +11,7 @@
     .status{display:inline-flex;border-radius:999px;padding:6px 9px;font:900 10px Verdana,sans-serif;text-transform:uppercase;white-space:nowrap}.red{background:#ffe1df;color:#8d1d12}.yellow{background:#fff0c0;color:#745000}.green{background:#dff5e8;color:#176032}
     .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:16px 0}.card{border:1px solid var(--line);border-radius:20px;background:#faf7ff;padding:15px}.card b{display:block;color:#1f6b49;margin-bottom:6px}.card p{margin:0;color:var(--muted)}
     .route{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:16px 0}.route div{border:1px solid var(--line);border-radius:16px;background:#fff;padding:12px;position:relative}.route div:after{content:'→';position:absolute;right:-11px;top:50%;transform:translateY(-50%);color:#1f6b49;font-weight:900}.route div:last-child:after{display:none}.route b{display:block;color:#1f6b49;margin-bottom:4px}.route span{display:block;color:var(--muted);font-size:13px}
-    .matrix{overflow:auto;border:1px solid var(--line);border-radius:22px;background:#fff;margin:16px 0}table{width:100%;min-width:1160px;border-collapse:collapse;font-size:14px}th,td{border-bottom:1px solid var(--line);padding:11px;text-align:left;vertical-align:top}th{font:900 10px Verdana,sans-serif;text-transform:uppercase;color:#514a61;background:#fbfaf7}.note{border:1px solid var(--line);border-radius:18px;background:#fbfaf7;padding:14px;line-height:1.55}.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:12px}.links a{display:block;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:13px;text-decoration:none;color:var(--ink)}.links strong{display:block;color:#1f6b49;margin-bottom:4px}.links span{display:block;color:var(--muted);font-size:13px}@media(max-width:950px){.route{grid-template-columns:1fr}.route div:after{display:none}}
+    .matrix{overflow:auto;border:1px solid var(--line);border-radius:22px;background:#fff;margin:16px 0}table{width:100%;min-width:1160px;border-collapse:collapse;font-size:14px}th,td{border-bottom:1px solid var(--line);padding:11px;text-align:left;ниша-align:top}th{font:900 10px Verdana,sans-serif;text-transform:uppercase;color:#514a61;background:#fbfaf7}.note{border:1px solid var(--line);border-radius:18px;background:#fbfaf7;padding:14px;line-height:1.55}.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:12px}.links a{display:block;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:13px;text-decoration:none;color:var(--ink)}.links strong{display:block;color:#1f6b49;margin-bottom:4px}.links span{display:block;color:var(--muted);font-size:13px}@media(max-width:950px){.route{grid-template-columns:1fr}.route div:after{display:none}}
   </style>
 </head>
 <body>
@@ -20,28 +20,28 @@
   <section class="doc">
     <div class="eyebrow">Проверка · тестовый заказ · админка · эксперт · поддержка · доказательства</div>
     <h1>Сквозная проверка запуска без реальных платежей</h1>
-    <p class="lead">Эта страница задает маршрут проверки, который должен пройти PM/тестировщик перед рекламой: клиент выбирает услугу, создается тестовый заказ без списания денег, клиент задает вопрос, админ назначает эксперта, эксперт отвечает, уведомления формируются в no-send режиме, поддержка видит проблему, а аналитика показывает результат.</p>
+    <p class="lead">Эта страница задает маршрут проверки, который должен пройти PM/тестировщик перед рекламой: клиент выбирает услугу, создается тестовый заказ без списания денег, клиент задает вопрос, админ назначает эксперта, эксперт отвечает, уведомления формируются в без отправки писем режиме, поддержка видит проблему, а аналитика показывает результат.</p>
 
     <div class="decision">
       <h2>Решение PM</h2>
       <p><b>Готовность к запуску доказывается только сквозным сценарием.</b> Отдельные страницы, макеты, админские вкладки и документы не считаются готовностью, пока не доказан путь: клиент → тестовая покупка → вопрос → назначение → ответ → уведомления → поддержка → качество → начисление → отчет.</p>
-      <p><span class="status red">реальные платежи не запускать</span> <span class="status red">клиентам письма не отправлять</span> <span class="status yellow">проверять через test/no-send режим</span></p>
+      <p><span class="status red">реальные платежи не запускать</span> <span class="status red">клиентам письма не отправлять</span> <span class="status yellow">проверять через тестовый режим без отправки писем</span></p>
     </div>
 
     <div class="grid">
       <div class="card"><b>Что проверяем</b><p>Не “есть ли кнопка”, а работает ли услуга как единый процесс для клиента, эксперта, админа и поддержки.</p></div>
       <div class="card"><b>Что запрещено</b><p>Реальные списания, реальные клиентские письма, внешние публикации и изменения production без отдельного решения.</p></div>
-      <div class="card"><b>Что считается доказательством</b><p>Скриншоты, test order ID, статусы в админке, no-send лог, событие аналитики, карточка тикета, отчет проверки.</p></div>
+      <div class="card"><b>Что считается доказательством</b><p>Скриншоты, test order ID, статусы в админке, без отправки писем лог, событие аналитики, карточка тикета, отчет проверки.</p></div>
       <div class="card"><b>Что делать при провале</b><p>Остановить сценарий, зафиксировать FAIL, указать экран, ожидаемое поведение, фактическое поведение и задачу Игорю.</p></div>
     </div>
 
     <h2>Маршрут проверки</h2>
     <div class="route">
-      <div><b>1. Подготовка</b><span>тестовый клиент, эксперт, агент, админ, no-send, test order</span></div>
+      <div><b>1. Подготовка</b><span>тестовый клиент, эксперт, агент, админ, без отправки писем, test order</span></div>
       <div><b>2. Клиент</b><span>лендинг, оффер, выбор услуги, тестовая оплата, вопрос</span></div>
       <div><b>3. Админка</b><span>очередь, заказ, назначение, дедлайн, события</span></div>
       <div><b>4. Эксперт</b><span>задача, чат, ответ, качество, начисление</span></div>
-      <div><b>5. Проблема</b><span>жалоба, возврат, support, отчет и решение</span></div>
+      <div><b>5. Проблема</b><span>жалоба, возврат, поддержка, отчет и решение</span></div>
     </div>
 
     <h2>Предусловия перед проверкой</h2>
@@ -60,7 +60,7 @@
       <tr><td>2</td><td>Создать тестовую покупку без списания.</td><td>Появляется тестовый заказ со статусом “тестово оплачен”.</td><td>Test order ID + скрин клиентского статуса.</td><td>Заказ не создан или похож на реальный платеж.</td></tr>
       <tr><td>3</td><td>Клиент пишет вопрос.</td><td>Вопрос связан с заказом и консультацией.</td><td>Скрин вопроса в клиентском пути и админке.</td><td>Вопрос живет отдельно от заказа.</td></tr>
       <tr><td>4</td><td>Админ видит консультацию в очереди.</td><td>Есть статус, клиент, источник, цена, вопрос, дедлайн, действие “назначить”.</td><td>Скрин очереди и карточки консультации.</td><td>Админ не видит заказ без ручного поиска.</td></tr>
-      <tr><td>5</td><td>Назначить эксперта или агента.</td><td>Исполнитель получает задачу, дедлайн и уведомление в no-send/log режиме.</td><td>Скрин назначения + лог события.</td><td>Нет истории назначения или дедлайна.</td></tr>
+      <tr><td>5</td><td>Назначить эксперта или агента.</td><td>Исполнитель получает задачу, дедлайн и уведомление в без отправки писем/log режиме.</td><td>Скрин назначения + лог события.</td><td>Нет истории назначения или дедлайна.</td></tr>
       <tr><td>6</td><td>Эксперт открывает чат и отвечает.</td><td>Ответ отправлен внутри платформы, статус меняется, клиент видит результат.</td><td>Скрин рабочего места эксперта и клиентского ответа.</td><td>Ответ нельзя связать с консультацией.</td></tr>
       <tr><td>7</td><td>Проверить уведомления.</td><td>Сформированы события: оплата, вопрос, назначение, ответ.</td><td>No-send лог + preview письма/уведомления.</td><td>Событие не создано или письмо не связано с заказом.</td></tr>
       <tr><td>8</td><td>Закрыть консультацию.</td><td>Есть статус закрытия, качество, предварительное начисление, аналитика.</td><td>Скрин закрытия, начисления и события.</td><td>Нет итогового статуса или начисления.</td></tr>
@@ -68,22 +68,22 @@
 
     <h2>Проблемные сценарии</h2>
     <div class="matrix"><table><thead><tr><th>Сценарий</th><th>Как воспроизвести</th><th>Что должно произойти</th><th>Доказательство</th><th>Если не работает</th></tr></thead><tbody>
-      <tr><td>Оплата не прошла</td><td>Запустить test failed payment.</td><td>Клиент видит ошибку, эксперту задача не создается, событие записано.</td><td>Скрин ошибки + событие.</td><td>FAIL до рекламы.</td></tr>
-      <tr><td>Оплатил, но не написал вопрос</td><td>Создать test success и не отправлять вопрос.</td><td>Заказ попадает в очередь “без вопроса”, формируется напоминание no-send.</td><td>Скрин очереди + no-send.</td><td>FAIL: оплаченный клиент потеряется.</td></tr>
+      <tr><td>Оплата не прошла</td><td>Запустить test failed платежи.</td><td>Клиент видит ошибку, эксперту задача не создается, событие записано.</td><td>Скрин ошибки + событие.</td><td>FAIL до рекламы.</td></tr>
+      <tr><td>Оплатил, но не написал вопрос</td><td>Создать test success и не отправлять вопрос.</td><td>Заказ попадает в очередь “без вопроса”, формируется напоминание без отправки писем.</td><td>Скрин очереди + без отправки писем.</td><td>FAIL: оплаченный клиент потеряется.</td></tr>
       <tr><td>Нет назначения</td><td>Оставить вопрос без исполнителя.</td><td>Появляется очередь “ожидает назначения”.</td><td>Скрин очереди.</td><td>FAIL: админ не управляет сервисом.</td></tr>
       <tr><td>Эксперт просрочил</td><td>Смоделировать дедлайн в прошлом или ожидание до дедлайна.</td><td>Просрочка видна админу, поддержке и исполнителю; есть эскалация.</td><td>Скрин просрочки + событие.</td><td>FAIL: риск refund и жалоб.</td></tr>
       <tr><td>Клиент пожаловался</td><td>Создать жалобу на ответ.</td><td>Тикет связан с заказом, чатом, экспертом и причиной.</td><td>Скрин тикета и карточки консультации.</td><td>FAIL: поддержка работает вслепую.</td></tr>
-      <tr><td>Возврат/компенсация</td><td>Открыть refund/credit request.</td><td>Есть статус решения, причина, связь с начислением и качеством.</td><td>Скрин support/refund и начисления.</td><td>FAIL: экономика не считается честно.</td></tr>
+      <tr><td>Возврат/компенсация</td><td>Открыть refund/credit request.</td><td>Есть статус решения, причина, связь с начислением и качеством.</td><td>Скрин поддержка/refund и начисления.</td><td>FAIL: экономика не считается честно.</td></tr>
       <tr><td>Плохой ответ</td><td>Отметить ответ как шаблонный/опасный/неперсональный.</td><td>Модерация видит нарушение, замечание и решение по видимости.</td><td>Скрин оценки качества.</td><td>WARN/FAIL по критичности.</td></tr>
     </tbody></table></div>
 
     <h2>Пакет доказательств</h2>
     <div class="matrix"><table><thead><tr><th>Доказательство</th><th>Что должно быть видно</th><th>Кому нужно</th><th>Минимальный результат</th></tr></thead><tbody>
       <tr><td>Скрин клиентского оффера</td><td>Цена, срок, формат, ограничения, CTA.</td><td>Заказчику, PM, Антону.</td><td>Понятно, что покупает клиент.</td></tr>
-      <tr><td>Test order ID</td><td>Заказ тестовый, денег не списано, статус понятен.</td><td>PM, Игорю, QA.</td><td>Можно воспроизвести.</td></tr>
-      <tr><td>Карточка консультации</td><td>Клиент, заказ, вопрос, исполнитель, дедлайн, события.</td><td>Игорю, админке, support.</td><td>Контекст в одном месте.</td></tr>
+      <tr><td>Test order ID</td><td>Заказ тестовый, денег не списано, статус понятен.</td><td>PM, Игорю, проверка.</td><td>Можно воспроизвести.</td></tr>
+      <tr><td>Карточка консультации</td><td>Клиент, заказ, вопрос, исполнитель, дедлайн, события.</td><td>Игорю, админке, поддержка.</td><td>Контекст в одном месте.</td></tr>
       <tr><td>Рабочее место эксперта</td><td>Задача, чат, дедлайн, подсказки, отправка ответа.</td><td>PM, экспертам, Игорю.</td><td>Эксперт может работать без ручных объяснений.</td></tr>
-      <tr><td>No-send лог</td><td>Какие письма/уведомления сформированы и кому должны были уйти.</td><td>PM, Игорю, support.</td><td>Безопасная проверка коммуникаций.</td></tr>
+      <tr><td>No-send лог</td><td>Какие письма/уведомления сформированы и кому должны были уйти.</td><td>PM, Игорю, поддержка.</td><td>Безопасная проверка коммуникаций.</td></tr>
       <tr><td>Support/refund ticket</td><td>Проблема, заказ, чат, исполнитель, решение.</td><td>Поддержке, PM, Игорю.</td><td>Проблема не потеряна.</td></tr>
       <tr><td>Отчет экономики</td><td>Источник, заказ, чек, экспертская стоимость, возврат, repeat marker.</td><td>PM, основателю.</td><td>Можно оценивать рекламный тест.</td></tr>
     </tbody></table></div>
@@ -103,8 +103,8 @@
     <div class="links">
       <a href="paid-consultation-test-flow.html"><strong>Покупка консультации</strong><span>Что именно проверяем в заказе и статусах.</span></a>
       <a href="admin-ops.html"><strong>Операционный центр админки</strong><span>Какие очереди и карточки должны подтверждаться скриншотами.</span></a>
-      <a href="events.html"><strong>События, уведомления и аналитика</strong><span>Какие события и no-send логи нужны как proof.</span></a>
-      <a href="support-refund-readiness.html"><strong>Поддержка и возвраты</strong><span>Какие проблемные сценарии обязательны.</span></a>
+      <a href="events.html"><strong>События, уведомления и аналитика</strong><span>Какие события и логи без отправки писем нужны как доказательство.</span></a>
+      <a href="поддержка-refund-readiness.html"><strong>Поддержка и возвраты</strong><span>Какие проблемные сценарии обязательны.</span></a>
       <a href="expert-quality-moderation.html"><strong>Качество экспертов</strong><span>Как проверять плохой ответ, жалобу и последствия.</span></a>
       <a href="expert-agent-compensation.html"><strong>Оплата экспертов</strong><span>Как закрытие, качество и возврат влияют на начисления.</span></a>
       <a href="first-sales-economics.html"><strong>Экономика первых продаж</strong><span>Какие данные нужны до рекламного теста.</span></a>
@@ -113,10 +113,11 @@
 
     <h2>Итог</h2>
     <div class="note"><p><b>До рекламы нужен один доказанный маршрут.</b> Если сквозная проверка не проходит, любые разговоры о трафике, LTV, масштабировании и запуске с 5 экспертами преждевременны. Эта страница является чек-листом для PM, тестировщика и Игоря: что пройти, что зафиксировать и где остановиться.</p></div>
-  <p><a href="backend-frontend-proof-map.html"><b>Карта связи фронта и backend:</b> что есть в макетах Oracle/Nebula, что есть в Confideline backend/admin и где нужен proof перед задачей Игорю.</a></p></section>
+  <p><a href="бекенд-фронт-доказательство-map.html"><b>Карта связи фронта и бекенд:</b> что есть в макетах Oracle/Nebula, что есть в Confideline бекенд/админка и где нужен доказательство перед задачей Игорю.</a></p></section>
 </main>
 <script src="../assets/panel-ux.js"></script>
 </body>
 </html>
+
 
 
