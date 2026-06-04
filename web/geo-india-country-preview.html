@@ -31,7 +31,7 @@
   <link rel="stylesheet" href="css/geo-confideline-preview.css">
   <style>
     .geo-hero {
-      --geo-hero-image: url("img/geo/india-country-hero.jpg");
+      --geo-hero-image: url("../img/geo/india-country-hero.jpg");
     }
   </style>
 </head>
@@ -63,7 +63,7 @@
           <p class="geo-hero__lead">Если Индия связана с отношениями, переездом или личным решением, консультант поможет спокойно разобрать ситуацию в приватном текстовом чате.</p>
           <div class="geo-hero__actions geo-hero__actions--grid">
             <a class="geo-btn geo-btn--primary" href="#consultants">Выбрать консультанта</a>
-            <a class="geo-btn geo-btn--ghost" href="#india-text">Подробнее об Индии</a>
+            <button class="geo-btn geo-btn--ghost" type="button" data-open-onboarding>Пройти короткий подбор</button>
           </div>
         </div>
 
@@ -73,64 +73,84 @@
           </figure>
           <div class="geo-side-panel__body">
             <h2>Сначала вопрос, затем консультант</h2>
-            <p>Выберите тему и город. Список ниже сразу перестроится под ваш сценарий.</p>
+            <p>Выберите тему сразу на странице или пройдите короткий подбор, если пока сложно сформулировать запрос.</p>
           </div>
         </aside>
       </div>
     </section>
 
     <form class="geo-intake" id="countryFilter">
-      <div class="geo-intake__grid">
-        <label>
-          <span>Тема вопроса</span>
-          <select class="geo-input js-topic" name="topic">
-            <option value="relationship">Отношения</option>
-            <option value="compatibility">Совместимость</option>
-            <option value="relocation">Переезд</option>
-            <option value="choice">Личный выбор</option>
-          </select>
+      <div class="geo-intake__head">
+        <div>
+          <span>Тип вопроса</span>
+          <strong>Что сейчас нужно разобрать?</strong>
+        </div>
+        <button class="geo-btn geo-btn--soft" type="button" data-open-onboarding>Помочь выбрать тему</button>
+      </div>
+      <div class="geo-topic-options" role="radiogroup" aria-label="Тип вопроса">
+        <label class="geo-topic-option">
+          <input class="js-topic" type="radio" name="topic" value="relationship" checked>
+          <span class="geo-topic-option__icon geo-topic-option__icon--relationship" aria-hidden="true"></span>
+          <span class="geo-topic-option__label">Отношения</span>
         </label>
-        <label>
-          <span>Формат</span>
-          <select class="geo-input js-format" name="format">
-            <option value="chat">Текстовый чат</option>
-            <option value="same">Тот же консультант</option>
-          </select>
+        <label class="geo-topic-option">
+          <input class="js-topic" type="radio" name="topic" value="compatibility">
+          <span class="geo-topic-option__icon geo-topic-option__icon--compatibility" aria-hidden="true"></span>
+          <span class="geo-topic-option__label">Совместимость</span>
         </label>
-        <label>
-          <span>Страна</span>
-          <input class="geo-input" name="country" value="Индия" readonly>
+        <label class="geo-topic-option">
+          <input class="js-topic" type="radio" name="topic" value="relocation">
+          <span class="geo-topic-option__icon geo-topic-option__icon--relocation" aria-hidden="true"></span>
+          <span class="geo-topic-option__label">Переезд</span>
         </label>
-        <label>
-          <span>Город</span>
-          <select class="geo-input js-city" name="city">
-            <option>Дели</option>
-            <option>Мумбаи</option>
-            <option>Бангалор</option>
-          </select>
+        <label class="geo-topic-option">
+          <input class="js-topic" type="radio" name="topic" value="choice">
+          <span class="geo-topic-option__icon geo-topic-option__icon--choice" aria-hidden="true"></span>
+          <span class="geo-topic-option__label">Личный выбор</span>
         </label>
-        <button class="geo-btn geo-btn--blue" type="button" data-scroll="#consultants">Показать консультантов</button>
       </div>
     </form>
 
     <div class="geo-main">
-      <div class="geo-stack">
-        <section class="geo-section" id="consultants">
+      <section class="geo-section geo-consultants" id="consultants">
           <div class="geo-section__head">
             <h2>Онлайн-консультация по Индии: выберите тему и консультанта</h2>
-            <p>Список меняется после выбора темы. Так страница сразу связывает страну, вопрос и подходящий формат консультации.</p>
-            <div class="geo-filter-result js-filter-result"></div>
+            <p>Список меняется после выбора темы. Страна уже задана страницей, а город лучше выбирать отдельно, когда вопрос связан с переездом или конкретной локацией.</p>
+            <div class="geo-filter-result js-filter-result">Тип вопроса: Отношения</div>
           </div>
           <div class="geo-advisor-grid js-advisors"></div>
-        </section>
+      </section>
 
+      <aside class="geo-aside">
+        <h2>Как проходит консультация</h2>
+        <div class="geo-fact">
+          <strong>Вы выбираете тему в контексте Индии</strong>
+          <p>Отношения, совместимость, переезд, работа или личный выбор. Если вопрос пока звучит неровно, это нормально: в чате его можно описать живыми словами.</p>
+        </div>
+        <div class="geo-fact">
+          <strong>Консультант смотрит ситуацию шире</strong>
+          <p>Важны не только дата и место, но и фон: почему именно Индия стала точкой решения, что меняется после переезда и где сейчас больше напряжения.</p>
+        </div>
+        <div class="geo-fact">
+          <strong>Вы получаете спокойный разбор</strong>
+          <p>Ответ остается в приватном текстовом чате: что видно по ситуации, какие варианты стоит сравнить и с каким шагом лучше не торопиться.</p>
+        </div>
+        <div class="geo-aside__cta">
+          <a class="geo-btn geo-btn--primary" href="#consultants">Выбрать консультанта</a>
+          <button class="geo-btn geo-btn--ghost-dark" type="button" data-open-onboarding>Короткий подбор</button>
+        </div>
+        <p class="geo-footnote">Консультация не заменяет медицинскую, юридическую или финансовую помощь.</p>
+      </aside>
+
+      <div class="geo-stack">
         <section class="geo-selected js-selected">
-          <div>
+          <img class="geo-selected__avatar js-selected-avatar" src="./YouDate-last/img/hero/woman-1.png" alt="Мира">
+          <div class="geo-selected__body">
             <span class="geo-selected__label">Сейчас выбран</span>
             <h3 class="js-selected-name">Мира</h3>
             <p class="js-selected-text">Поможет разобрать отношения, сомнения и эмоциональный выбор в личном чате.</p>
           </div>
-          <a class="geo-btn geo-btn--primary" href="https://confideline.com/registration/register" target="_blank" rel="noopener">Перейти к вопросу</a>
+          <a class="geo-btn geo-btn--primary" href="https://confideline.com/registration/register" target="_blank" rel="noopener">Перейти к регистрации</a>
         </section>
 
         <article class="geo-article" id="india-text">
@@ -179,23 +199,28 @@
         <section class="geo-section">
           <div class="geo-section__head">
             <h2>FAQ по Индии и консультациям</h2>
-            <p>Короткие ответы закрывают дополнительные поисковые вопросы без перегруза основного текста.</p>
+            <p>Короткие ответы помогают быстро понять, когда лучше смотреть всю страну, а когда переходить к конкретному городу.</p>
           </div>
-          <div class="geo-faq">
-            <article><h3>Подходит ли Индия для переезда по астрокартографии?</h3><p>Это зависит от натальной карты, текущих циклов и конкретного города. Для одних Индия усиливает рост, для других быстрее вскрывает перегруз.</p></article>
-            <article><h3>Можно ли разобрать отношения, если партнер находится в Индии?</h3><p>Да. Консультация может включать синастрию, контекст расстояния, ожидания пары и влияние переезда на динамику отношений.</p></article>
-            <article><h3>Чем страница страны отличается от страницы города?</h3><p>Страна показывает общий контекст и регионы, а городская страница помогает точнее разобрать локальную энергию и практический сценарий.</p></article>
+          <div class="geo-faq" data-faq>
+            <article class="geo-faq__item is-open" role="button" tabindex="0" aria-expanded="true" aria-controls="faq-india-relocation">
+              <h3>Подходит ли Индия для переезда по астрокартографии?</h3>
+              <p id="faq-india-relocation">Это зависит от натальной карты, текущих циклов и конкретного города. Индия может усиливать тему духовного поиска, смены ритма, учебы, отношений на расстоянии и резкой адаптации. На консультации лучше смотреть не абстрактную страну, а ваш вопрос: зачем вы туда едете, что оставляете дома и какой город рассматриваете.</p>
+              <span class="geo-faq__toggle" aria-hidden="true"></span>
+            </article>
+            <article class="geo-faq__item" role="button" tabindex="0" aria-expanded="false" aria-controls="faq-india-relationship">
+              <h3>Можно ли разобрать отношения, если партнер находится в Индии?</h3>
+              <p id="faq-india-relationship">Да. В приватном текстовом чате можно описать ситуацию своими словами: пауза в общении, разные ожидания, расстояние, переезд, знакомство в поездке или планы на совместную жизнь. Консультант поможет увидеть динамику пары, не сводя все к одному знаку или одному прогнозу.</p>
+              <span class="geo-faq__toggle" aria-hidden="true"></span>
+            </article>
+            <article class="geo-faq__item" role="button" tabindex="0" aria-expanded="false" aria-controls="faq-india-city">
+              <h3>Чем страница страны отличается от страницы города?</h3>
+              <p id="faq-india-city">Страница страны нужна, когда вы еще выбираете направление или сравниваете несколько городов. Городская страница точнее подходит для практического сценария: Дели, Мумбаи или Бангалор дают разный темп, круг общения, карьерный фон и ощущение личной свободы.</p>
+              <span class="geo-faq__toggle" aria-hidden="true"></span>
+            </article>
           </div>
         </section>
       </div>
 
-      <aside class="geo-aside">
-        <h2>Как проходит консультация</h2>
-        <div class="geo-fact"><span>1</span><strong>Вы выбираете тему и консультанта</strong></div>
-        <div class="geo-fact"><span>2</span><strong>Описываете вопрос в приватном чате</strong></div>
-        <div class="geo-fact"><span>3</span><strong>Получаете аккуратный ответ без давления</strong></div>
-        <p class="geo-footnote">Консультация не заменяет медицинскую, юридическую или финансовую помощь.</p>
-      </aside>
     </div>
   </main>
 
@@ -206,6 +231,38 @@
       <section><h3>Начать</h3><p>Выберите тему, консультанта и перейдите к личному вопросу.</p></section>
     </div>
   </footer>
+
+  <div class="geo-modal" data-onboarding hidden>
+    <div class="geo-modal__backdrop" data-close-onboarding></div>
+    <section class="geo-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle" aria-describedby="onboardingLead">
+      <button class="geo-modal__close" type="button" aria-label="Закрыть подбор" data-close-onboarding></button>
+      <span class="geo-modal__eyebrow">Короткий подбор</span>
+      <h2 id="onboardingTitle">Три вопроса перед выбором консультанта</h2>
+      <p id="onboardingLead">Ответьте на несколько пунктов, чтобы следующий шаг был не случайным кликом, а готовым переходом к регистрации и личному вопросу.</p>
+      <form class="geo-onboarding">
+        <fieldset>
+          <legend>Что сейчас главное?</legend>
+          <label><input type="radio" name="intent" value="relationship" checked> Отношения или пауза в общении</label>
+          <label><input type="radio" name="intent" value="relocation"> Переезд, город или адаптация</label>
+          <label><input type="radio" name="intent" value="choice"> Личный выбор и несколько сценариев</label>
+        </fieldset>
+        <fieldset>
+          <legend>Какой ответ будет полезен?</legend>
+          <label><input type="radio" name="depth" value="fast" checked> Быстро понять следующий шаг</label>
+          <label><input type="radio" name="depth" value="deep"> Разобрать ситуацию глубже</label>
+          <label><input type="radio" name="depth" value="compare"> Сравнить несколько вариантов</label>
+        </fieldset>
+        <label class="geo-onboarding__note">
+          <span>Опишите вопрос одной фразой</span>
+          <textarea name="question" rows="3" placeholder="Например: думаю о переезде в Индию, но не понимаю, что будет с отношениями и работой"></textarea>
+        </label>
+        <div class="geo-modal__actions">
+          <button class="geo-btn geo-btn--ghost-dark" type="button" data-close-onboarding>Вернуться к странице</button>
+          <a class="geo-btn geo-btn--primary" href="https://confideline.com/registration/register" target="_blank" rel="noopener">Перейти к регистрации</a>
+        </div>
+      </form>
+    </section>
+  </div>
 
   <script type="application/ld+json">
     {
@@ -240,6 +297,38 @@
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Подходит ли Индия для переезда по астрокартографии?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Это зависит от натальной карты, текущих циклов и конкретного города. Индия может усиливать тему духовного поиска, смены ритма, учебы, отношений на расстоянии и резкой адаптации."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Можно ли разобрать отношения, если партнер находится в Индии?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Да. В приватном текстовом чате можно описать ситуацию своими словами: пауза в общении, разные ожидания, расстояние, переезд, знакомство в поездке или планы на совместную жизнь."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Чем страница страны отличается от страницы города?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Страница страны нужна, когда вы еще выбираете направление или сравниваете несколько городов. Городская страница точнее подходит для практического сценария."
+          }
+        }
+      ]
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
       "@type": "ImageObject",
       "contentUrl": "https://cutthreat.github.io/confideline/web/img/geo/india-country-hero.jpg",
       "name": "India consultation page hero image",
@@ -251,56 +340,80 @@
   <script>
     const advisorData = {
       relationship: [
-        { name: "Мира", role: "Отношения и эмоциональный выбор", text: "Помогает разобрать паузу в общении, сомнения и возвращение к диалогу.", tag: "отношения" },
-        { name: "Аная", role: "Синастрия и совместимость", text: "Подходит, если нужно понять динамику пары и разные ожидания партнеров.", tag: "совместимость" },
-        { name: "Лина", role: "Мягкая поддержка в личном вопросе", text: "Помогает сформулировать вопрос и отделить тревогу от решения.", tag: "личный выбор" }
+        { name: "Мира", role: "Отношения", text: "Помогает разобрать паузу в общении, сомнения и возвращение к диалогу.", tag: "отношения" },
+        { name: "Аная", role: "Синастрия", text: "Подходит, если нужно понять динамику пары и разные ожидания партнеров.", tag: "совместимость" },
+        { name: "Лина", role: "Личный выбор", text: "Помогает сформулировать вопрос и отделить тревогу от решения.", tag: "личный выбор" }
       ],
       compatibility: [
-        { name: "Аная", role: "Синастрия и совместимость", text: "Смотрит совместимость, повторяющиеся сценарии и сильные стороны пары.", tag: "совместимость" },
-        { name: "Мира", role: "Отношения и эмоциональный выбор", text: "Помогает понять, стоит ли продолжать разговор и как снизить напряжение.", tag: "отношения" },
-        { name: "Деви", role: "Натальная карта и циклы", text: "Разбирает личные циклы и то, как они влияют на отношения.", tag: "астрология" }
+        { name: "Аная", role: "Синастрия", text: "Смотрит совместимость, повторяющиеся сценарии и сильные стороны пары.", tag: "совместимость" },
+        { name: "Мира", role: "Отношения", text: "Помогает понять, стоит ли продолжать разговор и как снизить напряжение.", tag: "отношения" },
+        { name: "Деви", role: "Натальная карта", text: "Разбирает личные циклы и то, как они влияют на отношения.", tag: "астрология" }
       ],
       relocation: [
-        { name: "Деви", role: "Астрокартография и переезд", text: "Подходит для вопросов о стране, городе, адаптации и смене ритма жизни.", tag: "переезд" },
+        { name: "Деви", role: "Астрокартография", text: "Подходит для вопросов о стране, городе, адаптации и смене ритма жизни.", tag: "переезд" },
         { name: "Лина", role: "Личный выбор", text: "Помогает сравнить несколько сценариев и выбрать спокойный следующий шаг.", tag: "выбор" },
-        { name: "Аная", role: "Совместимость после переезда", text: "Смотрит, как переезд может повлиять на пару и общие планы.", tag: "совместимость" }
+        { name: "Аная", role: "Совместимость", text: "Смотрит, как переезд может повлиять на пару и общие планы.", tag: "совместимость" }
       ],
       choice: [
         { name: "Лина", role: "Личный выбор", text: "Помогает разложить ситуацию, когда есть несколько вариантов и мало ясности.", tag: "выбор" },
-        { name: "Деви", role: "Натальная карта и циклы", text: "Показывает, какие темы сейчас усиливаются и где лучше не торопиться.", tag: "астрология" },
-        { name: "Мира", role: "Отношения и решение", text: "Подходит, если выбор связан с человеком, паузой или сложным разговором.", tag: "отношения" }
+        { name: "Деви", role: "Натальная карта", text: "Показывает, какие темы сейчас усиливаются и где лучше не торопиться.", tag: "астрология" },
+        { name: "Мира", role: "Решение в отношениях", text: "Подходит, если выбор связан с человеком, паузой или сложным разговором.", tag: "отношения" }
       ]
+    };
+
+    const advisorProfiles = {
+      "Мира": { image: "./YouDate-last/img/hero/woman-1.png", level: "Ведущий консультант", proof: "6 лет практики" },
+      "Аная": { image: "./YouDate-last/img/hero/woman-3.png", level: "Синастрия", proof: "5 лет практики" },
+      "Лина": { image: "./YouDate-last/img/hero/woman-5.png", level: "Мягкая поддержка", proof: "4 года практики" },
+      "Деви": { image: "./YouDate-last/img/hero/woman-8.png", level: "Астрокартография", proof: "7 лет практики" }
     };
 
     const form = document.querySelector("#countryFilter");
     const list = document.querySelector(".js-advisors");
     const selectedName = document.querySelector(".js-selected-name");
     const selectedText = document.querySelector(".js-selected-text");
+    const selectedAvatar = document.querySelector(".js-selected-avatar");
     const selectedMeta = document.querySelector(".js-filter-result");
+    const onboarding = document.querySelector("[data-onboarding]");
+    let onboardingReturnFocus = null;
 
-    function optionText(selector) {
-      const field = form.querySelector(selector);
-      return field.tagName === "SELECT" ? field.selectedOptions[0].textContent : field.value;
+    function selectedTopicText() {
+      return form.querySelector(".js-topic:checked").closest(".geo-topic-option").querySelector(".geo-topic-option__label").textContent;
     }
 
     function renderAdvisors() {
-      const topic = form.querySelector(".js-topic").value;
+      const topic = form.querySelector(".js-topic:checked").value;
       const advisors = advisorData[topic];
-      selectedMeta.textContent = `${optionText(".js-topic")} / ${optionText(".js-city")} / ${optionText(".js-format")}`;
-      list.innerHTML = advisors.map((advisor, index) => `
+      selectedMeta.textContent = `Тип вопроса: ${selectedTopicText()}`;
+      list.innerHTML = advisors.map((advisor, index) => {
+        const profile = advisorProfiles[advisor.name];
+        return `
         <button class="geo-advisor ${index === 0 ? "is-selected" : ""}" type="button" data-name="${advisor.name}" data-text="${advisor.text}">
-          <span>${advisor.tag}</span>
-          <strong>${advisor.name}</strong>
-          <em>${advisor.role}</em>
+          <span class="geo-advisor__tag">${advisor.tag}</span>
+          <div class="geo-advisor__top">
+            <img class="geo-advisor__avatar" src="${profile.image}" alt="${advisor.name}">
+            <div class="geo-advisor__identity">
+              <strong>${advisor.name}</strong>
+              <em>${advisor.role}</em>
+            </div>
+          </div>
+          <div class="geo-advisor__meta">
+            <span>${profile.level}</span>
+            <span>${profile.proof}</span>
+          </div>
           <small>${advisor.text}</small>
         </button>
-      `).join("");
+      `;
+      }).join("");
       selectAdvisor(advisors[0].name, advisors[0].text);
     }
 
     function selectAdvisor(name, text) {
+      const profile = advisorProfiles[name];
       selectedName.textContent = name;
       selectedText.textContent = text;
+      selectedAvatar.src = profile.image;
+      selectedAvatar.alt = name;
     }
 
     form.addEventListener("change", renderAdvisors);
@@ -311,9 +424,63 @@
       card.classList.add("is-selected");
       selectAdvisor(card.dataset.name, card.dataset.text);
     });
-    document.querySelector("[data-scroll]").addEventListener("click", event => {
-      document.querySelector(event.currentTarget.dataset.scroll).scrollIntoView({ behavior: "smooth", block: "start" });
+    const scrollTrigger = document.querySelector("[data-scroll]");
+    if (scrollTrigger) {
+      scrollTrigger.addEventListener("click", event => {
+        document.querySelector(event.currentTarget.dataset.scroll).scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+
+    function openOnboarding(trigger) {
+      onboardingReturnFocus = trigger;
+      onboarding.hidden = false;
+      document.body.classList.add("geo-modal-open");
+      onboarding.querySelector(".geo-modal__close").focus();
+    }
+
+    function closeOnboarding() {
+      onboarding.hidden = true;
+      document.body.classList.remove("geo-modal-open");
+      if (onboardingReturnFocus) {
+        onboardingReturnFocus.focus();
+      }
+    }
+
+    document.querySelectorAll("[data-open-onboarding]").forEach(button => {
+      button.addEventListener("click", () => openOnboarding(button));
     });
+
+    document.querySelectorAll("[data-close-onboarding]").forEach(button => {
+      button.addEventListener("click", closeOnboarding);
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && !onboarding.hidden) {
+        closeOnboarding();
+      }
+    });
+
+    const faqItems = Array.from(document.querySelectorAll("[data-faq] .geo-faq__item"));
+
+    function setFaqState(activeItem) {
+      const isOpen = activeItem.classList.contains("is-open");
+      faqItems.forEach(item => {
+        const shouldOpen = item === activeItem && !isOpen;
+        item.classList.toggle("is-open", shouldOpen);
+        item.setAttribute("aria-expanded", String(shouldOpen));
+      });
+    }
+
+    faqItems.forEach(item => {
+      item.addEventListener("click", () => setFaqState(item));
+      item.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          setFaqState(item);
+        }
+      });
+    });
+
     renderAdvisors();
   </script>
 </body>
