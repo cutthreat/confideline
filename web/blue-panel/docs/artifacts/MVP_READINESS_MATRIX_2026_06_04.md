@@ -9,14 +9,15 @@
 | R05 | Backend | Confideline admin/backend | Желтый | Запустить/собрать P0 test cockpit по клиент→оплата→чат→support. |
 | R06 | Frontend/design | Oracle/Nebula дизайн | Красный | Собрать дизайн-карту: PNG/Figma экран, backend dependency, content, QA. |
 | R07 | Клиентский путь | Оффер и лендинг | Желтый | Сопоставить legacy page → Nebula page → final content/CTA/trust. |
-| R08 | Клиентский путь | Регистрация/вход | Красный | Добавить в P0 QA: guest/auth/email recovery сценарии. |
+| R08 | Клиентский путь | Регистрация/вход | Красный | Добавить в проверку перед запуском: guest/auth/email recovery сценарии. |
 | R09 | Платежи | Checkout/payment path | Красный | Сделать test checkout/failure state без реальных платежей. |
 | R10 | Чат | Admin chat и paid session lifecycle | Желтый | Допаковать в задачу Игорю: роли, SLA, состояния, QA. |
 | R11 | Эксперты | Кабинет/роль эксперта и агента | Красный | Сделать role map: эксперт, агент, модератор, support, admin. |
 | R12 | Обучение | Школа первых 5 экспертов | Желтый | Собрать lesson map, тесты, допуск, задание Ксении как ревизору. |
-| R13 | Support | Тикеты, жалобы, refund | Желтый | Сформировать co2p support/refund/failure states. |
+| R13 | Support | Тикеты, жалобы, refund | Желтый | Сформировать co2p support/refund/проблемные ситуации. |
 | R14 | Email | Email, уведомления, рассылки | Желтый | Собрать event map по клиенту/эксперту/admin/support/payments. |
 | R15 | Legal/content | Terms, Privacy, Refund, FAQ, дисклеймеры | Красный | Собрать пакет, не публиковать без founder/legal/payment approval. |
 | R16 | Маркетинг | Трафик, CAC/LTV, retention | Красный | Сформировать unit economics assumptions и pre-traffic gate. |
 | R17 | QA | Проверка перед запуском рекламы и проблемные сценарии | Желтый | Собрать чек-лист проверки перед запуском рекламы: PASS/FAIL, owner, retest. |
 | R18 | Аналитика | Эксперт/агент/admin metrics | Красный | Сформировать analytics P0 requirements и связать с dashboard. |
+
