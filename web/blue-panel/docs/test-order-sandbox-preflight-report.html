@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Preflight тестового заказа · Blue panel</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:var(--shadow)}.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;margin-bottom:16px}.hero-main{background:linear-gradient(135deg,#183d32,#1f6b49);color:#fff;border-radius:30px;padding:24px}.hero-main h1,.hero-main p{color:#fff}.hero-main h1{font-size:46px;line-height:1;margin:8px 0 12px}.hero-side{border:1px solid var(--line);border-radius:30px;background:#fff8df;padding:18px}.hero-side b{display:block;color:#1f6b49;margin-bottom:6px}.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.badge{display:inline-flex;border-radius:999px;padding:7px 10px;font:900 11px Manrope,Verdana,sans-serif}.ok{background:#dff5e8;color:#176032}.warn{background:#fff0c0;color:#745000}.bad{background:#ffe1df;color:#8d1d12}.blue{background:#e5f1ff;color:#1b5a85}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:16px 0}.card{border:1px solid var(--line);border-radius:20px;background:#faf7ff;padding:15px}.card b{display:block;color:#1f6b49;margin-bottom:6px}.card p{margin:0;color:var(--muted)}.matrix{overflow:auto;border:1px solid var(--line);border-radius:22px;background:#fff;margin:16px 0}table{width:100%;min-width:1120px;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:11px;text-align:left;vertical-align:top}th{font:900 10px Manrope,Verdana,sans-serif;text-transform:uppercase;background:#fbfaf7;color:#514a61}.status{display:inline-flex;border-radius:999px;padding:6px 9px;font:900 10px Manrope,Verdana,sans-serif;white-space:nowrap}.note{background:#fff8df;border:1px solid var(--line);border-radius:20px;padding:15px;line-height:1.55;margin:16px 0}.proof-img{border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fff;margin:16px 0}.proof-img img{display:block;width:100%;height:auto}.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:14px}.links a{display:block;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:14px;text-decoration:none;color:var(--ink)}.links strong{display:block;color:#1f6b49;margin-bottom:4px}.links span{display:block;color:var(--muted);font-size:13px}@media(max-width:980px){.hero{grid-template-columns:1fr}.hero-main h1{font-size:36px}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <a href="test-order-runtime-proof-plan.html">← Проверка тестового заказа</a>
+  <section class="hero">
+    <div class="hero-main">
+      <div class="eyebrow">Факт проверки · 2026-06-04</div>
+      <h1>Preflight тестового заказа: платежная песочница работает</h1>
+      <p>Проверен нижний слой оплаты без реальных денег: fake checkout, success, cancel, fail, refund и signed webhook. Это дает безопасную основу для следующего шага — связать платежный успех с заказом, вопросом, консультацией, чатом и админкой.</p>
+      <div class="badges"><span class="badge ok">payment sandbox PASS</span><span class="badge bad">консультация еще не доказана</span><span class="badge blue">без реальных писем</span></div>
+    </div>
+    <aside class="hero-side">
+      <b>Что доказано</b><p>Локальная Stripe-like песочница может безопасно имитировать платежные состояния и webhook.</p>
+      <b>Что не доказано</b><p>Текущий сайт еще не показал end-to-end маршрут: order → question → consultation → expert chat → support.</p>
+    </aside>
+  </section>
+
+  <section class="doc">
+    <h2>Короткий вывод PM</h2>
+    <div class="note"><b>Решение:</b> использовать локальную payment sandbox как обязательный safe-provider для тестового заказа. Следующий блок для Игоря — подключить ее к локальному/test Yii2 flow через `CONFIDELINE_STRIPE_API_BASE` и доказать, что успешная fake-оплата создает/обновляет заказ и консультацию, а не только payment intent.</div>
+
+    <div class="grid">
+      <div class="card"><b>Проверка выполнена</b><p>`run-sandbox-scenarios.php` прошел success/cancel/fail/refund/webhook.</p></div>
+      <div class="card"><b>Реальные деньги не использовались</b><p>Проверка шла только на `127.0.0.1:8787`, без Stripe keys и без карт.</p></div>
+      <div class="card"><b>Есть adapter для Игоря</b><p>В проекте есть `ADAPTER_SNIPPET_RU.md`: куда вставить sandbox API base и checkoutUrl.</p></div>
+      <div class="card"><b>Главный риск остается</b><p>Нет runtime proof, что оплата создает консультацию и видна эксперту/админу.</p></div>
+    </div>
+
+    <h2>Скрин доказательства</h2>
+    <div class="proof-img"><img src="artifacts/test-order-sandbox-checkout-2026-06-04.png" alt="Confideline sandbox checkout proof"></div>
+
+    <h2>Матрица результата</h2>
+    <div class="matrix"><table><thead><tr><th>Блок</th><th>Статус</th><th>Доказательство</th><th>Вывод PM</th><th>Следующее действие</th></tr></thead><tbody>
+      <tr><td>Локальная платежная песочница</td><td><span class="status ok">PASS</span></td><td>Сценарии success, cancel, fail, refund, webhook прошли.</td><td>Можно использовать как safe-provider.</td><td>Подключить к локальному/test сайту.</td></tr>
+      <tr><td>Fake checkout UI</td><td><span class="status ok">PASS</span></td><td>Скрин checkout на 127.0.0.1.</td><td>Есть наглядный proof без реального Stripe.</td><td>Использовать в QA/demo.</td></tr>
+      <tr><td>Adapter для Yii2</td><td><span class="status warn">WARN</span></td><td>`ADAPTER_SNIPPET_RU.md` описывает изменения.</td><td>Путь внедрения есть, но runtime не доказан.</td><td>Передать Игорю в co2p-пакете.</td></tr>
+      <tr><td>Связь сайта с sandbox</td><td><span class="status bad">RED</span></td><td>Нет proof текущего Confideline checkout через sandbox.</td><td>Тестовый заказ еще не готов.</td><td>Запустить локальный/test сайт с env.</td></tr>
+      <tr><td>Заказ → консультация → чат</td><td><span class="status bad">RED</span></td><td>Нет proof после fake success.</td><td>Это главный блокер платной услуги.</td><td>Доказать mapping payment success → order → consultation.</td></tr>
+      <tr><td>Уведомления/no-send</td><td><span class="status warn">WARN</span></td><td>Email-пакет есть отдельно, связка с заказом не доказана.</td><td>Реальные письма не включать.</td><td>Проверить event log на test order.</td></tr>
+      <tr><td>Support/refund</td><td><span class="status warn">WARN</span></td><td>Refund в sandbox работает, но тикет не доказан.</td><td>Платежный refund не равен support-процессу.</td><td>Проверить тикет по тестовой консультации.</td></tr>
+    </tbody></table></div>
+
+    <h2>Связанные материалы</h2>
+    <div class="links">
+      <a href="artifacts/TEST_ORDER_SANDBOX_PREFLIGHT_OUTPUT_2026_06_04.md"><strong>Вывод проверки</strong><span>Командный proof и PM-вывод.</span></a>
+      <a href="artifacts/TEST_ORDER_SANDBOX_PREFLIGHT_REPORT_2026_06_04.csv"><strong>CSV результата</strong><span>Табличная версия матрицы.</span></a>
+      <a href="artifacts/TEST_ORDER_SANDBOX_CHECKOUT_SESSION_2026_06_04.json"><strong>Checkout session JSON</strong><span>Fake session для proof-скрина.</span></a>
+      <a href="test-order-runtime-proof-plan.html"><strong>План runtime-проверки</strong><span>Полный маршрут заказа до консультации и поддержки.</span></a>
+      <a href="igor-test-order-consultation-handoff.html"><strong>Пакет Игорю</strong><span>Что нужно реализовать или подтвердить дальше.</span></a>
+      <a href="red-route-execution-plan.html"><strong>Красный маршрут</strong><span>Почему этот блок идет первым.</span></a>
+    </div>
+  </section>
+</main>
+<script src="../assets/panel-ux.js"></script>
+</body>
+</html>

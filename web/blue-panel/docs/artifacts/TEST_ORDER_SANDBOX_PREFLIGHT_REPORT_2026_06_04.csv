@@ -1,0 +1,8 @@
+Блок,Статус,Доказательство,Вывод PM,Следующее действие
+Локальная платежная песочница,PASS,run-sandbox-scenarios.php прошел success cancel fail refund webhook,Можно использовать как безопасный provider для тестового заказа,Подключить sandbox к локальному/test Yii2 flow через env
+Fake checkout UI,PASS,Скрин artifacts/test-order-sandbox-checkout-2026-06-04.png,Есть визуальный checkout без реального Stripe,Использовать для demo/proof и не подключать к production
+Adapter для Yii2,WARN,ADAPTER_SNIPPET_RU.md описывает StripeCheckout BalanceController frontend branch,Есть понятный путь внедрения но не доказано что он применен в текущем runtime,Передать Игорю как часть co2p пакета
+Связь сайта с sandbox,RED,Нет runtime proof что Confideline создает checkout session через sandbox,Без этого нельзя считать тестовый заказ готовым,Запустить локальный/test сайт с CONFIDELINE_STRIPE_API_BASE
+Связь оплаты с заказом и консультацией,RED,Нет proof order question consultation chat после sandbox success,Это главный блокер запуска платной услуги,Реализовать/проверить mapping payment success -> order -> consultation
+No-send события и письма,WARN,Email пакет есть отдельно но runtime с заказом не доказан,Нельзя отправлять реальные письма до no-send proof,Связать события payment/order/consultation/support
+Support/refund контур,WARN,Refund sandbox работает но support/order связь не доказана,Возврат как платежный объект не равен операционной обработке жалобы,Проверить тикет по тестовой консультации
