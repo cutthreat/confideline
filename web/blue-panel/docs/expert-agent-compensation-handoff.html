@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Пакет Игорю: начисления экспертам и агентам · Blue panel</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:var(--shadow)}
+    .lead{font-size:18px;color:var(--muted);max-width:1040px}.decision{border:1px solid var(--line);border-radius:24px;background:#fff8df;padding:18px;margin:16px 0}.decision h2{margin-top:0}
+    .status{display:inline-flex;border-radius:999px;padding:6px 9px;font:900 10px Verdana,sans-serif;text-transform:uppercase;white-space:nowrap}.green{background:#dff5e8;color:#176032}.yellow{background:#fff0c0;color:#745000}.red{background:#ffe1df;color:#8d1d12}.blue{background:#e5f1ff;color:#1b5a85}
+    .flow{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin:18px 0}.step{position:relative;border:1px solid var(--line);border-radius:18px;background:#fff;padding:14px;min-height:116px}.step:after{content:'→';position:absolute;right:-12px;top:50%;transform:translateY(-50%);font-weight:900;color:#1f6b49}.step:last-child:after{display:none}.step b{display:block;color:#1f6b49;margin-bottom:6px}.step span{display:block;color:var(--muted);font-size:13px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:16px 0}.card{border:1px solid var(--line);border-radius:20px;background:#faf7ff;padding:15px}.card b{display:block;color:#1f6b49;margin-bottom:6px}.card p{margin:0;color:var(--muted)}
+    .matrix{overflow:auto;border:1px solid var(--line);border-radius:22px;background:#fff;margin:16px 0}table{width:100%;min-width:1180px;border-collapse:collapse;font-size:14px}th,td{border-bottom:1px solid var(--line);padding:11px;text-align:left;vertical-align:top}th{font:900 10px Verdana,sans-serif;text-transform:uppercase;color:#514a61;background:#fbfaf7}.note{border:1px solid var(--line);border-radius:18px;background:#fbfaf7;padding:14px;line-height:1.55}.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:12px}.links a{display:block;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:13px;text-decoration:none;color:var(--ink)}.links strong{display:block;color:#1f6b49;margin-bottom:4px}.links span{display:block;color:var(--muted);font-size:13px}@media(max-width:1150px){.flow{grid-template-columns:1fr 1fr}.step:after{display:none}}@media(max-width:700px){.flow{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <a href="../index.html">← Blue panel</a>
+  <section class="doc">
+    <div class="eyebrow">Передача в разработку · эксперты · агенты · начисления · проверка</div>
+    <h1>Пакет Игорю: начисления экспертам и агентам</h1>
+    <p class="lead">Этот пакет описывает, как в админке должны появляться тестовые начисления за консультации: кто выполнил работу, за что начислена сумма, почему она подтверждена, удержана, изменена или отменена. Реальные выплаты и точные ставки не запускаются.</p>
+
+    <div class="decision">
+      <h2>Решение PM</h2>
+      <p><b>Для первых 5 экспертов нужна прозрачная тестовая система начислений, а не ручные заметки в чате.</b> Исполнитель должен видеть, за что ему начислено, админ — почему сумма появилась, PM — как это влияет на экономику. Рекомендованная модель для старта: базово считать завершенную консультацию, но учитывать срок ответа, качество, жалобы, возвраты и ручные решения с логом.</p>
+      <p><span class="status yellow">модель готова к согласованию</span> <span class="status red">точные ставки не утверждены</span> <span class="status red">админка начислений не доказана</span> <span class="status green">можно проверить без реальных выплат</span></p>
+    </div>
+
+    <h2>Как должно появляться начисление</h2>
+    <div class="flow">
+      <div class="step"><b>1. Заказ</b><span>Есть платная или тестовая консультация.</span></div>
+      <div class="step"><b>2. Назначение</b><span>Эксперт или агент получил задачу.</span></div>
+      <div class="step"><b>3. Ответ</b><span>Исполнитель дал ответ клиенту в чате.</span></div>
+      <div class="step"><b>4. Проверка</b><span>Система смотрит срок, жалобы, качество и статус заказа.</span></div>
+      <div class="step"><b>5. Начисление</b><span>Создается тестовая сумма с причиной.</span></div>
+      <div class="step"><b>6. Корректировка</b><span>Бонус, удержание, спор или отмена фиксируются с логом.</span></div>
+      <div class="step"><b>7. Отчет</b><span>Исполнитель, админ и PM видят итог периода.</span></div>
+    </div>
+
+    <h2>Что должно быть в админке</h2>
+    <div class="matrix"><table><thead><tr><th>Блок</th><th>Что должно быть видно</th><th>Зачем нужно</th><th>Критерий приемки</th></tr></thead><tbody>
+      <tr><td>Карточка начисления</td><td>Исполнитель, роль, консультация, заказ, клиентский вопрос, сумма, валюта, статус, причина.</td><td>Понять, за что появилась сумма.</td><td>Из начисления открывается консультация и исполнитель.</td></tr>
+      <tr><td>Правило расчета</td><td>Фикс, процент, гибрид, бонус, удержание, ручная корректировка.</td><td>Не спорить о происхождении суммы.</td><td>Каждое начисление имеет правило.</td></tr>
+      <tr><td>Статус начисления</td><td>Ожидает результата, предварительно, подтверждено, удержано, скорректировано, отменено, выплачено.</td><td>Показывать, что деньги еще могут зависеть от качества и жалобы.</td><td>Статус меняется только с причиной.</td></tr>
+      <tr><td>Качество и жалобы</td><td>Оценка ответа, замечания, просрочка, refund risk, спор.</td><td>Связать деньги с качеством услуги.</td><td>Жалоба может поставить начисление на удержание.</td></tr>
+      <tr><td>Кабинет исполнителя</td><td>Список своих начислений, статусы, причины удержаний, период, итог.</td><td>Эксперт/агент понимает, что заработал.</td><td>Исполнитель не видит чужие начисления.</td></tr>
+      <tr><td>Отчет админа</td><td>Итог по ролям, периодам, статусам, удержаниям, спорным кейсам.</td><td>Управлять расходами и качеством.</td><td>Админ видит сводку без ручного подсчета.</td></tr>
+      <tr><td>История действий</td><td>Кто создал, изменил, подтвердил, удержал или отменил начисление.</td><td>Защитить систему от хаоса и споров.</td><td>Любая ручная правка имеет автора и причину.</td></tr>
+    </tbody></table></div>
+
+    <h2>Рекомендованные правила старта</h2>
+    <div class="matrix"><table><thead><tr><th>Роль</th><th>Основа оплаты</th><th>Что дает бонус</th><th>Что ставит на удержание</th><th>Комментарий PM</th></tr></thead><tbody>
+      <tr><td>Эксперт</td><td>Завершенная консультация + ручная гарантия на период теста при необходимости.</td><td>Ответ в срок, хорошая оценка, отсутствие жалоб, соблюдение регламента.</td><td>Просрочка без причины, плохой ответ, жалоба, возврат по вине эксперта, увод клиента.</td><td>Главная мотивация — качественно оказанная услуга, не количество сообщений.</td></tr>
+      <tr><td>Агент</td><td>Фикс за смену или фикс + обработанные консультации в назначенной зоне.</td><td>Нет просрочек, корректная эскалация, соблюдение скриптов.</td><td>Скрытие проблем, работа вне назначенных анкет, нарушение правил.</td><td>Для агента важна дисциплина процесса и управляемость смены.</td></tr>
+      <tr><td>Модератор качества</td><td>Фикс за смену или пакет проверок.</td><td>Конкретные замечания, быстрое закрытие спорных кейсов, улучшение обучения.</td><td>Формальные проверки без фактов.</td><td>Модератор не должен быть мотивирован штрафовать ради штрафов.</td></tr>
+      <tr><td>Поддержка</td><td>Фикс за смену/контур.</td><td>Быстрое закрытие тикетов, снижение повторных жалоб, корректные решения.</td><td>Потерянные тикеты, обещания вне правил, неверные решения.</td><td>Поддержка не должна продавать любой ценой, ее задача — доверие и решение проблем.</td></tr>
+    </tbody></table></div>
+
+    <h2>Статусы начисления</h2>
+    <div class="matrix"><table><thead><tr><th>Статус</th><th>Что означает</th><th>Кто видит</th><th>Что дальше</th></tr></thead><tbody>
+      <tr><td>Ожидает результата</td><td>Консультация назначена, но ответ еще не принят как выполненный.</td><td>Исполнитель, админ.</td><td>Ждем ответ и закрытие консультации.</td></tr>
+      <tr><td>Предварительно начислено</td><td>Ответ отправлен, но еще есть окно проверки/жалобы.</td><td>Исполнитель, админ.</td><td>Проверка качества и проблем.</td></tr>
+      <tr><td>Подтверждено</td><td>Работа принята, критичных жалоб нет.</td><td>Исполнитель, админ, финансы.</td><td>Попадает в итог периода.</td></tr>
+      <tr><td>На удержании</td><td>Есть жалоба, просрочка, спор или риск возврата.</td><td>Исполнитель, поддержка, админ.</td><td>Ждем решение поддержки/модерации.</td></tr>
+      <tr><td>Скорректировано</td><td>Сумма изменена из-за бонуса, удержания или ручного решения.</td><td>Исполнитель, админ.</td><td>Фиксируется причина изменения.</td></tr>
+      <tr><td>Отменено</td><td>Работа не оплачивается по правилам.</td><td>Исполнитель, админ.</td><td>Нужна причина и ссылка на кейс.</td></tr>
+      <tr><td>Выплачено</td><td>Начисление закрыто в периоде выплаты.</td><td>Исполнитель, финансы, админ.</td><td>Остается в истории.</td></tr>
+    </tbody></table></div>
+
+    <h2>Сценарии проверки</h2>
+    <div class="matrix"><table><thead><tr><th>Сценарий</th><th>Что проверяем</th><th>Ожидаемый результат</th><th>Доказательство</th></tr></thead><tbody>
+      <tr><td>Ответ без жалоб</td><td>Закрыть тестовую консультацию качественным ответом.</td><td>Создано предварительное или подтвержденное тестовое начисление.</td><td>Скрин начисления.</td></tr>
+      <tr><td>Просрочка</td><td>Нарушить срок ответа.</td><td>Начисление попадает на удержание или требует ручного решения.</td><td>Скрин статуса и причины.</td></tr>
+      <tr><td>Жалоба на качество</td><td>Создать жалобу клиента.</td><td>Начисление связано с жалобой и не подтверждается автоматически.</td><td>Скрин жалобы и начисления.</td></tr>
+      <tr><td>Бонус</td><td>Админ добавляет бонус за качество.</td><td>Сумма меняется только с причиной и автором.</td><td>Скрин истории действий.</td></tr>
+      <tr><td>Удержание</td><td>Админ применяет удержание.</td><td>Исполнитель видит причину, админ видит лог.</td><td>Скрин кабинета исполнителя и админки.</td></tr>
+      <tr><td>Отмена</td><td>Консультация отменена по правилам.</td><td>Начисление получает статус “отменено” с причиной.</td><td>Скрин статуса.</td></tr>
+      <tr><td>Доступ исполнителя</td><td>Эксперт/агент открывает свои начисления.</td><td>Видит только свои суммы и причины, чужие данные закрыты.</td><td>Скрин под ролью исполнителя.</td></tr>
+      <tr><td>Итог периода</td><td>Админ формирует сводку.</td><td>Видно суммы по ролям, статусам, удержаниям и спорным кейсам.</td><td>Скрин отчета.</td></tr>
+    </tbody></table></div>
+
+    <h2>Решения основателя</h2>
+    <div class="note"><p>PM не утверждает финальные суммы. До передачи в боевую работу нужно отдельно решить: точные ставки, валюту, период выплат, способ выплаты, legal статус исполнителей, налоговую модель, кто имеет право подтверждать/отменять начисления, какие удержания допустимы и как это отражается в документах для экспертов.</p></div>
+
+    <h2>Артефакты и связи</h2>
+    <div class="links">
+      <a href="artifacts/EXPERT_AGENT_COMPENSATION_HANDOFF_2026_06_04.csv"><strong>Таблица начислений</strong><span>Роли, правила, статусы, удержания, критерии приемки.</span></a>
+      <a href="artifacts/EXPERT_AGENT_COMPENSATION_TEST_SCENARIOS_2026_06_04.md"><strong>Сценарии проверки</strong><span>Как доказать начисления без реальных выплат.</span></a>
+      <a href="expert-agent-compensation.html"><strong>Общая модель оплаты</strong><span>PM-вывод по фикс/процент/гибрид и рискам мотивации.</span></a>
+      <a href="expert-agent-workspace-handoff.html"><strong>Рабочее место эксперта</strong><span>Где исполнитель видит задачи, качество и начисления.</span></a>
+      <a href="support-refund-handoff.html"><strong>Поддержка и жалобы</strong><span>Как жалобы и возвраты влияют на начисления.</span></a>
+      <a href="first-sales-economics.html"><strong>Экономика первых продаж</strong><span>Как выплаты влияют на валовую прибыль и рекламный тест.</span></a>
+      <a href="june-plan.html#jun-05"><strong>План июня: модель оплаты</strong><span>Июньская задача, которую закрывает этот пакет.</span></a>
+      <a href="https://trello.com/c/bNsEmcDz"><strong>Trello: модель работы с агентами и оплатой</strong><span>Карточка месяца для согласования и результата.</span></a>
+    </div>
+  </section>
+</main>
+<script src="../assets/panel-ux.js"></script>
+</body>
+</html>
