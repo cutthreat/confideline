@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Пакет Игорю: email, уведомления и события · Blue panel</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:var(--shadow)}
+    .lead{font-size:18px;color:var(--muted);max-width:1040px}.decision{border:1px solid var(--line);border-radius:24px;background:#fff8df;padding:18px;margin:16px 0}.decision h2{margin-top:0}
+    .status{display:inline-flex;border-radius:999px;padding:6px 9px;font:900 10px Verdana,sans-serif;text-transform:uppercase;white-space:nowrap}.green{background:#dff5e8;color:#176032}.yellow{background:#fff0c0;color:#745000}.red{background:#ffe1df;color:#8d1d12}.blue{background:#e5f1ff;color:#1b5a85}
+    .flow{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:18px 0}.step{position:relative;border:1px solid var(--line);border-radius:18px;background:#fff;padding:14px;min-height:112px}.step:after{content:'→';position:absolute;right:-12px;top:50%;transform:translateY(-50%);font-weight:900;color:#1f6b49}.step:last-child:after{display:none}.step b{display:block;color:#1f6b49;margin-bottom:6px}.step span{display:block;color:var(--muted);font-size:13px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:16px 0}.card{border:1px solid var(--line);border-radius:20px;background:#faf7ff;padding:15px}.card b{display:block;color:#1f6b49;margin-bottom:6px}.card p{margin:0;color:var(--muted)}
+    .matrix{overflow:auto;border:1px solid var(--line);border-radius:22px;background:#fff;margin:16px 0}table{width:100%;min-width:1180px;border-collapse:collapse;font-size:14px}th,td{border-bottom:1px solid var(--line);padding:11px;text-align:left;vertical-align:top}th{font:900 10px Verdana,sans-serif;text-transform:uppercase;color:#514a61;background:#fbfaf7}.note{border:1px solid var(--line);border-radius:18px;background:#fbfaf7;padding:14px;line-height:1.55}.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:12px}.links a{display:block;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:13px;text-decoration:none;color:var(--ink)}.links strong{display:block;color:#1f6b49;margin-bottom:4px}.links span{display:block;color:var(--muted);font-size:13px}@media(max-width:1050px){.flow{grid-template-columns:1fr 1fr}.step:after{display:none}}@media(max-width:680px){.flow{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <a href="../index.html">← Blue panel</a>
+  <section class="doc">
+    <div class="eyebrow">Передача в разработку · письма · уведомления · админка · проверка</div>
+    <h1>Пакет Игорю: email, уведомления и события</h1>
+    <p class="lead">Этот пакет фиксирует, какие сообщения и внутренние уведомления нужны для запуска платных консультаций: клиент должен понимать статус заказа, эксперт и агент — видеть новую работу и срок ответа, поддержка — быстро находить проблему, админ — контролировать просрочки, жалобы и начисления.</p>
+
+    <div class="decision">
+      <h2>Решение PM</h2>
+      <p><b>Email и уведомления — не второстепенная задача, а часть услуги.</b> Если после оплаты клиент не понимает, что происходит, а эксперт не видит назначенную консультацию, сервис будет выглядеть сломанным даже при рабочем чате. Для июня нужен отдельный пакет: события, шаблоны, переменные, роли получателей, управление в админке и тестовый режим без отправки реальным клиентам.</p>
+      <p><span class="status red">блокирует рекламу</span> <span class="status yellow">есть контур email-админки</span> <span class="status yellow">нужна связка с заказом и чатом</span> <span class="status green">можно проверить без реальных писем</span></p>
+    </div>
+
+    <h2>Как должно работать сообщение</h2>
+    <div class="flow">
+      <div class="step"><b>1. Событие</b><span>Оплата, вопрос, назначение, ответ, просрочка, жалоба или начисление.</span></div>
+      <div class="step"><b>2. Получатель</b><span>Клиент, эксперт, агент, поддержка, модератор или админ.</span></div>
+      <div class="step"><b>3. Шаблон</b><span>Система выбирает нужный текст, язык и переменные.</span></div>
+      <div class="step"><b>4. Проверка</b><span>До боевого запуска письмо формируется в тестовом режиме.</span></div>
+      <div class="step"><b>5. Статус</b><span>Админ видит: сформировано, отправлено, ошибка, отменено.</span></div>
+      <div class="step"><b>6. Отчет</b><span>PM видит, где клиент или эксперт остался без статуса.</span></div>
+    </div>
+
+    <h2>Минимальный набор сообщений для запуска</h2>
+    <div class="matrix"><table><thead><tr><th>Событие</th><th>Кому</th><th>Смысл сообщения</th><th>Ключевые переменные</th><th>Где должно быть видно</th><th>Статус</th></tr></thead><tbody>
+      <tr><td>Регистрация клиента</td><td>Клиент</td><td>Подтвердить вход и объяснить следующий шаг.</td><td>Имя, язык, ссылка входа, поддержка.</td><td>Профиль клиента, журнал писем.</td><td><span class="status yellow">частично стандартно</span></td></tr>
+      <tr><td>Заказ создан</td><td>Клиент, админ</td><td>Показать, что покупка начата, но услуга еще не оказана.</td><td>Номер заказа, услуга, цена, язык, источник.</td><td>Заказ, админка, журнал событий.</td><td><span class="status red">нужно связать</span></td></tr>
+      <tr><td>Оплата успешна или тестово успешна</td><td>Клиент, админ, поддержка</td><td>Подтвердить статус и перевести клиента к вопросу.</td><td>Заказ, сумма, валюта, услуга, ссылка на вопрос.</td><td>Заказ, платежи, support, журнал писем.</td><td><span class="status red">обязательно</span></td></tr>
+      <tr><td>Оплата не прошла</td><td>Клиент, поддержка</td><td>Объяснить, что услуга не началась, дать повторить попытку или обратиться в поддержку.</td><td>Заказ, причина, ссылка повтора, поддержка.</td><td>Заказ, support, журнал ошибок.</td><td><span class="status red">обязательно</span></td></tr>
+      <tr><td>Клиент не написал вопрос после оплаты</td><td>Клиент, поддержка</td><td>Напомнить, что для консультации нужен вопрос.</td><td>Заказ, услуга, срок ожидания, ссылка на форму.</td><td>Очередь “оплачен без вопроса”.</td><td><span class="status red">обязательно</span></td></tr>
+      <tr><td>Вопрос принят</td><td>Клиент, админ</td><td>Подтвердить, что запрос получен и будет назначен исполнителю.</td><td>Заказ, тема, срок ответа, язык, ссылка на чат.</td><td>Карточка консультации, журнал событий.</td><td><span class="status red">обязательно</span></td></tr>
+      <tr><td>Консультация назначена</td><td>Эксперт/агент, админ</td><td>Исполнитель получает новую работу и срок ответа.</td><td>Консультация, клиент, тема, срок, ссылка на чат, роль.</td><td>Рабочее место эксперта, очередь админа.</td><td><span class="status red">обязательно</span></td></tr>
+      <tr><td>Скоро истекает срок ответа</td><td>Эксперт/агент, админ</td><td>Предупредить о риске просрочки.</td><td>Консультация, дедлайн, оставшееся время, ссылка на чат.</td><td>Очередь сроков, журнал уведомлений.</td><td><span class="status red">обязательно</span></td></tr>
+      <tr><td>Ответ отправлен</td><td>Клиент, админ, аналитика</td><td>Сообщить, что консультация готова, открыть оценку и повторный шаг.</td><td>Консультация, эксперт, ссылка на чат, оценка, поддержка.</td><td>Чат, письмо клиенту, отчет ответа.</td><td><span class="status red">обязательно</span></td></tr>
+      <tr><td>Жалоба или обращение</td><td>Поддержка, админ, модератор</td><td>Не потерять проблему клиента и связать ее с заказом.</td><td>Заказ, клиент, чат, исполнитель, причина, срок реакции.</td><td>Support queue, карточка заказа.</td><td><span class="status red">обязательно</span></td></tr>
+      <tr><td>Решение по проблеме</td><td>Клиент, поддержка, админ</td><td>Сообщить итог: ответ, доработка, компенсация, отказ, следующий шаг.</td><td>Тикет, заказ, решение, срок, ссылка поддержки.</td><td>Тикет, журнал решений.</td><td><span class="status red">обязательно</span></td></tr>
+      <tr><td>Начисление исполнителю</td><td>Эксперт/агент, админ</td><td>Показать, за что начислены деньги или почему есть удержание.</td><td>Консультация, сумма, статус, причина, период.</td><td>Рабочее место эксперта, финансы.</td><td><span class="status yellow">после основного пути</span></td></tr>
+      <tr><td>Повторная покупка</td><td>Клиент, PM/маркетинг</td><td>Вернуть клиента после ответа без агрессивного спама.</td><td>Прошлая консультация, тема, новый повод, ссылка.</td><td>Маркетинговые рассылки, аналитика.</td><td><span class="status yellow">после первого запуска</span></td></tr>
+    </tbody></table></div>
+
+    <h2>Разделение сообщений</h2>
+    <div class="grid">
+      <div class="card"><b>Сервисные письма</b><p>Регистрация, заказ, оплата, вопрос, ответ, проблема. Это обязательные статусы услуги.</p></div>
+      <div class="card"><b>Внутренние уведомления</b><p>Назначение, просрочка, жалоба, удержание, блокировка, ручное действие админа.</p></div>
+      <div class="card"><b>Маркетинговые рассылки</b><p>Повторная покупка, контент, реактивация. Только после готовности основного пути и правил согласия.</p></div>
+      <div class="card"><b>Тестовый режим</b><p>До запуска формируем сообщения и статусы без реальной отправки клиентам.</p></div>
+    </div>
+
+    <h2>Что нужно в админке</h2>
+    <div class="matrix"><table><thead><tr><th>Раздел</th><th>Что должно быть</th><th>Зачем нужно</th><th>Критерий приемки</th></tr></thead><tbody>
+      <tr><td>Шаблоны сообщений</td><td>Название, событие, язык, тема письма, текст, переменные, статус активности.</td><td>Команда может редактировать тексты без программиста.</td><td>Админ видит список шаблонов и может открыть конкретный шаблон.</td></tr>
+      <tr><td>Переменные</td><td>Имя клиента, заказ, услуга, цена, валюта, срок, ссылка на чат, поддержка, язык.</td><td>Сообщение выглядит персонально и не ломается.</td><td>В тестовом режиме видно, какие переменные подставились.</td></tr>
+      <tr><td>Журнал сообщений</td><td>Событие, получатель, шаблон, статус, ошибка, дата, связанный заказ/чат.</td><td>Поддержка понимает, ушло ли письмо и почему клиент не получил статус.</td><td>Из заказа можно открыть историю сообщений.</td></tr>
+      <tr><td>Правила отправки</td><td>Кому отправлять, когда не отправлять, повторы, язык, тестовый режим.</td><td>Не спамить и не отправлять опасные сообщения.</td><td>Есть понятные правила для каждого события.</td></tr>
+      <tr><td>Очередь ошибок</td><td>Не сформировано, не отправлено, нет шаблона, нет email, ошибка переменной.</td><td>Не терять критичные статусы услуги.</td><td>Админ видит ошибки без ручного поиска.</td></tr>
+    </tbody></table></div>
+
+    <h2>Правила текста и безопасности</h2>
+    <div class="matrix"><table><thead><tr><th>Правило</th><th>Как писать</th><th>Что запрещено</th></tr></thead><tbody>
+      <tr><td>Статус важнее эмоций</td><td>Коротко объяснить, что произошло и что делать дальше.</td><td>Писать “магические гарантии”, обещать 100% результат.</td></tr>
+      <tr><td>Срок ответа</td><td>Показывать понятный срок и где смотреть статус.</td><td>Оставлять клиента после оплаты без времени ожидания.</td></tr>
+      <tr><td>Поддержка рядом</td><td>Всегда давать понятный путь обращения, если что-то не так.</td><td>Прятать поддержку или заставлять искать контакты.</td></tr>
+      <tr><td>Без лишних данных</td><td>Показывать только нужную информацию для роли.</td><td>Отправлять исполнителю платежные данные или чужие консультации.</td></tr>
+      <tr><td>Юридическая аккуратность</td><td>Писать как про развлекательную/консультационную услугу с дисклеймером.</td><td>Обещать медицинские, финансовые, юридические или гарантированные предсказательные результаты.</td></tr>
+    </tbody></table></div>
+
+    <h2>Сценарии проверки</h2>
+    <div class="matrix"><table><thead><tr><th>Сценарий</th><th>Что проверяем</th><th>Ожидаемый результат</th><th>Доказательство</th></tr></thead><tbody>
+      <tr><td>Успешная покупка</td><td>Создать тестовый заказ и вопрос.</td><td>Клиент, админ и поддержка видят правильный статус; письмо сформировано в тестовом режиме.</td><td>Скрин заказа и журнала сообщений.</td></tr>
+      <tr><td>Ошибка оплаты</td><td>Смоделировать отказ оплаты.</td><td>Клиент получает понятный статус, консультация не назначается.</td><td>Скрин статуса и отсутствия назначения.</td></tr>
+      <tr><td>Назначение эксперта</td><td>Назначить консультацию исполнителю.</td><td>Эксперт/агент видит уведомление и дедлайн.</td><td>Скрин рабочего места исполнителя.</td></tr>
+      <tr><td>Просрочка</td><td>Нарушить срок ответа.</td><td>Админ, поддержка и исполнитель видят проблему.</td><td>Скрин очереди просрочек.</td></tr>
+      <tr><td>Ответ готов</td><td>Эксперт отправляет ответ.</td><td>Клиент получает статус “ответ готов”, событие попадает в историю.</td><td>Скрин чата и журнала.</td></tr>
+      <tr><td>Жалоба</td><td>Создать обращение клиента.</td><td>Поддержка видит заказ, чат, исполнителя и причину.</td><td>Скрин тикета.</td></tr>
+      <tr><td>Ошибка шаблона</td><td>Отключить шаблон или убрать переменную.</td><td>Админ видит ошибку, письмо не уходит молча.</td><td>Скрин очереди ошибок.</td></tr>
+    </tbody></table></div>
+
+    <h2>Что не входит в этот пакет</h2>
+    <div class="note"><p>Этот пакет не запускает реальные письма клиентам, не подключает платежного провайдера и не утверждает финальную юридическую политику рассылок. Он описывает структуру событий, шаблонов, переменных и проверки, чтобы Игорь мог связать email-админку с заказом, консультацией, чатом, поддержкой и рабочим местом эксперта.</p></div>
+
+    <h2>Артефакты и связи</h2>
+    <div class="links">
+      <a href="artifacts/EMAIL_NOTIFICATIONS_HANDOFF_2026_06_04.csv"><strong>Таблица email и уведомлений</strong><span>События, получатели, смысл, переменные, место в админке и статус.</span></a>
+      <a href="artifacts/EMAIL_NOTIFICATIONS_TEST_SCENARIOS_2026_06_04.md"><strong>Сценарии проверки</strong><span>Как доказать, что сообщения формируются и видны без реальной отправки клиентам.</span></a>
+      <a href="https://cutthreat.github.io/confideline/web/qa-reports/nebula-email-admin-upload-2026-05-25/?v=4f19983"><strong>Существующий web-контур email</strong><span>Ранее подготовленный результат по загрузке email-шаблонов в админке.</span></a>
+      <a href="events.html"><strong>Карта событий</strong><span>Общая нервная система сервиса: события, уведомления, админка и аналитика.</span></a>
+      <a href="paid-consultation-test-flow.html"><strong>Покупка консультации</strong><span>Где события возникают в коммерческом пути клиента.</span></a>
+      <a href="expert-agent-workspace-handoff.html"><strong>Рабочее место эксперта</strong><span>Какие уведомления нужны исполнителю, админу и поддержке.</span></a>
+      <a href="support-refund-readiness.html"><strong>Поддержка и возвраты</strong><span>Какие сообщения нужны при проблемах, жалобах и решениях.</span></a>
+      <a href="june-plan.html#jun-03"><strong>План июня: email</strong><span>Июньская задача, которую закрывает этот пакет.</span></a>
+    </div>
+  </section>
+</main>
+<script src="../assets/panel-ux.js"></script>
+</body>
+</html>
