@@ -1,0 +1,152 @@
+:root{--ink:#27222d;--muted:#6f6878;--line:#ded4c7;--paper:#fffaf1;--panel:#ffffff;--accent:#673eda;--shadow:0 20px 60px rgba(70,48,30,.12)}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#f8f1e5,#eef3ec);color:var(--ink);font-family:Georgia,'Times New Roman',serif}.wrap{max-width:1180px;margin:0 auto;padding:28px 18px 34px}.panel{background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:32px;box-shadow:var(--shadow);padding:22px}h1{font-size:46px;line-height:1.02;margin:6px 0 14px}h2{font-size:28px;line-height:1.15;margin:0 0 12px}h3{margin:0 0 10px}p{font-size:16px;line-height:1.55;color:var(--muted)}a{color:#184f38}.eyebrow{font:900 12px Verdana,sans-serif;text-transform:uppercase;letter-spacing:.14em;color:#174d39}.foot{margin-top:18px;color:#6f6878;font-size:13px}.back{display:inline-block;margin-bottom:14px;font-weight:700}@media(max-width:760px){h1{font-size:34px}.wrap{padding:18px 10px}.panel{border-radius:24px}}
+
+/* Unified Blue panel UX */
+.top-nav{position:sticky;top:0;z-index:30;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 18px;padding:12px;background:rgba(250,247,239,.93);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:22px;box-shadow:0 12px 30px rgba(58,43,29,.08)}
+.top-nav a{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);text-decoration:none;font:900 12px Manrope,Verdana,sans-serif;letter-spacing:.03em;transition:transform .16s ease,box-shadow .16s ease,background .16s ease}
+.top-nav a.active,.top-nav a[aria-current="page"],.top-nav a.primary{background:#1f6b49;color:#fff;border-color:#1f6b49}
+.top-nav a:hover{box-shadow:0 10px 24px rgba(31,107,73,.16);transform:translateY(-1px)}
+.panel-click-card,.panel-clickable-link{cursor:pointer;position:relative;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,background .16s ease}
+.panel-click-card:hover,.panel-clickable-link:hover{transform:translateY(-1px);box-shadow:0 16px 34px rgba(31,107,73,.14)!important;border-color:#9fc6b2!important}
+.panel-click-card:focus-visible,.panel-clickable-link:focus-visible{outline:3px solid rgba(31,107,73,.28);outline-offset:3px}
+.panel-card-action{display:inline-flex;width:max-content;align-items:center;justify-content:center;border-radius:999px;background:#1f6b49;color:#fff!important;text-decoration:none!important;padding:8px 11px;margin-top:10px;font:900 11px Manrope,Verdana,sans-serif;letter-spacing:.02em}
+.panel-click-card > a[href]:only-of-type,.panel-click-card a[href]{font-weight:900;text-decoration:none;color:#1f6b49}
+.external-link::after{content:' ↗';font-weight:900;color:#1f6b49}.file-link::after{content:' файл';display:inline-flex;margin-left:6px;border:1px solid var(--line);border-radius:999px;padding:2px 6px;background:#fff8df;color:#745000;font:900 9px Verdana,sans-serif;text-transform:uppercase}
+.back{display:inline-flex;align-items:center;gap:6px;padding:8px 11px;border:1px solid var(--line);border-radius:999px;background:#fff;text-decoration:none;color:var(--ink);font:900 12px Manrope,Verdana,sans-serif}.back:hover{box-shadow:0 10px 24px rgba(31,107,73,.12)}
+@media(max-width:760px){.top-nav{position:relative;border-radius:18px}.top-nav a{flex:1 1 auto}.panel-card-action{width:100%}}
+
+/* Reading rhythm fixes */
+.doc h2,.panel h2,.box h2,.service-zone h2{margin-top:28px}
+.doc h2:first-child,.panel h2:first-child,.box h2:first-child,.service-zone h2:first-child{margin-top:0}
+.doc table,.box table{margin:12px 0 18px}
+.doc details,.box details{margin-top:12px}
+.board + h2,.grid + h2,.summary + h2,.task + h2,table + h2,details + h2{margin-top:34px!important}
+
+/* Plain first links become visible back/actions */
+main.wrap > a[href]:not([class]){display:inline-flex;align-items:center;gap:6px;margin:0 0 12px;padding:8px 11px;border:1px solid var(--line);border-radius:999px;background:#fff;text-decoration:none;color:var(--ink);font:900 12px Manrope,Verdana,sans-serif}
+main.wrap > a[href]:not([class]):hover{box-shadow:0 10px 24px rgba(31,107,73,.12);transform:translateY(-1px)}
+
+/* First-screen composition fixes */
+.hero-main,.hero-side{align-self:start}
+.route-step .panel-card-action{display:none!important}
+
+/* Click area only: remove duplicate text links inside cards */
+.panel-click-card > a[href],
+.panel-click-card .month > a[href],
+.panel-click-card a[href]:not(.keep-text-link){
+  position:absolute!important;
+  right:14px!important;
+  top:14px!important;
+  width:34px!important;
+  height:34px!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  text-indent:999px!important;
+  border:1px solid var(--line)!important;
+  border-radius:999px!important;
+  background:#fff!important;
+  box-shadow:none!important;
+}
+.panel-click-card > a[href]::before,
+.panel-click-card a[href]:not(.keep-text-link)::before{
+  content:'↗';
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  text-indent:0;
+  color:#1f6b49;
+  font:900 16px Manrope,Verdana,sans-serif;
+}
+.panel-click-card:hover > a[href],
+.panel-click-card:hover a[href]:not(.keep-text-link){
+  background:#1f6b49!important;
+  border-color:#1f6b49!important;
+}
+.panel-click-card:hover > a[href]::before,
+.panel-click-card:hover a[href]:not(.keep-text-link)::before{color:#fff}
+.panel-card-action{width:34px!important;height:34px!important;padding:0!important;margin-top:10px!important;display:inline-grid!important;place-items:center!important;border-radius:999px!important;font-size:16px!important;line-height:1!important;text-indent:0!important}
+.panel-clickable-link .panel-card-action{position:absolute;right:14px;top:14px;margin:0!important}
+.panel-clickable-link{padding-right:58px!important}
+.route-step .panel-card-action{display:none!important}
+
+/* Area-click standard: cards are clickable, arrow is only a quiet hint */
+.hero-main,.hero-side{align-self:start}
+.panel-click-card,.panel-clickable-link{cursor:pointer;position:relative;padding-right:54px!important;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,background .16s ease}
+.panel-click-card:hover,.panel-clickable-link:hover{transform:translateY(-1px);box-shadow:0 16px 34px rgba(31,107,73,.14)!important;border-color:#9fc6b2!important;background:#fbfff9!important}
+.panel-click-card:focus-visible,.panel-clickable-link:focus-visible{outline:3px solid rgba(31,107,73,.28);outline-offset:3px}
+.panel-click-card > a[href]:not(.keep-text-link),
+.panel-click-card a[href]:not(.keep-text-link){position:absolute!important;right:18px!important;top:50%!important;transform:translateY(-50%)!important;width:auto!important;height:auto!important;min-width:0!important;min-height:0!important;padding:0!important;margin:0!important;border:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important;text-indent:-9999px!important;color:transparent!important;text-decoration:none!important;white-space:nowrap!important}
+.panel-click-card > a[href]:not(.keep-text-link)::before,
+.panel-click-card a[href]:not(.keep-text-link)::before{content:'→';position:absolute;right:0;top:50%;transform:translateY(-50%);text-indent:0;color:#1f6b49;font:900 18px Georgia,'Times New Roman',serif;line-height:1}
+.panel-click-card:hover > a[href]:not(.keep-text-link)::before,
+.panel-click-card:hover a[href]:not(.keep-text-link)::before{color:#0f3d2b;transform:translate(3px,-50%)}
+.panel-card-action{position:absolute!important;right:18px!important;top:50%!important;transform:translateY(-50%)!important;width:auto!important;height:auto!important;padding:0!important;margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;color:#1f6b49!important;box-shadow:none!important;font:900 18px Georgia,'Times New Roman',serif!important;line-height:1!important;text-indent:0!important}
+.panel-clickable-link:hover .panel-card-action{transform:translate(3px,-50%)!important;color:#0f3d2b!important}
+.route-step .panel-card-action{display:none!important}
+
+/* Remove duplicate arrow on cards that already contain their own link */
+.panel-click-card .panel-card-action{display:none!important}
+
+/* Unified card arrow symbol */
+.panel-click-card > a[href]:not(.keep-text-link)::before,
+.panel-click-card a[href]:not(.keep-text-link)::before,
+.panel-card-action{content:'↗'!important;color:#1f6b49!important;font:900 16px Georgia,'Times New Roman',serif!important;line-height:1!important}
+.panel-click-card:hover > a[href]:not(.keep-text-link)::before,
+.panel-click-card:hover a[href]:not(.keep-text-link)::before,
+.panel-clickable-link:hover .panel-card-action{color:#0f3d2b!important;transform:translate(2px,-50%)!important}
+.route-arrow{font:900 16px Georgia,'Times New Roman',serif!important;color:#1f6b49!important}
+.route-arrow::before{content:'↗'}
+.route-arrow{font-size:0!important}
+
+/* Route arrows match resource arrows */
+.route-arrow{font-size:0!important;color:transparent!important}
+.route-arrow::before{content:'↗'!important;display:block!important;color:#1f6b49!important;font:900 16px Georgia,'Times New Roman',serif!important;line-height:1!important}
+.route-step:hover .route-arrow::before{color:#0f3d2b!important;transform:translate(2px,-2px)!important}
+
+/* Main dashboard spacing grid correction */
+:root{--dash-gap:24px;--card-pad-x:24px;--card-pad-y:18px;--arrow-right:22px}
+.wrap{max-width:1180px;padding:24px 18px 40px}
+.top-nav{margin-bottom:18px;padding:12px!important}
+.hero,.plan-grid{grid-template-columns:minmax(0,1.15fr) minmax(360px,.85fr)!important;gap:var(--dash-gap)!important;align-items:start!important;margin-bottom:var(--dash-gap)!important}
+.hero-main,.hero-side,.box,.service-zone{border-radius:28px!important}
+.hero-main{padding:28px 26px!important}
+.hero-side,.box{padding:var(--card-pad-y) var(--card-pad-x)!important}
+.hero-side h2,.box h2{margin:0 0 16px!important}
+.route-map,.month-list,.resource-list,.service-grid{gap:10px!important}
+.route-step,.month,.resource-list a,.service-grid a{min-height:68px!important;padding:14px 58px 14px 16px!important;align-items:center!important;border-radius:18px!important}
+.route-step{grid-template-columns:38px minmax(0,1fr) 18px!important}
+.route-num{width:36px!important;height:36px!important;border-radius:12px!important;display:grid!important;place-items:center!important}
+.route-step b,.resource-list a strong,.service-grid a strong{margin:0 0 3px!important;line-height:1.15!important}
+.route-step span,.resource-list a span,.service-grid a span,.month p{line-height:1.35!important}
+.month{grid-template-columns:96px minmax(0,1fr) 18px!important}
+.month b{line-height:1.15!important}
+.panel-click-card > a[href]:not(.keep-text-link),
+.panel-click-card a[href]:not(.keep-text-link),
+.panel-card-action{right:var(--arrow-right)!important}
+.route-arrow{justify-self:end!important;align-self:center!important}
+.next-panel{min-height:72px!important;padding:16px 58px 16px 16px!important;margin-top:14px!important;grid-template-columns:1fr 18px!important;position:relative!important}
+.next-panel .panel-card-action{display:block!important}
+.legend{margin-top:12px!important}
+.principles,.service-zone{margin-top:var(--dash-gap)!important}
+@media(max-width:980px){.hero,.plan-grid{grid-template-columns:1fr!important}.route-step,.month,.resource-list a,.service-grid a,.next-panel{padding-right:52px!important}.wrap{padding:18px 12px 32px}}
+
+/* Final spacing cleanup */
+.hero{margin-bottom:20px!important}
+.hero-main h1{font-size:48px!important;line-height:1!important;max-width:590px!important}
+.hero-main p{max-width:620px!important}
+.next-panel .panel-card-action{display:none!important}
+.next-panel{padding-right:58px!important}
+.plan-grid{margin-top:0!important}
+.month,.resource-list a{min-height:64px!important}
+
+/* Tighten dashboard vertical rhythm */
+.route-step{min-height:54px!important;padding:9px 52px 9px 14px!important;grid-template-columns:34px minmax(0,1fr) 16px!important}
+.route-num{width:32px!important;height:32px!important;border-radius:11px!important;font-size:12px!important}
+.route-map{gap:8px!important;margin-top:10px!important}
+.hero-side h2{margin-bottom:10px!important;font-size:30px!important}
+.next-panel{min-height:58px!important;padding:12px 52px 12px 14px!important;margin-top:10px!important}
+.legend{display:none!important}
+.hero-side{padding:18px 24px!important}
+.hero{margin-bottom:22px!important}
+.month,.resource-list a{min-height:58px!important;padding-top:11px!important;padding-bottom:11px!important}

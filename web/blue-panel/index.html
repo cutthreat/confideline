@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Синяя панель запуска · YouDate/N</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .top-nav{position:sticky;top:0;z-index:20;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:-4px 0 18px;padding:12px;background:rgba(250,247,239,.92);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:22px;box-shadow:0 12px 30px rgba(58,43,29,.08)}
+    .top-nav a{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);text-decoration:none;font:900 12px Manrope,Verdana,sans-serif;letter-spacing:.03em}
+    .top-nav a.primary{background:#1f6b49;color:#fff;border-color:#1f6b49}.top-nav a:hover{box-shadow:0 10px 24px rgba(31,107,73,.16);transform:translateY(-1px)}
+    .hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);gap:18px;margin-bottom:18px}.hero-main{background:linear-gradient(135deg,#163d2f,#1f6b49);color:#fff;border-radius:34px;padding:26px;box-shadow:var(--shadow)}.hero-main h1,.hero-main p{color:#fff}.hero-main h1{font-size:52px;line-height:.96;margin:8px 0 14px}.hero-main .eyebrow{color:#dff5e8}.hero-side{background:#fff;border:1px solid var(--line);border-radius:34px;padding:20px;box-shadow:var(--shadow)}
+    .status-line{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.pill{display:inline-flex;border-radius:999px;padding:7px 10px;background:#fff0c0;color:#745000;font:900 11px Manrope,Verdana,sans-serif;text-transform:uppercase;letter-spacing:.06em}.pill.ok{background:#dff5e8;color:#176032}.pill.bad{background:#ffe1df;color:#8d1d12}
+    .plan-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}.box{background:#fff;border:1px solid var(--line);border-radius:28px;padding:18px;box-shadow:var(--shadow)}
+    .month-list{display:grid;gap:11px}.month{display:grid;grid-template-columns:96px 1fr auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:20px;padding:14px;background:#faf7ff}.month b{font-size:18px}.month p{margin:3px 0 0;color:var(--muted);font-size:14px}.month a{color:#1f6b49;font-weight:900;text-decoration:none;white-space:nowrap}
+    .resource-list{display:grid;gap:10px}.resource-list a{display:block;text-decoration:none;color:var(--ink);background:#faf7ff;border:1px solid var(--line);border-radius:18px;padding:12px}.resource-list a strong{display:block;margin-bottom:4px}.resource-list a span{color:var(--muted);font-size:13px}.resource-list a:hover{box-shadow:0 12px 24px rgba(31,107,73,.12)}
+    .principles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:18px}.principle{background:#fff;border:1px solid var(--line);border-radius:22px;padding:14px}.principle b{display:block;margin-bottom:5px;color:#1f6b49}.service-zone{margin-top:22px;background:#fff;border:1px solid var(--line);border-radius:28px;padding:18px;box-shadow:var(--shadow)}.service-zone h2{margin-top:0}.service-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}.service-grid a{display:block;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:16px;background:#fbfaf7;padding:12px}.service-grid a strong{display:block;color:#514a61;margin-bottom:4px}.service-grid a span{display:block;color:var(--muted);font-size:13px}.route-map{display:grid;gap:10px;margin-top:14px}.route-step{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:10px;text-decoration:none;color:var(--ink)}.route-step:hover{box-shadow:0 12px 24px rgba(31,107,73,.12);transform:translateY(-1px)}.route-num{width:34px;height:34px;border-radius:12px;background:#1f6b49;color:#fff;display:grid;place-items:center;font:900 13px Manrope,Verdana,sans-serif}.route-step b{display:block;color:#1f6b49;margin-bottom:2px}.route-step span{display:block;color:var(--muted);font-size:13px}.route-arrow{font:900 18px Georgia,serif;color:#1f6b49}.next-panel{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;margin-top:14px;padding:14px;border-radius:22px;background:#fff8df;border:1px solid var(--line)}.next-panel a{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:#1f6b49;color:#fff;text-decoration:none;padding:10px 14px;font:900 12px Manrope,Verdana,sans-serif}.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.legend span{display:inline-flex;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 9px;font:900 10px Verdana,sans-serif;color:#514a61}
+    @media(max-width:950px){.hero,.plan-grid{grid-template-columns:1fr}.hero-main h1{font-size:40px}.month{grid-template-columns:1fr}.month a{white-space:normal}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <nav class="top-nav" aria-label="Главная навигация Blue panel">
+    <a class="primary" href="cells/cell-pm-master-launch-plan-2026-06-04.html">Мастер-план</a>
+    <a href="docs/strategy-board.html">Стратегия</a>
+    <a href="docs/june-plan.html">План июня</a>
+    <a href="docs/launch-readiness-architecture.html">Готовность запуска</a>
+    <a href="docs/evidence.html">Проверка сайта</a>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-main">
+      <div class="eyebrow">Главный экран · мастер-план</div>
+      <h1>План запуска платформы YouDate / Nebula</h1>
+      <p>Самое важное здесь — порядок запуска. Сначала доводим универсальную paid P2P платформу: backend, роли, платный заказ, чат, админку, уведомления, support, QA и аналитику. Затем накладываем Nebula как первую коммерческую нишу.</p>
+      <div class="status-line"><span class="pill ok">платформа сначала</span><span class="pill">Nebula как первый vertical</span><span class="pill bad">трафик только после P0 QA</span></div>
+    </div>
+    <aside class="hero-side">
+      <h2>Маршрут работы</h2>
+      <div class="route-map" aria-label="Маршрут работы в Blue panel">
+        <a class="route-step" href="docs/strategy-board.html"><span class="route-num">1</span><span><b>Стратегия</b>Почему строим именно такую платформу</span><span class="route-arrow">→</span></a>
+        <a class="route-step" href="cells/cell-pm-master-launch-plan-2026-06-04.html"><span class="route-num">2</span><span><b>Мастер-план</b>Порядок запуска по месяцам</span><span class="route-arrow">→</span></a>
+        <a class="route-step" href="docs/june-plan.html"><span class="route-num">3</span><span><b>План июня</b>160 часов PM-работы и задачи месяца</span><span class="route-arrow">→</span></a>
+        <a class="route-step" href="docs/result-publication-standard.html"><span class="route-num">4</span><span><b>Результат</b>Страница proof для Trello, Игоря, Ксении и QA</span><span class="route-arrow">→</span></a>
+      </div>
+      <div class="next-panel"><div><b>Начать сейчас</b><br><span>План июня: задачи месяца и порядок работы.</span></div><a href="docs/june-plan.html">План июня</a></div>
+      <div class="legend"><span>Верх: решения</span><span>Центр: план</span><span>Низ: служебное</span></div>
+    </aside>
+  </section>
+
+  <section class="plan-grid">
+    <section class="box">
+      <h2>Мастер-план по месяцам</h2>
+      <div class="month-list">
+        <div class="month"><b>Июнь</b><p>Собираем базовую архитектуру, закрываем слепые зоны, готовим задачи для разработки и QA.</p><a href="cells/cell-pm-master-launch-plan-2026-06-04.html#june">Открыть</a></div>
+        <div class="month"><b>Июль</b><p>Связываем универсальный путь услуги: выбор, тестовая оплата, запрос, назначение, ответ, support.</p><a href="cells/cell-pm-master-launch-plan-2026-06-04.html#july">Открыть</a></div>
+        <div class="month"><b>Август</b><p>Стабилизируем роли, админку, ошибки, возвраты, модерацию, аналитику и Nebula-упаковку.</p><a href="cells/cell-pm-master-launch-plan-2026-06-04.html#august">Открыть</a></div>
+        <div class="month"><b>Сентябрь</b><p>Проводим контролируемый тестовый запуск с 5 экспертами и ежедневным контролем качества.</p><a href="cells/cell-pm-master-launch-plan-2026-06-04.html#september">Открыть</a></div>
+        <div class="month"><b>Октябрь</b><p>Переходим к боевому запуску и масштабированию только после доказанной экономики и операционки.</p><a href="cells/cell-pm-master-launch-plan-2026-06-04.html#october">Открыть</a></div>
+      </div>
+    </section>
+    <aside class="box">
+      <h2>Вложенные ресурсы мастер-плана</h2>
+      <div class="resource-list">
+        <a href="docs/june-plan.html"><strong>План июня</strong><span>Дочерний ресурс внутри июньского этапа.</span></a>
+        <a href="docs/gaps.html"><strong>Что готово и чего не хватает</strong><span>Дочерний ресурс для матрицы готовности.</span></a>
+        <a href="docs/events.html"><strong>Email, уведомления, события</strong><span>Дочерний ресурс для коммуникаций запуска.</span></a>
+        <a href="docs/admin-ops.html"><strong>Админка и операционный центр</strong><span>Дочерний ресурс для admin visibility.</span></a>
+        <a href="docs/evidence.html"><strong>Проверка текущего сайта</strong><span>Доказательства по live Confideline.</span></a>
+        <a href="docs/pm-blockers-resolution.html"><strong>Блокеры PM</strong><span>Доступы, старые ссылки, пустые карточки, вложения и правила эскалации.</span></a>
+        <a href="docs/legal-content-package.html"><strong>Юридический HTML-пакет</strong><span>Дочерний ресурс для legal gate.</span></a>
+      </div>
+    </aside>
+  </section>
+
+  <section class="principles">
+    <div class="principle"><b>Стратегия</b><p>Отвечает: какую систему строим и почему.</p></div>
+    <div class="principle"><b>Мастер-план</b><p>Отвечает: в каком порядке работаем по месяцам.</p></div>
+    <div class="principle"><b>Trello</b><p>Отвечает: какие задачи согласованы на конкретный месяц.</p></div>
+    <div class="principle"><b>co2p</b><p>Отвечает: как задача передается людям и проверяется после внедрения.</p></div>
+  </section>
+  <section class="service-zone" aria-label="Служебная информация">
+    <h2>Служебная зона PM</h2>
+    <p>Здесь находятся материалы, которые нужны для нашей работы, алгоритмов, проверки и передачи задач команде. Они не конкурируют с главными разделами наверху.</p>
+    <div class="service-grid">
+      <a href="docs/how-plan-works.html"><strong>Как устроен план</strong><span>Иерархия: стратегия → мастер-план → месяц → результат → Trello.</span></a>
+      <a href="docs/project-management-model.html"><strong>Процесс управления</strong><span>Как PM, Blue panel, Trello, Игорь, Ксения и QA работают вместе.</span></a>
+      <a href="docs/result-publication-standard.html"><strong>Стандарт результата</strong><span>Как оформлять итог задачи на веб-панели и GitHub Pages.</span></a>
+      <a href="docs/dependencies.html"><strong>Карта зависимостей</strong><span>Что должно быть связано до end-to-end проверки.</span></a>
+      <a href="docs/pm-trello-intake-readiness.html"><strong>PM / Trello intake</strong><span>Карта источников, карточек, ссылок и блокеров.</span></a>
+      <a href="docs/pm-start-goal-2026-06-04.html"><strong>PM-цель старта работ</strong><span>Что PM делает автономно по стратегии и плану июня.</span></a><a href="docs/pm-discussions-register-2026-06-04.html"><strong>Реестр решений PM</strong><span>Ключевые договоренности, чтобы обсуждения не терялись.</span></a><a href="docs/pm-blockers-resolution.html"><strong>Блокеры PM</strong><span>Доступы, старые ссылки, пустые карточки и правила эскалации.</span></a>
+    </div>
+  </section>
+  <div class="foot">Верх — главные разделы для решений. Низ — служебная информация для процесса и проверки.</div>
+</main>
+<script src="assets/panel-ux.js"></script></body>
+</html>
+
+
+
+
+
+
+
+
+
+

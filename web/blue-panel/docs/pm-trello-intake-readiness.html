@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PM-контур и полный Trello intake · Синяя панель</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:22px;box-shadow:var(--shadow)}
+    .lead{font-size:18px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    .metric{border:1px solid var(--line);border-radius:20px;padding:14px;background:#faf7ff}.metric b{display:block;font-size:28px}.metric span{color:var(--muted)}
+    .card{border:1px solid var(--line);border-radius:20px;padding:14px;background:#fff}.card b{display:block;margin-bottom:6px}
+    table{width:100%;border-collapse:collapse;font-size:14px}th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{font:900 11px Verdana,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:#514a61}
+    .warn{background:#fff8df}.bad{background:#ffecec}.ok{background:#e8fff2}.note{background:#fff8df;border:1px solid var(--line);border-radius:18px;padding:14px;line-height:1.55}
+    details{border:1px solid var(--line);border-radius:18px;padding:12px;background:#fbfaf7;margin-top:10px}summary{cursor:pointer;font-weight:900}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <a href="../index.html">← Синяя панель</a>
+  <section class="doc">
+    <div class="eyebrow">Готовность PM</div>
+    <h1>PM-контур и полный Trello intake</h1>
+    <p class="lead">Эта страница показывает, что PM уже снял из Trello, какие данные доступны, какие ссылки требуют доступа и что нужно для следующего полноценного рабочего прохода.</p>
+
+    <div class="grid">
+      <div class="metric"><b>291</b><span>карточка снята</span></div>
+      <div class="metric"><b>34</b><span>списка на доске</span></div>
+      <div class="metric"><b>600</b><span>комментариев справа</span></div>
+      <div class="metric"><b>283</b><span>вложения</span></div>
+      <div class="metric"><b>757</b><span>пунктов чек-листов</span></div>
+      <div class="metric"><b>825</b><span>уникальных ссылок</span></div>
+    </div>
+
+    <h2>Что теперь умеет PM-контур</h2>
+    <div class="grid">
+      <div class="card"><b>Читает Trello полностью</b><p>Списки, карточки, архивные карточки, описания, чек-листы, вложения, комментарии справа, метки и ссылки.</p></div>
+      <div class="card"><b>Видит недочеты</b><p>Отдельно выделены заблокированные ссылки, 404, timeout и пустые/тонкие карточки.</p></div>
+      <div class="card"><b>Готовит следующий проход</b><p>Следующий проход начинается не с поиска данных, а с выбранного P0-направления и готовой карты источников.</p></div>
+      <div class="card"><b>Не меняет Trello без команды</b><p>Доска не изменялась. Trello пока используется только как источник знаний.</p></div>
+    </div>
+
+    <h2>Карта доступности внешних ссылок</h2>
+    <table>
+      <thead><tr><th>Статус</th><th>Количество</th><th>Что значит</th></tr></thead>
+      <tbody>
+        <tr class="ok"><td>Доступны</td><td>319</td><td>Можно читать в следующем проходе и извлекать содержание.</td></tr>
+        <tr class="bad"><td>Блокируют доступ</td><td>60</td><td>Нужен доступ или другой источник.</td></tr>
+        <tr class="bad"><td>404</td><td>18</td><td>Ссылка устарела или маршрут изменился.</td></tr>
+        <tr class="warn"><td>Ошибка/timeout</td><td>54</td><td>Нужно перепроверить точечно, если ссылка важна для P0.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Важные блокеры</h2>
+    <table>
+      <thead><tr><th>Тип</th><th>Что обнаружено</th><th>Действие PM</th></tr></thead>
+      <tbody>
+        <tr><td>Google Docs/Sheets/Drive</td><td>Есть закрытые документы и один 404 среди важных ссылок.</td><td>Запрашивать доступ только по конкретному URL и причине.</td></tr>
+        <tr><td>Figma</td><td>Часть ссылок требует доступ или не отвечает.</td><td>Сверять с локальными Oracle/Nebula материалами, при необходимости просить доступ.</td></tr>
+        <tr><td>Confideline старые ссылки</td><td>Часть старых `/ru/admin/...` и legal routes дает 404.</td><td>Сопоставить со свежей admin route map и не считать старую ссылку текущей истиной.</td></tr>
+        <tr><td>Вложения Trello</td><td>Метаданные сняты, но содержимое не всех вложений распознано.</td><td>Для P0-направлений скачивать/извлекать содержимое приоритетно.</td></tr>
+        <tr><td>Пустые карточки</td><td>24 карточки без описания, комментариев, вложений и чек-листов.</td><td>Классифицировать как placeholders/устаревшие/требующие внешнего контекста.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Решение по блокерам</h2>
+    <div class="note"><a href="pm-blockers-resolution.html"><strong>Открыть страницу “Блокеры PM и готовность следующего прохода”</strong></a>. Там зафиксированы доступы, ремап старых Confideline ссылок, классификация пустых карточек, план распознавания вложений и правила, когда PM должен задавать вопросы.</div>
+
+    <h2>Как стартовать следующий проход</h2>
+    <div class="note">Выбираем одно P0-направление: email, chat, экспертский кабинет, школа, admin dashboard, QA, legal или маркетинг. Открываем карту карточек по этой области, читаем доступные внешние документы, фиксируем заблокированные ссылки, формируем PM-вывод и только потом обновляем Blue panel/co2p пакет.</div>
+
+    <h2>Документы</h2>
+    <details open><summary>Открыть артефакты</summary>
+      <ul>
+        <li><a href="artifacts/PM_AUTONOMY_CONTOUR_AUDIT_RU.md">Критический аудит PM-контура</a></li>
+        <li><a href="artifacts/TRELLO_FULL_INTAKE_MAP_RU.md">Карта полного Trello intake</a></li>
+        <li><a href="artifacts/NEXT_PM_PASS_READINESS_PACKET_RU.md">Пакет готовности к следующему PM-проходу</a></li>
+        <li><a href="artifacts/trello-card-scan-map.csv">Карта сканирования карточек</a></li>
+        <li><a href="artifacts/trello-important-link-blockers.csv">Важные блокеры доступа</a></li>
+        <li><a href="artifacts/trello-important-accessible-links.csv">Важные доступные ссылки</a></li>
+        <li><a href="artifacts/trello-card-area-map.csv">Первичная карта областей проекта</a></li>
+      </ul>
+    </details>
+  </section>
+</main>
+<script src="../assets/panel-ux.js"></script></body>
+</html>
+
+
+
+
+
+
+
+
