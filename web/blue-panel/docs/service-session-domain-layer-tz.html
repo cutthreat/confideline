@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ТЗ Игорю: слой платной услуги · Blue panel</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:var(--shadow)}
+    .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;margin-bottom:16px}
+    .hero-main{background:linear-gradient(135deg,#17372f,#1f6b49);color:#fff;border-radius:30px;padding:24px}
+    .hero-main h1,.hero-main p{color:#fff}.hero-main h1{font-size:46px;line-height:1;margin:8px 0 12px}
+    .hero-side{border:1px solid var(--line);border-radius:30px;background:#fff8df;padding:18px}.hero-side b{display:block;color:#1f6b49;margin-bottom:6px}
+    .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.badge{display:inline-flex;border-radius:999px;padding:7px 10px;font:900 11px Manrope,Verdana,sans-serif}.ok{background:#dff5e8;color:#176032}.warn{background:#fff0c0;color:#745000}.bad{background:#ffe1df;color:#8d1d12}.blue{background:#e5f1ff;color:#1b5a85}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:16px 0}.card{border:1px solid var(--line);border-radius:20px;background:#faf7ff;padding:15px}.card b{display:block;color:#1f6b49;margin-bottom:6px}.card p{margin:0;color:var(--muted)}
+    .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:10px;margin:16px 0}.step{border:1px solid var(--line);border-radius:18px;background:#fff;padding:14px}.step .num{width:32px;height:32px;border-radius:11px;background:#1f6b49;color:#fff;display:grid;place-items:center;font:900 13px Manrope,Verdana,sans-serif;margin-bottom:8px}.step b{display:block;color:#1f6b49;margin-bottom:5px}.step span{display:block;color:var(--muted);font-size:13px}
+    .matrix{overflow:auto;border:1px solid var(--line);border-radius:22px;background:#fff;margin:16px 0}table{width:100%;min-width:1220px;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:11px;text-align:left;vertical-align:top}th{font:900 10px Manrope,Verdana,sans-serif;text-transform:uppercase;background:#fbfaf7;color:#514a61}.status{display:inline-flex;border-radius:999px;padding:6px 9px;font:900 10px Manrope,Verdana,sans-serif;white-space:nowrap}
+    .note{background:#fff8df;border:1px solid var(--line);border-radius:20px;padding:15px;line-height:1.55;margin:16px 0}.danger{background:#fff1ef}.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:14px}.links a{display:block;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:14px;text-decoration:none;color:var(--ink)}.links strong{display:block;color:#1f6b49;margin-bottom:4px}.links span{display:block;color:var(--muted);font-size:13px}code{white-space:normal}@media(max-width:980px){.hero{grid-template-columns:1fr}.hero-main h1{font-size:36px}table{min-width:900px}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <a href="igor-sandbox-checkout-to-consultation-handoff.html">← Пакет sandbox checkout</a>
+  <section class="hero">
+    <div class="hero-main">
+      <div class="eyebrow">co2p · задача для внедрения</div>
+      <h1>Слой платной услуги на backend</h1>
+      <p>Нужно связать оплату, вопрос клиента, исполнителя, чат, события, поддержку и качество в одну рабочую сущность. Для Nebula это будет консультация, но архитектурно это универсальный слой платной P2P-услуги для всей платформы YouDate.</p>
+      <div class="badges"><span class="badge bad">сейчас разрыв</span><span class="badge warn">payment sandbox доказан</span><span class="badge blue">универсальная модель</span></div>
+    </div>
+    <aside class="hero-side">
+      <b>Решение PM</b><p>В коде сущность лучше назвать <code>service_session</code>. В интерфейсе Nebula показываем человеку “консультация”. В других нишах это может быть “сессия”, “заказ”, “чат с экспертом” или другая платная услуга.</p>
+      <b>Ограничение</b><p>Сначала только local/test. Не production, не реальные Stripe keys, не реальные письма и не реальные списания.</p>
+    </aside>
+  </section>
+
+  <section class="doc">
+    <h2>Зачем это нужно</h2>
+    <div class="note"><b>Проблема:</b> текущий backend доказывает пользователей, анкеты, сообщения, заявки экспертов, платежный order и credits/balance. Но платная консультация как цельный жизненный цикл не доказана. Значит, после покупки мы пока не можем надежно показать: кто задал вопрос, кто обязан ответить, где задача в админке, какой срок, какой чат, какие события, что делать при проблеме и как считать качество.</div>
+
+    <h2>Итоговое решение</h2>
+    <div class="grid">
+      <div class="card"><b>Универсальная сущность</b><p><code>service_session</code> хранит факт купленной услуги и связывает order, клиента, вопрос, исполнителя, чат, сроки и поддержку.</p></div>
+      <div class="card"><b>Nebula-упаковка</b><p>На фронте и в текстах пользователь видит “консультацию”, “вопрос эксперту”, “ответ”, “срок ответа”.</p></div>
+      <div class="card"><b>Админская очередь</b><p>Админ видит новые, оплаченные, назначенные, просроченные, спорные и закрытые услуги без ручного поиска.</p></div>
+      <div class="card"><b>Эксперт/агент</b><p>Исполнитель видит назначенную задачу, вопрос, контекст, SLA, чат и статус начисления.</p></div>
+      <div class="card"><b>События без отправки</b><p>Сначала фиксируем события для email/уведомлений в no-send режиме, чтобы не слать реальные письма.</p></div>
+      <div class="card"><b>QA-доказательство</b><p>Тестовый заказ должен проходить от fake checkout до карточки услуги, чата, события и problem state.</p></div>
+    </div>
+
+    <h2>Минимальный маршрут клиента</h2>
+    <div class="flow">
+      <div class="step"><div class="num">1</div><b>Оффер</b><span>Клиент выбирает платную консультацию.</span></div>
+      <div class="step"><div class="num">2</div><b>Вопрос</b><span>Клиент пишет вопрос и выбирает язык/тему.</span></div>
+      <div class="step"><div class="num">3</div><b>Оплата</b><span>Создается order и открывается sandbox checkout.</span></div>
+      <div class="step"><div class="num">4</div><b>Услуга</b><span>После fake success создается <code>service_session</code>.</span></div>
+      <div class="step"><div class="num">5</div><b>Назначение</b><span>Админ или правило назначает эксперта/агента.</span></div>
+      <div class="step"><div class="num">6</div><b>Ответ</b><span>Исполнитель отвечает в привязанном чате.</span></div>
+      <div class="step"><div class="num">7</div><b>Закрытие</b><span>Сессия закрывается, события и качество фиксируются.</span></div>
+      <div class="step"><div class="num">8</div><b>Повтор</b><span>Клиент получает follow-up/repeat offer.</span></div>
+    </div>
+
+    <h2>Минимальная модель данных</h2>
+    <div class="matrix"><table><thead><tr><th>Объект</th><th>Поля</th><th>Зачем нужно</th><th>Приемка</th></tr></thead><tbody>
+      <tr><td><code>service_session</code></td><td><code>id</code>, <code>order_id</code>, <code>client_id</code>, <code>vertical</code>, <code>service_type</code>, <code>offer_id</code>, <code>status</code>, <code>payment_status</code>, <code>test_mode</code>, <code>question_text</code>, <code>question_language</code>, <code>client_locale</code>, <code>assigned_expert_profile_id</code>, <code>assigned_agent_id</code>, <code>conversation_id</code>, <code>deadline_at</code>, <code>answered_at</code>, <code>closed_at</code>, <code>dispute_status</code>, <code>refund_status</code>, <code>quality_status</code>, <code>metadata</code>, <code>created_at</code>, <code>updated_at</code>.</td><td>Главная связка платной услуги.</td><td>После fake success создана запись и ее видно в админке.</td></tr>
+      <tr><td><code>service_session_event</code></td><td><code>session_id</code>, <code>event_type</code>, <code>actor_type</code>, <code>actor_id</code>, <code>payload</code>, <code>created_at</code>.</td><td>История действий, уведомления, аудит, QA.</td><td>События видны по тестовой сессии без реальных писем.</td></tr>
+      <tr><td><code>service_session_assignment</code></td><td><code>session_id</code>, <code>expert_profile_id</code>, <code>agent_id</code>, <code>assigned_by</code>, <code>status</code>, <code>deadline_at</code>.</td><td>Кто отвечает и кто несет ответственность.</td><td>Админ может назначить/переназначить исполнителя.</td></tr>
+      <tr><td><code>support_ticket</code> link</td><td><code>session_id</code>, <code>order_id</code>, <code>reason</code>, <code>status</code>, <code>resolution</code>.</td><td>Жалобы, refund, спорные ситуации.</td><td>Тикет связан с конкретной услугой и платежом.</td></tr>
+      <tr><td><code>quality/compensation</code></td><td><code>session_id</code>, <code>quality_status</code>, <code>reviewer_id</code>, <code>compensation_status</code>, <code>amount</code>.</td><td>Контроль качества и начисления исполнителю.</td><td>Есть отметка качества и начисления по закрытой услуге.</td></tr>
+    </tbody></table></div>
+
+    <h2>Статусы услуги</h2>
+    <div class="matrix"><table><thead><tr><th>Статус</th><th>Человеческий смысл</th><th>Кто видит</th><th>Что должно происходить</th></tr></thead><tbody>
+      <tr><td><code>draft</code></td><td>Услуга начата, но еще не готова к оплате.</td><td>Система/админ</td><td>Можно безопасно удалить или завершить.</td></tr>
+      <tr><td><code>question_pending</code></td><td>Нужен вопрос клиента.</td><td>Клиент/админ</td><td>Показать форму вопроса.</td></tr>
+      <tr><td><code>payment_pending</code></td><td>Ждем оплату.</td><td>Клиент/админ</td><td>Открыть checkout.</td></tr>
+      <tr><td><code>paid_waiting_assignment</code></td><td>Оплачено, нужно назначить исполнителя.</td><td>Админ/модератор</td><td>Попадает в очередь новых оплаченных услуг.</td></tr>
+      <tr><td><code>assigned</code></td><td>Исполнитель назначен.</td><td>Админ/эксперт/агент</td><td>Стартует срок ответа.</td></tr>
+      <tr><td><code>in_work</code></td><td>Исполнитель готовит ответ.</td><td>Админ/эксперт/агент</td><td>Контроль SLA и прогресса.</td></tr>
+      <tr><td><code>answered</code></td><td>Ответ отправлен.</td><td>Клиент/админ/исполнитель</td><td>Можно закрывать или отправлять на quality review.</td></tr>
+      <tr><td><code>closed</code></td><td>Услуга завершена.</td><td>Все роли по правам</td><td>Фиксируется качество, начисление, follow-up.</td></tr>
+      <tr><td><code>overdue</code></td><td>Срок ответа нарушен.</td><td>Админ/support</td><td>Эскалация, переназначение, компенсация.</td></tr>
+      <tr><td><code>disputed</code></td><td>Клиент недоволен или есть спор.</td><td>Support/админ</td><td>Создать тикет и решение.</td></tr>
+      <tr><td><code>refund_review</code></td><td>Возврат на рассмотрении.</td><td>Support/финансы</td><td>Проверить основание возврата.</td></tr>
+      <tr><td><code>refunded</code></td><td>Возврат подтвержден.</td><td>Support/финансы</td><td>Связать refund с order и сессией.</td></tr>
+      <tr><td><code>cancelled</code></td><td>Заказ отменен.</td><td>Клиент/админ</td><td>Не создавать ложную продажу.</td></tr>
+      <tr><td><code>payment_failed</code></td><td>Оплата не прошла.</td><td>Клиент/админ</td><td>Не создавать оплаченную услугу.</td></tr>
+    </tbody></table></div>
+
+    <h2>Очереди в админке</h2>
+    <div class="grid">
+      <div class="card"><b>Новые оплаченные</b><p>Оплачено, но исполнитель еще не назначен.</p></div>
+      <div class="card"><b>Нужен вопрос</b><p>Есть order, но вопрос клиента не сохранен или невалиден.</p></div>
+      <div class="card"><b>В работе</b><p>Назначенные услуги с активным сроком ответа.</p></div>
+      <div class="card"><b>Просрочено</b><p>SLA нарушен, нужна реакция админа/support.</p></div>
+      <div class="card"><b>Ответ на проверке</b><p>Ответ есть, но требуется quality review.</p></div>
+      <div class="card"><b>Споры и возвраты</b><p>Все disputed/refund cases в одном месте.</p></div>
+      <div class="card"><b>Закрыто</b><p>Завершенные услуги, качество и начисления.</p></div>
+      <div class="card"><b>Тестовый режим</b><p>Все sandbox/test данные отделены от реальных.</p></div>
+    </div>
+
+    <h2>События для уведомлений и аналитики</h2>
+    <div class="matrix"><table><thead><tr><th>Событие</th><th>Когда фиксировать</th><th>Для чего</th><th>На старте</th></tr></thead><tbody>
+      <tr><td><code>checkout_start</code></td><td>Клиент перешел к оплате.</td><td>Аналитика воронки.</td><td>No-send/event log.</td></tr>
+      <tr><td><code>checkout_complete</code></td><td>Fake success платежа.</td><td>Старт услуги.</td><td>No-send/event log.</td></tr>
+      <tr><td><code>question_submitted</code></td><td>Вопрос сохранен.</td><td>Контекст исполнителю.</td><td>No-send/event log.</td></tr>
+      <tr><td><code>service_session_created</code></td><td>Создана услуга.</td><td>Админская очередь.</td><td>No-send/event log.</td></tr>
+      <tr><td><code>expert_assigned</code></td><td>Назначен эксперт/агент.</td><td>Ответственность и SLA.</td><td>No-send/event log.</td></tr>
+      <tr><td><code>answer_started</code></td><td>Исполнитель взял в работу.</td><td>Операционный контроль.</td><td>No-send/event log.</td></tr>
+      <tr><td><code>answer_sent</code></td><td>Ответ отправлен клиенту.</td><td>Закрытие и follow-up.</td><td>No-send/event log.</td></tr>
+      <tr><td><code>deadline_overdue</code></td><td>SLA нарушен.</td><td>Эскалация.</td><td>No-send/event log.</td></tr>
+      <tr><td><code>support_ticket_created</code></td><td>Клиент пожаловался или запросил помощь.</td><td>Support.</td><td>No-send/event log.</td></tr>
+      <tr><td><code>refund_requested</code></td><td>Запрошен возврат.</td><td>Финансы/support.</td><td>No-send/event log.</td></tr>
+      <tr><td><code>repeat_offer_shown</code></td><td>Показан следующий оффер.</td><td>Retention/LTV.</td><td>No-send/event log.</td></tr>
+    </tbody></table></div>
+
+    <h2>Приемка для Игоря</h2>
+    <div class="grid">
+      <div class="card"><b>Fake success создает услугу</b><p>После sandbox оплаты есть order + <code>service_session</code>, связанные между собой.</p></div>
+      <div class="card"><b>Cancel/fail безопасны</b><p>При cancel/fail не появляется оплаченная услуга и не считается продажа.</p></div>
+      <div class="card"><b>Вопрос связан</b><p>Вопрос клиента открывается из карточки услуги и не теряется.</p></div>
+      <div class="card"><b>Админ видит очередь</b><p>Новая услуга попадает в понятную очередь и фильтруется по test mode.</p></div>
+      <div class="card"><b>Эксперт видит задачу</b><p>Исполнитель получает назначение, срок, вопрос и чат.</p></div>
+      <div class="card"><b>Чат связан</b><p>Conversation/chat привязан к услуге, клиенту и исполнителю.</p></div>
+      <div class="card"><b>События видны</b><p>No-send события фиксируются без отправки реальных писем.</p></div>
+      <div class="card"><b>Support/refund связан</b><p>Жалоба или возврат открываются из конкретной услуги и order.</p></div>
+    </div>
+
+    <h2>Стоп-условия</h2>
+    <div class="note danger"><b>Не считаем задачу закрытой, если:</b> используется только пополнение credits вместо платной услуги; нет связи order с вопросом; нет очереди в админке; нет связи с исполнителем; нет test_mode; нет problem states; нет proof-скринов; не подтвержден актуальный runtime source.</div>
+
+    <h2>Доказательная база</h2>
+    <div class="links">
+      <a href="backend-consultation-domain-gap-proof.html"><strong>Backend proof: платная консультация не доказана</strong><span>Факты из source: order/credits/message есть, но lifecycle консультации нет.</span></a>
+      <a href="test-order-sandbox-preflight-report.html"><strong>Payment sandbox preflight</strong><span>Локальная песочница оплаты прошла без реальных платежей.</span></a>
+      <a href="igor-sandbox-checkout-to-consultation-handoff.html"><strong>Sandbox checkout → консультация</strong><span>Пакет передачи Игорю по связке fake payment success и услуги.</span></a>
+      <a href="test-order-runtime-proof-plan.html"><strong>План runtime-проверки</strong><span>Какие скрины и факты нужны, чтобы доказать готовность.</span></a>
+      <a href="artifacts/SERVICE_SESSION_DOMAIN_LAYER_TZ_2026_06_04.md"><strong>Markdown-пакет</strong><span>Версия для чтения и передачи.</span></a>
+      <a href="artifacts/SERVICE_SESSION_DOMAIN_LAYER_TZ_2026_06_04.csv"><strong>CSV-матрица</strong><span>Табличная версия требований и приемки.</span></a>
+    </div>
+  </section>
+</main>
+<script src="../assets/panel-ux.js"></script>
+</body>
+</html>

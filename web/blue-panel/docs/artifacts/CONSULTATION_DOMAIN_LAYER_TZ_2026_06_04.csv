@@ -1,0 +1,11 @@
+Раздел,Что должно быть,Зачем,Acceptance proof,Статус до разработки
+Сущность service_session,order_id client_id vertical service_type question status payment_status conversation_id deadline test_mode,Рабочий объект платной услуги вместо абстрактных credits,Скрин/DB proof service_session после fake success,Красный
+Связь с order,service_session.order_id указывает на оплаченный/test order,Понимать какая покупка породила услугу,Из order открывается service_session,Красный
+Вопрос клиента,question_text или ClientQuestion связан с order/session,Не терять смысл покупки,Из сессии открывается вопрос клиента,Красный
+Назначение исполнителя,assigned_user_id/agent_id deadline status,Первые 5 экспертов работают управляемо,Админ назначает исполнителя и видит срок,Красный
+Чат,conversation_id или другой chat id связан с service_session,Ответ должен относиться к конкретной покупке,Один chat виден клиенту эксперту админу,Красный
+Админские очереди,paid_waiting_assignment waiting_question in_work overdue disputed refunded test,Админ видит проблемы без ручного поиска,Скрин очередей с тестовыми состояниями,Красный
+No-send события,checkout_complete question_submitted session_created expert_assigned answer_sent overdue support refund,Подготовка email/уведомлений без реальных писем,Лог событий по test order,Желтый
+Support/refund связь,support_ticket_id refund status в контексте service_session,Жалобы и возвраты разбираются по покупке и чату,Скрин тикета связанного с session/order,Красный
+Качество ответа,quality score issue decision reviewer,Контроль первых экспертов и обучение,Скрин/запись quality после ответа,Желтый
+Test mode,test_mode фильтр в админке/отчете,Безопасная проверка без боевых данных,Фильтр test/real работает,Красный
