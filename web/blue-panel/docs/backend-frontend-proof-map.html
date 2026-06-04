@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Карта связи фронта, backend и проверки · Blue panel</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:var(--shadow)}
+    .lead{font-size:18px;color:var(--muted);max-width:1040px}.decision{border:1px solid var(--line);border-radius:24px;background:#fff8df;padding:18px;margin:16px 0}.decision h2{margin-top:0}
+    .status{display:inline-flex;border-radius:999px;padding:6px 9px;font:900 10px Verdana,sans-serif;text-transform:uppercase;white-space:nowrap}.red{background:#ffe1df;color:#8d1d12}.yellow{background:#fff0c0;color:#745000}.green{background:#dff5e8;color:#176032}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:16px 0}.card{border:1px solid var(--line);border-radius:20px;background:#faf7ff;padding:15px}.card b{display:block;color:#1f6b49;margin-bottom:6px}.card p{margin:0;color:var(--muted)}
+    .route{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:16px 0}.route div{border:1px solid var(--line);border-radius:16px;background:#fff;padding:12px;position:relative}.route div:after{content:'→';position:absolute;right:-11px;top:50%;transform:translateY(-50%);color:#1f6b49;font-weight:900}.route div:last-child:after{display:none}.route b{display:block;color:#1f6b49;margin-bottom:4px}.route span{display:block;color:var(--muted);font-size:13px}
+    .matrix{overflow:auto;border:1px solid var(--line);border-radius:22px;background:#fff;margin:16px 0}table{width:100%;min-width:1280px;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{font:900 10px Verdana,sans-serif;text-transform:uppercase;color:#514a61;background:#fbfaf7}.note{border:1px solid var(--line);border-radius:18px;background:#fbfaf7;padding:14px;line-height:1.55}.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:12px}.links a{display:block;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:13px;text-decoration:none;color:var(--ink)}.links strong{display:block;color:#1f6b49;margin-bottom:4px}.links span{display:block;color:var(--muted);font-size:13px}@media(max-width:950px){.route{grid-template-columns:1fr}.route div:after{display:none}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <a href="../index.html">← Blue panel</a>
+  <section class="doc">
+    <div class="eyebrow">Frontend · backend · контент · админка · proof</div>
+    <h1>Карта связи фронта, backend и проверки</h1>
+    <p class="lead">Эта страница показывает, как сопоставлять то, что нужно для запуска Nebula, с тем, что уже есть в дизайне Oracle/Nebula, backend Confideline, админке, контенте и проверочных отчетах. Она нужна, чтобы передавать Игорю не абстрактные идеи, а проверяемые задачи.</p>
+
+    <div class="decision">
+      <h2>Решение PM</h2>
+      <p><b>Сейчас проект нельзя оценивать одним статусом “готов/не готов”.</b> Нужно смотреть по слоям: экран есть, backend есть, контент есть, админка управляет, проблемные состояния описаны, сквозная проверка пройдена. Если хотя бы один слой не доказан, статус остается желтым или красным.</p>
+      <p><span class="status yellow">дизайн и база есть</span> <span class="status red">сквозная связь не доказана</span> <span class="status red">перед рекламой нужен proof</span></p>
+    </div>
+
+    <div class="grid">
+      <div class="card"><b>Frontend Oracle/Nebula</b><p>Есть 14 экранных групп и 89 блоков из экранного контракта, плюс публичная верстка Nebula pages.</p></div>
+      <div class="card"><b>Backend Confideline</b><p>Есть платформа и админка как база: пользователи, сообщения, заказы, роли, страницы, support, email, bans и связанные модули.</p></div>
+      <div class="card"><b>Главный пробел</b><p>Не доказан единый путь: экран клиента связан с backend, админкой, событиями, поддержкой и проверкой.</p></div>
+      <div class="card"><b>Следующее действие</b><p>Каждую задачу Игорю формировать как screen contract: экран, backend, контент, состояния, acceptance, proof.</p></div>
+    </div>
+
+    <h2>Как читать статус</h2>
+    <div class="route">
+      <div><b>1. Экран</b><span>есть ли макет/верстка и ссылка на источник</span></div>
+      <div><b>2. Backend</b><span>есть ли функция и админский маршрут</span></div>
+      <div><b>3. Контент</b><span>готовы ли тексты, FAQ, legal, письма, переводы</span></div>
+      <div><b>4. Состояния</b><span>успех, ошибка, пусто, нет оплаты, спор, просрочка</span></div>
+      <div><b>5. Proof</b><span>есть ли скрин/отчет/test/no-send доказательство</span></div>
+    </div>
+
+    <h2>Карта соответствия ключевых функций</h2>
+    <div class="matrix"><table><thead><tr><th>Функция запуска</th><th>Что нужно человеку</th><th>Frontend / дизайн</th><th>Backend / админка</th><th>Контент</th><th>Проверка</th><th>Статус</th><th>Следующее действие</th></tr></thead><tbody>
+      <tr><td>Главная и оффер</td><td>Понять, что продает сервис, зачем доверять и что будет после клика.</td><td>Есть Nebula public pages: Home и коммерческие страницы.</td><td>Нужна связка CTA с регистрацией, выбором услуги и заказом.</td><td>Частично есть AskNebula/Google/Trello база, но нужна screen-by-screen вставка.</td><td>Нет доказанного сквозного клика до тестового заказа.</td><td><span class="status yellow">доработать</span></td><td>Сопоставить каждую CTA с backend-действием и тестовым маршрутом.</td></tr>
+      <tr><td>Регистрация и вход</td><td>Создать аккаунт, войти, восстановить доступ, не потерять путь покупки.</td><td>Auth slice и страницы есть частично.</td><td>Confideline backend имеет user/auth базу.</td><td>Нужны сервисные письма, privacy note, языки.</td><td>Нужен test auth path с guest/auth состояниями.</td><td><span class="status yellow">доработать</span></td><td>Сделать auth proof: signup/login/forgot → возврат к покупке.</td></tr>
+      <tr><td>Каталог экспертов</td><td>Выбрать эксперта или тему консультации.</td><td>Есть psychic pages, карточки, профили, search/favorites в дизайне.</td><td>Dating/person search logic можно использовать как универсальную базу, но нужно адаптировать под услуги.</td><td>Нужны профили экспертов, trust-блоки, дисклеймеры, категории.</td><td>Нет доказательства связи каталога с назначением платной консультации.</td><td><span class="status yellow">доработать</span></td><td>Определить: каталог выбирает конкретного эксперта или категорию/очередь.</td></tr>
+      <tr><td>Покупка консультации</td><td>Оплатить безопасно, понять статус, задать вопрос.</td><td>Есть generic payment surface, но не доказан starter package/paid consultation flow.</td><td>Есть база заказов/платежных настроек как админский слой, реальные платежи не трогаем.</td><td>Нужны payment terms, объяснение тестового/реального статуса, письма.</td><td>Сценарий test order описан, но реальный проход не выполнен.</td><td><span class="status red">блокер</span></td><td>Реализовать/проверить test order без списания.</td></tr>
+      <tr><td>Вопрос клиента после оплаты</td><td>Понять, куда писать вопрос и что будет дальше.</td><td>Нужно связать client question intake с кабинетом/чатом.</td><td>Должна быть связь order → question → consultation/session.</td><td>Нужны подсказки, ограничения, язык, FAQ.</td><td>Нет proof связи вопроса с заказом.</td><td><span class="status red">блокер</span></td><td>Сделать карточку консультации, где вопрос не живет отдельно от заказа.</td></tr>
+      <tr><td>Чат консультации</td><td>Клиент получает ответ, эксперт отвечает внутри платформы.</td><td>Есть chat UI и admin chat workspace v2 контур.</td><td>Есть messaging/admin база, но lifecycle платной консультации не доказан.</td><td>Нужны шаблоны, правила, подсказки, дисклеймеры.</td><td>Нужен скрин client/expert/admin sides в одном test order.</td><td><span class="status yellow">частично</span></td><td>Связать chat с paid consultation status и deadline.</td></tr>
+      <tr><td>Операционная админка</td><td>Команда видит очереди, дедлайны, проблемы и ручные действия.</td><td>Это backend/admin слой, не публичный фронт.</td><td>Операционный центр описан: очереди, карточка, роли, события, отчеты.</td><td>Нужны подписи статусов, причины действий, тексты уведомлений.</td><td>Нет screen proof, что админ видит весь путь без ручного поиска.</td><td><span class="status red">блокер</span></td><td>Сделать/проверить очередь: новые, без вопроса, без назначения, просрочено, жалоба.</td></tr>
+      <tr><td>Рабочее место эксперта</td><td>Эксперт видит задачу, срок, чат, подсказки, качество и начисления.</td><td>Можно стартовать через админку по ролям; отдельный кабинет не обязателен.</td><td>Требуются права, назначение, дедлайн, журнал, начисления.</td><td>Нужны регламент, база знаний, шаблоны, обучение.</td><td>Нет proof роли эксперта в реальном тестовом сценарии.</td><td><span class="status red">блокер</span></td><td>Собрать role-based admin view для эксперта/агента.</td></tr>
+      <tr><td>Поддержка и возвраты</td><td>Клиент знает, что делать при проблеме; команда видит тикет.</td><td>Есть legal/support/refund public pages; in-cabinet support states не доказаны.</td><td>Нужна привязка тикета к заказу, чату, исполнителю и решению.</td><td>Нужны refund policy, support copy, email-уведомления.</td><td>Нет proof support/refund ticket на test order.</td><td><span class="status red">блокер</span></td><td>Сделать проблемный сценарий “оплатил и не получил / плохой ответ”.</td></tr>
+      <tr><td>Email и уведомления</td><td>Клиент и команда получают статус без ручных объяснений.</td><td>UI должен показывать статусы; email-контур уже отдельно опубликован.</td><td>Нужны события заказа, вопроса, назначения, ответа, просрочки, жалобы, возврата.</td><td>Есть email-пакеты и карта событий, нужно связать с переменными.</td><td>No-send proof по сквозному маршруту еще не выполнен.</td><td><span class="status yellow">доработать</span></td><td>Проверить no-send: payment, question, assign, answer, refund.</td></tr>
+      <tr><td>Качество экспертов</td><td>Ответы не шаблонные, безопасные и персональные.</td><td>Требуется экран/вкладка качества в админке или рабочем месте.</td><td>Нужны оценка ответа, замечания, видимость, санкции, связь с support.</td><td>Рубрика качества и регламент описаны.</td><td>Нет proof очереди модерации и влияния на видимость.</td><td><span class="status yellow">доработать</span></td><td>Связать жалобу клиента с проверкой ответа и видимостью эксперта.</td></tr>
+      <tr><td>Начисления</td><td>Эксперт/агент понимает, за что начислено и что удержано.</td><td>Нужна вкладка/панель начислений в рабочем месте.</td><td>Модель статусов начислений описана, реализация не доказана.</td><td>Нужны правила, причины удержаний, финальные founder решения.</td><td>Нет proof начисления после закрытия тестовой консультации.</td><td><span class="status yellow">после основного пути</span></td><td>Добавить тестовое начисление после ответа и статусы удержания.</td></tr>
+      <tr><td>Документы сайта</td><td>Понимать правила услуги, приватность, возвраты, дисклеймеры.</td><td>Есть legal/support pages во frontend-слое.</td><td>Live Confideline legal сейчас legacy dating; нужно заменить/адаптировать.</td><td>Нужен HTML-ready package с переменными и approval gate.</td><td>Публичные live docs проверены как не готовые для Nebula.</td><td><span class="status red">нужно переписать</span></td><td>Готовить пакет, но не публиковать без legal/payment/founder approval.</td></tr>
+      <tr><td>Аналитика и экономика</td><td>Понять стоимость клиента, повтор, refund, качество и нагрузку.</td><td>UI/админка должны показывать отчеты и события.</td><td>Карта событий и экономика описаны, real data proof отсутствует.</td><td>Нужны названия событий, отчеты, no-send/test markers.</td><td>Нет сквозного отчета по test order.</td><td><span class="status red">до рекламы</span></td><td>Собрать отчет test order: источник, оплата, ответ, жалоба, начисление.</td></tr>
+    </tbody></table></div>
+
+    <h2>Что передавать Игорю по каждой функции</h2>
+    <div class="matrix"><table><thead><tr><th>Поле задачи</th><th>Что должно быть внутри</th><th>Почему нельзя без этого</th></tr></thead><tbody>
+      <tr><td>Экран / источник</td><td>Ссылка на Nebula page, Figma/export/PNG или существующий Blue panel proof.</td><td>Иначе разработчик не знает, какую именно страницу внедрять.</td></tr>
+      <tr><td>Backend/admin связь</td><td>Route, модель, админский экран, роль, событие, где будет видно состояние.</td><td>Иначе frontend останется красивой картинкой без сервиса.</td></tr>
+      <tr><td>Контент</td><td>Тексты, CTA, FAQ, legal note, email copy, переменные, языки.</td><td>Иначе экран будет требовать ручного переписывания на этапе внедрения.</td></tr>
+      <tr><td>Состояния</td><td>Успех, ошибка, ожидание, пусто, нет доступа, refund, просрочка, blocked.</td><td>Иначе тест сразу упрется в тупиковые состояния.</td></tr>
+      <tr><td>Проверка</td><td>Как пройти сценарий, какие скриншоты нужны, где PASS/WARN/FAIL.</td><td>Иначе нельзя принять задачу и безопасно включать трафик.</td></tr>
+    </tbody></table></div>
+
+    <h2>Связанные страницы Blue panel</h2>
+    <div class="links">
+      <a href="oracle-nebula-design-backend-content-qa.html"><strong>Oracle/Nebula: дизайн, backend, контент</strong><span>Правило пятислойной проверки каждого экрана.</span></a>
+      <a href="nebula-screen-contract.html"><strong>Экранный контракт Nebula</strong><span>14 экранных групп и 89 блоков из Google Sheet.</span></a>
+      <a href="nebula-design-source-contract.html"><strong>Дизайн-источники Nebula</strong><span>Figma, публичная верстка, таблицы и source-status.</span></a>
+      <a href="evidence.html"><strong>Проверка текущего сайта</strong><span>Confideline live как legacy public и backend как база платформы.</span></a>
+      <a href="launch-test-scenario.html"><strong>Сквозная проверка запуска</strong><span>Как доказать путь без реальных платежей.</span></a>
+      <a href="jun-08-page-screen-registry.html"><strong>Проверка страниц и функций</strong><span>Где вести реестр экранов, зависимостей и проблемных сценариев.</span></a>
+    </div>
+
+    <h2>Итог</h2>
+    <div class="note"><p><b>Проект имеет серьезную базу, но готовность нужно доказывать по связкам.</b> Самая важная следующая работа: пройти строки этой карты и для каждой красной/желтой функции сделать co2p-пакет для Игоря: экран, backend/admin, контент, состояния, тестовый proof. Только после этого можно говорить о переходе от PM-проектирования к внедрению и приемке.</p></div>
+  </section>
+</main>
+<script src="../assets/panel-ux.js"></script>
+</body>
+</html>
