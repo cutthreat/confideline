@@ -47,6 +47,12 @@
     code { padding:1px 5px; border-radius:6px; background:#eef4fb; color:#183b63; }
     .yes{color:var(--green);font-weight:700}.limited{color:var(--amber);font-weight:700}.no{color:var(--red);font-weight:700}
     .callout { margin-top:14px; padding:16px; border-radius:18px; border:1px solid #f0d9a7; background:#fff8e9; color:#60420d; line-height:1.5; }
+    .hint{position:relative;display:inline-flex;align-items:center;gap:4px;border-bottom:1px dotted rgba(47,114,216,.65);cursor:help}
+    .hint::after{content:attr(data-tip);position:absolute;left:0;bottom:calc(100% + 10px);z-index:20;width:min(360px,80vw);padding:10px 12px;border-radius:12px;background:#13233a;color:#fff;box-shadow:0 16px 34px rgba(20,35,58,.22);font-size:12px;line-height:1.35;font-weight:500;white-space:normal;opacity:0;pointer-events:none;transform:translateY(4px);transition:opacity .14s ease,transform .14s ease}
+    .hint::before{content:"";position:absolute;left:18px;bottom:calc(100% + 4px);z-index:21;border:6px solid transparent;border-top-color:#13233a;opacity:0;transition:opacity .14s ease}
+    .hint:hover::after,.hint:focus::after,.hint:hover::before,.hint:focus::before{opacity:1;transform:translateY(0)}
+    .hint:focus{outline:2px solid rgba(47,114,216,.32);outline-offset:2px;border-radius:6px}
+    .perm-list{display:flex;flex-wrap:wrap;gap:7px}.perm-list .hint{margin:1px 0}
     @media (max-width:1180px){.hero-grid,.grid,.grid.two,.metrics{grid-template-columns:1fr 1fr}} @media (max-width:760px){.roles-hero{padding:24px 16px 20px}.hero-grid,.grid,.grid.two,.metrics{grid-template-columns:1fr}.tabs,.panel,.metrics{padding-left:16px;padding-right:16px}}
   </style>
 </head>
@@ -57,20 +63,20 @@
         <div class="panel-nav__label">ТЗ по ролям админки</div>
         <div class="panel-nav__links">
           <a href="./index.html">Каталог панелей</a>
-          <a href="https://confideline.com/en/admin/settings/role" target="_blank" rel="noopener">Live-страница ролей</a>
-          <a href="https://github.com/cutthreat/confideline/blob/codex/confideline-dashboard-handoff-2026-04-14/web/admin-roles-tz-panel.html" target="_blank" rel="noopener">GitHub panel</a>
+          <a href="https://confideline.com/ru/admin/settings/role" target="_blank" rel="noopener">Live-страница ролей</a>
+          <a href="https://github.com/cutthreat/confideline/blob/codex/confideline-translator-preview/web/admin-roles-tz-panel.html" target="_blank" rel="noopener">GitHub panel</a>
         </div>
       </nav>
       <div class="hero-grid">
         <div>
-          <p class="kicker">Confideline · роли админ-панели · обновлено 2026-06-01</p>
+          <p class="kicker">Confideline · роли админ-панели · обновлено 2026-06-04</p>
           <h1>Эталон ролей для разработки и тестирования платного чата</h1>
           <p>Панель обновлена до последней версии role review: используем 10 рабочих ролей текущего ТЗ, не вводим новые role short names, исключаем продуктовый термин `partner`, фиксируем эталон поведения ролей и проверяем фактический доступ через direct URL и backend scope.</p>
           <div class="tp-actions" style="margin-top:18px">
             <a class="tp-btn tp-btn--primary" href="./role-review-2026-06-01/role-behavior-standard-ru.md">Эталон ролей</a>
             <a class="tp-btn" href="./role-review-2026-06-01/role-matrix-final-ru.csv">Финальная матрица CSV</a>
             <a class="tp-btn" href="./role-review-2026-06-01/role-direct-url-acceptance-ru.csv">Acceptance CSV</a>
-            <a class="tp-btn" href="https://github.com/cutthreat/confideline/tree/codex/confideline-dashboard-handoff-2026-04-14" target="_blank" rel="noopener">GitHub repo</a>
+            <a class="tp-btn" href="https://github.com/cutthreat/confideline/tree/codex/confideline-translator-preview" target="_blank" rel="noopener">GitHub repo</a>
             <a class="tp-btn" href="../qa-ba-autonomous-tester/reports/admin-role-live-current.json">Evidence JSON</a>
           </div>
         </div>
@@ -91,7 +97,7 @@
       <div class="metric"><strong>10</strong><span>рабочих ролей текущего ТЗ по платному чату</span></div>
       <div class="metric"><strong>0</strong><span>новых role short names не добавляем на первом этапе</span></div>
       <div class="metric"><strong>23</strong><span>direct-url acceptance checks в актуальном CSV</span></div>
-      <div class="metric"><strong>5/5</strong><span>Kristy super-admin baseline: assigned/unassigned ids валидны</span></div>
+      <div class="metric"><strong>72</strong><span>live permission options из формы `/ru/admin/role/update?id=2`</span></div>
     </section>
 
     <nav class="tabs">
@@ -105,35 +111,86 @@
     </nav>
 
     <main>
-      <section class="panel is-active" id="tab-matrix">
+            <section class="panel is-active" id="tab-matrix">
         <div class="matrix">
           <table>
-            <thead><tr><th>Роль</th><th>Существующие permission keys / доступ</th><th>Не выдавать</th><th>Статус ключей и scope-надстроек</th><th>Почему</th></tr></thead>
+            <thead><tr><th>Роль</th><th>Существующие permission keys / доступ</th><th>Дополнительные права</th><th>Почему</th></tr></thead>
             <tbody>
-              <tr><td><code>super-admin</code></td><td><code>All</code></td><td>Ежедневный чат, support, content, payout</td><td>Audit на роли, выплаты, возвраты, raw PHP, назначения</td><td>Root нужен для аварии и владения системой, но не для операционной работы.</td></tr>
-              <tr><td><code>admin</code></td><td><code>users-view</code>, ограниченный <code>users-update</code>, reports, verifications, bans, photos, <code>orders-view</code></td><td><code>All</code>, raw PHP, payment settings, balance changes, прямой refund</td><td><code>ops.dashboard</code>, <code>chat.transcript.review</code>, <code>support.escalation.read</code></td><td>Операционный контроль без технического и финансового root.</td></tr>
-              <tr><td><code>agent</code></td><td><code>users-agent</code>, <code>chief_under-view</code>; <code>messages-all</code>/<code>chat-all</code> только при backend-scope</td><td><code>users-update</code>, <code>chief_under-all</code>, orders, balance, refund, pages, роли</td><td>Есть в live permissions: <code>users-agent</code>, <code>chief_under-view</code>, <code>messages-all</code>, <code>chat-all</code>. Нет в live permissions: assigned-only chat keys. Поэтому assigned-only доступ должен быть реализован backend guards: <code>canViewConversation</code>, <code>canSendAsExpert</code>.</td><td>Агент работает только с назначенными экспертными анкетами.</td></tr>
-              <tr><td><code>agent-moder</code></td><td><code>chief_under-all</code>, ограниченный <code>users-update</code>, assignment audit</td><td>Глобальный чат без reason, финансы, роли, raw PHP</td><td><code>agent.assignment.manage</code>, <code>agent.assignment.history</code>, <code>agent.kpi.read</code></td><td>Руководит назначениями, но не становится root.</td></tr>
-              <tr><td><code>support</code></td><td>Существующие keys: <code>support-view</code>/<code>support-update</code> при настройке роли; order/session summary через безопасный backend scope</td><td>Глобальный чат, отправка от эксперта, роли, raw PHP, прямой refund</td><td><code>support.case.read</code>, <code>support.evidenceExport</code>, <code>chat.transcript.read.case</code>, <code>refund.request</code> в live permissions не найдены. Это требования к backend workflow или будущие granular keys.</td><td>Поддержка работает по обращению, а не по всей базе консультаций.</td></tr>
-              <tr><td><code>support-moder</code></td><td>Существующие support keys + эскалации через backend workflow</td><td><code>All</code>, role management, raw PHP, массовый transcript export</td><td>Отдельные keys <code>refund.approve.limited</code>, <code>chargeback.evidence</code>, <code>support.escalation.manage</code> не найдены. Нужны workflow guards и audit.</td><td>Старший support нужен для спорных случаев, но с лимитами и audit.</td></tr>
-              <tr><td><code>payment-moderator</code></td><td>Существующие keys: <code>orders-view</code>/<code>orders-all</code>, <code>balance_transaction-view</code> при настройке роли</td><td>Тело консультаций без case, чат, назначения, роли</td><td><code>refund.workflow</code>, <code>payment.dispute.read</code>, <code>payment.refund.prepare</code>, <code>orders.refund.status</code> не найдены. Нужны workflow guards и audit.</td><td>Платежная роль видит деньги и статусы, а не приватный текст услуги.</td></tr>
-              <tr><td><code>balance</code></td><td><code>partners-view</code>, <code>partners-balance</code>, <code>users-view</code>, <code>users-balance</code></td><td><code>messages-*</code>, <code>chat-*</code>, transcript, роли, raw PHP</td><td><code>balance.adjust.withReason</code>, <code>payout.report</code>, <code>agent.balance.audit</code></td><td>Баланс и начисления отделены от консультаций.</td></tr>
-              <tr><td><code>content-moder</code></td><td>Существующие keys: <code>help-*</code>, <code>news-*</code>, <code>languages-*</code>, <code>info_block-*</code>; <code>pages-*</code> только после raw PHP guard</td><td><code>pages-all</code> до разделения raw PHP, chat, orders, users, balance</td><td><code>content.pages.safe</code>, <code>content.geo</code>, <code>content.emailTemplates</code>, <code>technical.rawPages</code> не найдены. Нужны granular permissions или backend split.</td><td>Контент нужен для витрины, raw PHP является техническим риском.</td></tr>
-              <tr><td><code>user-moderator</code></td><td><code>users-view/update</code> ограниченно, reports, bans, verifications, photos moderation</td><td>Чат от эксперта, orders, balance, refund, роли, raw PHP</td><td><code>user.moderation.update</code>, <code>user.safetyFlag.manage</code>, <code>media.moderate</code></td><td>Модерирует пользователей и безопасность, не деньги и продажи.</td></tr>
+              <tr>
+                <td><span class="hint" tabindex="0" data-tip="Полный системный владелец. Используется для аварийного доступа, ролей, платежных ключей, env/license/plugins и raw PHP."><code>super-admin</code></span></td>
+                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="Полный доступ ко всем разделам и действиям админки. Это не обычный permission из списка, а режим root-доступа."><code>All</code></span></div></td>
+                <td>Не требуется.</td>
+                <td>Единственная роль, которой можно дать полный доступ. Нужна для владения системой и аварийного восстановления.</td>
+              </tr>
+              <tr>
+                <td><span class="hint" tabindex="0" data-tip="Операционный администратор продукта: видит общую картину, но не должен иметь root-доступ к системным настройкам."><code>admin</code></span></td>
+                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="Базовый доступ в админку без выбранных module permissions. В текущем live-снимке роль admin не имеет отдельных выбранных keys.">без выбранных module permissions</span></div></td>
+                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="Просмотр пользователей без права удаления и без финансовых операций."><code>users-view</code></span><span class="hint" tabindex="0" data-tip="Просмотр заказов без изменения платежного статуса."><code>orders-view</code></span><span class="hint" tabindex="0" data-tip="Просмотр жалоб/репортов для операционного контроля."><code>reports-view</code></span><span class="hint" tabindex="0" data-tip="Просмотр верификаций без системных настроек."><code>verifications-view</code></span></div></td>
+                <td>Роль нужна для операционного контроля, но опасные зоны roles/payment/env/plugins/raw PHP должны оставаться у <code>super-admin</code>.</td>
+              </tr>
+              <tr>
+                <td><span class="hint" tabindex="0" data-tip="Агент проекта: общается с клиентами от лица назначенных экспертных анкет."><code>agent</code></span></td>
+                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="Существующий key агентского пользовательского контура. Должен работать только с назначенными экспертными анкетами."><code>users-agent</code></span><span class="hint" tabindex="0" data-tip="Просмотр связки agent -> expert questionnaires через chief_under. Чужой userId должен быть закрыт или заменен на own scope."><code>chief_under-view</code></span><span class="hint" tabindex="0" data-tip="Крупное право на сообщения. Для агента допустимо только если backend режет выборки по assigned sessions."><code>messages-all</code></span><span class="hint" tabindex="0" data-tip="Крупное право на chat workspace. Для агента допустимо только при canViewConversation(agentId, conversationId)."><code>chat-all</code></span></div></td>
+                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="Не live-key, а backend scope: агент видит только assigned conversations/sessions.">assigned-only chat scope</span><span class="hint" tabindex="0" data-tip="Не live-key, а backend guard: агент может отправлять от лица только назначенной экспертной анкеты.">canSendAsExpert</span></div></td>
+                <td>Агенту нужны чат и сообщения, но только в границах назначенных экспертных анкет. Без backend scope <code>messages-all</code>/<code>chat-all</code> слишком широкие.</td>
+              </tr>
+              <tr>
+                <td><span class="hint" tabindex="0" data-tip="Диспетчер назначений: управляет связями агент -> экспертная анкета."><code>agent-moder</code></span></td>
+                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="Изменение пользовательских данных. Для этой роли должно быть ограничено полями, нужными для назначения/статуса."><code>users-update</code></span><span class="hint" tabindex="0" data-tip="Полное управление связками agent -> expert questionnaires."><code>chief_under-all</code></span></div></td>
+                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="Просмотр пользователей без расширения до глобальных чатов."><code>users-view</code></span><span class="hint" tabindex="0" data-tip="Просмотр агентского списка, если нужен для диспетчеризации."><code>partners-view</code></span></div></td>
+                <td>Роль должна управлять назначениями, но не читать все консультации и не управлять платежами.</td>
+              </tr>
+              <tr>
+                <td><span class="hint" tabindex="0" data-tip="Финансовый учет: балансы, начисления, сверки и выплаты без чтения личных консультаций."><code>balance</code></span></td>
+                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="Просмотр агентского/партнерского списка. Техническое legacy-название partners относится к агентскому контуру."><code>partners-view</code></span><span class="hint" tabindex="0" data-tip="Доступ к балансовым данным агентского контура."><code>partners-balance</code></span><span class="hint" tabindex="0" data-tip="Просмотр пользователей без модерационных и платежных действий."><code>users-view</code></span><span class="hint" tabindex="0" data-tip="Доступ к балансовым данным пользователей."><code>users-balance</code></span></div></td>
+                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="Просмотр балансовых транзакций, если нужен аудит начислений."><code>balance_transaction-view</code></span><span class="hint" tabindex="0" data-tip="Просмотр заказов только как финансовой сводки."><code>orders-view</code></span></div></td>
+                <td>Финансы должны видеть суммы и балансы, но не chat/messages/transcript и не роли.</td>
+              </tr>
+              <tr>
+                <td><span class="hint" tabindex="0" data-tip="Платежный модератор: платежные статусы, refund review и payment evidence без доступа к секретам провайдера."><code>payment-moderator</code></span></td>
+                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="В текущем live-снимке роль payment-moderator не имеет выбранных keys.">без выбранных module permissions</span></div></td>
+                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="Просмотр заказов для проверки оплаты/refund без доступа к provider secrets."><code>orders-view</code></span><span class="hint" tabindex="0" data-tip="Полный order-модуль стоит давать только если workflow ограничивает поля payment/refund."><code>orders-all</code></span><span class="hint" tabindex="0" data-tip="Просмотр балансовых транзакций для сверки payment evidence."><code>balance_transaction-view</code></span></div></td>
+                <td>Роль отвечает за платежи, но не должна читать все консультации, менять роли или видеть payment secret settings.</td>
+              </tr>
+              <tr>
+                <td><span class="hint" tabindex="0" data-tip="Первая линия поддержки: работает с обращениями клиентов и ограниченным контекстом заказа/сессии."><code>support</code></span></td>
+                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="В текущем live-снимке роль support не имеет выбранных keys.">без выбранных module permissions</span></div></td>
+                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="Просмотр support-обращений."><code>support-view</code></span><span class="hint" tabindex="0" data-tip="Обновление support-обращений без платежных решений."><code>support-update</code></span><span class="hint" tabindex="0" data-tip="Ограниченный просмотр пользователя для помощи клиенту."><code>users-view</code></span><span class="hint" tabindex="0" data-tip="Просмотр статуса заказа без payment mutation."><code>orders-view</code></span></div></td>
+                <td>Поддержке нужен case-bound контекст, но не глобальный чат, не балансы и не роли.</td>
+              </tr>
+              <tr>
+                <td><span class="hint" tabindex="0" data-tip="Старшая поддержка: эскалации, спорные кейсы, evidence bundle и передача refund review."><code>support-moder</code></span></td>
+                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="В текущем live-снимке роль support-moder не имеет выбранных keys.">без выбранных module permissions</span></div></td>
+                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="Полный support-модуль для старшей поддержки и эскалаций."><code>support-all</code></span><span class="hint" tabindex="0" data-tip="Просмотр заказов для evidence bundle без самостоятельного финального refund."><code>orders-view</code></span><span class="hint" tabindex="0" data-tip="Просмотр пользователей для разбора кейса."><code>users-view</code></span></div></td>
+                <td>Можно расширить относительно <code>support</code>, но финальный payment/refund mutation должен оставаться у финансового контура.</td>
+              </tr>
+              <tr>
+                <td><span class="hint" tabindex="0" data-tip="Контент-модератор: безопасный публичный контент, help/news/info blocks без доступа к чатам и деньгам."><code>content-moder</code></span></td>
+                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="В текущем live-снимке роль content-moder не имеет выбранных keys.">без выбранных module permissions</span></div></td>
+                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="Help-разделы и справочные страницы."><code>help-all</code></span><span class="hint" tabindex="0" data-tip="Новости и публикации."><code>news-all</code></span><span class="hint" tabindex="0" data-tip="Инфоблоки сайта."><code>info_block-all</code></span><span class="hint" tabindex="0" data-tip="Языковые записи/переводы, если контент-менеджер ведет локализации."><code>languages-view</code></span></div></td>
+                <td>Контент можно расширить, но <code>pages-all</code> опасен, потому что Pages позволяет raw PHP.</td>
+              </tr>
+              <tr>
+                <td><span class="hint" tabindex="0" data-tip="Модератор пользователей: жалобы, баны, фото, верификации и safety-сигналы."><code>user-moderator</code></span></td>
+                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="В текущем live-снимке роль user-moderator не имеет выбранных keys.">без выбранных module permissions</span></div></td>
+                <td><div class="perm-list"><span class="hint" tabindex="0" data-tip="Просмотр жалоб/репортов."><code>reports-view</code></span><span class="hint" tabindex="0" data-tip="Управление банами по правилам модерации."><code>bans-all</code></span><span class="hint" tabindex="0" data-tip="Модерация фото."><code>photos-all</code></span><span class="hint" tabindex="0" data-tip="Проверка/обновление верификаций."><code>verifications-all</code></span><span class="hint" tabindex="0" data-tip="Ограниченное обновление moderation fields пользователя."><code>users-update</code></span></div></td>
+                <td>Роль защищает пользователей и площадку, но не управляет платежами, ролями и глобальными transcript.</td>
+              </tr>
             </tbody>
           </table>
         </div>
-        <div class="callout"><strong>Смысл матрицы:</strong> это целевое распределение прав, а не снимок текущих настроек. Текущие значения нужны только как evidence, что такие роли существуют.</div>
+        <div class="callout"><strong>Смысл матрицы:</strong> во второй колонке указаны текущие или однозначно необходимые существующие permission keys. В третьей колонке указаны логичные дополнительные права, которые можно дать, чтобы не плодить отдельные роли.</div>
         <div class="callout"><strong>Launch-blocker:</strong> если <code>messages-all</code> и <code>chat-all</code> у <code>agent</code> не ограничены backend-проверкой через <code>chief_under</code>, платный чат запускать нельзя.</div>
-      </section>
-
-      <section class="panel" id="tab-dictionary">
+      </section><section class="panel" id="tab-dictionary">
         <div class="grid two">
           <article class="card wide">
             <h3>Справочник permission keys и scope-надстроек</h3>
-            <p>В live-форме ролей найдено 93 permission values. В матрице теперь разделены реальные ключи админки и проектные backend-ограничения. Это важно: нельзя писать <code>scoped chat assigned</code> как будто это существующий ключ роли.</p>
+            <p>В live-форме роли <code>/ru/admin/role/update?id=2</code> найдено 72 permission values. В матрице разделены реальные ключи админки и проектные backend-ограничения. Это важно: нельзя писать <code>scoped chat assigned</code> как будто это существующий ключ роли.</p>
             <div class="tp-actions">
               <a class="tp-btn tp-btn--primary" href="./role-review-2026-06-01/permission-scope-dictionary-ru.md">Открыть справочник</a>
+              <a class="tp-btn" href="./role-review-2026-06-01/permission-catalog-live-ru.md">Полный каталог 72 live-прав</a>
+              <a class="tp-btn" href="./role-review-2026-06-01/permission-catalog-live-ru.csv">CSV прав</a>
+              <a class="tp-btn" href="./role-review-2026-06-01/permission-catalog-live-ru.json">JSON прав</a>
             </div>
           </article>
           <article class="card"><h3><code>users-agent</code></h3><p><strong>Статус:</strong> есть в live permissions. Техническое право агентского пользовательского контура. Не заменяет проверку assigned expert ids.</p></article>
@@ -154,7 +211,7 @@
             <p>Эталон — это ожидаемое поведение роли до практического тестирования. Он нужен, чтобы программист понимал, кому какую роль выставлять, а тестировщик сравнивал live-факт с заранее зафиксированным ожиданием.</p>
             <div class="tp-actions">
               <a class="tp-btn tp-btn--primary" href="./role-review-2026-06-01/role-behavior-standard-ru.md">Открыть полный эталон</a>
-              <a class="tp-btn" href="https://github.com/cutthreat/confideline/blob/codex/confideline-dashboard-handoff-2026-04-14/web/admin-roles-tz-panel.html" target="_blank" rel="noopener">GitHub panel</a>
+              <a class="tp-btn" href="https://github.com/cutthreat/confideline/blob/codex/confideline-translator-preview/web/admin-roles-tz-panel.html" target="_blank" rel="noopener">GitHub panel</a>
             </div>
           </article>
           <article class="card"><h3>Для программиста</h3><ul><li>Выставлять только существующие роли.</li><li>Если permission слишком широкий, добавлять backend-фильтр.</li><li>Не считать меню защитой.</li><li>Логировать sensitive actions: actor, role, action, target, timestamp.</li></ul></article>
@@ -223,5 +280,6 @@
   </script>
 </body>
 </html>
+
 
 
