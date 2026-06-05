@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pre-launch QA · лист приема контрольного запуска</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.rule{border:1px solid var(--line,#ddcfb8);border-radius:18px;padding:16px;background:#fff}.rule.pass{background:#f1fbf4}.rule.warn{background:#fff8df}.rule.stop{background:#fff0ee}.links-row{display:flex;flex-wrap:wrap;gap:10px}.links-row a{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line,#ddcfb8);border-radius:999px;padding:10px 14px;background:#fff;text-decoration:none;color:#145c42;font-weight:800}.matrix table{min-width:2100px}.matrix table td:nth-child(1){font-weight:900;color:#145c42;white-space:nowrap}.small-note{font-size:14px;color:#666}@media(max-width:900px){.rules{grid-template-columns:1fr}.links-row a{width:100%;justify-content:space-between}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<nav class="top" aria-label="Навигация">
+<a href="../index.html">Главная</a>
+<a href="prelaunch-qa-execution-control.html">Pre-launch QA</a>
+<a href="qa-start-readiness-checklist.html">Gate старта QA</a>
+<a href="qa-test-order-execution-brief.html">QA brief</a>
+<a href="test-order-runtime-public-report-shell.html">Публичный отчет</a>
+<a class="primary" href="prelaunch-qa-capture-sheet-2026-06-06.html">QA sheet</a>
+</nav>
+
+<section class="hero">
+<div class="hero-main">
+<div class="eyebrow">QA · control order · before traffic</div>
+<h1>Лист приема pre-launch QA</h1>
+<p>Заполняется тестировщиком после READY gate. Цель — не “покликать сайт”, а доказать контрольный путь: клиент покупает безопасный тестовый заказ, эксперт отвечает, админ видит процесс, события создаются без отправки, support управляет проблемой, аналитика и отчет дают PM решение PASS/WARN/STOP.</p>
+<div class="badges"><span class="badge red">QA start сейчас STOP</span><span class="badge red">runtime proof = 0</span><span class="badge red">paid traffic запрещен</span><span class="badge green">форма приема готова</span></div>
+</div>
+<aside class="side">
+<b>Что QA должен вернуть</b>
+<p>qa_run_id, test_order_id, test_user_id, expert/profile_id, screenshots, admin links, event IDs, support_case_id, purchase analytics row, final verdict, blockers и retest path.</p>
+<b>STOP-сигналы</b>
+<p>Риск реального платежа, реальная отправка email, потеря заказа/вопроса/ответа, отсутствие исполнителя, support без владельца, админка не видит lifecycle, отчет без доказательств.</p>
+<div class="note"><b>Граница:</b> этот лист не запускает QA сам по себе. QA стартует только после safe order READY, минимум одного accepted эксперта, no-send/admin route READY.</div>
+</aside>
+</section>
+
+<section class="doc">
+<div class="stats">
+<div class="metric red"><b>15</b><span>QA-точек приема</span></div>
+<div class="metric red"><b>0</b><span>accepted QA runs сейчас</span></div>
+<div class="metric yellow"><b>safe only</b><span>без реальных оплат/писем</span></div>
+<div class="metric red"><b>STOP</b><span>если нет публичного отчета</span></div>
+</div>
+</section>
+
+<section class="doc">
+<h2>Матрица приема QA</h2>
+<div class="matrix"><table><thead><tr><th>ID</th><th>Что проверяет QA</th><th>Что делает</th><th>Обязательные данные</th><th>Что вернуть как proof</th><th>Accepted</th><th>Returned / STOP</th><th>Связанный лист</th><th>Статус</th></tr></thead><tbody>
+<tr><td>QAC01</td><td><b>READY gate</b></td><td>Проверяет, можно ли стартовать тест.</td><td>safe_order_ready, expert_ready, no_send_ready, admin_ready.</td><td>Скрин/ссылка на ready checklist.</td><td>Все входы READY или явно WARN с разрешением PM.</td><td>Нет safe order или accepted эксперта.</td><td>qa-start-readiness-checklist</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>QAC02</td><td><b>Landing / offer / docs</b></td><td>Открывает коммерческую страницу и CTA.</td><td>landing_url, CTA, docs links, disclaimer block.</td><td>Скрин landing + зона CTA/docs.</td><td>Покупатель понимает услугу и ограничения до оплаты.</td><td>Dating/subscription legacy, нет docs/disclaimer.</td><td>PDC / SCR01</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>QAC03</td><td><b>Auth без потери покупки</b></td><td>Проходит guest/auth и возвращается к заказу.</td><td>test_user_id, session_id, return_to.</td><td>Скрины до/после auth с сохраненным intent.</td><td>Выбранная услуга/пакет не теряется.</td><td>Путь сброшен или заказ невозможно продолжить.</td><td>SCR02</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>QAC04</td><td><b>Пакет и safe checkout</b></td><td>Выбирает услугу и создает безопасный заказ.</td><td>package_id, value, currency, order_id, test marker.</td><td>Скрин checkout/order + no real charge proof.</td><td>Order создан в safe/test режиме.</td><td>Есть риск реального платежа или нет order_id.</td><td>PAC / SCR04-SCR05</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>QAC05</td><td><b>Вопрос клиента</b></td><td>Вводит вопрос и контекст.</td><td>question_id, order_id, session_id, client_id.</td><td>Скрин клиента и админки с тем же вопросом.</td><td>Вопрос связан с заказом.</td><td>Вопрос теряется или живет отдельно от order.</td><td>SCR06</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>QAC06</td><td><b>Назначение исполнителя</b></td><td>Проверяет назначение эксперта/анкеты и SLA.</td><td>performer_id, profile_id, assigned_at, deadline.</td><td>Скрин assignment/deadline.</td><td>Есть ответственный исполнитель и срок.</td><td>Заказ без владельца или без SLA.</td><td>EA / AOC03</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>QAC07</td><td><b>Рабочее место эксперта</b></td><td>Заходит под ролью исполнителя.</td><td>task_id, question_id, deadline, answer form.</td><td>Скрин workspace: вопрос, срок, поле ответа.</td><td>Исполнитель может ответить внутри сайта.</td><td>Эксперт не видит задачу или не может ответить.</td><td>AOC04 / SCR09</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>QAC08</td><td><b>Ответ и видимость клиенту</b></td><td>Публикует тестовый ответ и проверяет клиента.</td><td>answer_id, order_id, client view, admin view.</td><td>Скрины ответ в роли эксперта, клиента и админа.</td><td>Ответ связан с заказом и виден клиенту.</td><td>Ответ не доставляется или автор/заказ не связаны.</td><td>SCR08 / AOC08</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>QAC09</td><td><b>No-send события</b></td><td>Проверяет event log и preview без отправки.</td><td>event_id, template, variables, recipient, send_mode.</td><td>NSC01-NSC10 или скрин no-send log.</td><td>События есть, реальные письма не уходят.</td><td>Нет preview/log или реальная отправка.</td><td>NSC / AOC07</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>QAC10</td><td><b>Support/problem state</b></td><td>Создает жалобу/просрочку/слабый ответ.</td><td>support_case_id, reason, owner, decision, closure.</td><td>SPC01-SPC10 или скрин кейса.</td><td>Проблема управляется и закрывается.</td><td>Support не связан с order или нет владельца.</td><td>SPC / AOC06</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>QAC11</td><td><b>Админская видимость</b></td><td>Проверяет lifecycle в админке.</td><td>order timeline, SLA, events, support, answer, owner.</td><td>AOC01-AOC15 или скрин order route.</td><td>Админ видит путь без ручного поиска.</td><td>Данные разбросаны и нет понятного состояния.</td><td>AOC</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>QAC12</td><td><b>Purchase analytics</b></td><td>Проверяет source/session/order/value/service/support.</td><td>source, session_id, order_id, value, currency, daily row.</td><td>PAC01-PAC12 или analytics row.</td><td>Первый трафик можно будет измерять.</td><td>Нет source/order/value связки.</td><td>PAC</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>QAC13</td><td><b>Failure states</b></td><td>Проверяет минимум 3 сбоя: payment/order/support/empty.</td><td>failure_type, expected message, recovery action.</td><td>Скрины ошибки + понятный next action.</td><td>Пользователь не попадает в тупик.</td><td>Ошибка без объяснения/support/action.</td><td>SCR / AOC / SPC</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>QAC14</td><td><b>Публичный QA-отчет</b></td><td>Публикует отчет на GitHub Pages.</td><td>qa_report_url, screenshots, raw evidence, verdict.</td><td>Ссылка на отчет + manifest/ledger если есть.</td><td>PM и Игорь могут воспроизвести результат.</td><td>Скрины в переписке без отчета и структуры.</td><td>QA report shell</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>QAC15</td><td><b>Финальный verdict</b></td><td>Ставит PASS/WARN/STOP и next actions.</td><td>verdict, blockers, owners, retest path, launch impact.</td><td>Итоговый блок для PM readiness.</td><td>Понятно, что зеленеет, что остается желтым, что блокирует трафик.</td><td>Нет решения или “в целом норм” без привязки к gates.</td><td>Launch readiness</td><td><span class="status red">ждем proof</span></td></tr>
+</tbody></table></div>
+</section>
+
+<section class="doc">
+<h2>Правила приемки</h2>
+<div class="rules">
+<div class="rule pass"><b>PASS</b><p>QAC01-QAC15 закрыты, публичный отчет опубликован, critical STOP отсутствует. PM может пересчитать readiness, но paid traffic открывается только если остальные launch gates тоже готовы.</p></div>
+<div class="rule warn"><b>WARN</b><p>Основной путь работает, но есть ручные обходы, UX-долг или неполная аналитика. Допустимо только для ограниченного теста с владельцем и сроком закрытия.</p></div>
+<div class="rule stop"><b>STOP</b><p>Риск реальной оплаты/отправки, потеря заказа/вопроса/ответа, нет исполнителя, support неуправляем, админка не видит путь, нет публичного отчета.</p></div>
+</div>
+</section>
+
+<section class="doc">
+<h2>Связанные proof-страницы</h2>
+<div class="links-row">
+<a href="prelaunch-qa-execution-control.html">Pre-launch QA ↗</a>
+<a href="qa-start-readiness-checklist.html">Gate старта QA ↗</a>
+<a href="qa-test-order-execution-brief.html">QA brief ↗</a>
+<a href="test-order-runtime-public-report-shell.html">Публичный отчет ↗</a>
+<a href="admin-operations-capture-sheet-2026-06-06.html">Admin sheet ↗</a>
+<a href="support-problem-control-order-capture-sheet-2026-06-06.html">Support sheet ↗</a>
+<a href="purchase-analytics-control-order-capture-sheet-2026-06-06.html">Analytics sheet ↗</a>
+<a href="artifacts/PRELAUNCH_QA_CAPTURE_SHEET_2026_06_06.csv">CSV для приема ↗</a>
+</div>
+<p class="small-note">QA считается завершенным только после публичного отчета с доказательствами, а не после устного прохода сайта.</p>
+</section>
+<p class="footer">Generated local web panel · prelaunch-qa-capture-sheet-2026-06-06.html · 2026-06-06</p>
+</main>
+</body>
+</html>
