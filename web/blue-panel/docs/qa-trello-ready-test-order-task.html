@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Постановка QA для Trello · test order Nebula</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .top-nav{position:sticky;top:0;z-index:20;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:-4px 0 18px;padding:12px;background:rgba(250,247,239,.94);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:22px;box-shadow:0 12px 30px rgba(58,43,29,.08)}
+    .top-nav a{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);text-decoration:none;font:900 12px Manrope,Verdana,sans-serif}.top-nav a.primary{background:#1f6b49;color:#fff;border-color:#1f6b49}
+    .hero{display:grid;grid-template-columns:1.08fr .92fr;gap:16px;margin-bottom:16px}.hero-main{background:linear-gradient(135deg,#17372f,#1f6b49);border-radius:30px;padding:26px;color:#fff;box-shadow:var(--shadow)}.hero-main h1,.hero-main p{color:#fff}.hero-main h1{font-size:46px;line-height:1;margin:8px 0 12px}.side{border:1px solid var(--line);border-radius:30px;background:#fff8df;padding:18px}.side b{display:block;color:#1f6b49;margin:12px 0 5px}.side p{color:var(--muted)}
+    .doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:22px;box-shadow:var(--shadow);margin-top:16px}.note{border:1px solid var(--line);border-radius:18px;background:#fff8df;padding:14px;margin:16px 0;line-height:1.55}.copybox{border:1px dashed #b9aa99;border-radius:18px;background:#fbfaf7;padding:16px;margin:12px 0;white-space:pre-wrap;line-height:1.55;font-size:14px}.matrix{overflow:auto;border:1px solid var(--line);border-radius:22px;background:#fff;margin-top:14px}table{width:100%;min-width:1180px;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:11px;text-align:left;vertical-align:top}th{font:900 10px Manrope,Verdana,sans-serif;text-transform:uppercase;background:#fbfaf7;color:#514a61}td:first-child{font-weight:900;color:#1f6b49}.status{display:inline-flex;border-radius:999px;padding:6px 9px;font:900 10px Manrope,Verdana,sans-serif;white-space:nowrap}.red{background:#ffe1df;color:#8d1d12}.yellow{background:#fff0c0;color:#745000}.green{background:#dff5e8;color:#176032}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:14px}.cards a,.cards div{display:block;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:14px;text-decoration:none;color:var(--ink)}.cards strong{display:block;color:#1f6b49;margin-bottom:4px}.cards span{display:block;color:var(--muted);font-size:13px;line-height:1.45}@media(max-width:900px){.hero{grid-template-columns:1fr}.hero-main h1{font-size:34px}table{min-width:920px}}
+  </style>
+</head>
+<body><main class="wrap">
+<nav class="top-nav" aria-label="Навигация"><a href="../index.html">Главная</a><a href="current-next-action-board.html">Текущие действия</a><a href="qa-test-order-execution-brief.html">QA-пакет</a><a class="primary" href="qa-trello-ready-test-order-task.html">Постановка QA</a><a href="test-order-fixture-fill-template.html">Фикстуры</a><a href="test-order-runtime-public-report-shell.html">QA shell</a></nav>
+<section class="hero"><div class="hero-main"><div class="eyebrow">Trello-ready QA · без запуска теста сейчас</div><h1>Постановка задачи QA по контрольному заказу</h1><p>Это готовый текст для карточки Trello тестировщику. QA стартует только после READY по gate и закрытия красных условий Игорем. До этого задача используется как стандарт будущей приемки.</p></div><aside class="side"><b>Главное ограничение</b><p>QA не должен начинать runtime-проход, если нет safe test checkout, no-send режима, тестовых ролей и заполненных фикстур.</p><b>Что считается результатом</b><p>Публичный QA-отчет со скринами, order id/session id, PASS/WARN/STOP и задачами Игорю.</p></aside></section>
+<section class="doc"><h2>Заголовок карточки</h2><div class="copybox">Проверить контрольный заказ платной консультации без реальных платежей и писем</div><h2>Описание карточки для Trello</h2><div class="copybox">Постановка задачи:
+Нужно пройти первый контрольный заказ платной консультации Nebula/YouDate в безопасном тестовом режиме и доказать скринами, что маршрут работает или показать, где он ломается.
+
+Условие старта:
+QA начинает проверку только после READY по gate. Если нет safe test checkout, no-send режима, тестовых ролей, доступов или заполненных фикстур, задача не считается FAIL продукта. Это фиксируется как блокер подготовки теста.
+
+Смысл задачи:
+Нам нужно не просто покликать сайт, а доказать, что первая платная консультация может пройти управляемо: клиент создает тестовый заказ, задает вопрос, эксперт/агент получает задачу, отвечает, админ видит весь путь, события фиксируются без реальной отправки писем, support может обработать проблемный сценарий.
+
+Шаги выполнения:
+1. Проверить, что фикстуры заполнены: тестовый клиент, эксперт/агент, админ/support, before-state, admin URL, rollback rule.
+2. Снять before-state клиента, исполнителя, админки, событий и support.
+3. Пройти клиентский путь: оффер/услуга → test checkout → order success без real charge.
+4. Проверить, что вопрос клиента связан с order/session/task.
+5. Проверить админскую видимость: order, question, session/task, assignment, chat, events, support.
+6. Проверить workspace исполнителя: задача, вопрос, срок, контекст, чат, отправка ответа.
+7. Проверить, что ответ виден клиенту и админу по правам.
+8. Проверить no-send события: preview есть, реальные письма/push/SMS не отправлены.
+9. Создать один support/problem state: клиент недоволен ответом или эксперт просрочил ответ.
+10. Проверить test_run_id / test marker и rollback rule.
+11. Заполнить публичный QA-отчет: PASS/WARN/STOP, скрины, order id, session id, задачи Игорю, остаточные риски.
+
+Конечная цель:
+Публичный QA-отчет по одному контрольному заказу с вердиктом PASS/WARN/STOP и доказательствами по клиенту, админу, исполнителю, уведомлениям и support.
+
+Временные затраты:
+Ориентир 8-16 часов после закрытия gate. Если gate не готов, работа останавливается как PREPARE/STOP, а не тратится на шумный тест.
+
+Результат выполнения:
+Ссылка на Blue Panel QA shell: https://cutthreat.github.io/confideline/web/qa-reports/nebula-test-order-runtime-qa-shell-2026-06-05/ (by Codex)
+После фактического теста: ссылка обновляется на заполненный QA-отчет.</div></section>
+<section class="doc"><h2>Stop conditions для QA</h2><div class="matrix"><table><thead><tr><th>Стоп-сигнал</th><th>Как классифицировать</th><th>Что делать</th></tr></thead><tbody>
+<tr><td>Нет safe checkout / есть риск real charge</td><td><span class="status red">STOP</span></td><td>Не начинать тест. Вернуть Игорю AC01.</td></tr>
+<tr><td>Нет no-send режима / могут уйти реальные письма</td><td><span class="status red">STOP</span></td><td>Не начинать тест. Вернуть Игорю AC06.</td></tr>
+<tr><td>Нет доступа к роли или админке</td><td><span class="status yellow">RETEST_AUTH_REQUIRED</span></td><td>Не считать багом продукта. Заполнить фикстуры/доступы.</td></tr>
+<tr><td>Order создан, но question/session не связаны</td><td><span class="status red">FAIL</span></td><td>Фиксировать дефект маршрута, задача Игорю AC02-AC03.</td></tr>
+<tr><td>Эксперт не видит задачу</td><td><span class="status red">FAIL</span></td><td>Фиксировать дефект workspace/assignment, задача Игорю AC04-AC05.</td></tr>
+<tr><td>Основной маршрут работает, но админке неудобно</td><td><span class="status yellow">WARN</span></td><td>Не разрешать трафик автоматически; оформить improvement отдельно.</td></tr>
+</tbody></table></div></section>
+<section class="doc"><h2>Evidence checklist</h2><div class="matrix"><table><thead><tr><th>#</th><th>Evidence</th><th>Что должно быть видно</th></tr></thead><tbody>
+<tr><td>01</td><td>01-offer-service-price-deadline.png</td><td>Услуга, цена, срок, ограничения, CTA.</td></tr>
+<tr><td>02</td><td>02-sandbox-order-success-client-admin.png</td><td>Клиентский success и order id в админке, без real charge.</td></tr>
+<tr><td>03</td><td>03-question-linked-to-order.png</td><td>Один вопрос у клиента и в админке, связь с order/session.</td></tr>
+<tr><td>04</td><td>04-service-session-card-queue.png</td><td>Карточка консультации, статус, deadline, клиент, вопрос.</td></tr>
+<tr><td>05</td><td>05-assignment-expert-agent.png</td><td>Назначение исполнителя и workspace.</td></tr>
+<tr><td>06</td><td>06-client-admin-expert-chat-answer.png</td><td>Ответ виден клиенту, исполнителю и админу по правам.</td></tr>
+<tr><td>07</td><td>07-nosend-events-preview.png</td><td>Журнал событий и preview без реальной отправки.</td></tr>
+<tr><td>08</td><td>08-support-case-linked-to-order.png</td><td>Support case связан с order/session/chat/expert.</td></tr>
+<tr><td>09</td><td>09-final-pass-warn-stop-summary.png</td><td>Вердикт, задачи Игорю, остаточные риски.</td></tr>
+</tbody></table></div></section>
+<section class="doc"><h2>Связанные материалы</h2><div class="cards"><a href="artifacts/QA_TRELLO_READY_TEST_ORDER_TASK_2026_06_05.csv"><strong>CSV постановки QA</strong><span>Табличная версия карточки QA, условий старта и evidence.</span></a><a href="qa-test-order-execution-brief.html"><strong>QA-пакет</strong><span>Полная инструкция тестировщику.</span></a><a href="test-order-fixture-fill-template.html"><strong>Фикстуры</strong><span>Что заполнить перед QA.</span></a><a href="test-order-gate-current-verdict.html"><strong>Gate verdict</strong><span>Почему runtime QA пока STOP.</span></a><a href="test-order-runtime-public-report-shell.html"><strong>Публичный QA shell</strong><span>Где будет жить итоговый отчет.</span></a><a href="current-next-action-board.html"><strong>Текущая очередь</strong><span>Где QA стоит в NA01-NA08.</span></a></div></section>
+</main><script src="../assets/panel-ux.js"></script></body></html>
