@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Support acceptance matrix · Nebula</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .top-nav{position:sticky;top:0;z-index:20;display:flex;gap:10px;flex-wrap:wrap;margin:-4px 0 18px;padding:12px;background:rgba(250,247,239,.94);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:22px;box-shadow:0 12px 30px rgba(58,43,29,.08)}
+    .top-nav a{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);text-decoration:none;font:900 12px Manrope,Verdana,sans-serif;letter-spacing:.03em}.top-nav a.primary{background:#1f6b49;color:#fff;border-color:#1f6b49}
+    .hero{display:grid;grid-template-columns:1.08fr .92fr;gap:16px;margin-bottom:16px}.hero-main{background:linear-gradient(135deg,#17372f,#1f6b49);border-radius:30px;padding:26px;color:#fff;box-shadow:var(--shadow)}.hero-main h1,.hero-main p{color:#fff}.hero-main h1{font-size:46px;line-height:1;margin:8px 0 12px}.side{border:1px solid var(--line);border-radius:30px;background:#fff8df;padding:18px}.side b{display:block;color:#1f6b49;margin:12px 0 5px}.side p{color:var(--muted)}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:16px 0}.metric{border:1px solid var(--line);border-radius:20px;background:#fff;padding:14px}.metric b{font-size:30px;display:block;color:#1f6b49}.metric.red b{color:#8d1d12}.metric.yellow b{color:#745000}
+    .doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:22px;box-shadow:var(--shadow);margin-top:16px}.note{background:#fff8df;border:1px solid var(--line);border-radius:18px;padding:14px;margin:16px 0;line-height:1.55}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:22px;background:#fff;margin-top:14px}table{width:100%;min-width:1560px;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{font:900 10px Manrope,Verdana,sans-serif;text-transform:uppercase;background:#fbfaf7;color:#514a61}td:first-child{font-weight:900;color:#1f6b49}.status{display:inline-flex;border-radius:999px;padding:6px 9px;font:900 10px Manrope,Verdana,sans-serif;white-space:nowrap}.green{background:#dff5e8;color:#176032}.yellow{background:#fff0c0;color:#745000}.red{background:#ffe1df;color:#8d1d12}.gray{background:#eef0f1;color:#4e555b}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:14px}.cards a,.card{display:block;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:14px;text-decoration:none;color:var(--ink)}.cards strong,.card strong{display:block;color:#1f6b49;margin-bottom:5px}.cards span,.card span{display:block;color:var(--muted);font-size:13px;line-height:1.45}@media(max-width:980px){.hero{grid-template-columns:1fr}.hero-main h1{font-size:34px}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <nav class="top-nav" aria-label="Навигация">
+    <a href="../index.html">Главная</a>
+    <a href="support-refund-launch-control.html">Support control</a>
+    <a href="support-refund-handoff.html">Пакет Игорю</a>
+    <a href="co2p-support-refund-service-session.html">co2p support</a>
+    <a class="primary" href="support-problem-acceptance-matrix.html">Acceptance matrix</a>
+    <a href="test-order-runtime-cockpit.html">Test order</a>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-main">
+      <div class="eyebrow">Support · problem states · acceptance</div>
+      <h1>Какие проблемы должны быть обработаны до первых клиентов</h1>
+      <p>Эта матрица переводит support/refund в приемку. Для каждого проблемного сценария указано: что должен увидеть support, что должен сделать backend/админка, какой no-send event нужен, как это влияет на эксперта и какой proof принимает QA.</p>
+    </div>
+    <aside class="side">
+      <b>PM-решение</b>
+      <p>Перед рекламой нам нужен минимум один проверенный support problem state на контрольном заказе. Полные refund rules можно закрывать позже, но карточка проблемы и операционный маршрут должны быть доказаны сейчас.</p>
+      <b>Граница</b>
+      <p>Реальные возвраты не запускаем. Проверяем только test-mode статусы, no-send уведомления, связи с заказом и видимость для команды.</p>
+    </aside>
+  </section>
+
+  <section class="stats">
+    <div class="metric red"><b>8</b><span>problem states для MVP-контроля</span></div>
+    <div class="metric red"><b>1</b><span>обязательный support proof в test order</span></div>
+    <div class="metric yellow"><b>4</b><span>связанные роли: support, admin, expert, QA</span></div>
+    <div class="metric red"><b>0</b><span>реальных refund/payment действий</span></div>
+  </section>
+
+  <section class="doc">
+    <h2>Support acceptance matrix</h2>
+    <div class="note"><b>Правило:</b> support-сценарий считается готовым не тогда, когда “есть куда написать”, а когда обращение связано с order, service_session, chat, expert/agent, payment/test status, event log, решением и последствиями.</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Проблема</th><th>Что видит support</th><th>Что должна делать админка/backend</th><th>No-send event</th><th>Влияние на эксперта/деньги</th><th>QA proof</th><th>Вердикт</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><b>Оплата есть, консультация не создана</b></td><td>Order id, payment/test status, клиент, услуга, сумма, отсутствие service_session.</td><td>Создать support ticket типа payment_success_no_session; показать действие: retry create session / manual review.</td><td>support_ticket_created, payment_issue_detected</td><td>Эксперт не штрафуется, начисления не создаются.</td><td>Скрин order + support ticket + отсутствие/создание session.</td><td><span class="status red">блокер</span></td></tr>
+          <tr><td>2</td><td><b>Клиент оплатил, но не написал вопрос</b></td><td>Order, клиент, услуга, статус waiting_question, срок ожидания.</td><td>Показать очередь “без вопроса”, кнопку reminder preview, ссылку клиенту на вопрос.</td><td>question_reminder_preview</td><td>Эксперту задача не назначается, SLA еще не стартует.</td><td>Скрин waiting_question + no-send reminder.</td><td><span class="status red">блокер</span></td></tr>
+          <tr><td>3</td><td><b>Эксперт не ответил в срок</b></td><td>Session, deadline, просрочка, эксперт/агент, вопрос, чат, history.</td><td>Создать overdue ticket, эскалацию админу, возможность переназначить или продлить.</td><td>expert_overdue_escalated</td><td>Возможное предупреждение, hold начисления, понижение видимости.</td><td>Скрин overdue status + ticket + escalation.</td><td><span class="status red">блокер</span></td></tr>
+          <tr><td>4</td><td><b>Ответ плохого качества</b></td><td>Ответ, вопрос, регламент качества, профиль эксперта, история замечаний.</td><td>Создать quality_complaint, решение: доработка / замечание / компенсация / отклонить жалобу.</td><td>quality_complaint_created, support_review_needed</td><td>Quality note, possible hold/adjustment, обучение или санкция.</td><td>Скрин жалобы + quality decision + effect on expert.</td><td><span class="status red">блокер</span></td></tr>
+          <tr><td>5</td><td><b>Чат или сообщение не доставлено</b></td><td>Message id, sender/recipient, delivery status, session, error, timestamps.</td><td>Создать chat_delivery_issue, показать retry/escalate и не штрафовать эксперта без доказательства.</td><td>chat_delivery_failed</td><td>Санкций нет до подтверждения вины исполнителя.</td><td>Скрин failed message + support ticket + technical owner.</td><td><span class="status red">блокер</span></td></tr>
+          <tr><td>6</td><td><b>Email/уведомление не сформировалось</b></td><td>Event type, template key, recipient role, payload, error, no-send/sandbox marker.</td><td>Показать failed notification log, retry preview, статус ручного уведомления.</td><td>notification_failed, notification_retry_preview</td><td>Не влияет на эксперта, если клиент не получил статус из-за системы.</td><td>Скрин event log + failed template + retry preview.</td><td><span class="status yellow">важно</span></td></tr>
+          <tr><td>7</td><td><b>Клиент просит возврат/компенсацию</b></td><td>Order, payment/test status, ответ, причина, история обращений, refund boundary.</td><td>Создать refund_review ticket с решением: declined / credit / manual review / approved in test-mode.</td><td>refund_review_started, refund_decision_preview</td><td>Начисление ставится на hold до решения; реальный refund не запускается.</td><td>Скрин refund_review + decision + no real money movement.</td><td><span class="status red">блокер</span></td></tr>
+          <tr><td>8</td><td><b>Попытка увести клиента вне платформы</b></td><td>Сообщение, эксперт/агент, клиент, session, фрагмент нарушения, история.</td><td>Создать moderation ticket, решение: warning / hidden restriction / pause / ban.</td><td>moderation_case_created</td><td>Санкция влияет на видимость, допуск или начисление по правилам.</td><td>Скрин flagged message + moderation decision + expert consequence.</td><td><span class="status yellow">важно</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="doc">
+    <h2>Минимум для первого контрольного заказа</h2>
+    <div class="cards">
+      <div class="card"><strong>Обязательный support scenario</strong><span>Клиент недоволен ответом: “The answer feels too generic and does not address my question.”</span></div>
+      <div class="card"><strong>Обязательный ticket context</strong><span>Order id, service_session id, chat, expert/agent, question, answer, reason, status, decision.</span></div>
+      <div class="card"><strong>Обязательный no-send</strong><span>support_ticket_created и support_review_needed должны появиться как preview/log без реальной отправки.</span></div>
+      <div class="card"><strong>Обязательный QA verdict</strong><span>PASS только если support видит контекст и может принять test-mode решение без ручного поиска.</span></div>
+    </div>
+  </section>
+
+  <section class="doc">
+    <h2>Acceptance для Игоря</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Блок</th><th>Минимальное требование</th><th>FAIL если</th><th>Retest</th></tr></thead>
+        <tbody>
+          <tr><td>Карточка обращения</td><td>Единая карточка содержит client, order, service_session, chat, expert, reason, status, owner, history.</td><td>Support вынужден искать заказ/чат/эксперта вручную.</td><td>Открыть ticket из test order и увидеть все связи.</td></tr>
+          <tr><td>Статусы</td><td>new, in_review, waiting_expert, escalated, refund_review, resolved, closed.</td><td>Нельзя понять, кто владелец и что следующий шаг.</td><td>Изменить статус и увидеть историю изменения.</td></tr>
+          <tr><td>Решение</td><td>Нельзя закрыть ticket без reason, decision, owner, customer outcome.</td><td>Обращение закрывается без объяснения.</td><td>Закрыть test ticket с решением и увидеть итог.</td></tr>
+          <tr><td>События</td><td>ticket_created/status_changed/review_needed/decision events пишутся в no-send log.</td><td>Нет event log или ушло реальное письмо.</td><td>Повторить support scenario и снять event log.</td></tr>
+          <tr><td>Последствия</td><td>Quality/compensation/expert visibility получают test marker или pending action.</td><td>Жалоба никак не влияет на качество/начисление/модерацию.</td><td>Открыть expert/quality/compensation preview по ticket.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="doc">
+    <h2>Связанные материалы</h2>
+    <div class="cards">
+      <a href="artifacts/SUPPORT_PROBLEM_ACCEPTANCE_MATRIX_2026_06_05.csv"><strong>CSV acceptance matrix</strong><span>Табличная версия support problem states и proof-критериев.</span></a>
+      <a href="support-refund-launch-control.html"><strong>Support control</strong><span>Общая карта support/refund перед запуском.</span></a>
+      <a href="support-refund-handoff.html"><strong>Пакет Игорю</strong><span>Карточка обращения, поля, статусы и сценарии проверки.</span></a>
+      <a href="co2p-support-refund-service-session.html"><strong>co2p support/refund</strong><span>Как support связан с service_session, quality и начислениями.</span></a>
+      <a href="backend-admin-runtime-gap-matrix.html"><strong>Backend/admin gaps</strong><span>Почему Report/Block база не равна support ticket по консультации.</span></a>
+      <a href="test-order-runtime-public-report-shell.html"><strong>QA-report shell</strong><span>Куда попадет support proof после runtime QA.</span></a>
+    </div>
+  </section>
+</main>
+<script src="../assets/panel-ux.js"></script>
+</body>
+</html>
