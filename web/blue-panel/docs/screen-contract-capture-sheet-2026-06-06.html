@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Экранные контракты · дизайн → backend → контент → QA</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.rule{border:1px solid var(--line,#ddcfb8);border-radius:18px;padding:16px;background:#fff}.rule.pass{background:#f1fbf4}.rule.warn{background:#fff8df}.rule.stop{background:#fff0ee}.links-row{display:flex;flex-wrap:wrap;gap:10px}.links-row a{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line,#ddcfb8);border-radius:999px;padding:10px 14px;background:#fff;text-decoration:none;color:#145c42;font-weight:800}.matrix table{min-width:1900px}.matrix table td:nth-child(1){font-weight:900;color:#145c42;white-space:nowrap}.small-note{font-size:14px;color:#666}@media(max-width:900px){.rules{grid-template-columns:1fr}.links-row a{width:100%;justify-content:space-between}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<nav class="top" aria-label="Навигация">
+<a href="../index.html">Главная</a>
+<a href="screen-backend-content-control.html">Реестр экранов</a>
+<a href="frontend-screen-backend-content-gate.html">Экранный gate</a>
+<a href="oracle-nebula-design-source-coverage.html">Дизайн-источники</a>
+<a href="test-order-screen-contract.html">Контрольный заказ</a>
+<a class="primary" href="screen-contract-capture-sheet-2026-06-06.html">Лист контрактов</a>
+</nav>
+
+<section class="hero">
+<div class="hero-main">
+<div class="eyebrow">Oracle/Nebula · screen contract · before implementation</div>
+<h1>Лист приема экранов перед версткой и QA</h1>
+<p>Каждый критичный экран считается готовым не по красоте макета, а по контракту: источник дизайна, действие пользователя, backend-сущность, админская видимость, контент, ошибки, no-send/support/analytics и proof-путь для QA.</p>
+<div class="badges"><span class="badge yellow">дизайн-источники есть</span><span class="badge red">runtime-связь не доказана</span><span class="badge red">сквозной платный путь не пройден</span><span class="badge green">формат контрактов готов</span></div>
+</div>
+<aside class="side">
+<b>Что принимается как proof</b>
+<p>Для каждого экрана: ссылка/экспорт макета, route/страница, backend entity/action, тексты/FAQ/disclaimer, состояния ошибки/пусто/loading, owner, QA screenshot или planned verifier.</p>
+<b>STOP-сигналы</b>
+<p>Экран красивый, но CTA ведет в тупик; нет backend route; нет текстов; нет error state; нет админской видимости; QA не знает, что проверять.</p>
+<div class="note"><b>PM-правило:</b> Антону и Игорю отдавать не “сделать экран”, а экранный контракт с проверяемым результатом.</div>
+</aside>
+</section>
+
+<section class="doc">
+<div class="stats">
+<div class="metric yellow"><b>14</b><span>критичных экранных зон</span></div>
+<div class="metric red"><b>0</b><span>сквозных runtime PASS</span></div>
+<div class="metric yellow"><b>частично</b><span>дизайн и backend-основа есть</span></div>
+<div class="metric red"><b>STOP</b><span>если экран не связан с действием</span></div>
+</div>
+</section>
+
+<section class="doc">
+<h2>Матрица экранных контрактов</h2>
+<div class="matrix"><table><thead><tr><th>ID</th><th>Экран / зона</th><th>Цель для пользователя</th><th>Дизайн proof</th><th>Frontend route</th><th>Backend / админка</th><th>Контент</th><th>Failure states</th><th>QA proof</th><th>Owner</th><th>Статус</th><th>Следующий шаг</th></tr></thead><tbody>
+<tr><td>SCR01</td><td><b>Вход с рекламы и коммерческая страница</b></td><td>Понять услугу, формат, цену, доверие и CTA.</td><td>Oracle/Nebula landing/export или текущая верстка.</td><td>Landing page / vertical page.</td><td>CTA должен вести к регистрации/выбору услуги/заказу.</td><td>Оффер, FAQ, trust, disclaimer, цена, срок ответа.</td><td>Неясный CTA, пустой эксперт, недоступная услуга.</td><td>Скрин страницы + клик CTA до следующего шага.</td><td>PM + Антон + Игорь</td><td><span class="status yellow">частично</span></td><td>Сопоставить CTA с test-order маршрутом.</td></tr>
+<tr><td>SCR02</td><td><b>Регистрация, вход, восстановление доступа</b></td><td>Попасть в сервис и не потерять намерение покупки.</td><td>Login/signup/forgot макеты или верстка.</td><td>Auth pages.</td><td>User/auth, session, return_to checkout/order.</td><td>Ошибки, privacy note, email-сообщения.</td><td>Неверный пароль, email занят, forgot не сработал.</td><td>Скрины guest → auth → возврат к покупке.</td><td>Игорь + QA</td><td><span class="status yellow">частично</span></td><td>Включить auth в контрольный заказ.</td></tr>
+<tr><td>SCR03</td><td><b>Онбординг после регистрации</b></td><td>Собрать intent клиента без перегруза.</td><td>Onboarding/prototype/export.</td><td>Post-signup modal/flow.</td><td>Сохранение intent, темы, вопроса, языка, birth data если нужно.</td><td>Вопросы анкеты, подсказки, privacy text.</td><td>Пропуск шага, пустые данные, неверный формат.</td><td>Скрин сохраненного intent в профиле/order draft.</td><td>PM + Антон + Игорь</td><td><span class="status yellow">частично</span></td><td>Решить, что обязательно для MVP.</td></tr>
+<tr><td>SCR04</td><td><b>Выбор услуги / пакета / цены</b></td><td>Выбрать понятную платную консультацию.</td><td>Карточки пакетов, pricing block.</td><td>Packages / checkout entry.</td><td>service_id, package_id, price, availability.</td><td>Что входит, срок ответа, ограничения, refund note.</td><td>Нет доступных пакетов, цена не совпала, валюта.</td><td>Скрин package → order draft с value/currency.</td><td>PM + Игорь</td><td><span class="status red">не доказано</span></td><td>Связать package с safe order.</td></tr>
+<tr><td>SCR05</td><td><b>Checkout / безопасная тестовая оплата</b></td><td>Понять оплату и подтвердить заказ без риска.</td><td>Checkout/payment state.</td><td>Checkout page.</td><td>order_id, payment/test status, no real charge flag.</td><td>Terms, consent, descriptor placeholder, support note.</td><td>Payment error, cancel, pending, duplicate.</td><td>Скрин safe checkout + order created.</td><td>Игорь + QA</td><td><span class="status red">не доказано</span></td><td>Показать no-real-charge test path.</td></tr>
+<tr><td>SCR06</td><td><b>Вопрос клиента</b></td><td>Оставить вопрос так, чтобы эксперт понял задачу.</td><td>Question form / chat entry.</td><td>Question page/modal.</td><td>question_id связан с order/session/client.</td><td>Подсказки, лимиты, sensitive disclaimer.</td><td>Пустой вопрос, слишком коротко, вложения, язык.</td><td>Скрин question_id внутри заказа.</td><td>PM + Игорь + QA</td><td><span class="status red">не доказано</span></td><td>Связать question с test order.</td></tr>
+<tr><td>SCR07</td><td><b>Спасибо / статус заказа</b></td><td>Понять, что заказ принят и когда ждать ответ.</td><td>Success/status screen.</td><td>Order status page.</td><td>created/assigned/in_progress/completed/overdue.</td><td>Срок ответа, support link, что будет дальше.</td><td>Order pending, expert not assigned, overdue.</td><td>Скрин status + order_id.</td><td>Игорь + QA</td><td><span class="status red">не доказано</span></td><td>Проверить after-checkout state.</td></tr>
+<tr><td>SCR08</td><td><b>Кабинет клиента / чат / результат</b></td><td>Увидеть ответ, историю и следующий шаг.</td><td>Client cabinet/chat/result screens.</td><td>User cabinet/chat/result.</td><td>answer_id, transcript, follow-up, repeat marker.</td><td>Ответ, next step, CTA repeat, support entry.</td><td>Ответ не готов, эксперт заменен, ошибка загрузки.</td><td>Скрин клиента с ответом и связкой order.</td><td>Игорь + QA</td><td><span class="status red">не доказано</span></td><td>Доказать answer visibility.</td></tr>
+<tr><td>SCR09</td><td><b>Рабочее место эксперта / агента</b></td><td>Эксперт видит задачу, срок, контекст и отвечает.</td><td>Admin/workspace/chat screen.</td><td>Expert/admin workspace.</td><td>assignment, task, SLA, answer submit, profile_id.</td><td>Подсказки, регламент, quality reminder.</td><td>Нет задач, просрочка, нет прав, язык.</td><td>Скрин workspace по test order.</td><td>Игорь + PM + QA</td><td><span class="status red">не доказано</span></td><td>Связать с E01 admission.</td></tr>
+<tr><td>SCR10</td><td><b>Админская очередь заказов</b></td><td>Админ видит все, что влияет на запуск.</td><td>Admin queue/dashboard.</td><td>Admin order queue.</td><td>orders, statuses, assignment, SLA, alerts.</td><td>Фильтры, статусы, причины, владельцы.</td><td>Зависшие заказы, просрочки, нет исполнителя.</td><td>Скрин admin timeline/order row.</td><td>Игорь + PM</td><td><span class="status red">не доказано</span></td><td>Показать order timeline.</td></tr>
+<tr><td>SCR11</td><td><b>Support / проблемный заказ</b></td><td>Решить жалобу, просрочку или слабый ответ.</td><td>Support/refund/problem state.</td><td>Support/admin case.</td><td>support_case_id, owner, decision, closure.</td><td>Тексты статуса, причины, no-send preview.</td><td>Жалоба без order, нет владельца, нет решения.</td><td>SPC01-SPC10 capture sheet.</td><td>PM + Игорь + QA</td><td><span class="status red">не доказано</span></td><td>Пройти problem-state на safe order.</td></tr>
+<tr><td>SCR12</td><td><b>Email / уведомления preview</b></td><td>Проверить сообщения без реальной отправки.</td><td>Email preview/admin log.</td><td>No-send/event log.</td><td>event_id, template, variables, recipient role.</td><td>Subject/body, переменные, языки.</td><td>missing variable, wrong recipient, send leak.</td><td>NSC01-NSC10 capture sheet.</td><td>Игорь + QA</td><td><span class="status red">не доказано</span></td><td>Снять no-send proof.</td></tr>
+<tr><td>SCR13</td><td><b>Документы, FAQ, дисклеймеры</b></td><td>Понять правила до оплаты и снизить риск претензий.</td><td>Terms/Privacy/FAQ/trust pages.</td><td>Public pages / checkout consent.</td><td>legal docs, refund review wording, disclaimer.</td><td>Terms, Privacy, Refund, FAQ, support path.</td><td>Нет документа, неверная ссылка, нет consent.</td><td>Скрин docs + checkout checkbox/link.</td><td>PM + founder/legal</td><td><span class="status yellow">частично</span></td><td>Готовить HTML-ready пакет, решения позже.</td></tr>
+<tr><td>SCR14</td><td><b>Аналитика и отчет первого дня</b></td><td>Понять, что происходит с заказами и экономикой.</td><td>Analytics/report dashboard.</td><td>Daily report/source/order/value/support fields.</td><td>source, order, value, expert, support, status.</td><td>Названия метрик, расшифровки, owners.</td><td>Нет source, нет value, ручной отчет без ссылок.</td><td>PAC01-PAC12 capture sheet.</td><td>PM + Игорь + QA</td><td><span class="status red">не доказано</span></td><td>Связать safe order с purchase analytics.</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="doc">
+<h2>Правила приемки экранного контракта</h2>
+<div class="rules">
+<div class="rule pass"><b>PASS</b><p>Есть дизайн/source proof, route, backend entity/action, контент, failure states, owner и QA proof. Экран можно отдавать в реализацию или принимать после внедрения.</p></div>
+<div class="rule warn"><b>WARN</b><p>Экран можно двигать как макет/черновик, но без runtime PASS: backend, error states, тексты или QA-снимки еще частично ручные.</p></div>
+<div class="rule stop"><b>STOP</b><p>Нет backend-связи, CTA ведет в тупик, нет текстов/дисклеймеров, нет failure states или QA не может воспроизвести проверку.</p></div>
+</div>
+</section>
+
+<section class="doc">
+<h2>Связанные proof-страницы</h2>
+<div class="links-row">
+<a href="screen-backend-content-control.html">Реестр экранов ↗</a>
+<a href="frontend-screen-backend-content-gate.html">Экранный gate ↗</a>
+<a href="oracle-nebula-design-source-coverage.html">Дизайн-источники ↗</a>
+<a href="test-order-screen-contract.html">Контрольный заказ ↗</a>
+<a href="backend-admin-launch-gate.html">Backend/admin gate ↗</a>
+<a href="artifacts/SCREEN_CONTRACT_CAPTURE_SHEET_2026_06_06.csv">CSV для приема ↗</a>
+</div>
+<p class="small-note">Этот лист нужен, чтобы задачи по дизайну, фронту, backend и QA не расходились. Один экран должен иметь один проверяемый контракт.</p>
+</section>
+<p class="footer">Generated local web panel · screen-contract-capture-sheet-2026-06-06.html · 2026-06-06</p>
+</main>
+</body>
+</html>
