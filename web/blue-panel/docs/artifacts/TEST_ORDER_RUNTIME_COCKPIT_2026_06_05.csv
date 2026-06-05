@@ -1,5 +1,5 @@
 step,stage,status,owner,expected_proof,stop_condition,next_action
-01,Gate до запуска,STOP,PM + Игорь + QA,Все STOP условия сняты; safe checkout и no-send подтверждены,Есть риск реального списания или реального письма,Не запускать QA; закрыть gate
+01,Gate до запуска,STOP,PM + Игорь + QA,Все STOP условия сняты; safe checkout, no-send и допуск исполнителя подтверждены,Есть риск реального списания или реального письма,Не запускать QA; закрыть gate
 02,Тестовые данные,PREPARE,PM + QA,Тестовый клиент эксперт/агент admin/support услуга вопрос marker before-state,Не заполнены роли или нет доступа,Заполнить fixture sheet
 03,Оффер услуги,WARN,PM + Антон,Скрин оффера: услуга цена срок ответ ограничения CTA,Клиент не понимает что покупает,Вернуть UX/content правку
 04,Безопасный тестовый заказ,STOP,Игорь,Order id test marker сумма валюта no реального списания,Нет order id или есть риск real payment,Игорю: безопасный checkout/order без реального списания
@@ -7,6 +7,7 @@ step,stage,status,owner,expected_proof,stop_condition,next_action
 06,Вопрос клиента,STOP,Игорь + QA,Вопрос связан с order/session/client/service/language,Вопрос не связан с заказом,Игорю order-question-session binding
 07,Карточка консультации,STOP,Игорь,Единая карточка order question client status deadline performer chat support,Нет service session/task,Игорю service session/task layer
 08,Назначение исполнителя,STOP,Игорь + QA,Исполнитель назначен и видит задачу,Исполнитель не видит задачу,Игорю assignment/workspace
+08A,Допуск исполнителя,STOP,PM + Ксения + эксперт,"Admission journal: обучение, пробный ответ, SLA, доступ, назначенная анкета","Исполнитель назначен технически, но не допущен по качеству",Допустить минимум одного исполнителя до QA
 09,Ответ исполнителя,STOP,Эксперт/агент + QA,Ответ виден клиенту и админу связан с consultation/session,Ответ потерян или не связан,Игорю chat/session binding
 10,No-send события,STOP,Игорь + QA,Event log и preview с no-send marker для 8 событий,Событие ушло реальным каналом,Остановить тест production-risk
 11,Support problem state,WARN/STOP,PM + QA + Игорь,Тикет связан с order session chat expert reason decision,Support не видит контекст,Игорю support card/status
