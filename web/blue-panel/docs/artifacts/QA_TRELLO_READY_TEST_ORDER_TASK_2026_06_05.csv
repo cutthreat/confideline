@@ -1,18 +1,8 @@
-field,value
-title,"Проверить контрольный заказ платной консультации без реальных платежей и писем"
-start_condition,"QA starts only after READY by gate; otherwise classify as PREPARE/STOP not product FAIL"
-result,"Public QA report with PASS/WARN/STOP, screenshots, order id, session id, Igor tasks and residual risks"
-hours,"8-16 after gate is ready"
-report_shell,"https://cutthreat.github.io/confideline/web/qa-reports/nebula-test-order-runtime-qa-shell-2026-06-05/ (by Codex)"
-stop_safe_checkout,"STOP if no safe checkout or real charge risk"
-stop_nosend,"STOP if no no-send or real email/push/SMS risk"
-stop_access,"RETEST_AUTH_REQUIRED if role/admin access missing"
-evidence_01,"01-offer-service-price-deadline.png"
-evidence_02,"02-sandbox-order-success-client-admin.png"
-evidence_03,"03-question-linked-to-order.png"
-evidence_04,"04-service-session-card-queue.png"
-evidence_05,"05-assignment-expert-agent.png"
-evidence_06,"06-client-admin-expert-chat-answer.png"
-evidence_07,"07-nosend-events-preview.png"
-evidence_08,"08-support-case-linked-to-order.png"
-evidence_09,"09-final-pass-warn-stop-summary.png"
+section,fx,pf,content,owner
+start_condition,FX08/FX09,PF01/PF08,"QA starts only after safe checkout and no-send are proven",Игорь+PM
+route_order,FX08,PF01,"Create safe test order without real charge",QA
+route_admin,FX11,PF02-PF04,"Verify order question session/task/admin visibility",QA
+route_performer,FX07/FX04,PF05-PF07,"Verify assignment workspace and answer",QA
+route_events,FX09/FX06,PF08,"Verify no-send event log and preview",QA
+route_support,FX05,PF09,"Create support/problem state linked to order",QA
+final_report,FX01/FX10,PF12,"Publish PASS/WARN/STOP with evidence and rollback note",QA+PM
