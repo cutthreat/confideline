@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Единый светофор запуска · proof index</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}.gate{display:block;position:relative;border:1px solid var(--line,#ddcfb8);border-radius:22px;background:#fff;padding:16px 56px 16px 16px;text-decoration:none;color:#241d2b;min-height:150px}.gate:after{content:'↗';position:absolute;right:14px;bottom:14px;width:36px;height:36px;border-radius:999px;background:#1f6b49;color:#fff;display:grid;place-items:center;font:900 18px Arial}.gate b{display:block;color:#145c42;margin-bottom:8px}.gate small{display:block;color:#5d5668;line-height:1.42;margin-top:8px}.gate.red{background:#fff8f7}.gate.yellow{background:#fffdf2}.gate.green{background:#f7fff9}.matrix table{min-width:2100px}.matrix table td:nth-child(1){font-weight:900;color:#145c42;white-space:nowrap}.links-row{display:flex;flex-wrap:wrap;gap:10px}.links-row a{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line,#ddcfb8);border-radius:999px;padding:10px 14px;background:#fff;text-decoration:none;color:#145c42;font-weight:800}.rulebox{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.rule{border:1px solid var(--line,#ddcfb8);border-radius:18px;padding:16px;background:#fff}.rule.stop{background:#fff0ee}.rule.warn{background:#fff8df}.rule.pass{background:#f1fbf4}@media(max-width:900px){.rulebox{grid-template-columns:1fr}.links-row a{width:100%;justify-content:space-between}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<nav class="top" aria-label="Навигация">
+<a href="../index.html">Главная</a>
+<a href="launch-readiness-master-control.html">Готовность запуска</a>
+<a href="project-layer-status-board.html">Сводный статус</a>
+<a href="launch-proof-execution-queue.html">Очередь proof</a>
+<a href="red-route-execution-plan.html">Красный маршрут</a>
+<a class="primary" href="launch-readiness-proof-index-2026-06-06.html">Proof index</a>
+</nav>
+
+<section class="hero">
+<div class="hero-main">
+<div class="eyebrow">Launch readiness · evidence index · 2026-06-06</div>
+<h1>Единый светофор запуска по proof-фактам</h1>
+<p>Это верхний контрольный слой после сборки capture sheets. Он показывает, какие части проекта уже имеют PM-инфраструктуру, какие остаются частично готовыми, а какие блокируют запуск до runtime proof, QA-отчета и решений владельца.</p>
+<div class="badges"><span class="badge red">запуск красный</span><span class="badge red">paid traffic запрещен</span><span class="badge red">runtime proof = 0</span><span class="badge green">proof-инфраструктура собрана</span></div>
+</div>
+<aside class="side">
+<b>Главный PM-вывод</b>
+<p>Мы собрали основу управления запуском: capture sheets, proof-пакеты, связи Blue Panel и правила приемки. Но сервис нельзя запускать, пока нет фактов по safe order, E01-E05, no-send, support, admin, analytics и публичному QA.</p>
+<b>Как читать</b>
+<p>Зеленый — можно опираться как на готовую PM-инфраструктуру. Желтый — база есть, но нужен runtime/approval. Красный — блокирует клиентов, checkout, письма или рекламу.</p>
+<div class="note"><b>Правило:</b> ни один слой не зеленеет от документа сам по себе. Зеленый запусковый статус дает только accepted proof.</div>
+</aside>
+</section>
+
+<section class="doc">
+<div class="stats">
+<div class="metric green"><b>2</b><span>слоя зеленые как PM-основа</span></div>
+<div class="metric yellow"><b>3</b><span>слоя частично готовы</span></div>
+<div class="metric red"><b>13</b><span>слоев блокируют запуск</span></div>
+<div class="metric red"><b>0</b><span>accepted runtime/QA orders</span></div>
+</div>
+</section>
+
+<section class="doc">
+<h2>Что делать первым</h2>
+<div class="grid">
+<a class="gate red" href="first-control-order-proof-package.html"><b>1. Безопасный контрольный заказ</b><span class="status red">красный</span><small>Получить safe order id, test marker, вопрос, назначение, ответ, события, support и admin timeline.</small></a>
+<a class="gate red" href="first-five-expert-admission-capture-sheet-2026-06-06.html"><b>2. Допустить минимум одного эксперта</b><span class="status red">красный</span><small>Для QA нужен один accepted эксперт; для первого трафика нужны 5 accepted или жесткий capacity limit.</small></a>
+<a class="gate red" href="prelaunch-qa-capture-sheet-2026-06-06.html"><b>3. Запустить QA только после READY</b><span class="status red">STOP сейчас</span><small>QA не стартует без safe order, accepted эксперта, no-send/admin/support READY.</small></a>
+<a class="gate red" href="first-traffic-preflight-operating-board.html"><b>4. Трафик только после QA</b><span class="status red">запрещен</span><small>Paid traffic нельзя покупать до публичного QA-отчета и измеримой покупки.</small></a>
+</div>
+</section>
+
+<section class="doc">
+<h2>Полный светофор по слоям</h2>
+<div class="matrix"><table><thead><tr><th>ID</th><th>Слой</th><th>Статус</th><th>Что уже есть</th><th>Что не доказано</th><th>Следующий proof</th><th>Владелец</th><th>Proof / capture</th></tr></thead><tbody>
+<tr class="green"><td>LR01</td><td><b>PM-контур и Blue Panel</b></td><td><span class="status green">зеленый как система</span></td><td>Панель, proof-страницы, CSV, публикация на GitHub Pages, связи между слоями.</td><td>Нужно поддерживать актуальность после каждого accepted/returned proof.</td><td>Обновлять статусы после фактов команды.</td><td>PM / Codex</td><td><a class="open" href="pm-current-state-proof-ledger.html">↗</a></td></tr>
+<tr class="green"><td>LR02</td><td><b>Стратегия и платформа-first логика</b></td><td><span class="status green">зеленый как направление</span></td><td>Платформа YouDate сначала, Nebula как первый vertical, июнь связан с proof-gates.</td><td>Стратегия не доказывает работу сайта.</td><td>Держать задачи месяца связанными с control order.</td><td>PM</td><td><a class="open" href="strategy-board.html">↗</a></td></tr>
+<tr class="yellow"><td>LR03</td><td><b>Trello и план июня</b></td><td><span class="status yellow">частично</span></td><td>План июня и правило: Trello как источник правок, Blue Panel как результат/proof.</td><td>Часть задач — PM-пакеты, не внедренные функции.</td><td>Обновлять карточки результатами без переименования без команды.</td><td>PM</td><td><a class="open" href="june-plan.html">↗</a></td></tr>
+<tr class="red"><td>LR04</td><td><b>Backend Confideline и admin route</b></td><td><span class="status red">блокер</span></td><td>Есть backend-основа и admin-контур в документах.</td><td>Нет safe order proof: order → question → assignment → answer → support → events.</td><td>AOC01-AOC15 + Игорь safe order proof.</td><td>Игорь + PM + QA</td><td><a class="open" href="admin-operations-capture-sheet-2026-06-06.html">↗</a></td></tr>
+<tr class="yellow"><td>LR05</td><td><b>Дизайн и экраны Oracle/Nebula</b></td><td><span class="status yellow">частично</span></td><td>Есть экранные контракты SCR01-SCR14.</td><td>Нет runtime связки экран → действие → backend → content → QA screenshot.</td><td>SCR-листы по каждому экрану через test order.</td><td>PM + Антон + Игорь + QA</td><td><a class="open" href="screen-contract-capture-sheet-2026-06-06.html">↗</a></td></tr>
+<tr class="red"><td>LR06</td><td><b>Клиентский платный путь</b></td><td><span class="status red">блокер</span></td><td>Путь описан: offer, auth, package, checkout, question, answer, support.</td><td>Нет пройденного safe checkout/order/question/answer.</td><td>QAC02-QAC08 на контрольном заказе.</td><td>Игорь + QA</td><td><a class="open" href="prelaunch-qa-capture-sheet-2026-06-06.html">↗</a></td></tr>
+<tr class="yellow"><td>LR07</td><td><b>Школа и методология экспертов</b></td><td><span class="status yellow">частично</span></td><td>Есть школа, регламенты, роли Ксении как ревизора, scorecard логика.</td><td>Нет принятых пробных ответов и admission по 5 людям.</td><td>EA01-EA10 по E01-E05.</td><td>PM + Ксения</td><td><a class="open" href="first-five-expert-admission-capture-sheet-2026-06-06.html">↗</a></td></tr>
+<tr class="red"><td>LR08</td><td><b>Допуск первых 5 экспертов</b></td><td><span class="status red">блокер</span></td><td>Форма приема E01-E05 создана.</td><td>0 из 5 accepted; нет SLA, анкеты, доступа, пробных ответов, verdict.</td><td>Заполнить E01-E05 и принять минимум E01 для QA.</td><td>PM + Ксения + QA</td><td><a class="open" href="first-five-expert-admission-capture-sheet-2026-06-06.html">↗</a></td></tr>
+<tr class="red"><td>LR09</td><td><b>Рабочее место эксперта/агента</b></td><td><span class="status red">блокер</span></td><td>Требования и связь с admin capture sheet есть.</td><td>Нет proof под ролью исполнителя на test order.</td><td>AOC04/QAC07: исполнитель видит задачу и может ответить.</td><td>Игорь + QA</td><td><a class="open" href="admin-operations-capture-sheet-2026-06-06.html">↗</a></td></tr>
+<tr class="red"><td>LR10</td><td><b>Email, события и no-send</b></td><td><span class="status red">блокер</span></td><td>No-send capture sheet есть.</td><td>Нет event log по одному заказу; не доказано, что реальные письма не уходят.</td><td>NSC01-NSC10 по safe order.</td><td>Игорь + QA</td><td><a class="open" href="nosend-control-order-capture-sheet-2026-06-06.html">↗</a></td></tr>
+<tr class="red"><td>LR11</td><td><b>Support и problem-state</b></td><td><span class="status red">блокер</span></td><td>Support capture sheet есть.</td><td>Нет support_case_id, owner, decision, closure по проблемному заказу.</td><td>SPC01-SPC10 на safe problem-state.</td><td>Support + PM + QA</td><td><a class="open" href="support-problem-control-order-capture-sheet-2026-06-06.html">↗</a></td></tr>
+<tr class="red"><td>LR12</td><td><b>Public docs, checkout trust, legal gate</b></td><td><span class="status red">approval gate</span></td><td>PDC01-PDC12 лист приема создан; источники и ориентиры есть.</td><td>Нет final seller/payment/refund/geography/legal approval.</td><td>HTML-ready пакет + founder/legal/payment decisions.</td><td>PM + Founder + Legal/Payment</td><td><a class="open" href="public-docs-checkout-capture-sheet-2026-06-06.html">↗</a></td></tr>
+<tr class="red"><td>LR13</td><td><b>Purchase analytics и CAC/LTV</b></td><td><span class="status red">блокер</span></td><td>PAC01-PAC12 лист приема создан.</td><td>Нет source/session/order/value/service/support связки.</td><td>PAC01-PAC12 на safe order.</td><td>Игорь + PM + QA</td><td><a class="open" href="purchase-analytics-control-order-capture-sheet-2026-06-06.html">↗</a></td></tr>
+<tr class="red"><td>LR14</td><td><b>Админский операционный контроль</b></td><td><span class="status red">блокер</span></td><td>AOC01-AOC15 лист приема создан.</td><td>Нет runtime admin proof и daily dashboard.</td><td>AOC01-AOC15 по safe order.</td><td>Игорь + PM + QA</td><td><a class="open" href="admin-operations-capture-sheet-2026-06-06.html">↗</a></td></tr>
+<tr class="red"><td>LR15</td><td><b>Pre-launch QA</b></td><td><span class="status red">STOP</span></td><td>QAC01-QAC15 лист приема и report shell есть.</td><td>QA нельзя стартовать: нет safe order, accepted expert, no-send/admin/support READY.</td><td>После READY пройти QAC01-QAC15 и опубликовать отчет.</td><td>QA + PM</td><td><a class="open" href="prelaunch-qa-capture-sheet-2026-06-06.html">↗</a></td></tr>
+<tr class="red"><td>LR16</td><td><b>Маркетинг и первый трафик</b></td><td><span class="status red">запрещен</span></td><td>Go/no-go логика и traffic preflight есть.</td><td>Нет QA PASS/WARN, capacity, purchase analytics, docs approval.</td><td>First traffic preflight после accepted QA и capacity.</td><td>PM + Marketing + Founder</td><td><a class="open" href="first-traffic-preflight-operating-board.html">↗</a></td></tr>
+<tr class="red"><td>LR17</td><td><b>Legal/payment/founder решения</b></td><td><span class="status red">не PM-only</span></td><td>PM знает список решений и подготовит пакет.</td><td>Не утверждены seller, provider, descriptor, refund, geography.</td><td>Founder decision log.</td><td>Founder</td><td><a class="open" href="public-docs-checkout-capture-sheet-2026-06-06.html">↗</a></td></tr>
+<tr class="red"><td>LR18</td><td><b>Release / launch day control</b></td><td><span class="status red">не готово</span></td><td>Есть месячный план и proof-очередь.</td><td>Нет accepted QA report, traffic limit, daily dashboard, rollback/stop rules для первого дня.</td><td>После QA собрать launch day runbook.</td><td>PM + Founder + Team</td><td><a class="open" href="launch-proof-execution-queue.html">↗</a></td></tr>
+</tbody></table></div>
+</section>
+
+<section class="doc">
+<h2>Правила смены статуса</h2>
+<div class="rulebox">
+<div class="rule pass"><b>Зеленый</b><p>Есть accepted proof: скрин/route/report/ID/CSV или публичная ссылка, которая прямо доказывает требование.</p></div>
+<div class="rule warn"><b>Желтый</b><p>Есть база, макет, методология, PM-пакет или ручной обход, но нет runtime proof или финального approval.</p></div>
+<div class="rule stop"><b>Красный</b><p>Блокирует клиента, оплату, письма, support, QA, аналитику, трафик или юридическую публикацию.</p></div>
+</div>
+</section>
+
+<section class="doc">
+<h2>Связанные входы</h2>
+<div class="links-row">
+<a href="launch-readiness-master-control.html">Готовность запуска ↗</a>
+<a href="launch-proof-execution-queue.html">Очередь proof ↗</a>
+<a href="first-control-order-proof-package.html">Первый заказ ↗</a>
+<a href="prelaunch-qa-capture-sheet-2026-06-06.html">QA sheet ↗</a>
+<a href="red-route-execution-plan.html">Красный маршрут ↗</a>
+<a href="artifacts/LAUNCH_READINESS_PROOF_INDEX_2026_06_06.csv">CSV светофор ↗</a>
+</div>
+<p class="small-note">Этот индекс не заменяет дочерние capture sheets. Он показывает, где находится весь запуск в целом и какой proof нужен следующим.</p>
+</section>
+<p class="footer">Generated local web panel · launch-readiness-proof-index-2026-06-06.html · 2026-06-06</p>
+</main>
+</body>
+</html>
