@@ -1,0 +1,18 @@
+section,item,field,status,proof,if_missing
+roles,test_client,"client id; login; test email alias; language; country; test marker",FILL,"profile/admin card screenshot without passwords",ACCESS_BLOCKER
+roles,test_expert,"expert id; role; profile; admission status; language",FILL,"role/access screenshot",EXPERT_WORKSPACE_NOT_PROVABLE
+roles,test_agent,"agent id; available profiles; permission boundary",SCOPE_DECISION,"profiles screenshot or agent scope excluded note",CLASSIFY_SCOPE_NOT_BUG
+roles,admin,"admin id/role; order/session/chat/events/support/users access",FILL,"admin sections screenshot",ADMIN_VISIBILITY_NOT_PROVABLE
+roles,support,"support id/role; ticket/report/problem state access",FILL,"support section screenshot",SUPPORT_NOT_TESTED
+before_state,client,"balance/credits; orders; messages; notifications; support tickets",FILL,"00-before-client-state.png",DELTA_NOT_PROVABLE
+before_state,performer,"task queue; profiles; compensation; active chats",FILL,"00-before-performer-state.png",ASSIGNMENT_DELTA_NOT_PROVABLE
+before_state,admin,"order/session/events/support queues before order",FILL,"00-before-admin-queues.png",OLD_RECORDS_MAY_CONFUSE_TEST
+before_state,events,"mail/event/preview queue before test",FILL,"00-before-events-nosend.png",NOSEND_DELTA_NOT_PROVABLE
+before_state,support,"open tickets for test accounts",FILL,"00-before-support-state.png",PROBLEM_STATE_DELTA_NOT_PROVABLE
+admin_url,order,"URL/path after Igor",WAIT_IGOR,"order id test marker no real charge",ORDER_ADMIN_NOT_PROVABLE
+admin_url,question,"URL/path after Igor",WAIT_IGOR,"question language category order/session link",QUESTION_LINK_NOT_PROVABLE
+admin_url,session_task,"URL/path after Igor",WAIT_IGOR,"status deadline performer chat support",SESSION_NOT_PROVABLE
+admin_url,events,"URL/path after Igor",WAIT_IGOR,"event timeline and no-send preview",EVENTS_NOT_PROVABLE
+rollback,keep_until_report,"do not delete test records before QA report",READY_RULE,"evidence can be matched to order/session",PROOF_LOST
+rollback,archive_or_keep,"delete/archive/keep with test marker after report",FILL_AFTER_QA,"rollback note in QA report",TEST_DATA_POLLUTES_SYSTEM
+rollback,exclude_metrics,"test_run_id excludes order/events/support/compensation from real metrics",WAIT_IGOR,"filter/marker or technical rule",METRICS_POLLUTION
