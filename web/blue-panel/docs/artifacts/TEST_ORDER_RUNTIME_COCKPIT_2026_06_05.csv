@@ -1,11 +1,16 @@
-Пункт,Статус сейчас,Что нужно доказать,Evidence,Если не проходит
-Тестовые роли и данные,подготовить,"Есть тестовый клиент, эксперт/агент, админ, support, услуга, цена, язык",Скрин/таблица фикстур,"Остановить тест до подготовки фикстур"
-Оффер и CTA,проверить,"Клиент понимает услугу, срок ответа, ограничения и следующий шаг",Скрин оффера/CTA,"Правка Антону/Игорю по экрану"
-Test checkout,не доказано,"Заказ создается без реального списания и имеет test/no-real-payment признак",Order id + скрин статуса,"Игорю: sandbox/test-order режим"
-Вопрос клиента,не доказано,"Вопрос связан с order_id, клиентом, услугой и языком",Скрин клиента и админки,"Игорю: связка question/order/session"
-Карточка консультации,не доказано,"Админ видит консультацию без ручного поиска",Скрин очереди/карточки,"Игорю: admin queue/card"
-Назначение исполнителя,не доказано,"Эксперт/агент назначен, видит задачу, срок, вопрос и чат",Скрин назначения и кабинета,"Игорю: роли и workspace"
-Ответ клиенту,не доказано,"Ответ виден клиенту и админу, связан с консультацией",Скрины трех сторон,"Игорю: chat/session binding"
-No-send события,не доказано,"События созданы, письма не отправлены, переменные заполнены",Event log + preview,"Игорю: event log/no-send"
-Support/problem state,не доказано,"Проблема связана с заказом, чатом, исполнителем и решением",Скрин тикета/решения,"Игорю: support card/status"
-QA-отчет,не заполнен,"Есть PASS/WARN/STOP, скрины, задачи, остаточные риски",Публичная QA-страница,"Не переходить к рекламе"
+step,stage,status,owner,expected_proof,stop_condition,next_action
+01,Gate до запуска,STOP,PM + Игорь + QA,Все STOP условия сняты; safe checkout и no-send подтверждены,Есть риск реального списания или реального письма,Не запускать QA; закрыть gate
+02,Тестовые данные,PREPARE,PM + QA,Тестовый клиент эксперт/агент admin/support услуга вопрос marker before-state,Не заполнены роли или нет доступа,Заполнить fixture sheet
+03,Оффер услуги,WARN,PM + Антон,Скрин оффера: услуга цена срок ответ ограничения CTA,Клиент не понимает что покупает,Вернуть UX/content правку
+04,Безопасный тестовый заказ,STOP,Игорь,Order id test marker сумма валюта no реального списания,Нет order id или есть риск real payment,Игорю: безопасный checkout/order без реального списания
+05,Order в админке,STOP,Игорь + QA,Админ видит заказ клиента услугу статус test marker,Заказ не виден в админке,Игорю admin visibility
+06,Вопрос клиента,STOP,Игорь + QA,Вопрос связан с order/session/client/service/language,Вопрос не связан с заказом,Игорю order-question-session binding
+07,Карточка консультации,STOP,Игорь,Единая карточка order question client status deadline performer chat support,Нет service session/task,Игорю service session/task layer
+08,Назначение исполнителя,STOP,Игорь + QA,Исполнитель назначен и видит задачу,Исполнитель не видит задачу,Игорю assignment/workspace
+09,Ответ исполнителя,STOP,Эксперт/агент + QA,Ответ виден клиенту и админу связан с consultation/session,Ответ потерян или не связан,Игорю chat/session binding
+10,No-send события,STOP,Игорь + QA,Event log и preview с no-send marker для 8 событий,Событие ушло реальным каналом,Остановить тест production-risk
+11,Support problem state,WARN/STOP,PM + QA + Игорь,Тикет связан с order session chat expert reason decision,Support не видит контекст,Игорю support card/status
+12,Quality/compensation preview,WARN,PM + Игорь,Quality note и test compensation preview без реальной выплаты,Нет связи с session или выплатами,Оформить как желтый долг
+13,QA final report,STOP до отчета,QA + PM,Публичный отчет PASS/WARN/STOP evidence links defects risks,Нет отчета или нет ключевых evidence,Не переходить к рекламе
+
+

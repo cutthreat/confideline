@@ -22,7 +22,7 @@
     <a href="test-order-runtime-qa-report-template.html">Шаблон отчета</a>
     <a href="test-order-runtime-public-report-shell.html">Публичный отчет</a>
     <a href="nosend-event-proof-matrix.html">No-send</a>
-  </nav>
+  <a href="test-order-runtime-cockpit.html">Пульт заказа</a></nav>
 
   <section class="hero">
     <div class="hero-main">
@@ -47,12 +47,12 @@
   <section class="doc">
     <h2>Что должно быть готово до старта QA</h2>
     <div class="flow">
-      <a href="test-order-readiness-gate.html"><b>Gate контрольного заказа</b><span>Сначала убираем красные условия. Если safe order, no-send или рабочее место не готовы, тест не запускается.</span></a>
+      <a href="test-order-readiness-gate.html"><b>Gate контрольного заказа</b><span>Сначала убираем красные условия. Если безопасный тестовый заказ, no-send или рабочее место не готовы, тест не запускается.</span></a>
       <a href="igor-test-order-acceptance-contract.html"><b>Контракт Игорю</b><span>Игорь показывает AC01-AC09: безопасный заказ, связка order/question/session, назначение, ответ, события и support.</span></a>
       <a href="test-order-fixture-readiness-sheet.html"><b>Фикстуры теста</b><span>PM/QA заполняют тестовую услугу, вопрос, роли, before-state, rollback и список админских разделов.</span></a>
       <a href="test-order-fixture-fill-template.html"><b>Заполняемый шаблон</b><span>Место, где перед запуском фиксируются конкретные аккаунты, URL, id и исходное состояние.</span></a>
     </div>
-    <div class="notice"><b>Нельзя начинать:</b> если есть риск реального списания, реальной отправки письма, нет test order id, нет связи вопроса с заказом, админ не видит маршрут или исполнитель не видит задачу.</div>
+    <div class="notice"><b>Нельзя начинать:</b> если есть риск реального списания, реальной отправки письма, нет id контрольного заказа, нет связи вопроса с заказом, админ не видит маршрут или исполнитель не видит задачу.</div>
   </section>
 
   <section class="doc">
@@ -61,7 +61,7 @@
       <thead><tr><th>#</th><th>Шаг</th><th>Что делает QA</th><th>Ожидаемый факт</th><th>Доказательство</th><th>Вердикт</th><th>Если не проходит</th></tr></thead>
       <tbody>
         <tr><td>01</td><td>Оффер услуги</td><td>Открыть экран покупки тестовой консультации.</td><td>Клиент понимает услугу, цену, срок ответа, ограничения и следующий шаг.</td><td>01-client-offer</td><td><span class="status yellow">WARN если неясно</span></td><td>Отдать в UX/контент-правку, не считать коммерческий путь готовым.</td></tr>
-        <tr><td>02</td><td>Безопасный тестовый заказ</td><td>Оформить заказ в test/sandbox/mock режиме.</td><td>Создан order id, видны сумма, валюта, статус test, реального списания нет.</td><td>02-test-order-created</td><td><span class="status red">STOP если нет order id</span></td><td>Игорю: safe checkout/order не принят.</td></tr>
+        <tr><td>02</td><td>Безопасный тестовый заказ</td><td>Оформить заказ в test/sandbox/mock режиме.</td><td>Создан order id, видны сумма, валюта, статус test, реального списания нет.</td><td>02-test-order-created</td><td><span class="status red">STOP если нет order id</span></td><td>Игорю: безопасный checkout/order не принят.</td></tr>
         <tr><td>03</td><td>Заказ в админке</td><td>Открыть заказ в админской части.</td><td>Админ видит заказ, клиента, услугу, сумму, статус, test marker.</td><td>03-admin-order</td><td><span class="status red">STOP если заказ не виден</span></td><td>Игорю: admin visibility по заказу.</td></tr>
         <tr><td>04</td><td>Вопрос клиента</td><td>Отправить вопрос после заказа или проверить уже связанный вопрос.</td><td>Вопрос связан с order id, клиентом, услугой, языком и темой.</td><td>04-question-linked</td><td><span class="status red">STOP если связь потеряна</span></td><td>Игорю: связка order → question.</td></tr>
         <tr><td>05</td><td>Карточка консультации</td><td>Открыть очередь/карточку консультации в админке.</td><td>Есть единая карточка работы: order, question, клиент, статус, срок, исполнитель, чат.</td><td>05-service-session</td><td><span class="status red">STOP если карточки нет</span></td><td>Игорю: service session/task поверх заказа.</td></tr>
@@ -82,7 +82,7 @@
       <thead><tr><th>Имя</th><th>Что приложить</th><th>Что должно быть видно</th><th>Кому нужно</th></tr></thead>
       <tbody>
         <tr><td>01-client-offer</td><td>Скрин клиентского оффера.</td><td>Услуга, цена, срок ответа, CTA, ограничения.</td><td>PM, Антон, Заказчик.</td></tr>
-        <tr><td>02-test-order-created</td><td>Скрин success и/или карточки заказа.</td><td>Order id, test marker, сумма, валюта, отсутствие real charge.</td><td>PM, Игорь, QA.</td></tr>
+        <tr><td>02-test-order-created</td><td>Скрин success и/или карточки заказа.</td><td>Order id, test marker, сумма, валюта, отсутствие реальное списание.</td><td>PM, Игорь, QA.</td></tr>
         <tr><td>03-admin-order</td><td>Скрин заказа в админке.</td><td>Клиент, услуга, статус, сумма, test marker.</td><td>Игорь, PM.</td></tr>
         <tr><td>04-question-linked</td><td>Скрин вопроса клиента и админской связки.</td><td>Один order/session marker на обеих сторонах.</td><td>Игорь, PM, QA.</td></tr>
         <tr><td>05-service-session</td><td>Скрин карточки консультации.</td><td>Order, question, клиент, срок, статус, исполнитель, чат.</td><td>Игорь, PM.</td></tr>
@@ -118,3 +118,6 @@
     </div>
   </section>
 </main><script src="../assets/panel-ux.js"></script></body></html>
+
+
+
