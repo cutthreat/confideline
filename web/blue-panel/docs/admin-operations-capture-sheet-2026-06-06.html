@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Админский контур · лист приема AOC01-AOC15</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.rule{border:1px solid var(--line,#ddcfb8);border-radius:18px;padding:16px;background:#fff}.rule.pass{background:#f1fbf4}.rule.warn{background:#fff8df}.rule.stop{background:#fff0ee}.links-row{display:flex;flex-wrap:wrap;gap:10px}.links-row a{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line,#ddcfb8);border-radius:999px;padding:10px 14px;background:#fff;text-decoration:none;color:#145c42;font-weight:800}.matrix table{min-width:2050px}.matrix table td:nth-child(1){font-weight:900;color:#145c42;white-space:nowrap}.small-note{font-size:14px;color:#666}@media(max-width:900px){.rules{grid-template-columns:1fr}.links-row a{width:100%;justify-content:space-between}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<nav class="top" aria-label="Навигация">
+<a href="../index.html">Главная</a>
+<a href="admin-operations-control-map.html">Админ-контур</a>
+<a href="backend-admin-launch-gate.html">Backend/admin gate</a>
+<a href="admin-visibility-proof-package.html">Admin visibility</a>
+<a href="support-problem-control-order-capture-sheet-2026-06-06.html">Support sheet</a>
+<a class="primary" href="admin-operations-capture-sheet-2026-06-06.html">Admin sheet</a>
+</nav>
+
+<section class="hero">
+<div class="hero-main">
+<div class="eyebrow">Admin ops · visibility · moderation · before traffic</div>
+<h1>Лист приема админского операционного контура</h1>
+<p>Заполняется на одном safe test order и проблемном сценарии. Цель — доказать, что админка управляет консультацией как процессом: заказ, вопрос, исполнитель, SLA, чат, события, support, качество, санкции, начисления, аналитика и daily control видны без ручного хаоса.</p>
+<div class="badges"><span class="badge red">admin runtime proof = 0</span><span class="badge red">трафик запрещен без visibility</span><span class="badge yellow">backend-кирпичи есть</span><span class="badge green">лист приема готов</span></div>
+</div>
+<aside class="side">
+<b>Что принимается как proof</b>
+<p>Скрины/ссылки на admin route, где видны order_id, client_id, question_id, performer/profile_id, SLA, event_id, support_case_id, quality decision, moderation action, payout preview и daily status.</p>
+<b>STOP-сигналы</b>
+<p>Админ ищет данные вручную по разным местам; нет order lifecycle; нет владельца проблемы; нет SLA; нет no-send log; нет audit trail по модерации; QA не может повторить проверку.</p>
+<div class="note"><b>PM-правило:</b> для первых 5 экспертов допустим admin-based кабинет по ролям, но только если он закрывает весь путь консультации и дает QA proof.</div>
+</aside>
+</section>
+
+<section class="doc">
+<div class="stats">
+<div class="metric red"><b>15</b><span>операционных зон приема</span></div>
+<div class="metric red"><b>0</b><span>runtime PASS по админке</span></div>
+<div class="metric yellow"><b>safe order</b><span>проверка без реальных оплат/писем</span></div>
+<div class="metric red"><b>STOP</b><span>если нет единой видимости</span></div>
+</div>
+</section>
+
+<section class="doc">
+<h2>Матрица приема админки</h2>
+<div class="matrix"><table><thead><tr><th>ID</th><th>Зона</th><th>Что должно быть видно</th><th>Связанные данные</th><th>Что вернуть как proof</th><th>Accepted</th><th>Returned / STOP</th><th>Владелец</th><th>Статус</th></tr></thead><tbody>
+<tr><td>AOC01</td><td><b>Единая карточка консультации</b></td><td>Заказ, клиент, вопрос, исполнитель, срок, чат, события, support, итог.</td><td>order_id, client_id, question_id, performer_id, event_id.</td><td>Admin link/screenshot одной карточки или route.</td><td>Жизненный цикл виден в одном месте или связанными вкладками без догадок.</td><td>Данные разбросаны и требуют ручного поиска.</td><td>Игорь + PM</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>AOC02</td><td><b>Очередь новых заказов</b></td><td>Новые, оплаченные/test, без вопроса, без назначения, следующий шаг.</td><td>order_id, payment/test status, question status, source.</td><td>Скрин очереди с test order.</td><td>Админ видит, что нужно сделать сейчас.</td><td>Заказ есть, но статус действия неясен.</td><td>Игорь + Support</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>AOC03</td><td><b>Назначение эксперта/агента</b></td><td>Кто назначен, какая анкета, язык, доступность, нагрузка, SLA.</td><td>performer_id, profile_id, assigned_at, language, capacity.</td><td>Скрин назначения на safe order.</td><td>Исполнитель назначен и срок ответа запущен.</td><td>Исполнитель выбран вне системы или без связи с order.</td><td>Игорь + Admin</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>AOC04</td><td><b>Рабочее место исполнителя</b></td><td>Задачи, вопрос, клиентский контекст, срок, поле ответа, подсказки.</td><td>task_id, question_id, deadline, profile_id.</td><td>Скрин под ролью эксперта/агента.</td><td>Исполнитель может ответить внутри сайта.</td><td>Только админ видит задачу, эксперт не видит.</td><td>Игорь + QA</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>AOC05</td><td><b>Контроль SLA и просрочки</b></td><td>deadline, soon overdue, overdue, escalation, reassignment.</td><td>deadline_at, answer_at, overdue_status, escalation_owner.</td><td>Скрин таймера/очереди просрочек.</td><td>Просрочка видна и имеет владельца/действие.</td><td>Срок известен только вручную или в голове.</td><td>Игорь + Support</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>AOC06</td><td><b>Support/problem state</b></td><td>Кейс связан с заказом, чатом, исполнителем, причиной, решением.</td><td>support_case_id, order_id, reason, owner, decision.</td><td>SPC01-SPC10 или скрин support case.</td><td>Проблема управляется как кейс.</td><td>Жалоба без order/support_case_id.</td><td>Support + QA + PM</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>AOC07</td><td><b>No-send события</b></td><td>События заказа, вопроса, назначения, ответа, support без реальной отправки.</td><td>event_id, template, variables, recipient_role, send_mode.</td><td>NSC01-NSC10 или event log screenshot.</td><td>Preview есть, реальные письма не уходят.</td><td>Нет event log или ушла реальная отправка.</td><td>Игорь + QA</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>AOC08</td><td><b>Качество ответа</b></td><td>Рубрика оценки, замечания, итог accepted/returned, связь с экспертом.</td><td>answer_id, quality_score, reviewer, verdict.</td><td>Скрин review/scorecard по пробному или test answer.</td><td>Качество влияет на допуск/обучение/санкции.</td><td>Оценка “нормально” без критериев.</td><td>PM + Ксения + QA</td><td><span class="status yellow">ждем proof</span></td></tr>
+<tr><td>AOC09</td><td><b>Модерация, предупреждения и баны</b></td><td>Warning, hide, visible ban, shadow restriction, reason, audit log.</td><td>moderation_action_id, target_id, reason, actor_id, scope.</td><td>Скрин тестового moderation action без влияния на real users.</td><td>Действие имеет причину, владельца, срок и audit trail.</td><td>Бан/скрытие без причины или без журнала.</td><td>PM + Игорь</td><td><span class="status yellow">ждем proof</span></td></tr>
+<tr><td>AOC10</td><td><b>Ранжирование и поднятие экспертов</b></td><td>Качество, SLA, жалобы, доступность, manual boost/freeze, anti-abuse.</td><td>expert_id, score inputs, boost_reason, visibility_status.</td><td>Скрин/описание P0 visibility model и admin override.</td><td>Понятно, почему эксперт выше/ниже и кто вмешался.</td><td>Ручная накрутка без причины и audit trail.</td><td>PM + Игорь + Founder</td><td><span class="status yellow">ждем proof</span></td></tr>
+<tr><td>AOC11</td><td><b>Языки и переводы</b></td><td>Язык клиента, эксперта, ответа, перевод, ответственность за ошибку.</td><td>client_lang, expert_lang, answer_lang, translation_flag.</td><td>Скрин полей языка или P0 rule.</td><td>Языковая связка понятна для QA и support.</td><td>Язык ответа не контролируется.</td><td>PM + Игорь</td><td><span class="status yellow">ждем proof</span></td></tr>
+<tr><td>AOC12</td><td><b>Начисления и удержания</b></td><td>Preview начисления по заказу, hold, bonus, deduction, payout status.</td><td>order_id, performer_id, earning_preview, hold_reason.</td><td>Скрин начисления без реальной выплаты.</td><td>Стоимость работы исполнителя видна для экономики.</td><td>Начисления считаются вручную и не связаны с order.</td><td>PM + Founder</td><td><span class="status yellow">ждем proof</span></td></tr>
+<tr><td>AOC13</td><td><b>Аналитика эксперта/агента</b></td><td>Ответы, скорость, просрочки, жалобы, качество, выручка, repeat.</td><td>expert_id, answer_count, avg_time, complaints, revenue.</td><td>Минимальный KPI row по test order/первым 5 экспертам.</td><td>PM видит performance, а не только список пользователей.</td><td>Нет KPI или KPI не связан с консультациями.</td><td>PM + Игорь</td><td><span class="status yellow">ждем proof</span></td></tr>
+<tr><td>AOC14</td><td><b>Ежедневный dashboard PM/Admin</b></td><td>Новые, без вопроса, без назначения, просрочено, жалобы, ответы, выручка, нагрузка.</td><td>daily_date, queues_count, blockers, owner, next_action.</td><td>Скрин или report row одного дня.</td><td>Утром видно, чем управлять.</td><td>PM собирает состояние вручную из переписок.</td><td>PM + Игорь</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>AOC15</td><td><b>QA proof админки</b></td><td>QA отчет подтверждает, что админ видит весь маршрут без ручного поиска.</td><td>qa_run_id, screenshots, verdict, blockers.</td><td>PASS/WARN/STOP report по admin route.</td><td>Можно принять admin layer как доказанный или вернуть с дефектами.</td><td>Нет QA run или только устное “работает”.</td><td>QA + PM</td><td><span class="status red">ждем proof</span></td></tr>
+</tbody></table></div>
+</section>
+
+<section class="doc">
+<h2>Правила приемки</h2>
+<div class="rules">
+<div class="rule pass"><b>PASS</b><p>AOC01-AOC07, AOC14 и AOC15 доказаны на safe order; AOC08-AOC13 имеют минимум рабочий manual/admin proof и понятные owners. Можно переходить к ограниченному QA/traffic после остальных gates.</p></div>
+<div class="rule warn"><b>WARN</b><p>Основной жизненный цикл заказа виден, но качество, модерация, ранжирование, языки, начисления или KPI пока частично ручные. Допустимо только для контролируемого теста.</p></div>
+<div class="rule stop"><b>STOP</b><p>Нет единой карточки/связки заказа, нет SLA, нет no-send, нет support owner/decision, нет QA proof или админ должен догадываться о состоянии консультации.</p></div>
+</div>
+</section>
+
+<section class="doc">
+<h2>Связанные proof-страницы</h2>
+<div class="links-row">
+<a href="admin-operations-control-map.html">Админ-контур ↗</a>
+<a href="backend-admin-launch-gate.html">Backend/admin gate ↗</a>
+<a href="admin-visibility-proof-package.html">Admin visibility proof ↗</a>
+<a href="support-problem-control-order-capture-sheet-2026-06-06.html">Support sheet ↗</a>
+<a href="nosend-control-order-capture-sheet-2026-06-06.html">No-send sheet ↗</a>
+<a href="screen-contract-capture-sheet-2026-06-06.html">Экранные контракты ↗</a>
+<a href="artifacts/ADMIN_OPERATIONS_CAPTURE_SHEET_2026_06_06.csv">CSV для приема ↗</a>
+</div>
+<p class="small-note">Этот лист нужен, чтобы backend, роли, support, уведомления, модерация и аналитика не проверялись отдельно друг от друга.</p>
+</section>
+<p class="footer">Generated local web panel · admin-operations-capture-sheet-2026-06-06.html · 2026-06-06</p>
+</main>
+</body>
+</html>
