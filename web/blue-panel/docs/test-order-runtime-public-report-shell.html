@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Публичный QA-report shell · test order</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .top-nav{position:sticky;top:0;z-index:20;display:flex;gap:10px;flex-wrap:wrap;margin:-4px 0 18px;padding:12px;background:rgba(250,247,239,.94);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:22px;box-shadow:0 12px 30px rgba(58,43,29,.08)}
+    .top-nav a{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);text-decoration:none;font:900 12px Manrope,Verdana,sans-serif;letter-spacing:.03em}
+    .top-nav a.primary{background:#1f6b49;color:#fff;border-color:#1f6b49}.hero{display:grid;grid-template-columns:1.08fr .92fr;gap:16px;margin-bottom:16px}.hero-main{background:linear-gradient(135deg,#17372f,#1f6b49);border-radius:30px;padding:26px;color:#fff;box-shadow:var(--shadow)}.hero-main h1,.hero-main p{color:#fff}.hero-main h1{font-size:46px;line-height:1;margin:8px 0 12px}.side{border:1px solid var(--line);border-radius:30px;background:#fff8df;padding:18px}.side b{display:block;color:#1f6b49;margin:12px 0 5px}.side p{color:var(--muted)}
+    .doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:22px;box-shadow:var(--shadow);margin-top:16px}.note{background:#fff8df;border:1px solid var(--line);border-radius:18px;padding:14px;margin:16px 0;line-height:1.55}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:22px;background:#fff;margin-top:14px}table{width:100%;min-width:1420px;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{font:900 10px Manrope,Verdana,sans-serif;text-transform:uppercase;background:#fbfaf7;color:#514a61}td:first-child{font-weight:900;color:#1f6b49}.status{display:inline-flex;border-radius:999px;padding:6px 9px;font:900 10px Manrope,Verdana,sans-serif;white-space:nowrap}.red{background:#ffe1df;color:#8d1d12}.yellow{background:#fff0c0;color:#745000}.green{background:#dff5e8;color:#176032}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:14px}.cards a,.card{display:block;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:14px;text-decoration:none;color:var(--ink)}.cards strong,.card strong{display:block;color:#1f6b49;margin-bottom:5px}.cards span,.card span{display:block;color:var(--muted);font-size:13px;line-height:1.45}@media(max-width:980px){.hero{grid-template-columns:1fr}.hero-main h1{font-size:34px}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <nav class="top-nav" aria-label="Навигация">
+    <a href="../index.html">Главная</a>
+    <a href="test-order-runtime-cockpit.html">Пульт test order</a>
+    <a href="qa-test-order-execution-brief.html">QA-пакет</a>
+    <a href="test-order-runtime-qa-report-template.html">Шаблон Blue Panel</a>
+    <a class="primary" href="test-order-runtime-public-report-shell.html">Публичный отчет</a>
+    <a href="nosend-event-proof-matrix.html">No-send proof</a>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-main">
+      <div class="eyebrow">public QA report shell · для Игоря и Заказчика</div>
+      <h1>Публичный контейнер отчета по контрольному заказу</h1>
+      <p>Это не доказательство выполнения теста. Это заранее подготовленный формат результата, который будет заполнен после runtime QA: order id, session id, скрины, логи, PASS/WARN/STOP и задачи Игорю.</p>
+    </div>
+    <aside class="side">
+      <b>Где будет жить итог</b>
+      <p>Публичный shell опубликован в каталоге QA-отчетов: <a href="https://cutthreat.github.io/confideline/web/qa-reports/nebula-test-order-runtime-qa-shell-2026-06-05/">web/qa-reports/nebula-test-order-runtime-qa-shell-2026-06-05</a>.</p>
+      <b>Текущий статус</b>
+      <p>Формат готов, runtime proof не заполнен. Все строки остаются красными до фактического прохода.</p>
+    </aside>
+  </section>
+
+  <section class="doc">
+    <h2>Правило именования evidence</h2>
+    <div class="note"><b>Зачем это нужно:</b> если QA назовет скрины случайно, Игорь и PM потеряют связь между шагом, доказательством и дефектом. Поэтому evidence именуется по маршруту проверки.</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Шаг</th><th>Имя evidence</th><th>Что должно быть видно</th><th>Кому важно</th><th>Статус до теста</th></tr></thead>
+        <tbody>
+          <tr><td>01</td><td>Оффер</td><td>01-client-offer.png</td><td>Услуга, цена, срок, CTA, ограничения.</td><td>PM, Антон, Игорь</td><td><span class="status red">пусто</span></td></tr>
+          <tr><td>02</td><td>Test checkout success</td><td>02-client-order-success.png</td><td>Успех заказа, test marker, отсутствие real charge.</td><td>PM, Игорь, QA</td><td><span class="status red">пусто</span></td></tr>
+          <tr><td>03</td><td>Админский заказ</td><td>03-admin-order-card.png</td><td>Order id, сумма, валюта, клиент, статус, test marker.</td><td>Игорь, PM</td><td><span class="status red">пусто</span></td></tr>
+          <tr><td>04</td><td>Вопрос клиента</td><td>04-client-question-submitted.png</td><td>Текст вопроса, язык, связь с заказом.</td><td>PM, QA</td><td><span class="status red">пусто</span></td></tr>
+          <tr><td>05</td><td>Карточка консультации</td><td>05-admin-service-session.png</td><td>Session id, order id, вопрос, статус, срок.</td><td>Игорь, PM</td><td><span class="status red">пусто</span></td></tr>
+          <tr><td>06</td><td>Назначение исполнителя</td><td>06-admin-assignment.png</td><td>Эксперт/агент, статус назначения, история.</td><td>Игорь, QA</td><td><span class="status red">пусто</span></td></tr>
+          <tr><td>07</td><td>Рабочее место исполнителя</td><td>07-expert-task-workspace.png</td><td>Вопрос, срок, контекст, поле ответа.</td><td>Игорь, PM, эксперт</td><td><span class="status red">пусто</span></td></tr>
+          <tr><td>08</td><td>Ответ клиенту</td><td>08-client-answer-visible.png</td><td>Ответ, статус, связь с консультацией.</td><td>PM, QA, Игорь</td><td><span class="status red">пусто</span></td></tr>
+          <tr><td>09</td><td>No-send события</td><td>09-event-log-nosend.png</td><td>Event type, preview, получатель, no-send marker.</td><td>Игорь, QA</td><td><span class="status red">пусто</span></td></tr>
+          <tr><td>10</td><td>Support case</td><td>10-support-ticket.png</td><td>Жалоба, order/session/chat/expert, статус решения.</td><td>Support, Игорь, PM</td><td><span class="status red">пусто</span></td></tr>
+          <tr><td>11</td><td>Quality/compensation</td><td>11-quality-compensation-preview.png</td><td>Quality note, тестовое начисление, отсутствие реальной выплаты.</td><td>PM, Игорь</td><td><span class="status red">пусто</span></td></tr>
+          <tr><td>12</td><td>Итог QA</td><td>12-qa-summary.png</td><td>PASS/WARN/STOP, блокеры, задачи Игорю, rollback.</td><td>Все</td><td><span class="status red">пусто</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="doc">
+    <h2>Как shell будет использоваться</h2>
+    <div class="cards">
+      <div class="card"><strong>До теста</strong><span>Страница показывает, что именно нужно собрать и какие proof-файлы должны появиться.</span></div>
+      <div class="card"><strong>Во время теста</strong><span>QA идет по именам evidence и не спорит, какие скрины нужны.</span></div>
+      <div class="card"><strong>После теста</strong><span>Shell заменяется или дополняется фактическим отчетом с реальными скринами/логами.</span></div>
+      <div class="card"><strong>Для Игоря</strong><span>Каждый FAIL/WARN получает факт, ожидание, шаги повторения, evidence и retest.</span></div>
+    </div>
+  </section>
+
+  <section class="doc">
+    <h2>Связанные материалы</h2>
+    <div class="cards">
+      <a href="https://cutthreat.github.io/confideline/web/qa-reports/nebula-test-order-runtime-qa-shell-2026-06-05/"><strong>Публичный QA-report shell</strong><span>Страница, которую можно дать Игорю и Заказчику как будущий контейнер результата.</span></a>
+      <a href="artifacts/TEST_ORDER_RUNTIME_EVIDENCE_NAMING_2026_06_05.csv"><strong>CSV evidence naming</strong><span>Табличная версия имен скринов и ожидаемых proof.</span></a>
+      <a href="test-order-runtime-qa-report-template.html"><strong>Шаблон Blue Panel</strong><span>Внутренняя форма приемки test order.</span></a>
+      <a href="qa-test-order-execution-brief.html"><strong>QA-пакет</strong><span>Как пройти маршрут и вернуть результат.</span></a>
+      <a href="nosend-event-proof-matrix.html"><strong>No-send proof</strong><span>Как проверить уведомления без реальной отправки.</span></a>
+      <a href="igor-gate-red-conditions-handoff.html"><strong>Игорю: красные gate-условия</strong><span>Что нужно закрыть до QA-прохода.</span></a>
+    </div>
+  </section>
+</main>
+<script src="../assets/panel-ux.js"></script>
+</body>
+</html>
