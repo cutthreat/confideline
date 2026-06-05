@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Прием proof после dispatch · accepted / returned / blocked</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}.cardx{display:block;position:relative;border:1px solid var(--line,#ddcfb8);border-radius:24px;background:#fff;padding:18px 58px 18px 18px;text-decoration:none;color:#241d2b;min-height:210px}.cardx:after{content:'↗';position:absolute;right:14px;bottom:14px;width:36px;height:36px;border-radius:999px;background:#1f6b49;color:#fff;display:grid;place-items:center;font:900 18px Arial}.cardx.red{background:#fff8f7}.cardx.yellow{background:#fffdf2}.cardx.green{background:#f7fff9}.cardx b{display:block;color:#145c42;margin-bottom:7px;font-size:19px}.cardx small{display:block;color:#5d5668;line-height:1.42;margin-top:8px}.matrix table{min-width:2180px}.matrix table td:nth-child(1){font-weight:900;color:#145c42;white-space:nowrap}.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.rule{border:1px solid var(--line,#ddcfb8);border-radius:18px;padding:16px;background:#fff}.rule.accept{background:#f1fbf4}.rule.return{background:#fff8df}.rule.block{background:#fff0ee}.links-row{display:flex;flex-wrap:wrap;gap:10px}.links-row a{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line,#ddcfb8);border-radius:999px;padding:10px 14px;background:#fff;text-decoration:none;color:#145c42;font-weight:800}.small-note{font-size:14px;color:#666}@media(max-width:900px){.rules{grid-template-columns:1fr}.links-row a{width:100%;justify-content:space-between}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<nav class="top" aria-label="Навигация">
+<a href="../index.html">Главная</a>
+<a href="team-dispatch-after-proof-index-2026-06-06.html">Dispatch</a>
+<a href="external-proof-intake-register.html">Прием proof</a>
+<a href="launch-readiness-proof-index-2026-06-06.html">Proof index</a>
+<a href="proof-status-update-playbook.html">Пересчет статусов</a>
+<a class="primary" href="team-proof-intake-after-dispatch-2026-06-06.html">Intake after dispatch</a>
+</nav>
+
+<section class="hero">
+<div class="hero-main">
+<div class="eyebrow">Proof intake · after dispatch · 2026-06-06</div>
+<h1>Как принимать ответы команды</h1>
+<p>Эта страница нужна в момент, когда Игорь, Ксения, Антон, QA или владелец присылают результат. PM не меняет светофор по впечатлению: каждый ответ проходит через capture sheet и получает один из трех статусов — accepted, returned или blocked.</p>
+<div class="badges"><span class="badge red">runtime proof пока 0</span><span class="badge yellow">ждем ответы команды</span><span class="badge green">правила приемки готовы</span><span class="badge red">зеленый только по evidence</span></div>
+</div>
+<aside class="side">
+<b>Основной принцип</b>
+<p>Ответ должен содержать ID, скрины/ссылки, owner, verdict и связь с конкретным листом: AOC, NSC, SPC, PAC, EA, SCR, PDC или QAC. Если связи нет — это returned.</p>
+<b>Что меняется после приема</b>
+<p>Accepted proof может изменить один конкретный gate. Returned не меняет статус и указывает недостающие факты. Blocked фиксирует внешний стоппер и владельца следующего действия.</p>
+<div class="note"><b>Запрет:</b> не переводить слой в зеленый по переписке, одному скрину без ID, Trello-карточке или устному “готово”.</div>
+</aside>
+</section>
+
+<section class="doc">
+<div class="stats">
+<div class="metric red"><b>5</b><span>ожидаемых внешних источников</span></div>
+<div class="metric yellow"><b>3</b><span>возможных решения: accepted/returned/blocked</span></div>
+<div class="metric red"><b>0</b><span>принятых runtime ответов сейчас</span></div>
+<div class="metric green"><b>1</b><span>правило: proof меняет только свой gate</span></div>
+</div>
+</section>
+
+<section class="doc">
+<h2>Быстрые решения PM</h2>
+<div class="rules">
+<div class="rule accept"><b>accepted</b><p>Ответ содержит прямое доказательство, закрывает конкретные пункты capture sheet, имеет ссылки/скрины/ID и может быть воспроизведен.</p></div>
+<div class="rule return"><b>returned</b><p>Работа полезна, но не хватает ID, скрина, связи с order/session, verdict, owner, route или обязательного поля capture sheet.</p></div>
+<div class="rule block"><b>blocked</b><p>Есть внешний стоппер: нет доступа, нет реализации, нужен founder/legal/payment decision, риск реальной оплаты/письма или QA нельзя стартовать.</p></div>
+</div>
+</section>
+
+<section class="doc">
+<h2>Куда заносить ответ</h2>
+<div class="cards">
+<a class="cardx red" href="admin-operations-capture-sheet-2026-06-06.html"><b>Ответ Игоря</b><span class="status red">runtime/backend</span><small>Проверить AOC01-AOC15, NSC01-NSC10, SPC01-SPC10, PAC01-PAC12. Если нет safe order_id и no real charge/send proof — returned/blocked.</small></a>
+<a class="cardx red" href="first-five-expert-admission-capture-sheet-2026-06-06.html"><b>Ответ Ксении / экспертов</b><span class="status red">E01-E05</span><small>Проверить EA01-EA10: пробный ответ, scorecard, SLA, анкета, доступ, safety, capacity и verdict по каждому слоту.</small></a>
+<a class="cardx yellow" href="screen-contract-capture-sheet-2026-06-06.html"><b>Ответ Антона</b><span class="status yellow">дизайн</span><small>Проверить SCR01-SCR14: source, action, backend, content, failure states. Красивый экран без сценария не accepted.</small></a>
+<a class="cardx red" href="prelaunch-qa-capture-sheet-2026-06-06.html"><b>Ответ QA</b><span class="status red">после READY</span><small>Проверить QAC01-QAC15, публичный отчет, скрины, raw evidence, final PASS/WARN/STOP и retest path.</small></a>
+<a class="cardx yellow" href="public-docs-checkout-capture-sheet-2026-06-06.html"><b>Ответ владельца/legal/payment</b><span class="status yellow">approval</span><small>Проверить PDC12: seller, provider, descriptor, refund, geography, final legal approval или отложено с owner/date.</small></a>
+<a class="cardx green" href="launch-readiness-proof-index-2026-06-06.html"><b>Обновление светофора</b><span class="status green">PM action</span><small>После accepted/returned/blocked обновить только затронутый слой proof index и следующий шаг.</small></a>
+</div>
+</section>
+
+<section class="doc">
+<h2>Матрица intake</h2>
+<div class="matrix"><table><thead><tr><th>ID</th><th>Источник ответа</th><th>Проверить по листу</th><th>Accepted если</th><th>Returned если</th><th>Blocked если</th><th>Какой gate может измениться</th><th>Следующее действие PM</th></tr></thead><tbody>
+<tr class="red"><td>INT01</td><td><b>Игорь: safe control order</b></td><td>AOC, NSC, SPC, PAC, first-control-order</td><td>Есть order_id/question_id/performer/event/support/analytics, скрины, no real charge/send.</td><td>Нет ID, нет связи с order, часть полей только словами.</td><td>Невозможно создать safe order, риск реального платежа/письма, нет нужного route.</td><td>LR04, LR06, LR09, LR10, LR11, LR13, LR14</td><td>Обновить proof index, если accepted; иначе вернуть точный missing list.</td></tr>
+<tr class="red"><td>INT02</td><td><b>Ксения / эксперты: E01-E05</b></td><td>EA01-EA10, admission sheet</td><td>Минимум E01 имеет пробный ответ, score, SLA, анкету, доступ, safety, verdict.</td><td>Есть имя эксперта, но нет ответа/SLA/анкеты/verdict.</td><td>Эксперт не может работать, нет доступа, нет материала, safety violation.</td><td>LR07, LR08, LR09, LR15</td><td>Accepted E01 открывает путь к QA READY; E01-E05 нужны до трафика.</td></tr>
+<tr class="yellow"><td>INT03</td><td><b>Антон: screen contracts</b></td><td>SCR01-SCR14</td><td>Экран имеет design source, user action, backend link, content, failure states, owner.</td><td>Есть только макет/скрин без действия или error states.</td><td>Нет доступа к Figma/export или экран конфликтует с backend flow.</td><td>LR05, LR06, LR12</td><td>Обновить screen contracts и сформировать точные задачи Игорю/верстке.</td></tr>
+<tr class="red"><td>INT04</td><td><b>QA: public report</b></td><td>QAC01-QAC15</td><td>Есть public report, qa_run_id, order marker, screenshots, defects, final verdict.</td><td>Есть чеклист без скринов, нет order marker, нет raw evidence.</td><td>QA start не READY или найден critical STOP.</td><td>LR15, затем LR16 при PASS/WARN без critical STOP.</td><td>Пересчитать readiness и назначить retest/traffic preflight decision.</td></tr>
+<tr class="yellow"><td>INT05</td><td><b>Founder/legal/payment</b></td><td>PDC12, legal/payment gates</td><td>Есть явные решения или отложено с owner/date.</td><td>Ответ “позже” без владельца/срока.</td><td>Решение требует юриста/provider/access и PM не может закрыть.</td><td>LR12, LR17, LR16</td><td>Обновить public docs/checkout approval gate, не публиковать без final approval.</td></tr>
+<tr class="green"><td>INT06</td><td><b>PM / Codex</b></td><td>proof index, status playbook</td><td>Статус обновлен только по прямому proof, ссылка опубликована, CSV/страница есть.</td><td>Обновлен текст без связи с evidence.</td><td>Не хватает доступа/страница 404/невозможно проверить ссылку.</td><td>LR01 and affected gate</td><td>Опубликовать обновленную Blue Panel и оставить цель активной до runtime proof.</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="doc">
+<h2>Связанные входы</h2>
+<div class="links-row">
+<a href="team-dispatch-after-proof-index-2026-06-06.html">Dispatch ↗</a>
+<a href="external-proof-intake-register.html">Реестр приема proof ↗</a>
+<a href="external-proof-inbox.html">Proof inbox ↗</a>
+<a href="proof-status-update-playbook.html">Пересчет статусов ↗</a>
+<a href="launch-readiness-proof-index-2026-06-06.html">Proof index ↗</a>
+<a href="artifacts/TEAM_PROOF_INTAKE_AFTER_DISPATCH_2026_06_06.csv">CSV intake ↗</a>
+</div>
+<p class="small-note">Эта страница используется только после того, как команда вернула ответ. До этого она фиксирует правила будущей приемки.</p>
+</section>
+<p class="footer">Generated local web panel · team-proof-intake-after-dispatch-2026-06-06.html · 2026-06-06</p>
+</main>
+</body>
+</html>
