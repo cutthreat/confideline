@@ -50,7 +50,7 @@
       <a href="test-order-readiness-gate.html"><b>Gate контрольного заказа</b><span>Сначала убираем красные условия. Если безопасный тестовый заказ, no-send или рабочее место не готовы, тест не запускается.</span></a>
       <a href="igor-test-order-acceptance-contract.html"><b>Контракт Игорю</b><span>Игорь показывает AC01-AC09: безопасный заказ, связка order/question/session, назначение, ответ, события и support.</span></a>
       <a href="test-order-fixture-readiness-sheet.html"><b>Фикстуры теста</b><span>PM/QA заполняют тестовую услугу, вопрос, роли, before-state, rollback и список админских разделов.</span></a>
-      <a href="test-order-fixture-fill-template.html"><b>Заполняемый шаблон</b><span>Место, где перед запуском фиксируются конкретные аккаунты, URL, id и исходное состояние.</span></a>
+      <a href="test-order-fixture-fill-template.html"><b>Заполняемый шаблон</b><span>Место, где перед запуском фиксируются конкретные аккаунты, URL, id и исходное состояние.</span></a><a href="test-order-proof-capture-sheet.html"><b>Лист фактов PF01-PF12</b><span>Главная таблица, которую QA заполняет доказательствами: order id, скрины, логи, support и verdict.</span></a>
     </div>
     <div class="notice"><b>Нельзя начинать:</b> если есть риск реального списания, реальной отправки письма, нет id контрольного заказа, нет связи вопроса с заказом, админ не видит маршрут или исполнитель не видит задачу.</div>
   </section>
@@ -58,20 +58,20 @@
   <section class="doc">
     <h2>Маршрут контрольного заказа</h2>
     <div class="matrix"><table>
-      <thead><tr><th>#</th><th>Шаг</th><th>Что делает QA</th><th>Ожидаемый факт</th><th>Доказательство</th><th>Вердикт</th><th>Если не проходит</th></tr></thead>
+      <thead><tr><th>#</th><th>PF</th><th>Шаг</th><th>Что делает QA</th><th>Ожидаемый факт</th><th>Доказательство</th><th>Вердикт</th><th>Если не проходит</th></tr></thead>
       <tbody>
-        <tr><td>01</td><td>Оффер услуги</td><td>Открыть экран покупки тестовой консультации.</td><td>Клиент понимает услугу, цену, срок ответа, ограничения и следующий шаг.</td><td>01-client-offer</td><td><span class="status yellow">WARN если неясно</span></td><td>Отдать в UX/контент-правку, не считать коммерческий путь готовым.</td></tr>
-        <tr><td>02</td><td>Безопасный тестовый заказ</td><td>Оформить заказ в test/sandbox/mock режиме.</td><td>Создан order id, видны сумма, валюта, статус test, реального списания нет.</td><td>02-test-order-created</td><td><span class="status red">STOP если нет order id</span></td><td>Игорю: безопасный checkout/order не принят.</td></tr>
-        <tr><td>03</td><td>Заказ в админке</td><td>Открыть заказ в админской части.</td><td>Админ видит заказ, клиента, услугу, сумму, статус, test marker.</td><td>03-admin-order</td><td><span class="status red">STOP если заказ не виден</span></td><td>Игорю: admin visibility по заказу.</td></tr>
-        <tr><td>04</td><td>Вопрос клиента</td><td>Отправить вопрос после заказа или проверить уже связанный вопрос.</td><td>Вопрос связан с order id, клиентом, услугой, языком и темой.</td><td>04-question-linked</td><td><span class="status red">STOP если связь потеряна</span></td><td>Игорю: связка order → question.</td></tr>
-        <tr><td>05</td><td>Карточка консультации</td><td>Открыть очередь/карточку консультации в админке.</td><td>Есть единая карточка работы: order, question, клиент, статус, срок, исполнитель, чат.</td><td>05-service-session</td><td><span class="status red">STOP если карточки нет</span></td><td>Игорю: service session/task поверх заказа.</td></tr>
-        <tr><td>06</td><td>Назначение исполнителя</td><td>Назначить эксперта или агента на тестовую консультацию.</td><td>Назначение сохраняется, исполнитель видит задачу, админ видит историю.</td><td>06-assignment</td><td><span class="status red">STOP если назначение не работает</span></td><td>Игорю: роли, права, assignment.</td></tr>
-        <tr><td>07</td><td>Рабочее место исполнителя</td><td>Зайти под исполнителем и открыть задачу.</td><td>Видны вопрос, контекст клиента, срок, чат/поле ответа и действие отправки.</td><td>07-expert-workspace</td><td><span class="status red">STOP если задачи нет</span></td><td>Игорю: expert/agent workspace.</td></tr>
-        <tr><td>08</td><td>Ответ клиенту</td><td>Отправить тестовый ответ и проверить стороны.</td><td>Ответ связан с консультацией, виден клиенту и админу, статус меняется ожидаемо.</td><td>08-answer-client-admin</td><td><span class="status red">STOP если ответ потерян</span></td><td>Игорю: chat/session binding.</td></tr>
-        <tr><td>09</td><td>Уведомления без отправки</td><td>Проверить журнал событий и preview уведомлений.</td><td>События order/question/assignment/answer/support есть, но реальные email/push/SMS не ушли.</td><td>09-nosend-events</td><td><span class="status red">STOP если ушли реальные письма</span></td><td>Игорю: no-send режим и event log.</td></tr>
-        <tr><td>10</td><td>Support-сценарий</td><td>Создать жалобу или проблемное состояние по тестовому заказу.</td><td>Support видит order, consultation, chat, исполнителя, причину и решение.</td><td>10-support-case</td><td><span class="status yellow">WARN/STOP по критичности</span></td><td>Игорю/PM: support card и failure states.</td></tr>
-        <tr><td>11</td><td>Итоговое состояние</td><td>Сравнить before-state и after-state, зафиксировать rollback.</td><td>Понятно, какие тестовые данные появились, что оставлено как proof, что можно очистить.</td><td>11-before-after-rollback</td><td><span class="status yellow">WARN если состояние неясно</span></td><td>QA: не закрывать отчет без rollback note.</td></tr>
-        <tr><td>12</td><td>Публичный отчет</td><td>Опубликовать QA-отчет с вердиктом.</td><td>Есть PASS/WARN/STOP, скрины/логи, задачи Игорю и остаточные риски.</td><td>12-final-verdict</td><td><span class="status red">STOP пока отчета нет</span></td><td>Не переходить к рекламе и следующему runtime-этапу.</td></tr>
+        <tr><td>01</td><td>PF00</td><td>Оффер услуги</td><td>Открыть экран покупки тестовой консультации.</td><td>Клиент понимает услугу, цену, срок ответа, ограничения и следующий шаг.</td><td>01-client-offer</td><td><span class="status yellow">WARN если неясно</span></td><td>Отдать в UX/контент-правку, не считать коммерческий путь готовым.</td></tr>
+        <tr><td>02</td><td>PF01</td><td>Безопасный тестовый заказ</td><td>Оформить заказ в test/sandbox/mock режиме.</td><td>Создан order id, видны сумма, валюта, статус test, реального списания нет.</td><td>02-test-order-created</td><td><span class="status red">STOP если нет order id</span></td><td>Игорю: безопасный checkout/order не принят.</td></tr>
+        <tr><td>03</td><td>PF02</td><td>Заказ в админке</td><td>Открыть заказ в админской части.</td><td>Админ видит заказ, клиента, услугу, сумму, статус, test marker.</td><td>03-admin-order</td><td><span class="status red">STOP если заказ не виден</span></td><td>Игорю: admin visibility по заказу.</td></tr>
+        <tr><td>04</td><td>PF03</td><td>Вопрос клиента</td><td>Отправить вопрос после заказа или проверить уже связанный вопрос.</td><td>Вопрос связан с order id, клиентом, услугой, языком и темой.</td><td>04-question-linked</td><td><span class="status red">STOP если связь потеряна</span></td><td>Игорю: связка order → question.</td></tr>
+        <tr><td>05</td><td>PF04</td><td>Карточка консультации</td><td>Открыть очередь/карточку консультации в админке.</td><td>Есть единая карточка работы: order, question, клиент, статус, срок, исполнитель, чат.</td><td>05-service-session</td><td><span class="status red">STOP если карточки нет</span></td><td>Игорю: service session/task поверх заказа.</td></tr>
+        <tr><td>06</td><td>PF05</td><td>Назначение исполнителя</td><td>Назначить эксперта или агента на тестовую консультацию.</td><td>Назначение сохраняется, исполнитель видит задачу, админ видит историю.</td><td>06-assignment</td><td><span class="status red">STOP если назначение не работает</span></td><td>Игорю: роли, права, assignment.</td></tr>
+        <tr><td>07</td><td>PF06</td><td>Рабочее место исполнителя</td><td>Зайти под исполнителем и открыть задачу.</td><td>Видны вопрос, контекст клиента, срок, чат/поле ответа и действие отправки.</td><td>07-expert-workspace</td><td><span class="status red">STOP если задачи нет</span></td><td>Игорю: expert/agent workspace.</td></tr>
+        <tr><td>08</td><td>PF07</td><td>Ответ клиенту</td><td>Отправить тестовый ответ и проверить стороны.</td><td>Ответ связан с консультацией, виден клиенту и админу, статус меняется ожидаемо.</td><td>08-answer-client-admin</td><td><span class="status red">STOP если ответ потерян</span></td><td>Игорю: chat/session binding.</td></tr>
+        <tr><td>09</td><td>PF08</td><td>Уведомления без отправки</td><td>Проверить журнал событий и preview уведомлений.</td><td>События order/question/assignment/answer/support есть, но реальные email/push/SMS не ушли.</td><td>09-nosend-events</td><td><span class="status red">STOP если ушли реальные письма</span></td><td>Игорю: no-send режим и event log.</td></tr>
+        <tr><td>10</td><td>PF09</td><td>Support-сценарий</td><td>Создать жалобу или проблемное состояние по тестовому заказу.</td><td>Support видит order, consultation, chat, исполнителя, причину и решение.</td><td>10-support-case</td><td><span class="status yellow">WARN/STOP по критичности</span></td><td>Игорю/PM: support card и failure states.</td></tr>
+        <tr><td>11</td><td>PF10-PF11</td><td>Итоговое состояние</td><td>Сравнить before-state и after-state, зафиксировать rollback.</td><td>Понятно, какие тестовые данные появились, что оставлено как proof, что можно очистить.</td><td>11-before-after-rollback</td><td><span class="status yellow">WARN если состояние неясно</span></td><td>QA: не закрывать отчет без rollback note.</td></tr>
+        <tr><td>12</td><td>PF12</td><td>Публичный отчет</td><td>Опубликовать QA-отчет с вердиктом.</td><td>Есть PASS/WARN/STOP, скрины/логи, задачи Игорю и остаточные риски.</td><td>12-final-verdict</td><td><span class="status red">STOP пока отчета нет</span></td><td>Не переходить к рекламе и следующему runtime-этапу.</td></tr>
       </tbody>
     </table></div>
   </section>
@@ -111,13 +111,14 @@
     <div class="links">
       <a href="test-order-runtime-qa-report-template.html"><b>Шаблон QA-отчета</b><span>Форма, которую тестировщик заполнит после runtime-прохода.</span></a>
       <a href="test-order-runtime-public-report-shell.html"><b>Публичный контейнер отчета</b><span>Место будущего отчета для тебя, Заказчика, Игоря и QA.</span></a>
-      <a href="nosend-event-proof-matrix.html"><b>No-send proof</b><span>Отдельная матрица событий и безопасной проверки уведомлений.</span></a>
+      <a href="test-order-proof-capture-sheet.html"><b>Лист фактов PF01-PF12</b><span>Единая таблица, куда QA заносит evidence и итог.</span></a><a href="nosend-event-proof-matrix.html"><b>No-send proof</b><span>Отдельная матрица событий и безопасной проверки уведомлений.</span></a>
       <a href="igor-trello-ready-test-order-task.html"><b>Постановка Игорю для Trello</b><span>Человеческая карточка на базе acceptance contract.</span></a>
       <a href="qa-trello-ready-test-order-task.html"><b>Постановка QA для Trello</b><span>Карточка запуска проверки после READY по gate.</span></a>
       <a href="artifacts/QA_TEST_ORDER_EXECUTION_EXECUTIVE_2026_06_05.csv"><b>CSV QA-пакета</b><span>Табличная версия маршрута и доказательств.</span></a>
     </div>
   </section>
 </main><script src="../assets/panel-ux.js"></script></body></html>
+
 
 
 
