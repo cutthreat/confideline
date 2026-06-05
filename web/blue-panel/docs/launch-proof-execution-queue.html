@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Очередь закрытия proof-gates · запуск Nebula</title>
+  <style>
+    :root{--bg:#f7f1e6;--paper:#fffdf8;--ink:#201b22;--muted:#665f68;--line:#ddccb5;--green:#1f7a52;--red:#b12e2e;--yellow:#c98712;--blue:#2c668a;--soft:#f3ecff;--shadow:0 18px 48px rgba(37,31,21,.10)}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0,#fff7dc 0,#f7f1e6 36%,#efe7d9 100%);color:var(--ink);font:17px/1.5 Georgia,'Times New Roman',serif}.wrap{max-width:1180px;margin:0 auto;padding:28px 18px 56px}.top{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 18px;padding:12px 14px;background:rgba(255,253,248,.82);border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow)}a{color:#0f6847;text-decoration:none}.top a{padding:10px 16px;border:1px solid var(--line);border-radius:999px;background:#fffdf8;font:700 14px/1.1 Arial,sans-serif}.top a.primary{background:var(--green);color:white;border-color:var(--green)}.hero{display:grid;grid-template-columns:1.25fr .75fr;gap:18px;margin-bottom:18px}.card,.hero-main,.side,.doc{background:rgba(255,253,248,.92);border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow)}.hero-main{padding:34px 36px;background:linear-gradient(135deg,#15543b,#237b55);color:white}.eyebrow{letter-spacing:.16em;text-transform:uppercase;font:800 12px/1.2 Arial,sans-serif}.hero h1{margin:12px 0 12px;font-size:48px;line-height:.96}.hero p{max-width:760px;margin:0;color:#fff7e7}.side{padding:24px}.side b{display:block;color:#0e6947;margin:0 0 6px}.status-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.stat{padding:18px;border:1px solid var(--line);border-radius:22px;background:#fffdf8}.stat small{display:block;font:800 11px/1 Arial,sans-serif;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.stat b{display:block;margin-top:8px;font-size:28px}.red{color:var(--red)}.yellow{color:var(--yellow)}.green{color:var(--green)}.doc{padding:26px;margin:18px 0}.doc h2{margin:0 0 14px;font-size:31px}.queue{display:grid;gap:12px}.step{display:grid;grid-template-columns:64px 1fr 180px;gap:18px;align-items:stretch;padding:16px;border:1px solid var(--line);border-radius:22px;background:#fffdf8;transition:.18s ease}.step:hover{transform:translateY(-2px);border-color:#78b99c;box-shadow:0 16px 36px rgba(31,122,82,.12)}.num{display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:14px;background:var(--green);color:white;font:800 18px/1 Arial,sans-serif}.step h3{margin:0 0 6px;font-size:22px}.step p{margin:0 0 10px;color:var(--muted)}.meta{display:flex;flex-wrap:wrap;gap:7px}.tag{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;background:#eef7f1;color:#12613f;font:800 11px/1 Arial,sans-serif;text-transform:uppercase}.tag.redbg{background:#ffeaea;color:#9f1f1f}.tag.yellowbg{background:#fff4d8;color:#8b5b00}.proof{display:grid;gap:8px;font-size:14px}.proof b{color:#0e6947}.proof span{display:block;color:var(--muted)}.links{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.link-card{position:relative;display:block;padding:17px 48px 17px 18px;border:1px solid var(--line);border-radius:20px;background:#fbf8ff;min-height:82px}.link-card:after{content:'↗';position:absolute;right:16px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--green);color:white;font:800 16px/1 Arial,sans-serif}.link-card:hover{border-color:#78b99c;box-shadow:0 12px 28px rgba(31,122,82,.12)}.link-card b{display:block;color:#0e6947}.link-card span{display:block;color:var(--muted);font-size:15px}.decision{display:grid;grid-template-columns:1fr 1fr;gap:14px}.box{padding:18px;border:1px solid var(--line);border-radius:22px;background:#fffdf8}.box h3{margin:0 0 8px}.box ul{margin:0;padding-left:20px}.box li{margin:6px 0}.footer{margin-top:22px;color:var(--muted);font:13px/1.4 Arial,sans-serif}@media (max-width:900px){.hero,.status-row,.decision,.links{grid-template-columns:1fr}.step{grid-template-columns:52px 1fr}.proof{grid-column:1 / -1}.hero h1{font-size:38px}}
+  </style>
+</head>
+<body><main class="wrap">
+  <nav class="top" aria-label="Навигация"><a href="../index.html">Главная</a><a href="alexey-master-plan.html">Для Алексея</a><a href="launch-proof-index.html">Индекс proof</a><a class="primary" href="launch-proof-execution-queue.html">Очередь proof</a><a href="launch-readiness-executive-status.html">Сводный статус</a><a href="owner-proof-next-actions.html">Кто следующий</a><a href="prelaunch-qa-execution-control.html">QA</a></nav>
+
+  <section class="hero">
+    <div class="hero-main">
+      <div class="eyebrow">YouDate / Nebula · execution queue</div>
+      <h1>Очередь закрытия proof-gates</h1>
+      <p>Задача сейчас не расширять список документов, а последовательно закрыть красные зоны фактами. Каждый шаг ниже меняет готовность запуска только после accepted proof: скрин, ссылка, order id, QA-отчет, админский route или подтвержденный допуск эксперта.</p>
+    </div>
+    <aside class="side">
+      <b>Текущий вывод PM</b>
+      <p>Запуск остается красным, потому что нет контрольного заказа, допуска экспертов, no-send proof, support proof и QA PASS/WARN.</p>
+      <b>Первое действие</b>
+      <p>Отдать Игорю пакет безопасного контрольного заказа. Параллельно закрыть E01 как первого исполнителя для QA.</p>
+    </aside>
+  </section>
+
+  <section class="status-row" aria-label="Текущий статус">
+    <div class="stat"><small>gates в очереди</small><b>8</b></div>
+    <div class="stat"><small>runtime proof</small><b class="red">0</b></div>
+    <div class="stat"><small>эксперты допущены</small><b class="red">0 / 5</b></div>
+    <div class="stat"><small>платный трафик</small><b class="red">закрыт</b></div>
+  </section>
+
+  <section class="doc">
+    <h2>Порядок работы команды</h2>
+    <div class="queue">
+      <a class="step" href="first-control-order-proof-package.html"><span class="num">1</span><div><h3>Подготовить и отправить Игорю пакет контрольного заказа</h3><p>PM/Codex дает понятный маршрут: что нужно показать на backend/admin, без реальной оплаты и без реальных писем.</p><div class="meta"><span class="tag">владелец PM</span><span class="tag yellowbg">готово к отправке</span></div></div><div class="proof"><b>Accepted proof</b><span>Ссылка на пакет + зафиксированный запрос Игорю.</span><b>Returned если</b><span>Неясен route, есть риск реальной оплаты или реальной отправки.</span></div></a>
+      <a class="step" href="first-control-order-proof-package.html"><span class="num">2</span><div><h3>Игорь показывает безопасный путь заказа</h3><p>Нужны test order id, связка с вопросом клиента, назначение исполнителя, рабочее место, ответ, no-send события и support route.</p><div class="meta"><span class="tag">владелец Игорь</span><span class="tag redbg">ждем факт</span></div></div><div class="proof"><b>Accepted proof</b><span>Order id, test marker, question binding, assignment, answer, admin/support/no-send route.</span><b>Returned если</b><span>Нет связи заказа с вопросом, нет роли исполнителя, нет изоляции теста.</span></div></a>
+      <a class="step" href="first-five-experts-proof-package.html"><span class="num">3</span><div><h3>Допустить E01 как первого исполнителя для QA</h3><p>Для QA нужен минимум один исполнитель с понятным SLA, пробным ответом, оценкой качества, доступом и PM-вердиктом.</p><div class="meta"><span class="tag">PM / Ксения / эксперт</span><span class="tag redbg">0 из 1</span></div></div><div class="proof"><b>Accepted proof</b><span>Анкета, SLA, обучение, trial answer, scorecard, роль, workspace, вердикт.</span><b>Returned если</b><span>Нет пробного ответа, нет оценки, нет доступа или неясна анкета.</span></div></a>
+      <a class="step" href="notifications-nosend-proof-package.html"><span class="num">4</span><div><h3>Закрыть no-send, админку и problem-state</h3><p>До QA должны быть видны события заказа, уведомления в безопасном режиме, support case и ежедневная видимость администратора.</p><div class="meta"><span class="tag">Игорь / PM</span><span class="tag redbg">ждем факт</span></div></div><div class="proof"><b>Accepted proof</b><span>No-send marker, admin queue, support case, daily view, event log.</span><b>Returned если</b><span>Письмо реально ушло, событие не видно, support не связан с заказом.</span></div></a>
+      <a class="step" href="prelaunch-qa-execution-control.html"><span class="num">5</span><div><h3>Собрать READY-пакет для тестировщика</h3><p>QA запускается только когда есть безопасный заказ, E01, no-send, admin route, support route и понятная форма отчета.</p><div class="meta"><span class="tag">PM / QA</span><span class="tag yellowbg">после шагов 2-4</span></div></div><div class="proof"><b>Accepted proof</b><span>READY-checklist, тестовые данные, ссылки на route, пустая форма отчета.</span><b>Returned если</b><span>Хотя бы один обязательный route отсутствует.</span></div></a>
+      <a class="step" href="prelaunch-qa-execution-control.html"><span class="num">6</span><div><h3>QA проходит контрольный заказ</h3><p>Тестировщик проходит путь клиента, исполнителя, админа и support. Результат меняет статус запуска только через публичный отчет.</p><div class="meta"><span class="tag">владелец QA</span><span class="tag redbg">не стартовать сейчас</span></div></div><div class="proof"><b>Accepted proof</b><span>PASS/WARN/STOP отчет со скринами и ссылками.</span><b>Returned если</b><span>Нет скринов, нет воспроизводимости, отчет не привязан к order id.</span></div></a>
+      <a class="step" href="first-five-experts-proof-package.html"><span class="num">7</span><div><h3>Довести допуск E01-E05 и capacity</h3><p>Для первого трафика нужен не один тестовый исполнитель, а пять готовых экспертов с лимитами, графиком и fallback-правилами.</p><div class="meta"><span class="tag">PM / Ксения</span><span class="tag redbg">0 из 5</span></div></div><div class="proof"><b>Accepted proof</b><span>5 expert proof packs, daily capacity, SLA coverage, fallback owner.</span><b>Returned если</b><span>Нет лимитов, нет обучения, нет допуска или нет замены при молчании.</span></div></a>
+      <a class="step" href="marketing-first-traffic-proof-package.html"><span class="num">8</span><div><h3>Открыть legal/payment и первый трафик только после gates</h3><p>PM готовит материалы, но не утверждает seller, provider, descriptor, refund и географию. Paid traffic закрыт до QA, capacity и founder/legal/payment decisions.</p><div class="meta"><span class="tag">Founder / PM</span><span class="tag redbg">закрыто</span></div></div><div class="proof"><b>Accepted proof</b><span>Legal/payment решения + QA PASS/WARN + 5 экспертов + purchase analytics.</span><b>Returned если</b><span>Нет платежного пути, нет документов, нет аналитики покупки или capacity.</span></div></a>
+    </div>
+  </section>
+
+  <section class="doc decision">
+    <div class="box"><h3>Что PM/Codex делает без ожидания</h3><ul><li>Держит proof-пакеты актуальными и связанными между собой.</li><li>Готовит отправляемые пакеты Игорю, QA, Ксении и Антону.</li><li>Собирает offer, FAQ, email/no-send, support, analytics и screen contract в Blue Panel.</li><li>Фиксирует все accepted/returned/blocked факты без переименования Trello-карточек.</li></ul></div>
+    <div class="box"><h3>Что нельзя начинать сейчас</h3><ul><li>QA без safe order route, E01 и no-send proof.</li><li>Платный трафик без QA PASS/WARN, 5 экспертов, legal/payment и purchase analytics.</li><li>Реальные платежи, реальные письма и внешние публикации.</li><li>Переписывание Trello-названий вместо работы по содержанию.</li></ul></div>
+  </section>
+
+  <section class="doc">
+    <h2>Связанные страницы</h2>
+    <div class="links">
+      <a class="link-card" href="launch-proof-index.html"><b>Индекс proof запуска</b><span>Все proof-пакеты запуска в одном маршруте.</span></a>
+      <a class="link-card" href="owner-proof-next-actions.html"><b>Кто следующий</b><span>Кому сейчас передавать задачу и какой факт принимать.</span></a>
+      <a class="link-card" href="launch-readiness-executive-status.html"><b>Сводный статус</b><span>Короткий executive view: красное, желтое, зеленое.</span></a>
+      <a class="link-card" href="pm-objective-coverage-live-2026-06-06.html"><b>PM-цель</b><span>Почему PM-цель еще активна и что не доказано.</span></a>
+    </div>
+  </section>
+
+  <p class="footer">Generated local web panel · launch-proof-execution-queue.html · дата: 2026-06-06</p>
+</main><script src="../assets/panel-ux.js"></script></body></html>
