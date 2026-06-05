@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>No-send proof · уведомления тестового заказа</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .top-nav{position:sticky;top:0;z-index:20;display:flex;gap:10px;flex-wrap:wrap;margin:-4px 0 18px;padding:12px;background:rgba(250,247,239,.94);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:22px;box-shadow:0 12px 30px rgba(58,43,29,.08)}
+    .top-nav a{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);text-decoration:none;font:900 12px Manrope,Verdana,sans-serif;letter-spacing:.03em}
+    .top-nav a.primary{background:#1f6b49;color:#fff;border-color:#1f6b49}.top-nav a:hover{box-shadow:0 10px 24px rgba(31,107,73,.16);transform:translateY(-1px)}
+    .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-bottom:16px}.hero-main{background:linear-gradient(135deg,#17372f,#1f6b49);border-radius:30px;padding:26px;color:#fff;box-shadow:var(--shadow)}.hero-main h1,.hero-main p{color:#fff}.hero-main h1{font-size:46px;line-height:1;margin:8px 0 12px}.side{border:1px solid var(--line);border-radius:30px;background:#fff8df;padding:18px}.side b{display:block;color:#1f6b49;margin:12px 0 5px}.side p{color:var(--muted)}
+    .badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.badge{border-radius:999px;padding:7px 10px;background:#fff;color:#17372f;font:900 11px Manrope,Verdana,sans-serif}.red{background:#ffe1df!important;color:#8d1d12!important}.yellow{background:#fff0c0!important;color:#745000!important}.green{background:#dff5e8!important;color:#176032!important}.gray{background:#eef0f1!important;color:#4e555b!important}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:16px 0}.metric{border:1px solid var(--line);border-radius:20px;background:#fff;padding:14px}.metric b{font-size:30px;display:block;color:#1f6b49}.metric.red b{color:#8d1d12}.metric.yellow b{color:#745000}
+    .doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:22px;box-shadow:var(--shadow);margin-top:16px}.note{background:#fff8df;border:1px solid var(--line);border-radius:18px;padding:14px;margin:16px 0;line-height:1.55}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:22px;background:#fff;margin-top:14px}table{width:100%;min-width:1420px;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{font:900 10px Manrope,Verdana,sans-serif;text-transform:uppercase;background:#fbfaf7;color:#514a61}td:first-child{font-weight:900;color:#1f6b49}.status{display:inline-flex;border-radius:999px;padding:6px 9px;font:900 10px Manrope,Verdana,sans-serif;white-space:nowrap;margin:2px 2px 2px 0}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:14px}.cards a,.card{display:block;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:14px;text-decoration:none;color:var(--ink)}.cards strong,.card strong{display:block;color:#1f6b49;margin-bottom:5px}.cards span,.card span{display:block;color:var(--muted);font-size:13px;line-height:1.45}@media(max-width:980px){.hero{grid-template-columns:1fr}.hero-main h1{font-size:34px}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <nav class="top-nav" aria-label="Навигация">
+    <a href="../index.html">Главная</a>
+    <a href="test-order-readiness-gate.html">Gate</a>
+    <a href="pm-test-order-fixture-pack.html">PM-данные</a>
+    <a href="qa-test-order-execution-brief.html">QA-пакет</a>
+    <a class="primary" href="nosend-event-proof-matrix.html">No-send proof</a>
+    <a href="events-notifications-launch-control.html">Уведомления</a>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-main">
+      <div class="eyebrow">runtime safety · no-send</div>
+      <h1>Как доказать уведомления без реальной отправки писем</h1>
+      <p>Эта страница превращает фразу “проверить уведомления” в конкретный QA-proof. На контрольном заказе события должны создаться, preview должен показать получателя и переменные, но реальные письма, push и SMS не должны уйти.</p>
+      <div class="badge-row"><span class="badge red">реальная отправка запрещена</span><span class="badge yellow">нужен event log</span><span class="badge green">цель: no-send proof</span></div>
+    </div>
+    <aside class="side">
+      <b>Почему это отдельный gate</b>
+      <p>Без no-send режима тест может случайно отправить письма реальным пользователям или экспертам. Такой тест нельзя считать безопасным proof перед запуском.</p>
+      <b>Что считается доказательством</b>
+      <p>Для каждого события есть запись в журнале, preview сообщения, test marker, получатель, переменные и явный признак, что отправка заблокирована.</p>
+    </aside>
+  </section>
+
+  <section class="stats">
+    <div class="metric"><b>8</b><span>событий должны пройти через no-send журнал</span></div>
+    <div class="metric red"><b>0</b><span>реальных писем, push или SMS разрешено</span></div>
+    <div class="metric yellow"><b>4</b><span>роли получают статусы: клиент, эксперт, support, админ</span></div>
+    <div class="metric red"><b>STOP</b><span>если событие ушло реальным каналом</span></div>
+  </section>
+
+  <section class="doc">
+    <h2>No-send матрица контрольного заказа</h2>
+    <div class="note"><b>Правило QA:</b> если событие сработало, но нет preview или no-send marker, это не PASS. Если письмо ушло реально, тест останавливается и задача возвращается Игорю как production-risk.</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Событие</th><th>Кому должно быть адресовано</th><th>Что должно быть в preview</th><th>Где искать proof</th><th>PASS</th><th>WARN</th><th>STOP</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><b>order_created</b></td><td>Клиент, админ</td><td>Номер заказа, услуга, цена, валюта, test marker.</td><td>Event log, карточка заказа, preview клиентского письма.</td><td><span class="status green">event + preview + no-send</span></td><td><span class="status yellow">event есть, preview неполный</span></td><td><span class="status red">нет event или письмо ушло</span></td></tr>
+          <tr><td>2</td><td><b>payment_test_success</b></td><td>Клиент, админ</td><td>Статус test/sandbox/mock, сумма, отсутствие real charge.</td><td>Order/payment log, preview, admin order.</td><td><span class="status green">test payment зафиксирован</span></td><td><span class="status yellow">статус виден не везде</span></td><td><span class="status red">есть риск real payment</span></td></tr>
+          <tr><td>3</td><td><b>question_submitted</b></td><td>Клиент, админ, очередь исполнителей</td><td>Текст вопроса, язык, order id, service/session id.</td><td>Event log, admin consultation card, preview.</td><td><span class="status green">вопрос связан с заказом</span></td><td><span class="status yellow">не хватает языка/категории</span></td><td><span class="status red">вопрос потерял order/session</span></td></tr>
+          <tr><td>4</td><td><b>expert_assigned</b></td><td>Эксперт/агент, админ</td><td>Исполнитель, срок ответа, вопрос, ссылка на задачу.</td><td>Assignment log, workspace эксперта, preview.</td><td><span class="status green">исполнитель видит задачу</span></td><td><span class="status yellow">задача есть, но контекст неполный</span></td><td><span class="status red">исполнитель не видит задачу</span></td></tr>
+          <tr><td>5</td><td><b>answer_sent</b></td><td>Клиент, админ</td><td>Статус ответа, ссылка/экран результата, имя/анкета эксперта, session id.</td><td>Client result, admin chat/session, preview.</td><td><span class="status green">ответ доставлен в интерфейсе</span></td><td><span class="status yellow">preview неполный</span></td><td><span class="status red">ответ не виден клиенту</span></td></tr>
+          <tr><td>6</td><td><b>support_ticket_created</b></td><td>Support, админ</td><td>Причина обращения, order id, session id, клиент, эксперт, статус.</td><td>Support queue, event log, ticket card.</td><td><span class="status green">тикет связан с заказом</span></td><td><span class="status yellow">не хватает контекста</span></td><td><span class="status red">тикет не создается</span></td></tr>
+          <tr><td>7</td><td><b>support_review_needed</b></td><td>Support, админ, при необходимости PM</td><td>Причина review, дедлайн решения, ответственный, текущий статус.</td><td>Support ticket, event log, admin dashboard.</td><td><span class="status green">review виден и назначен</span></td><td><span class="status yellow">нет ответственного/срока</span></td><td><span class="status red">жалоба теряется</span></td></tr>
+          <tr><td>8</td><td><b>consultation_closed</b></td><td>Клиент, эксперт/агент, админ</td><td>Итоговый статус, закрытие, quality marker, test marker, начисление/без выплаты.</td><td>Order/session status, event log, compensation preview.</td><td><span class="status green">закрытие зафиксировано</span></td><td><span class="status yellow">нет quality/compensation preview</span></td><td><span class="status red">статус не закрывается</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="doc">
+    <h2>Минимальный формат записи в журнале</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Поле</th><th>Зачем нужно</th><th>Пример для test order</th></tr></thead>
+        <tbody>
+          <tr><td>test_run_id</td><td>Отделить тест от реальных заказов и метрик.</td><td>nebula-test-order-YYYYMMDD-001</td></tr>
+          <tr><td>event_type</td><td>Понять, какой шаг route сработал.</td><td>question_submitted</td></tr>
+          <tr><td>recipient_role</td><td>Проверить, кому должно было уйти сообщение.</td><td>client / expert / admin / support</td></tr>
+          <tr><td>recipient_address_masked</td><td>Не раскрывать личные данные, но доказать адресацию.</td><td>client_test@***</td></tr>
+          <tr><td>template_key</td><td>Связать событие с шаблоном уведомления.</td><td>nebula.question.submitted</td></tr>
+          <tr><td>payload_preview</td><td>Проверить переменные без отправки.</td><td>order_id, session_id, service_name, deadline</td></tr>
+          <tr><td>send_mode</td><td>Доказать, что реальная отправка отключена.</td><td>no_send / preview_only / sandbox</td></tr>
+          <tr><td>delivery_status</td><td>Отделить безопасную блокировку от ошибки.</td><td>blocked_by_test_mode</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="doc">
+    <h2>Что делать при FAIL/WARN</h2>
+    <div class="cards">
+      <div class="card"><strong>Если нет события</strong><span>Игорю: какое действие не создало event, какой order/session id, какой экран и какой ожидаемый event_type.</span></div>
+      <div class="card"><strong>Если нет preview</strong><span>Игорю: добавить preview payload до фактической отправки, иначе QA не может проверить переменные безопасно.</span></div>
+      <div class="card"><strong>Если письмо ушло реально</strong><span>STOP: остановить тест, зафиксировать канал/получателя/время, вернуть как production-risk.</span></div>
+      <div class="card"><strong>Если не хватает переменных</strong><span>WARN: зафиксировать недостающие поля, но не блокировать весь route, если клиент/эксперт не потеряли статус.</span></div>
+    </div>
+  </section>
+
+  <section class="doc">
+    <h2>Связанные материалы</h2>
+    <div class="cards">
+      <a href="artifacts/NOSEND_EVENT_PROOF_MATRIX_2026_06_05.csv"><strong>CSV no-send матрицы</strong><span>Табличный источник событий, получателей, proof и stop-условий.</span></a>
+      <a href="pm-test-order-fixture-pack.html"><strong>PM-фикстуры test order</strong><span>Тестовая услуга, вопрос, support-сценарий и список событий.</span></a>
+      <a href="test-order-readiness-gate.html"><strong>Gate готовности</strong><span>No-send является красным gate до подтверждения.</span></a>
+      <a href="qa-test-order-execution-brief.html"><strong>QA-пакет</strong><span>Маршрут тестировщика, где no-send проверяется как отдельный шаг.</span></a>
+      <a href="email-notifications-handoff.html"><strong>Пакет Игорю: email и уведомления</strong><span>Что нужно реализовать или подтвердить на стороне сайта.</span></a>
+    </div>
+  </section>
+</main>
+<script src="../assets/panel-ux.js"></script>
+</body>
+</html>
