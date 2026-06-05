@@ -27,7 +27,7 @@
     <div class="hero-main">
       <div class="eyebrow">public QA report shell · для Игоря и Заказчика</div>
       <h1>Публичный контейнер отчета по контрольному заказу</h1>
-      <p>Это не доказательство выполнения теста. Это заранее подготовленный формат результата, который будет заполнен после runtime QA: order id, session id, скрины, логи, PASS/WARN/STOP и задачи Игорю.</p>
+      <p>Это не доказательство выполнения теста. Это заранее подготовленный формат результата, который будет заполнен после runtime QA: order id, session id, PF01-PF12, скрины, логи, PASS/WARN/STOP и задачи Игорю.</p>
     </div>
     <aside class="side">
       <b>Где будет жить итог</b>
@@ -39,26 +39,21 @@
 
   <section class="doc">
     <h2>Правило именования evidence</h2>
-    <div class="note"><b>Зачем это нужно:</b> если QA назовет скрины случайно, Игорь и PM потеряют связь между шагом, доказательством и дефектом. Поэтому evidence именуется по маршруту проверки.</div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>#</th><th>Шаг</th><th>Имя evidence</th><th>Что должно быть видно</th><th>Кому важно</th><th>Статус до теста</th></tr></thead>
-        <tbody>
-          <tr><td>01</td><td>Оффер</td><td>01-client-offer.png</td><td>Услуга, цена, срок, CTA, ограничения.</td><td>PM, Антон, Игорь</td><td><span class="status red">пусто</span></td></tr>
-          <tr><td>02</td><td>Test checkout success</td><td>02-client-order-success.png</td><td>Успех заказа, test marker, отсутствие real charge.</td><td>PM, Игорь, QA</td><td><span class="status red">пусто</span></td></tr>
-          <tr><td>03</td><td>Админский заказ</td><td>03-admin-order-card.png</td><td>Order id, сумма, валюта, клиент, статус, test marker.</td><td>Игорь, PM</td><td><span class="status red">пусто</span></td></tr>
-          <tr><td>04</td><td>Вопрос клиента</td><td>04-client-question-submitted.png</td><td>Текст вопроса, язык, связь с заказом.</td><td>PM, QA</td><td><span class="status red">пусто</span></td></tr>
-          <tr><td>05</td><td>Карточка консультации</td><td>05-admin-service-session.png</td><td>Session id, order id, вопрос, статус, срок.</td><td>Игорь, PM</td><td><span class="status red">пусто</span></td></tr>
-          <tr><td>06</td><td>Назначение исполнителя</td><td>06-admin-assignment.png</td><td>Эксперт/агент, статус назначения, история.</td><td>Игорь, QA</td><td><span class="status red">пусто</span></td></tr>
-          <tr><td>07</td><td>Рабочее место исполнителя</td><td>07-expert-task-workspace.png</td><td>Вопрос, срок, контекст, поле ответа.</td><td>Игорь, PM, эксперт</td><td><span class="status red">пусто</span></td></tr>
-          <tr><td>08</td><td>Ответ клиенту</td><td>08-client-answer-visible.png</td><td>Ответ, статус, связь с консультацией.</td><td>PM, QA, Игорь</td><td><span class="status red">пусто</span></td></tr>
-          <tr><td>09</td><td>No-send события</td><td>09-event-log-nosend.png</td><td>Event type, preview, получатель, no-send marker.</td><td>Игорь, QA</td><td><span class="status red">пусто</span></td></tr>
-          <tr><td>10</td><td>Support case</td><td>10-support-ticket.png</td><td>Жалоба, order/session/chat/expert, статус решения.</td><td>Support, Игорь, PM</td><td><span class="status red">пусто</span></td></tr>
-          <tr><td>11</td><td>Quality/compensation</td><td>11-quality-compensation-preview.png</td><td>Quality note, тестовое начисление, отсутствие реальной выплаты.</td><td>PM, Игорь</td><td><span class="status red">пусто</span></td></tr>
-          <tr><td>12</td><td>Итог QA</td><td>12-qa-summary.png</td><td>PASS/WARN/STOP, блокеры, задачи Игорю, rollback.</td><td>Все</td><td><span class="status red">пусто</span></td></tr>
-        </tbody>
-      </table>
-    <a href="qa-trello-ready-test-order-task.html"><strong>Постановка QA для Trello</strong><span>Какая задача приведет к заполнению этого report shell.</span></a>
+<div class="note"><b>Зачем это нужно:</b> каждый скрин/лог должен закрывать конкретный PF. Если evidence назван случайно, Игорь и PM теряют связь между шагом, доказательством и дефектом.</div>
+<div class="matrix"><table><thead><tr><th>PF</th><th>Шаг</th><th>Файл evidence</th><th>Что должно быть видно</th><th>Кому нужно</th><th>Статус</th></tr></thead><tbody>
+<tr><td>PF00</td><td>Оффер услуги</td><td>01-client-offer.png</td><td>Услуга, цена, срок, CTA, ограничения.</td><td>PM, Антон, Заказчик</td><td><span class="status red">пусто</span></td></tr>
+<tr><td>PF01</td><td>Test checkout success</td><td>02-client-order-success.png</td><td>Успех заказа, test marker, no real charge, order id.</td><td>PM, Игорь, QA</td><td><span class="status red">пусто</span></td></tr>
+<tr><td>PF02</td><td>Admin order</td><td>03-admin-order-card.png</td><td>Order id, amount, currency, client, status, test marker.</td><td>Игорь, PM</td><td><span class="status red">пусто</span></td></tr>
+<tr><td>PF03</td><td>Вопрос клиента</td><td>04-client-question-submitted.png</td><td>Текст вопроса, язык, связь с заказом.</td><td>PM, QA</td><td><span class="status red">пусто</span></td></tr>
+<tr><td>PF04</td><td>Карточка консультации</td><td>05-admin-service-session.png</td><td>Session/task id, order id, question, status, deadline.</td><td>PM, Игорь</td><td><span class="status red">пусто</span></td></tr>
+<tr><td>PF05</td><td>Назначение исполнителя</td><td>06-admin-assignment.png</td><td>Эксперт/агент, статус назначения, история.</td><td>Игорь, QA</td><td><span class="status red">пусто</span></td></tr>
+<tr><td>PF06</td><td>Рабочее место</td><td>07-expert-task-workspace.png</td><td>Вопрос, deadline, контекст, поле ответа.</td><td>Игорь, PM, эксперт</td><td><span class="status red">пусто</span></td></tr>
+<tr><td>PF07</td><td>Ответ клиенту</td><td>08-client-answer-visible.png</td><td>Ответ, статус, consultation binding.</td><td>PM, QA, Игорь</td><td><span class="status red">пусто</span></td></tr>
+<tr><td>PF08</td><td>No-send события</td><td>09-event-log-nosend.png</td><td>Event type, preview, получатель, no-send marker.</td><td>Игорь, QA</td><td><span class="status red">пусто</span></td></tr>
+<tr><td>PF09</td><td>Support case</td><td>10-support-ticket.png</td><td>Жалоба, order/session/chat/expert, decision status.</td><td>Support, Игорь, PM</td><td><span class="status red">пусто</span></td></tr>
+<tr><td>PF10-PF11</td><td>Язык, качество, начисление, after-state</td><td>11-language-quality-compensation.png</td><td>Language marker, quality note, test compensation, rollback note.</td><td>PM, Игорь, QA</td><td><span class="status red">пусто</span></td></tr>
+<tr><td>PF12</td><td>Итог QA</td><td>12-qa-summary.png</td><td>PASS/WARN/STOP, блокеры, задачи Игорю, rollback.</td><td>Все</td><td><span class="status red">пусто</span></td></tr>
+</tbody></table></div><a href="qa-trello-ready-test-order-task.html"><strong>Постановка QA для Trello</strong><span>Какая задача приведет к заполнению этого report shell.</span></a>
 </div></section>
 
   <section class="doc">
@@ -75,7 +70,7 @@
     <h2>Связанные материалы</h2>
     <div class="cards">
       <a href="https://cutthreat.github.io/confideline/web/qa-reports/nebula-test-order-runtime-qa-shell-2026-06-05/"><strong>Публичный QA-report shell</strong><span>Страница, которую можно дать Игорю и Заказчику как будущий контейнер результата.</span></a>
-      <a href="artifacts/TEST_ORDER_RUNTIME_EVIDENCE_NAMING_2026_06_05.csv"><strong>CSV evidence naming</strong><span>Табличная версия имен скринов и ожидаемых proof.</span></a>
+      <a href="test-order-proof-capture-sheet.html"><strong>Лист фактов PF01-PF12</strong><span>Главный источник фактов для отчета.</span></a><a href="artifacts/TEST_ORDER_RUNTIME_EVIDENCE_NAMING_2026_06_05.csv"><strong>CSV evidence naming</strong><span>Табличная версия имен скринов и ожидаемых proof.</span></a>
       <a href="test-order-runtime-qa-report-template.html"><strong>Шаблон Blue Panel</strong><span>Внутренняя форма приемки test order.</span></a>
       <a href="qa-test-order-execution-brief.html"><strong>QA-пакет</strong><span>Как пройти маршрут и вернуть результат.</span></a>
       <a href="nosend-event-proof-matrix.html"><strong>No-send proof</strong><span>Как проверить уведомления без реальной отправки.</span></a>
@@ -86,5 +81,6 @@
 <script src="../assets/panel-ux.js"></script>
 </body>
 </html>
+
 
 
