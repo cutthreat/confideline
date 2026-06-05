@@ -1,0 +1,12 @@
+ID;Шаг;Кто ведет;Что должно произойти;Что принимает PM;Связь с proof;STOP-условие;Ссылка
+"T0";"Входные данные";"PM + Игорь + QA";"Определены тестовый клиент, услуга, вопрос, исполнитель, роли, no-send и rollback";"Заполненный fixture sheet";"готовит PF01-PF12";"Нет safe/test/no-send boundary";"test-order-fixture-readiness-sheet.html"
+"T1";"Заказ";"Игорь";"Создан заказ без реального списания";"order id, admin screenshot, safe marker";"PF01-PF02";"Есть риск реального списания или нет order id";"igor-test-order-acceptance-contract.html"
+"T2";"Вопрос";"Игорь + QA";"Вопрос клиента связан с заказом и сессией/услугой";"question id, order id, client id, language";"PF03";"Вопрос живет отдельно от заказа";"test-order-screen-contract.html"
+"T3";"Админка";"Игорь + QA";"Админ видит заказ как один управляемый процесс";"admin route, timeline, status, fields";"PF04";"Админ собирает данные вручную из разных мест";"admin-control-order-gate.html"
+"T4";"Назначение";"PM + Ксения + Игорь";"Назначен минимум один допущенный исполнитель";"admission verdict, performer id, SLA, assignment log";"PF05";"Исполнитель не допущен или нет assignment history";"first-five-expert-admission-gate.html"
+"T5";"Рабочее место";"Игорь + QA";"Исполнитель открывает задачу и видит рабочий контекст";"скрин роли исполнителя, статус задачи, поле ответа";"PF06";"Ответ можно дать только вне системы";"expert-runtime-proof-register.html"
+"T6";"Ответ";"QA + эксперт/агент";"Ответ отправлен и виден клиенту и админу";"answer id, transcript, client/admin screenshots";"PF07";"Нет delivery proof или transcript";"qa-test-order-execution-brief.html"
+"T7";"No-send";"Игорь + QA";"События созданы, но реальные письма не отправлены";"event log, preview, no-send marker";"PF08";"Ушло реальное письмо/сообщение или нет лога";"notification-event-nosend-gate.html"
+"T8";"Support";"Support + QA + PM";"Один проблемный сценарий создан, решен и закрыт";"case id, reason, owner, decision, closed state";"PF09";"Кейс не связан с заказом или не имеет владельца";"support-failure-state-gate.html"
+"T9";"Язык/качество/начисление";"PM + Игорь + QA";"Фиксируются language marker, quality note и compensation preview без выплаты";"скрин полей или explicit out-of-scope note";"PF10-PF11";"Если влияет на клиента и не зафиксировано";"language-translation-ops-control.html"
+"T10";"QA verdict";"QA + PM";"Публичный отчет фиксирует итог теста";"PASS/WARN/STOP, screenshots, defects, next owner";"PF12";"Нет публичного отчета";"test-order-runtime-public-report-shell.html"
