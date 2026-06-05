@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Backend/admin runtime gaps · Nebula test order</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .top-nav{position:sticky;top:0;z-index:20;display:flex;gap:10px;flex-wrap:wrap;margin:-4px 0 18px;padding:12px;background:rgba(250,247,239,.94);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:22px;box-shadow:0 12px 30px rgba(58,43,29,.08)}
+    .top-nav a{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);text-decoration:none;font:900 12px Manrope,Verdana,sans-serif;letter-spacing:.03em}
+    .top-nav a.primary{background:#1f6b49;color:#fff;border-color:#1f6b49}.hero{display:grid;grid-template-columns:1.08fr .92fr;gap:16px;margin-bottom:16px}.hero-main{background:linear-gradient(135deg,#17372f,#1f6b49);border-radius:30px;padding:26px;color:#fff;box-shadow:var(--shadow)}.hero-main h1,.hero-main p{color:#fff}.hero-main h1{font-size:46px;line-height:1;margin:8px 0 12px}.side{border:1px solid var(--line);border-radius:30px;background:#fff8df;padding:18px}.side b{display:block;color:#1f6b49;margin:12px 0 5px}.side p{color:var(--muted)}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:16px 0}.metric{border:1px solid var(--line);border-radius:20px;background:#fff;padding:14px}.metric b{font-size:30px;display:block;color:#1f6b49}.metric.red b{color:#8d1d12}.metric.yellow b{color:#745000}
+    .doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:22px;box-shadow:var(--shadow);margin-top:16px}.note{background:#fff8df;border:1px solid var(--line);border-radius:18px;padding:14px;margin:16px 0;line-height:1.55}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:22px;background:#fff;margin-top:14px}table{width:100%;min-width:1520px;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{font:900 10px Manrope,Verdana,sans-serif;text-transform:uppercase;background:#fbfaf7;color:#514a61}td:first-child{font-weight:900;color:#1f6b49}.status{display:inline-flex;border-radius:999px;padding:6px 9px;font:900 10px Manrope,Verdana,sans-serif;white-space:nowrap}.green{background:#dff5e8;color:#176032}.yellow{background:#fff0c0;color:#745000}.red{background:#ffe1df;color:#8d1d12}.gray{background:#eef0f1;color:#4e555b}.path{font-family:Consolas,monospace;font-size:12px;color:#514a61;background:#fbfaf7;border:1px solid var(--line);border-radius:10px;padding:4px 6px;display:inline-block}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:14px}.cards a,.card{display:block;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:14px;text-decoration:none;color:var(--ink)}.cards strong,.card strong{display:block;color:#1f6b49;margin-bottom:5px}.cards span,.card span{display:block;color:var(--muted);font-size:13px;line-height:1.45}@media(max-width:980px){.hero{grid-template-columns:1fr}.hero-main h1{font-size:34px}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <nav class="top-nav" aria-label="Навигация">
+    <a href="../index.html">Главная</a>
+    <a href="backend-code-evidence-map.html">Backend факты</a>
+    <a href="confideline-admin-route-evidence-map.html">Админка</a>
+    <a class="primary" href="backend-admin-runtime-gap-matrix.html">Runtime gaps</a>
+    <a href="test-order-runtime-cockpit.html">Test order</a>
+    <a href="igor-gate-red-conditions-handoff.html">Игорю</a>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-main">
+      <div class="eyebrow">Backend/admin · что мешает доказать test order</div>
+      <h1>Разрывы между текущим backend и платной консультацией Nebula</h1>
+      <p>Эта страница показывает, какие части Confideline уже найдены как кодовая база, а какие связи нужно подтвердить или внедрить, чтобы контрольный заказ стал доказательством работы сервиса.</p>
+    </div>
+    <aside class="side">
+      <b>PM-вывод</b>
+      <p>Backend не пустой: есть заказы, сообщения, админский чат, уведомления и жалобы. Но это не доказывает lifecycle платной консультации, пока один test order не пройдет весь маршрут.</p>
+      <b>Как использовать</b>
+      <p>Игорю отдавать не “сделать backend”, а конкретные связки: order → question → service session → assignment → chat → events → support → QA proof.</p>
+    </aside>
+  </section>
+
+  <section class="stats">
+    <div class="metric"><b>8</b><span>проверенных code-файлов/зон найдены точечно</span></div>
+    <div class="metric yellow"><b>5</b><span>существующих кирпичей можно переиспользовать</span></div>
+    <div class="metric red"><b>7</b><span>runtime-связей еще не доказаны</span></div>
+    <div class="metric red"><b>1</b><span>главный proof: контрольный заказ</span></div>
+  </section>
+
+  <section class="doc">
+    <h2>Точечная проверка текущего кода</h2>
+    <div class="note"><b>Источник:</b> текущая локальная база Confideline Yii2: <span class="path">Confideline/Chat/youdate-2.0.2-yii2/Source/youdate_extracted/application</span>. Это code evidence, а не runtime proof.</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Зона</th><th>Факт текущего кода</th><th>Что это дает</th><th>Что не доказывает</th><th>PM-статус</th></tr></thead>
+        <tbody>
+          <tr><td>Order</td><td><span class="path">models/Order.php</span> найден; есть статусы NEW, IN_PROGRESS, COMPLETED, CANCELLED; есть currency, total_price, payment_method, payment_id, data.</td><td>Есть база заказа и платежного состояния.</td><td>Не доказано, что order превращается в консультацию с вопросом, экспертом, SLA и ответом.</td><td><span class="status yellow">кирпич есть</span></td></tr>
+          <tr><td>Admin order</td><td><span class="path">modules/admin/controllers/OrderController.php</span> найден.</td><td>Есть админская зона заказа.</td><td>Не доказано, что из карточки заказа видны question/session/assignment/chat/support.</td><td><span class="status yellow">видимость частичная</span></td></tr>
+          <tr><td>Message / Conversation</td><td><span class="path">models/Message.php</span> и <span class="path">models/Conversation.php</span> найдены.</td><td>Есть база сообщений и диалогов.</td><td>Не доказана связь диалога с конкретной оплаченной консультацией.</td><td><span class="status yellow">чатовый кирпич есть</span></td></tr>
+          <tr><td>Admin message actions</td><td><span class="path">modules/admin/controllers/MessageController.php</span> найден; есть actionChat, actionConversations, actionMessages, actionSend, actionTranslate, actionDelete.</td><td>Есть админский чат, отправка и перевод.</td><td>Не доказано, что эксперт/агент видит именно назначенную service task.</td><td><span class="status yellow">нужен role proof</span></td></tr>
+          <tr><td>Notifications</td><td><span class="path">managers/NotificationManager.php</span> найден; email отправляется через appMailer при включенной настройке; есть исключение для user.tag = fake.</td><td>Есть база уведомлений и потенциальный safe-трюк для тестовых пользователей.</td><td>Не доказан общий no-send preview/event log по событиям консультации.</td><td><span class="status red">нужен no-send proof</span></td></tr>
+          <tr><td>Reports</td><td><span class="path">models/Report.php</span> и <span class="path">controllers/ReportController.php</span> найдены.</td><td>Есть база жалоб/репортов.</td><td>Не доказана support-карточка, связанная с order/session/chat/expert и решением.</td><td><span class="status red">support gap</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="doc">
+    <h2>Runtime-gap матрица для контрольного заказа</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Шаг QA</th><th>Что уже есть как база</th><th>Какой backend/admin разрыв</th><th>Что должен подтвердить/сделать Игорь</th><th>Что будет proof</th><th>Статус</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Оффер и checkout</td><td>Order и платежные поля существуют.</td><td>Нет доказанного test/sandbox/mock заказа без реального списания.</td><td>Подтвердить safe test order и test marker.</td><td>Order id, сумма/валюта, статус test, отсутствие real charge.</td><td><span class="status red">блокер QA</span></td></tr>
+          <tr><td>2</td><td>Order → question</td><td>Order может хранить data; messages есть.</td><td>Не доказана сущность вопроса, связанная с order/service.</td><td>Связать вопрос клиента с order_id, service/session id, языком и категорией.</td><td>Скрин клиента + admin order/question с одним id.</td><td><span class="status red">блокер QA</span></td></tr>
+          <tr><td>3</td><td>Question → service session</td><td>Есть order и admin order.</td><td>Не доказана единая карточка консультации/session lifecycle.</td><td>Показать или создать service_session/task: order, question, client, status, deadline.</td><td>Admin session card с order/question/status/deadline.</td><td><span class="status red">главный gap</span></td></tr>
+          <tr><td>4</td><td>Assignment</td><td>Есть user/admin база и admin message actions.</td><td>Не доказано назначение эксперта/агента на консультацию.</td><td>Сделать назначение исполнителя и историю изменения.</td><td>Скрин assignment в админке и workspace исполнителя.</td><td><span class="status red">блокер QA</span></td></tr>
+          <tr><td>5</td><td>Expert/agent workspace</td><td>Admin MessageController имеет chat/send/translate.</td><td>Не доказано, что исполнитель видит назначенную задачу, срок, вопрос и отвечает в нужный чат.</td><td>Связать workspace с service_session и ролью исполнителя.</td><td>Скрин исполнителя: вопрос, deadline, answer field, отправленный ответ.</td><td><span class="status red">блокер запуска</span></td></tr>
+          <tr><td>6</td><td>No-send events</td><td>NotificationManager и appMailer есть; fake tag может блокировать email.</td><td>Нет доказанного event log/preview/no-send marker по событиям consultation lifecycle.</td><td>Показать журнал событий и preview без реальной отправки.</td><td>No-send event log для order/question/assignment/answer/support/closed.</td><td><span class="status red">production-risk</span></td></tr>
+          <tr><td>7</td><td>Support/problem state</td><td>Report/Block база есть.</td><td>Жалоба как platform report не равна support ticket по платной консультации.</td><td>Связать тикет/обращение с order/session/chat/expert и статусом решения.</td><td>Support ticket с контекстом заказа и решением.</td><td><span class="status red">support gap</span></td></tr>
+          <tr><td>8</td><td>Quality/compensation</td><td>User/balance/order база есть.</td><td>Не доказано тестовое начисление и quality note после консультации.</td><td>Показать preview начисления без реальной выплаты и quality marker.</td><td>Quality/compensation preview по test session.</td><td><span class="status yellow">после основного route</span></td></tr>
+          <tr><td>9</td><td>Admin timeline</td><td>Есть admin order, messages, logs.</td><td>Не доказан единый timeline событий консультации.</td><td>Показать timeline: created, paid/test, question, assigned, answered, support, closed.</td><td>Admin event/timeline screen или отчет со связанными логами.</td><td><span class="status yellow">для управляемости</span></td></tr>
+          <tr><td>10</td><td>Rollback/test data</td><td>Order имеет data; тестовые пользователи могут быть tagged.</td><td>Не доказана изоляция test data от продаж, выплат, аналитики и support.</td><td>Добавить/показать test_run_id и фильтр test data.</td><td>Скрин test marker/filter + rollback rule.</td><td><span class="status yellow">до QA желательно</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="doc">
+    <h2>Решение PM</h2>
+    <div class="cards">
+      <div class="card"><strong>Не переписывать с нуля</strong><span>Order, messages, admin chat, notifications и reports уже есть как база.</span></div>
+      <div class="card"><strong>Не считать готовым</strong><span>Ни один code-факт не заменяет test order runtime proof.</span></div>
+      <div class="card"><strong>Главная задача Игорю</strong><span>Связать существующие кирпичи в единый route платной консультации.</span></div>
+      <div class="card"><strong>Главная задача QA</strong><span>Пройти один заказ и заполнить публичный QA-report shell реальными evidence.</span></div>
+    </div>
+  </section>
+
+  <section class="doc">
+    <h2>Связанные материалы</h2>
+    <div class="cards">
+      <a href="artifacts/BACKEND_ADMIN_RUNTIME_GAP_MATRIX_2026_06_05.csv"><strong>CSV runtime-gap матрицы</strong><span>Табличный источник разрывов backend/admin по test order.</span></a>
+      <a href="backend-code-evidence-map.html"><strong>Backend-карта фактов</strong><span>Что найдено в коде Confideline.</span></a>
+      <a href="confideline-admin-route-evidence-map.html"><strong>Карта админки</strong><span>Какие admin zones уже есть и где нужен service_session.</span></a>
+      <a href="igor-gate-red-conditions-handoff.html"><strong>Игорю: красные условия gate</strong><span>Что закрыть до QA test order.</span></a>
+      <a href="test-order-runtime-public-report-shell.html"><strong>Публичный QA-report shell</strong><span>Куда попадет фактический proof после теста.</span></a>
+      <a href="nosend-event-proof-matrix.html"><strong>No-send proof</strong><span>Как проверять уведомления без реальной отправки.</span></a>
+    </div>
+  </section>
+</main>
+<script src="../assets/panel-ux.js"></script>
+</body>
+</html>
