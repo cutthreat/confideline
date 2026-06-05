@@ -2,17 +2,55 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Аудит ссылок Blue Panel · 2026-06-05</title>
-  <link rel="stylesheet" href="../style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Аудит ссылок Blue Panel</title>
   <style>
-    .doc{background:#fff;border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:var(--shadow)}.lead{font-size:18px;color:var(--muted);max-width:1040px}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:16px 0}.metric{border:1px solid var(--line);border-radius:20px;background:#faf7ff;padding:14px}.metric b{display:block;font-size:30px;color:#1f6b49}.metric.green b{color:#176032}.metric.yellow b{color:#745000}.note{border:1px solid var(--line);border-radius:20px;background:#fff8df;padding:15px;margin:14px 0;line-height:1.55}.matrix{overflow:auto;border:1px solid var(--line);border-radius:22px;background:#fff;margin-top:16px}table{width:100%;min-width:1180px;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:11px;text-align:left;vertical-align:top}th{font:900 10px Manrope,Verdana,sans-serif;text-transform:uppercase;background:#fbfaf7;color:#514a61}.status{display:inline-flex;border-radius:999px;padding:6px 9px;font:900 10px Manrope,Verdana,sans-serif;text-transform:uppercase;white-space:nowrap}.status.green{background:#dff5e8;color:#176032}.status.yellow{background:#fff0c0;color:#745000}.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;margin-top:16px}.links a{display:block;border:1px solid var(--line);border-radius:18px;background:#faf7ff;padding:14px;text-decoration:none;color:var(--ink)}.links strong{display:block;color:#1f6b49;margin-bottom:4px}.links span{display:block;color:var(--muted);font-size:13px}
+    :root{--bg:#f5efe4;--ink:#241f26;--muted:#6b6270;--green:#176b47;--line:#dacbb8;--card:#fffaf2;--soft:#f7f2fb;}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 Georgia,"Times New Roman",serif}main{max-width:1180px;margin:0 auto;padding:34px 22px 56px}.top{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:24px}.crumb{color:var(--green);font-weight:700;text-decoration:none}.hero,.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 14px 40px rgba(38,28,12,.06)}h1{font-size:48px;line-height:.96;margin:10px 0 16px}h2{font-size:28px;margin:0 0 14px}.lead{font-size:20px;color:var(--muted);max-width:760px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}.metric{background:var(--soft);border:1px solid var(--line);border-radius:18px;padding:18px}.metric b{display:block;font-size:34px;color:var(--green);line-height:1}.metric span{display:block;margin-top:7px;color:var(--muted)}.status{display:inline-flex;align-items:center;gap:8px;border:1px solid #a6d8bd;background:#e9f8ef;color:var(--green);border-radius:999px;padding:9px 13px;font-weight:700}.cards{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.row{display:grid;grid-template-columns:220px 1fr 110px;gap:16px;border-top:1px solid var(--line);padding:13px 0}.row:first-child{border-top:0}.ok{color:var(--green);font-weight:700}.muted{color:var(--muted)}a.tile{display:block;text-decoration:none;color:inherit;border:1px solid var(--line);border-radius:18px;padding:16px;background:#fff;transition:.15s ease}a.tile:hover{transform:translateY(-2px);border-color:var(--green);box-shadow:0 12px 28px rgba(23,107,71,.12)}@media(max-width:850px){.top,.cards,.grid{grid-template-columns:1fr;display:grid}h1{font-size:36px}.row{grid-template-columns:1fr}}
   </style>
 </head>
-<body><main class="wrap"><a href="../index.html">← Главная Blue Panel</a><section class="doc"><div class="eyebrow">Blue Panel · полный link audit · 2026-06-05</div><h1>Аудит ссылок Blue Panel</h1><p class="lead">Это служебная проверка всей локальной Blue Panel: открываются ли внутренние переходы на существующие файлы и нет ли скрытых 404 внутри панели. Нужна, чтобы Заказчик, Игорь, Ксения, Антон и QA не попадали на пустые страницы при работе с доказательствами.</p>
-<div class="stats"><div class="metric green"><b>138</b><span>HTML-страниц проверено</span></div><div class="metric green"><b>2019</b><span>внутренних ссылок проверено</span></div><div class="metric green"><b>0</b><span>битых внутренних ссылок</span></div><div class="metric"><b>541</b><span>обычных внешних ссылок найдено</span></div><div class="metric yellow"><b>8</b><span>protocol-relative внешних ссылок Google</span></div></div>
-<div class="note"><b>Вывод PM:</b> локальная Blue Panel сейчас не имеет битых внутренних HTML-ссылок на файлы. Ранее найденные “missing” оказались внешними protocol-relative ресурсами Google Forms вида <code>//ssl.gstatic.com/...</code> внутри экспортированных учебных HTML, а не сломанными страницами Blue Panel.</div>
-<h2>Результат проверки</h2><div class="matrix"><table><thead><tr><th>Проверка</th><th>Факт</th><th>Статус</th><th>PM-вывод</th></tr></thead><tbody><tr><td>Все HTML-файлы панели</td><td>Проверено 138 файлов в <code>service-blueprint-v2</code>.</td><td><span class="status green">готово</span></td><td>Проверка охватила не только главный экран, а всю локальную HTML-панель.</td></tr><tr><td>Внутренние относительные ссылки</td><td>Проверено 2019 ссылок на локальные файлы.</td><td><span class="status green">0 broken</span></td><td>Внутренние переходы ведут на существующие файлы.</td></tr><tr><td>Обычные внешние ссылки</td><td>Найдено 541 ссылок <code>http/https/mailto/tel/javascript</code>.</td><td><span class="status yellow">не runtime-audit</span></td><td>Этот проход не проверяет доступность всех внешних Google/Trello/Figma/QA URL; они контролируются отдельными source maps.</td></tr><tr><td>Protocol-relative ресурсы Google</td><td>Найдено 8 ссылок <code>//ssl.gstatic.com/...</code> в экспортированных учебных HTML.</td><td><span class="status yellow">внешние ресурсы</span></td><td>Это внешние ресурсы Google Forms, не внутренний 404 Blue Panel. В следующем внешнем link audit их надо учитывать как external.</td></tr></tbody></table></div>
-<h2>Что эта проверка не доказывает</h2><div class="note"><p>Этот аудит не доказывает, что все внешние Google Docs, Trello, Figma и QA-ссылки доступны; не доказывает runtime работу сайта; не заменяет test order QA. Он доказывает только одно: внутри опубликованной структуры Blue Panel нет битых относительных переходов на HTML/CSV/локальные файлы.</p></div>
-<h2>Связь с PM-задачей</h2><div class="matrix"><table><thead><tr><th>Зачем это нужно</th><th>Что закрывает</th><th>Что дальше</th></tr></thead><tbody><tr><td>Заказчик не должен попадать на 404 внутри панели.</td><td>Качество навигации и доверие к мастер-плану.</td><td>После каждой крупной публикации повторять локальный link audit.</td></tr><tr><td>Игорь и QA должны открывать handoff/proof без поиска.</td><td>Передача задач и контроль результата.</td><td>Для внешних ссылок вести отдельную карту доступа и блокеров.</td></tr><tr><td>PM должен отличать внутренний 404 от закрытого внешнего источника.</td><td>Чистота доказательной базы.</td><td>Не смешивать Blue Panel link audit с Google/Trello/Figma access audit.</td></tr></tbody></table></div>
-<h2>Связанные материалы</h2><div class="links"><a href="artifacts/BLUE_PANEL_LINK_AUDIT_2026_06_05.csv"><strong>CSV аудита ссылок</strong><span>Табличная версия результатов полного прохода.</span></a><a href="pm-source-coverage-control.html"><strong>Покрытие источников PM</strong><span>Какие источники изучены, частично изучены или требуют доступа.</span></a><a href="pm-objective-completion-audit.html"><strong>Аудит PM-задачи</strong><span>Почему цель еще активна и что остается доказать.</span></a><a href="qa-evidence-runtime-gap-register.html"><strong>QA и runtime gap</strong><span>Почему link audit не заменяет test order QA.</span></a></div></section></main><script src="../assets/panel-ux.js"></script></body></html>
+<body>
+<main>
+  <div class="top">
+    <a class="crumb" href="../index.html">← Blue Panel</a>
+    <span class="status">Проверка пройдена: критичных дефектов ссылок нет</span>
+  </div>
+  <section class="hero">
+    <p class="muted">Обновлено: 05.06.2026</p>
+    <h1>Аудит ссылок и HTML-навигации Blue Panel</h1>
+    <p class="lead">Цель проверки — убрать сломанные переходы, обрезанные ссылки и вложенные кликабельные области, чтобы панель можно было читать и открывать без технического шума.</p>
+    <div class="grid">
+      <div class="metric"><b>176</b><span>HTML-страниц проверено</span></div>
+      <div class="metric"><b>3004</b><span>внутренних ссылок проверено</span></div>
+      <div class="metric"><b>501</b><span>внешняя ссылка учтена</span></div>
+      <div class="metric"><b>0</b><span>критичных дефектов найдено после правок</span></div>
+    </div>
+  </section>
+  <section class="cards">
+    <div class="card">
+      <h2>Что исправлено</h2>
+      <div class="row"><b>Главная страница</b><span>Удалена обрезанная строка ссылки во вложенных ресурсах мастер-плана.</span><span class="ok">Готово</span></div>
+      <div class="row"><b>Страница для Алексея</b><span>Удалены четыре обрезанные строки ссылок в блоках передачи и рабочих реестров.</span><span class="ok">Готово</span></div>
+      <div class="row"><b>Контроль запуска</b><span>Ссылка на отсутствующую страницу заменена на существующую страницу доказательной базы.</span><span class="ok">Готово</span></div>
+      <div class="row"><b>Вложенные клики</b><span>Карточки, где ссылка находилась внутри другой ссылки, разделены на отдельные кликабельные области.</span><span class="ok">Готово</span></div>
+    </div>
+    <div class="card">
+      <h2>Результат проверки</h2>
+      <div class="row"><b>Битые внутренние ссылки</b><span>Не найдено.</span><span class="ok">0</span></div>
+      <div class="row"><b>Обрезанные href/class</b><span>Не найдено.</span><span class="ok">0</span></div>
+      <div class="row"><b>Вложенные ссылки</b><span>Не найдено.</span><span class="ok">0</span></div>
+      <div class="row"><b>CSV-артефакт</b><span><a href="artifacts/BLUE_PANEL_LINK_AUDIT_2026_06_05.csv">Открыть таблицу проверки</a></span><span class="ok">Есть</span></div>
+    </div>
+  </section>
+  <section class="card" style="margin-top:18px">
+    <h2>Ключевые страницы после исправления</h2>
+    <div class="grid">
+      <a class="tile" href="../index.html"><b>Главная Blue Panel</b><br><span class="muted">Маршрут работы и мастер-план</span></a>
+      <a class="tile" href="alexey-master-plan.html"><b>Для Алексея</b><br><span class="muted">Короткий план без технического шума</span></a>
+      <a class="tile" href="launch-readiness-master-control.html"><b>Готовность запуска</b><br><span class="muted">Светофор по слоям запуска</span></a>
+      <a class="tile" href="test-order-handoff-bundle.html"><b>Контрольный заказ</b><br><span class="muted">Пакет передачи Игорю и QA</span></a>
+    </div>
+  </section>
+</main>
+</body>
+</html>
