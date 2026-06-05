@@ -1,0 +1,13 @@
+ID,Факт,Связанные данные,Что вернуть как proof,Accepted,Returned/STOP,Статус
+PAC01,Источник клиента сохранен,"source; medium; campaign; content; term или source_id","Скрин/event row где source связан с session_id","Канал можно связать с сессией","Скрин рекламы без session_id",ждем proof
+PAC02,Сессия связана с клиентом,"session_id; client_id; login/guest marker","Скрин/лог сохранения session после входа или checkout","Путь клиента не рвется","Клиент есть но неизвестна исходная сессия",ждем proof
+PAC03,Клиент связан с заказом,"client_id; order_id; created_at","Admin link/screenshot заказа с клиентом","Можно строить LP -> checkout -> order","Order отдельно от клиента",ждем proof
+PAC04,Purchase/order event создан,"event_name; event_id; timestamp; order_id; test marker","Event log или no-send/test analytics row","Purchase event существует и безопасен","Запись в базе без события или событие без order_id",ждем proof
+PAC05,Сумма и валюта известны,"value; currency; price_package; payment/test status","Скрин/лог value/currency внутри order/event","Revenue можно считать","Цена только в тексте оффера",ждем proof
+PAC06,Платежная граница безопасна,"test/sandbox/mock mode; provider placeholder; no real charge flag","Proof что списания нет и provider не задействован","QA может продолжать без платежного риска","Неясно был ли реальный charge",ждем proof
+PAC07,Заказ перешел в услугу,"service_session_id; consultation_id; question_id","Скрин order -> service_session -> question","Покупка связана с оказанием услуги","Purchase есть услуги нет",ждем proof
+PAC08,Исполнитель связан с заказом,"expert_id; agent_id; profile_id; assigned_at","Скрин назначения исполнителя/анкеты","Можно считать capacity и себестоимость","Ответ есть но исполнитель не связан с order",ждем proof
+PAC09,SLA и результат измеримы,"deadline; answer_at; completed/overdue status","Скрин сроков ответа и статуса","Качество delivery можно связать с заказом","Ответ без времени и статуса",ждем proof
+PAC10,Support/refund impact связан,"support_case_id; reason; refund_review/credit/retry status","Ссылка на support case или явное нет проблемы с proof","Refund-risk можно учитывать в экономике","Жалоба или refund note вне заказа",ждем proof
+PAC11,Repeat/retention можно отследить позже,"client_id; order history marker; follow-up marker","Proof что повтор будет связан с тем же client_id","D7/D14/D30 можно считать после фактов","LTV считается гипотезой без client_id history",ждем proof
+PAC12,Daily report получает данные,"report row; source link; order link; status; owner","Строка daily report с первичными proof-ссылками","День можно принять как измеримый тест","Ручная сводка без первичных ссылок",ждем proof

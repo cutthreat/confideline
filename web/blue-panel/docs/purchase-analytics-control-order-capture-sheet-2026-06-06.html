@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Purchase analytics capture sheet · контрольный заказ</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.capture-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:18px}.capture-card{border:1px solid var(--line,#ddcfb8);border-radius:18px;background:#fff;padding:16px}.capture-card b{display:block;color:#12583d;margin-bottom:6px}.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.rule{border:1px solid var(--line,#ddcfb8);border-radius:18px;padding:16px;background:#fff}.rule.pass{background:#f1fbf4}.rule.warn{background:#fff8df}.rule.stop{background:#fff0ee}.links-row{display:flex;flex-wrap:wrap;gap:10px}.links-row a{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line,#ddcfb8);border-radius:999px;padding:10px 14px;background:#fff;text-decoration:none;color:#145c42;font-weight:800}.small-note{font-size:14px;color:#666}.matrix table td:nth-child(1){font-weight:900;color:#145c42;white-space:nowrap}@media(max-width:900px){.capture-grid,.rules{grid-template-columns:1fr}.links-row a{width:100%;justify-content:space-between}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<nav class="top" aria-label="Навигация">
+<a href="../index.html">Главная</a>
+<a href="purchase-analytics-proof-acceptance-board.html">Purchase analytics</a>
+<a href="marketing-first-traffic-proof-package.html">Первый трафик</a>
+<a href="first-traffic-cac-ltv-calculator.html">CAC/LTV</a>
+<a href="first-control-order-proof-package.html">Контрольный заказ</a>
+<a class="primary" href="purchase-analytics-control-order-capture-sheet-2026-06-06.html">Analytics sheet</a>
+</nav>
+
+<section class="hero">
+<div class="hero-main">
+<div class="eyebrow">Analytics · CAC/LTV proof · safe control order</div>
+<h1>Лист фиксации данных покупки</h1>
+<p>Заполняется по одному safe test order. Цель — доказать, что будущий первый трафик можно измерять: источник клиента связан с сессией, заказом, суммой, услугой, исполнителем, результатом, support и daily report.</p>
+<div class="badges"><span class="badge red">purchase analytics proof = 0</span><span class="badge red">CAC/LTV пока невалидны</span><span class="badge yellow">модель приема готова</span><span class="badge green">можно передавать Игорю/QA</span></div>
+</div>
+<aside class="side">
+<b>Что принимается как proof</b>
+<p>source/session/client/order/value/currency/status/service_session/question/expert/SLA/support/daily report. Все поля должны быть связаны с одним safe order.</p>
+<b>STOP-сигналы</b>
+<p>Есть заказ без source, source без order, сумма без currency, purchase event без order_id, support отдельно от заказа или daily report заполнен руками без первичных proof-ссылок.</p>
+<div class="note"><b>Граница:</b> это не запуск рекламы и не реальная платежная аналитика. Это приемка структуры данных до рекламного теста.</div>
+</aside>
+</section>
+
+<section class="doc">
+<div class="stats">
+<div class="metric red"><b>12</b><span>полей/связок нужно собрать</span></div>
+<div class="metric red"><b>0</b><span>accepted purchase events сейчас</span></div>
+<div class="metric yellow"><b>safe only</b><span>без реального рекламного трафика</span></div>
+<div class="metric red"><b>STOP</b><span>если нет source → order → value</span></div>
+</div>
+</section>
+
+<section class="doc">
+<h2>Что фиксируем по покупке и экономике</h2>
+<div class="matrix"><table><thead><tr><th>ID</th><th>Факт</th><th>Связанные данные</th><th>Что вернуть как proof</th><th>Accepted</th><th>Returned / STOP</th><th>Статус</th></tr></thead><tbody>
+<tr><td>PAC01</td><td><b>Источник клиента сохранен</b></td><td>source, medium, campaign, content, term или source_id</td><td>Скрин/event row, где source связан с session_id.</td><td>Канал можно связать с сессией.</td><td>Скрин рекламы без session_id.</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>PAC02</td><td><b>Сессия связана с клиентом</b></td><td>session_id, client_id, login/guest marker</td><td>Скрин/лог сохранения session после входа или checkout.</td><td>Путь клиента не рвется.</td><td>Клиент есть, но неизвестна исходная сессия.</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>PAC03</td><td><b>Клиент связан с заказом</b></td><td>client_id, order_id, created_at</td><td>Admin link/screenshot заказа с клиентом.</td><td>Можно строить LP → checkout → order.</td><td>Order отдельно от клиента.</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>PAC04</td><td><b>Purchase/order event создан</b></td><td>event_name, event_id, timestamp, order_id, test marker</td><td>Event log или no-send/test analytics row.</td><td>Purchase event существует и безопасен.</td><td>Запись в базе без события или событие без order_id.</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>PAC05</td><td><b>Сумма и валюта известны</b></td><td>value, currency, price_package, payment/test status</td><td>Скрин/лог поля value/currency внутри order/event.</td><td>Revenue можно считать.</td><td>Цена только в тексте оффера.</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>PAC06</td><td><b>Платежная граница безопасна</b></td><td>test/sandbox/mock mode, provider placeholder, no real charge flag</td><td>Proof, что списания нет и реальный provider не задействован.</td><td>QA может продолжать без платежного риска.</td><td>Неясно, был ли реальный charge.</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>PAC07</td><td><b>Заказ перешел в услугу</b></td><td>service_session_id, consultation_id, question_id</td><td>Скрин order → service_session → question.</td><td>Покупка связана с оказанием услуги.</td><td>Purchase есть, услуги нет.</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>PAC08</td><td><b>Исполнитель связан с заказом</b></td><td>expert_id, agent_id, profile_id, assigned_at</td><td>Скрин назначения исполнителя/анкеты.</td><td>Можно считать capacity и себестоимость.</td><td>Ответ есть, но исполнитель не связан с order.</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>PAC09</td><td><b>SLA и результат измеримы</b></td><td>deadline, answer_at, completed/overdue status</td><td>Скрин сроков, ответа и статуса.</td><td>Качество delivery можно связать с заказом.</td><td>Ответ без времени и статуса.</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>PAC10</td><td><b>Support/refund impact связан</b></td><td>support_case_id, reason, refund_review/credit/retry status</td><td>Ссылка на support case или явное “нет проблемы” с proof.</td><td>Refund-risk можно учитывать в экономике.</td><td>Жалоба или refund note вне заказа.</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>PAC11</td><td><b>Repeat/retention можно отследить позже</b></td><td>client_id, order history marker, follow-up marker</td><td>Proof, что повторная покупка будет связана с тем же client_id.</td><td>D7/D14/D30 можно будет считать после фактов.</td><td>LTV считается гипотезой без client_id history.</td><td><span class="status yellow">ждем proof</span></td></tr>
+<tr><td>PAC12</td><td><b>Daily report получает данные</b></td><td>report row, source link, order link, status, owner</td><td>Строка daily report с первичными proof-ссылками.</td><td>День можно принять как измеримый тест.</td><td>Ручная сводка без первичных ссылок.</td><td><span class="status red">ждем proof</span></td></tr>
+</tbody></table></div>
+</section>
+
+<section class="doc">
+<h2>Правила приемки</h2>
+<div class="rules">
+<div class="rule pass"><b>PASS</b><p>PAC01-PAC10 и PAC12 приняты на safe order. PAC11 может быть желтым до фактического повторного заказа, но должен иметь client_id/order history основу.</p></div>
+<div class="rule warn"><b>WARN</b><p>Основная цепочка source → session → order → value → service работает, но часть daily report, retention или error log пока ручная.</p></div>
+<div class="rule stop"><b>STOP</b><p>Нет source/session/order/value связки, нет currency, purchase event без order_id, не доказан safe payment mode или данные не попадают в report.</p></div>
+</div>
+</section>
+
+<section class="doc">
+<h2>Связанные proof-страницы</h2>
+<div class="links-row">
+<a href="purchase-analytics-proof-acceptance-board.html">Purchase analytics proof ↗</a>
+<a href="marketing-first-traffic-proof-package.html">Marketing go/no-go ↗</a>
+<a href="first-traffic-cac-ltv-calculator.html">CAC/LTV calculator ↗</a>
+<a href="first-control-order-proof-package.html">Контрольный заказ ↗</a>
+<a href="first-traffic-daily-report-template.html">Daily report ↗</a>
+<a href="artifacts/PURCHASE_ANALYTICS_CONTROL_ORDER_CAPTURE_SHEET_2026_06_06.csv">CSV для приема ↗</a>
+</div>
+<p class="small-note">Эта страница нужна до покупки трафика: она заранее задает, какие данные должны появиться, чтобы первый рекламный день был управленчески полезным.</p>
+</section>
+<p class="footer">Generated local web panel · purchase-analytics-control-order-capture-sheet-2026-06-06.html · 2026-06-06</p>
+</main>
+</body>
+</html>
