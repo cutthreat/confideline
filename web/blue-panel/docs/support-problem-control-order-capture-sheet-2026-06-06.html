@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support capture sheet · проблемный контрольный заказ</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.capture-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:18px}.capture-card{border:1px solid var(--line,#ddcfb8);border-radius:18px;background:#fff;padding:16px}.capture-card b{display:block;color:#12583d;margin-bottom:6px}.capture-card span{color:#5d5964}.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.rule{border:1px solid var(--line,#ddcfb8);border-radius:18px;padding:16px;background:#fff}.rule.pass{background:#f1fbf4}.rule.warn{background:#fff8df}.rule.stop{background:#fff0ee}.links-row{display:flex;flex-wrap:wrap;gap:10px}.links-row a{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line,#ddcfb8);border-radius:999px;padding:10px 14px;background:#fff;text-decoration:none;color:#145c42;font-weight:800}.small-note{font-size:14px;color:#666}.matrix table td:nth-child(1){font-weight:900;color:#145c42;white-space:nowrap}@media(max-width:900px){.capture-grid,.rules{grid-template-columns:1fr}.links-row a{width:100%;justify-content:space-between}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<nav class="top" aria-label="Навигация">
+<a href="../index.html">Главная</a>
+<a href="support-problem-proof-package.html">Support proof</a>
+<a href="nosend-control-order-capture-sheet-2026-06-06.html">No-send sheet</a>
+<a href="first-control-order-proof-package.html">Контрольный заказ</a>
+<a href="prelaunch-qa-execution-control.html">QA</a>
+<a class="primary" href="support-problem-control-order-capture-sheet-2026-06-06.html">Support sheet</a>
+</nav>
+
+<section class="hero">
+<div class="hero-main">
+<div class="eyebrow">Support · problem state · safe control order</div>
+<h1>Лист фиксации проблемного заказа</h1>
+<p>Заполняется по одному safe test order. Цель — доказать, что проблема не превращается в ручную переписку: кейс связан с заказом, чатом, экспертом, имеет владельца, решение, no-send событие, закрытие и отражение в QA/readiness.</p>
+<div class="badges"><span class="badge red">runtime support proof = 0</span><span class="badge red">реальные refund/email запрещены</span><span class="badge yellow">лист приема готов</span><span class="badge green">можно передавать Игорю/QA</span></div>
+</div>
+<aside class="side">
+<b>Что принимается как proof</b>
+<p>support_case_id, order_id, session/task_id, question_id/answer_id, performer/profile_id, причина, владелец, решение, no-send event id, screenshot закрытия и QA verdict.</p>
+<b>STOP-сигналы</b>
+<p>Кейс не связан с заказом или сессией, нет владельца, нет решения, ушел реальный refund/email, нет closure, нет no-send события.</p>
+<div class="note"><b>Граница:</b> мы проверяем управляемость процесса, а не утверждаем юридические refund rules и не запускаем реальные возвраты.</div>
+</aside>
+</section>
+
+<section class="doc">
+<div class="stats">
+<div class="metric red"><b>10</b><span>фактов нужно собрать</span></div>
+<div class="metric red"><b>0</b><span>accepted support proof сейчас</span></div>
+<div class="metric yellow"><b>safe only</b><span>без реальных писем/возвратов</span></div>
+<div class="metric red"><b>QA STOP</b><span>если нет связки с заказом</span></div>
+</div>
+</section>
+
+<section class="doc">
+<h2>Что фиксируем по проблемному заказу</h2>
+<div class="matrix"><table><thead><tr><th>ID</th><th>Факт</th><th>Связанные данные</th><th>Что вернуть как proof</th><th>Accepted</th><th>Returned / STOP</th><th>Статус</th></tr></thead><tbody>
+<tr><td>SPC01</td><td><b>Заказ найден</b></td><td>test_run_id, order_id, client_id</td><td>Safe/test marker, скрин или admin link.</td><td>Заказ существует и безопасен; реального списания нет.</td><td>Проблема без конкретного заказа.</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>SPC02</td><td><b>Связка с консультацией</b></td><td>session/task_id, question_id, answer_id если есть</td><td>Скрин order → question → answer/overdue path.</td><td>Понятно, какой вопрос/ответ вызвал проблему.</td><td>Жалоба отдельно от консультации.</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>SPC03</td><td><b>Исполнитель и анкета связаны</b></td><td>performer_id, profile_id, role</td><td>Скрин/ссылка, где виден назначенный исполнитель.</td><td>Проблема привязана к эксперту/анкете.</td><td>Нельзя понять, кто отвечал.</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>SPC04</td><td><b>Проблема создана</b></td><td>support_case_id, reason_type</td><td>late_answer / weak_answer / chat_issue / refund_review / retry_request.</td><td>Кейс создан с причиной и временем.</td><td>Устная переписка без карточки.</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>SPC05</td><td><b>Владелец назначен</b></td><td>owner role/person, SLA, priority</td><td>Скрин owner/assignee и срока реакции.</td><td>Ответственный виден и обязанность понятна.</td><td>Кейс висит без владельца.</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>SPC06</td><td><b>Решение выбрано</b></td><td>decision_type, decision_reason</td><td>retry / do-over / escalate / credit_review / refund_review / reject_with_reason.</td><td>Решение записано в кейсе; реального refund нет.</td><td>Решение только словами в переписке.</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>SPC07</td><td><b>No-send статус клиента</b></td><td>event_id, template, variables, recipient role</td><td>Preview/event log без фактической отправки.</td><td>Событие связано с support_case/order.</td><td>Реальное письмо ушло или нет preview.</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>SPC08</td><td><b>Последствие для эксперта</b></td><td>quality note, warning, hold, no action reason</td><td>Скрин решения по качеству или обоснованный no action.</td><td>Решение связано с performer/order.</td><td>Проблема не влияет на качество и не объяснено почему.</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>SPC09</td><td><b>Кейс закрыт</b></td><td>closed_at, resolution summary, owner</td><td>Скрин финального состояния resolved/closed.</td><td>Есть итог, дата, владелец и next step.</td><td>Кейс создан, но не закрыт.</td><td><span class="status red">ждем proof</span></td></tr>
+<tr><td>SPC10</td><td><b>Попало в QA/readiness</b></td><td>QA report row, readiness impact, next owner</td><td>Строка в QA/proof отчете или явное “no change” с причиной.</td><td>Launch readiness обновлен или обоснованно не изменен.</td><td>Proof где-то есть, но в статус запуска не попал.</td><td><span class="status red">ждем proof</span></td></tr>
+</tbody></table></div>
+</section>
+
+<section class="doc">
+<h2>Правила приемки</h2>
+<div class="rules">
+<div class="rule pass"><b>PASS</b><p>SPC01-SPC10 приняты, реальные refund/email не выполнялись, QA может подтвердить управляемый проблемный путь.</p></div>
+<div class="rule warn"><b>WARN</b><p>Базовый кейс работает, но последствия для эксперта, аналитика, daily report или часть админского отображения остаются ручными.</p></div>
+<div class="rule stop"><b>STOP</b><p>Нет support_case_id, нет связи с заказом, нет владельца/решения, ушел реальный refund/email или кейс не закрывается.</p></div>
+</div>
+</section>
+
+<section class="doc">
+<h2>Связанные proof-страницы</h2>
+<div class="links-row">
+<a href="support-problem-proof-package.html">Support proof package ↗</a>
+<a href="nosend-control-order-capture-sheet-2026-06-06.html">No-send capture sheet ↗</a>
+<a href="first-control-order-proof-package.html">Контрольный заказ ↗</a>
+<a href="prelaunch-qa-execution-control.html">QA execution control ↗</a>
+<a href="artifacts/SUPPORT_PROBLEM_CONTROL_ORDER_CAPTURE_SHEET_2026_06_06.csv">CSV для приема ↗</a>
+</div>
+<p class="small-note">Эта страница не заменяет юридический refund path. Она нужна, чтобы доказать операционный путь проблемного заказа до рекламы.</p>
+</section>
+<p class="footer">Generated local web panel · support-problem-control-order-capture-sheet-2026-06-06.html · 2026-06-06</p>
+</main>
+</body>
+</html>
