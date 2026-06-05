@@ -1,0 +1,20 @@
+Раздел,ID,Название,Статус,PM-решение,Proof
+Формула,F01,Валовая прибыль первой покупки,Желтый,"price - payment_fee - expert_cost - support_cost - refund_reserve - ops_cost",Заполнить до первого трафика
+Формула,F02,Допустимый CAC до repeat proof,Желтый,"gross_profit_first_purchase × safety_factor",Не учитывать repeat до факта
+Формула,F03,Фактический CAC,Красный,"ad_spend / paid_customers",Нужны реальные spend и paid customers
+Формула,F04,Фактический LTV,Желтый,"first_purchase_margin + repeat_margin - refunds - disputes",Только после D7/D14/D30 данных
+Поле,ECO-01,Цена первой покупки,Красный,Утвердить один starter offer,LP/checkout/email proof
+Поле,ECO-02,Payment fee,Красный,Заменить фактической комиссией после provider approval,Legal/payment gate
+Поле,ECO-03,Стоимость эксперта/агента,Желтый,Задать модель начисления hold bonus,Compensation runtime proof
+Поле,ECO-04,Support cost,Желтый,Заложить ручную стоимость problem states,Support case proof
+Поле,ECO-05,Refund reserve,Желтый,Заложить резерв до факта,Refund/support log
+Поле,ECO-06,Purchase event value,Красный,Проверить value currency order session source,Event log
+Поле,ECO-07,UTM/source/campaign,Красный,Связать источник с order/session,Analytics proof
+Поле,ECO-08,Capacity limit,Красный,Заполнить 5 экспертов и дневной лимит,Capacity journal
+Поле,ECO-09,Conversion to purchase,Желтый,До факта использовать только осторожное допущение,Analytics after test
+Поле,ECO-10,Repeat 7/14/30,Желтый,Не включать в CAC до факта,Order history
+Поле,ECO-11,Support/refund outcomes,Красный,Смоделировать support problem state,Support ticket proof
+Поле,ECO-12,Daily report,Желтый,Подготовить шаблон daily traffic report,PM report
+Решение,D01,CAC ниже первой маржи,Зеленый позже,Можно продолжать малый тест если SLA/support в норме,QA+analytics proof
+Решение,D02,CAC зависит от repeat,Желтый,Не масштабировать до repeat/refund статистики,D7/D14/D30 proof
+Решение,D03,CAC выше доказанной маржи или нет value,Красный,Остановить трафик и чинить оффер/воронку/качество,Daily report stop
