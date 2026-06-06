@@ -1,0 +1,9 @@
+gate_id;условие;текущий_статус;что_считается_доказательством;решение_pm;владелец;что_делаем_дальше
+QA-G01;Принят safe order от backend;красный;order_id плюс question_id плюс assignment плюс answer binding плюс admin timeline плюс no-charge/no-send proof;без accepted R01 QA не стартует;Игорь + PM;получить R01 и принять по capture sheet
+QA-G02;Принят первый эксперт E01 для QA;красный;анкета E01 плюс доступ плюс SLA плюс пробный ответ плюс scorecard плюс verdict accepted;без accepted R02 QA не стартует;PM + Ксения;довести E01 до admitted_for_qa
+QA-G03;Нет риска реального платежа;красный до proof;тестовый marker или no-charge proof по контрольному заказу;при риске реального списания QA запрещен;Игорь + QA;проверять только safe mode
+QA-G04;Нет риска реальной отправки писем или сообщений;красный до proof;event_id плюс preview плюс external_send=false по ключевым событиям;при риске реальной отправки QA запрещен;Игорь + QA;использовать no-send режим
+QA-G05;Админ видит контрольный заказ целиком;желтый до R01;order_id открывает order/question/assignment/answer/events/support без ручного поиска;если админка не видит цепочку, QA не дает зеленый запуск;Игорь;показать admin route в R01
+QA-G06;Support route определен;желтый до proof;support_case_id или явно описанный route проблемы, owner, решение и закрытие;без support нельзя тестировать проблемные ситуации;Support + PM + Игорь;привязать support к order_id
+QA-G07;Analytics minimum определен;желтый до proof;source/session/order/value/currency/service/expert/support связаны или gap явно указан;без этого нельзя считать CAC/LTV после трафика;Игорь + PM;привязать analytics row к control order
+QA-G08;Тестировщик получает понятное задание;желтый;URL, роли, ограничения, known issues, stop-условия и формат отчета;задача отправляется только после QA-G01 и QA-G02;PM;после accepted R01/R02 отправить TXT задачу тестировщику
