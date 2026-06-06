@@ -1,0 +1,13 @@
+ID;Что должен показать Игорь;Что вернуть PM/QA;Accepted proof;Returned/STOP
+BA01;Безопасный тестовый заказ без реального списания;order_id, test marker, сумма, валюта, no real charge proof;Есть order_id и явный test/no-charge marker;Нет test marker или есть риск реального платежа
+BA02;Связка заказа с вопросом клиента;question_id, текст вопроса, client_id, service/package_id;Вопрос однозначно связан с order_id;Вопрос живет отдельно от заказа
+BA03;Карточка консультации / session;session_id или рабочая карточка процесса;Есть единый lifecycle объекта консультации;Нет объекта, связывающего order/question/expert/answer
+BA04;Назначение исполнителя и анкеты;performer_id, profile_id, assigned_at, deadline;Исполнитель и профиль назначены внутри системы;Назначение вне системы или без profile_id
+BA05;Рабочее место исполнителя;скрин роли эксперта/агента: вопрос, срок, поле ответа;Эксперт может ответить внутри сайта;Эксперт не видит задачу или отвечает вне сайта
+BA06;Ответ клиента/админа;answer_id, timestamp, author, client view, admin view;Ответ связан с конкретной консультацией и виден клиенту/админу;Ответ не связан с заказом или виден только вручную
+BA07;Admin timeline;скрин списка/карточки: created, question, assigned, answered, support/events;Админ видит путь без ручного поиска;Админ собирает состояние вручную
+BA08;No-send события;event_id, template, recipient role, external_send=false, preview;События созданы, реальные письма не ушли;Нет event log или ушла реальная отправка
+BA09;Support/problem case;support_case_id, reason, owner, status, decision path;Проблема связана с order/session/chat;Жалоба без ticket/order link
+BA10;Purchase analytics minimum;source/session/order/value/currency/service/expert/support links;PAC minimum можно использовать для первого CAC/LTV учета;Нет связи source→order→value
+BA11;Admin visibility AOC;AOC01-AOC07 + AOC14 screenshot/route;Основной жизненный цикл управляется из админки;Нет единого маршрута админа
+BA12;QA handoff;URL/логины/ограничения/known issues;QA может повторить маршрут без догадок;QA не понимает где и кем проверять
