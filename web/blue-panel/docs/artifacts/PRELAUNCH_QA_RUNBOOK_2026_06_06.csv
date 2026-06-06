@@ -1,15 +1,15 @@
-Шаг;Статус старта;Что проверяет QA;Что вернуть;Accepted;STOP
-1. READY gate;STOP сейчас;Safe order, E01, admin route, no-send, support context;ready checklist link + owner;Все входы READY или PM-approved WARN;Нет safe order или accepted E01
-2. Оффер и документы;Ждет READY;Landing/CTA/docs/disclaimer до оплаты;скрины landing/checkout docs;Клиент понимает услугу, цену, ограничения;Dating legacy, нет disclaimer/docs
-3. Safe checkout/order;Ждет READY;Test order без реального списания;order_id, test marker, no-charge proof;Order создан безопасно;Риск реального платежа
-4. Вопрос клиента;Ждет READY;Question linked to order/session;question_id, screen client/admin;Вопрос связан с order_id;Вопрос отдельно от заказа
-5. Назначение исполнителя;Ждет READY;Expert/profile/SLA assigned;performer_id, profile_id, deadline;Есть владелец и срок;Нет исполнителя/SLA
-6. Workspace исполнителя;Ждет READY;Expert sees task/question/answer form;screen expert workspace;Эксперт может ответить внутри сайта;Ответ вне сайта/нет задачи
-7. Ответ и видимость;Ждет READY;Answer visible client/admin;answer_id, client/admin screens;Ответ связан с консультацией;Ответ потерян/не связан
-8. No-send events;Ждет READY;Events and previews without sending;event ids, templates, external_send=false;События есть, писем нет;Реальная отправка или нет логов
-9. Support problem state;Ждет READY;Complaint/overdue/bad answer route;support_case_id, owner, decision;Кейс связан с order/session;Нет владельца или связи
-10. Admin visibility;Ждет READY;Admin lifecycle/order timeline;AOC evidence/screens;Админ видит путь без ручного поиска;Состояние собирается вручную
-11. Analytics minimum;Ждет READY;Source/session/order/value/service/support;PAC row;Можно считать первый тест трафика позже;Нет source→order→value
-12. Failure states;Ждет READY;Ошибки payment/order/support/empty;failure screenshots + next action;Пользователь не в тупике;Ошибка без объяснения/action
-13. Public report;Ждет run;PASS/WARN/STOP report;GitHub Pages report URL;Отчет с proof и owners;Скрины в переписке без отчета
-14. PM readiness update;После отчета;Пересчет светофора;updated Blue Panel links;Статусы меняются по proof;Вердикт без gate mapping
+step,area,start_status,what_to_check,evidence_required,pass,warn,stop
+QAR00,"QA-ready gate","closed","R01 accepted + R02 accepted + no-charge/no-send + admin route + workspace","links to accepted R01/R02","All required gates accepted","Minor PM-approved warning","Any required gate missing"
+QAR01,"Offer and trust","waiting","Landing/CTA/docs/disclaimer before payment","screenshots","Client understands service, price and limitations","Text needs improvement but not blocking test","Dating legacy or no disclaimer/docs on paid path"
+QAR02,"Safe checkout/test order","waiting","Create test order without real charge","order_id,test marker,no-charge proof","Order created safely","Minor UX issue","Risk of real payment or no order_id"
+QAR03,"Client question binding","waiting","Question linked to order/session","question_id,client/admin screens","Question tied to order_id","UI confusing","Question detached from order"
+QAR04,"Expert assignment","waiting","Expert/profile/SLA assigned","performer_id,profile_id,deadline","Owner and deadline visible","SLA wording unclear","No performer or no SLA"
+QAR05,"Expert workspace","waiting","Expert sees task/question/answer form","workspace screenshot","Expert can answer inside platform","Minor UX issue","Answer outside platform or no task"
+QAR06,"Answer visibility","waiting","Answer visible to client and admin","answer_id,client/admin screens","Answer tied to consultation","Formatting issue","Answer lost or not linked"
+QAR07,"No-send events","waiting","Events and previews without sending","event ids,template preview,external_send=false","Events exist and no real send","Template copy needs fixes","Real send or no logs"
+QAR08,"Support/problem case","waiting","Complaint/overdue/bad answer route","support_case_id,owner,decision","Case tied to order/session","SLA unclear","No owner or no link"
+QAR09,"Admin visibility","waiting","Admin lifecycle/order timeline","admin screenshots","Admin sees path without manual search","Needs UX improvement","State must be assembled manually"
+QAR10,"Analytics minimum","waiting","Source/session/order/value/service/support","analytics row/report","Minimum purchase analytics trace exists","Missing non-critical field","No source->order->value trace"
+QAR11,"Failure states","waiting","Payment/order/support/empty/timeout states","screenshots,next actions","User never hits dead end","Some copy weak","Error without explanation/action"
+QAR12,"Public report","waiting","Publish QA report","GitHub Pages URL","Report has proof, defects, owners, verdict","Report needs formatting update","Screens in chat only/no report"
+QAR13,"PM readiness update","waiting","Map QA verdict to Blue Panel readiness","updated readiness links","Status updated by proof","Needs PM review","Verdict without gate mapping"
