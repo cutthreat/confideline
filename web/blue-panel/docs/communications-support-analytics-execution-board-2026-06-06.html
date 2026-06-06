@@ -24,6 +24,13 @@
 
   <section class="stats"><div class="metric red"><b>0</b><span>принятых no-send событий</span></div><div class="metric red"><b>0</b><span>принятых support cases</span></div><div class="metric red"><b>0</b><span>принятых analytics rows</span></div><div class="metric"><b>12</b><span>пунктов CSA-приемки</span></div></section>
 
+  <section class="doc"><h2>Короткое решение по CSA</h2><div class="cards">
+    <a class="card" href="backend-admin-safe-order-execution-board-2026-06-06.html"><span class="code">QA</span><span class="status red">минимум</span><h3>Что нужно до QA</h3><p>На одном test_run_id/order_id: order event, question event, assignment event, no-send external_send=false и admin timeline.</p><p><b>Без этого:</b> QA не стартует.</p></a>
+    <a class="card" href="support-problem-control-order-capture-sheet-2026-06-06.html"><span class="code">WARN</span><span class="status yellow">можно частично</span><h3>Что можно оставить как WARN</h3><p>Reminder, overdue и follow-up могут быть ручным fallback для первого QA, если core route доказан и рисков реальной отправки нет.</p><p><b>Но:</b> для трафика нужно закрыть.</p></a>
+    <a class="card" href="purchase-analytics-proof-acceptance-board.html"><span class="code">TRAFFIC</span><span class="status red">обязательно</span><h3>Что нужно до первого трафика</h3><p>Source/session/order/value/service/expert/support должны быть в одной analytics row или daily row с proof-ссылками.</p><p><b>Без этого:</b> CAC/LTV недостоверны.</p></a>
+    <a class="card" href="artifacts/CSA_ACCEPTANCE_DECISION_GATE_2026_06_06.csv"><span class="code">CSV</span><span class="status green">правила</span><h3>Accepted / returned / blocked</h3><p>Короткие правила приемки CSA, чтобы PM, Игорь и QA одинаково понимали статус.</p><p><b>Цель:</b> меньше повторных запросов.</p></a>
+  </div><div class="note"><b>PM-вывод:</b> CSA может открыть QA только по core no-send/admin proof. Но первый трафик остается закрытым, пока support и analytics не связаны с тем же заказом.</div></section>
+
   <section class="doc"><h2>Что должно доказаться на одном заказе</h2><div class="cards">
     <a class="card" href="notification-nosend-proof-register.html"><span class="code">CSA01</span><span class="status red">красный</span><h3>Заказ создал событие</h3><p>Order event должен иметь event_id, template, variables, preview и external_send=false.</p><p><b>Proof:</b> event связан с order_id.</p></a>
     <a class="card" href="notification-nosend-proof-register.html"><span class="code">CSA02</span><span class="status red">красный</span><h3>Вопрос создал событие</h3><p>Вопрос клиента связан с заказом и не живет отдельно от консультации.</p><p><b>Proof:</b> question_id + event_id + order_id.</p></a>
@@ -86,9 +93,20 @@ QA:
 2. Проверить, что реальные письма/сообщения не ушли.
 3. Проверить, что support case не живет отдельно от заказа.
 4. Проверить, что analytics row не является ручной сводкой без первичных proof.
-5. В публичном QA-отчете указать PASS/WARN/STOP по CSA.</div></section>
+5. В публичном QA-отчете указать PASS/WARN/STOP по CSA.
 
-  <section class="doc"><h2>Связанные страницы</h2><div class="links"><a class="link" href="nosend-control-order-capture-sheet-2026-06-06.html"><b>No-send sheet</b><span>Что Игорь и QA должны вернуть по уведомлениям на safe order.</span></a><a class="link" href="support-problem-control-order-capture-sheet-2026-06-06.html"><b>Support sheet</b><span>Проблемный заказ, владелец, решение и закрытие.</span></a><a class="link" href="purchase-analytics-control-order-capture-sheet-2026-06-06.html"><b>Analytics sheet</b><span>Source/session/order/value/support для будущего CAC/LTV.</span></a><a class="link" href="first-traffic-execution-board-2026-06-06.html"><b>Первый трафик</b><span>Что PM готовит сейчас и почему бюджет рекламы пока 0.</span></a><a class="link" href="artifacts/COMMUNICATIONS_SUPPORT_ANALYTICS_EXECUTION_BOARD_2026_06_06.csv"><b>CSV CSA</b><span>Табличная версия этой страницы.</span></a><a class="link" href="artifacts/CSA_ONE_ORDER_RUNTIME_PROOF_CHECKLIST_2026_06_06.csv"><b>CSV одного заказа</b><span>15 фактов, которые должны быть связаны одним order_id.</span></a></div></section>
+Минимум для QA-ready:
+- order/question/assignment events связаны с order_id;
+- external_send=false по core events;
+- admin видит event log/preview;
+- нет реальных писем, SMS, push или сообщений.
+
+Минимум для первого трафика:
+- support_case_id и support decision связаны с order_id;
+- source/session/order/value/service/expert/support видны в analytics/daily row;
+- QA не дал STOP по CSA.</div></section>
+
+  <section class="doc"><h2>Связанные страницы</h2><div class="links"><a class="link" href="nosend-control-order-capture-sheet-2026-06-06.html"><b>No-send sheet</b><span>Что Игорь и QA должны вернуть по уведомлениям на safe order.</span></a><a class="link" href="support-problem-control-order-capture-sheet-2026-06-06.html"><b>Support sheet</b><span>Проблемный заказ, владелец, решение и закрытие.</span></a><a class="link" href="purchase-analytics-control-order-capture-sheet-2026-06-06.html"><b>Analytics sheet</b><span>Source/session/order/value/support для будущего CAC/LTV.</span></a><a class="link" href="first-traffic-execution-board-2026-06-06.html"><b>Первый трафик</b><span>Что PM готовит сейчас и почему бюджет рекламы пока 0.</span></a><a class="link" href="artifacts/CSA_ACCEPTANCE_DECISION_GATE_2026_06_06.csv"><b>CSV decision gate</b><span>Что принимается для QA-ready и что требуется до трафика.</span></a><a class="link" href="artifacts/COMMUNICATIONS_SUPPORT_ANALYTICS_EXECUTION_BOARD_2026_06_06.csv"><b>CSV CSA</b><span>Табличная версия этой страницы.</span></a><a class="link" href="artifacts/CSA_ONE_ORDER_RUNTIME_PROOF_CHECKLIST_2026_06_06.csv"><b>CSV одного заказа</b><span>15 фактов, которые должны быть связаны одним order_id.</span></a></div></section>
 
   <p class="footer">Generated Blue Panel · communications-support-analytics-execution-board-2026-06-06.html · обновлено: 2026-06-06 · Trello не редактировался.</p>
 </main><script src="../assets/panel-ux.js"></script></body></html>
