@@ -1,13 +1,13 @@
-ID;Слой;Что должно произойти на одном order_id;Что вернуть;Accepted proof;STOP;Связь
-CSA01;No-send order created;Создано событие заказа без отправки наружу;event_id, template, variables, preview, external_send=false;Event связан с order_id/test_run_id;Ушла реальная отправка или нет marker;NSC01
-CSA02;No-send question accepted;Событие вопроса связано с order/session;event_id + question_id/order_id;Вопрос и событие имеют один marker;Вопрос отдельно от order;NSC04
-CSA03;No-send assignment;Событие назначения идет эксперту/админу без отправки;event_id + performer_id/profile_id/deadline;Экспертская задача и событие связаны;Нет assignment/workspace proof;NSC05
-CSA04;No-send answer ready;Событие готового ответа связано с answer_id;event_id + answer_id + client/admin view;Ответ и уведомление связаны;Ответ есть, событие отдельно;NSC07
-CSA05;Support case created;Проблема по заказу создает case;support_case_id, reason, owner, order_id;Кейс связан с order/session/expert;Жалоба без order link;SPC01-SPC05
-CSA06;Support decision/closure;Кейс получает решение и закрытие;decision, owner, closed_at, readiness impact;Есть решение, no-send status и closure;Кейс висит без решения;SPC06-SPC10
-CSA07;Analytics source/session/order;Источник связан с сессией и заказом;source, session_id, client_id, order_id;Можно восстановить путь traffic→order;Source или order существуют отдельно;PAC01-PAC04
-CSA08;Analytics value/service/expert;Сумма, услуга, эксперт связаны с заказом;value,currency,service_session_id,expert/profile_id;Можно считать delivery и себестоимость;Цена только в тексте, эксперт не связан;PAC05-PAC09
-CSA09;Analytics support impact;Support/refund-risk связан с order;support_case_id, reason, decision/status;Будущий CAC/LTV учитывает проблемные заказы;Support отдельно от покупки;PAC10
-CSA10;Daily report row;День получает строку с proof-ссылками;daily row: source/order/value/status/owner/proof links;PM может принять день как измеримый тест;Ручная сводка без первичных proof;PAC12
-CSA11;QA report mapping;QA связывает NSC/SPC/PAC в один verdict;QA report URL + QAC references;Ready status меняется только по report;Скрины в переписке без report;QAC09-QAC15
-CSA12;Launch decision;PM пересчитывает traffic gate после accepted proof;updated readiness + go/no-go note;Paid traffic remains 0 until accepted gates;Запуск рекламы без proof;First traffic gate
+id,zone,status,what_exists,not_proven,owner,next_action,link
+CSA01,order_nosend_event,red,"email/no-send package","event_id on safe order","Igor + QA","return event preview external_send=false",notification-nosend-proof-register.html
+CSA02,question_event,red,"question binding described","question_id event_id order_id","Igor + QA","capture on R01",notification-nosend-proof-register.html
+CSA03,assignment_event,red,"workspace/assignment logic","performer and deadline in event","Igor + E01","bind with R02/E01",notification-nosend-proof-register.html
+CSA04,answer_event,red,"admin chat/workspace contour","answer_id and notification","Igor + QA","check after E01 answer",notification-nosend-proof-register.html
+CSA05,support_case,red,"problem states described","case_id on same order_id","Support + QA","create problem case",support-problem-proof-register.html
+CSA06,support_decision,red,"support/refund logic","decision owner closure no-send","Support + PM","close test case with decision",support-problem-proof-register.html
+CSA07,source_session_order,red,"marketing/economics logic","source linked to order","Igor + PM","capture analytics row",purchase-analytics-proof-acceptance-board.html
+CSA08,value_service_expert,red,"purchase analytics fields described","value currency service expert row","Igor + PM","bind with safe order",purchase-analytics-proof-acceptance-board.html
+CSA09,support_impact,red,"support outcome needed for LTV","support decision in analytics","PM + QA","check after support case",purchase-analytics-proof-acceptance-board.html
+CSA10,daily_report,red,"daily cycle exists","daily row with proof links","PM","assemble after QA order",admin-daily-visibility-execution-board.html
+CSA11,qa_mapping,red,"QA-runbook exists","public QA report","QA + PM","start after R01/R02",prelaunch-qa-runbook-2026-06-06.html
+CSA12,go_nogo,red,"traffic gate described","no basis to change budget","PM + founder","recalculate after accepted proof",first-traffic-execution-board-2026-06-06.html
