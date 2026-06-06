@@ -28,12 +28,12 @@
           <span class="badge ok">источники дизайна найдены</span>
           <span class="badge warn">3 желтых зоны</span>
           <span class="badge stop">11 красных зон</span>
-          <span class="badge stop">0 экранов accepted</span>
+          <span class="badge stop">0 экранов принято фактами</span>
         </div>
       </div>
       <aside class="panel side">
         <div class="box"><h3>PM-вывод</h3><p class="muted">Макет не равен готовой странице. Backend без понятного экрана тоже не равен готовому продукту.</p></div>
-        <div class="box"><h3>Что меняет статус</h3><p class="muted">Accepted screen contract: источник макета, route, действие, backend, контент, failure states, QA-скрин или лог.</p></div>
+        <div class="box"><h3>Что меняет статус</h3><p class="muted">Принятый экранный контракт: источник макета, route, действие, backend, контент, failure states, QA-скрин или лог.</p></div>
         <div class="box"><h3>Правило для Антона и Игоря</h3><p class="muted">Каждая задача на экран должна передаваться как связка дизайн + действие + backend + текст + проверка, а не как “сделать страницу”.</p></div>
       </aside>
     </section>
@@ -60,6 +60,28 @@
       <article class="card red" data-id="SC12"><h3>Email, уведомления и события</h3><p class="muted">Сервис не работает стабильно без писем, напоминаний и служебных уведомлений.</p><div class="row"><div class="label">есть</div><div class="value">Отдельный контур email/admin upload и проработанные сценарии.</div></div><div class="row"><div class="label">не хватает</div><div class="value">Привязка event_id/template/recipient к покупке и заказу.</div></div><div class="row"><div class="label">proof</div><div class="value">No-send preview: welcome, paid, status, answer, support.</div></div></article>
       <article class="card red" data-id="SC13"><h3>Документы, FAQ и дисклеймеры</h3><p class="muted">Публичные документы должны быть готовы в HTML-формате сайта и согласованы до checkout.</p><div class="row"><div class="label">есть</div><div class="value">Ранее собирались Terms/Privacy/Refund/FAQ материалы.</div></div><div class="row"><div class="label">не хватает</div><div class="value">Founder/legal/payment approval и финальная HTML-версия.</div></div><div class="row"><div class="label">proof</div><div class="value">Публичные страницы открываются, ссылки не 404, версия утверждена.</div></div></article>
       <article class="card red" data-id="SC14"><h3>Аналитика покупок и качества</h3><p class="muted">Без аналитики нельзя считать CAC, LTV, качество экспертов и готовность трафика.</p><div class="row"><div class="label">есть</div><div class="value">Понимание нужных метрик и связей.</div></div><div class="row"><div class="label">не хватает</div><div class="value">source/session/order/value/expert/support/repeat в одной цепочке.</div></div><div class="row"><div class="label">proof</div><div class="value">Отчет по тестовому order_id с полным следом.</div></div></article>
+    </section>
+
+    
+    <section class="panel" style="margin-top:18px">
+      <h2>Очередь передачи экранов в работу</h2>
+      <p class="lead">Это практический порядок для PM, Антона, Игоря и QA. Он показывает, какие экранные пакеты можно готовить уже сейчас, а какие нельзя отдавать как готовые без внешнего proof или решения владельца.</p>
+      <div class="tablebox">
+        <table>
+          <thead><tr><th>ID</th><th>Пакет экрана</th><th>Статус</th><th>Что делаем дальше</th><th>Что блокирует готовность</th><th>Результат</th><th>Связка</th></tr></thead>
+          <tbody>
+            <tr><td>SQ-01</td><td><b>Главная страница и оффер</b></td><td><span class="status yellow">готовить сейчас</span></td><td>PM формирует offer/content contract, Антон сверяет визуал, Игорь подтверждает CTA до order draft.</td><td>Нет runtime CTA/order draft.</td><td>Пакет landing/offer без обещания запусковой готовности.</td><td><a href="oracle-nebula-screen-contract-2026-06-06.html">контракт</a></td></tr>
+            <tr><td>SQ-02</td><td><b>Вход, регистрация, возврат в заказ</b></td><td><span class="status yellow">готовить сейчас</span></td><td>Описать guest → login/signup → same order сценарий и ошибки.</td><td>Нужен runtime session/order proof.</td><td>QA-сценарий и backend acceptance для Игоря.</td><td><a href="paid-client-flow-proof-contract-2026-06-06.html">paid-flow</a></td></tr>
+            <tr><td>SQ-03</td><td><b>Форма вопроса и статус заказа</b></td><td><span class="status red">после R01</span></td><td>Связать question_id, order_id, SLA, support link и тексты ожидания.</td><td>Нет safe order lifecycle proof.</td><td>Контракт paid-flow для Игоря и QA.</td><td><a href="backend-admin-safe-order-execution-board-2026-06-06.html">R01</a></td></tr>
+            <tr><td>SQ-04</td><td><b>Кабинет клиента и ответ</b></td><td><span class="status red">после answer proof</span></td><td>Описать answer_id, transcript, repeat CTA, support/report issue.</td><td>Нет runtime answer proof.</td><td>Контракт client result view.</td><td><a href="client-journey-readiness-map.html">путь клиента</a></td></tr>
+            <tr><td>SQ-05</td><td><b>Рабочее место эксперта и очередь админки</b></td><td><span class="status yellow">готовить пакет</span></td><td>Связать assignment, SLA, answer form, earnings, admin visibility.</td><td>0/5 экспертов accepted, нет assignment proof.</td><td>co2p-пакет workspace/admin queue.</td><td><a href="expert-agent-workspace-handoff.html">workspace</a></td></tr>
+            <tr><td>SQ-06</td><td><b>Support, email, аналитика</b></td><td><span class="status yellow">готовить для QA</span></td><td>Описать support_case, no-send events, purchase analytics row.</td><td>Нет order-bound event/support/analytics proof.</td><td>CSA acceptance для safe order и QA.</td><td><a href="communications-support-analytics-execution-board-2026-06-06.html">CSA</a></td></tr>
+            <tr><td>SQ-07</td><td><b>Checkout, документы, FAQ</b></td><td><span class="status red">без публикации</span></td><td>Собрать HTML-ready texts, consent, disclaimer, refund/support wording.</td><td>Founder/legal/payment decisions.</td><td>Пакет на approval, не на публикацию.</td><td><a href="public-docs-checkout-execution-board-2026-06-06.html">docs</a></td></tr>
+            <tr><td>SQ-08</td><td><b>Первый рекламный путь</b></td><td><span class="status red">закрыто до QA</span></td><td>Не запускать, только готовить tracking и stop-rules.</td><td>Нет QA PASS/WARN, capacity 5 экспертов, docs/payment approval.</td><td>Preflight без бюджета.</td><td><a href="first-traffic-marketing-preflight-package-2026-06-06.html">traffic</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="lead" style="margin-top:14px"><b>Решение PM:</b> сначала готовим SQ-01, SQ-02, SQ-05, SQ-06 как пакеты. SQ-03/SQ-04 ждут R01 и answer proof. SQ-07 ждет founder/legal/payment. SQ-08 закрыт до QA и capacity.</p>
     </section>
 
     <section class="tablebox">
@@ -103,13 +125,14 @@
         <a class="route" href="client-journey-readiness-map.html"><span><b>Путь клиента</b><br><span class="muted">Как экран связан с покупкой и ответом.</span></span><span class="arrow">↗</span></a>
         <a class="route" href="admin-operations-control-map.html"><span><b>Админка</b><br><span class="muted">Как экран должен управляться внутри.</span></span><span class="arrow">↗</span></a>
         <a class="route" href="public-docs-checkout-execution-board-2026-06-06.html"><span><b>Документы и checkout</b><br><span class="muted">Что нельзя запускать без согласований.</span></span><span class="arrow">↗</span></a>
-        <a class="route" href="artifacts/PAGE_CONTENT_BACKEND_READINESS_MAP_2026_06_06.csv"><span><b>CSV для сверки</b><br><span class="muted">Табличная версия карты.</span></span><span class="arrow">↗</span></a>
+        <a class="route" href="artifacts/PAGE_CONTENT_BACKEND_READINESS_MAP_2026_06_06.csv"><span><b>CSV для сверки</b><br><span class="muted">Табличная версия карты.</span></span><span class="arrow">↗</span></a><a class="route" href="artifacts/SCREEN_IMPLEMENTATION_PRIORITY_QUEUE_2026_06_06.csv"><span><b>CSV очереди экранов</b><br><span class="muted">Что готовить сейчас, что ждет proof и что закрыто до решений.</span></span><span class="arrow">↗</span></a>
       </div>
     </details>
 
-    <section class="service muted">Blue Panel · экранная карта обновлена 06.06.2026 · зеленый статус появится только после source → screen → backend → content → failure states → QA accepted.</section>
+    <section class="service muted">Blue Panel · экранная карта обновлена 06.06.2026 · зеленый статус появится только после источник → экран → сайт → контент → проблемные состояния → проверка.</section>
   </main>
 </body>
 </html>
+
 
 
