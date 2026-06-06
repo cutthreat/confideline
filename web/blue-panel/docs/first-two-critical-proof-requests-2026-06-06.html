@@ -17,21 +17,24 @@
 
   <section class="stats"><div class="metric red"><b>2</b><span>сообщения отправить первыми</span></div><div class="metric red"><b>0</b><span>принятых доказательств сейчас</span></div><div class="metric yellow"><b>1</b><span>QA стартует только после READY</span></div><div class="metric red"><b>0</b><span>реальных платежей, писем и рекламы</span></div></section>
 
-  <section class="doc"><h2>Готовые тексты для отправки</h2><div class="cards"><article class="request red"><h3>1. Игорю · безопасный тестовый заказ</h3><p>Нужно показать, что backend/admin Confideline может провести один тестовый заказ без реального списания и без реальной отправки писем.</p><div class="copy">Игорь, нужен один безопасный тестовый заказ для YouDate/Nebula, чтобы PM и QA могли проверить рабочий путь услуги.
+<section class="doc"><h2>Готовые тексты для отправки</h2><div class="cards"><article class="request red"><h3>1. Игорю · безопасный тестовый заказ</h3><p>Нужно показать, что backend/admin Confideline может провести один тестовый заказ без реального списания и без реальной отправки писем.</p><div class="copy">Игорь, нужен один безопасный тестовый заказ для YouDate/Nebula, чтобы PM и QA могли проверить рабочий путь услуги.
 
 Просьба вернуть одним ответом:
-1. общий marker проверки: test_run_id или аналог;
-2. order_id / question_id / session_id или task_id;
-3. кто назначен исполнителем: performer_id / profile_id;
-4. ссылка или route в админке, где виден заказ, вопрос, исполнитель, статус и timeline;
-5. proof, что ответ исполнителя привязан к этому заказу;
-6. proof, что реального списания и реальной отправки писем не было;
-7. событие или preview уведомлений в no-send режиме;
-8. support_case_id или proof, как создается обращение по этому заказу;
-9. скрины ключевых экранов;
-10. короткий verdict: READY / PARTIAL / BLOCKED.
+1. test_run_id или другой marker проверки;
+2. order_id + сумма/валюта + proof, что реального списания не было;
+3. question_id и proof, что вопрос связан именно с order_id;
+4. session_id/card/task_id, если есть отдельная карточка консультации;
+5. performer_id + profile_id/анкета + assigned_at + deadline;
+6. скрин рабочего места эксперта/агента: вопрос, срок, поле ответа;
+7. answer_id или proof, что ответ исполнителя привязан к этому заказу;
+8. route/скрин в админке, где виден заказ, вопрос, исполнитель, статус и timeline;
+9. no-send event: event_id, template, recipient_role, preview, external_send=false;
+10. support_case_id или proof, как создается обращение по этому заказу;
+11. минимальные analytics поля: source/session/order/value/currency/service/expert/support;
+12. данные для QA: URL, роли/логины, ограничения, known issues;
+13. короткий verdict: READY / PARTIAL / BLOCKED.
 
-Если пункт не реализован, не скрывать: указать PARTIAL/BLOCKED, причину и что нужно доработать.</div><div class="rules"><div class="rule accept"><b>Принимаем</b><span>Есть ID заказа, вопрос, исполнитель, ответ, админка, no-send/no-charge, support и скрины.</span></div><div class="rule return"><b>Возвращаем</b><span>Есть общие скрины, но нет ID, связи с заказом, событий, support или verdict.</span></div><div class="rule block"><b>Блокер</b><span>Нельзя безопасно создать заказ или есть риск реального платежа/письма.</span></div></div></article>
+Критический минимум для QA: order_id/no-charge, question_id, performer/profile, workspace, admin timeline, no-send external_send=false. Если пункт не реализован, не скрывать: указать PARTIAL/BLOCKED, причину и что нужно доработать.</div><div class="rules"><div class="rule accept"><b>Принимаем</b><span>Есть ID заказа, вопрос, исполнитель, workspace, ответ/route, админка, no-send/no-charge, support и скрины.</span></div><div class="rule return"><b>Возвращаем</b><span>Есть общие скрины, но нет ID, связи с заказом, событий, support, workspace или verdict.</span></div><div class="rule block"><b>Блокер</b><span>Нельзя безопасно создать заказ или есть риск реального платежа/письма.</span></div></div></article>
   <article class="request red"><h3>2. Ксении / E01 · первый эксперт для QA</h3><p>Нужно выбрать минимум одного эксперта, на котором можно безопасно проверить путь клиента и качество ответа.</p><div class="copy">Ксения, нужен статус допуска первых экспертов для YouDate/Nebula.
 
 Просьба вернуть по E01-E05:
