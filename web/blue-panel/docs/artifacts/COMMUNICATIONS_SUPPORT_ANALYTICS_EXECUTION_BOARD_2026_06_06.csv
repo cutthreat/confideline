@@ -1,0 +1,13 @@
+ID;Слой;Что должно произойти на одном order_id;Что вернуть;Accepted proof;STOP;Связь
+CSA01;No-send order created;Создано событие заказа без отправки наружу;event_id, template, variables, preview, external_send=false;Event связан с order_id/test_run_id;Ушла реальная отправка или нет marker;NSC01
+CSA02;No-send question accepted;Событие вопроса связано с order/session;event_id + question_id/order_id;Вопрос и событие имеют один marker;Вопрос отдельно от order;NSC04
+CSA03;No-send assignment;Событие назначения идет эксперту/админу без отправки;event_id + performer_id/profile_id/deadline;Экспертская задача и событие связаны;Нет assignment/workspace proof;NSC05
+CSA04;No-send answer ready;Событие готового ответа связано с answer_id;event_id + answer_id + client/admin view;Ответ и уведомление связаны;Ответ есть, событие отдельно;NSC07
+CSA05;Support case created;Проблема по заказу создает case;support_case_id, reason, owner, order_id;Кейс связан с order/session/expert;Жалоба без order link;SPC01-SPC05
+CSA06;Support decision/closure;Кейс получает решение и закрытие;decision, owner, closed_at, readiness impact;Есть решение, no-send status и closure;Кейс висит без решения;SPC06-SPC10
+CSA07;Analytics source/session/order;Источник связан с сессией и заказом;source, session_id, client_id, order_id;Можно восстановить путь traffic→order;Source или order существуют отдельно;PAC01-PAC04
+CSA08;Analytics value/service/expert;Сумма, услуга, эксперт связаны с заказом;value,currency,service_session_id,expert/profile_id;Можно считать delivery и себестоимость;Цена только в тексте, эксперт не связан;PAC05-PAC09
+CSA09;Analytics support impact;Support/refund-risk связан с order;support_case_id, reason, decision/status;Будущий CAC/LTV учитывает проблемные заказы;Support отдельно от покупки;PAC10
+CSA10;Daily report row;День получает строку с proof-ссылками;daily row: source/order/value/status/owner/proof links;PM может принять день как измеримый тест;Ручная сводка без первичных proof;PAC12
+CSA11;QA report mapping;QA связывает NSC/SPC/PAC в один verdict;QA report URL + QAC references;Ready status меняется только по report;Скрины в переписке без report;QAC09-QAC15
+CSA12;Launch decision;PM пересчитывает traffic gate после accepted proof;updated readiness + go/no-go note;Paid traffic remains 0 until accepted gates;Запуск рекламы без proof;First traffic gate
