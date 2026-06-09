@@ -1,4 +1,244 @@
 /* Global admin chrome customizations: header, sidebar, user dropdown, and header tools. */
+/* GitHub Pages fallback: make the chat mockup self-contained even when captured AdminLTE/MHTML CSS is unavailable. */
+html,
+body {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #e8eef5;
+  color: #26384d;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+}
+
+body *,
+body *::before,
+body *::after {
+  box-sizing: border-box;
+}
+
+body.skin-youdate .wrapper {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #e8eef5;
+}
+
+body.skin-youdate .main-header {
+  position: relative;
+  z-index: 30;
+  flex: 0 0 44px;
+  min-height: 44px;
+  background: #445b91;
+  color: #f8fbff;
+  box-shadow: 0 1px 0 rgba(30, 50, 80, 0.18);
+}
+
+body.skin-youdate .main-header .logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 190px;
+  height: 44px;
+  color: #fff;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+body.skin-youdate .main-header .navbar {
+  position: absolute;
+  inset: 0 0 0 190px;
+  min-height: 44px;
+  margin: 0;
+  border: 0;
+  background: transparent;
+}
+
+body.skin-youdate .main-header .dropdown-menu,
+body.skin-youdate .main-header .admin-user-menu,
+body.skin-youdate .main-header .open > .dropdown-menu {
+  display: none !important;
+}
+
+body.skin-youdate .main-header .header-tools,
+body.skin-youdate .main-header .sidebar-toggle {
+  display: none !important;
+}
+
+body.skin-youdate .main-sidebar,
+body.skin-youdate .main-footer,
+body.skin-youdate .control-sidebar,
+body.skin-youdate .control-sidebar-bg,
+body.skin-youdate .content-header {
+  display: none !important;
+}
+
+body.skin-youdate .content-wrapper {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0;
+  overflow: hidden;
+  background: #e8eef5;
+}
+
+body.skin-youdate .content,
+body.skin-youdate .content > .box,
+body.skin-youdate .content > .box > .box-body {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+#admin-agent-chat {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  color: #26384d;
+}
+
+#admin-agent-chat .h-100,
+#admin-agent-chat [ng-controller] {
+  height: 100%;
+  min-height: 0;
+}
+
+#admin-agent-chat > .h-100 > .box.box-solid {
+  display: none !important;
+}
+
+#admin-agent-chat .chat-shell {
+  display: grid;
+  grid-template-columns: 352px minmax(480px, 1fr) 316px;
+  gap: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border-top: 1px solid #d4dee8;
+  background: #edf2f7;
+}
+
+#admin-agent-chat .pane {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: #fff;
+  border-right: 1px solid #d8e1ea;
+}
+
+#admin-agent-chat .pane-left,
+#admin-agent-chat .pane-center,
+#admin-agent-chat .pane-right {
+  display: flex;
+  flex-direction: column;
+}
+
+#admin-agent-chat .pane-right {
+  border-right: 0;
+  border-left: 1px solid #d8e1ea;
+}
+
+#admin-agent-chat .pane-head {
+  flex: 0 0 auto;
+  background: #f7fafc;
+  border-bottom: 1px solid #d8e1ea;
+}
+
+#admin-agent-chat .pane-scroll,
+#admin-agent-chat .pane-body,
+#admin-agent-chat .chat-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+#admin-agent-chat .conversation-footer,
+#admin-agent-chat .composer-area {
+  flex: 0 0 auto;
+}
+
+#admin-agent-chat .btn {
+  border: 1px solid #d6e1ea;
+  background: #fff;
+  color: #31475d;
+  font: inherit;
+  cursor: pointer;
+}
+
+#admin-agent-chat .btn-primary {
+  border-color: #8fb6d0;
+  background: #e7f3fb;
+  color: #285f82;
+}
+
+#admin-agent-chat .form-control {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #d6e1ea;
+  border-radius: 4px;
+  background: #fff;
+  color: #26384d;
+  font: inherit;
+  box-shadow: none;
+}
+
+#admin-agent-chat a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (max-width: 1180px) {
+  #admin-agent-chat .chat-shell {
+    grid-template-columns: 320px minmax(420px, 1fr) 286px;
+  }
+}
+
+@media (max-width: 900px) {
+  body {
+    overflow: auto;
+  }
+
+  body.skin-youdate .wrapper {
+    position: static;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  body.skin-youdate .content-wrapper,
+  body.skin-youdate .content,
+  body.skin-youdate .content > .box,
+  body.skin-youdate .content > .box > .box-body,
+  #admin-agent-chat {
+    height: auto;
+    min-height: calc(100vh - 44px);
+    overflow: visible;
+  }
+
+  #admin-agent-chat .chat-shell {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: calc(100vh - 44px);
+  }
+
+  #admin-agent-chat .pane {
+    min-height: 420px;
+    border-right: 0;
+    border-bottom: 1px solid #d8e1ea;
+  }
+}
+
 .main-header .navbar-custom-menu {
   display: flex;
   align-items: center;
