@@ -21,6 +21,9 @@
     .filters { display:flex; gap:10px; flex-wrap:wrap; align-items:center; background:#fff; border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin: 0 0 18px; }
     .filters label { display:inline-flex; gap:6px; align-items:center; padding:6px 8px; border:1px solid #e4e9f2; border-radius:6px; background:#f9fbff; cursor:pointer; user-select:none; }
     .filters input { width:16px; height:16px; }
+    .info-tabs { margin: 0 0 18px; }
+    .tab-button { border:1px solid #0f766e; color:#0f766e; background:#fff; border-radius:6px; padding:10px 14px; font-weight:700; cursor:pointer; }
+    .tab-button[aria-expanded="true"] { background:#e7f6f3; }
     .service-session { background:#fff; border:1px solid var(--line); border-left:8px solid #0f766e; border-radius:8px; padding:18px 20px; margin: 0 0 22px; }
     .service-session h2 { margin:0 0 8px; font-size:22px; }
     .service-session p { margin:0 0 10px; line-height:1.5; max-width:1100px; }
@@ -73,16 +76,19 @@
     <label><input type="checkbox" data-filter-priority="P0" checked>P0</label>
     <label><input type="checkbox" data-filter-priority="P1" checked>P1</label>
   </div>
-  <section class="service-session" id="service-session">
-    <h2>Что такое service_session</h2>
-    <p><b>service_session</b> - это одна консультация как рабочая сущность сервиса. Она связывает клиента, вопрос, выбранного или назначенного эксперта, агента, чат, минуты, баланс, поддержку, жалобы, refund, начисление эксперту и контроль качества.</p>
-    <p>Сейчас в Confideline многое существует отдельно: профиль, чат, кредиты, заказы, поддержка, жалобы. Для Nebula это нужно собрать в один маршрут, чтобы супер-админ видел не разрозненные записи, а конкретную консультацию и ее статус.</p>
-    <div class="service-session-grid">
-      <div class="service-session-item"><b>До консультации</b><br>тема, вопрос клиента, эксперт, цена за минуту, баланс, готовность эксперта.</div>
-      <div class="service-session-item"><b>Во время консультации</b><br>чат, таймер, списание минут, предупреждение о балансе, статус ответа.</div>
-      <div class="service-session-item"><b>После консультации</b><br>итог, история, жалоба/support, refund, начисление эксперту, QA-оценка.</div>
+  <div class="info-tabs">
+    <button class="tab-button" type="button" aria-expanded="false" aria-controls="service-session" data-toggle-service-session>Что такое service_session</button>
+    <section class="service-session is-hidden" id="service-session" aria-label="Что такое service_session">
+      <h2>Что такое service_session</h2>
+      <p><b>service_session</b> - это одна консультация как рабочая сущность сервиса. Она связывает клиента, вопрос, выбранного или назначенного эксперта, агента, чат, минуты, баланс, поддержку, жалобы, refund, начисление эксперту и контроль качества.</p>
+      <p>Сейчас в Confideline многое существует отдельно: профиль, чат, кредиты, заказы, поддержка, жалобы. Для Nebula это нужно собрать в один маршрут, чтобы супер-админ видел не разрозненные записи, а конкретную консультацию и ее статус.</p>
+      <div class="service-session-grid">
+        <div class="service-session-item"><b>До консультации</b><br>тема, вопрос клиента, эксперт, цена за минуту, баланс, готовность эксперта.</div>
+        <div class="service-session-item"><b>Во время консультации</b><br>чат, таймер, списание минут, предупреждение о балансе, статус ответа.</div>
+        <div class="service-session-item"><b>После консультации</b><br>итог, история, жалоба/support, refund, начисление эксперту, QA-оценка.</div>
+      </div>
+    </section>
     </div>
-  </section>
     <section class="role-section" id="Супер-админ" data-role="Супер-админ" style="--role-color:#b7791f;--role-bg:#fff8e6">
       <div class="role-head">
         <div>
@@ -359,6 +365,8 @@
   (function () {
     const roleInputs = Array.from(document.querySelectorAll('[data-filter-role]'));
     const priorityInputs = Array.from(document.querySelectorAll('[data-filter-priority]'));
+    const serviceSessionButton = document.querySelector('[data-toggle-service-session]');
+    const serviceSessionPanel = document.getElementById('service-session');
 
     function selectedValues(inputs, attr) {
       return new Set(inputs.filter((input) => input.checked).map((input) => input.getAttribute(attr)));
@@ -386,6 +394,13 @@
     }
 
     roleInputs.concat(priorityInputs).forEach((input) => input.addEventListener('change', applyFilters));
+    if (serviceSessionButton && serviceSessionPanel) {
+      serviceSessionButton.addEventListener('click', () => {
+        const expanded = serviceSessionButton.getAttribute('aria-expanded') === 'true';
+        serviceSessionButton.setAttribute('aria-expanded', String(!expanded));
+        serviceSessionPanel.classList.toggle('is-hidden', expanded);
+      });
+    }
     applyFilters();
   }());
 </script>
