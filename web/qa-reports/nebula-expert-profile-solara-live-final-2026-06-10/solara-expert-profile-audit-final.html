@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SolaraOrtiz: аудит анкеты эксперта</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f6f8fb; color: #172033; }
+    header { background: #1f4e78; color: #fff; padding: 26px 32px; }
+    main { padding: 22px 28px 42px; }
+    h1 { margin: 0 0 8px; font-size: 28px; }
+    h2 { margin-top: 24px; }
+    .card { background: #fff; border: 1px solid #d9e2f3; border-radius: 8px; padding: 16px; margin: 14px 0; }
+    table { width: 100%; border-collapse: collapse; background: #fff; font-size: 14px; }
+    th { background: #1f4e78; color: #fff; text-align: left; padding: 10px; }
+    td { border-top: 1px solid #d9e2f3; padding: 10px; vertical-align: top; line-height: 1.45; }
+    .ok { color: #1f5e2e; font-weight: 700; }
+    .warn { color: #8a4b00; font-weight: 700; }
+    .bad { color: #842029; font-weight: 700; }
+    code { background: #eef2f7; padding: 2px 5px; border-radius: 4px; }
+    a { color: #175cd3; font-weight: 700; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>SolaraOrtiz: аудит аккаунта анкеты эксперта</h1>
+  <p>Фокус: что видит и редактирует сама анкета эксперта, и насколько это помогает запуску эзотерических поминутных консультаций.</p>
+</header>
+<main>
+  <div class="card">
+    <h2>Короткий вывод</h2>
+    <p><span class="ok">Доказано прямым входом:</span> SolaraOrtiz входит напрямую, у нее есть публичная экспертная карточка и редактируемые поля эзотерической анкеты: направления, специализация, языки, количество консультаций, опыт и описание.</p>
+    <p><span class="ok">Статус входа:</span> после обновления тестового пароля прямой вход подтвержден; 9 из 9 проверенных страниц открылись под аккаунтом Solara без <code>Login as user</code>.</p>
+    <p><span class="warn">Product вывод:</span> это пока профиль эксперта на базе dating/social-платформы, а не полноценное рабочее место эзотерической консультации. Нет service_session, приема консультации, таймера минут, ставки эксперта, начислений за консультацию, SLA и quality-review внутри аккаунта эксперта.</p>
+  </div>
+
+  <h2>Evidence по входу</h2>
+  <table>
+    <thead><tr><th>Проверка</th><th>Результат</th><th>Доказательство</th><th>Вывод</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Прямой вход username <code>SolaraOrtiz</code></td>
+        <td class="ok">Прошел</td>
+        <td><a href="solara-direct-final-audit.json">JSON direct-login final</a>, <a href="evidence-solara-direct-final/00-direct-login.png">скрин</a></td>
+        <td>Прямой вход подтвержден.</td>
+      </tr>
+      <tr>
+        <td>Пароль Solara</td>
+        <td class="ok">Восстановлен на тестовом сайте</td>
+        <td><a href="solara-password-repair-and-direct-login.json">JSON repair + direct check</a></td>
+        <td>Пароль в отчетах не сохранен; в evidence сохранен только факт успешного входа.</td>
+      </tr>
+      <tr>
+        <td>Админский <code>Login as user</code> для Solara #103</td>
+        <td class="warn">Дополнительная история проверки</td>
+        <td><a href="evidence-solara-admin-login-as-user/01-after-login-as-user.png">скрин после входа</a></td>
+        <td>Использовался до восстановления прямого входа; финальный статус опирается на direct-login evidence.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Что видит Solara</h2>
+  <table>
+    <thead><tr><th>Раздел</th><th>Что видно</th><th>Product значение</th><th>Скрин</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Профиль</td>
+        <td>Solara Ortiz, Испания/Валенсия, описание Tarot/Cheap Chat, экспертные направления, специализации, языки, опыт, 500+ консультаций.</td>
+        <td class="ok">Есть публичная карточка эксперта, пригодная как база для витрины.</td>
+        <td><a href="evidence-solara-direct-final/01-ru-profile.png">скрин</a></td>
+      </tr>
+      <tr>
+        <td>Настройки профиля</td>
+        <td>Редактируются имя, описание, дата рождения, страна, город, статус, пол, “ищу”, “о себе” и экспертные extra-fields.</td>
+        <td class="ok">Экспертные поля редактируются самой анкетой.</td>
+        <td><a href="evidence-solara-direct-final/02-ru-settings-profile.png">скрин</a></td>
+      </tr>
+      <tr>
+        <td>Фото</td>
+        <td>Страница загрузки/управления фотографиями доступна.</td>
+        <td class="ok">Анкета может поддерживать визуальную карточку эксперта.</td>
+        <td><a href="evidence-solara-direct-final/03-ru-settings-photos.png">скрин</a></td>
+      </tr>
+      <tr>
+        <td>Аккаунт и уведомления</td>
+        <td>Настройки аккаунта и уведомлений доступны.</td>
+        <td class="warn">Есть базовая настройка пользователя, но не экспертские SLA/availability.</td>
+        <td><a href="evidence-solara-direct-final/04-ru-settings-account.png">аккаунт</a>, <a href="evidence-solara-direct-final/05-ru-settings-notifications.png">уведомления</a></td>
+      </tr>
+      <tr>
+        <td>Сообщения</td>
+        <td>Страница сообщений доступна.</td>
+        <td class="warn">Это обычные сообщения, не доказан consultation-mode с минутами и сессией.</td>
+        <td><a href="evidence-solara-direct-final/06-ru-messages.png">скрин</a></td>
+      </tr>
+      <tr>
+        <td>Баланс / услуги</td>
+        <td>0 кредитов, Premium account, boost/search positioning, no ads, incognito.</td>
+        <td class="bad">Это dating/social-монетизация, не начисления эксперта за консультации.</td>
+        <td><a href="evidence-solara-direct-final/07-ru-balance-services.png">скрин</a></td>
+      </tr>
+      <tr>
+        <td>Новости</td>
+        <td>Контентная страница новостей доступна.</td>
+        <td class="warn">Не влияет на рабочий контур эксперта.</td>
+        <td><a href="evidence-solara-direct-final/08-ru-news.png">скрин</a></td>
+      </tr>
+      <tr>
+        <td>Страны</td>
+        <td>Geo-content с эзотерическим позиционированием: астро-картография, Таро, совместимость, консультации.</td>
+        <td class="ok">Есть контентная база под эзотерику, но это не кабинет эксперта.</td>
+        <td><a href="evidence-solara-direct-final/09-ru-countries.png">скрин</a></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Что Solara может редактировать как эксперт</h2>
+  <table>
+    <thead><tr><th>Блок</th><th>Поля/значения</th><th>Вывод для Nebula</th></tr></thead>
+    <tbody>
+      <tr><td>Базовый профиль</td><td>Имя, описание, страна Испания, город Валенсия, дата рождения, пол, статус.</td><td>Подходит как основа экспертной карточки, но dating-поля “ищу/отношения” нужно убрать или заменить.</td></tr>
+      <tr><td>Экспертиза</td><td>Таролог, Экстрасенс, Ясновидящий, Духовный практик.</td><td>Это уже предметные эзотерические категории.</td></tr>
+      <tr><td>Специализация</td><td>Любовные отношения, Брак и семья, Совместимость партнеров, Карьера и предназначение.</td><td>Подходит для фильтров/подбора эксперта и клиентского онбординга.</td></tr>
+      <tr><td>Языки</td><td>Spanish, English.</td><td>Нужно использовать для маршрутизации клиентов и доступности.</td></tr>
+      <tr><td>Опыт</td><td>Более 500 консультаций, более 10 лет опыта.</td><td>Подходит для доверия на карточке, но нужен proof/модерация утверждений.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Function / code impact map</h2>
+  <table>
+    <thead><tr><th>Функция</th><th>Кодовая точка</th><th>Что влияет</th><th>Gap для консультаций</th></tr></thead>
+    <tbody>
+      <tr><td>Редактирование профиля</td><td><code>controllers/SettingsController.php::actionProfile</code></td><td>Сохраняет Profile и ProfileExtra fields.</td><td>Нет отдельной модели экспертской доступности, цены/мин и SLA.</td></tr>
+      <tr><td>Extra fields эксперта</td><td><code>SettingsController.php::actionExtraFields</code></td><td>Сохраняет категории “Экспертиза” и “Опыт эксперта”.</td><td>Поля есть, но не связаны с order/session.</td></tr>
+      <tr><td>Публичная карточка</td><td><code>controllers/ProfileController.php::actionView</code></td><td>Показывает профиль, фото, like/report/message.</td><td>Нет консультационной карточки с ценой/мин, availability и стартом service_session.</td></tr>
+      <tr><td>Новости</td><td><code>controllers/NewsController.php::actionIndex</code></td><td>Показывает опубликованные новости.</td><td>Контентный раздел, не рабочий кабинет.</td></tr>
+      <tr><td>Страны / directory</td><td><code>controllers/DirectoryController.php::actionIndex</code> + geo-content route</td><td>Страницы стран/директория и SEO-контент.</td><td>Полезно для маркетинга, но не закрывает консультационную операцию.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Anton-gate</h2>
+  <table>
+    <thead><tr><th>Проверка</th><th>Вердикт</th><th>Почему</th></tr></thead>
+    <tbody>
+      <tr><td>Понятность роли эксперта</td><td class="warn">Частично</td><td>Анкета выглядит экспертной за счет эзотерических полей, но вокруг осталась dating-навигация.</td></tr>
+      <tr><td>Готовность к платной консультации</td><td class="bad">Не готово</td><td>Нет сессии, таймера, ставки, начислений, SLA и quality flow.</td></tr>
+      <tr><td>Доверие к карточке</td><td class="warn">Частично</td><td>Есть опыт и специализации, но claims “500+ консультаций/10+ лет” требуют модерации/proof.</td></tr>
+      <tr><td>Операционная масштабируемость 5 → 25 экспертов</td><td class="bad">Не готово</td><td>Профиль масштабируется, но рабочий контур консультаций для экспертов не собран.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="card">
+    <h2>Итог для мастер-плана</h2>
+    <p>Solara доказывает, что экспертная анкета и эзотерические поля уже существуют в текущем Confideline. Это хорошая база для витрины экспертов. Но запуск Nebula нельзя считать готовым, потому что аккаунт эксперта пока не управляет консультацией как продуктовой сущностью: нет service_session, поминутной логики, доступности эксперта, SLA, начислений и expert QA.</p>
+  </div>
+</main>
+</body>
+</html>

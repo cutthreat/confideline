@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Агент Kristy: расширение рабочего доступа</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f6f8fb; color: #172033; }
+    header { background: #1f4e78; color: #fff; padding: 26px 32px; }
+    main { padding: 22px 28px 40px; }
+    h1 { margin: 0 0 8px; font-size: 28px; }
+    h2 { margin-top: 24px; }
+    .card { background: #fff; border: 1px solid #d9e2f3; border-radius: 8px; padding: 16px; margin: 14px 0; }
+    table { width: 100%; border-collapse: collapse; background: #fff; font-size: 14px; }
+    th { background: #1f4e78; color: #fff; text-align: left; padding: 10px; }
+    td { border-top: 1px solid #d9e2f3; padding: 10px; vertical-align: top; line-height: 1.45; }
+    .ok { color: #1f5e2e; font-weight: 700; }
+    .warn { color: #8a4b00; font-weight: 700; }
+    a { color: #175cd3; font-weight: 700; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Агент Kristy: рабочий доступ расширен</h1>
+  <p>Цель проверки: дать агенту доступ, достаточный для работы с назначенными анкетами экспертов и клиентскими коммуникациями, без превращения роли в супер-админа.</p>
+</header>
+<main>
+  <div class="card">
+    <h2>Управленческий вывод</h2>
+    <p><span class="ok">Готово:</span> роль agent расширена до рабочего минимума: собственная карточка агента, назначенные анкеты, чат, сообщения, поддержка, заказы, транзакции и жалобы доступны под Kristy.</p>
+    <p><span class="warn">Осталось:</span> общий список всех партнеров <code>/ru/admin/partner/index</code> остается закрыт даже после добавления <code>partners-all</code>. Для операционной работы Kristy это не блокер, потому что карточка Kristy и ее назначенные анкеты открываются. Если нужен именно общий реестр партнеров для агента, требуется отдельное исправление правила доступа в коде/роутинге.</p>
+  </div>
+
+  <h2>Что было добавлено в роль agent</h2>
+  <table>
+    <thead><tr><th>Право</th><th>Зачем нужно агенту</th><th>Статус</th></tr></thead>
+    <tbody>
+      <tr><td><code>partners-all</code></td><td>Партнерский контур и карточка агента.</td><td class="ok">Сохранено</td></tr>
+      <tr><td><code>chief_under-all</code></td><td>Назначенные анкеты экспертов под агентом.</td><td class="ok">Сохранено</td></tr>
+      <tr><td><code>support-all</code></td><td>Работа с обращениями клиентов.</td><td class="ok">Сохранено</td></tr>
+      <tr><td><code>reports-all</code></td><td>Работа с жалобами.</td><td class="ok">Сохранено</td></tr>
+      <tr><td>Сохранены ранее открытые права</td><td>Chat, Messages, Orders, Balance transactions.</td><td class="ok">Сохранено</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Проверка под Kristy</h2>
+  <table>
+    <thead><tr><th>Раздел</th><th>Что проверено</th><th>Результат</th><th>Скрин</th></tr></thead>
+    <tbody>
+      <tr><td>Главная админки</td><td>Вход под агентом Kristy.</td><td class="ok">Доступно</td><td><a href="agent-after-expanded-needed-access/01-ru-admin.png">скрин</a></td></tr>
+      <tr><td>Карточка агента</td><td>Kristy #12, данные агента.</td><td class="ok">Доступно</td><td><a href="agent-after-expanded-needed-access/03-ru-admin-partner-info-id-12.png">скрин</a></td></tr>
+      <tr><td>Назначенные анкеты</td><td>Solara Ortiz, Stella Berzina, Talia Munkrest.</td><td class="ok">Доступно</td><td><a href="agent-after-expanded-needed-access/04-ru-admin-chief-under-index-userid-12.png">скрин</a></td></tr>
+      <tr><td>Рабочий чат</td><td>Чаты и фильтры agent/admin chat.</td><td class="ok">Доступно</td><td><a href="agent-after-expanded-needed-access/05-ru-admin-message-chat.png">скрин</a></td></tr>
+      <tr><td>Поддержка</td><td>Очередь обращений.</td><td class="ok">Доступно</td><td><a href="agent-after-expanded-needed-access/06-ru-admin-support-index.png">скрин</a></td></tr>
+      <tr><td>Заказы</td><td>Список заказов и статусы.</td><td class="ok">Доступно</td><td><a href="agent-after-expanded-needed-access/07-ru-admin-order-index.png">скрин</a></td></tr>
+      <tr><td>Транзакции</td><td>Балансовые операции.</td><td class="ok">Доступно</td><td><a href="agent-after-expanded-needed-access/08-ru-admin-balance-transaction-index.png">скрин</a></td></tr>
+      <tr><td>Жалобы</td><td>Список жалоб.</td><td class="ok">Доступно</td><td><a href="agent-after-expanded-needed-access/09-ru-admin-report-index.png">скрин</a></td></tr>
+      <tr><td>Общий список партнеров</td><td><code>/ru/admin/partner/index</code>.</td><td class="warn">Закрыто отдельным правилом доступа</td><td><a href="agent-after-expanded-needed-access/02-ru-admin-partner-index.png">скрин</a></td></tr>
+    </tbody>
+  </table>
+
+  <div class="card">
+    <h2>Что это значит для Nebula</h2>
+    <p>Агент уже может быть рабочим оператором нескольких анкет экспертов: видеть свои анкеты, вести коммуникацию, проверять обращения, заказы, транзакции и жалобы. Для запуска эзотерических консультаций все равно нужен отдельный слой service_session: назначение консультации, поминутные лимиты, SLA, начисления эксперту и связь с поддержкой/refund.</p>
+    <p>Доказательства: <a href="agent-role-expanded-needed-access.json">изменение роли</a>, <a href="agent-after-expanded-needed-access-map.json">проверка под Kristy</a>, <a href="../nebula-3-role-live-functional-map-2026-06-10/role-based-master-plan.html">обновленный мастер-план</a>.</p>
+  </div>
+</main>
+</body>
+</html>

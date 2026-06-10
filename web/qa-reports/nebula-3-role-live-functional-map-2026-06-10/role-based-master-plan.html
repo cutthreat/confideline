@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nebula master plan by 4 roles</title>
+  <style>
+    :root { color-scheme: light; --ink:#172033; --muted:#667085; --line:#d9e2f3; --blue:#1f4e78; }
+    body { font-family: Arial, sans-serif; margin: 0; color: var(--ink); background: #f6f8fb; }
+    header { background: #1f4e78; color: white; padding: 28px 34px; }
+    header h1 { margin: 0 0 8px; font-size: 30px; }
+    header p { margin: 0; max-width: 1050px; line-height: 1.5; }
+    main { padding: 22px 28px 40px; }
+    .nav { display:flex; gap:10px; flex-wrap:wrap; margin: 0 0 18px; }
+    .nav a { background:white; border:1px solid var(--line); color:#175cd3; padding:10px 14px; text-decoration:none; border-radius:6px; font-weight:700; }
+    .summary { display:grid; grid-template-columns: repeat(3, minmax(220px,1fr)); gap:12px; margin-bottom:18px; }
+    .summary-card { background:white; border:1px solid var(--line); border-left:6px solid #2f80ed; padding:14px; border-radius:6px; }
+    .summary-card b { display:block; margin-bottom:6px; }
+    .legend { display:flex; gap:10px; flex-wrap:wrap; align-items:center; background:#fff; border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin: 0 0 16px; }
+    .legend b { margin-right:4px; }
+    .filters { display:flex; gap:10px; flex-wrap:wrap; align-items:center; background:#fff; border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin: 0 0 18px; }
+    .filters label { display:inline-flex; gap:6px; align-items:center; padding:6px 8px; border:1px solid #e4e9f2; border-radius:6px; background:#f9fbff; cursor:pointer; user-select:none; }
+    .filters input { width:16px; height:16px; }
+    .service-session { background:#fff; border:1px solid var(--line); border-left:8px solid #0f766e; border-radius:8px; padding:18px 20px; margin: 0 0 22px; }
+    .service-session h2 { margin:0 0 8px; font-size:22px; }
+    .service-session p { margin:0 0 10px; line-height:1.5; max-width:1100px; }
+    .service-session-grid { display:grid; grid-template-columns: repeat(3, minmax(220px,1fr)); gap:10px; margin-top:12px; }
+    .service-session-item { background:#f8fafc; border:1px solid #e4e9f2; border-radius:6px; padding:10px; line-height:1.45; }
+    .is-hidden { display:none !important; }
+    .role-section { background:white; border:1px solid var(--line); border-radius:8px; margin: 18px 0 26px; overflow:hidden; }
+    .role-head { display:grid; grid-template-columns: 260px 1fr; gap:20px; align-items:center; background:var(--role-bg); border-left:8px solid var(--role-color); padding:18px 20px; }
+    .role-head h2 { margin:0; font-size:26px; }
+    .role-head p { margin:0; line-height:1.5; max-width:1000px; }
+    .eyebrow { color:var(--muted); font-size:12px; text-transform:uppercase; font-weight:700; letter-spacing:.04em; margin-bottom:4px; }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th { background:#1f4e78; color:white; text-align:left; padding:10px; vertical-align:top; }
+    td { border-top:1px solid var(--line); padding:10px; vertical-align:top; line-height:1.45; }
+    .block-name { font-weight:700; min-width:170px; }
+    .pill, .priority { display:inline-block; padding:4px 8px; border-radius:999px; font-weight:700; font-size:12px; white-space:nowrap; }
+    .status-green { background:#d9ead3; color:#1f5e2e; }
+    .status-yellow { background:#fff2cc; color:#7a4e00; }
+    .status-red { background:#f4cccc; color:#842029; }
+    .priority-p0 { background:#f4cccc; color:#842029; }
+    .priority-p1 { background:#fff2cc; color:#7a4e00; }
+    .priority-p2 { background:#e7e6e6; color:#344054; }
+    .footer { color:var(--muted); font-size:13px; margin-top:20px; }
+    @media (max-width:900px) { .summary { grid-template-columns:1fr; } .role-head { grid-template-columns:1fr; } table { font-size:13px; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Мастер-план Nebula по 4 ролям</h1>
+  <p>Укрупненная карта для понимания проекта: что должно быть у супер-админа, агента, эксперта и клиента, что уже есть в Confideline, что нужно доделать для запуска эзотерических поминутных консультаций с 5 экспертами и готовностью к росту до 25.</p>
+</header>
+<main>
+  <nav class="nav">
+    <a href="#Супер-админ">Супер-админ</a>
+    <a href="#Агент">Агент</a>
+    <a href="#Эксперт">Эксперт</a>
+    <a href="#Клиент">Клиент</a>
+  </nav>
+  <div class="legend">
+    <b>Как читать план:</b>
+    <span class="priority priority-p0">P0</span><span>обязательно до запуска с 5 экспертами</span>
+    <span class="priority priority-p1">P1</span><span>важно, но можно делать после базового запуска или параллельно без блокировки старта</span>
+  </div>
+  <div class="filters" aria-label="Фильтры мастер-плана">
+    <b>Фильтр:</b>
+    <label><input type="checkbox" data-filter-role="Супер-админ" checked>Супер-админ</label>
+    <label><input type="checkbox" data-filter-role="Агент" checked>Агент</label>
+    <label><input type="checkbox" data-filter-role="Эксперт" checked>Эксперт</label>
+    <label><input type="checkbox" data-filter-role="Клиент" checked>Клиент</label>
+    <label><input type="checkbox" data-filter-priority="P0" checked>P0</label>
+    <label><input type="checkbox" data-filter-priority="P1" checked>P1</label>
+  </div>
+  <section class="service-session" id="service-session">
+    <h2>Что такое service_session</h2>
+    <p><b>service_session</b> - это одна консультация как рабочая сущность сервиса. Она связывает клиента, вопрос, выбранного или назначенного эксперта, агента, чат, минуты, баланс, поддержку, жалобы, refund, начисление эксперту и контроль качества.</p>
+    <p>Сейчас в Confideline многое существует отдельно: профиль, чат, кредиты, заказы, поддержка, жалобы. Для Nebula это нужно собрать в один маршрут, чтобы супер-админ видел не разрозненные записи, а конкретную консультацию и ее статус.</p>
+    <div class="service-session-grid">
+      <div class="service-session-item"><b>До консультации</b><br>тема, вопрос клиента, эксперт, цена за минуту, баланс, готовность эксперта.</div>
+      <div class="service-session-item"><b>Во время консультации</b><br>чат, таймер, списание минут, предупреждение о балансе, статус ответа.</div>
+      <div class="service-session-item"><b>После консультации</b><br>итог, история, жалоба/support, refund, начисление эксперту, QA-оценка.</div>
+    </div>
+  </section>
+    <section class="role-section" id="Супер-админ" data-role="Супер-админ" style="--role-color:#b7791f;--role-bg:#fff8e6">
+      <div class="role-head">
+        <div>
+          <div class="eyebrow">Пользовательский сценарий</div>
+          <h2>Супер-админ</h2>
+        </div>
+        <p>Супер-админ - это полный рабочий контур Nebula. Он должен видеть и управлять всем: клиентами, агентами, экспертами, ролями, модерацией, балансом, заказами, чатами, поддержкой, жалобами, refund, начислениями, правилами консультаций и качеством сервиса.</p>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Блок</th><th>Статус</th><th>Что уже есть</th><th>Что нужно сделать</th><th>Готово когда</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> Единый центр консультаций</td>
+          <td><span class="pill status-red">Нужно собрать</span></td>
+          <td>Есть отдельные разделы: пользователи, партнеры/агенты, заказы, транзакции, чат, поддержка, жалобы, роли, модерация.</td>
+          <td>Собрать service_session: заказ, вопрос, клиент, агент, эксперт, чат, минуты, поддержка, refund, начисление и события в одном маршруте.</td>
+          <td>Супер-админ видит каждую консультацию целиком и понимает, где проблема.</td>
+          
+        </tr>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> Управление ролями и доступами</td>
+          <td><span class="pill status-yellow">Частично есть</span></td>
+          <td>Есть роли и настройка permissions. Роль агента расширена до рабочего минимума: анкеты, чат, support, orders, balance transactions, reports.</td>
+          <td>Зафиксировать 4 роли Nebula: супер-админ, агент, эксперт, клиент. Разделить видимость и действия без лишнего доступа.</td>
+          <td>Каждая роль видит только свой рабочий контур, а супер-админ видит все.</td>
+          
+        </tr>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> Модерация и качество</td>
+          <td><span class="pill status-yellow">Частично есть</span></td>
+          <td>Есть жалобы, модерационные разделы, фото/контент, пользователи с жалобами, логи.</td>
+          <td>Связать модерацию с консультацией: жалоба на эксперта/клиента, проверка качества ответа, решение, санкция, refund.</td>
+          <td>Любой спор имеет владельца, статус, решение и доказательство.</td>
+          
+        </tr>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> Баланс, заказы, начисления</td>
+          <td><span class="pill status-yellow">Частично есть</span></td>
+          <td>Есть credits, balance transactions, orders, ручные балансовые операции, платежная база.</td>
+          <td>Добавить поминутные правила: цена эксперта, списание за минуты, остановка при недостатке баланса, начисление эксперту, удержание комиссии.</td>
+          <td>По каждой консультации видно: оплачено, списано, начислено, возвращено.</td>
+          
+        </tr>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> Очереди работы</td>
+          <td><span class="pill status-red">Нужно сделать</span></td>
+          <td>Сейчас данные есть в разных разделах.</td>
+          <td>Очереди: новый вопрос, оплата без вопроса, ожидает назначения, эксперт не ответил, скоро дедлайн, жалоба, refund, сбой уведомления.</td>
+          <td>Супер-админ не ищет проблемы вручную, а видит рабочие очереди.</td>
+          
+        </tr>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> Сквозной контроль запуска</td>
+          <td><span class="pill status-red">Нужно сделать</span></td>
+          <td>Есть отдельные proof по страницам и ролям.</td>
+          <td>Собрать QA gate: клиент создал тестовый заказ/вопрос, агент/эксперт обработал, супер-админ проверил поддержку, жалобу, баланс и начисление.</td>
+          <td>Один тест доказывает, что сервис можно запускать с 5 экспертами.</td>
+          
+        </tr></tbody>
+      </table>
+    </section>
+
+    <section class="role-section" id="Агент" data-role="Агент" style="--role-color:#805ad5;--role-bg:#f5f0ff">
+      <div class="role-head">
+        <div>
+          <div class="eyebrow">Пользовательский сценарий</div>
+          <h2>Агент</h2>
+        </div>
+        <p>Агент - оператор нескольких анкет экспертов. Он не супер-админ и не клиент: его задача вести назначенные анкеты, коммуникации, обращения и первичный контроль консультаций в своем контуре.</p>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Блок</th><th>Статус</th><th>Что уже есть</th><th>Что нужно сделать</th><th>Готово когда</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> Назначенные анкеты</td>
+          <td><span class="pill status-yellow">Частично есть</span></td>
+          <td>Kristy #12 видит свои назначенные анкеты: Solara Ortiz, Stella Berzina, Talia Munkrest.</td>
+          <td>Оформить это как рабочий список экспертов агента: статус анкеты, готовность, специализация, доступность.</td>
+          <td>Агент понимает, за каких экспертов отвечает и кто готов принимать консультации.</td>
+          
+        </tr>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> Коммуникации</td>
+          <td><span class="pill status-yellow">Частично есть</span></td>
+          <td>Доступны admin chat и messages.</td>
+          <td>Связать чат с консультацией и конкретной анкетой эксперта, убрать dating-логику из рабочего сценария.</td>
+          <td>Агент видит, от лица какой анкеты идет коммуникация и к какой консультации она относится.</td>
+          
+        </tr>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> Поддержка и жалобы</td>
+          <td><span class="pill status-green">Базово доступно</span></td>
+          <td>После расширения роли доступны support и reports.</td>
+          <td>Ограничить и связать обращения с консультациями своего контура: клиент, эксперт, причина, решение.</td>
+          <td>Агент обрабатывает только свои консультационные обращения, а супер-админ видит все.</td>
+          
+        </tr>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> Заказы и транзакции</td>
+          <td><span class="pill status-yellow">Частично есть</span></td>
+          <td>Агенту доступны orders и balance transactions.</td>
+          <td>Сделать для агента не общий финансовый хаос, а понятный вид по консультациям его анкет: оплата, минуты, списание, возврат.</td>
+          <td>Агент может объяснить клиенту статус оплаты и передать проблему супер-админу.</td>
+          
+        </tr>
+        <tr>
+          <td class="block-name"><span class="priority priority-p1">P1</span> Ограничение доступа</td>
+          <td><span class="pill status-yellow">Есть уточнение</span></td>
+          <td>Собственная карточка агента и назначенные анкеты доступны. Общий список всех партнеров закрыт отдельным правилом доступа.</td>
+          <td>Решить, нужен ли агенту общий реестр партнеров. Если нужен - исправить доступ к Partner index; если не нужен - оставить закрытым.</td>
+          <td>Агент не видит лишнего, но не теряет рабочие задачи.</td>
+          
+        </tr>
+        <tr>
+          <td class="block-name"><span class="priority priority-p1">P1</span> Инструкции агента</td>
+          <td><span class="pill status-red">Нужно сделать</span></td>
+          <td>Рабочий доступ агента уже частично собран, но инструкции обработки консультаций не оформлены.</td>
+          <td>Сделать короткие правила: когда агент отвечает сам, когда передает эксперту, когда эскалирует супер-админу.</td>
+          <td>Новый агент может работать по понятному регламенту без устных объяснений.</td>
+          
+        </tr></tbody>
+      </table>
+    </section>
+
+    <section class="role-section" id="Эксперт" data-role="Эксперт" style="--role-color:#2b6cb0;--role-bg:#eef6ff">
+      <div class="role-head">
+        <div>
+          <div class="eyebrow">Пользовательский сценарий</div>
+          <h2>Эксперт</h2>
+        </div>
+        <p>Эксперт - эзотерический специалист, чья анкета видна клиенту. На SolaraOrtiz подтверждено: экспертная карточка и эзотерические поля уже есть, но для запуска нужен отдельный рабочий контур консультаций: задачи, минуты, SLA, качество и начисления..</p>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Блок</th><th>Статус</th><th>Что уже есть</th><th>Что нужно сделать</th><th>Готово когда</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> Анкета эксперта</td>
+          <td><span class="pill status-yellow">Частично есть</span></td>
+          <td>SolaraOrtiz показывает публичную карточку: описание Tarot/Cheap Chat, направления “Таролог, Экстрасенс, Ясновидящий, Духовный практик”, специализации, языки Spanish/English, опыт 500+ консультаций и 10+ лет.</td>
+          <td>Довести карточку до продукта: цена/мин, доступность, правила консультации, модерация claims про опыт и консультации.</td>
+          <td>Клиент понимает, кто эксперт и почему ему можно доверять.</td>
+          
+        </tr>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> Допуск эксперта</td>
+          <td><span class="pill status-red">Нужно сделать</span></td>
+          <td>Есть профиль и экспертные поля, но нет доказанного процесса допуска эксперта к платным консультациям.</td>
+          <td>Добавить статус допуска: проверен, активен, скрыт, заблокирован; подтвердить опыт, направления, язык и готовность работать.</td>
+          <td>Перед запуском 5 экспертов имеют понятный статус допуска и могут принимать консультации.</td>
+          
+        </tr>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> Рабочее место эксперта</td>
+          <td><span class="pill status-red">Нужно сделать</span></td>
+          <td>Есть обычный профиль, настройки, сообщения и баланс/услуги. Solara может редактировать профиль и extra-fields.</td>
+          <td>Добавить экспертский кабинет: новые консультации, активная сессия, ответ, завершение, история, дедлайны.</td>
+          <td>Эксперт может провести консультацию без ручного сопровождения разработчика.</td>
+          
+        </tr>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> SLA и качество ответа</td>
+          <td><span class="pill status-red">Нужно сделать</span></td>
+          <td>Есть общие логи и сообщения, но нет консультационных SLA.</td>
+          <td>Добавить принять/отклонить консультацию, время ответа, просрочку, quality review, причину жалобы.</td>
+          <td>Понятно, ответил ли эксперт вовремя и качественно.</td>
+          
+        </tr>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> Начисления эксперту</td>
+          <td><span class="pill status-red">Нужно сделать</span></td>
+          <td>Есть balance transactions, но не доказана связь с консультацией и минутами.</td>
+          <td>Считать начисление по завершенной консультации: минуты, ставка, комиссия, удержание, выплата.</td>
+          <td>Эксперт видит, за что получил начисление.</td>
+          
+        </tr></tbody>
+      </table>
+    </section>
+
+    <section class="role-section" id="Клиент" data-role="Клиент" style="--role-color:#2f855a;--role-bg:#ecfdf3">
+      <div class="role-head">
+        <div>
+          <div class="eyebrow">Пользовательский сценарий</div>
+          <h2>Клиент</h2>
+        </div>
+        <p>Клиентский путь должен превратить текущий dating/social-фронт в понятный сервис эзотерических поминутных консультаций: выбрать тему, задать вопрос, выбрать или получить эксперта, видеть цену за минуту, общаться в консультационном чате, контролировать списание и обратиться в поддержку.</p>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Блок</th><th>Статус</th><th>Что уже есть</th><th>Что нужно сделать</th><th>Готово когда</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> Понимание продукта</td>
+          <td><span class="pill status-yellow">Частично есть</span></td>
+          <td>Сайт сейчас выглядит как social/dating: профиль, поиск, сообщения, группы, страны.</td>
+          <td>Переделать маршрут под эзотерическую консультацию: что клиент покупает, как задает вопрос, кто отвечает, сколько стоит минута.</td>
+          <td>Клиент без объяснений понимает: это сервис эзотерических консультаций, а не сайт знакомств.</td>
+          
+        </tr>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> Онбординг вопроса</td>
+          <td><span class="pill status-red">Нужно сделать</span></td>
+          <td>Есть профиль и настройки пользователя.</td>
+          <td>Добавить шаги: тема, вопрос, контекст, формат консультации, выбор эксперта или подбор.</td>
+          <td>Клиент может подготовить консультацию до начала чата.</td>
+          
+        </tr>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> Выбор эксперта</td>
+          <td><span class="pill status-yellow">Частично есть</span></td>
+          <td>Есть профили пользователей и поля экспертизы/специализации.</td>
+          <td>Сделать карточки эзотерических экспертов: направление, опыт, доступность, цена/мин, рейтинг/качество.</td>
+          <td>Клиент может выбрать эксперта или получить назначение.</td>
+          
+        </tr>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> Поминутная консультация</td>
+          <td><span class="pill status-red">Нужно сделать</span></td>
+          <td>Есть обычный чат, кредиты и баланс. Нет доказанного backend-лимита общения в минутах.</td>
+          <td>Добавить режим консультации: старт, таймер, стоимость минуты, списание, предупреждение баланса, завершение.</td>
+          <td>Чат работает как платная поминутная консультация, а не обычная переписка.</td>
+          
+        </tr>
+        <tr>
+          <td class="block-name"><span class="priority priority-p0">P0</span> Поддержка клиента</td>
+          <td><span class="pill status-red">Нужно сделать</span></td>
+          <td>В админке есть support tickets; клиентский публичный support ранее не был подтвержден как готовый маршрут.</td>
+          <td>Сделать обращение по конкретной консультации: проблема, возврат, жалоба, вопрос.</td>
+          <td>Любая проблема клиента привязана к consultation/session и видна супер-админу.</td>
+          
+        </tr>
+        <tr>
+          <td class="block-name"><span class="priority priority-p1">P1</span> Итог и повторная консультация</td>
+          <td><span class="pill status-red">Нужно сделать</span></td>
+          <td>Есть история сообщений, но нет отдельного итога консультации.</td>
+          <td>Добавить итог/резюме, сохраненный transcript, оценку качества и быстрый повторный вопрос тому же эксперту.</td>
+          <td>Клиент может вернуться к результату консультации и продолжить с тем же экспертом.</td>
+          
+        </tr></tbody>
+      </table>
+    </section>
+  <div class="summary">
+    <div class="summary-card"><b>Главная задача</b>Собрать консультацию в один управляемый маршрут: клиентский вопрос, назначение эксперта, чат, минуты/баланс, поддержка, жалоба/refund, начисление эксперту и контроль супер-админа.</div>
+    <div class="summary-card"><b>4 роли запуска</b>Супер-админ управляет всем контуром. Агент ведет несколько анкет экспертов. Эксперт оказывает консультацию и ведет свой профиль. Клиент выбирает эзотерическую консультацию, задает вопрос и общается с экспертом. SolaraOrtiz подтверждает: экспертная анкета есть, но консультационный кабинет еще не собран.</div>
+    <div class="summary-card"><b>Что блокирует запуск</b>Нет единой сущности консультации service_session, нет поминутного списания по сессии, нет консультационного режима чата, нет полного экспертского рабочего места и нет сквозного QA-теста клиент → агент/эксперт → супер-админ.</div>
+  </div>
+  <div class="footer">
+    <b>Материалы проверки:</b>
+    <a href="../nebula-expert-profile-solara-live-final-2026-06-10/solara-expert-profile-audit-final.html">Solara audit</a> ·
+    <a href="../nebula-agent-operator-live-final-2026-06-10/agent-role-access-expansion-update.html">Агент access update</a> ·
+    <a href="../nebula-client-live-source-final-2026-06-10/client-product-audit-final.html">Клиентский аудит</a> ·
+    <a href="../nebula-expert-live-source-final-2026-06-10/expert-product-audit-final.html">Экспертский аудит</a> ·
+    <a href="three-role-current-state-synthesis.html">Карта фактов</a> ·
+    <a href="product-gap-closure-synthesis.html">Пробелы аудита</a> ·
+    <a href="super-admin-final-qa-status.html">Super-admin QA</a> ·
+    <a href="../nebula-super-admin-live-source-final-2026-06-10/super-admin-21-live-source-final.html">Super-admin live-source</a>
+  </div>
+</main>
+<script>
+  (function () {
+    const roleInputs = Array.from(document.querySelectorAll('[data-filter-role]'));
+    const priorityInputs = Array.from(document.querySelectorAll('[data-filter-priority]'));
+
+    function selectedValues(inputs, attr) {
+      return new Set(inputs.filter((input) => input.checked).map((input) => input.getAttribute(attr)));
+    }
+
+    function rowPriority(row) {
+      if (row.querySelector('.priority-p0')) return 'P0';
+      if (row.querySelector('.priority-p1')) return 'P1';
+      return '';
+    }
+
+    function applyFilters() {
+      const roles = selectedValues(roleInputs, 'data-filter-role');
+      const priorities = selectedValues(priorityInputs, 'data-filter-priority');
+
+      document.querySelectorAll('.role-section').forEach((section) => {
+        const roleVisible = roles.has(section.getAttribute('data-role'));
+        section.classList.toggle('is-hidden', !roleVisible);
+
+        section.querySelectorAll('tbody tr').forEach((row) => {
+          const priority = rowPriority(row);
+          row.classList.toggle('is-hidden', roleVisible && priority && !priorities.has(priority));
+        });
+      });
+    }
+
+    roleInputs.concat(priorityInputs).forEach((input) => input.addEventListener('change', applyFilters));
+    applyFilters();
+  }());
+</script>
+</body>
+</html>
+
