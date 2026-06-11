@@ -3310,3 +3310,229 @@ body.geo-modal-open {
     min-height: 0;
   }
 }
+
+/* Final grid guard: country/city filters use one shared 12-column rhythm. */
+.geo-country-filter,
+.geo-city-filter-v2 {
+  --geo-filter-gap: var(--geo-space-md);
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--geo-filter-gap);
+  align-items: stretch;
+}
+
+/* Guest header follows the live YouDate layout: service entry, not landing CTA. */
+.geo-topbar {
+  background: #fff;
+  border-bottom: 1px solid #e3e9f4;
+  box-shadow: none;
+}
+
+.geo-topbar__inner {
+  min-height: 56px;
+}
+
+.geo-brand {
+  color: var(--geo-ink);
+}
+
+.geo-brand:hover {
+  color: var(--geo-ink);
+}
+
+.geo-brand img {
+  width: 116px;
+}
+
+.geo-brand span {
+  display: none;
+}
+
+.geo-topbar__actions--guest {
+  gap: var(--geo-space-sm);
+}
+
+.geo-login-note {
+  color: #40516b;
+  font-size: 14px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.geo-btn--login {
+  min-width: 64px;
+  min-height: 38px;
+  height: 38px;
+  border-radius: 4px;
+  background: var(--geo-blue);
+  border-color: var(--geo-blue);
+  color: #fff;
+  padding: 0 16px;
+  font-size: 14px;
+}
+
+.geo-btn--login:hover {
+  background: #255bd8;
+  border-color: #255bd8;
+  color: #fff;
+}
+
+.geo-topbar .geo-topbar__inner {
+  min-height: 56px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.geo-topbar .geo-brand {
+  position: relative;
+  width: 116px;
+  height: 36px;
+}
+
+.geo-topbar .geo-brand::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #159bd7 0 47%, #ee386d 52% 100%);
+  -webkit-mask: url("../img/geo/youdate-logo.png") center / contain no-repeat;
+  mask: url("../img/geo/youdate-logo.png") center / contain no-repeat;
+}
+
+.geo-topbar .geo-brand img {
+  display: none;
+}
+
+.geo-topbar .geo-topbar__actions--guest {
+  display: flex;
+  grid-template-columns: none;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.geo-topbar .geo-topbar__actions--guest .geo-btn--login {
+  width: auto;
+  min-width: 64px;
+  height: 38px;
+  min-height: 38px;
+  padding: 0 16px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+@media (max-width: 575.98px) {
+  .geo-login-note {
+    font-size: 13px;
+  }
+
+  .geo-topbar .geo-topbar__actions--guest .geo-btn--login {
+    min-width: 58px;
+    padding-inline: 14px;
+  }
+}
+
+.geo-country-filter > .geo-field-shell:first-child,
+.geo-city-filter-v2 > .geo-field-shell:first-child {
+  grid-column: 1 / span 3;
+}
+
+.geo-country-filter > .geo-field-shell:nth-child(2),
+.geo-city-filter-v2 > .geo-field-shell:nth-child(2) {
+  grid-column: 4 / span 6;
+}
+
+.geo-country-filter > .geo-btn,
+.geo-city-filter-v2 > .geo-btn {
+  grid-column: 10 / span 3;
+  align-self: stretch;
+  min-width: 0;
+  width: 100%;
+}
+
+.geo-topic-options,
+.geo-topic-options--city-v2 {
+  gap: var(--geo-space-md);
+}
+
+.geo-topic-option,
+.geo-topic-options--city-v2 .geo-topic-option {
+  height: 62px;
+  min-height: 62px;
+  padding: 0 var(--geo-space-md);
+}
+
+.geo-main--content .geo-article > p,
+.geo-main--content .geo-article > ul {
+  max-width: none;
+}
+
+@media (max-width: 991.98px) {
+  .geo-country-filter,
+  .geo-city-filter-v2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .geo-country-filter > .geo-field-shell:first-child,
+  .geo-city-filter-v2 > .geo-field-shell:first-child,
+  .geo-country-filter > .geo-field-shell:nth-child(2),
+  .geo-city-filter-v2 > .geo-field-shell:nth-child(2) {
+    grid-column: auto;
+  }
+
+  .geo-country-filter > .geo-btn,
+  .geo-city-filter-v2 > .geo-btn {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .geo-country-filter,
+  .geo-city-filter-v2 {
+    grid-template-columns: 1fr;
+    gap: var(--geo-space-sm);
+  }
+
+  .geo-country-filter > .geo-field-shell:first-child,
+  .geo-city-filter-v2 > .geo-field-shell:first-child,
+  .geo-country-filter > .geo-field-shell:nth-child(2),
+  .geo-city-filter-v2 > .geo-field-shell:nth-child(2),
+  .geo-country-filter > .geo-btn,
+  .geo-city-filter-v2 > .geo-btn {
+    grid-column: auto;
+  }
+
+  .geo-topic-options,
+  .geo-topic-options--city-v2 {
+    grid-template-columns: 1fr;
+  }
+
+.geo-topic-option,
+.geo-topic-options--city-v2 .geo-topic-option {
+  justify-content: flex-start;
+  height: 56px;
+  min-height: 56px;
+  }
+}
+
+/* Content-width guard: SEO text should use the whole readable card width. */
+.geo-main--content-wide {
+  display: block;
+  margin-top: var(--geo-space-xl);
+}
+
+.geo-main--content-wide .geo-stack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--geo-space-xl);
+}
+
+.geo-main--content-wide .geo-article,
+.geo-main--content-wide .geo-section,
+.geo-main--content-wide .geo-disclaimer {
+  width: 100%;
+}
+
+.geo-main--content-wide .geo-article > p,
+.geo-main--content-wide .geo-article > ul,
+.geo-main--content-wide .geo-article > ol {
+  max-width: none;
+}
