@@ -33,7 +33,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&subset=latin-ext">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700">
-  <link rel="stylesheet" href="css/geo-confideline-preview.css?v=city-template-20260611-v29">
+  <link rel="stylesheet" href="css/geo-confideline-preview.css?v=city-template-20260611-v30">
   <style>
     .geo-hero {
       --geo-hero-image: url("img/geo/india-country-hero.jpg");
@@ -560,9 +560,10 @@
       card.click();
     });
 
-    const faqItems = Array.from(document.querySelectorAll("[data-faq] .geo-faq__item"));
+    const faq = document.querySelector("[data-faq]");
 
     function setFaqState(activeItem) {
+      const faqItems = Array.from(faq.querySelectorAll(".geo-faq__item"));
       const shouldClose = activeItem.classList.contains("is-open");
       faqItems.forEach(item => {
         const shouldOpen = item === activeItem && !shouldClose;
@@ -571,15 +572,21 @@
       });
     }
 
-    faqItems.forEach(item => {
-      item.addEventListener("click", () => setFaqState(item));
-      item.addEventListener("keydown", event => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          setFaqState(item);
-        }
+    if (faq) {
+      faq.addEventListener("click", event => {
+        const item = event.target.closest(".geo-faq__item");
+        if (!item || !faq.contains(item)) return;
+        setFaqState(item);
       });
-    });
+
+      faq.addEventListener("keydown", event => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        const item = event.target.closest(".geo-faq__item");
+        if (!item || !faq.contains(item)) return;
+        event.preventDefault();
+        setFaqState(item);
+      });
+    }
 
     renderAdvisors();
   </script>
