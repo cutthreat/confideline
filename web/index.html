@@ -14,7 +14,7 @@
     </header>
 
     <section class="tp-grid">
-      <article class="tp-card" id="geo-country-city-pages">
+      <article class="tp-card">
         <h2>QA Reports</h2>
         <p>Публичный каталог отчетов тестирования для передачи программисту: verdict, таблицы, скриншоты, дефекты и rollback notes.</p>
         <div class="tp-actions">
@@ -52,7 +52,7 @@
         </div>
       </article>
 
-      <article class="tp-card">
+      <article class="tp-card" id="geo-country-city-pages">
         <h2>Geo Country / City Pages</h2>
         <p>Единая точка входа по страницам стран и городов: публичные макеты India/Delhi и пакет миграции редактора в боевую Yii2-админку.</p>
         <div class="tp-actions">
@@ -70,7 +70,6 @@
               <a class="tp-btn" href="./geo-admin-country-city-editor-proposal.html">Макет админки</a>
               <a class="tp-btn" href="./geo-admin-country-city-editor-migration-notes.md">Migration notes</a>
               <a class="tp-btn" href="./geo-admin-migration/confideline-geo-admin-migration-package.zip" download>Скачать ZIP</a>
-              <a class="tp-btn" href="#geo-country-city-pages">Ссылка на задачу</a>
             </div>
           </div>
         </div>
@@ -189,6 +188,84 @@
       </article>
     </section>
   </div>
+
+  <script>
+    (function () {
+      const translit = {
+        а: "a", б: "b", в: "v", г: "g", д: "d", е: "e", ё: "e", ж: "zh", з: "z", и: "i", й: "y",
+        к: "k", л: "l", м: "m", н: "n", о: "o", п: "p", р: "r", с: "s", т: "t", у: "u", ф: "f",
+        х: "h", ц: "c", ч: "ch", ш: "sh", щ: "sch", ы: "y", э: "e", ю: "yu", я: "ya"
+      };
+
+      function slugify(text, index) {
+        const slug = text.toLowerCase()
+          .replace(/[ъь]/g, "")
+          .replace(/[а-яё]/g, letter => translit[letter] || letter)
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+        return slug ? `task-${slug}` : `task-${index + 1}`;
+      }
+
+      function taskUrl(id) {
+        return `${window.location.origin}${window.location.pathname}#${id}`;
+      }
+
+      function copyText(text) {
+        function fallbackCopy() {
+          const textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.setAttribute("readonly", "");
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand("copy");
+          textarea.remove();
+        }
+
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text).catch(() => {
+            fallbackCopy();
+          });
+        }
+        fallbackCopy();
+        return Promise.resolve();
+      }
+
+      document.querySelectorAll(".tp-card").forEach((card, index) => {
+        const title = card.querySelector("h2");
+        if (!card.id) {
+          card.id = slugify(title ? title.textContent : "", index);
+        }
+        if (card.querySelector(".tp-card-link-badge")) return;
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "tp-card-link-badge";
+        button.title = "Скопировать ссылку на задачу";
+        button.setAttribute("aria-label", `Скопировать ссылку на задачу: ${title ? title.textContent.trim() : card.id}`);
+        button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 14.5 14.5 9.5"/><path d="M13 6.5l1.2-1.2a4.2 4.2 0 0 1 6 6L17.8 13.7a4.2 4.2 0 0 1-6 0"/><path d="M11 17.5l-1.2 1.2a4.2 4.2 0 0 1-6-6L6.2 10.3a4.2 4.2 0 0 1 6 0"/></svg>';
+        button.addEventListener("click", () => {
+          const url = taskUrl(card.id);
+          copyText(url).then(() => {
+            button.classList.add("is-copied");
+            button.title = "Ссылка скопирована";
+            window.history.replaceState(null, "", `#${card.id}`);
+            window.setTimeout(() => {
+              button.classList.remove("is-copied");
+              button.title = "Скопировать ссылку на задачу";
+            }, 1400);
+          });
+        });
+        card.prepend(button);
+      });
+
+      if (window.location.hash) {
+        const target = document.getElementById(window.location.hash.slice(1));
+        if (target) target.scrollIntoView({ block: "start" });
+      }
+    })();
+  </script>
 
         <article class="project-card">
           <div class="project-card__meta">Confideline · Expert Application Handoff</div>

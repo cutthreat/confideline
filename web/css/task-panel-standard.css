@@ -46,10 +46,11 @@ body.cl-task-standard {
 
 .tp-card {
   scroll-margin-top: 18px;
+  position: relative;
   background: #fff;
   border: 1px solid #c8d8ea;
   border-radius: 20px;
-  padding: 16px 16px 14px;
+  padding: 16px 58px 14px 16px;
   box-shadow: 0 8px 20px rgba(73, 103, 149, 0.05);
 }
 
@@ -63,6 +64,77 @@ body.cl-task-standard {
   font-size: 18px;
   line-height: 1.25;
   font-weight: 700;
+}
+
+.tp-card-link-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid #b9cce4;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffffff 0%, #f3f8ff 100%);
+  color: #2f72d8;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(73, 103, 149, 0.09);
+  transition: transform .18s ease, color .18s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.tp-card-link-badge:hover,
+.tp-card-link-badge:focus {
+  color: #fff;
+  background: #3a80e8;
+  border-color: #3a80e8;
+  outline: 0;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(58, 128, 232, 0.28);
+}
+
+.tp-card-link-badge.is-copied {
+  color: #fff;
+  background: #00a65a;
+  border-color: #00a65a;
+}
+
+.tp-card-link-badge svg {
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+
+.tp-card-link-badge::after {
+  content: "Скопировать ссылку";
+  position: absolute;
+  top: 50%;
+  right: 42px;
+  transform: translateY(-50%);
+  width: max-content;
+  max-width: 180px;
+  padding: 6px 9px;
+  border-radius: 8px;
+  background: #1f2d3d;
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease;
+  box-shadow: 0 8px 18px rgba(31, 45, 61, 0.18);
+}
+
+.tp-card-link-badge:hover::after,
+.tp-card-link-badge:focus::after {
+  opacity: 1;
+}
+
+.tp-card-link-badge.is-copied::after {
+  content: "Ссылка скопирована";
 }
 
 .tp-card p {
@@ -176,6 +248,10 @@ body.cl-task-standard {
 @media (max-width: 760px) {
   .tp-hero {
     padding: 20px 16px 18px;
+  }
+
+  .tp-card {
+    padding-right: 56px;
   }
 
   .tp-grid,
