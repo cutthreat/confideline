@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Update country</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="admin-static-preview/css/admin.min.css">
+  <style>
+    body { background: #ecf0f5; }
+
+    .geo-admin-compatible .content-header h1 {
+      font-size: 26px;
+    }
+
+    .geo-admin-compatible .content {
+      padding-top: 10px;
+    }
+
+    .geo-admin-compatible .form-control[readonly],
+    .geo-admin-compatible .form-control[disabled] {
+      background: #eee;
+      color: #444;
+    }
+
+    .geo-admin-compatible .nav-tabs {
+      border-bottom: 1px solid #d2d6de;
+    }
+
+    .geo-admin-compatible .nav-tabs > li > a {
+      color: #3c4b64;
+      font-weight: 600;
+    }
+
+    .geo-admin-compatible .nav-tabs > li.active > a,
+    .geo-admin-compatible .nav-tabs > li.active > a:hover,
+    .geo-admin-compatible .nav-tabs > li.active > a:focus {
+      border-top: 3px solid #3c8dbc;
+      color: #111827;
+    }
+
+    .geo-admin-compatible .geo-tab-content {
+      padding: 18px 0 0;
+    }
+
+    .geo-admin-compatible .section-title {
+      margin: 0 0 14px;
+      font-weight: 700;
+      color: #222;
+    }
+
+    .geo-admin-compatible .geo-box {
+      margin-bottom: 18px;
+      padding: 14px 14px 4px;
+      border: 1px solid #d2d6de;
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    .geo-admin-compatible .geo-box__title {
+      margin: 0 0 12px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .geo-admin-compatible .geo-editor {
+      border: 1px solid #d2d6de;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .geo-admin-compatible .geo-editor__menu,
+    .geo-admin-compatible .geo-editor__toolbar,
+    .geo-admin-compatible .geo-editor__footer {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-height: 42px;
+      padding: 0 18px;
+      border-bottom: 1px solid #e5e8ec;
+      color: #111827;
+    }
+
+    .geo-admin-compatible .geo-editor__toolbar {
+      gap: 20px;
+      font-size: 18px;
+    }
+
+    .geo-admin-compatible .geo-editor__body {
+      min-height: 360px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .geo-admin-compatible .geo-editor__footer {
+      justify-content: space-between;
+      border-top: 1px solid #e5e8ec;
+      border-bottom: 0;
+      color: #607086;
+      font-size: 12px;
+    }
+
+    .geo-admin-compatible .geo-photo-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 34px;
+    }
+
+    .geo-admin-compatible .geo-photo-slot {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .geo-admin-compatible .geo-photo-drop {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 150px;
+      height: 150px;
+      border: 2px dashed #999;
+      color: #8792a2;
+      font-size: 36px;
+      background: #fff;
+    }
+
+    .geo-admin-compatible .geo-faq-row {
+      margin-bottom: 12px;
+      padding: 12px;
+      border: 1px solid #d2d6de;
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    .geo-admin-compatible .geo-repeat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .geo-admin-compatible .geo-repeat-card {
+      padding: 14px;
+      border: 1px solid #d2d6de;
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    .geo-admin-compatible .geo-repeat-card .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .geo-admin-compatible .geo-check-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 0;
+    }
+
+    .geo-admin-compatible .geo-check-list .label {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 0 10px;
+      font-size: 12px;
+    }
+
+    .geo-admin-compatible .sidebar-toggle:before {
+      content: none !important;
+    }
+
+    @media (max-width: 991px) {
+      .geo-admin-compatible .geo-photo-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .geo-admin-compatible .geo-photo-slot {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="hold-transition skin-youdate sidebar-mini">
+<div class="wrapper geo-admin-compatible">
+  <header class="main-header">
+    <a href="#" class="logo">
+      <span class="logo-mini">YD</span>
+      <span class="logo-lg"><b>You</b>Date</span>
+    </a>
+    <nav class="navbar navbar-static-top">
+      <a href="#" class="sidebar-toggle" role="button"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span></a>
+      <div class="navbar-custom-menu">
+        <form class="navbar-form navbar-left" role="search">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Поиск">
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
+            </span>
+          </div>
+        </form>
+        <ul class="nav navbar-nav">
+          <li><a href="#"><span class="glyphicon glyphicon-user"></span> admin</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <aside class="main-sidebar">
+    <section class="sidebar">
+      <ul class="sidebar-menu">
+        <li><a href="#"><span class="glyphicon glyphicon-cog"></span> <span>Главное</span></a></li>
+        <li class="header">Содержимое</li>
+        <li><a href="#"><span class="glyphicon glyphicon-user"></span> <span>Партнеры</span></a></li>
+        <li><a href="#"><span class="glyphicon glyphicon-user"></span> <span>Пользователи</span></a></li>
+        <li><a href="#"><span class="glyphicon glyphicon-credit-card"></span> <span>Финансы</span></a></li>
+        <li><a href="#"><span class="glyphicon glyphicon-picture"></span> <span>Фотографии</span></a></li>
+        <li class="header">Система</li>
+        <li class="active treeview">
+          <a href="#"><span class="glyphicon glyphicon-map-marker"></span> <span>Countries &amp; Cities</span></a>
+          <ul class="treeview-menu menu-open" style="display:block">
+            <li class="active"><a href="#"><span class="glyphicon glyphicon-flag"></span> Countries</a></li>
+            <li><a href="#"><span class="glyphicon glyphicon-map-marker"></span> Cities</a></li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+  </aside>
+
+  <div class="content-wrapper">
+    <section class="content-header">
+      <h1>Update country</h1>
+      <ol class="breadcrumb">
+        <li><a href="#">Администрация</a></li>
+        <li><a href="#">Manage countries</a></li>
+        <li class="active">Update country</li>
+      </ol>
+    </section>
+
+    <section class="content">
+      <div class="box box-solid">
+        <div class="box-body">
+          <ul class="nav nav-tabs" role="tablist">
+            <li class="active"><a href="#tab-info" role="tab" data-toggle="tab">Информация</a></li>
+            <li><a href="#tab-description" role="tab" data-toggle="tab">Описание</a></li>
+            <li><a href="#tab-country-map" role="tab" data-toggle="tab">Города и регионы</a></li>
+            <li><a href="#tab-images" role="tab" data-toggle="tab">Изображения</a></li>
+            <li><a href="#tab-faq" role="tab" data-toggle="tab">FAQ</a></li>
+            <li><a href="#tab-seo" role="tab" data-toggle="tab">SEO</a></li>
+            <li><a href="#tab-experts" role="tab" data-toggle="tab">Эксперты</a></li>
+          </ul>
+
+          <div class="tab-content geo-tab-content">
+            <div class="tab-pane active" id="tab-info">
+              <h4 class="section-title">Основные данные страницы</h4>
+              <div class="row">
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label class="control-label">Страна</label>
+                    <input class="form-control input-lg" value="South Sudan" readonly>
+                  </div>
+                </div>
+                <div class="col-md-1">
+                  <div class="form-group">
+                    <label class="control-label">Код страны</label>
+                    <input class="form-control input-lg" value="SS" readonly>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label class="control-label">Slug</label>
+                    <input class="form-control input-lg" value="south-sudan" readonly>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label class="control-label">Translated name</label>
+                    <input class="form-control input-lg" value="Южный Судан">
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="form-group">
+                    <label class="control-label">Geoname Id</label>
+                    <input class="form-control input-lg" value="7909807" readonly>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-5">
+                  <div class="form-group">
+                    <label class="control-label">Reference for view on site</label>
+                    <input class="form-control input-lg" value="https://confideline.com/ru/country/south-sudan">
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="form-group">
+                    <label class="control-label">Sort</label>
+                    <input class="form-control input-lg" value="">
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="form-group">
+                    <label class="control-label">Is Active</label>
+                    <select class="form-control input-lg">
+                      <option>Не активно</option>
+                      <option>Активно</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-1">
+                  <div class="checkbox" style="margin-top:35px">
+                    <label><input type="checkbox"> <strong>Show On Main</strong></label>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="form-group">
+                    <label class="control-label">Language</label>
+                    <select class="form-control input-lg">
+                      <option>Русский</option>
+                      <option>English</option>
+                      <option>Español</option>
+                      <option>Italiano</option>
+                      <option>Deutsch</option>
+                      <option>Português</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="tab-description">
+              <div class="geo-box">
+                <h3 class="geo-box__title">Hero и короткое описание</h3>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">H1 Hero</label>
+                      <input class="form-control" value="Южный Судан: астрокартография для переезда, отношений и личного выбора">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="control-label">H2 Hero</label>
+                      <input class="form-control" value="Разберите, как страна, конкретный город или регион могут влиять на работу, отношения и следующий шаг.">
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-8">
+                    <div class="form-group">
+                      <label class="control-label">Короткое описание</label>
+                      <textarea class="form-control" rows="3">Короткий текст для карточки страны, превью и первого знакомства пользователя со страницей.</textarea>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label class="control-label">Основная CTA</label>
+                      <input class="form-control" value="Выбрать эксперта">
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Вторичная CTA</label>
+                      <input class="form-control" value="Подобрать направление">
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label class="control-label">Заголовок правой карточки Hero</label>
+                      <input class="form-control" value="Города Южного Судана дают разный фон для вопроса">
+                    </div>
+                  </div>
+                  <div class="col-md-8">
+                    <div class="form-group">
+                      <label class="control-label">Текст правой карточки Hero</label>
+                      <input class="form-control" value="Выберите город, если важна конкретная среда для переезда, отношений, работы или личного выбора.">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 class="section-title">Html Description</h4>
+              <div class="geo-editor">
+                <div class="geo-editor__menu">
+                  <span>Файл</span><span>Изменить</span><span>Вид</span><span>Вставить</span><span>Формат</span><span>Инструменты</span><span>Таблица</span><span>Help</span>
+                  <span class="pull-right text-primary" style="margin-left:auto">⚡ Upgrade</span>
+                </div>
+                <div class="geo-editor__toolbar">
+                  <span>↶</span><span>↷</span><strong>B</strong><em>I</em><span>☰</span><span>☷</span><span>≡</span><span>•</span><span>1.</span><span>🔗</span><span>&lt;&gt;</span>
+                </div>
+                <div class="geo-editor__body"></div>
+                <div class="geo-editor__footer"><span>p</span><span>Press Alt+0 for help</span><span>0 words &nbsp; Build with tinyMCE</span></div>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="tab-country-map">
+              <h4 class="section-title">Популярные города страны</h4>
+              <div class="geo-repeat-grid">
+                <div class="geo-repeat-card">
+                  <div class="form-group">
+                    <label class="control-label">Город 1</label>
+                    <input class="form-control" value="Джуба">
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label">Slug / ссылка</label>
+                    <input class="form-control" value="/ru/city/in-juba">
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label">Teaser description</label>
+                    <textarea class="form-control" rows="3">Столица, официальные решения, контакты и напряжение быстрого роста.</textarea>
+                  </div>
+                </div>
+                <div class="geo-repeat-card">
+                  <div class="form-group">
+                    <label class="control-label">Город 2</label>
+                    <input class="form-control" value="Малакаль">
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label">Slug / ссылка</label>
+                    <input class="form-control" value="/ru/city/in-malakal">
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label">Teaser description</label>
+                    <textarea class="form-control" rows="3">Северное направление, восстановление связей и осторожные долгосрочные решения.</textarea>
+                  </div>
+                </div>
+                <div class="geo-repeat-card">
+                  <div class="form-group">
+                    <label class="control-label">Город 3</label>
+                    <input class="form-control" value="Вау">
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label">Slug / ссылка</label>
+                    <input class="form-control" value="/ru/city/in-wau">
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label">Teaser description</label>
+                    <textarea class="form-control" rows="3">Более спокойный ритм, бытовая адаптация и вопросы личной устойчивости.</textarea>
+                  </div>
+                </div>
+              </div>
+
+              <h4 class="section-title" style="margin-top:22px">Регионы страны</h4>
+              <div class="row">
+                <div class="col-md-3">
+                  <div class="geo-repeat-card">
+                    <div class="form-group">
+                      <label class="control-label">Регион</label>
+                      <input class="form-control" value="Север">
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Смысловой акцент</label>
+                      <textarea class="form-control" rows="3">Дисциплина, восстановление опоры и осторожное планирование.</textarea>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="geo-repeat-card">
+                    <div class="form-group">
+                      <label class="control-label">Регион</label>
+                      <input class="form-control" value="Юг">
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Смысловой акцент</label>
+                      <textarea class="form-control" rows="3">Столица, контакты, документы и решения в плотной среде.</textarea>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="geo-repeat-card">
+                    <div class="form-group">
+                      <label class="control-label">Регион</label>
+                      <input class="form-control" value="Запад">
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Смысловой акцент</label>
+                      <textarea class="form-control" rows="3">Бытовая адаптация, личный ритм и постепенное расширение связей.</textarea>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="geo-repeat-card">
+                    <div class="form-group">
+                      <label class="control-label">Регион</label>
+                      <input class="form-control" value="Восток">
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Смысловой акцент</label>
+                      <textarea class="form-control" rows="3">Движение, переговоры, новые маршруты и смена среды.</textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="tab-images">
+              <h4 class="section-title">Изображения страницы</h4>
+              <div class="geo-photo-grid">
+                <div>
+                  <label class="control-label">Main Photo</label>
+                  <div class="geo-photo-slot">
+                    <div class="geo-photo-drop"><span class="glyphicon glyphicon-plus-sign"></span></div>
+                    <div>
+                      <div class="form-group">
+                        <label class="control-label">Alt</label>
+                        <input class="form-control" value="Южный Судан: главное изображение страницы">
+                      </div>
+                      <div class="form-group">
+                        <label class="control-label">Title</label>
+                        <input class="form-control" value="Главное фото страны">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label class="control-label">Cover Photo</label>
+                  <div class="geo-photo-slot">
+                    <div class="geo-photo-drop"><span class="glyphicon glyphicon-plus-sign"></span></div>
+                    <div>
+                      <div class="form-group">
+                        <label class="control-label">Alt</label>
+                        <input class="form-control" value="Hero-фон страницы страны">
+                      </div>
+                      <div class="form-group">
+                        <label class="control-label">Title</label>
+                        <input class="form-control" value="Обложка страницы">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="tab-faq">
+              <h4 class="section-title">Вопросы и ответы</h4>
+              <div class="geo-faq-row">
+                <div class="row">
+                  <div class="col-md-5">
+                    <label class="control-label">Вопрос 1</label>
+                    <input class="form-control" value="Подходит ли Южный Судан для переезда?">
+                  </div>
+                  <div class="col-md-7">
+                    <label class="control-label">Ответ</label>
+                    <input class="form-control" value="Короткий ответ раскрывается в FAQ на публичной странице.">
+                  </div>
+                </div>
+              </div>
+              <div class="geo-faq-row">
+                <div class="row">
+                  <div class="col-md-5">
+                    <label class="control-label">Вопрос 2</label>
+                    <input class="form-control" value="Как выбрать город или регион?">
+                  </div>
+                  <div class="col-md-7">
+                    <label class="control-label">Ответ</label>
+                    <input class="form-control" value="Ответ помогает понять, когда смотреть страну целиком, а когда переходить к городу.">
+                  </div>
+                </div>
+              </div>
+              <div class="geo-faq-row">
+                <div class="row">
+                  <div class="col-md-5">
+                    <label class="control-label">Вопрос 3</label>
+                    <input class="form-control" value="Помогает ли синастрия в отношениях?">
+                  </div>
+                  <div class="col-md-7">
+                    <label class="control-label">Ответ</label>
+                    <input class="form-control" value="Ответ связывает отношения, совместимость и выбранную локацию.">
+                  </div>
+                </div>
+              </div>
+              <div class="geo-faq-row">
+                <div class="row">
+                  <div class="col-md-5">
+                    <label class="control-label">Вопрос 4</label>
+                    <input class="form-control" value="Зачем нужна астрокартография?">
+                  </div>
+                  <div class="col-md-7">
+                    <label class="control-label">Ответ</label>
+                    <input class="form-control" value="Ответ объясняет, как локация влияет на личные решения и состояние.">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="tab-seo">
+              <h4 class="section-title">SEO и социальные сниппеты</h4>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="control-label">Meta Title</label>
+                    <input class="form-control" value="Южный Судан: астрокартография и консультация онлайн | {{siteName}}">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="control-label">Meta Description</label>
+                    <input class="form-control" value="Астрокартография Южного Судана для переезда, отношений, карьеры и личного выбора.">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="control-label">Canonical</label>
+                    <input class="form-control" value="https://confideline.com/ru/country/south-sudan">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="control-label">OG image</label>
+                    <input class="form-control" value="/uploads/geo/south-sudan-main.jpg">
+                  </div>
+                </div>
+              </div>
+              <div class="geo-check-list">
+                <span class="label label-success">H1/H2 заполнены</span>
+                <span class="label label-warning">Фото 0/2</span>
+                <span class="label label-success">FAQ 4/4</span>
+                <span class="label label-success">SEO заполнено</span>
+                <span class="label label-danger">RU опубликован, остальные языки требуют проверки</span>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="tab-experts">
+              <h4 class="section-title">Эксперты на странице</h4>
+              <div class="row">
+                <div class="col-md-3">
+                  <label class="control-label">Отношения</label>
+                  <input class="form-control" value="4 карточки">
+                </div>
+                <div class="col-md-3">
+                  <label class="control-label">Переезд</label>
+                  <input class="form-control" value="4 карточки">
+                </div>
+                <div class="col-md-3">
+                  <label class="control-label">Карьера</label>
+                  <input class="form-control" value="4 карточки">
+                </div>
+                <div class="col-md-3">
+                  <label class="control-label">Совместимость</label>
+                  <input class="form-control" value="4 карточки">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr>
+          <button type="button" class="btn btn-primary">Обновить</button>
+          <button type="button" class="btn btn-default">Предпросмотр</button>
+          <button type="button" class="btn btn-default pull-right">Вернуться к списку</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script>
+  (function () {
+    var links = document.querySelectorAll('.nav-tabs a[href^="#tab-"]');
+
+    function openTab(hash, writeHash) {
+      var link = document.querySelector('.nav-tabs a[href="' + hash + '"]');
+      var pane = document.querySelector(hash);
+
+      if (!link || !pane) {
+        return;
+      }
+
+      document.querySelectorAll('.nav-tabs li').forEach(function (item) {
+        item.classList.remove('active');
+      });
+
+      document.querySelectorAll('.tab-pane').forEach(function (item) {
+        item.classList.remove('active');
+      });
+
+      link.parentElement.classList.add('active');
+      pane.classList.add('active');
+
+      if (writeHash && window.history && window.history.replaceState) {
+        window.history.replaceState(null, '', hash);
+      }
+    }
+
+    links.forEach(function (link) {
+      link.addEventListener('click', function (event) {
+        event.preventDefault();
+        openTab(link.getAttribute('href'), true);
+      });
+    });
+
+    if (window.location.hash) {
+      openTab(window.location.hash, false);
+    }
+  }());
+</script>
+</body>
+</html>
