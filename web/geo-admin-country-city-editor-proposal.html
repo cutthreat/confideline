@@ -452,13 +452,13 @@
                     <div class="geo-editor-assist__hint">Нажмите переменную, чтобы скопировать</div>
                   </div>
                   <div class="geo-variable-chips">
-                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{siteName}}">{{siteName}}</button>
-                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{geoName}}">{{geoName}}</button>
-                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{countryName}}">{{countryName}}</button>
-                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{cityName}}">{{cityName}}</button>
-                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{whatWeOfferBlock}}">{{whatWeOfferBlock}}</button>
-                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{geoServiceListBlock}}">{{geoServiceListBlock}}</button>
-                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{informationalDisclaimerBlock}}">{{informationalDisclaimerBlock}}</button>
+                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{siteName}}" data-toggle="tooltip" data-placement="top" title="Название проекта">{{siteName}}</button>
+                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{geoName}}" data-toggle="tooltip" data-placement="top" title="Название текущей страницы: страна или город">{{geoName}}</button>
+                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{countryName}}" data-toggle="tooltip" data-placement="top" title="Название страны текущей страницы">{{countryName}}</button>
+                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{cityName}}" data-toggle="tooltip" data-placement="top" title="Название города текущей страницы">{{cityName}}</button>
+                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{whatWeOfferBlock}}" data-toggle="tooltip" data-placement="top" title="Готовый блок “Что предлагаем”">{{whatWeOfferBlock}}</button>
+                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{geoServiceListBlock}}" data-toggle="tooltip" data-placement="top" title="Готовый список гео-услуг">{{geoServiceListBlock}}</button>
+                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{informationalDisclaimerBlock}}" data-toggle="tooltip" data-placement="top" title="Единый информационный дисклеймер">{{informationalDisclaimerBlock}}</button>
                   </div>
                 </div>
                 <div class="geo-editor__footer"><span>p</span><span>Press Alt+0 for help</span><span>0 words &nbsp; Build with tinyMCE</span></div>
@@ -709,6 +709,13 @@
 
     if (window.location.hash) {
       openTab(window.location.hash, false);
+    }
+
+    if (window.jQuery && jQuery.fn && jQuery.fn.tooltip) {
+      jQuery('[data-variable][data-toggle="tooltip"]').tooltip({
+        container: 'body',
+        trigger: 'hover focus'
+      });
     }
 
     document.querySelectorAll('[data-variable]').forEach(function (button) {
