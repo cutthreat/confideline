@@ -27,6 +27,7 @@
 
 ## Файлы пакета
 
+- `confideline-geo-admin-migration-package.zip` — готовый архив для передачи программисту;
 - `index.html` — веб-панель handoff;
 - `custom.css` — локальные стили страницы;
 - `custom.js` — локальная логика страницы;
