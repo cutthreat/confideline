@@ -927,26 +927,32 @@
     });
 
     const faq = document.querySelector("[data-faq]");
-    const faqItems = faq ? Array.from(faq.querySelectorAll(".geo-faq__item")) : [];
 
     function setFaqState(activeItem) {
-      const isOpen = activeItem.classList.contains("is-open");
+      const faqItems = Array.from(faq.querySelectorAll(".geo-faq__item"));
+      const shouldClose = activeItem.classList.contains("is-open");
       faqItems.forEach(item => {
-        const shouldOpen = item === activeItem && !isOpen;
+        const shouldOpen = item === activeItem && !shouldClose;
         item.classList.toggle("is-open", shouldOpen);
         item.setAttribute("aria-expanded", String(shouldOpen));
       });
     }
 
-    faqItems.forEach(item => {
-      item.onclick = () => setFaqState(item);
-      item.onkeydown = event => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          setFaqState(item);
-        }
-      };
-    });
+    if (faq) {
+      faq.addEventListener("click", event => {
+        const item = event.target.closest(".geo-faq__item");
+        if (!item || !faq.contains(item)) return;
+        setFaqState(item);
+      });
+
+      faq.addEventListener("keydown", event => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        const item = event.target.closest(".geo-faq__item");
+        if (!item || !faq.contains(item)) return;
+        event.preventDefault();
+        setFaqState(item);
+      });
+    }
 
     renderAdvisors();
   </script>
