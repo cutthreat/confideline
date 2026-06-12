@@ -101,6 +101,51 @@
       font-size: 12px;
     }
 
+    .geo-admin-compatible .geo-editor-assist {
+      margin-top: 0;
+      padding: 12px 14px;
+      border-top: 1px solid #e5e8ec;
+      border-right: 0;
+      border-bottom: 0;
+      border-left: 0;
+      border-radius: 0;
+      background: #f9fafc;
+    }
+
+    .geo-admin-compatible .geo-editor-assist__head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .geo-admin-compatible .geo-editor-assist__title {
+      font-weight: 700;
+      color: #222;
+    }
+
+    .geo-admin-compatible .geo-editor-assist__hint {
+      color: #607086;
+      font-size: 12px;
+    }
+
+    .geo-admin-compatible .geo-variable-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .geo-admin-compatible .geo-variable-chip {
+      font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    }
+
+    .geo-admin-compatible .geo-variable-chip.is-copied {
+      border-color: #00a65a;
+      color: #008d4c;
+      background: #f0fff6;
+    }
+
     .geo-admin-compatible .geo-photo-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -401,6 +446,21 @@
                   <span>↶</span><span>↷</span><strong>B</strong><em>I</em><span>☰</span><span>☷</span><span>≡</span><span>•</span><span>1.</span><span>🔗</span><span>&lt;&gt;</span>
                 </div>
                 <div class="geo-editor__body"></div>
+                <div class="geo-editor-assist">
+                  <div class="geo-editor-assist__head">
+                    <div class="geo-editor-assist__title">Быстрые переменные для текста</div>
+                    <div class="geo-editor-assist__hint">Нажмите переменную, чтобы скопировать</div>
+                  </div>
+                  <div class="geo-variable-chips">
+                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{siteName}}">{{siteName}}</button>
+                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{geoName}}">{{geoName}}</button>
+                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{countryName}}">{{countryName}}</button>
+                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{cityName}}">{{cityName}}</button>
+                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{whatWeOfferBlock}}">{{whatWeOfferBlock}}</button>
+                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{geoServiceListBlock}}">{{geoServiceListBlock}}</button>
+                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{informationalDisclaimerBlock}}">{{informationalDisclaimerBlock}}</button>
+                  </div>
+                </div>
                 <div class="geo-editor__footer"><span>p</span><span>Press Alt+0 for help</span><span>0 words &nbsp; Build with tinyMCE</span></div>
               </div>
             </div>
@@ -650,6 +710,26 @@
     if (window.location.hash) {
       openTab(window.location.hash, false);
     }
+
+    document.querySelectorAll('[data-variable]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var value = button.getAttribute('data-variable');
+        var textArea = document.createElement('textarea');
+        textArea.value = value;
+        textArea.setAttribute('readonly', '');
+        textArea.style.position = 'absolute';
+        textArea.style.left = '-9999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+
+        button.classList.add('is-copied');
+        window.setTimeout(function () {
+          button.classList.remove('is-copied');
+        }, 900);
+      });
+    });
   }());
 </script>
 </body>
