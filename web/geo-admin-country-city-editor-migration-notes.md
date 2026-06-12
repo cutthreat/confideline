@@ -35,12 +35,10 @@
 | Вкладка | Роль | Что относится сюда | Что не должно лежать здесь |
 |---|---|---|---|
 | Информация | Привязка страницы к сущности сайта и статус языковой версии | страна, код, slug, translated name, geoname id, публичная ссылка, sort, active, show on main, language | длинный текст, FAQ, SEO meta |
-| Описание | Публичный первый экран и основной SEO-текст | H1 Hero, H2 Hero, teaser, CTA, hero-карточка, HTML-текст, переменные `{{siteName}}`, `{{whatWeOfferBlock}}`, `{{geoServiceListBlock}}`, `{{informationalDisclaimerBlock}}` | canonical, фото, экспертные карточки |
-| Города и регионы | Страновая навигация внутри публичной страницы | популярные города страны, ссылки на городские страницы, teaser для города, 4 региональных смысловых акцента | основной body HTML, meta title, FAQ |
-| Изображения | Медиа страницы | main photo, cover photo, alt, title | meta title, FAQ |
-| FAQ | Аккордеон вопросов на публичной странице | 4 вопроса и ответа | основной SEO-текст, техническая schema |
-| SEO | Поисковые и социальные метаданные | meta title, meta description, canonical, OG image | редактирование фото, FAQ |
-| Эксперты | Настройка локального блока экспертов | тема и количество карточек для вывода | регистрационная логика, база пользователей |
+| Описание | Публичный первый экран и основной SEO-текст | H1 Hero, H2 Hero, teaser, CTA, hero-карточка, HTML-текст, переменные `{{siteName}}`, `{{whatWeOfferBlock}}`, `{{geoServiceListBlock}}`, `{{informationalDisclaimerBlock}}` | canonical, фото, эксперты, города и регионы |
+| Изображения | Медиа страницы | main photo, cover photo, alt, title, description, preview modal | meta title, FAQ |
+| FAQ | Аккордеон вопросов на публичной странице | 4 вопроса и ответа | основной SEO-текст, ручная schema |
+| SEO | Поисковые, социальные и LLM-readable метаданные | meta title, meta description, canonical, robots, hreflang cluster, OG image, schema type, JSON-LD preview | редактирование фото, FAQ |
 
 ## Рекомендуемая модель данных
 
@@ -66,8 +64,7 @@
     "card": {
       "eyebrow": "",
       "title": "",
-      "text": "",
-      "links": []
+      "text": ""
     }
   },
   "teaserDescription": "",
@@ -78,8 +75,15 @@
     "og": {}
   },
   "faqItems": [],
-  "seo": {},
-  "expertConfig": {},
+  "seo": {
+    "metaTitle": "",
+    "metaDescription": "",
+    "canonical": "",
+    "robots": "index, follow",
+    "hreflangCluster": ["ru", "en", "es", "it", "de", "pt", "x-default"],
+    "schemaType": "WebPage + FAQPage + BreadcrumbList + ImageObject",
+    "ogImage": ""
+  },
   "status": "draft"
 }
 ```
@@ -100,13 +104,16 @@
 - meta title;
 - meta description;
 - canonical;
+- robots = `index, follow` для опубликованной страницы;
+- hreflang cluster для всех языков: ru, en, es, it, de, pt, x-default;
+- JSON-LD schema: WebPage, BreadcrumbList, FAQPage, ImageObject;
 - статус активной страницы.
 
 ## Что не нужно показывать контент-менеджеру
 
 - raw JSON;
 - внутренние ID связей;
-- schema-разметку в исходном виде;
+- редактирование schema-разметки в исходном виде;
 - технические названия классов фронта;
 - пояснения о том, как фронт собирает страницу.
 
@@ -120,7 +127,10 @@
 - группировать новые поля по вкладкам текущей формы;
 - оставить TinyMCE для `Html Description`;
 - сохранить текущий способ загрузки `Main Photo` и `Cover Photo`;
-- для страны отдельно хранить 3 популярных города и 4 региональных акцента;
+- загруженные изображения должны открываться в Bootstrap modal для проверки полного размера;
+- JSON-LD должен генерироваться шаблоном из полей, а не редактироваться вручную;
+- FAQPage schema должна выводиться только если заполнены минимум 4 вопроса и ответа;
+- hreflang должен строиться по существующим языковым версиям и canonical URL;
 - новые поля валидировать по языковой версии страницы.
 
 - `yii\bootstrap\ActiveForm`;

@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Geo admin migration handoff</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../admin-static-preview/css/admin.min.css">
+  <link rel="stylesheet" href="custom.css">
+</head>
+<body class="hold-transition skin-youdate sidebar-mini geo-migration-page">
+<div class="wrapper">
+  <aside class="main-sidebar">
+    <section class="sidebar">
+      <div class="user-panel">
+        <div class="pull-left image"></div>
+        <div class="pull-left info"><p>Confideline</p></div>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="header">Миграция</li>
+        <li class="active"><a href="#tab-summary"><span class="glyphicon glyphicon-list-alt"></span> <span>Geo admin</span></a></li>
+      </ul>
+    </section>
+  </aside>
+
+  <div class="content-wrapper">
+    <section class="content-header">
+      <h1>Geo admin migration handoff</h1>
+      <ol class="breadcrumb">
+        <li><a href="../geo-admin-country-city-editor-proposal.html">Макет админки</a></li>
+        <li class="active">Миграция</li>
+      </ol>
+    </section>
+
+    <section class="content">
+      <div class="geo-migration-hero">
+        <h2>Передача макета страны и города в боевую админку</h2>
+        <p>Пакет описывает, какие поля добавить, как разнести view, где подключить AssetBundle, что оставить стандартным submit, а что делать через AJAX. Код страницы изолируется в <code>custom.css</code> и <code>custom.js</code>.</p>
+      </div>
+
+      <div class="geo-check-grid">
+        <div class="geo-check-card">
+          <strong>Yii 2.0.55</strong>
+          <span>Внедрение через views, ActiveForm и AssetBundle.</span>
+        </div>
+        <div class="geo-check-card">
+          <strong>PHP 8.5.0</strong>
+          <span>View-код без устаревших PHP-паттернов.</span>
+        </div>
+        <div class="geo-check-card">
+          <strong>Submit + AJAX</strong>
+          <span>Сохранение через форму, проверки и предпросмотр через AJAX.</span>
+        </div>
+        <div class="geo-check-card">
+          <strong>custom.css / custom.js</strong>
+          <span>Все page-specific вынесено отдельно.</span>
+        </div>
+      </div>
+
+      <ul class="nav nav-tabs geo-tabs">
+        <li class="active"><a href="#tab-summary">Сводка</a></li>
+        <li><a href="#tab-files">Файлы</a></li>
+        <li><a href="#tab-fields">Поля</a></li>
+        <li><a href="#tab-yii">Yii2</a></li>
+        <li><a href="#tab-ajax">Submit / AJAX</a></li>
+        <li><a href="#tab-checklist">Приемка</a></li>
+      </ul>
+
+      <div class="tab-content">
+        <div class="tab-pane active" id="tab-summary">
+          <div class="geo-panel">
+            <h3>Что нужно получить на боевом сайте</h3>
+            <p>В текущих страницах управления страной и городом появляются вкладки: <strong>Информация</strong>, <strong>Описание</strong>, <strong>Изображения</strong>, <strong>FAQ</strong>, <strong>SEO</strong>, <strong>Переменные</strong>. Управление городами/регионами и экспертами не входит в карточку страны или города.</p>
+            <ul>
+              <li>Системные поля остаются в текущем виде: ID, slug, geoname id, ссылка, active, show on main, language.</li>
+              <li>Контент и SEO редактируются для выбранного языка через существующий select <strong>Language</strong>.</li>
+              <li>Основной HTML-текст остается в TinyMCE.</li>
+              <li>Фото остаются в текущем uploader-контуре, но получают alt/title/description.</li>
+              <li>Перед сохранением показывается понятная проверка ошибок.</li>
+            </ul>
+          </div>
+
+          <div class="geo-panel">
+            <h3>Стандарт на будущее</h3>
+            <p>Для всех похожих страниц Confideline page-specific код выносится в отдельные файлы <code>custom.css</code> и <code>custom.js</code>, подключенные через отдельный AssetBundle. Глобальные стили админки не меняются ради одной страницы.</p>
+            <div class="geo-copy-row">
+              <code>web/static/admin/geo-page/custom.css</code>
+              <button type="button" class="btn btn-default btn-sm geo-copy-button" data-copy="web/static/admin/geo-page/custom.css">Копировать</button>
+            </div>
+            <div class="geo-copy-row" style="margin-top:8px">
+              <code>web/static/admin/geo-page/custom.js</code>
+              <button type="button" class="btn btn-default btn-sm geo-copy-button" data-copy="web/static/admin/geo-page/custom.js">Копировать</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane" id="tab-files">
+          <div class="geo-panel">
+            <h3>Карта файлов для внедрения</h3>
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped geo-file-map">
+                <thead>
+                  <tr>
+                    <th>Файл</th>
+                    <th>Роль</th>
+                    <th>Важно</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>modules/admin/assets/GeoAdminPageAsset.php</code></td>
+                    <td>Подключает локальные CSS/JS.</td>
+                    <td>Не добавлять код в общий AssetBundle админки.</td>
+                  </tr>
+                  <tr>
+                    <td><code>web/static/admin/geo-page/custom.css</code></td>
+                    <td>Стили только geo-редактора.</td>
+                    <td>Перенести из этого пакета.</td>
+                  </tr>
+                  <tr>
+                    <td><code>web/static/admin/geo-page/custom.js</code></td>
+                    <td>Локальная логика вкладок, счетчиков, переменных, проверки.</td>
+                    <td>Не смешивать с глобальными скриптами.</td>
+                  </tr>
+                  <tr>
+                    <td><code>modules/admin/views/country/_form.php</code></td>
+                    <td>Форма страны.</td>
+                    <td>Подключить общие partials geo-вкладок.</td>
+                  </tr>
+                  <tr>
+                    <td><code>modules/admin/views/geoname/_form.php</code></td>
+                    <td>Форма города.</td>
+                    <td>Использовать ту же структуру вкладок.</td>
+                  </tr>
+                  <tr>
+                    <td><code>modules/admin/views/geo/_*.php</code></td>
+                    <td>Общие partials: описание, изображения, FAQ, SEO, переменные.</td>
+                    <td>Разнести блоки, чтобы страна и город не расходились.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane" id="tab-fields">
+          <div class="geo-panel">
+            <h3>Поля, которыми управляем из админки</h3>
+            <h4>Описание</h4>
+            <ul>
+              <li>H1 Hero</li>
+              <li>H2 Hero</li>
+              <li>Teaser Description</li>
+              <li>правая карточка Hero: заголовок и текст</li>
+              <li>тексты CTA в Hero</li>
+              <li>Html Description в TinyMCE</li>
+            </ul>
+            <h4>Изображения</h4>
+            <ul>
+              <li>Main Photo + alt/title/description</li>
+              <li>Cover Photo + alt/title/description</li>
+              <li>OG image, если не равен Main Photo</li>
+            </ul>
+            <h4>FAQ</h4>
+            <ul>
+              <li>4 вопроса и 4 ответа для аккордеона публичной страницы.</li>
+            </ul>
+            <h4>SEO</h4>
+            <ul>
+              <li>Meta Title, Meta Description, H1, SEO Text, Canonical, OG image.</li>
+            </ul>
+            <h4>Переменные</h4>
+            <ul>
+              <li><code>{{siteName}}</code>, <code>{{geoName}}</code>, <code>{{countryName}}</code>, <code>{{cityName}}</code>, <code>{{whatWeOfferBlock}}</code>, <code>{{geoServiceListBlock}}</code>, <code>{{informationalDisclaimerBlock}}</code>, <code>{{languageName}}</code>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tab-pane" id="tab-yii">
+          <div class="geo-panel">
+            <h3>AssetBundle</h3>
+            <pre class="geo-code">namespace app\modules\admin\assets;
+
+use yii\web\AssetBundle;
+
+class GeoAdminPageAsset extends AssetBundle
+{
+    public $basePath = '@webroot/static/admin/geo-page';
+    public $baseUrl = '@web/static/admin/geo-page';
+    public $css = ['custom.css'];
+    public $js = ['custom.js'];
+    public $depends = [
+        'yii\web\YiiAsset',
+        'yii\bootstrap\BootstrapAsset',
+    ];
+}</pre>
+            <h3>Подключение во view</h3>
+            <pre class="geo-code">use app\modules\admin\assets\GeoAdminPageAsset;
+
+GeoAdminPageAsset::register($this);</pre>
+            <h3>Форма</h3>
+            <p>Оставить текущий <code>ActiveForm</code>. Вкладки и partials вставляются внутрь существующей формы, чтобы кнопка <strong>Обновить</strong> работала как сейчас.</p>
+          </div>
+        </div>
+
+        <div class="tab-pane" id="tab-ajax">
+          <div class="geo-panel">
+            <h3>Submit</h3>
+            <p>Главное сохранение остается обычным submit формы. Это базовая надежность: даже если JavaScript или AJAX временно сломались, админ может сохранить страницу штатным способом.</p>
+            <h3>AJAX</h3>
+            <ul>
+              <li><code>POST /admin/geo/preview</code> — вернуть HTML-предпросмотр текущей языковой версии.</li>
+              <li><code>POST /admin/geo/validate</code> — вернуть список предупреждений перед сохранением.</li>
+              <li><code>POST /admin/geo/variables</code> — опционально вернуть актуальную карту переменных, если она будет храниться на сервере.</li>
+            </ul>
+            <button type="button" class="btn btn-default" data-geo-ajax-preview data-target="#ajaxPreviewResult">Проверить AJAX preview</button>
+            <div id="ajaxPreviewResult" style="margin-top:12px"></div>
+          </div>
+        </div>
+
+        <div class="tab-pane" id="tab-checklist">
+          <div class="geo-panel">
+            <h3>Чек-лист приемки</h3>
+            <ul class="geo-warning-list">
+              <li>Страница страны и страница города используют одну структуру вкладок.</li>
+              <li>Языки работают через существующий select <strong>Language</strong>.</li>
+              <li>Системные поля не потеряны и read-only остаются read-only.</li>
+              <li>Meta Title показывает счетчик и предупреждение после 70 символов.</li>
+              <li>Meta Description показывает счетчик и предупреждение после 160 символов.</li>
+              <li>Переменные имеют hint при наведении и копируются кликом.</li>
+              <li>Верхние индикаторы готовности ловят отсутствие Cover Photo, FAQ меньше 4, пустой HTML, ошибки SEO и слово Neiro вместо <code>{{siteName}}</code>.</li>
+              <li>Submit работает без AJAX.</li>
+              <li>AJAX preview не ломает форму, если endpoint недоступен.</li>
+              <li class="is-blocker">Нельзя переносить в карточку страны/города вкладки “Города и регионы” и “Эксперты”.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="custom.js"></script>
+</body>
+</html>

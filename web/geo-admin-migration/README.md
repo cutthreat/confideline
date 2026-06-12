@@ -1,0 +1,91 @@
+# Geo admin migration handoff
+
+## Что передается программисту
+
+Пакет описывает перенос макета редактирования стран и городов в боевую админку Confideline.
+
+Целевая платформа:
+
+- Yii 2.0.55;
+- PHP 8.5.0 во views;
+- AdminLTE / Bootstrap текущей админки;
+- AssetBundle;
+- обычный form submit для сохранения;
+- AJAX для предпросмотра и вспомогательных проверок.
+
+## Главный принцип
+
+Миграция гибридная: программист внедряет в текущий Yii2-код, Codex может помогать, но пакет должен быть понятен без Codex.
+
+Поэтому:
+
+- структура вкладок описана явно;
+- CSS/JS вынесены в `custom.css` и `custom.js`;
+- новые поля разделены по вкладкам;
+- системные поля остаются как в текущей админке;
+- языки сохраняют текущую механику через поле `Language`.
+
+## Файлы пакета
+
+- `index.html` — веб-панель handoff;
+- `custom.css` — локальные стили страницы;
+- `custom.js` — локальная логика страницы;
+- `confideline-admin-page-standard.md` — стандарт для будущих страниц Confideline.
+
+## Куда переносить в Yii2
+
+```text
+modules/admin/assets/GeoAdminPageAsset.php
+web/static/admin/geo-page/custom.css
+web/static/admin/geo-page/custom.js
+modules/admin/views/country/_form.php
+modules/admin/views/geoname/_form.php
+modules/admin/views/geo/_tabs.php
+modules/admin/views/geo/_description.php
+modules/admin/views/geo/_images.php
+modules/admin/views/geo/_faq.php
+modules/admin/views/geo/_seo.php
+modules/admin/views/geo/_variables.php
+```
+
+## Минимальный AssetBundle
+
+```php
+namespace app\modules\admin\assets;
+
+use yii\web\AssetBundle;
+
+class GeoAdminPageAsset extends AssetBundle
+{
+    public $basePath = '@webroot/static/admin/geo-page';
+    public $baseUrl = '@web/static/admin/geo-page';
+    public $css = ['custom.css'];
+    public $js = ['custom.js'];
+    public $depends = [
+        'yii\web\YiiAsset',
+        'yii\bootstrap\BootstrapAsset',
+    ];
+}
+```
+
+## Подключение во view
+
+```php
+use app\modules\admin\assets\GeoAdminPageAsset;
+
+GeoAdminPageAsset::register($this);
+```
+
+## Сохранение
+
+Сохранение страницы остается обычным submit текущей формы Yii2. AJAX не должен быть единственным способом сохранить страницу.
+
+## AJAX
+
+AJAX нужен только для:
+
+- предпросмотра текущей языковой версии;
+- проверки длины SEO-полей на сервере, если потребуется;
+- проверки готовности медиа/FAQ перед публикацией.
+
+Если AJAX недоступен, кнопка `Обновить` все равно должна работать через submit.
