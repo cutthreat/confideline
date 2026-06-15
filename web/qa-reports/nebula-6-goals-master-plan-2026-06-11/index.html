@@ -1,0 +1,759 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nebula - мастер-план по 6 глобальным целям</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink:#172033;
+      --muted:#667085;
+      --line:#d9e2f3;
+      --bg:#f6f8fb;
+      --blue:#1f4e78;
+      --green:#0f766e;
+      --red:#842029;
+      --yellow:#7a4e00;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Arial, sans-serif; color:var(--ink); background:var(--bg); }
+    header { background:#1f4e78; color:#fff; padding:30px 34px; }
+    header h1 { margin:0 0 8px; font-size:30px; }
+    header p { margin:0; max-width:1120px; line-height:1.5; }
+    main { padding:22px 28px 46px; }
+    .top-nav { display:flex; flex-wrap:wrap; gap:10px; margin:0 0 18px; }
+    .top-nav button { background:#fff; border:1px solid var(--line); color:#175cd3; padding:10px 14px; text-decoration:none; border-radius:6px; font-weight:700; cursor:pointer; }
+    .top-nav button.is-active { background:#e8f1ff; border-color:#175cd3; color:#0b3f91; }
+    .top-nav button:focus-visible, .task-button:focus-visible, .task-links button:focus-visible, .task-ref:focus-visible { outline:3px solid #b7d4ff; outline-offset:2px; }
+    .notice { background:#fff; border:1px solid var(--line); border-left:6px solid var(--green); border-radius:8px; padding:14px 16px; margin:0 0 18px; line-height:1.5; }
+    .legend { display:flex; flex-wrap:wrap; gap:10px; align-items:center; background:#fff; border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin:0 0 18px; }
+    .badge { display:inline-block; padding:4px 8px; border-radius:999px; font-weight:700; font-size:12px; white-space:nowrap; }
+    .p0 { background:#f4cccc; color:#842029; }
+    .p1 { background:#fff2cc; color:#7a4e00; }
+    .p2 { background:#e7e6e6; color:#344054; }
+    .status-red { background:#f4cccc; color:#842029; }
+    .status-yellow { background:#fff2cc; color:#7a4e00; }
+    .status-green { background:#d9ead3; color:#1f5e2e; }
+    section { margin:22px 0 30px; }
+    .section-title { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin:0 0 12px; }
+    .section-title h2 { margin:0; font-size:24px; }
+    .section-title p { margin:0; color:var(--muted); line-height:1.4; max-width:780px; }
+    .goals-grid { display:grid; grid-template-columns:repeat(3, minmax(250px,1fr)); gap:14px; }
+    .goal-card { background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    .goal-head { padding:14px 16px; color:#fff; background:var(--goal-color); }
+    .goal-head b { display:block; font-size:16px; margin-bottom:5px; }
+    .goal-body { padding:14px 16px; line-height:1.45; }
+    .goal-body ul { margin:10px 0 0; padding-left:18px; }
+    .goal-body li { margin:4px 0; }
+    .task-links { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .task-links button, .task-ref { display:inline-block; text-decoration:none; color:#175cd3; background:#f4f8ff; border:1px solid #d8e6ff; border-radius:6px; padding:5px 8px; font-weight:700; font-size:13px; cursor:pointer; font-family:inherit; }
+    table { width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    th { background:#1f4e78; color:#fff; text-align:left; padding:10px; vertical-align:top; }
+    td { border-top:1px solid var(--line); padding:10px; vertical-align:top; line-height:1.45; }
+    .role-name, .task-name { font-weight:700; min-width:160px; }
+    .tab-panel.is-hidden, .task-card.is-hidden { display:none; }
+    .tasks-grid { display:block; }
+    .task-picker { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 14px; background:#fff; border:1px solid var(--line); border-radius:8px; padding:12px; }
+    .task-button { color:#175cd3; background:#f4f8ff; border:1px solid #d8e6ff; border-radius:6px; padding:7px 9px; font-weight:700; font-size:13px; cursor:pointer; font-family:inherit; }
+    .task-button.is-active { background:#175cd3; color:#fff; border-color:#175cd3; }
+    .task-card { background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    .task-card header { background:#f8fafc; color:var(--ink); padding:14px 16px; border-left:8px solid var(--goal-color); border-bottom:1px solid var(--line); }
+    .task-card h3 { margin:0 0 6px; font-size:19px; }
+    .task-card .meta { display:flex; flex-wrap:wrap; gap:8px; align-items:center; color:var(--muted); font-size:13px; }
+    .task-card .body { padding:14px 16px; }
+    .flow-list { display:grid; grid-template-columns:repeat(2, minmax(220px,1fr)); gap:10px; margin-top:10px; }
+    .flow-box { background:#fbfdff; border:1px solid #e4e9f2; border-radius:6px; padding:10px; line-height:1.45; }
+    .flow-box b { display:block; margin-bottom:5px; }
+    .flow-box ul { margin:0; padding-left:18px; }
+    .flow-box li { margin:3px 0; }
+    .session-mock { margin-top:16px; border:1px solid #cfd9ea; border-radius:8px; background:#f8fbff; overflow:hidden; }
+    .session-mock-head { display:flex; justify-content:space-between; gap:14px; align-items:flex-start; padding:14px 16px; background:#163b63; color:#fff; }
+    .session-mock-head h4 { margin:0 0 5px; font-size:18px; }
+    .session-mock-head p { margin:0; color:#e5eefb; line-height:1.4; }
+    .session-mock-controls { display:flex; flex-wrap:wrap; gap:8px; padding:12px 14px; border-bottom:1px solid #dce5f4; background:#fff; }
+    .session-mock-controls button { border:1px solid #d8e6ff; background:#f4f8ff; color:#175cd3; border-radius:6px; padding:7px 10px; font-weight:700; cursor:pointer; font-family:inherit; }
+    .session-mock-controls button.is-active { background:#175cd3; border-color:#175cd3; color:#fff; }
+    .session-kpis { display:grid; grid-template-columns:repeat(5, minmax(130px, 1fr)); gap:10px; padding:12px 14px; background:#fff; border-bottom:1px solid #dce5f4; }
+    .session-kpi { border:1px solid #e4e9f2; border-radius:8px; padding:10px; background:#fbfdff; }
+    .session-kpi span { display:block; color:var(--muted); font-size:12px; margin-bottom:4px; }
+    .session-kpi b { display:block; font-size:15px; }
+    .session-layout { display:grid; grid-template-columns:280px 1fr; gap:12px; padding:14px; }
+    .session-side, .session-main { background:#fff; border:1px solid #e4e9f2; border-radius:8px; padding:12px; }
+    .session-side h5, .session-main h5 { margin:0 0 8px; font-size:15px; }
+    .session-side dl { margin:0; display:grid; gap:8px; }
+    .session-side dt { color:var(--muted); font-size:12px; }
+    .session-side dd { margin:2px 0 0; font-weight:700; }
+    .session-tabs { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 12px; }
+    .session-tabs button { border:1px solid #d8e6ff; background:#f4f8ff; color:#175cd3; border-radius:6px; padding:7px 10px; font-weight:700; cursor:pointer; font-family:inherit; }
+    .session-tabs button.is-active { background:#175cd3; border-color:#175cd3; color:#fff; }
+    .session-panel.is-hidden, .session-role-note.is-hidden { display:none; }
+    .session-panel { line-height:1.45; }
+    .session-panel ul { margin:8px 0 0; padding-left:18px; }
+    .session-row-list { display:grid; gap:8px; margin-top:8px; }
+    .session-row { display:grid; grid-template-columns:140px 1fr; gap:10px; align-items:start; border:1px solid #e4e9f2; border-radius:8px; padding:9px; background:#fbfdff; }
+    .session-row span { color:var(--muted); font-size:12px; }
+    .session-chat { display:grid; gap:8px; margin-top:8px; }
+    .session-msg { max-width:82%; border:1px solid #e4e9f2; border-radius:8px; padding:9px; background:#fbfdff; }
+    .session-msg.agent { margin-left:auto; background:#edf7ff; border-color:#cfe7ff; }
+    .session-msg b { display:block; margin-bottom:3px; font-size:13px; }
+    .session-note { margin-top:10px; padding:10px; border-left:4px solid #175cd3; background:#f4f8ff; line-height:1.45; }
+    .mock-card { margin-top:16px; border:1px solid #cfd9ea; border-radius:8px; background:#fff; overflow:hidden; }
+    .mock-card h4 { margin:0; padding:12px 14px; background:#f8fafc; border-bottom:1px solid #e4e9f2; font-size:17px; }
+    .mock-body { padding:14px; }
+    .mock-grid { display:grid; grid-template-columns:repeat(3, minmax(180px, 1fr)); gap:10px; }
+    .mock-grid.two { grid-template-columns:repeat(2, minmax(240px, 1fr)); }
+    .mock-box { border:1px solid #e4e9f2; border-radius:8px; background:#fbfdff; padding:10px; line-height:1.45; }
+    .mock-box strong { display:block; margin-bottom:5px; }
+    .mock-box ul { margin:0; padding-left:18px; }
+    .mock-box li { margin:3px 0; }
+    .mock-strip { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 12px; }
+    .mock-pill { display:inline-block; border:1px solid #d8e6ff; background:#f4f8ff; color:#175cd3; border-radius:999px; padding:5px 8px; font-size:12px; font-weight:700; }
+    .mock-pill.red { background:#f4cccc; color:#842029; border-color:#edb5b5; }
+    .mock-pill.green { background:#d9ead3; color:#1f5e2e; border-color:#b8dcae; }
+    .mock-pill.yellow { background:#fff2cc; color:#7a4e00; border-color:#ead58e; }
+    .mock-table { width:100%; border-collapse:collapse; border:1px solid #e4e9f2; border-radius:8px; overflow:hidden; background:#fff; }
+    .mock-table th { background:#edf3fb; color:#172033; padding:8px; }
+    .mock-table td { padding:8px; border-top:1px solid #e4e9f2; }
+    .mock-screen { border:1px solid #e4e9f2; border-radius:10px; overflow:hidden; background:#fff; }
+    .mock-screen-head { display:flex; justify-content:space-between; gap:10px; padding:10px 12px; background:#172033; color:#fff; }
+    .mock-screen-body { padding:12px; }
+    .mock-hero { border-radius:8px; padding:16px; background:#f2eefc; border:1px solid #ded2ff; }
+    .mock-hero h5 { margin:0 0 6px; font-size:18px; }
+    .mock-hero p { margin:0 0 10px; }
+    .mock-button { display:inline-block; background:#6d28d9; color:#fff; border-radius:6px; padding:8px 10px; font-weight:700; }
+    .footer { color:var(--muted); font-size:13px; margin-top:26px; line-height:1.5; }
+    .footer a { color:#175cd3; }
+    @media (max-width:1050px) { .goals-grid, .tasks-grid, .flow-list, .session-layout, .session-kpis, .mock-grid, .mock-grid.two { grid-template-columns:1fr; } .session-mock-head { flex-direction:column; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Мастер-план Nebula по 6 глобальным целям</h1>
+  <p>Новая отдельная версия без перезаписи старого мастер-плана. Здесь 6 глобальных целей на 6 месяцев, задачи внутри каждой цели и вид по ролям. Каждая задача раскрыта как понятная карточка для программиста, маркетолога, Codex и PM-контроля.</p>
+</header>
+
+<main>
+  <nav class="top-nav" aria-label="Разделы мастер-плана">
+    <button class="tab-button is-active" type="button" data-tab-target="six-goals">6 целей</button>
+    <button class="tab-button" type="button" data-tab-target="role-plan">По ролям</button>
+    <button class="tab-button" type="button" data-tab-target="tasks">Карточки задач</button>
+    <button class="tab-button" type="button" data-tab-target="sources">Источники</button>
+  </nav>
+
+  <div class="notice">
+    <b>Как читать:</b> цель месяца задает главный фокус. Внутри цели есть конкретные задачи. В таблицах задачи кликабельны и ведут к карточке с описанием: что делаем, зачем, какие flow, какой backend, маркетинг, QA и что блокирует запуск.
+  </div>
+
+  <div class="legend">
+    <b>Приоритет:</b>
+    <span class="badge p0">P0</span><span>без этого нельзя принять платного клиента</span>
+    <span class="badge p1">P1</span><span>нужно для нормального запуска и роста</span>
+    <span class="badge p2">P2</span><span>можно после базового запуска</span>
+  </div>
+
+  <section id="six-goals" class="tab-panel" data-tab-panel="six-goals">
+    <div class="section-title">
+      <h2>1. Мастер-план списком по 6 глобальным целям</h2>
+      <p>Это управленческая рамка: одна глобальная цель на месяц, а внутри - задачи, которые тянут за собой продукт, backend, маркетинг, QA и операционку.</p>
+    </div>
+    <div class="goals-grid">
+      <article class="goal-card" style="--goal-color:#2563eb">
+        <div class="goal-head"><b>1) Глобальный чат</b>Месяц 1</div>
+        <div class="goal-body">
+          Сделать рабочий чат для всех ролей и карточку одной конкретной консультации.
+          <ul>
+            <li>клиент, эксперт, агент, админ;</li>
+            <li>service_session: вопрос, эксперт, чат, минуты, деньги, support, качество;</li>
+            <li>уведомления по части чата.</li>
+          </ul>
+          <div class="task-links">
+            <button type="button" data-task-target="task-g1-session">G1.1 Карточка консультации</button>
+            <button type="button" data-task-target="task-g1-chat">G1.2 Чат по ролям</button>
+            <button type="button" data-task-target="task-g1-statuses">G1.3 Статусы и история</button>
+            <button type="button" data-task-target="task-g1-chat-notifications">G1.4 Уведомления чата</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="goal-card" style="--goal-color:#0f766e">
+        <div class="goal-head"><b>2) Деньги и поминутная логика</b>Месяц 2</div>
+        <div class="goal-body">
+          Сделать продуктовую денежную механику: цена, баланс, лимиты, стоп, возвраты, начисления.
+          <ul>
+            <li>поминутное списание;</li>
+            <li>условия консультации и возвраты;</li>
+            <li>мотивация и начисления сотрудникам.</li>
+          </ul>
+          <div class="task-links">
+            <button type="button" data-task-target="task-g2-pricing">G2.1 Цена и баланс</button>
+            <button type="button" data-task-target="task-g2-timer">G2.2 Таймер и stop</button>
+            <button type="button" data-task-target="task-g2-refund">G2.3 Возвраты</button>
+            <button type="button" data-task-target="task-g2-accruals">G2.4 Начисления</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="goal-card" style="--goal-color:#7c3aed">
+        <div class="goal-head"><b>3) Натянуть дизайн сайта на backend</b>Месяц 3</div>
+        <div class="goal-body">
+          Перенести дизайн сайта на backend и связать с реальными данными.
+          <ul>
+            <li>эксперты, карточки, услуги, цены, статусы, чат;</li>
+            <li>клиентский путь как у askNebula;</li>
+            <li>проверка, что это рабочий продукт, а не макет.</li>
+          </ul>
+          <div class="task-links">
+            <button type="button" data-task-target="task-g3-home">G3.1 Витрина</button>
+            <button type="button" data-task-target="task-g3-catalog">G3.2 Каталог</button>
+            <button type="button" data-task-target="task-g3-profile">G3.3 Карточка эксперта</button>
+            <button type="button" data-task-target="task-g3-quiz">G3.4 Подбор и старт</button>
+            <button type="button" data-task-target="task-g3-qa">G3.5 QA клиентского пути</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="goal-card" style="--goal-color:#b7791f">
+        <div class="goal-head"><b>4) Support, документы и правила</b>Месяц 4</div>
+        <div class="goal-body">
+          Собрать безопасный контур поддержки, жалоб, спорных ситуаций и правил консультации.
+          <ul>
+            <li>support по конкретной консультации;</li>
+            <li>refund logic;</li>
+            <li>дисклеймеры, правила, уведомления.</li>
+          </ul>
+          <div class="task-links">
+            <button type="button" data-task-target="task-g4-support">G4.1 Support</button>
+            <button type="button" data-task-target="task-g4-complaints">G4.2 Жалобы и refund</button>
+            <button type="button" data-task-target="task-g4-docs">G4.3 Документы</button>
+            <button type="button" data-task-target="task-g4-support-notifications">G4.4 Уведомления support</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="goal-card" style="--goal-color:#be185d">
+        <div class="goal-head"><b>5) Маркетинг, аналитика и дашборды</b>Месяц 5</div>
+        <div class="goal-body">
+          Сделать измеримый контур: статусы консультаций, деньги, проблемные сессии, качество, KPI и воронка.
+          <ul>
+            <li>таблица взаимодействий;</li>
+            <li>готовность к рекламе;</li>
+            <li>события и KPI по всем страницам.</li>
+          </ul>
+          <div class="task-links">
+            <button type="button" data-task-target="task-g5-events">G5.1 События воронки</button>
+            <button type="button" data-task-target="task-g5-dashboard">G5.2 Дашборд</button>
+            <button type="button" data-task-target="task-g5-kpi">G5.3 KPI таблица</button>
+            <button type="button" data-task-target="task-g5-marketing-gate">G5.4 Gate рекламы</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="goal-card" style="--goal-color:#475569">
+        <div class="goal-head"><b>6) Рабочий контур команды</b>Месяц 6</div>
+        <div class="goal-body">
+          Сделать операционный контур для модератора, агентов, экспертов и контроля качества.
+          <ul>
+            <li>назначение консультаций;</li>
+            <li>SLA, обучение, регламенты;</li>
+            <li>правила ИИ, копипаста, бейджей и коммуникации.</li>
+          </ul>
+          <div class="task-links">
+            <button type="button" data-task-target="task-g6-assignment">G6.1 Назначение</button>
+            <button type="button" data-task-target="task-g6-sla">G6.2 SLA</button>
+            <button type="button" data-task-target="task-g6-quality">G6.3 Контроль качества</button>
+            <button type="button" data-task-target="task-g6-training">G6.4 Обучение и регламенты</button>
+            <button type="button" data-task-target="task-g6-team-notifications">G6.5 Командные уведомления</button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="role-plan" class="tab-panel is-hidden" data-tab-panel="role-plan">
+    <div class="section-title">
+      <h2>2. Мастер-план по ролям</h2>
+      <p>Тот же план, но разложенный по ролям. Каждая строка ведет на конкретную задачу, чтобы было видно, что именно нужно реализовать для клиента, эксперта, агента и супер-админа.</p>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Роль</th>
+          <th>Что должно стать рабочим</th>
+          <th>Ключевые задачи</th>
+          <th>Готово когда</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="role-name">Клиент</td>
+          <td>Понимает продукт, выбирает эксперта или проходит подбор, задает вопрос, видит условия, стартует чат, платит за минуты, получает support и может оставить отзыв.</td>
+          <td>
+            <button class="task-ref" type="button" data-task-target="task-g3-home">Витрина</button>
+            <button class="task-ref" type="button" data-task-target="task-g3-catalog">Каталог</button>
+            <button class="task-ref" type="button" data-task-target="task-g3-profile">Карточка эксперта</button>
+            <button class="task-ref" type="button" data-task-target="task-g3-quiz">Подбор</button>
+            <button class="task-ref" type="button" data-task-target="task-g1-chat">Чат</button>
+            <button class="task-ref" type="button" data-task-target="task-g2-pricing">Цена/баланс</button>
+            <button class="task-ref" type="button" data-task-target="task-g4-support">Support</button>
+          </td>
+          <td>Клиент может пройти путь от рекламы до консультации без ручного объяснения.</td>
+        </tr>
+        <tr>
+          <td class="role-name">Эксперт</td>
+          <td>Имеет понятную анкету, допуск, рабочий кабинет консультаций, SLA по ответу, историю, начисления и правила качества.</td>
+          <td>
+            <button class="task-ref" type="button" data-task-target="task-g3-profile">Карточка эксперта</button>
+            <button class="task-ref" type="button" data-task-target="task-g1-chat">Чат</button>
+            <button class="task-ref" type="button" data-task-target="task-g2-accruals">Начисления</button>
+            <button class="task-ref" type="button" data-task-target="task-g6-sla">SLA</button>
+            <button class="task-ref" type="button" data-task-target="task-g6-quality">Контроль качества</button>
+            <button class="task-ref" type="button" data-task-target="task-g6-training">Регламенты</button>
+          </td>
+          <td>5 экспертов могут принимать и проводить консультации без разработчика рядом.</td>
+        </tr>
+        <tr>
+          <td class="role-name">Агент</td>
+          <td>Видит назначенные анкеты экспертов, свои консультации, чаты, support, SLA, эскалации и мотивацию.</td>
+          <td>
+            <button class="task-ref" type="button" data-task-target="task-g1-session">Карточка консультации</button>
+            <button class="task-ref" type="button" data-task-target="task-g1-chat">Чат</button>
+            <button class="task-ref" type="button" data-task-target="task-g4-support">Support</button>
+            <button class="task-ref" type="button" data-task-target="task-g6-assignment">Назначение</button>
+            <button class="task-ref" type="button" data-task-target="task-g6-sla">SLA</button>
+            <button class="task-ref" type="button" data-task-target="task-g6-training">Инструкции агента</button>
+          </td>
+          <td>Агент может вести несколько анкет и понимать, что делать с каждым клиентом.</td>
+        </tr>
+        <tr>
+          <td class="role-name">Супер-админ</td>
+          <td>Видит весь сервис: консультации, деньги, проблемы, SLA, support, refund, качество, роли, обучение, дашборды и готовность к рекламе.</td>
+          <td>
+            <button class="task-ref" type="button" data-task-target="task-g1-session">service_session</button>
+            <button class="task-ref" type="button" data-task-target="task-g2-refund">Возвраты</button>
+            <button class="task-ref" type="button" data-task-target="task-g5-dashboard">Дашборд</button>
+            <button class="task-ref" type="button" data-task-target="task-g5-kpi">KPI</button>
+            <button class="task-ref" type="button" data-task-target="task-g6-assignment">Назначение</button>
+            <button class="task-ref" type="button" data-task-target="task-g6-quality">Качество</button>
+            <button class="task-ref" type="button" data-task-target="task-g5-marketing-gate">Gate рекламы</button>
+          </td>
+          <td>Админ видит каждую консультацию целиком и понимает, можно ли включать рекламу.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="task-cards" class="tab-panel is-hidden" data-tab-panel="tasks">
+    <div class="section-title">
+      <h2>Карточки конкретных задач</h2>
+      <p>Каждая карточка - это мини-ТЗ: что делаем, какие flow должны работать, что нужно backend, зачем это маркетингу и как проверять.</p>
+    </div>
+
+    <div class="task-picker" data-task-picker aria-label="Выбор конкретной задачи"></div>
+    <div class="tasks-grid">
+      <article class="task-card" id="task-g1-session" style="--goal-color:#2563eb">
+        <header>
+          <h3>G1.1 Карточка одной консультации</h3>
+          <div class="meta"><span class="badge p0">P0</span><span>Цель 1: Глобальный чат</span></div>
+        </header>
+        <div class="body">
+          <p><b>Что сделать:</b> создать единую карточку консультации: клиент, вопрос, эксперт, агент, чат, цена минуты, списания, начисления, support, жалоба/refund, отзыв, статус и оценка качества.</p>
+          <div class="flow-list">
+            <div class="flow-box"><b>User flow</b><ul><li>клиент создает вопрос;</li><li>выбирается эксперт/агент;</li><li>консультация получает статус.</li></ul></div>
+            <div class="flow-box"><b>Backend</b><ul><li>service_session ID;</li><li>связь с chat, balance, support;</li><li>история событий.</li></ul></div>
+            <div class="flow-box"><b>Маркетинг</b><ul><li>основа измеримой воронки;</li><li>доказательство, что реклама приводит к реальной консультации.</li></ul></div>
+            <div class="flow-box"><b>QA</b><ul><li>одна консультация открывается целиком;</li><li>все связанные данные видны админу.</li></ul></div>
+          </div>
+          <div class="session-mock" aria-label="Интерактивный макет карточки одной консультации">
+            <div class="session-mock-head">
+              <div>
+                <h4>Макет: карточка одной консультации</h4>
+                <p>Одна карточка связывает клиента, вопрос, эксперта/агента, чат, минуты, деньги, support, refund, отзыв и контроль качества.</p>
+              </div>
+              <span class="badge status-yellow">Демо-макет, не live-данные</span>
+            </div>
+            <div class="session-mock-controls" aria-label="Выбор роли">
+              <button class="is-active" type="button" data-session-role="admin">Супер-админ</button>
+              <button type="button" data-session-role="agent">Агент</button>
+              <button type="button" data-session-role="expert">Эксперт</button>
+              <button type="button" data-session-role="client">Клиент</button>
+            </div>
+            <div class="session-kpis">
+              <div class="session-kpi"><span>Статус</span><b>Идет консультация</b></div>
+              <div class="session-kpi"><span>Цена</span><b>45 кредитов/мин</b></div>
+              <div class="session-kpi"><span>Минуты</span><b>08:42 из лимита</b></div>
+              <div class="session-kpi"><span>Баланс</span><b>достаточно на 14 мин</b></div>
+              <div class="session-kpi"><span>Риск</span><b>support не открыт</b></div>
+            </div>
+            <div class="session-layout">
+              <aside class="session-side">
+                <h5>Паспорт консультации</h5>
+                <dl>
+                  <div><dt>ID</dt><dd>SS-2026-000184</dd></div>
+                  <div><dt>Клиент</dt><dd>Maria K.</dd></div>
+                  <div><dt>Вопрос</dt><dd>Отношения и совместимость</dd></div>
+                  <div><dt>Эксперт</dt><dd>Solara Ortiz</dd></div>
+                  <div><dt>Агент</dt><dd>Kristy</dd></div>
+                  <div><dt>Источник</dt><dd>Главная -> карточка эксперта</dd></div>
+                </dl>
+              </aside>
+              <div class="session-main">
+                <div class="session-role-note" data-role-note="admin">
+                  <b>Вид супер-админа:</b> видит все: чат, деньги, refund, support, качество, владельцев, SLA и историю решений.
+                </div>
+                <div class="session-role-note is-hidden" data-role-note="agent">
+                  <b>Вид агента:</b> видит назначенные анкеты, вопросы клиентов, чат, SLA, инструкции и свои начисления, но не всю финансовую админку.
+                </div>
+                <div class="session-role-note is-hidden" data-role-note="expert">
+                  <b>Вид эксперта:</b> видит свою анкету, вопрос, контекст клиента, чат и правила ответа, без чужих клиентов и админских решений.
+                </div>
+                <div class="session-role-note is-hidden" data-role-note="client">
+                  <b>Вид клиента:</b> видит свой вопрос, выбранного эксперта, чат, цену/баланс, условия, support и итог консультации.
+                </div>
+                <div class="session-tabs" aria-label="Разделы консультации">
+                  <button class="is-active" type="button" data-session-tab="overview">Обзор</button>
+                  <button type="button" data-session-tab="chat">Чат</button>
+                  <button type="button" data-session-tab="money">Деньги</button>
+                  <button type="button" data-session-tab="support">Support/refund</button>
+                  <button type="button" data-session-tab="quality">Качество</button>
+                </div>
+                <div class="session-panel" data-session-panel="overview">
+                  <h5>Что должно быть видно сразу</h5>
+                  <div class="session-row-list">
+                    <div class="session-row"><span>Кто участвует</span><div>Клиент Maria K., эксперт Solara Ortiz, агент Kristy, ответственный модератор.</div></div>
+                    <div class="session-row"><span>Что происходит</span><div>Клиент задал вопрос, консультация идет в чате, счетчик минут активен.</div></div>
+                    <div class="session-row"><span>Что важно админу</span><div>Баланс достаточен, SLA не нарушен, жалоб нет, качество пока не проверено.</div></div>
+                  </div>
+                </div>
+                <div class="session-panel is-hidden" data-session-panel="chat">
+                  <h5>Чат внутри консультации</h5>
+                  <div class="session-chat">
+                    <div class="session-msg"><b>Клиент</b>Хочу понять, стоит ли продолжать отношения и что он чувствует.</div>
+                    <div class="session-msg agent"><b>Агент от имени Solara Ortiz</b>Я посмотрю вашу ситуацию. Уточните, пожалуйста, дату рождения партнера, если готовы.</div>
+                    <div class="session-msg"><b>Клиент</b>Да, могу отправить. Сколько примерно займет консультация?</div>
+                  </div>
+                  <div class="session-note">В реальной версии здесь нужны: владелец ответа, таймер, лимит баланса, статус печати, внутренние заметки агента и лог модерации.</div>
+                </div>
+                <div class="session-panel is-hidden" data-session-panel="money">
+                  <h5>Поминутная логика</h5>
+                  <div class="session-row-list">
+                    <div class="session-row"><span>Списание</span><div>45 кредитов за минуту, списание идет только при активной консультации.</div></div>
+                    <div class="session-row"><span>Стоп</span><div>Если баланса меньше следующей минуты, чат должен остановить платную часть и показать понятное сообщение.</div></div>
+                    <div class="session-row"><span>Начисление</span><div>После завершения минуты попадают в расчет эксперта/агента с учетом refund и качества.</div></div>
+                  </div>
+                </div>
+                <div class="session-panel is-hidden" data-session-panel="support">
+                  <h5>Support и возвраты</h5>
+                  <div class="session-row-list">
+                    <div class="session-row"><span>Обращение</span><div>Клиент может открыть обращение из этой консультации, чтобы support видел весь контекст.</div></div>
+                    <div class="session-row"><span>Refund</span><div>Решение о возврате должно ссылаться на чат, минуты, правила и решение модератора.</div></div>
+                    <div class="session-row"><span>История</span><div>Нельзя терять, кто принял решение, когда и почему.</div></div>
+                  </div>
+                </div>
+                <div class="session-panel is-hidden" data-session-panel="quality">
+                  <h5>Контроль качества</h5>
+                  <ul>
+                    <li>ответ не нарушает правила и не дает запрещенных обещаний;</li>
+                    <li>агент/эксперт соблюдает тон, скорость и регламент;</li>
+                    <li>жалоба или плохая оценка переводят консультацию в очередь проверки;</li>
+                    <li>итог качества влияет на обучение, допуск и начисления.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="task-card" id="task-g1-chat" style="--goal-color:#2563eb">
+        <header>
+          <h3>G1.2 Чат для клиента, эксперта, агента и админа</h3>
+          <div class="meta"><span class="badge p0">P0</span><span>Цель 1: Глобальный чат</span></div>
+        </header>
+        <div class="body">
+          <p><b>Что сделать:</b> один консультационный чат с разной видимостью и действиями для ролей.</p>
+          <div class="flow-list">
+            <div class="flow-box"><b>User flow</b><ul><li>клиент пишет вопрос;</li><li>эксперт/агент отвечает;</li><li>админ видит историю.</li></ul></div>
+            <div class="flow-box"><b>Backend</b><ul><li>chat thread;</li><li>role permissions;</li><li>message audit.</li></ul></div>
+            <div class="flow-box"><b>Маркетинг</b><ul><li>чат - главный продаваемый продукт;</li><li>обещание рекламы должно подтверждаться скоростью ответа.</li></ul></div>
+            <div class="flow-box"><b>QA</b><ul><li>каждая роль видит только свое;</li><li>сообщения сохраняются и связаны с консультацией.</li></ul></div>
+          </div>
+          <div class="mock-card">
+            <h4>Макет: рабочий чат по ролям</h4>
+            <div class="mock-body">
+              <div class="mock-strip">
+                <span class="mock-pill green">Клиент: пишет и видит баланс</span>
+                <span class="mock-pill yellow">Агент: отвечает за назначенную анкету</span>
+                <span class="mock-pill">Эксперт: видит свой контекст</span>
+                <span class="mock-pill">Админ: видит аудит</span>
+              </div>
+              <div class="mock-grid two">
+                <div class="mock-box">
+                  <strong>Левая колонка чата</strong>
+                  <ul>
+                    <li>номер консультации и статус;</li>
+                    <li>клиент, эксперт, агент;</li>
+                    <li>таймер, цена, оставшийся баланс;</li>
+                    <li>SLA ответа и риск просрочки.</li>
+                  </ul>
+                </div>
+                <div class="mock-box">
+                  <strong>Основное окно</strong>
+                  <ul>
+                    <li>сообщения клиента и эксперта/агента;</li>
+                    <li>внутренняя заметка не видна клиенту;</li>
+                    <li>кнопки: ответить, пауза, завершить, открыть support;</li>
+                    <li>все сообщения пишутся в историю консультации.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="task-card" id="task-g1-statuses" style="--goal-color:#2563eb">
+        <header>
+          <h3>G1.3 Статусы, история и завершение консультации</h3>
+          <div class="meta"><span class="badge p0">P0</span><span>Цель 1: Глобальный чат</span></div>
+        </header>
+        <div class="body">
+          <p><b>Что сделать:</b> статусы draft, waiting, active, paused, ended, disputed, refunded, quality_review.</p>
+          <div class="flow-list">
+            <div class="flow-box"><b>User flow</b><ul><li>понятно, что происходит сейчас;</li><li>после завершения есть история.</li></ul></div>
+            <div class="flow-box"><b>Backend</b><ul><li>status machine;</li><li>event log;</li><li>timestamps.</li></ul></div>
+            <div class="flow-box"><b>Маркетинг</b><ul><li>статусы нужны для KPI и ретеншна;</li><li>можно понимать, где теряются клиенты.</li></ul></div>
+            <div class="flow-box"><b>QA</b><ul><li>статус меняется только по правилам;</li><li>нет потерянных консультаций.</li></ul></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="task-card" id="task-g1-chat-notifications" style="--goal-color:#2563eb">
+        <header>
+          <h3>G1.4 Уведомления по чату</h3>
+          <div class="meta"><span class="badge p1">P1</span><span>Цель 1: Глобальный чат</span></div>
+        </header>
+        <div class="body">
+          <p><b>Что сделать:</b> уведомления о новом сообщении, подключении эксперта, ожидании ответа, завершении и проблемах.</p>
+          <div class="flow-list">
+            <div class="flow-box"><b>User flow</b><ul><li>клиент не теряет ответ;</li><li>эксперт/агент не пропускает запрос.</li></ul></div>
+            <div class="flow-box"><b>Backend</b><ul><li>notification events;</li><li>email/in-app/Telegram hooks;</li><li>read/unread status.</li></ul></div>
+            <div class="flow-box"><b>Маркетинг</b><ul><li>быстрый ответ повышает конверсию и повторные обращения.</li></ul></div>
+            <div class="flow-box"><b>QA</b><ul><li>событие создает уведомление;</li><li>лишние роли не получают чужие уведомления.</li></ul></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="task-card" id="task-g2-pricing" style="--goal-color:#0f766e">
+        <header><h3>G2.1 Цена за минуту и баланс клиента</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 2: Деньги</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> цена/мин у эксперта, баланс клиента, free minutes или бонус, понятные условия до старта.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>клиент видит цену;</li><li>понимает, когда начнется списание.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>price_per_minute;</li><li>balance;</li><li>promo/free minutes.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>цена и trial - ключевые офферы рекламной воронки.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>цена на витрине совпадает с ценой в консультации.</li></ul></div></div><div class="mock-card"><h4>Макет: блок цены перед стартом</h4><div class="mock-body"><div class="mock-grid"><div class="mock-box"><strong>Solara Ortiz</strong><ul><li>45 кредитов/мин</li><li>первые 3 минуты бонусом</li><li>старт только после подтверждения условий</li></ul></div><div class="mock-box"><strong>Баланс клиента</strong><ul><li>630 кредитов</li><li>примерно 14 минут</li><li>пополнить баланс</li></ul></div><div class="mock-box"><strong>Перед стартом</strong><ul><li>показать цену;</li><li>показать правила списания;</li><li>дать согласие с условиями.</li></ul></div></div></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g2-timer" style="--goal-color:#0f766e">
+        <header><h3>G2.2 Таймер, списание и stop при нехватке средств</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 2: Деньги</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> поминутное списание в активном чате, предупреждение о низком балансе и остановка без ухода в неуправляемый минус.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>видит оставшийся баланс;</li><li>получает предупреждение;</li><li>может пополнить.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>billing timer;</li><li>debit events;</li><li>low balance stop rule.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>прозрачность денег снижает недоверие.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>списание соответствует времени;</li><li>stop срабатывает.</li></ul></div></div><div class="mock-card"><h4>Макет: таймер и stop-правило</h4><div class="mock-body"><table class="mock-table"><thead><tr><th>Состояние</th><th>Что видит клиент</th><th>Что делает система</th></tr></thead><tbody><tr><td><span class="mock-pill green">Баланс есть</span></td><td>Идет консультация, осталось 14 минут</td><td>Списывает минуту и пишет событие</td></tr><tr><td><span class="mock-pill yellow">Осталось 2 минуты</span></td><td>Предупреждение и кнопка пополнить</td><td>Готовит soft-stop</td></tr><tr><td><span class="mock-pill red">Баланс закончился</span></td><td>Платный чат остановлен</td><td>Блокирует списание и фиксирует причину</td></tr></tbody></table></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g2-refund" style="--goal-color:#0f766e">
+        <header><h3>G2.3 Возвраты и история транзакций</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 2: Деньги</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> связать refund с конкретной консультацией, причиной, решением и балансом.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>клиент подает запрос;</li><li>видит статус решения.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>refund request;</li><li>transaction reversal;</li><li>admin decision log.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>refund policy - часть доверия перед рекламой.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>возврат меняет баланс;</li><li>история не теряется.</li></ul></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g2-accruals" style="--goal-color:#0f766e">
+        <header><h3>G2.4 Начисления и мотивация сотрудников</h3><div class="meta"><span class="badge p1">P1</span><span>Цель 2: Деньги</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> правила начисления эксперту и агенту по завершенным минутам, возвратам и качеству.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>эксперт/агент видит понятные начисления.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>commission rules;</li><li>accrual ledger;</li><li>hold/refund adjustments.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>мотивация команды влияет на скорость и качество консультаций.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>начисление совпадает с минутами и refund.</li></ul></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g3-home" style="--goal-color:#7c3aed">
+        <header><h3>G3.1 Главная витрина на backend</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 3: Дизайн на backend</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> подключить дизайн главной к реальным экспертам, темам, ценам, CTA и trust-блокам.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>клиент понимает продукт;</li><li>переходит к подбору или эксперту.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>experts feed;</li><li>pricing;</li><li>promo conditions.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>главная продает ясность, эксперта и старт консультации.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>нет статического фейка;</li><li>CTA работает.</li></ul></div></div><div class="mock-card"><h4>Макет: главная страница на реальных данных</h4><div class="mock-body"><div class="mock-screen"><div class="mock-screen-head"><b>Nebula</b><span>Эксперты онлайн</span></div><div class="mock-screen-body"><div class="mock-hero"><h5>Поминутная эзотерическая консультация с экспертом</h5><p>Выберите тему, задайте вопрос и начните чат с подходящим экспертом.</p><span class="mock-button">Подобрать эксперта</span></div><div class="mock-grid" style="margin-top:10px;"><div class="mock-box"><strong>Solara Ortiz</strong>Таро, отношения, 45 кредитов/мин</div><div class="mock-box"><strong>Amara Moon</strong>Астрология, совместимость, 50 кредитов/мин</div><div class="mock-box"><strong>Trust-блок</strong>Правила, поддержка, возвраты, реальные статусы</div></div></div></div></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g3-catalog" style="--goal-color:#7c3aed">
+        <header><h3>G3.2 Каталог экспертов</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 3: Дизайн на backend</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> список экспертов с фильтрами, ценой, рейтингом, доступностью и CTA.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>найти эксперта;</li><li>открыть карточку;</li><li>начать чат.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>expert list API;</li><li>filters;</li><li>availability.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>каталог снижает страх выбора и повышает доверие.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>фильтры работают;</li><li>данные не противоречат карточке.</li></ul></div></div><div class="mock-card"><h4>Макет: каталог экспертов</h4><div class="mock-body"><div class="mock-strip"><span class="mock-pill">Таро</span><span class="mock-pill">Отношения</span><span class="mock-pill">Онлайн сейчас</span><span class="mock-pill">до 50 кредитов/мин</span></div><table class="mock-table"><thead><tr><th>Эксперт</th><th>Направление</th><th>Цена</th><th>Статус</th><th>Действие</th></tr></thead><tbody><tr><td>Solara Ortiz</td><td>Таро, отношения</td><td>45/мин</td><td>Онлайн</td><td>Начать чат</td></tr><tr><td>Amara Moon</td><td>Астрология</td><td>50/мин</td><td>Доступна</td><td>Открыть карточку</td></tr></tbody></table></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g3-profile" style="--goal-color:#7c3aed">
+        <header><h3>G3.3 Карточка эксперта</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 3: Дизайн на backend</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> реальная карточка эксперта: описание, направления, методы, опыт, отзывы, цена, доступность, CTA.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>клиент оценивает доверие;</li><li>решает начать консультацию.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>expert profile;</li><li>claims moderation;</li><li>reviews.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>карточка продает доверие к конкретному эксперту.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>нет неподтвержденных claims;</li><li>цена и CTA видны.</li></ul></div></div><div class="mock-card"><h4>Макет: карточка эксперта</h4><div class="mock-body"><div class="mock-grid two"><div class="mock-box"><strong>Solara Ortiz</strong><ul><li>Таро и отношения</li><li>45 кредитов/мин</li><li>онлайн, отвечает до 5 минут</li><li>рейтинг и отзывы</li></ul></div><div class="mock-box"><strong>CTA и доверие</strong><ul><li>Задать вопрос</li><li>Начать чат</li><li>Правила консультации</li><li>Support и возвраты</li></ul></div></div></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g3-quiz" style="--goal-color:#7c3aed">
+        <header><h3>G3.4 Подбор эксперта и старт консультации</h3><div class="meta"><span class="badge p1">P1</span><span>Цель 3: Дизайн на backend</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> короткий quiz по логике askNebula: тема, тип чтения, optional birth data, matching, рекомендованные эксперты.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>клиент описывает проблему;</li><li>получает подходящих экспертов.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>quiz session;</li><li>matching rules;</li><li>recommended experts.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>quiz лучше для холодного трафика, чем резкий checkout.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>quiz не ведет в тупик;</li><li>выбор передается в консультацию.</li></ul></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g3-qa" style="--goal-color:#7c3aed">
+        <header><h3>G3.5 QA клиентского пути</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 3: Дизайн на backend</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> проверить путь: главная -> эксперт/подбор -> вопрос -> условия -> чат -> деньги/support.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>нет ручных объяснений;</li><li>нет мертвых кнопок.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>каждый CTA создает реальное состояние.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>без этого нельзя вести рекламный трафик.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>сквозной тест PASS;</li><li>ошибки задокументированы.</li></ul></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g4-support" style="--goal-color:#b7791f">
+        <header><h3>G4.1 Support по конкретной консультации</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 4: Support</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> support ticket должен быть привязан к консультации, клиенту, эксперту/агенту и истории чата.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>клиент открывает обращение из чата/кабинета.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>ticket;</li><li>service_session link;</li><li>owner/status.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>support защищает доверие и снижает негатив.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>обращение не теряется;</li><li>админ видит контекст.</li></ul></div></div><div class="mock-card"><h4>Макет: support-кейс внутри консультации</h4><div class="mock-body"><div class="mock-grid"><div class="mock-box"><strong>Кейс #SUP-184</strong><ul><li>привязан к SS-2026-000184</li><li>причина: спор по качеству</li><li>статус: ожидает модератора</li></ul></div><div class="mock-box"><strong>Контекст</strong><ul><li>клиент, эксперт, агент;</li><li>чат и минуты;</li><li>списания и баланс.</li></ul></div><div class="mock-box"><strong>Решение</strong><ul><li>вернуть / отказать / частично вернуть;</li><li>записать причину;</li><li>уведомить клиента.</li></ul></div></div></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g4-complaints" style="--goal-color:#b7791f">
+        <header><h3>G4.2 Жалобы, спорные ситуации и refund decision</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 4: Support</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> единый процесс решения: причина, доказательства, решение, возврат или отказ.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>клиент понимает статус жалобы.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>complaint case;</li><li>decision log;</li><li>refund link.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>понятные правила повышают доверие до оплаты.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>решение отражается в деньгах и статусах.</li></ul></div></div><div class="mock-card"><h4>Макет: решение по refund</h4><div class="mock-body"><table class="mock-table"><thead><tr><th>Шаг</th><th>Что проверяется</th><th>Результат</th></tr></thead><tbody><tr><td>1</td><td>Минуты и списания по консультации</td><td>подтверждены</td></tr><tr><td>2</td><td>История чата и жалоба клиента</td><td>есть спорный ответ</td></tr><tr><td>3</td><td>Решение модератора</td><td>частичный возврат + quality review</td></tr></tbody></table></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g4-docs" style="--goal-color:#b7791f">
+        <header><h3>G4.3 Документы, дисклеймеры и правила консультаций</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 4: Support</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> правила должны быть доступны до старта консультации: ограничения ответственности, правила refund, запреты claims.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>клиент видит условия до оплаты/чата.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>document versions;</li><li>consent timestamp;</li><li>consultation link.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>legal не убивает конверсию, а снимает риск.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>нет противоречия между рекламой и условиями.</li></ul></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g4-support-notifications" style="--goal-color:#b7791f">
+        <header><h3>G4.4 Уведомления support</h3><div class="meta"><span class="badge p1">P1</span><span>Цель 4: Support</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> email/in-app уведомления по созданию обращения, назначению, решению и refund.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>клиент не спрашивает вручную, что с обращением.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>support notification events.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>прозрачная поддержка снижает churn.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>уведомления уходят нужной роли.</li></ul></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g5-events" style="--goal-color:#be185d">
+        <header><h3>G5.1 События воронки</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 5: Аналитика</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> события от визита до платных минут: page view, CTA, quiz, expert chosen, chat start, paid minutes, support, review.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>не видит аналитику, но каждый шаг измеряется.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>event table;</li><li>session/user/source IDs.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>без событий нельзя масштабировать рекламу.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>каждый ключевой шаг пишет событие.</li></ul></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g5-dashboard" style="--goal-color:#be185d">
+        <header><h3>G5.2 Дашборд консультаций</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 5: Аналитика</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> операционный дашборд: статусы, деньги, проблемные сессии, SLA, support, качество.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>админ открывает очередь проблем.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>service_session aggregate;</li><li>money/support/SLA data.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>дашборд отвечает, можно ли включать рекламу.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>проблемы видны без ручного поиска.</li></ul></div></div><div class="mock-card"><h4>Макет: дашборд готовности к рекламе</h4><div class="mock-body"><div class="mock-grid"><div class="mock-box"><strong>Сегодня</strong><ul><li>42 консультации</li><li>18 активных чатов</li><li>3 проблемные сессии</li></ul></div><div class="mock-box"><strong>Деньги</strong><ul><li>списано 18 450 кредитов</li><li>refund pending: 2</li><li>начисления: в проверке</li></ul></div><div class="mock-box"><strong>Качество</strong><ul><li>SLA нарушен: 1</li><li>жалобы: 2</li><li>quality review: 4</li></ul></div></div><table class="mock-table" style="margin-top:10px;"><thead><tr><th>Очередь</th><th>Количество</th><th>Что делать</th></tr></thead><tbody><tr><td>Ожидает назначения</td><td>5</td><td>назначить агента/эксперта</td></tr><tr><td>Скоро дедлайн</td><td>3</td><td>проверить SLA</td></tr><tr><td>Жалобы/refund</td><td>2</td><td>решение модератора</td></tr></tbody></table></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g5-kpi" style="--goal-color:#be185d">
+        <header><h3>G5.3 KPI и таблица взаимодействий</h3><div class="meta"><span class="badge p1">P1</span><span>Цель 5: Аналитика</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> единая таблица: источник, страница, CTA, эксперт, консультация, деньги, support, отзыв.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>не влияет на интерфейс клиента напрямую.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>analytics warehouse / export.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>ROI, CAC, conversion, retention.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>данные сверяются со сквозным тестом.</li></ul></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g5-marketing-gate" style="--goal-color:#be185d">
+        <header><h3>G5.4 Gate готовности к рекламе</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 5: Аналитика</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> чек-лист, без которого нельзя запускать рекламный трафик: чат, деньги, support, эксперты, QA, аналитика.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>клиентский путь проходит без тупиков.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>сквозной QA proof.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>реклама запускается только после product readiness.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>gate PASS для 5 экспертов.</li></ul></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g6-assignment" style="--goal-color:#475569">
+        <header><h3>G6.1 Назначение консультаций модератором</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 6: Команда</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> очередь назначений: кто клиент, какая тема, какой эксперт/агент, какой статус.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>модератор назначает ответственного.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>assignment state;</li><li>owner role;</li><li>audit log.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>назначение защищает скорость ответа на платный трафик.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>назначение видно всем нужным ролям.</li></ul></div></div><div class="mock-card"><h4>Макет: очередь назначений</h4><div class="mock-body"><table class="mock-table"><thead><tr><th>Консультация</th><th>Тема</th><th>Кого назначить</th><th>SLA</th><th>Действие</th></tr></thead><tbody><tr><td>SS-184</td><td>Отношения</td><td>Kristy -> Solara Ortiz</td><td><span class="mock-pill yellow">12 мин осталось</span></td><td>Назначить</td></tr><tr><td>SS-185</td><td>Карьера</td><td>Нужен агент</td><td><span class="mock-pill red">просрочка</span></td><td>Эскалировать</td></tr></tbody></table></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g6-sla" style="--goal-color:#475569">
+        <header><h3>G6.2 SLA и контроль агентов</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 6: Команда</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> время ответа, просрочки, предупреждения, контроль работы агентов и экспертов.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>клиент получает ответ в ожидаемый срок.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>SLA timers;</li><li>breach events;</li><li>owner queue.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>SLA влияет на отзывы и окупаемость рекламы.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>просрочка видна админу.</li></ul></div></div><div class="mock-card"><h4>Макет: SLA-контроль</h4><div class="mock-body"><div class="mock-grid"><div class="mock-box"><strong>Норма</strong><ul><li>первый ответ до 5 минут</li><li>следующий ответ до 3 минут</li></ul></div><div class="mock-box"><strong>Предупреждение</strong><ul><li>таймер желтый</li><li>уведомление агенту</li></ul></div><div class="mock-box"><strong>Просрочка</strong><ul><li>красный статус</li><li>эскалация модератору</li><li>влияние на quality score</li></ul></div></div></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g6-quality" style="--goal-color:#475569">
+        <header><h3>G6.3 Модерация и контроль качества</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 6: Команда</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> проверка качества ответов, жалоб, claims экспертов, санкций и обучения.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>клиент может пожаловаться;</li><li>качество не остается без контроля.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>quality score;</li><li>review queue;</li><li>moderation decisions.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>качество - основа доверия и повторных продаж.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>есть решение по спору и качеству.</li></ul></div></div><div class="mock-card"><h4>Макет: проверка качества консультации</h4><div class="mock-body"><table class="mock-table"><thead><tr><th>Критерий</th><th>Статус</th><th>Что делает модератор</th></tr></thead><tbody><tr><td>Запрещенные обещания</td><td><span class="mock-pill green">нет</span></td><td>подтвердить</td></tr><tr><td>Скорость ответа</td><td><span class="mock-pill yellow">на границе SLA</span></td><td>замечание агенту</td></tr><tr><td>Тон и понятность</td><td><span class="mock-pill green">ok</span></td><td>зачесть</td></tr><tr><td>Жалоба клиента</td><td><span class="mock-pill red">есть</span></td><td>открыть support/refund</td></tr></tbody></table></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g6-training" style="--goal-color:#475569">
+        <header><h3>G6.4 Обучение и регламенты</h3><div class="meta"><span class="badge p1">P1</span><span>Цель 6: Команда</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> правила работы агента с клиентом: бейджи, запреты ИИ, копипаст, тон, эскалации, что можно и нельзя обещать.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>клиент получает единый стандарт общения.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>training status;</li><li>policy acknowledgement.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>регламенты защищают бренд от хаоса.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>новый агент может работать по инструкции.</li></ul></div></div></div>
+      </article>
+
+      <article class="task-card" id="task-g6-team-notifications" style="--goal-color:#475569">
+        <header><h3>G6.5 Командные уведомления: почта, нотификации, Telegram</h3><div class="meta"><span class="badge p1">P1</span><span>Цель 6: Команда</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> уведомления о новых задачах, просрочках, жалобах, решениях, начислениях и критичных сбоях.</p><div class="flow-list"><div class="flow-box"><b>User flow</b><ul><li>команда не пропускает задачи.</li></ul></div><div class="flow-box"><b>Backend</b><ul><li>notification routing;</li><li>role channels;</li><li>Telegram bot hook.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>операционная скорость поддерживает рекламный рост.</li></ul></div><div class="flow-box"><b>QA</b><ul><li>уведомление приходит нужному владельцу.</li></ul></div></div></div>
+      </article>
+    </div>
+  </section>
+
+  <section id="sources" class="tab-panel is-hidden" data-tab-panel="sources">
+    <div class="section-title">
+      <h2>Источники и статус</h2>
+      <p>Этот контур не заменяет старые документы, а собирает новую управленческую версию по 6 глобальным целям.</p>
+    </div>
+    <table>
+      <thead><tr><th>Источник</th><th>Как использован</th><th>Статус</th></tr></thead>
+      <tbody>
+        <tr><td>askNebula functional map</td><td>Логика страниц, flow, quiz, экспертные карточки, trust/legal/marketing</td><td><span class="badge status-green">Учтено</span></td></tr>
+        <tr><td>Per-page flow and marketing strategy map</td><td>Задачи связаны с user/backend/money/support/analytics/marketing flow</td><td><span class="badge status-green">Учтено</span></td></tr>
+        <tr><td>Role-based master plan 2026-06-10</td><td>Ролевая рамка: клиент, эксперт, агент, супер-админ</td><td><span class="badge status-green">Учтено, не перезаписано</span></td></tr>
+        <tr><td>Oracle-верстка</td><td>Нужно дальше сверить: какие страницы уже есть в дизайне, какие отсутствуют</td><td><span class="badge status-yellow">Ожидает сверки</span></td></tr>
+      </tbody>
+    </table>
+    <div class="footer">
+      Связанные файлы:
+      <a href="../asknebula-functional-map-2026-06-11/asknebula-functional-map-and-nebula-transfer.md">askNebula transfer</a> ·
+      <a href="../asknebula-functional-map-2026-06-11/nebula-per-page-flow-and-marketing-strategy-map.md">per-page flow map</a> ·
+      <a href="../nebula-3-role-live-functional-map-2026-06-10/role-based-master-plan.html">старый мастер-план по ролям</a>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  const tabButtons = Array.from(document.querySelectorAll('[data-tab-target]'));
+  const tabPanels = Array.from(document.querySelectorAll('[data-tab-panel]'));
+  const taskCards = Array.from(document.querySelectorAll('.task-card'));
+  const taskPicker = document.querySelector('[data-task-picker]');
+
+  function setActiveTask(taskId) {
+    taskCards.forEach((card) => {
+      card.classList.toggle('is-hidden', card.id !== taskId);
+    });
+    document.querySelectorAll('[data-task-target]').forEach((button) => {
+      button.classList.toggle('is-active', button.dataset.taskTarget === taskId);
+    });
+  }
+
+  function showTab(tabName) {
+    tabPanels.forEach((panel) => {
+      panel.classList.toggle('is-hidden', panel.dataset.tabPanel !== tabName);
+    });
+    tabButtons.forEach((button) => {
+      button.classList.toggle('is-active', button.dataset.tabTarget === tabName);
+    });
+  }
+
+  function showTask(taskId) {
+    if (!document.getElementById(taskId)) return;
+    setActiveTask(taskId);
+    showTab('tasks');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  if (taskPicker) {
+    taskCards.forEach((card) => {
+      const title = card.querySelector('h3') ? card.querySelector('h3').textContent.trim() : card.id;
+      const button = document.createElement('button');
+      button.className = 'task-button';
+      button.type = 'button';
+      button.dataset.taskTarget = card.id;
+      button.textContent = title;
+      taskPicker.appendChild(button);
+    });
+  }
+
+  tabButtons.forEach((button) => {
+    button.addEventListener('click', () => showTab(button.dataset.tabTarget));
+  });
+  document.querySelectorAll('[data-task-target]').forEach((button) => {
+    button.addEventListener('click', () => showTask(button.dataset.taskTarget));
+  });
+
+  document.querySelectorAll('[data-session-role]').forEach((button) => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('[data-session-role]').forEach((item) => {
+        item.classList.toggle('is-active', item === button);
+      });
+      document.querySelectorAll('[data-role-note]').forEach((note) => {
+        note.classList.toggle('is-hidden', note.dataset.roleNote !== button.dataset.sessionRole);
+      });
+    });
+  });
+
+  document.querySelectorAll('[data-session-tab]').forEach((button) => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('[data-session-tab]').forEach((item) => {
+        item.classList.toggle('is-active', item === button);
+      });
+      document.querySelectorAll('[data-session-panel]').forEach((panel) => {
+        panel.classList.toggle('is-hidden', panel.dataset.sessionPanel !== button.dataset.sessionTab);
+      });
+    });
+  });
+
+  setActiveTask('task-g1-session');
+  showTab('six-goals');
+})();
+</script>
+</body>
+</html>
