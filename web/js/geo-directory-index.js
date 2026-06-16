@@ -5,6 +5,9 @@
   const cards = Array.from(root.querySelectorAll("[data-directory-card]"));
   const modeButtons = Array.from(root.querySelectorAll("[data-directory-mode]"));
   const alphaButtons = Array.from(root.querySelectorAll("[data-directory-letter]"));
+  const alphaScroller = root.querySelector("[data-directory-alpha]");
+  const alphaShell = root.querySelector("[data-directory-alpha-shell]");
+  const alphaScrollButtons = Array.from(root.querySelectorAll("[data-directory-alpha-scroll]"));
   const searchInput = root.querySelector("[data-directory-search]");
   const countNode = root.querySelector("[data-directory-count]");
   const contextNode = root.querySelector("[data-directory-context]");
@@ -68,14 +71,63 @@
     });
   }
 
+  function hasLetter(letter) {
+    return letter === "all" || cards.some(card => card.dataset.mode === state.mode && card.dataset.letter === letter);
+  }
+
   function updateAlphaAvailability() {
     alphaButtons.forEach(button => {
       const letter = button.dataset.directoryLetter;
-      const available = letter === "all" || cards.some(card => card.dataset.mode === state.mode && card.dataset.letter === letter);
+      const available = hasLetter(letter);
       button.hidden = !available;
       button.classList.toggle("is-active", state.letter === letter);
       button.setAttribute("aria-pressed", state.letter === letter ? "true" : "false");
     });
+  }
+
+  function updateAlphaScrollControls() {
+    if (!alphaScroller || !alphaScrollButtons.length) return;
+
+    const applyState = (hasPrev, hasNext) => {
+      if (alphaShell) {
+        alphaShell.classList.toggle("has-prev", hasPrev);
+        alphaShell.classList.toggle("has-next", hasNext);
+      }
+
+      alphaScrollButtons.forEach(button => {
+        const isPrev = button.dataset.directoryAlphaScroll === "prev";
+        const available = isPrev ? hasPrev : hasNext;
+        button.classList.toggle("is-hidden", !available);
+        button.disabled = !available;
+        button.setAttribute("aria-hidden", available ? "false" : "true");
+      });
+    };
+
+    let maxScroll = Math.max(0, alphaScroller.scrollWidth - alphaScroller.clientWidth - 1);
+    let hasPrev = alphaScroller.scrollLeft > 1;
+    let hasNext = alphaScroller.scrollLeft < maxScroll;
+    applyState(hasPrev, hasNext);
+
+    maxScroll = Math.max(0, alphaScroller.scrollWidth - alphaScroller.clientWidth - 1);
+    if (alphaScroller.scrollLeft > maxScroll) alphaScroller.scrollLeft = maxScroll;
+    hasPrev = alphaScroller.scrollLeft > 1;
+    hasNext = alphaScroller.scrollLeft < maxScroll;
+    applyState(hasPrev, hasNext);
+  }
+
+  function scrollActiveLetterIntoView() {
+    if (!alphaScroller) return;
+    if (state.letter === "all") {
+      alphaScroller.scrollTo({ left: 0, behavior: "smooth" });
+      window.setTimeout(updateAlphaScrollControls, 180);
+      return;
+    }
+
+    const activeButton = alphaButtons.find(button => button.dataset.directoryLetter === state.letter && !button.hidden);
+    if (activeButton) {
+      activeButton.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    }
+    window.setTimeout(updateAlphaScrollControls, 180);
   }
 
   function pageCards(items) {
@@ -114,8 +166,42 @@
     paginationNode.append(createButton("Вперед", Math.min(totalPages, state.page + 1), false, state.page === totalPages));
   }
 
+  function fitCityLinks() {
+    const supportsCityTags = window.matchMedia("(min-width: 1200px)").matches;
+    const maxVisible = 2;
+
+    root.querySelectorAll(".geo-directory-card__links").forEach(nav => {
+      const card = nav.closest(".geo-directory-card");
+      const main = card?.querySelector(".geo-directory-card__main, .geo-directory-card > span");
+      const candidates = Array.from(nav.querySelectorAll("a:not(.geo-directory-card__city-arrow)"));
+
+      candidates.forEach(link => link.classList.add("is-hidden-by-fit"));
+      if (!card || !main || !supportsCityTags) return;
+
+      let visibleCount = 0;
+      candidates.forEach(link => {
+        if (visibleCount >= maxVisible) return;
+
+        link.classList.remove("is-hidden-by-fit");
+        const labelIsClipped = link.scrollWidth > link.clientWidth + 1;
+        const mainTextIsClipped = Array.from(main.querySelectorAll("h3, p")).some(node => node.scrollWidth > node.clientWidth + 1);
+        const mainRect = main.getBoundingClientRect();
+        const navRect = nav.getBoundingClientRect();
+        const hasRoom = mainRect.right + 12 <= navRect.left;
+
+        if (labelIsClipped || mainTextIsClipped || !hasRoom) {
+          link.classList.add("is-hidden-by-fit");
+          return;
+        }
+
+        visibleCount += 1;
+      });
+    });
+  }
+
   function render() {
     const currentCopy = copy[state.mode] || copy.countries;
+    if (!hasLetter(state.letter)) state.letter = "all";
     const matched = visibleCards();
     const page = pageCards(matched);
     const visible = page.items;
@@ -144,6 +230,9 @@
     if (emptyNode) emptyNode.classList.toggle("is-visible", matched.length === 0);
     if (resetButton) resetButton.hidden = state.letter === "all" && !state.query;
     renderPagination(page.totalPages);
+    fitCityLinks();
+    scrollActiveLetterIntoView();
+    updateAlphaScrollControls();
   }
 
   modeButtons.forEach(button => {
@@ -152,7 +241,8 @@
 
   alphaButtons.forEach(button => {
     button.addEventListener("click", () => {
-      state.letter = button.dataset.directoryLetter;
+      const nextLetter = button.dataset.directoryLetter;
+      state.letter = state.letter === nextLetter ? "all" : nextLetter;
       state.page = 1;
       render();
     });
@@ -186,6 +276,28 @@
       root.querySelector(".geo-directory-panel")?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   }
+
+  alphaScrollButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      if (!alphaScroller) return;
+      const direction = button.dataset.directoryAlphaScroll === "prev" ? -1 : 1;
+      alphaScroller.scrollBy({ left: direction * Math.round(alphaScroller.clientWidth * .72), behavior: "smooth" });
+      window.setTimeout(updateAlphaScrollControls, 220);
+    });
+  });
+
+  if (alphaScroller) {
+    alphaScroller.addEventListener("scroll", () => window.requestAnimationFrame(updateAlphaScrollControls));
+  }
+
+  let resizeTimer = null;
+  window.addEventListener("resize", () => {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(() => {
+      fitCityLinks();
+      updateAlphaScrollControls();
+    }, 120);
+  });
 
   render();
 })();
