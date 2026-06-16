@@ -10,12 +10,9 @@
   const alphaScrollButtons = Array.from(root.querySelectorAll("[data-directory-alpha-scroll]"));
   const searchInput = root.querySelector("[data-directory-search]");
   const countNode = root.querySelector("[data-directory-count]");
-  const contextNode = root.querySelector("[data-directory-context]");
   const emptyNode = root.querySelector("[data-directory-empty]");
   const titleNode = root.querySelector("[data-directory-title]");
   const leadNode = root.querySelector("[data-directory-lead]");
-  const resetButton = root.querySelector("[data-directory-reset]");
-  const rangeNode = root.querySelector("[data-directory-range]");
   const paginationNode = root.querySelector("[data-directory-pagination]");
   const urlParams = new URLSearchParams(window.location.search);
   const previewPageSize = Number(urlParams.get("pageSize"));
@@ -25,13 +22,11 @@
     countries: {
       title: "Страны и города",
       lead: "Найдите место, которое связано с вашим вопросом: отношения, переезд, работа, совместимость или личный выбор.",
-      context: "Посмотрите, как страна может влиять на отношения, работу, переезд и внутреннее состояние.",
       searchPlaceholder: "Поиск страны или города"
     },
     cities: {
       title: "Города Армении",
       lead: "Выберите город, если важны конкретная среда, ритм места, переезд, работа или отношения именно там.",
-      context: "Посмотрите, как энергия города может проявляться в вашем вопросе.",
       searchPlaceholder: "Поиск города"
     }
   };
@@ -167,8 +162,8 @@
   }
 
   function fitCityLinks() {
-    const supportsCityTags = window.matchMedia("(min-width: 1200px)").matches;
     const maxVisible = 2;
+    const minCardWidthForTags = 320;
 
     root.querySelectorAll(".geo-directory-card__links").forEach(nav => {
       const card = nav.closest(".geo-directory-card");
@@ -176,7 +171,10 @@
       const candidates = Array.from(nav.querySelectorAll("a:not(.geo-directory-card__city-arrow)"));
 
       candidates.forEach(link => link.classList.add("is-hidden-by-fit"));
-      if (!card || !main || !supportsCityTags) return;
+      if (!card || !main) return;
+
+      const cardWidth = card.getBoundingClientRect().width;
+      if (cardWidth < minCardWidthForTags) return;
 
       let visibleCount = 0;
       candidates.forEach(link => {
@@ -220,15 +218,13 @@
 
     if (titleNode) titleNode.textContent = currentCopy.title;
     if (leadNode) leadNode.textContent = currentCopy.lead;
-    if (contextNode) contextNode.textContent = currentCopy.context;
     if (searchInput) searchInput.placeholder = currentCopy.searchPlaceholder;
-    if (countNode) countNode.textContent = matched.length;
-    if (rangeNode) {
-      rangeNode.hidden = matched.length <= pageSize;
-      rangeNode.textContent = matched.length ? `Показано ${page.start + 1}-${page.end}` : "";
+    if (countNode) {
+      countNode.textContent = matched.length;
+      const countBadge = countNode.closest(".geo-directory-search__count");
+      if (countBadge) countBadge.hidden = !state.query.trim();
     }
     if (emptyNode) emptyNode.classList.toggle("is-visible", matched.length === 0);
-    if (resetButton) resetButton.hidden = state.letter === "all" && !state.query;
     renderPagination(page.totalPages);
     fitCityLinks();
     scrollActiveLetterIntoView();
@@ -256,16 +252,26 @@
     });
   }
 
-  if (resetButton) {
-    resetButton.addEventListener("click", () => {
-      state.letter = "all";
-      state.query = "";
-      state.page = 1;
-      if (searchInput) searchInput.value = "";
-      render();
-      if (searchInput) searchInput.focus();
+  cards.forEach(card => {
+    if (card.tagName.toLowerCase() === "a") return;
+    const mainLink = card.querySelector(".geo-directory-card__main[href]");
+    if (!mainLink) return;
+
+    card.tabIndex = 0;
+    card.setAttribute("role", "link");
+    card.setAttribute("aria-label", mainLink.getAttribute("aria-label") || mainLink.textContent.trim());
+
+    card.addEventListener("click", event => {
+      if (event.target.closest("a")) return;
+      mainLink.click();
     });
-  }
+
+    card.addEventListener("keydown", event => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      mainLink.click();
+    });
+  });
 
   if (paginationNode) {
     paginationNode.addEventListener("click", event => {

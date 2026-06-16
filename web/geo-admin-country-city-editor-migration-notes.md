@@ -1,13 +1,13 @@
-# Geo admin migration notes v3
+# Geo admin migration notes v4
 
 ## Цель
 
-Сделать v3-страницы страны и города управляемыми из текущей админки Confideline без полной перестройки админ-панели.
+Сделать v4-страницы страны и города управляемыми из текущей админки Confideline без полной перестройки админ-панели.
 
 Финальные макеты:
 
-- `web/geo-india-country-preview-v3.html`;
-- `web/geo-delhi-city-preview-v3.html`;
+- `web/geo-india-country-preview-v4.html`;
+- `web/geo-delhi-city-preview-v4.html`;
 - `web/geo-directory-index-preview.html`.
 
 ## Что изучено по WordPress-подходу
@@ -162,7 +162,7 @@
 
 Новый CSS должен быть минимальным и только для специфичных preview/image/status элементов.
 
-## Проверка публичных v3-макетов
+## Проверка публичных v4-макетов
 
 Контрольные ширины:
 
@@ -182,3 +182,4 @@
 - на tablet 2 анкеты экспертов в ряд;
 - на mobile работает слайдер экспертов;
 - на mobile страницы страны быстрые ссылки городов находятся поверх фото в Hero.
+
