@@ -821,8 +821,13 @@
     });
 
     form.addEventListener("change", event => {
-      if (!event.target.classList.contains("js-topic") && !event.target.classList.contains("js-city")) return;
-      showExpertsButton.textContent = "Показать экспертов";
+      if (event.target.classList.contains("js-topic")) {
+        renderAdvisors({ userAction: true });
+        return;
+      }
+      if (event.target.classList.contains("js-city")) {
+        showExpertsButton.textContent = "Показать экспертов";
+      }
     });
 
     form.addEventListener("submit", event => {
