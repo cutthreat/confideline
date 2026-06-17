@@ -1,0 +1,95 @@
+{
+  "contract": "oracle-nebula-auth-source-lineage",
+  "version": 1,
+  "rule": "Figma-available visual layers must be represented by DOM nodes with data-figma-id and source imageRef metadata. Manual visual imitation is blocked.",
+  "screens": {
+    "login": {
+      "page": "login.html",
+      "figma_screen": "366:1100",
+      "required_nodes": [
+        {
+          "node_id": "572:6248",
+          "role": "google_social_button_node_raster",
+          "asset": "img/auth-login-1200-google-social-node-figma.png",
+          "source_rule": "Composite Figma instance has stroke, shadow, and image child; live must use exported node raster, not CSS reconstruction from imageRef only."
+        },
+        {
+          "node_id": "572:6341",
+          "role": "facebook_social_button_node_raster",
+          "asset": "img/auth-login-1200-facebook-social-node-figma.png",
+          "source_rule": "Composite Figma instance has stroke, shadow, and image child; live must use exported node raster, not CSS reconstruction from imageRef only."
+        }
+      ]
+    },
+    "signup-step-1": {
+      "page": "signup-step-1.html",
+      "figma_screen": "366:1166",
+      "required_nodes": [
+        {
+          "node_id": "366:1167",
+          "role": "root_background",
+          "image_ref": "fd5c43707cda07281ef1a450b0950062854e60cb",
+          "asset": "img/auth-bg-abstract-figma.png"
+        },
+        {
+          "node_id": "366:1168",
+          "role": "right_silhouette",
+          "image_ref": "9fd63162d3194671f0a28062c463a5de32f38154",
+          "asset": "img/auth-bg-silhouette-figma.png"
+        },
+        {
+          "node_id": "366:1184",
+          "role": "panel_texture",
+          "image_ref": "fd5c43707cda07281ef1a450b0950062854e60cb",
+          "asset": "img/auth-bg-abstract-figma.png"
+        },
+        {
+          "node_id": "I578:6393;572:6349",
+          "role": "google_icon",
+          "image_ref": "d2710407115e963ce3fd1e2d440eb97a0f42be4b",
+          "asset": "img/auth-create-google-figma.png"
+        },
+        {
+          "node_id": "I578:6394;572:6349",
+          "role": "facebook_icon",
+          "image_ref": "870dac8f9983de95d96440d75160f8bc0ba50c94",
+          "asset": "img/auth-create-facebook-figma.png"
+        }
+      ]
+    },
+    "signup-step-2": {
+      "page": "signup-step-2.html",
+      "figma_screen": "368:1257",
+      "required_nodes": [
+        {
+          "node_id": "368:1258",
+          "role": "root_background",
+          "image_ref": "fd5c43707cda07281ef1a450b0950062854e60cb",
+          "asset": "img/auth-bg-abstract-figma.png"
+        },
+        {
+          "node_id": "368:1259",
+          "role": "right_silhouette",
+          "image_ref": "9fd63162d3194671f0a28062c463a5de32f38154",
+          "asset": "img/auth-bg-silhouette-figma.png"
+        },
+        {
+          "node_id": "368:1267",
+          "role": "panel_texture",
+          "image_ref": "fd5c43707cda07281ef1a450b0950062854e60cb",
+          "asset": "img/auth-bg-abstract-figma.png"
+        }
+      ]
+    }
+  },
+  "blocked_patterns": [
+    {
+      "selector": ".na-auth-page--create .na-auth-stage::before",
+      "reason": "Figma root background must be a bound DOM node, not an unbound pseudo-element."
+    },
+    {
+      "selector": ".na-auth-page--create .na-auth-stage::after",
+      "reason": "Figma silhouette must be a bound DOM node, not an unbound pseudo-element."
+    }
+  ]
+}

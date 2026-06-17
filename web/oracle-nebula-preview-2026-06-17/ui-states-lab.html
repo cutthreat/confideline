@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>UI States Lab — Neuro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="bootstrap.css" />
+  <link rel="stylesheet" href="home.css" />
+  <style>
+    :root{
+      --ui-purple:#734ff0;
+      --ui-purple-2:#8b72ff;
+      --ui-purple-deep:#2f1b63;
+      --ui-bg:#f2eff8;
+      --ui-card:#ffffff;
+      --ui-text:#171717;
+      --ui-muted:#5b5267;
+      --ui-border:rgba(115,79,240,.14);
+    }
+    body{font-family:"Manrope",sans-serif;background:linear-gradient(180deg,#f6f3fb 0%,#ece6f8 100%);color:var(--ui-text)}
+    .ui-lab{padding:86px 0 72px}
+    .ui-lab__section{padding:34px 0}
+    .ui-lab__title{margin:0 0 20px;font-size:52px;line-height:1;letter-spacing:-.04em}
+    .ui-lab__lead{margin:0 0 28px;max-width:780px;font-size:18px;line-height:1.7;color:var(--ui-muted)}
+    .ui-band{position:relative;overflow:hidden;border-radius:16px;background:linear-gradient(90deg,#7e56ff 0%,#9d87ff 100%);color:#fff;box-shadow:0 18px 40px rgba(109,69,234,.18)}
+    .ui-band__inner{display:flex;align-items:center;justify-content:center;gap:12px;min-height:34px;padding:8px 16px;font-size:14px;font-weight:600}
+    .ui-band__tag{padding:3px 8px;border-radius:999px;background:#ffcf79;color:#5a2e00;font-size:12px;font-weight:700}
+    .ui-card{background:var(--ui-card);border:1px solid var(--ui-border);border-radius:26px;box-shadow:0 16px 36px rgba(86,57,175,.08);overflow:hidden}
+    .ui-card__head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:18px 20px 0}
+    .ui-card__body{padding:16px 20px 20px}
+    .ui-card__eyebrow{display:inline-flex;padding:8px 12px;border-radius:999px;background:rgba(115,79,240,.08);color:var(--ui-purple);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    .ui-card__name{margin:8px 0 0;font-size:18px;font-weight:700}
+    .ui-card__text{margin:10px 0 0;color:#433b4f;font-size:15px;line-height:1.55}
+    .ui-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+    .ui-grid--two{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .ui-grid--four{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .ui-mini{padding:18px}
+    .ui-mini h3{margin:0 0 8px;font-size:22px}
+    .ui-mini p{margin:0;color:#433b4f;line-height:1.6}
+    .ui-offcanvas{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+    }
+    .ui-menu-shell{min-height:340px;background:#2b184f;color:#fff;border-radius:24px;padding:18px 18px 16px;box-shadow:0 18px 36px rgba(38,18,73,.16)}
+    .ui-menu-shell--open{background:#3d255f}
+    .ui-menu-shell__top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+    .ui-menu-shell__logo{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+    .ui-menu-shell__dot{width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#c6a7ff,#7d56ff 72%);box-shadow:0 0 10px rgba(181,146,255,.45)}
+    .ui-menu-shell__close{width:18px;height:18px;position:relative;border:0;background:transparent}
+    .ui-menu-shell__close:before,.ui-menu-shell__close:after{content:"";position:absolute;left:8px;top:0;width:1px;height:18px;background:#fff}
+    .ui-menu-shell__close:before{transform:rotate(45deg)}
+    .ui-menu-shell__close:after{transform:rotate(-45deg)}
+    .ui-menu-list{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+    .ui-menu-list a{display:flex;align-items:center;justify-content:space-between;color:#fff;text-decoration:none;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.12)}
+    .ui-menu-meta{display:flex;align-items:center;justify-content:space-between;margin-top:16px;font-size:12px;opacity:.9}
+    .ui-menu-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.18);font-size:11px}
+    .ui-modal-backdrop{position:relative;min-height:420px;border-radius:26px;background:rgba(36,23,74,.62);display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .ui-modal{width:min(332px,calc(100% - 36px));background:#fff;border-radius:26px;box-shadow:0 24px 64px rgba(32,16,77,.22);padding:18px 18px 16px;position:relative;text-align:center}
+    .ui-modal__close{position:absolute;top:12px;right:12px;width:20px;height:20px;border:0;background:transparent}
+    .ui-modal__close:before,.ui-modal__close:after{content:"";position:absolute;left:9px;top:1px;width:1.5px;height:18px;background:#8d6df0;border-radius:4px}
+    .ui-modal__close:before{transform:rotate(45deg)}
+    .ui-modal__close:after{transform:rotate(-45deg)}
+    .ui-modal__art{width:120px;height:auto;margin:0 auto 8px}
+    .ui-modal__title{margin:0 auto 8px;max-width:220px;color:#6d45ea;font-size:24px;line-height:1.04;font-weight:600;letter-spacing:-.03em}
+    .ui-modal__list{margin:0 auto 14px;padding:0;list-style:none;max-width:214px;text-align:left;display:grid;gap:7px;color:#2c2733;font-size:12px;line-height:1.45}
+    .ui-modal__list li{position:relative;padding-left:14px}
+    .ui-modal__list li:before{content:"";position:absolute;left:0;top:.42em;width:7px;height:7px;border-radius:50%;background:#ffb84d}
+    .ui-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 16px;border:0;border-radius:12px;background:var(--ui-purple);color:#fff;font-weight:700;text-decoration:none;box-shadow:0 12px 28px rgba(115,79,240,.24)}
+    .ui-btn--ghost{background:transparent;color:var(--ui-purple);border:1px solid rgba(115,79,240,.28);box-shadow:none}
+    .ui-pills{display:flex;flex-wrap:wrap;gap:10px}
+    .ui-pill{display:inline-flex;align-items:center;justify-content:center;height:30px;padding:0 14px;border-radius:999px;background:#fff;border:1px solid var(--ui-border);color:#7a67d8;font-size:12px}
+    .ui-step{position:relative;min-height:290px;padding:18px;border-radius:24px;background:#fff;border:1px solid rgba(115,79,240,.12);box-shadow:0 16px 34px rgba(86,57,175,.08)}
+    .ui-step__circle{position:absolute;top:0;left:0;width:74px;height:74px;border-radius:0 0 74px 0;border-right:1px solid rgba(115,79,240,.18);border-bottom:1px solid rgba(115,79,240,.18);color:#7a67d8;font-size:44px;line-height:74px;text-align:center}
+    .ui-step__title{margin:64px 0 10px;color:#6d45ea;font-size:20px;line-height:1.05}
+    .ui-step__text{margin:0;color:#40394a;font-size:14px;line-height:1.55}
+    .ui-step__cta{margin-top:16px;height:32px;font-size:12px;border-radius:10px;background:#ffbf73;color:#6a3300}
+    .ui-review{padding:18px 16px;border-radius:20px;background:#7a53ea;color:#fff;box-shadow:0 14px 28px rgba(122,83,234,.2)}
+    .ui-review__top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;font-size:12px;opacity:.95}
+    .ui-review__name{font-weight:700}
+    .ui-review__body{font-size:13px;line-height:1.55}
+    .ui-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .ui-tab{padding:14px;border-radius:18px;background:#fff;border:1px solid rgba(115,79,240,.12);box-shadow:0 12px 28px rgba(86,57,175,.08)}
+    .ui-tab__title{margin:0 0 8px;color:#171717;font-weight:700}
+    .ui-tab__text{margin:0;color:#443b51;font-size:14px;line-height:1.6}
+    .ui-cookies{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:14px;background:#7a53ea;color:#fff;box-shadow:0 12px 28px rgba(122,83,234,.2)}
+    .ui-cookies__text{font-size:13px;line-height:1.5}
+    .ui-cookies__actions{display:flex;gap:8px;flex:0 0 auto}
+    .ui-cookies .ui-btn{height:28px;padding:0 12px;border-radius:8px;font-size:12px}
+    @media (max-width: 991.98px){
+      .ui-grid,.ui-grid--two,.ui-grid--four{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .ui-offcanvas{grid-template-columns:1fr}
+      .ui-lab__title{font-size:40px}
+    }
+    @media (max-width: 767.98px){
+      .ui-lab{padding-top:72px}
+      .ui-grid,.ui-grid--two,.ui-grid--four{grid-template-columns:1fr}
+      .ui-modal-backdrop{min-height:360px}
+      .ui-band__inner{font-size:12px}
+      .ui-cookies{flex-direction:column;align-items:flex-start}
+      .ui-cookies__actions{width:100%}
+      .ui-cookies .ui-btn{flex:1}
+    }
+  </style>
+</head>
+<body>
+  <main class="ui-lab">
+    <div class="container">
+      <section class="ui-lab__section">
+        <h1 class="ui-lab__title">UI states and overlays</h1>
+        <p class="ui-lab__lead">This page collects the non-page UI entities you pointed out: offer bars, modals, menus, cookies, steps, review cards, tabs, buttons, and responsive variants. Each block is treated as a state, not a standalone page.</p>
+      </section>
+
+      <section class="ui-lab__section">
+        <div class="ui-band">
+          <div class="ui-band__inner">
+            <span>3 Minutes FREE</span>
+            <span>•</span>
+            <span>80% OFF For New Customers</span>
+            <span class="ui-band__tag">Try now</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="ui-lab__section">
+        <h2 class="section__title section__title--h2">Menu and offcanvas</h2>
+        <div class="ui-offcanvas">
+          <div class="ui-menu-shell">
+            <div class="ui-menu-shell__top">
+              <div class="ui-menu-shell__logo"><span class="ui-menu-shell__dot"></span><span>NEURO</span></div>
+              <button class="ui-menu-shell__close" type="button" aria-label="Close menu"></button>
+            </div>
+            <ul class="ui-menu-list">
+              <li><a href="#"><span>Psychic Reading</span><span>›</span></a></li>
+              <li><a href="#"><span>Psychic</span><span>›</span></a></li>
+              <li><a href="#"><span>Topics</span><span>›</span></a></li>
+              <li><a href="#"><span>Zodiac Signs</span><span>›</span></a></li>
+              <li><a href="#"><span>Charts</span><span>›</span></a></li>
+              <li><a href="#"><span>Articles</span><span>›</span></a></li>
+            </ul>
+            <div class="ui-menu-meta">
+              <span class="ui-menu-pill">Sign up</span>
+              <span>Eng</span>
+              <span class="ui-menu-pill">●</span>
+            </div>
+          </div>
+          <div class="ui-menu-shell ui-menu-shell--open">
+            <div class="ui-menu-shell__top">
+              <div class="ui-menu-shell__logo"><span class="ui-menu-shell__dot"></span><span>NEURO</span></div>
+              <button class="ui-menu-shell__close" type="button" aria-label="Close menu"></button>
+            </div>
+            <ul class="ui-menu-list">
+              <li><a href="#"><span>Psychic Reading</span><span>›</span></a></li>
+              <li><a href="#"><span>Tarot Reading</span><span>›</span></a></li>
+              <li><a href="#"><span>Astrology Reading</span><span>›</span></a></li>
+              <li><a href="#"><span>Aura Reading</span><span>›</span></a></li>
+              <li><a href="#"><span>Numerology Reading</span><span>›</span></a></li>
+              <li><a href="#"><span>Palm Reading</span><span>›</span></a></li>
+              <li><a href="#"><span>Phone Psychic Reading</span><span>›</span></a></li>
+              <li><a href="#"><span>Email Psychic Reading</span><span>›</span></a></li>
+            </ul>
+            <div class="ui-menu-meta">
+              <span class="ui-menu-pill">Menu open</span>
+              <span>Sign in</span>
+              <span class="ui-menu-pill">←</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ui-lab__section">
+        <h2 class="section__title section__title--h2">Cookies and offer states</h2>
+        <div class="ui-grid ui-grid--two">
+          <div class="ui-card ui-mini">
+            <h3>Cookies bar</h3>
+            <div class="ui-cookies">
+              <div class="ui-cookies__text">Cookies help us personalize your experience on our site, provide social media features, and analyze our traffic.</div>
+              <div class="ui-cookies__actions">
+                <a class="ui-btn" href="#">Accept</a>
+                <a class="ui-btn ui-btn--ghost" href="#">Settings</a>
+              </div>
+            </div>
+          </div>
+          <div class="ui-card ui-mini">
+            <h3>Top offer bar</h3>
+            <div class="ui-band" style="border-radius:14px">
+              <div class="ui-band__inner" style="min-height:32px">
+                <span>3 Minutes FREE - 80% OFF For New Customers</span>
+                <span class="ui-band__tag">Try now</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ui-lab__section">
+        <h2 class="section__title section__title--h2">Modal offer</h2>
+        <div class="ui-modal-backdrop">
+          <div class="ui-modal">
+            <button class="ui-modal__close" type="button" aria-label="Close modal"></button>
+            <img class="ui-modal__art" src="img/prn-tailored-orb-v2.png" alt="offer art" />
+            <div class="ui-modal__title">Get your first psychic reading for FREE</div>
+            <ul class="ui-modal__list">
+              <li>Conditions depending on the selected offer</li>
+              <li>Service available for new users</li>
+              <li>No credit card required</li>
+            </ul>
+            <a class="ui-btn" href="#">Start Now</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="ui-lab__section">
+        <h2 class="section__title section__title--h2">Steps, reviews, tabs, buttons</h2>
+        <div class="ui-grid ui-grid--four">
+          <article class="ui-step">
+            <div class="ui-step__circle">1</div>
+            <div class="ui-step__title">Sign Up</div>
+            <p class="ui-step__text">Create an account and start with the onboarding step that is visible across the mobile and desktop versions.</p>
+            <a class="ui-btn ui-step__cta" href="#">Get started</a>
+          </article>
+          <article class="ui-step">
+            <div class="ui-step__circle">2</div>
+            <div class="ui-step__title">Choose</div>
+            <p class="ui-step__text">Pick the service or expert that matches your immediate question.</p>
+          </article>
+          <article class="ui-step">
+            <div class="ui-step__circle">3</div>
+            <div class="ui-step__title">Read</div>
+            <p class="ui-step__text">Continue into the reading flow and keep the same visual rhythm.</p>
+          </article>
+          <article class="ui-step">
+            <div class="ui-step__circle">4</div>
+            <div class="ui-step__title">Continue</div>
+            <p class="ui-step__text">The last step becomes the conversion point with an emphasized CTA.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="ui-lab__section">
+        <div class="ui-grid ui-grid--three">
+          <div class="ui-review">
+            <div class="ui-review__top"><span class="ui-review__name">Kate</span><span>★★★★★</span></div>
+            <div class="ui-review__body">The psychic reading on Neuro was exactly what I needed. It helped me start from scratch with more trust.</div>
+          </div>
+          <div class="ui-review">
+            <div class="ui-review__top"><span class="ui-review__name">Vika</span><span>★★★★★</span></div>
+            <div class="ui-review__body">This result felt spot-on and useful. The card format keeps the review readable even in tight widths.</div>
+          </div>
+          <div class="ui-review">
+            <div class="ui-review__top"><span class="ui-review__name">Eva</span><span>★★★★★</span></div>
+            <div class="ui-review__body">The experience was reassuring and clear. The purple review card is treated as a state, not a page.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ui-lab__section">
+        <div class="ui-tabs">
+          <div class="ui-tab">
+            <div class="ui-tab__title">Cheap Psychic</div>
+            <div class="ui-tab__text">Low-friction entry state with a conversion-oriented button.</div>
+          </div>
+          <div class="ui-tab">
+            <div class="ui-tab__title">TABS</div>
+            <div class="ui-tab__text">Tab-like state block that is used for directory or chooser UX.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ui-lab__section">
+        <div class="ui-pills">
+          <span class="ui-pill">BUTTON REG</span>
+          <span class="ui-pill">NEXT</span>
+          <span class="ui-pill">CANCEL</span>
+          <span class="ui-pill">PLAY</span>
+          <span class="ui-pill">GET STARTED</span>
+          <span class="ui-pill">FIND PSYCHIC</span>
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
