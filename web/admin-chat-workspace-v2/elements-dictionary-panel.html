@@ -3223,7 +3223,7 @@
       'Chats::SLA': { mode: 'Вытесняет в интерфейсе', badge: 'Reply', className: 'is-suppression', note: 'SLA показывается вместо Reply. Два бейджа одновременно не показываем: Reply = ожидание в норме, SLA = ожидание просрочено. После ответа эксперта сигнал снимается.' },
       'Chats::Live': { mode: 'Подавляет', badge: 'Sell', className: 'is-suppression', note: 'Если клиент уже в платной сессии с другим экспертом, Sell скрываем. Нельзя подталкивать клиента к новой продаже, пока идет чужая активная сессия.' },
       'Chats::PP': { mode: 'Вытесняет в интерфейсе', badge: 'Sell', className: 'is-suppression', note: 'PP показываем только когда клиент перешел во внешний платеж и платеж еще не завершен. В этот момент Sell скрываем: следующий шаг - дождаться результата оплаты.' },
-      'Chats::Sell': { mode: 'Имеет исходы', badge: 'ожидание клиента / Skeptic / PP / Paid', className: 'is-outcome', note: 'Sell означает, что эксперт предложил платную консультацию. Дальше система выбирает один следующий шаг: клиент думает, клиент сомневается, клиент ушел в оплату или клиент уже оплатил.' },
+      'Chats::Sell': { mode: 'Имеет исходы', badge: 'ожидание клиента / Skeptic / PP / Paid', className: 'is-outcome', note: 'Sell означает, что эксперт предложил платную консультацию. Если клиент сомневается, Skeptic заменяет Sell. Если клиент начал внешний платеж, PP заменяет Sell. Если деньги уже доступны, Paid может показываться рядом с Sell.' },
       'Chats::Paid': { mode: 'Дополняет', badge: 'Sell', className: 'is-complement', note: 'Paid означает, что у клиента уже есть деньги или кредиты для консультации. Его можно показывать вместе с Sell: Sell = предложение, Paid = клиент готов платить.' },
       'Chats::Favorite': { mode: 'Дополняет', badge: 'любой бейдж', className: 'is-complement', note: 'Favorite - личная закладка эксперта. Она не меняет системные статусы и может показываться рядом с ними.' },
       'Chats::Trial': { mode: 'Снимается', badge: 'Paid', className: '', note: 'Trial показываем только до первого платного шага. После оплаты или старта платной сессии Trial скрываем.' },
@@ -3269,7 +3269,7 @@
       const target = plainReplacementTarget(replacement);
       if (replacementCategory(replacement) === 'Дополняет') {
         if (replacement.mode === 'Имеет исходы') {
-          return `После ${source} выбираем следующий шаг`;
+          return `Skeptic и PP заменяют ${source}; Paid дополняет ${source}`;
         }
         return `${source} добавляет контекст к ${target || 'карточке'}`;
       }
@@ -3289,11 +3289,23 @@
       return `Показываем ${source} вместо ${target || 'предыдущего сигнала'}`;
     }
 
+    function renderReplacementChips(row, replacement) {
+      const source = readableText(cleanDraftBadgeAnchor(row));
+      if (replacement.mode === 'Имеет исходы' && source === 'Sell') {
+        return `
+          <span class="replacement-chip is-suppression">Skeptic заменяет Sell</span>
+          <span class="replacement-chip is-suppression">PP заменяет Sell</span>
+          <span class="replacement-chip is-complement">Paid дополняет Sell</span>
+        `;
+      }
+      return `<span class="replacement-chip ${replacementCategoryClass(replacement)}">${renderReplacementSentence(row, replacement)}</span>`;
+    }
+
     function renderReplacement(row) {
       const replacement = badgeReplacement(row);
       return `
         <div class="replacement-cell">
-          <span class="replacement-chip ${replacementCategoryClass(replacement)}">${renderReplacementSentence(row, replacement)}</span>
+          ${renderReplacementChips(row, replacement)}
           <span class="replacement-detail">${renderReplacementLabel(row, replacement)}</span>
           <span class="replacement-note">${readableText(replacement.note)}</span>
         </div>
@@ -3335,7 +3347,7 @@
 
       if (replacementCategory(replacement) === 'Дополняет') {
         if (replacement.mode === 'Имеет исходы') {
-          return `<span class="replacement-mode">Варианты:</span> ${renderedBadge}`;
+          return `<span class="replacement-mode">Уточнение:</span> ожидание клиента - не бейдж и не отдельная замена`;
         }
         return `<span class="replacement-mode">Правило:</span> ${source} можно показывать вместе с ${renderedBadge}`;
       }
