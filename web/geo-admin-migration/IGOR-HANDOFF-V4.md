@@ -13,6 +13,18 @@
 - AJAX только для предпросмотра, счетчиков и проверок
 - page-specific CSS/JS только через отдельные `custom.css` и `custom.js`
 
+## CSS/JS boundary
+
+Do not use the geo preview CSS as a replacement for the current Confideline theme.
+
+Production integration must keep the existing site/admin AssetBundle chain:
+
+- admin pages: current Yii/AdminLTE/Bootstrap assets first;
+- public country/city/directory pages: current Confideline/YouDate frontend theme first;
+- geo-specific `custom.css` / `custom.js` or frontend geo CSS/JS after the base theme.
+
+The static HTML files in this package include preview assets only so the handoff can be opened outside Yii. In production, the base styles come from the existing application.
+
 ## Финальные макеты v4
 
 - Страна: `web/geo-india-country-preview-v4.html`
