@@ -3219,8 +3219,8 @@
     }
 
     const replacementByBadge = {
-      'Chats::Reply': { mode: 'Усиливается до', badge: 'SLA', className: 'is-outcome', note: 'Reply держится, пока клиент ждет в норме. Если ожидание вышло за порог, в очереди показываем SLA как более сильный сигнал того же ожидания.' },
-      'Chats::SLA': { mode: 'Вытесняет в интерфейсе', badge: 'Reply', className: 'is-suppression', note: 'SLA не должен висеть рядом с Reply: это тот же клиент, но уже просроченный. После ответа эксперта оба сигнала ожидания снимаются.' },
+      'Chats::Reply': { mode: 'Усиливается до', badge: 'SLA', className: 'is-outcome', note: 'Если клиент ждет ответ дольше нормы, Reply скрывается. Вместо него показываем SLA: это значит, что ожидание просрочено и эксперту нужно ответить быстрее.' },
+      'Chats::SLA': { mode: 'Вытесняет в интерфейсе', badge: 'Reply', className: 'is-suppression', note: 'SLA показывается вместо Reply. Два бейджа одновременно не показываем: Reply = ожидание в норме, SLA = ожидание просрочено. После ответа эксперта сигнал снимается.' },
       'Chats::Live': { mode: 'Подавляет', badge: 'Sell', className: 'is-suppression', note: 'Если клиент в активной paid-сессии с другим экспертом, Sell и новые касания не показываем как действие: текущий эксперт не должен вмешиваться.' },
       'Chats::PP': { mode: 'Вытесняет в интерфейсе', badge: 'Sell', className: 'is-suppression', note: 'Только если клиент ушел во внешний процесс оплаты. В этот момент главный сигнал уже не офер, а незавершенный платеж. Это не значит, что каждый Sell обязан стать PP.' },
       'Chats::Sell': { mode: 'Имеет исходы', badge: 'ожидание клиента / Skeptic / PP / Paid', className: 'is-outcome', note: 'Sell - момент офера, а не платежный статус. PP появляется только при внешнем pending-платеже; если баланс уже есть, следующий шаг может быть Paid или старт paid-сессии. Ожидание клиента после офера не является отдельным Chats-бейджем.' },
@@ -3317,6 +3317,7 @@
         return `<span class="replacement-mode">${readableText(mode)}</span>`;
       }
 
+      const source = readableText(cleanDraftBadgeAnchor(row));
       const available = availableBadgeNames(row.scenario);
       const parts = String(replacement.badge).split(/(\/)/);
       const renderedBadge = parts.map(part => {
@@ -3332,7 +3333,28 @@
         return `<button class="replacement-target" type="button" data-jump-badge="${trimmed}" data-jump-scenario="${row.scenario}" title="Перейти к бейджу ${trimmed}">${trimmed}</button>`;
       }).join('');
 
-      return `<span class="replacement-mode">${readableText(mode)}:</span> ${renderedBadge}`;
+      if (replacementCategory(replacement) === 'Дополняет') {
+        if (replacement.mode === 'Имеет исходы') {
+          return `<span class="replacement-mode">Правило:</span> возможные исходы: ${renderedBadge}`;
+        }
+        return `<span class="replacement-mode">Правило:</span> показывается вместе с ${renderedBadge}`;
+      }
+      if (replacement.mode === 'Усиливается до' || replacement.mode === 'Вытесняется') {
+        return `<span class="replacement-mode">Правило:</span> ${source} скрывается, показывается ${renderedBadge}`;
+      }
+      if (replacement.mode === 'Локально заменяет') {
+        return `<span class="replacement-mode">Правило:</span> ${renderedBadge} скрывается только для этого эксперта, показывается ${source}`;
+      }
+      if (replacement.mode === 'Снимается') {
+        return `<span class="replacement-mode">Правило:</span> ${source} скрывается после ${renderedBadge}`;
+      }
+      if (replacement.mode === 'Сменяет ход') {
+        return `<span class="replacement-mode">Правило:</span> активен один бейдж: ${source} или ${renderedBadge}`;
+      }
+      if (replacement.mode === 'Ограничивает действие при') {
+        return `<span class="replacement-mode">Правило:</span> ${source} не скрывает ${renderedBadge}, но меняет допустимое действие`;
+      }
+      return `<span class="replacement-mode">Правило:</span> ${renderedBadge} скрывается, показывается ${source}`;
     }
 
     const badgeWhenText = {
@@ -3777,7 +3799,7 @@
       }
 
       const replacement = badgeReplacement(row);
-      return `${replacement.mode}${replacement.badge ? `: ${replacement.badge}` : ''}. ${replacement.note}`;
+      return `${renderReplacementSentence(row, replacement)}. ${replacement.note}`;
     }
 
     function groupedEncyclopediaTerms() {
