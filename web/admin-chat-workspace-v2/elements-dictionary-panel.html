@@ -456,6 +456,13 @@
       font-weight: 900;
     }
 
+    .replacement-detail {
+      color: #344054;
+      font-size: 10.5px;
+      line-height: 1.25;
+      font-weight: 700;
+    }
+
     .replacement-target {
       appearance: none;
       border: 0;
@@ -3245,12 +3252,21 @@
       };
     }
 
+    function replacementCategory(replacement) {
+      return ['Дополняет', 'Имеет исходы'].includes(replacement.mode) ? 'Дополняет' : 'Заменяет';
+    }
+
+    function replacementCategoryClass(replacement) {
+      return replacementCategory(replacement) === 'Дополняет' ? 'is-complement' : 'is-suppression';
+    }
+
     function renderReplacement(row) {
       const replacement = badgeReplacement(row);
-      const hasTarget = Boolean(replacement.badge);
+      const category = replacementCategory(replacement);
       return `
         <div class="replacement-cell">
-          <span class="replacement-chip ${replacement.className || (hasTarget ? '' : 'is-muted')}">${renderReplacementLabel(row, replacement)}</span>
+          <span class="replacement-chip ${replacementCategoryClass(replacement)}">${category}</span>
+          <span class="replacement-detail">${renderReplacementLabel(row, replacement)}</span>
           <span class="replacement-note">${readableText(replacement.note)}</span>
         </div>
       `;
@@ -3278,7 +3294,7 @@
       const renderedBadge = parts.map(part => {
         const trimmed = part.trim();
         if (!trimmed || part === '/') {
-          return readableText(part);
+          return part === '/' ? ' / ' : readableText(part);
         }
 
         if (!available.has(trimmed)) {
