@@ -3260,12 +3260,40 @@
       return replacementCategory(replacement) === 'Дополняет' ? 'is-complement' : 'is-suppression';
     }
 
+    function plainReplacementTarget(replacement) {
+      return readableText(String(replacement.badge || '').replace(/\s*\/\s*/g, ' / '));
+    }
+
+    function renderReplacementSentence(row, replacement) {
+      const source = readableText(cleanDraftBadgeAnchor(row));
+      const target = plainReplacementTarget(replacement);
+      if (replacementCategory(replacement) === 'Дополняет') {
+        if (replacement.mode === 'Имеет исходы') {
+          return `${source} имеет исходы: ${target}`;
+        }
+        return `${source} дополняет ${target || 'контекст'}`;
+      }
+
+      if (replacement.mode === 'Усиливается до' || replacement.mode === 'Вытесняется') {
+        return `${target} заменяет ${source}`;
+      }
+      if (replacement.mode === 'Снимается') {
+        return `${target} снимает ${source}`;
+      }
+      if (replacement.mode === 'Сменяет ход') {
+        return `${source} сменяет ${target}`;
+      }
+      if (replacement.mode === 'Ограничивает действие при') {
+        return `${source} ограничивает ${target}`;
+      }
+      return `${source} заменяет ${target || 'предыдущий сигнал'}`;
+    }
+
     function renderReplacement(row) {
       const replacement = badgeReplacement(row);
-      const category = replacementCategory(replacement);
       return `
         <div class="replacement-cell">
-          <span class="replacement-chip ${replacementCategoryClass(replacement)}">${category}</span>
+          <span class="replacement-chip ${replacementCategoryClass(replacement)}">${renderReplacementSentence(row, replacement)}</span>
           <span class="replacement-detail">${renderReplacementLabel(row, replacement)}</span>
           <span class="replacement-note">${readableText(replacement.note)}</span>
         </div>
