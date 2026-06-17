@@ -29,9 +29,25 @@ The static HTML files in this package include preview assets only so the handoff
 
 - Страна: `web/geo-india-country-preview-v4.html`
 - Город: `web/geo-delhi-city-preview-v4.html`
-- Каталог стран/городов: `web/geo-directory-index-preview.html`
+- Каталог стран: `web/geo-countries-index-preview.html`
+- Каталог городов страны: `web/geo-cities-index-preview.html`
+- Совместимый вход каталога: `web/geo-directory-index-preview.html`, сейчас равен списку стран
 - Макет админки: `web/geo-admin-country-city-editor-proposal.html`
 - Миграционная панель: `web/geo-admin-migration/index.html`
+
+## SEO-структура каталогов
+
+Не объединять список стран и список городов в один SEO-документ.
+
+Нужная структура:
+
+- `/ru/countries` — список стран, canonical на `/ru/countries`;
+- `/ru/country/{countrySlug}/cities` — список городов выбранной страны, canonical на этот URL;
+- `/ru/cities` — общий список городов всех стран, если он нужен отдельно;
+- `/ru/country/{countrySlug}` — страница страны;
+- `/ru/city/{countryCode}-{citySlug}` — страница города.
+
+Переключатель "Страны / Города" в каталоге должен быть ссылками между URL. JS-фильтр можно использовать для поиска, алфавита и пагинации, но базовые карточки должны быть обычными `<a href="...">`.
 
 ## Анкеты экспертов v4
 
@@ -181,6 +197,7 @@ AJAX использовать только для:
 - нет горизонтального overflow;
 - один H1 на странице;
 - Hero содержит H1 и H2;
+- каталоги стран и городов имеют разные URL, H1, canonical и OG URL;
 - FAQ раскрывается кликом по области;
 - CTA "Пройти короткий подбор" открывает мини-опрос;
 - смена темы в фильтре сразу обновляет список экспертов без дополнительного клика по кнопке;

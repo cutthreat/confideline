@@ -20,14 +20,14 @@
 
   const copy = {
     countries: {
-      title: "Страны и города",
-      lead: "Найдите место, которое связано с вашим вопросом: отношения, переезд, работа, совместимость или личный выбор.",
-      searchPlaceholder: "Поиск страны или города"
+      title: root.dataset.directoryTitleText || "Страны",
+      lead: root.dataset.directoryLeadText || "Выберите страну, если вопрос связан с направлением, отношениями, переездом, работой, совместимостью или личным выбором.",
+      searchPlaceholder: root.dataset.directorySearchPlaceholder || "Поиск страны"
     },
     cities: {
-      title: "Города Армении",
-      lead: "Выберите город, если важны конкретная среда, ритм места, переезд, работа или отношения именно там.",
-      searchPlaceholder: "Поиск города"
+      title: root.dataset.directoryTitleText || "Города",
+      lead: root.dataset.directoryLeadText || "Выберите город, если важны конкретная среда, ритм места, переезд, работа или отношения именно там.",
+      searchPlaceholder: root.dataset.directorySearchPlaceholder || "Поиск города"
     }
   };
 
