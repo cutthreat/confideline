@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nebula - G2.4 Начисления и мотивация сотрудников</title>
+  <style>
+
+    :root {
+      color-scheme: light;
+      --ink:#172033;
+      --muted:#667085;
+      --line:#d9e2f3;
+      --bg:#f6f8fb;
+      --blue:#1f4e78;
+      --green:#0f766e;
+      --red:#842029;
+      --yellow:#7a4e00;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Arial, sans-serif; color:var(--ink); background:var(--bg); }
+    header { background:#1f4e78; color:#fff; padding:30px 34px; }
+    header h1 { margin:0 0 8px; font-size:30px; }
+    header p { margin:0; max-width:1120px; line-height:1.5; }
+    main { padding:22px 28px 46px; }
+    .top-nav { display:flex; flex-wrap:wrap; gap:10px; margin:0 0 18px; }
+    .top-nav button { background:#fff; border:1px solid var(--line); color:#175cd3; padding:10px 14px; text-decoration:none; border-radius:6px; font-weight:700; cursor:pointer; }
+    .top-nav button.is-active { background:#e8f1ff; border-color:#175cd3; color:#0b3f91; }
+    .top-nav button:focus-visible, .task-button:focus-visible, .task-links button:focus-visible, .task-ref:focus-visible { outline:3px solid #b7d4ff; outline-offset:2px; }
+    .notice { background:#fff; border:1px solid var(--line); border-left:6px solid var(--green); border-radius:8px; padding:14px 16px; margin:0 0 18px; line-height:1.5; }
+    .legend { display:flex; flex-wrap:wrap; gap:10px; align-items:center; background:#fff; border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin:0 0 18px; }
+    .badge { display:inline-block; padding:4px 8px; border-radius:999px; font-weight:700; font-size:12px; white-space:nowrap; }
+    .p0 { background:#f4cccc; color:#842029; }
+    .p1 { background:#fff2cc; color:#7a4e00; }
+    .p2 { background:#e7e6e6; color:#344054; }
+    .status-red { background:#f4cccc; color:#842029; }
+    .status-yellow { background:#fff2cc; color:#7a4e00; }
+    .status-green { background:#d9ead3; color:#1f5e2e; }
+    section { margin:22px 0 30px; }
+    .section-title { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin:0 0 12px; }
+    .section-title h2 { margin:0; font-size:24px; }
+    .section-title p { margin:0; color:var(--muted); line-height:1.4; max-width:780px; }
+    .goals-grid { display:grid; grid-template-columns:repeat(3, minmax(250px,1fr)); gap:14px; }
+    .goal-card { background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    .goal-head { padding:14px 16px; color:#fff; background:var(--goal-color); }
+    .goal-head b { display:block; font-size:16px; margin-bottom:5px; }
+    .goal-body { padding:14px 16px; line-height:1.45; }
+    .goal-body ul { margin:10px 0 0; padding-left:18px; }
+    .goal-body li { margin:4px 0; }
+    .task-links { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .task-links button, .task-ref { display:inline-block; text-decoration:none; color:#175cd3; background:#f4f8ff; border:1px solid #d8e6ff; border-radius:6px; padding:5px 8px; font-weight:700; font-size:13px; cursor:pointer; font-family:inherit; }
+    table { width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    th { background:#1f4e78; color:#fff; text-align:left; padding:10px; vertical-align:top; }
+    td { border-top:1px solid var(--line); padding:10px; vertical-align:top; line-height:1.45; }
+    .role-name, .task-name { font-weight:700; min-width:160px; }
+    .tab-panel.is-hidden, .task-card.is-hidden { display:none; }
+    .tasks-grid { display:block; }
+    .task-picker { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 14px; background:#fff; border:1px solid var(--line); border-radius:8px; padding:12px; }
+    .task-button { color:#175cd3; background:#f4f8ff; border:1px solid #d8e6ff; border-radius:6px; padding:7px 9px; font-weight:700; font-size:13px; cursor:pointer; font-family:inherit; }
+    .task-button.is-active { background:#175cd3; color:#fff; border-color:#175cd3; }
+    .task-card { background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    .task-card header { background:#f8fafc; color:var(--ink); padding:14px 16px; border-left:8px solid var(--goal-color); border-bottom:1px solid var(--line); }
+    .task-card h3 { margin:0 0 6px; font-size:19px; }
+    .task-card .meta { display:flex; flex-wrap:wrap; gap:8px; align-items:center; color:var(--muted); font-size:13px; }
+    .task-card .body { padding:14px 16px; }
+    .flow-list { display:grid; grid-template-columns:repeat(2, minmax(220px,1fr)); gap:10px; margin-top:10px; }
+    .flow-box { background:#fbfdff; border:1px solid #e4e9f2; border-radius:6px; padding:10px; line-height:1.45; }
+    .flow-box b { display:block; margin-bottom:5px; }
+    .flow-box ul { margin:0; padding-left:18px; }
+    .flow-box li { margin:3px 0; }
+    .session-mock { margin-top:16px; border:1px solid #cfd9ea; border-radius:8px; background:#f8fbff; overflow:hidden; }
+    .session-mock-head { display:flex; justify-content:space-between; gap:14px; align-items:flex-старт; padding:14px 16px; background:#163b63; color:#fff; }
+    .session-mock-head h4 { margin:0 0 5px; font-size:18px; }
+    .session-mock-head p { margin:0; color:#e5eefb; line-height:1.4; }
+    .session-mock-controls { display:flex; flex-wrap:wrap; gap:8px; padding:12px 14px; border-bottom:1px solid #dce5f4; background:#fff; }
+    .session-mock-controls button { border:1px solid #d8e6ff; background:#f4f8ff; color:#175cd3; border-radius:6px; padding:7px 10px; font-weight:700; cursor:pointer; font-family:inherit; }
+    .session-mock-controls button.is-active { background:#175cd3; border-color:#175cd3; color:#fff; }
+    .session-kpis { display:grid; grid-template-columns:repeat(5, minmax(130px, 1fr)); gap:10px; padding:12px 14px; background:#fff; border-bottom:1px solid #dce5f4; }
+    .session-kpi { border:1px solid #e4e9f2; border-radius:8px; padding:10px; background:#fbfdff; }
+    .session-kpi span { display:block; color:var(--muted); font-size:12px; margin-bottom:4px; }
+    .session-kpi b { display:block; font-size:15px; }
+    .session-layout { display:grid; grid-template-columns:280px 1fr; gap:12px; padding:14px; }
+    .session-side, .session-main { background:#fff; border:1px solid #e4e9f2; border-radius:8px; padding:12px; }
+    .session-side h5, .session-main h5 { margin:0 0 8px; font-size:15px; }
+    .session-side dl { margin:0; display:grid; gap:8px; }
+    .session-side dt { color:var(--muted); font-size:12px; }
+    .session-side dd { margin:2px 0 0; font-weight:700; }
+    .session-tabs { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 12px; }
+    .session-tabs button { border:1px solid #d8e6ff; background:#f4f8ff; color:#175cd3; border-radius:6px; padding:7px 10px; font-weight:700; cursor:pointer; font-family:inherit; }
+    .session-tabs button.is-active { background:#175cd3; border-color:#175cd3; color:#fff; }
+    .session-panel.is-hidden, .session-role-note.is-hidden { display:none; }
+    .session-panel { line-height:1.45; }
+    .session-panel ul { margin:8px 0 0; padding-left:18px; }
+    .session-row-list { display:grid; gap:8px; margin-top:8px; }
+    .session-row { display:grid; grid-template-columns:140px 1fr; gap:10px; align-items:старт; border:1px solid #e4e9f2; border-radius:8px; padding:9px; background:#fbfdff; }
+    .session-row span { color:var(--muted); font-size:12px; }
+    .session-chat { display:grid; gap:8px; margin-top:8px; }
+    .session-msg { max-width:82%; border:1px solid #e4e9f2; border-radius:8px; padding:9px; background:#fbfdff; }
+    .session-msg.agent { margin-left:auto; background:#edf7ff; border-color:#cfe7ff; }
+    .session-msg b { display:block; margin-bottom:3px; font-size:13px; }
+    .session-note { margin-top:10px; padding:10px; border-left:4px solid #175cd3; background:#f4f8ff; line-height:1.45; }
+    .mock-card { margin-top:16px; border:1px solid #cfd9ea; border-radius:8px; background:#fff; overflow:hidden; }
+    .mock-card h4 { margin:0; padding:12px 14px; background:#f8fafc; border-bottom:1px solid #e4e9f2; font-size:17px; }
+    .mock-body { padding:14px; }
+    .mock-grid { display:grid; grid-template-columns:repeat(3, minmax(180px, 1fr)); gap:10px; }
+    .mock-grid.two { grid-template-columns:repeat(2, minmax(240px, 1fr)); }
+    .mock-box { border:1px solid #e4e9f2; border-radius:8px; background:#fbfdff; padding:10px; line-height:1.45; }
+    .mock-box strong { display:block; margin-bottom:5px; }
+    .mock-box ul { margin:0; padding-left:18px; }
+    .mock-box li { margin:3px 0; }
+    .mock-strip { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 12px; }
+    .mock-pill { display:inline-block; border:1px solid #d8e6ff; background:#f4f8ff; color:#175cd3; border-radius:999px; padding:5px 8px; font-size:12px; font-weight:700; }
+    .mock-pill.red { background:#f4cccc; color:#842029; border-color:#edb5b5; }
+    .mock-pill.green { background:#d9ead3; color:#1f5e2e; border-color:#b8dcae; }
+    .mock-pill.yellow { background:#fff2cc; color:#7a4e00; border-color:#ead58e; }
+    .mock-table { width:100%; border-collapse:collapse; border:1px solid #e4e9f2; border-radius:8px; overflow:hidden; background:#fff; }
+    .mock-table th { background:#edf3fb; color:#172033; padding:8px; }
+    .mock-table td { padding:8px; border-top:1px solid #e4e9f2; }
+    .mock-screen { border:1px solid #e4e9f2; border-radius:10px; overflow:hidden; background:#fff; }
+    .mock-screen-head { display:flex; justify-content:space-between; gap:10px; padding:10px 12px; background:#172033; color:#fff; }
+    .mock-screen-body { padding:12px; }
+    .mock-hero { border-radius:8px; padding:16px; background:#f2eefc; border:1px solid #ded2ff; }
+    .mock-hero h5 { margin:0 0 6px; font-size:18px; }
+    .mock-hero p { margin:0 0 10px; }
+    .mock-button { display:inline-block; background:#6d28d9; color:#fff; border-radius:6px; padding:8px 10px; font-weight:700; }
+    .status-grid { display:grid; grid-template-columns:repeat(3, minmax(260px,1fr)); gap:14px; }
+    .status-card { background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    .status-head { padding:12px 14px; border-bottom:1px solid var(--line); background:#f8fafc; }
+    .status-head b { display:block; font-size:16px; margin-bottom:5px; }
+    .status-body { padding:14px; line-height:1.45; }
+    .status-body ul { margin:8px 0 0; padding-left:18px; }
+    .status-body li { margin:4px 0; }
+    .status-proof { margin-top:10px; padding:10px 12px; border-left:4px solid #175cd3; background:#f4f8ff; line-height:1.45; }
+    .footer { color:var(--muted); font-size:13px; margin-top:26px; line-height:1.5; }
+    .footer a { color:#175cd3; }
+    @media (max-width:1050px) { .goals-grid, .tasks-grid, .flow-list, .session-layout, .session-kpis, .mock-grid, .mock-grid.two, .status-grid { grid-template-columns:1fr; } .session-mock-head { flex-direction:column; } }
+  
+body { margin:0; }
+header.page-head { background:#1f4e78; color:#fff; padding:22px 28px; }
+header.page-head h1 { margin:0 0 8px; font-size:28px; }
+header.page-head p { margin:0; line-height:1.45; }
+main.page-main { padding:22px 28px 42px; }
+.back-link { display:inline-block; margin:0 0 16px; padding:9px 12px; border:1px solid #d8e6ff; border-radius:6px; background:#f4f8ff; color:#175cd3; font-weight:700; text-decoration:none; }
+  </style>
+</head>
+<body>
+  <header class="page-head">
+    <h1>G2.4 Начисления и мотивация сотрудников</h1>
+    <p>Отдельная страница задачи Nebula. Главный список остается на главной странице.</p>
+  </header>
+  <main class="page-main">
+    <a class="back-link" href="../index.html">← Назад к списку задач</a>
+    <article class="task-card" id="task-g2-accruals" style="--goal-color:#0f766e">
+        <header><h3>G2.4 Начисления и мотивация сотрудников</h3><div class="meta"><span class="badge p1">P1</span><span>Цель 2: Деньги</span><span class="badge status-yellow">ТЗ-пакет готов / следующий рубеж</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> описать правила начисления эксперту и агенту по завершенным минутам, возвратам и качеству. Начисление должно объясняться конкретной консультацией.</p><div class="flow-list"><div class="flow-box"><b>Путь пользователя</b><ul><li>эксперт/агент видит понятные начисления;</li><li>спорная консультация не превращается в непрозрачную выплату.</li></ul></div><div class="flow-box"><b>Данные и правила</b><ul><li>начисление, привязанное к консультации;</li><li>роль участника;</li><li>исход: удержать, выплатить или отклонить;</li><li>корректировки из-за возврата или спора.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>мотивация команды влияет на скорость и качество консультаций.</li></ul></div><div class="flow-box"><b>Проверка</b><ul><li>начисление совпадает со списанными минутами и решением по возврату/спору;</li><li>общая формула выплат без связи с консультацией не принимается.</li></ul></div></div><div class="status-proof"><b>Честный статус сейчас:</b> рабочий пакет готов, но приемка живого сценария еще не пройдена. Это следующий рубеж, а не завершенная реализация.</div></div>
+      </article>
+  </main>
+  <script>
+  (function () {
+    document.querySelectorAll('[data-session-role]').forEach((button) => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('[data-session-role]').forEach((item) => item.classList.toggle('is-active', item === button));
+        document.querySelectorAll('[data-role-note]').forEach((note) => note.classList.toggle('is-hidden', note.dataset.roleNote !== button.dataset.sessionRole));
+      });
+    });
+    document.querySelectorAll('[data-session-tab]').forEach((button) => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('[data-session-tab]').forEach((item) => item.classList.toggle('is-active', item === button));
+        document.querySelectorAll('[data-session-panel]').forEach((panel) => panel.classList.toggle('is-hidden', panel.dataset.sessionPanel !== button.dataset.sessionTab));
+      });
+    });
+  })();
+  </script>
+</body>
+</html>

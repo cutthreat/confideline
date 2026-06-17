@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nebula - оценка готовности задачи</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink:#172033;
+      --muted:#667085;
+      --line:#d9e2f3;
+      --bg:#f6f8fb;
+      --panel:#ffffff;
+      --blue:#1f4e78;
+      --green:#0f766e;
+      --red:#842029;
+      --yellow:#7a4e00;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Arial, sans-serif; color:var(--ink); background:var(--bg); }
+    header { background:var(--blue); color:#fff; padding:26px 30px; }
+    header h1 { margin:0 0 8px; font-size:30px; }
+    header p { margin:0; line-height:1.45; max-width:980px; }
+    main { padding:22px 28px 42px; }
+    a { color:#175cd3; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    .top-links { display:flex; flex-wrap:wrap; gap:10px; margin:0 0 18px; }
+    .top-link { display:inline-block; padding:9px 12px; border:1px solid #d8e6ff; border-radius:6px; background:#f4f8ff; font-weight:700; }
+    .hero { background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin:0 0 16px; }
+    .hero-head { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0 0 8px; }
+    .hero h2 { margin:0; font-size:26px; }
+    .hero p { margin:0; line-height:1.45; }
+    .meta-grid { display:grid; grid-template-columns:repeat(4, minmax(150px,1fr)); gap:10px; margin-top:14px; }
+    .meta-box { background:#fbfdff; border:1px solid #e4e9f2; border-radius:8px; padding:10px; }
+    .meta-box span { display:block; color:var(--muted); font-size:12px; margin-bottom:4px; }
+    .meta-box b { display:block; font-size:16px; }
+    .term-en { display:block; margin-top:3px; color:var(--muted); font-size:12px; font-weight:600; line-height:1.25; letter-spacing:.01em; }
+    .badge { display:inline-block; padding:4px 8px; border-radius:999px; font-weight:700; font-size:12px; white-space:nowrap; }
+    .stage-accepted { background:#d9ead3; color:#1f5e2e; }
+    .stage-packet { background:#fff2cc; color:#7a4e00; }
+    .stage-inventory { background:#e9eef7; color:#42526b; }
+    .stage-plan { background:#eef2f7; color:#475467; }
+    .score-card { background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin:0 0 16px; }
+    .score-card h3 { margin:0 0 8px; font-size:22px; }
+    .score-card p { margin:0 0 14px; color:var(--muted); line-height:1.45; }
+    .score-list { display:grid; gap:10px; }
+    .score-row { display:grid; grid-template-columns:minmax(170px, 1.1fr) 90px 1fr; gap:10px; align-items:center; padding:10px; border:1px solid #e4e9f2; border-radius:8px; background:#fbfdff; }
+    .criterion-detail { border:1px solid #e4e9f2; border-radius:8px; background:#fff; overflow:hidden; }
+    .criterion-detail summary { list-style:none; cursor:pointer; }
+    .criterion-detail summary::-webkit-details-marker { display:none; }
+    .criterion-detail .score-row { border:0; border-radius:0; }
+    .criterion-detail summary:focus-visible { outline:3px solid #b7d4ff; outline-offset:-3px; }
+    .criterion-body { padding:0 12px 12px; color:var(--ink); line-height:1.45; }
+    .criterion-body p { margin:0; }
+    .score-row b { display:block; }
+    .score-points { font-weight:700; color:#0b3f91; }
+    .score-state { color:var(--muted); font-size:12px; }
+    .score-line { height:10px; background:#e9eef7; border-radius:999px; overflow:hidden; }
+    .score-fill { height:100%; background:#175cd3; border-radius:999px; }
+    .score-note { margin-top:12px; color:var(--muted); font-size:13px; line-height:1.45; }
+    .disclosure { background:#fff; border:1px solid var(--line); border-radius:10px; margin:0 0 16px; overflow:hidden; }
+    .disclosure summary { cursor:pointer; padding:14px 16px; font-weight:700; background:#f8fafc; }
+    .disclosure summary:focus-visible { outline:3px solid #b7d4ff; outline-offset:-3px; }
+    .disclosure-body { padding:14px 16px; }
+    .section-grid { display:grid; grid-template-columns:repeat(3, minmax(240px,1fr)); gap:14px; }
+    .card { background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+    .card h3 { margin:0; padding:12px 14px; font-size:18px; border-bottom:1px solid var(--line); background:#f8fafc; }
+    .card.good h3 { border-left:6px solid var(--green); }
+    .card.todo h3 { border-left:6px solid var(--yellow); }
+    .card.accept h3 { border-left:6px solid #175cd3; }
+    .card-body { padding:14px; line-height:1.45; }
+    .card-body ul { margin:0; padding-left:18px; }
+    .card-body li { margin:5px 0; }
+    .empty { background:#fff; border:1px solid var(--line); border-radius:10px; padding:18px; line-height:1.5; }
+    @media (max-width:980px) {
+      .meta-grid, .section-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Оценка готовности задачи</h1>
+  <p>Здесь только оценочная часть: что уже готово на текущий момент, что еще нужно добить и по какому критерию задача считается реально готовой на сайте.</p>
+</header>
+
+<main>
+  <div class="top-links">
+    <a class="top-link" href="index.html">← Назад к списку</a>
+    <a class="top-link" id="detail-link" href="index.html">Открыть полные детали задачи</a>
+  </div>
+
+  <section id="content"></section>
+</main>
+
+<script>
+(function () {
+  const siteCriteria = [
+    { key:"surface", label:"Экран на месте", max:20 },
+    { key:"data", label:"Реальные данные", max:20 },
+    { key:"action", label:"Основное действие", max:20 },
+    { key:"flow", label:"Путь пользователя", max:20 },
+    { key:"proof", label:"Проверка и приемка", max:20 }
+  ];
+
+  const siteScoreByTask = {
+    "task-g1-session": [10,15,5,5,10],
+    "task-g1-chat": [10,15,10,5,10],
+    "task-g1-statuses": [10,15,5,5,10],
+    "task-g1-chat-notifications": [5,10,5,5,10],
+    "task-g2-pricing": [10,15,5,5,10],
+    "task-g2-timer": [10,10,5,5,10],
+    "task-g2-refund": [10,10,5,5,10],
+    "task-g2-accruals": [5,0,0,0,5],
+    "task-g3-home": [5,5,0,0,5],
+    "task-g3-catalog": [5,5,0,0,5],
+    "task-g3-profile": [5,5,5,0,5],
+    "task-g3-quiz": [5,0,0,0,5],
+    "task-g3-qa": [5,0,0,0,5],
+    "task-g4-support": [5,0,0,0,0],
+    "task-g4-complaints": [5,0,0,0,0],
+    "task-g4-docs": [5,0,0,0,0],
+    "task-g4-support-notifications": [0,0,0,0,0],
+    "task-g5-events": [5,0,0,0,0],
+    "task-g5-dashboard": [5,0,0,0,0],
+    "task-g5-kpi": [0,0,0,0,0],
+    "task-g5-marketing-gate": [0,0,0,0,0],
+    "task-g6-assignment": [5,0,0,0,0],
+    "task-g6-sla": [5,0,0,0,0],
+    "task-g6-quality": [5,0,0,0,0],
+    "task-g6-training": [0,0,0,0,0],
+    "task-g6-team-notifications": [0,0,0,0,0]
+  };
+
+  const criterionDetailsByTask = {
+    "task-g1-session": [
+      "10/20: есть внутренняя карточка консультации для админа и проверки, но это еще не полноценный экран для пользователя на сайте.",
+      "15/20: отдельная запись консультации и связь с текущим чатом уже дают реальную основу данных, но клиентский путь на сайте еще не собран целиком.",
+      "5/20: основное действие сайта пока не проходит end-to-end как пользовательский путь от входа до завершения консультации.",
+      "5/20: путь клиента, эксперта и оператора еще разорван между внутренней проверкой и будущими экранами сайта.",
+      "10/20: есть проверка внутреннего слоя, но нет финальной проверки именно сайта и пользовательского результата."
+    ]
+  };
+
+  const tzReadyByTask = {
+    "task-g1-session": 60,
+    "task-g1-chat": 45,
+    "task-g1-statuses": 65,
+    "task-g1-chat-notifications": 55,
+    "task-g2-pricing": 70,
+    "task-g2-timer": 70,
+    "task-g2-refund": 55,
+    "task-g2-accruals": 45,
+    "task-g3-home": 20,
+    "task-g3-catalog": 20,
+    "task-g3-profile": 40,
+    "task-g3-quiz": 20,
+    "task-g3-qa": 35,
+    "task-g4-support": 15,
+    "task-g4-complaints": 15,
+    "task-g4-docs": 15,
+    "task-g4-support-notifications": 10,
+    "task-g5-events": 15,
+    "task-g5-dashboard": 15,
+    "task-g5-kpi": 10,
+    "task-g5-marketing-gate": 10,
+    "task-g6-assignment": 15,
+    "task-g6-sla": 15,
+    "task-g6-quality": 15,
+    "task-g6-training": 10,
+    "task-g6-team-notifications": 10
+  };
+
+  const tasks = {
+    "task-g1-session": {
+      code:"G1.1", title:"Карточка консультации", goal:"Цель 1", stage:"accepted_bounded_slice", progress:45, tzReady:60, detailHref:"tasks/task-g1-session.html",
+      ready:[
+        "Есть отдельная запись консультации, а не просто переписка в чате.",
+        "Есть карточка консультации во внутреннем админском контуре.",
+        "Связь карточки с текущим чатом и сообщениями уже доказана."
+      ],
+      needed:[
+        "Довести эту карточку до полноценного пользовательского экрана сайта, а не только внутренней админской проверки.",
+        "Показать всю карточку в живом клиентском пути: старт, ход консультации, итог.",
+        "Убрать ручные разрывы между витриной сайта, чатом, деньгами и поддержкой."
+      ],
+      accept:[
+        "На сайте одна консультация открывается целиком для нужной роли.",
+        "Все ключевые блоки внутри одной карточки читаются без ручных пояснений.",
+        "Есть проверяемое доказательство именно пользовательского результата, а не только внутреннего контура."
+      ]
+    },
+    "task-g1-chat": {
+      code:"G1.2", title:"Чат по ролям", goal:"Цель 1", stage:"accepted_bounded_slice", progress:50, tzReady:60, detailHref:"tasks/task-g1-chat.html",
+      ready:[
+        "Ролевая модель чата и границы между ролями уже определены.",
+        "Базовый механизм сообщений можно переиспользовать.",
+        "Есть основа для привязки чата к конкретной консультации."
+      ],
+      needed:[
+        "Собрать чистый site-ready UX для клиента, эксперта, агента и админа.",
+        "Довести unread, системные сообщения и переходы между состояниями до понятного рабочего вида.",
+        "Проверить реальный end-to-end путь без ручного сопровождения."
+      ],
+      accept:[
+        "Каждая роль видит только свой допустимый контур общения.",
+        "Чат запускается из консультации и возвращает в нее без путаницы.",
+        "Сообщения, статусы и ограничения роли проверены на живом пути."
+      ]
+    },
+    "task-g1-statuses": {
+      code:"G1.3", title:"Статусы и история", goal:"Цель 1", stage:"accepted_bounded_slice", progress:45, tzReady:100, detailHref:"tasks/task-g1-statuses.html",
+      ready:[
+        "Статусы консультации и история событий уже доказаны.",
+        "Есть защита от недопустимых переходов.",
+        "История видна во внутренней проверке админского контура."
+      ],
+      needed:[
+        "Вывести эту историю в ясный site-facing контур для нужных ролей.",
+        "Довести человекочитаемые названия состояний и причину смены статуса.",
+        "Проверить, что история помогает оператору и клиенту, а не только разработчику."
+      ],
+      accept:[
+        "Статус консультации читается однозначно на каждом этапе.",
+        "История переходов объясняет, что случилось и почему.",
+        "Нет скрытых состояний, которые держатся только во внутренней логике системы."
+      ]
+    },
+    "task-g1-chat-notifications": {
+      code:"G1.4", title:"Уведомления чата", goal:"Цель 1", stage:"accepted_bounded_slice", progress:35, tzReady:55, detailHref:"tasks/task-g1-chat-notifications.html",
+      ready:[
+        "Граница уведомлений как отдельной части задачи уже понятна.",
+        "Есть привязка к консультации и чату."
+      ],
+      needed:[
+        "Довести полный список событий, кому и когда реально надо сигналить.",
+        "Собрать понятные тексты и UX точек входа на сайте.",
+        "Проверить, что уведомления помогают, а не засоряют поток."
+      ],
+      accept:[
+        "Каждая критичная смена состояния дает нужный сигнал нужной роли.",
+        "По уведомлению можно попасть прямо в нужный контекст.",
+        "Нет пропусков по важным событиям и нет лишнего спама."
+      ]
+    },
+    "task-g2-pricing": {
+      code:"G2.1", title:"Цена и баланс", goal:"Цель 2", stage:"accepted_bounded_slice", progress:45, tzReady:100, detailHref:"tasks/task-g2-pricing.html",
+      ready:[
+        "Правило цены привязано к конкретной консультации.",
+        "Старт блокируется, если цена и условия не зафиксированы.",
+        "Проверены успешный старт и блокировка ошибочного старта."
+      ],
+      needed:[
+        "Вывести эту механику в прозрачный клиентский интерфейс на сайте.",
+        "Показать понятную цену, условия старта и последствия до начала консультации.",
+        "Проверить путь витрина сайта -> старт консультации без ручных костылей."
+      ],
+      accept:[
+        "Клиент до старта видит цену и правило допуска.",
+        "Консультация не стартует без корректной цены и условий.",
+        "Условия старта и цена совпадают между интерфейсом и фактическим поведением."
+      ]
+    },
+    "task-g2-timer": {
+      code:"G2.2", title:"Таймер и остановка", goal:"Цель 2", stage:"accepted_bounded_slice", progress:40, tzReady:100, detailHref:"tasks/task-g2-timer.html",
+      ready:[
+        "Есть учет времени и списаний, привязанный к конкретной консультации.",
+        "Предупреждение, остановка и итог списаний уже доказаны.",
+        "Продолжение без доступного баланса уже блокируется."
+      ],
+      needed:[
+        "Сделать живой понятный таймер для клиентского и операторского интерфейса.",
+        "Довести поведение предупреждений перед остановкой.",
+        "Проверить продолжение/остановку консультации в реальном пользовательском потоке."
+      ],
+      accept:[
+        "На сайте видно, сколько консультация уже идет и что произойдет дальше.",
+        "Предупреждение и остановка происходят предсказуемо.",
+        "Итог списания совпадает с тем, что показано пользователю и оператору."
+      ]
+    },
+    "task-g2-refund": {
+      code:"G2.3", title:"Возвраты", goal:"Цель 2", stage:"packet_ready", progress:40, tzReady:80, detailHref:"tasks/task-g2-refund.html",
+      ready:[
+        "Контур возвратов и споров уже определен и должен быть привязан к конкретной консультации.",
+        "Понятны зависимости от статусов консультации и доказательств по ходу консультации.",
+        "ТЗ уже сильное, но на главной это не должно выглядеть как полностью site-ready слой."
+      ],
+      needed:[
+        "Собрать операторскую и клиентскую поверхность возврата/спора.",
+        "Показать связь возврата или спора с конкретной консультацией и ее событиями.",
+        "Доказать понятный сценарий от жалобы до финального решения."
+      ],
+      accept:[
+        "Любой возврат объясняется через конкретную консультацию и ее доказательства.",
+        "Оператор видит причину, сумму, решение и след.",
+        "Клиентский путь по жалобе/возврату не требует ручной расшифровки."
+      ]
+    },
+    "task-g2-accruals": {
+      code:"G2.4", title:"Начисления", goal:"Цель 2", stage:"packet_ready", progress:10, tzReady:70, detailHref:"tasks/task-g2-accruals.html",
+      ready:[
+        "Граница задачи и зависимости уже понятны.",
+        "Есть основа из списаний и возвратов, привязанных к консультации.",
+        "Есть постановка задачи, с которой можно стартовать."
+      ],
+      needed:[
+        "Реализовать логику начислений и мотивации поверх конкретной консультации.",
+        "Сделать операторскую/экспертную видимость начислений.",
+        "Пройти проверку живого сценария и связать это с фактическим сайтом."
+      ],
+      accept:[
+        "Начисление всегда объясняется конкретной консультацией.",
+        "Эксперт и оператор понимают, откуда взялась сумма.",
+        "Нет общего финансового шума без связи с конкретной консультацией."
+      ]
+    },
+    "task-g3-home": {
+      code:"G3.1", title:"Витрина", goal:"Цель 3", stage:"inventoried", progress:15, tzReady:35, detailHref:"tasks/task-g3-home.html",
+      ready:[
+        "Понимание, что витрина не должна обгонять рабочую основу продукта, уже есть.",
+        "Есть эталонный материал askNebula для сравнения."
+      ],
+      needed:[
+        "Привязать главную страницу к реальному продукту Nebula, а не к абстрактному универсальному сайту.",
+        "Разложить блоки: доверие, предложение, старт консультации, вход к эксперту, вопросы и правила.",
+        "Собрать макет и критерии приемки именно под Nebula."
+      ],
+      accept:[
+        "Главная страница объясняет продукт без ручного дообъяснения.",
+        "С нее можно начать правильный путь в консультацию.",
+        "Контент и кнопки действия соответствуют реальной логике продукта."
+      ]
+    },
+    "task-g3-catalog": {
+      code:"G3.2", title:"Каталог", goal:"Цель 3", stage:"inventoried", progress:15, tzReady:35, detailHref:"tasks/task-g3-catalog.html",
+      ready:[
+        "Каталог осмыслен как отдельный обязательный слой витрины сайта.",
+        "Понимание зависимости от экспертных данных уже есть."
+      ],
+      needed:[
+        "Определить реальные поля каталога, фильтры и сортировки под Nebula.",
+        "Связать каталог с профилем эксперта и путями старта консультации.",
+        "Сделать понятный клиентский путь выбора."
+      ],
+      accept:[
+        "Клиент может выбрать эксперта или направление без тупиков.",
+        "Каталог отражает реальные данные, а не заглушки.",
+        "Переход из каталога в профиль и старт консультации работает без разрыва."
+      ]
+    },
+    "task-g3-profile": {
+      code:"G3.3", title:"Карточка эксперта", goal:"Цель 3", stage:"packet_ready", progress:20, tzReady:65, detailHref:"tasks/task-g3-profile.html",
+      ready:[
+        "Понимание состава профиля эксперта уже есть.",
+        "Есть опора на уже согласованную основу консультации и денег.",
+        "ТЗ заметно сильнее, чем у общей витрины."
+      ],
+      needed:[
+        "Собрать реальную карточку эксперта под данные и сценарии Nebula.",
+        "Показать цену, специализацию, доверие и вход в консультацию.",
+        "Довести mobile/desktop поведение и связку с каталогом."
+      ],
+      accept:[
+        "Карточка помогает выбрать и запустить консультацию, а не просто читать анкету.",
+        "На карточке нет фальшивых полей без опоры на реальные данные.",
+        "Цена, доступность и кнопка старта не противоречат реальной логике старта."
+      ]
+    },
+    "task-g3-quiz": {
+      code:"G3.4", title:"Подбор и старт", goal:"Цель 3", stage:"inventoried", progress:10, tzReady:35, detailHref:"tasks/task-g3-quiz.html",
+      ready:[
+        "Понимание, что подбор должен вести в честный старт консультации, уже зафиксировано."
+      ],
+      needed:[
+        "Спроектировать реальный путь подбор -> рекомендация -> эксперт -> старт консультации.",
+        "Определить обязательные вопросы, ветвления и бизнес-правила.",
+        "Проверить, что путь не конфликтует с каталогом и профилем эксперта."
+      ],
+      accept:[
+        "Подбор действительно приводит к следующему действию, а не к декоративному экрану.",
+        "Рекомендация объяснима и связана с доступным продуктом.",
+        "После подбора можно честно стартовать консультацию."
+      ]
+    },
+    "task-g3-qa": {
+      code:"G3.5", title:"Проверка клиентского пути", goal:"Цель 3", stage:"packet_ready", progress:10, tzReady:60, detailHref:"tasks/task-g3-qa.html",
+      ready:[
+        "Понимание критичных клиентских путей уже есть.",
+        "Есть черновая основа для проверки витрины сайта против реальной логики продукта."
+      ],
+      needed:[
+        "Собрать полный список ключевых сценариев клиента.",
+        "Проверить их на локальном сайте после сборки G3.",
+        "Зафиксировать явные критерии прохода/непрохода."
+      ],
+      accept:[
+        "Все критичные пути от входа до консультации проходят без ручной помощи.",
+        "Каждый найденный разрыв зафиксирован и объяснен.",
+        "Есть финальный вывод о готовности, а не общий оптимизм."
+      ]
+    },
+    "task-g4-support": {
+      code:"G4.1", title:"Поддержка", goal:"Цель 4", stage:"master_plan_only", progress:5, tzReady:25, detailHref:"tasks/task-g4-support.html",
+      ready:[
+        "Понимание, что поддержка должна быть частью контура консультации, уже есть."
+      ],
+      needed:[
+        "Определить роли, входы в поддержку, очереди и типы обращений.",
+        "Связать поддержку с консультацией, возвратами и качеством.",
+        "Собрать операторский и клиентский контур."
+      ],
+      accept:[
+        "Любое обращение привязывается к реальной консультации или продуктовой проблеме.",
+        "Оператор понимает, что делать дальше.",
+        "Клиент видит понятный способ получить помощь."
+      ]
+    },
+    "task-g4-complaints": {
+      code:"G4.2", title:"Жалобы и возвраты", goal:"Цель 4", stage:"master_plan_only", progress:5, tzReady:25, detailHref:"tasks/task-g4-complaints.html",
+      ready:[
+        "Есть понимание связи жалоб с возвратами и спорными ситуациями."
+      ],
+      needed:[
+        "Описать прием обращения, разбор, решение, эскалации и исходы.",
+        "Привязать это к доказательствам по консультации и операторским действиям.",
+        "Сделать понятную поверхность для владельца процесса."
+      ],
+      accept:[
+        "Жалоба проходит полный путь до решения.",
+        "Каждое решение имеет след и объяснение.",
+        "Нет жалоб, которые висят вне контекста консультации."
+      ]
+    },
+    "task-g4-docs": {
+      code:"G4.3", title:"Документы", goal:"Цель 4", stage:"master_plan_only", progress:5, tzReady:25, detailHref:"tasks/task-g4-docs.html",
+      ready:[
+        "Понято, что документы и правила являются обязательной частью контура доверия."
+      ],
+      needed:[
+        "Определить список документов и где они должны появляться.",
+        "Связать документы с ключевыми действиями пользователя.",
+        "Сделать приемочный список обязательных текстов и мест."
+      ],
+      accept:[
+        "Пользователь видит нужные правила в нужный момент.",
+        "Оператор и админ понимают, на что можно ссылаться.",
+        "Нет критичных юридических и продуктовых дыр."
+      ]
+    },
+    "task-g4-support-notifications": {
+      code:"G4.4", title:"Уведомления поддержки", goal:"Цель 4", stage:"master_plan_only", progress:0, tzReady:20, detailHref:"tasks/task-g4-support-notifications.html",
+      ready:[
+        "Есть только понимание, что понадобится слой событий поддержки."
+      ],
+      needed:[
+        "Определить события, получателей и сигналы по срокам реакции.",
+        "Связать уведомления с очередью поддержки и жалобами.",
+        "Собрать понятный минимальный UX."
+      ],
+      accept:[
+        "Критичные события поддержки не теряются.",
+        "Нужная роль получает сигнал вовремя.",
+        "Сигнал ведет в нужный контекст."
+      ]
+    },
+    "task-g5-events": {
+      code:"G5.1", title:"События воронки", goal:"Цель 5", stage:"master_plan_only", progress:5, tzReady:25, detailHref:"tasks/task-g5-events.html",
+      ready:[
+        "Понимание, что измеримый продуктовый контур нужен, уже есть."
+      ],
+      needed:[
+        "Определить канонический список событий по воронке Nebula.",
+        "Привязать события к консультации, деньгам и витрине сайта.",
+        "Отделить полезную аналитику от лишнего шума."
+      ],
+      accept:[
+        "По событиям можно восстановить путь клиента.",
+        "События согласованы с реальной логикой продукта, а не придуманы отдельно.",
+        "Есть понятная база для дашборда и решений."
+      ]
+    },
+    "task-g5-dashboard": {
+      code:"G5.2", title:"Дашборд", goal:"Цель 5", stage:"master_plan_only", progress:5, tzReady:25, detailHref:"tasks/task-g5-dashboard.html",
+      ready:[
+        "Цель дашборда как операторской поверхности понятна."
+      ],
+      needed:[
+        "Определить ключевые виджеты, фильтры и тревожные зоны.",
+        "Связать дашборд с реальными событиями и конкретными консультациями.",
+        "Собрать макет и критерии полезности."
+      ],
+      accept:[
+        "По дашборду можно принять конкретное операционное решение.",
+        "Метрики не противоречат реальному состоянию системы.",
+        "Критичные проблемы видно без ручной раскопки."
+      ]
+    },
+    "task-g5-kpi": {
+      code:"G5.3", title:"Таблица показателей", goal:"Цель 5", stage:"master_plan_only", progress:0, tzReady:20, detailHref:"tasks/task-g5-kpi.html",
+      ready:[
+        "Есть только базовое понимание, что показатели нужны."
+      ],
+      needed:[
+        "Определить список показателей, владельцев и периодичность.",
+        "Зафиксировать формулы и источники.",
+        "Отвязаться от общих слов и перейти к измеримым метрикам."
+      ],
+      accept:[
+        "Каждый показатель имеет владельца, формулу и действие.",
+        "Таблица не спорит с дашбордом и событиями.",
+        "По показателям можно понять, что улучшать дальше."
+      ]
+    },
+    "task-g5-marketing-gate": {
+      code:"G5.4", title:"Допуск рекламы", goal:"Цель 5", stage:"master_plan_only", progress:0, tzReady:20, detailHref:"tasks/task-g5-marketing-gate.html",
+      ready:[
+        "Понимание, что рекламу нельзя включать без проверки готовности, уже есть."
+      ],
+      needed:[
+        "Определить явные условия допуска к рекламе.",
+        "Связать допуск с качеством, поддержкой, конверсией и денежной логикой.",
+        "Собрать простую модель решения для владельца."
+      ],
+      accept:[
+        "Есть понятный вывод: можно или нельзя запускать трафик.",
+        "Допуск основан на доказательствах, а не на ощущении.",
+        "При провале проверки видно, что именно блокирует запуск."
+      ]
+    },
+    "task-g6-assignment": {
+      code:"G6.1", title:"Назначение", goal:"Цель 6", stage:"master_plan_only", progress:5, tzReady:25, detailHref:"tasks/task-g6-assignment.html",
+      ready:[
+        "Понимание, что распределение консультаций и ролей нужно выделять отдельно, уже есть."
+      ],
+      needed:[
+        "Описать правила назначения клиента, агента и эксперта.",
+        "Показать ручной и автоматический контур.",
+        "Связать это со сроками реакции и качеством."
+      ],
+      accept:[
+        "Назначение не теряется и не вызывает двойной ответственности.",
+        "Оператор видит, кто владелец следующего шага.",
+        "Распределение работает на реальном потоке задач."
+      ]
+    },
+    "task-g6-sla": {
+      code:"G6.2", title:"Сроки реакции", goal:"Цель 6", stage:"master_plan_only", progress:5, tzReady:25, detailHref:"tasks/task-g6-sla.html",
+      ready:[
+        "Понимание критичности сроков реакции уже есть."
+      ],
+      needed:[
+        "Определить нормы реакции и эскалации по ролям.",
+        "Связать сроки реакции с уведомлениями, назначением ответственных и поддержкой.",
+        "Сделать видимую поверхность контроля."
+      ],
+      accept:[
+        "Есть измеримый срок реакции по каждому критичному сценарию.",
+        "Просрочки видны и понятны.",
+        "По срокам реакции можно управлять качеством сервиса."
+      ]
+    },
+    "task-g6-quality": {
+      code:"G6.3", title:"Контроль качества", goal:"Цель 6", stage:"master_plan_only", progress:5, tzReady:25, detailHref:"tasks/task-g6-quality.html",
+      ready:[
+        "Есть понимание, что слой качества нужен поверх всей консультации."
+      ],
+      needed:[
+        "Описать критерии хорошей/плохой консультации.",
+        "Связать качество с жалобами, возвратами, сроками реакции и обучением.",
+        "Собрать операторскую форму оценки."
+      ],
+      accept:[
+        "Каждая проблемная консультация может быть оценена по правилам.",
+        "Есть понятные триггеры для разбора и исправления.",
+        "Оценка качества влияет на действия, а не просто хранится."
+      ]
+    },
+    "task-g6-training": {
+      code:"G6.4", title:"Обучение и регламенты", goal:"Цель 6", stage:"master_plan_only", progress:0, tzReady:20, detailHref:"tasks/task-g6-training.html",
+      ready:[
+        "Пока только базовый замысел слоя обучения."
+      ],
+      needed:[
+        "Определить набор регламентов по ролям.",
+        "Связать обучение с проблемами качества, сроков реакции и поддержки.",
+        "Сделать понятный операторский пакет, а не набор заметок."
+      ],
+      accept:[
+        "Новая роль может начать работу без устной расшифровки.",
+        "Регламенты покрывают типовые ошибки и эскалации.",
+        "Обучение опирается на реальный продуктовый контур."
+      ]
+    },
+    "task-g6-team-notifications": {
+      code:"G6.5", title:"Командные уведомления", goal:"Цель 6", stage:"master_plan_only", progress:0, tzReady:20, detailHref:"tasks/task-g6-team-notifications.html",
+      ready:[
+        "Есть понимание, что команде понадобится собственный event layer."
+      ],
+      needed:[
+        "Определить, какие сигналы реально нужны команде.",
+        "Связать их с назначением ответственных, сроками реакции, качеством и поддержкой.",
+        "Собрать минимальный полезный контур без спама."
+      ],
+      accept:[
+        "Команда получает только полезные сигналы.",
+        "По сигналу видно, что именно делать дальше.",
+        "Уведомления уменьшают потери, а не создают шум."
+      ]
+    }
+  };
+
+  const taskTermEn = {
+    "task-g1-session": "service session",
+    "task-g1-chat": "role-based chat",
+    "task-g1-statuses": "state machine / lifecycle",
+    "task-g1-chat-notifications": "chat notifications",
+    "task-g2-pricing": "pricing gate",
+    "task-g2-timer": "timer / debit / hard stop",
+    "task-g2-refund": "refund ledger",
+    "task-g2-accruals": "accruals / incentives",
+    "task-g3-home": "storefront",
+    "task-g3-catalog": "expert catalog",
+    "task-g3-profile": "expert profile",
+    "task-g3-quiz": "quiz / matching / start",
+    "task-g3-qa": "end-to-end path proof",
+    "task-g4-support": "support",
+    "task-g4-complaints": "complaints / disputes",
+    "task-g4-docs": "terms / documents",
+    "task-g4-support-notifications": "support notifications",
+    "task-g5-events": "funnel events",
+    "task-g5-dashboard": "dashboard",
+    "task-g5-kpi": "KPI table",
+    "task-g5-marketing-gate": "marketing gate",
+    "task-g6-assignment": "assignment queue",
+    "task-g6-sla": "SLA / response time",
+    "task-g6-quality": "QA / quality control",
+    "task-g6-training": "training / playbook",
+    "task-g6-team-notifications": "team notifications"
+  };
+
+  function stageClass(stage) {
+    if (stage === "accepted_bounded_slice") return "stage-accepted";
+    if (stage === "packet_ready") return "stage-packet";
+    if (stage === "inventoried") return "stage-inventory";
+    return "stage-plan";
+  }
+
+  function stageLabel(stage) {
+    if (stage === "accepted_bounded_slice") return "Срез согласован";
+    if (stage === "packet_ready") return "Пакет готов";
+    if (stage === "inventoried") return "Оценка собрана";
+    return "Только план";
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("task");
+  const task = id ? tasks[id] : null;
+  const content = document.getElementById("content");
+  const detailLink = document.getElementById("detail-link");
+
+  if (!task) {
+    content.innerHTML = '<div class="empty"><b>Задача не найдена.</b><br>Вернитесь к списку и откройте оценку заново.</div>';
+    detailLink.href = "index.html";
+    return;
+  }
+
+  detailLink.href = task.detailHref;
+  const scoreVector = siteScoreByTask[id] || [0,0,0,0,0];
+  const totalScore = scoreVector.reduce((sum, value) => sum + value, 0);
+  const tzReady = tzReadyByTask[id] || 0;
+
+  function renderList(items) {
+    return "<ul>" + items.map((item) => "<li>" + item + "</li>").join("") + "</ul>";
+  }
+
+  function scoreState(value, max) {
+    if (value <= 0) return "нет";
+    if (value >= max) return "готово";
+    return "частично";
+  }
+
+  function renderScoreRows() {
+    const details = criterionDetailsByTask[id] || [];
+    return siteCriteria.map((criterion, index) => {
+      const value = scoreVector[index] || 0;
+      const percent = Math.round((value / criterion.max) * 100);
+      const detail = details[index] || "Расшифровка для этой задачи еще не собрана.";
+      return `
+        <details class="criterion-detail">
+          <summary>
+            <div class="score-row">
+              <div>
+                <b>${criterion.label}</b>
+                <div class="score-state">${scoreState(value, criterion.max)}</div>
+              </div>
+              <div class="score-points">${value}/${criterion.max}</div>
+              <div class="score-line"><div class="score-fill" style="width:${percent}%"></div></div>
+            </div>
+          </summary>
+          <div class="criterion-body"><p>${detail}</p></div>
+        </details>`;
+    }).join("");
+  }
+
+  content.innerHTML = `
+    <section class="hero">
+      <div class="hero-head">
+        <span class="badge ${stageClass(task.stage)}">${stageLabel(task.stage)}</span>
+        <span class="badge">${task.goal}</span>
+      </div>
+      <h2>${task.code} ${task.title}<span class="term-en">${taskTermEn[id] || ""}</span></h2>
+      <p>Короткая оценка без шума: что уже реально собрано, что еще обязательно нужно довести и как понять, что задача готова не на словах, а на сайте.</p>
+      <div class="meta-grid">
+        <div class="meta-box"><span>% сайта</span><b>${totalScore}%</b></div>
+        <div class="meta-box"><span>ТЗ</span><b>${tzReady}%</b></div>
+        <div class="meta-box"><span>Статус</span><b>${stageLabel(task.stage)}</b></div>
+        <div class="meta-box"><span>Полные детали</span><b><a href="${task.detailHref}">Открыть</a></b></div>
+      </div>
+    </section>
+
+    <details class="disclosure">
+      <summary>Из чего собран % сайта</summary>
+      <div class="disclosure-body">
+        <div class="score-card">
+          <h3>Критерии оценки</h3>
+          <p>Оценка складывается из 5 критериев по 20 баллов.</p>
+          <div class="score-list">${renderScoreRows()}</div>
+          <div class="score-note">Шаг оценки: 0 / 5 / 10 / 15 / 20. Итог = сумма критериев.</div>
+        </div>
+      </div>
+    </details>
+
+    <section class="section-grid">
+      <article class="card good">
+        <h3>Что уже готово</h3>
+        <div class="card-body">${renderList(task.ready)}</div>
+      </article>
+      <article class="card todo">
+        <h3>Что нужно добить</h3>
+        <div class="card-body">${renderList(task.needed)}</div>
+      </article>
+      <article class="card accept">
+        <h3>Когда считаем готовым</h3>
+        <div class="card-body">${renderList(task.accept)}</div>
+      </article>
+    </section>
+  `;
+})();
+</script>
+</body>
+</html>

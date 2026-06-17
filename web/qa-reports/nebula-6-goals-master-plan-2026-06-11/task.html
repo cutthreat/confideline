@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nebula task detail</title>
+  <style>
+    body { margin:0; font-family:Arial, sans-serif; background:#f6f8fb; color:#172033; }
+    header { background:#1f4e78; color:#fff; padding:22px 28px; }
+    header h1 { margin:0 0 8px; font-size:28px; }
+    header p { margin:0; line-height:1.45; }
+    main { padding:22px 28px 42px; }
+    .back-link { display:inline-block; margin:0 0 16px; padding:9px 12px; border:1px solid #d8e6ff; border-radius:6px; background:#f4f8ff; color:#175cd3; font-weight:700; text-decoration:none; }
+    .shell { max-width:1180px; margin:0 auto; }
+    .status { background:#fff; border:1px solid #d9e2f3; border-radius:8px; padding:14px 16px; margin-bottom:16px; line-height:1.5; }
+    .error { background:#fff5f5; border:1px solid #f1c3c3; color:#842029; }
+  </style>
+</head>
+<body>
+<header>
+  <h1 id="page-title">Карточка задачи Nebula</h1>
+  <p>Подробности вынесены с главной страницы. Источник карточек читается из локального detail-source.</p>
+</header>
+<main>
+  <div class="shell">
+    <a class="back-link" href="./index.html">← Назад к списку задач</a>
+    <div id="info" class="status">Загрузка карточки…</div>
+    <div id="detail-root"></div>
+  </div>
+</main>
+<script>
+(async function () {
+  const info = document.getElementById("info");
+  const root = document.getElementById("detail-root");
+  const pageTitle = document.getElementById("page-title");
+  const params = new URLSearchParams(window.location.search);
+  const taskId = params.get("task");
+
+  if (!taskId) {
+    info.classList.add("error");
+    info.textContent = "Не передан параметр task.";
+    return;
+  }
+
+  try {
+    const response = await fetch("./task-details.html", { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error("detail-source not reachable");
+    }
+
+    const html = await response.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    const style = doc.querySelector("style");
+    if (style) {
+      const clonedStyle = document.createElement("style");
+      clonedStyle.textContent = style.textContent;
+      document.head.appendChild(clonedStyle);
+    }
+
+    const article = doc.getElementById(taskId);
+    if (!article) {
+      info.classList.add("error");
+      info.textContent = "Карточка не найдена: " + taskId;
+      return;
+    }
+
+    const title = article.querySelector("h3") ? article.querySelector("h3").textContent.trim() : taskId;
+    document.title = "Nebula - " + title;
+    pageTitle.textContent = title;
+    info.textContent = "Источник: локальная страница деталей. Это отдельная страница выбранной задачи.";
+
+    article.classList.remove("is-hidden");
+    root.appendChild(article);
+  } catch (error) {
+    info.classList.add("error");
+    info.textContent = "Не удалось открыть detail-source: " + error.message;
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nebula - ТЗ задачи</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink:#172033;
+      --muted:#667085;
+      --line:#d9e2f3;
+      --bg:#f6f8fb;
+      --panel:#ffffff;
+      --blue:#1f4e78;
+      --green:#0f766e;
+      --yellow:#7a4e00;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Arial, sans-serif; color:var(--ink); background:var(--bg); }
+    header { background:var(--blue); color:#fff; padding:26px 30px; }
+    header h1 { margin:0 0 8px; font-size:30px; }
+    header p { margin:0; line-height:1.45; max-width:980px; }
+    main { padding:22px 28px 42px; }
+    a { color:#175cd3; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    .top-links { display:flex; flex-wrap:wrap; gap:10px; margin:0 0 18px; }
+    .top-link { display:inline-block; padding:9px 12px; border:1px solid #d8e6ff; border-radius:6px; background:#f4f8ff; font-weight:700; }
+    .hero { background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin:0 0 16px; }
+    .hero-head { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0 0 8px; }
+    .hero h2 { margin:0; font-size:26px; }
+    .hero p { margin:0; line-height:1.45; }
+    .meta-grid { display:grid; grid-template-columns:repeat(4, minmax(150px,1fr)); gap:10px; margin-top:14px; }
+    .meta-box { background:#fbfdff; border:1px solid #e4e9f2; border-radius:8px; padding:10px; }
+    .meta-box span { display:block; color:var(--muted); font-size:12px; margin-bottom:4px; }
+    .meta-box b { display:block; font-size:16px; }
+    .term-en { display:block; margin-top:3px; color:var(--muted); font-size:12px; font-weight:600; line-height:1.25; letter-spacing:.01em; }
+    .badge { display:inline-block; padding:4px 8px; border-radius:999px; font-weight:700; font-size:12px; white-space:nowrap; }
+    .stage-accepted { background:#d9ead3; color:#1f5e2e; }
+    .stage-packet { background:#fff2cc; color:#7a4e00; }
+    .stage-inventory { background:#e9eef7; color:#42526b; }
+    .stage-plan { background:#eef2f7; color:#475467; }
+    .score-card { background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin:0 0 16px; }
+    .score-card h3 { margin:0 0 8px; font-size:22px; }
+    .score-card p { margin:0 0 14px; color:var(--muted); line-height:1.45; }
+    .score-list { display:grid; gap:10px; }
+    .score-row { display:grid; grid-template-columns:minmax(220px, 1.25fr) 80px 1fr; gap:10px; align-items:center; padding:10px; border:1px solid #e4e9f2; border-radius:8px; background:#fbfdff; }
+    .criterion-detail { border:1px solid #e4e9f2; border-radius:8px; background:#fff; overflow:hidden; }
+    .criterion-detail summary { list-style:none; cursor:pointer; }
+    .criterion-detail summary::-webkit-details-marker { display:none; }
+    .criterion-detail .score-row { border:0; border-radius:0; }
+    .criterion-detail summary:focus-visible { outline:3px solid #b7d4ff; outline-offset:-3px; }
+    .criterion-body { padding:0 12px 12px; color:var(--ink); line-height:1.45; }
+    .criterion-body p { margin:0; }
+    .score-row b { display:block; }
+    .score-points { font-weight:700; color:#0f766e; }
+    .score-state { color:var(--muted); font-size:12px; }
+    .score-line { height:10px; background:#e9eef7; border-radius:999px; overflow:hidden; }
+    .score-fill { height:100%; background:#0f766e; border-radius:999px; }
+    .score-note { margin-top:12px; color:var(--muted); font-size:13px; line-height:1.45; }
+    .mock-card { background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin:0 0 16px; }
+    .mock-card h3 { margin:0 0 10px; font-size:22px; }
+    .mock-card p { margin:0 0 10px; line-height:1.45; }
+    .mock-grid { display:grid; grid-template-columns:repeat(2, minmax(240px,1fr)); gap:12px; }
+    .mock-box { border:1px solid #e4e9f2; border-radius:8px; background:#fbfdff; padding:12px; line-height:1.45; }
+    .mock-box b { display:block; margin-bottom:6px; }
+    .mock-box ul { margin:0; padding-left:18px; }
+    .mock-box li { margin:4px 0; }
+    .summary-grid { display:grid; grid-template-columns:repeat(3, minmax(160px,1fr)); gap:10px; margin:12px 0 0; }
+    .summary-box { background:#fbfdff; border:1px solid #e4e9f2; border-radius:8px; padding:10px; }
+    .summary-box span { display:block; color:var(--muted); font-size:12px; margin-bottom:4px; }
+    .summary-box b { display:block; font-size:18px; }
+    .disclosure { background:#fff; border:1px solid var(--line); border-radius:10px; margin:0 0 16px; overflow:hidden; }
+    .disclosure summary { cursor:pointer; padding:14px 16px; font-weight:700; background:#f8fafc; }
+    .disclosure summary:focus-visible { outline:3px solid #b7d4ff; outline-offset:-3px; }
+    .disclosure-body { padding:14px 16px; }
+    .section-grid { display:grid; grid-template-columns:repeat(3, minmax(240px,1fr)); gap:14px; }
+    .card { background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+    .card h3 { margin:0; padding:12px 14px; font-size:18px; border-bottom:1px solid var(--line); background:#f8fafc; }
+    .card.has h3 { border-left:6px solid var(--green); }
+    .card.miss h3 { border-left:6px solid var(--yellow); }
+    .card.done h3 { border-left:6px solid #175cd3; }
+    .card-body { padding:14px; line-height:1.45; }
+    .card-body ul { margin:0; padding-left:18px; }
+    .card-body li { margin:5px 0; }
+    .empty { background:#fff; border:1px solid var(--line); border-radius:10px; padding:18px; line-height:1.5; }
+    @media (max-width:980px) {
+      .meta-grid, .section-grid, .mock-grid, .summary-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>ТЗ задачи</h1>
+  <p>Здесь только ТЗ-часть: что уже описано, что еще надо дописать и по какому критерию ТЗ можно считать достаточно готовым для реализации и приемки.</p>
+</header>
+
+<main>
+  <div class="top-links">
+    <a class="top-link" href="index.html">← Назад к списку</a>
+    <a class="top-link" id="detail-link" href="index.html">Полные детали задачи</a>
+  </div>
+
+  <section id="content"></section>
+</main>
+
+<script>
+(function () {
+  const tzCriteria = [
+    { key:"goal", label:"Цель и результат", max:10 },
+    { key:"source", label:"Источник правды", max:10 },
+    { key:"scope", label:"Границы задачи", max:10 },
+    { key:"data", label:"Данные и состояния", max:10 },
+    { key:"screen", label:"Экран и сценарий", max:10 },
+    { key:"migration", label:"Контракт миграции", max:10 },
+    { key:"files", label:"Файлы и точки интеграции", max:10 },
+    { key:"deps", label:"Зависимости и порядок", max:10 },
+    { key:"proof", label:"Проверка, приемка и откат", max:10 },
+    { key:"owner", label:"Понимание и утверждение владельцем", max:10 }
+  ];
+
+  const tzScoreByTask = {
+    "task-g1-session": [10,5,5,10,5,0,5,10,10,0],
+    "task-g1-chat": [10,5,5,5,5,0,5,5,5,0],
+    "task-g1-statuses": [10,5,5,10,5,5,5,10,5,5],
+    "task-g1-chat-notifications": [10,5,5,5,5,0,5,5,10,5],
+    "task-g2-pricing": [10,5,5,10,5,0,5,10,10,10],
+    "task-g2-timer": [10,5,5,10,5,0,5,10,10,10],
+    "task-g2-refund": [10,5,5,10,5,0,5,5,5,5],
+    "task-g2-accruals": [10,5,5,5,5,0,5,5,5,0],
+    "task-g3-home": [5,5,0,0,0,0,0,5,5,0],
+    "task-g3-catalog": [5,5,0,0,0,0,0,5,5,0],
+    "task-g3-profile": [10,5,5,5,5,0,5,5,0,0],
+    "task-g3-quiz": [5,5,0,0,0,0,0,5,5,0],
+    "task-g3-qa": [10,5,0,5,0,0,5,5,5,0],
+    "task-g4-support": [5,0,0,0,0,0,0,5,5,0],
+    "task-g4-complaints": [5,0,0,0,0,0,0,5,5,0],
+    "task-g4-docs": [5,0,0,0,0,0,0,5,5,0],
+    "task-g4-support-notifications": [5,0,0,0,0,0,0,0,5,0],
+    "task-g5-events": [5,0,0,0,0,0,0,5,5,0],
+    "task-g5-dashboard": [5,0,0,0,0,0,0,5,5,0],
+    "task-g5-kpi": [5,0,0,0,0,0,0,0,5,0],
+    "task-g5-marketing-gate": [5,0,0,0,0,0,0,0,5,0],
+    "task-g6-assignment": [5,0,0,0,0,0,0,5,5,0],
+    "task-g6-sla": [5,0,0,0,0,0,0,5,5,0],
+    "task-g6-quality": [5,0,0,0,0,0,0,5,5,0],
+    "task-g6-training": [5,0,0,0,0,0,0,0,5,0],
+    "task-g6-team-notifications": [5,0,0,0,0,0,0,0,5,0]
+  };
+
+  const criterionDetailsByTask = {
+    "task-g1-session": [
+      "Строим одну карточку консультации: клиент, вопрос, эксперт, статус и связь с чатом должны собираться вокруг отдельной записи консультации.",
+      "Источник есть частично: есть HTML-макет, пакет реализации и черновой материал. Но нет одного принятого канонического ТЗ.",
+      "Граница описана частично: G1.1 не включает деньги, возвраты, поддержку и полный ход консультации. Нужно еще закрепить это в принятом ТЗ.",
+      "Отдельная запись консультации, базовые поля, связи с клиентом/экспертом/сообщениями и стартовые статусы уже описаны.",
+      "Экран описан частично: понятна карточка консультации во внутреннем админском контуре, но нет финального описания маршрута и интерфейса для передачи Игорю.",
+      "Не закрыто: нет принятого контракта, что из HTML-макета переносим 1:1, что адаптируем, а что оставляем для следующих задач.",
+      "Файлы описаны частично: есть список миграции, модели, сервиса, контроллера, вида, скрипта и стилей, но он еще не оформлен как финальный пакет для передачи в работу.",
+      "Порядок понятен: сначала запись консультации, затем статусы, цена, таймер/списания/остановка и возвраты.",
+      "Проверка описана: нужно доказать, что запись консультации связана с текущим чатом и видна как карточка консультации.",
+      "Не закрыто: Алексей еще не утвердил ТЗ как понятный рабочий документ для передачи Игорю."
+    ]
+  };
+
+  const tasks = {
+    "task-g1-session": { code:"G1.1", title:"Карточка консультации", goal:"Цель 1", stage:"accepted_bounded_slice", tzReady:60, detailHref:"tasks/task-g1-session.html",
+      has:["Цель и результат задачи уже понятны.", "Есть основа: отдельная запись консультации, пакет реализации, интерактивный HTML-макет и черновой материал для передачи в работу.", "Есть логика проверки и критерии частичной приемки для внутреннего админского слоя."],
+      missing:["Нет принятого канонического ТЗ как рабочего документа для Игоря.", "Нет полного контракта переноса из HTML-макета в рабочий экран: что переносится 1:1, что адаптируется, что остается для следующих задач.", "Нет финального утверждения владельцем: Алексей должен понять ТЗ, увидеть границы и принять, что именно передаем в реализацию."],
+      done:["ТЗ станет 100%, когда Алексей понимает и утверждает один рабочий пакет, а Игорь и Codex могут брать его в реализацию без догадок.", "Должны быть закрыты источники, перенос из макета, файлы/слои, данные, проверка, приемка и откат.", "Черновик, ссылка на макет или моя внутренняя оценка не равны полному ТЗ."],
+      htmlMock:{
+        required:"Да",
+        sourcePath:"tasks/task-g1-session.html",
+        handoffPath:"локальный служебный источник",
+        truth:["Паспорт консультации как единая карточка.", "Ролевые состояния: супер-админ, агент, эксперт, клиент.", "Вкладки и блоки: обзор, чат, деньги, поддержка/возвраты, качество.", "Полоса ключевых показателей и состав главных видимых полей."],
+        demoOnly:["Демо-имена людей.", "Демо-ID и тестовые цифры минут/цены/баланса.", "Текст-заглушки, если они не подтверждены продуктовым источником."],
+        transfer:["Сохраняем структуру и состав блоков как источник правды для интерфейса.", "Заменяем демо-данные на реальные поля консультации и связанные сущности.", "Не переносим слепо декоративные значения; переносим только контракт экрана и сценария.", "Фиксируем отдельно, какие блоки идут 1:1, а какие требуют адаптации под живую модель данных."]
+      } },
+    "task-g1-chat": { code:"G1.2", title:"Чат по ролям", goal:"Цель 1", stage:"accepted_bounded_slice", tzReady:45, detailHref:"tasks/task-g1-chat.html",
+      has:["Поняты роли и границы доступа.", "Есть опора на конкретную консультацию и механизм сообщений."],
+      missing:["Надо дописать точные сценарии по ролям.", "Надо зафиксировать системные сообщения, непрочитанные сообщения и переходы.", "Надо описать контракт переноса из макета и комплект для передачи в интеграцию."],
+      done:["ТЗ станет 100%, когда все роли и сценарии описаны без двусмысленности.", "Есть явная проверка по реальному чату и полный рабочий пакет для передачи в реализацию."] },
+    "task-g1-statuses": { code:"G1.3", title:"Статусы и история", goal:"Цель 1", stage:"accepted_bounded_slice", tzReady:65, detailHref:"tasks/task-g1-statuses.html",
+      has:["Статусы и история событий описаны.", "Есть правила допустимых переходов.", "Есть контракт проверки."],
+      missing:["Нет полного контракта интерфейса для истории на сайте.", "Надо явно описать пакет передачи для интеграции статусов в пользовательские и операторские экраны.", "Надо собрать контракт переноса и приемку уже не только для внутренней основы, но и для финальной поверхности."],
+      done:["ТЗ готово, когда статусы, переходы и визуальная поверхность истории описаны как один интеграционный контракт.", "Игорю должно быть понятно, куда и как это вшивается без домысливания."] },
+    "task-g1-chat-notifications": { code:"G1.4", title:"Уведомления чата", goal:"Цель 1", stage:"accepted_bounded_slice", tzReady:55, detailHref:"tasks/task-g1-chat-notifications.html",
+      has:["Понятна задача и ее границы.", "Есть зависимость от контура консультации и чата."],
+      missing:["Надо описать список событий.", "Надо развести получателей по ролям.", "Надо зафиксировать критерии полезности и анти-спама."],
+      done:["ТЗ готово, когда по каждому уведомлению ясно: кто, когда, зачем и куда переходит.", "Есть приемка без неясных мест."] },
+    "task-g2-pricing": { code:"G2.1", title:"Цена и баланс", goal:"Цель 2", stage:"accepted_bounded_slice", tzReady:70, detailHref:"tasks/task-g2-pricing.html",
+      has:["Правило цены, закрепленное за конкретной консультацией, описано.", "Блокировка старта без цены и проверочные сценарии описаны.", "Граница приемки понятна."],
+      missing:["Нет полного контракта интерфейса для показа цены и старта консультации клиенту.", "Надо описать пакет передачи Игорю: где цена показывается, из каких полей собирается, как проверяется на сайте.", "Надо добавить контракт переноса из макета/витрины в живой сценарий."],
+      done:["ТЗ полностью достаточно только когда цена, интерфейс и проверка описаны как единый рабочий пакет.", "Одной внутренней проверки недостаточно."] },
+    "task-g2-timer": { code:"G2.2", title:"Таймер и остановка", goal:"Цель 2", stage:"accepted_bounded_slice", tzReady:70, detailHref:"tasks/task-g2-timer.html",
+      has:["Поля учета времени и списаний описаны.", "Предупреждение, остановка и запрет продолжения заданы.", "Сценарии приемки понятны."],
+      missing:["Нет полного контракта интерфейса таймера и предупреждений на живом сайте.", "Надо описать пакет передачи для оператора, клиента и эксперта.", "Надо собрать проверку не только внутренней логики, но и финального пользовательского поведения."],
+      done:["ТЗ закрывает задачу только когда таймер, предупреждение и остановка описаны как финальный интеграционный сценарий.", "Есть четкая зависимость от предыдущих задач и полный пакет передачи в реализацию."] },
+    "task-g2-refund": { code:"G2.3", title:"Возвраты", goal:"Цель 2", stage:"packet_ready", tzReady:55, detailHref:"tasks/task-g2-refund.html",
+      has:["Есть модель возврата и спора, привязанная к консультации.", "Понятны ключевые сущности и зависимости.", "Граница приемки уже намечена."],
+      missing:["Надо точнее описать операторский сценарий.", "Надо зафиксировать клиентскую поверхность спора/возврата.", "Надо дописать доказательства по решению кейса и полный рабочий пакет для передачи в реализацию."],
+      done:["ТЗ станет 100%, когда весь путь спора/возврата описан от обращения до исхода.", "Ни одно решение не должно висеть вне доказательств по конкретной консультации."] },
+    "task-g2-accruals": { code:"G2.4", title:"Начисления", goal:"Цель 2", stage:"packet_ready", tzReady:45, detailHref:"tasks/task-g2-accruals.html",
+      has:["Есть рабочая граница задачи.", "Понятна зависимость от списаний и возвратов."],
+      missing:["Надо описать правила начисления и исключения.", "Надо зафиксировать операторскую и экспертную поверхность.", "Надо прописать проверку, сценарии приемки и комплект передачи в работу."],
+      done:["ТЗ готово, когда начисления полностью объясняются через конкретную консультацию.", "Есть формализованная проверка без серых зон."] },
+    "task-g3-home": { code:"G3.1", title:"Витрина", goal:"Цель 3", stage:"inventoried", tzReady:20, detailHref:"tasks/task-g3-home.html",
+      has:["Есть понимание места главной страницы в Nebula.", "Есть источник для сравнения."],
+      missing:["Надо описать состав блоков и кнопок действия.", "Надо зафиксировать слой доверия, правил и предложения.", "Надо определить приемку для главной страницы и контракт переноса из макета."],
+      done:["ТЗ готово, когда главная страница описана как конкретная продуктовая поверхность.", "Из ТЗ должно быть ясно, как принимать страницу без догадок."] },
+    "task-g3-catalog": { code:"G3.2", title:"Каталог", goal:"Цель 3", stage:"inventoried", tzReady:20, detailHref:"tasks/task-g3-catalog.html",
+      has:["Понята роль каталога на витрине сайта."],
+      missing:["Надо описать реальные поля каталога.", "Надо задать фильтры, сортировки и переходы.", "Надо связать каталог с профилем эксперта, стартом консультации и макетом."],
+      done:["ТЗ готово, когда каталог описан как рабочий путь выбора.", "Есть критерии, по которым видно, что он не декоративный."] },
+    "task-g3-profile": { code:"G3.3", title:"Карточка эксперта", goal:"Цель 3", stage:"packet_ready", tzReady:40, detailHref:"tasks/task-g3-profile.html",
+      has:["Понятен состав ключевых блоков профиля.", "Есть опора на уже согласованную основу."],
+      missing:["Надо дописать точные поля и состояния.", "Надо описать кнопку действия и связь со стартом консультации.", "Надо зафиксировать приемку на телефоне и компьютере, а также передачу макета в интеграцию."],
+      done:["ТЗ готово, когда профиль описан как рабочий экран выбора и старта.", "Нет фальшивых полей без опоры на реальные данные."] },
+    "task-g3-quiz": { code:"G3.4", title:"Подбор и старт", goal:"Цель 3", stage:"inventoried", tzReady:20, detailHref:"tasks/task-g3-quiz.html",
+      has:["Есть понимание продуктового смысла пути подбора."],
+      missing:["Надо описать вопросы и ветвления.", "Надо задать бизнес-правила рекомендации.", "Надо описать финальный переход в консультацию."],
+      done:["ТЗ готово, когда весь путь подбор -> рекомендация -> старт описан однозначно.", "Есть проверяемый путь приемки."] },
+    "task-g3-qa": { code:"G3.5", title:"Проверка клиентского пути", goal:"Цель 3", stage:"packet_ready", tzReady:35, detailHref:"tasks/task-g3-qa.html",
+      has:["Есть понимание списка критичных путей.", "Есть черновая рамка проверки."],
+      missing:["Надо дописать полный перечень сценариев.", "Надо формализовать критерии пройдено/не пройдено.", "Надо описать итоговый вывод о готовности и контур проверки для Игоря/Codex."],
+      done:["ТЗ готово, когда каждый путь можно проверить по чек-листу.", "Итог не должен зависеть от субъективной оценки."] },
+    "task-g4-support": { code:"G4.1", title:"Поддержка", goal:"Цель 4", stage:"master_plan_only", tzReady:15, detailHref:"tasks/task-g4-support.html",
+      has:["Есть только верхнеуровневое понимание слоя поддержки."],
+      missing:["Надо описать роли и типы обращений.", "Надо задать связи с консультацией, возвратами и качеством.", "Надо собрать контур приемки."],
+      done:["ТЗ готово, когда поддержка описана как работающий продуктовый контур.", "Есть конкретные сценарии и владелец следующего шага."] },
+    "task-g4-complaints": { code:"G4.2", title:"Жалобы и возвраты", goal:"Цель 4", stage:"master_plan_only", tzReady:15, detailHref:"tasks/task-g4-complaints.html",
+      has:["Есть только верхнеуровневая постановка."],
+      missing:["Надо описать прием обращения, разбор, решение и исход.", "Надо привязать жалобы к доказательствам по консультации.", "Надо определить операторский экран проверки."],
+      done:["ТЗ готово, когда жалоба проходит полный путь до решения на бумаге.", "Ни один шаг не остается неописанным."] },
+    "task-g4-docs": { code:"G4.3", title:"Документы", goal:"Цель 4", stage:"master_plan_only", tzReady:15, detailHref:"tasks/task-g4-docs.html",
+      has:["Есть только общее понимание важности документов."],
+      missing:["Надо определить список документов.", "Надо задать точки показа.", "Надо зафиксировать критерии обязательности."],
+      done:["ТЗ готово, когда понятно, какие документы где и зачем показываются.", "Есть приемочный список обязательных мест и текстов."] },
+    "task-g4-support-notifications": { code:"G4.4", title:"Уведомления поддержки", goal:"Цель 4", stage:"master_plan_only", tzReady:10, detailHref:"tasks/task-g4-support-notifications.html",
+      has:["Есть только ранняя идея слоя."],
+      missing:["Надо описать события и получателей.", "Надо задать сигналы по срокам реакции.", "Надо собрать проверку полезности."],
+      done:["ТЗ готово, когда каждое уведомление описано как проверяемое действие.", "Нет неясных адресатов и пустых сигналов."] },
+    "task-g5-events": { code:"G5.1", title:"События воронки", goal:"Цель 5", stage:"master_plan_only", tzReady:15, detailHref:"tasks/task-g5-events.html",
+      has:["Есть общее понимание необходимости слоя событий."],
+      missing:["Надо описать канонический список событий.", "Надо связать их с консультацией и витриной сайта.", "Надо отсеять шум."],
+      done:["ТЗ готово, когда события можно внедрять как единую карту воронки.", "Есть четкая продуктовая привязка каждого события."] },
+    "task-g5-dashboard": { code:"G5.2", title:"Дашборд", goal:"Цель 5", stage:"master_plan_only", tzReady:15, detailHref:"tasks/task-g5-dashboard.html",
+      has:["Есть только управленческий замысел дашборда."],
+      missing:["Надо описать состав виджетов.", "Надо определить сигналы тревоги и фильтры.", "Надо задать критерии полезности."],
+      done:["ТЗ готово, когда из него можно собрать дашборд без изобретений по ходу.", "Каждый блок отвечает на конкретный вопрос управления."] },
+    "task-g5-kpi": { code:"G5.3", title:"Таблица показателей", goal:"Цель 5", stage:"master_plan_only", tzReady:10, detailHref:"tasks/task-g5-kpi.html",
+      has:["Есть только намерение иметь слой показателей."],
+      missing:["Надо определить показатели, владельцев и формулы.", "Надо описать источники и периодичность.", "Надо связать показатели с решениями."],
+      done:["ТЗ готово, когда каждый показатель определен однозначно.", "По таблице можно принимать решения, а не просто смотреть числа."] },
+    "task-g5-marketing-gate": { code:"G5.4", title:"Допуск рекламы", goal:"Цель 5", stage:"master_plan_only", tzReady:10, detailHref:"tasks/task-g5-marketing-gate.html",
+      has:["Есть только рамочное понимание необходимости допуска к рекламе."],
+      missing:["Надо определить условия допуска: да/нет.", "Надо связать допуск с качеством, поддержкой и конверсией.", "Надо формализовать логику блокировки."],
+      done:["ТЗ готово, когда готовность к рекламе считается по явным правилам.", "Любой запрет на запуск имеет доказуемую причину."] },
+    "task-g6-assignment": { code:"G6.1", title:"Назначение", goal:"Цель 6", stage:"master_plan_only", tzReady:15, detailHref:"tasks/task-g6-assignment.html",
+      has:["Есть только общее понимание слоя назначения ответственных."],
+      missing:["Надо описать правила назначения.", "Надо задать ручной и автоматический контур.", "Надо связать это со сроками реакции и качеством."],
+      done:["ТЗ готово, когда по нему видно, кто и как становится владельцем консультации.", "Нет неясных зон ответственности."] },
+    "task-g6-sla": { code:"G6.2", title:"Сроки реакции", goal:"Цель 6", stage:"master_plan_only", tzReady:15, detailHref:"tasks/task-g6-sla.html",
+      has:["Есть только верхнеуровневый замысел контроля сроков реакции."],
+      missing:["Надо определить нормы реакции.", "Надо описать эскалации и контроль.", "Надо привязать сроки реакции к событиям и уведомлениям."],
+      done:["ТЗ готово, когда по каждому критичному сценарию задан срок и реакция.", "Есть измеримый контур приемки."] },
+    "task-g6-quality": { code:"G6.3", title:"Контроль качества", goal:"Цель 6", stage:"master_plan_only", tzReady:15, detailHref:"tasks/task-g6-quality.html",
+      has:["Есть только рамка слоя качества."],
+      missing:["Надо описать критерии хорошей и плохой консультации.", "Надо связать оценку с действиями.", "Надо собрать операторский экран."],
+      done:["ТЗ готово, когда качество можно применять как рабочий инструмент.", "Каждая оценка ведет к понятному действию."] },
+    "task-g6-training": { code:"G6.4", title:"Обучение и регламенты", goal:"Цель 6", stage:"master_plan_only", tzReady:10, detailHref:"tasks/task-g6-training.html",
+      has:["Есть только ранняя постановка слоя обучения."],
+      missing:["Надо описать набор регламентов по ролям.", "Надо привязать обучение к ошибкам и качеству.", "Надо определить критерии полноты пакета."],
+      done:["ТЗ готово, когда новая роль может стартовать по описанному пакету.", "Нет критичных белых пятен в регламентах."] },
+    "task-g6-team-notifications": { code:"G6.5", title:"Командные уведомления", goal:"Цель 6", stage:"master_plan_only", tzReady:10, detailHref:"tasks/task-g6-team-notifications.html",
+      has:["Есть только рамочное понимание слоя."],
+      missing:["Надо описать командные сигналы и адресатов.", "Надо задать полезность и правила против лишнего шума.", "Надо связать их с назначением ответственных, сроками реакции и поддержкой."],
+      done:["ТЗ готово, когда по каждому сигналу ясно, кто получает и что делает.", "Слой можно реализовывать без домысливания."] }
+  };
+
+  const taskTermEn = {
+    "task-g1-session": "service session",
+    "task-g1-chat": "role-based chat",
+    "task-g1-statuses": "state machine / lifecycle",
+    "task-g1-chat-notifications": "chat notifications",
+    "task-g2-pricing": "pricing gate",
+    "task-g2-timer": "timer / debit / hard stop",
+    "task-g2-refund": "refund ledger",
+    "task-g2-accruals": "accruals / incentives",
+    "task-g3-home": "storefront",
+    "task-g3-catalog": "expert catalog",
+    "task-g3-profile": "expert profile",
+    "task-g3-quiz": "quiz / matching / start",
+    "task-g3-qa": "end-to-end path proof",
+    "task-g4-support": "support",
+    "task-g4-complaints": "complaints / disputes",
+    "task-g4-docs": "terms / documents",
+    "task-g4-support-notifications": "support notifications",
+    "task-g5-events": "funnel events",
+    "task-g5-dashboard": "dashboard",
+    "task-g5-kpi": "KPI table",
+    "task-g5-marketing-gate": "marketing gate",
+    "task-g6-assignment": "assignment queue",
+    "task-g6-sla": "SLA / response time",
+    "task-g6-quality": "QA / quality control",
+    "task-g6-training": "training / playbook",
+    "task-g6-team-notifications": "team notifications"
+  };
+
+  function stageClass(stage) {
+    if (stage === "accepted_bounded_slice") return "stage-accepted";
+    if (stage === "packet_ready") return "stage-packet";
+    if (stage === "inventoried") return "stage-inventory";
+    return "stage-plan";
+  }
+
+  function stageLabel(stage) {
+    if (stage === "accepted_bounded_slice") return "Срез согласован";
+    if (stage === "packet_ready") return "Пакет готов";
+    if (stage === "inventoried") return "Оценка собрана";
+    return "Только план";
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("task");
+  const task = id ? tasks[id] : null;
+  const content = document.getElementById("content");
+  const detailLink = document.getElementById("detail-link");
+
+  if (!task) {
+    content.innerHTML = '<div class="empty"><b>Задача не найдена.</b><br>Вернитесь к списку и откройте ТЗ заново.</div>';
+    return;
+  }
+
+  detailLink.href = task.detailHref;
+  const scoreVector = tzScoreByTask[id] || [0,0,0,0,0,0,0,0,0,0];
+  const totalScore = scoreVector.reduce((sum, value) => sum + value, 0);
+
+  function renderList(items) {
+    return "<ul>" + items.map((item) => "<li>" + item + "</li>").join("") + "</ul>";
+  }
+
+  function renderScoreSummary() {
+    const closed = scoreVector.filter((value) => value >= 10).length;
+    const partial = scoreVector.filter((value) => value > 0 && value < 10).length;
+    const missing = scoreVector.filter((value) => value <= 0).length;
+    return `
+      <div class="summary-grid">
+        <div class="summary-box"><span>Закрыто</span><b>${closed}/10</b></div>
+        <div class="summary-box"><span>Частично</span><b>${partial}/10</b></div>
+        <div class="summary-box"><span>Не закрыто</span><b>${missing}/10</b></div>
+      </div>`;
+  }
+
+  function renderHtmlMockCard(mock) {
+    if (!mock) return "";
+    return `
+      <section class="mock-card">
+        <h3>Интерактивный HTML-макет</h3>
+        <p><b>Нужен:</b> ${mock.required}</p>
+        <div class="mock-grid">
+          <div class="mock-box">
+            <b>Источник</b>
+            <ul>
+              <li><a href="${mock.sourcePath}">${mock.sourcePath}</a></li>
+              <li>Draft-материал для ТЗ G1.1: локальный служебный источник</li>
+            </ul>
+          </div>
+          <div class="mock-box">
+            <b>Что берем как истину</b>
+            ${renderList(mock.truth)}
+          </div>
+          <div class="mock-box">
+            <b>Что не переносим как истину</b>
+            ${renderList(mock.demoOnly)}
+          </div>
+          <div class="mock-box">
+            <b>Как переносим в продукт</b>
+            ${renderList(mock.transfer)}
+          </div>
+        </div>
+      </section>`;
+  }
+
+  function scoreState(value, max) {
+    if (value <= 0) return "нет";
+    if (value >= max) return "закрыто";
+    return "частично";
+  }
+
+  function renderScoreRows() {
+    const details = criterionDetailsByTask[id] || [];
+    return tzCriteria.map((criterion, index) => {
+      const value = scoreVector[index] || 0;
+      const percent = Math.round((value / criterion.max) * 100);
+      const detail = details[index] || "Расшифровка для этой задачи еще не собрана.";
+      return `
+        <details class="criterion-detail">
+          <summary>
+            <div class="score-row">
+              <div>
+                <b>${criterion.label}</b>
+                <div class="score-state">${scoreState(value, criterion.max)}</div>
+              </div>
+              <div class="score-points">${value}/${criterion.max}</div>
+              <div class="score-line"><div class="score-fill" style="width:${percent}%"></div></div>
+            </div>
+          </summary>
+          <div class="criterion-body"><p>${detail}</p></div>
+        </details>`;
+    }).join("");
+  }
+
+  content.innerHTML = `
+    <section class="hero">
+      <div class="hero-head">
+        <span class="badge ${stageClass(task.stage)}">${stageLabel(task.stage)}</span>
+        <span class="badge">${task.goal}</span>
+      </div>
+      <h2>${task.code} ${task.title}<span class="term-en">${taskTermEn[id] || ""}</span></h2>
+      <div class="meta-grid">
+        <div class="meta-box"><span>Готовность ТЗ</span><b>${totalScore}%</b></div>
+        <div class="meta-box"><span>Статус</span><b>${stageLabel(task.stage)}</b></div>
+        <div class="meta-box"><span>Задача</span><b>${task.code}</b></div>
+        <div class="meta-box"><span>Полные детали</span><b><a href="${task.detailHref}">Открыть</a></b></div>
+      </div>
+    </section>
+
+    <section class="score-card">
+      <h3>${totalScore}% ТЗ</h3>
+      ${renderScoreSummary()}
+    </section>
+
+    <section class="section-grid">
+      <article class="card has">
+        <h3>Что уже описано</h3>
+        <div class="card-body">${renderList(task.has)}</div>
+      </article>
+      <article class="card miss">
+        <h3>Что надо дописать</h3>
+        <div class="card-body">${renderList(task.missing)}</div>
+      </article>
+      <article class="card done">
+        <h3>Когда ТЗ готово</h3>
+        <div class="card-body">${renderList(task.done)}</div>
+      </article>
+    </section>
+
+    <details class="disclosure">
+      <summary>Критерии оценки ТЗ</summary>
+      <div class="disclosure-body">
+        <div class="score-list">${renderScoreRows()}</div>
+        <div class="score-note">Шаг оценки: 0 / 5 / 10. Итог = сумма критериев. Методология оценки ТЗ хранится как локальный служебный источник.</div>
+      </div>
+    </details>
+
+    <details class="disclosure">
+      <summary>Интерактивный HTML-макет</summary>
+      <div class="disclosure-body">
+        ${renderHtmlMockCard(task.htmlMock)}
+      </div>
+    </details>
+  `;
+})();
+</script>
+</body>
+</html>
