@@ -5,15 +5,16 @@
     return Array.prototype.slice.call((root || document).querySelectorAll(selector));
   }
 
-  function openTab(hash, writeHash) {
-    var link = document.querySelector('.geo-tabs a[href="' + hash + '"]');
+  function openTab(hash, writeHash, tabs) {
+    var scope = tabs || document.querySelector('.geo-tabs, .nav-tabs');
+    var link = scope ? scope.querySelector('a[href="' + hash + '"]') : document.querySelector('a[href="' + hash + '"]');
     var pane = document.querySelector(hash);
 
     if (!link || !pane) {
       return;
     }
 
-    selectAll('.geo-tabs li').forEach(function (item) {
+    selectAll('li', scope || document).forEach(function (item) {
       item.classList.remove('active');
     });
 
@@ -30,10 +31,10 @@
   }
 
   function initTabs() {
-    selectAll('.geo-tabs a[href^="#tab-"]').forEach(function (link) {
+    selectAll('.geo-tabs a[href^="#tab-"], .nav-tabs a[href^="#tab-"]').forEach(function (link) {
       link.addEventListener('click', function (event) {
         event.preventDefault();
-        openTab(link.getAttribute('href'), true);
+        openTab(link.getAttribute('href'), true, link.closest('.geo-tabs, .nav-tabs'));
       });
     });
 
@@ -62,9 +63,9 @@
   }
 
   function initCopyButtons() {
-    selectAll('[data-copy]').forEach(function (button) {
+    selectAll('[data-copy], [data-variable]').forEach(function (button) {
       button.addEventListener('click', function () {
-        copyText(button.getAttribute('data-copy'), button);
+        copyText(button.getAttribute('data-copy') || button.getAttribute('data-variable'), button);
       });
     });
   }
@@ -195,52 +196,46 @@
     });
   }
 
-  function openImagePreview(trigger) {
-    var image = trigger.querySelector('img');
-    var modal = document.getElementById('geoImagePreviewModal');
-
-    if (!image) {
+  function initGeoUploadKit() {
+    if (!window.jQuery || !jQuery.fn || !jQuery.fn.yiiUploadKit) {
       return;
     }
 
-    if (!modal || !window.jQuery || !jQuery.fn || !jQuery.fn.modal) {
-      window.open(image.getAttribute('src'), '_blank');
-      return;
-    }
+    selectAll('[data-geo-upload-kit]').forEach(function (input) {
+      var uploadUrl = input.getAttribute('data-geo-upload-url');
+      var fieldName = input.getAttribute('data-geo-upload-name');
 
-    var title = trigger.getAttribute('data-preview-title') || image.getAttribute('alt') || 'Просмотр изображения';
-    var description = trigger.getAttribute('data-preview-description') || image.getAttribute('alt') || '';
-    var previewImage = modal.querySelector('.js-image-preview-full');
-    var caption = modal.querySelector('.js-image-preview-caption');
-    var titleNode = modal.querySelector('#geoImagePreviewTitle');
+      if (!uploadUrl || !fieldName) {
+        return;
+      }
 
-    if (titleNode) {
-      titleNode.textContent = title;
-    }
-
-    if (previewImage) {
-      previewImage.setAttribute('src', image.getAttribute('src'));
-      previewImage.setAttribute('alt', image.getAttribute('alt') || title);
-    }
-
-    if (caption) {
-      caption.textContent = description;
-    }
-
-    jQuery(modal).modal('show');
-  }
-
-  function initImagePreview() {
-    selectAll('[data-geo-image-preview]').forEach(function (trigger) {
-      trigger.addEventListener('click', function () {
-        openImagePreview(trigger);
-      });
-
-      trigger.addEventListener('keydown', function (event) {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          openImagePreview(trigger);
-        }
+      jQuery(input).yiiUploadKit({
+        url: uploadUrl,
+        multiple: false,
+        sortable: false,
+        maxNumberOfFiles: 1,
+        maxFileSize: 10485760,
+        minFileSize: null,
+        acceptFileTypes: null,
+        files: null,
+        previewImage: true,
+        showPreviewFilename: false,
+        editFilename: false,
+        errorHandler: 'popover',
+        pathAttribute: 'path',
+        baseUrlAttribute: 'base_url',
+        pathAttributeName: 'path',
+        baseUrlAttributeName: 'base_url',
+        messages: {
+          maxNumberOfFiles: 'Достигнуто максимальное кол-во файлов',
+          acceptFileTypes: 'Тип файла не разрешен',
+          maxFileSize: 'Файл слишком большой',
+          minFileSize: 'Файл меньше минимального размера'
+        },
+        name: fieldName,
+        done: renderStatusPanel,
+        fail: renderStatusPanel,
+        always: renderStatusPanel
       });
     });
   }
@@ -249,9 +244,9 @@
     initTabs();
     initCopyButtons();
     initCounters();
+    initGeoUploadKit();
     initStatusPanel();
     initAjaxPreview();
-    initImagePreview();
 
     if (window.jQuery && jQuery.fn && jQuery.fn.tooltip) {
       jQuery('[data-toggle="tooltip"]').tooltip({

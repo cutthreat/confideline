@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Update geoname</title>
+    <link rel="stylesheet" href="./geo-admin-migration/assets/original/rsms.me/inter/inter.css">
+    <link href="./geo-admin-migration/assets/original/confideline.com/content/assets/5da65002/css/jquery.fileupload.css" rel="stylesheet">
+    <link href="./geo-admin-migration/assets/youdate-original/application/vendor/bower-asset/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+    <link href="./geo-admin-migration/assets/original/confideline.com/content/assets/f6283b6c/css/font-awesome.min.css" rel="stylesheet">
+    <link href="./geo-admin-migration/assets/original/confideline.com/content/assets/7dcc4b22/upload-kit.min.css" rel="stylesheet">
+    <link href="./geo-admin-migration/assets/youdate-original/application/modules/admin/static/css/jquery.fancybox.min.css" rel="stylesheet">
+    <link href="./geo-admin-migration/assets/youdate-original/application/modules/admin/static/css/admin.min.css" rel="stylesheet">
+    <link href="./geo-admin-migration/custom.css" rel="stylesheet">
+</head>
+<body class="hold-transition skin-youdate sidebar-mini">
+<div class="wrapper geo-admin-compatible">
+  <header class="main-header">
+    <a href="#" class="logo">
+      <span class="logo-mini">YD</span>
+      <span class="logo-lg"><b>You</b>Date</span>
+    </a>
+    <nav class="navbar navbar-static-top">
+      <a href="#" class="sidebar-toggle" role="button"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span></a>
+      <div class="navbar-custom-menu">
+        <form class="navbar-form navbar-left" role="search">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Поиск">
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
+            </span>
+          </div>
+        </form>
+        <ul class="nav navbar-nav">
+          <li><a href="#"><span class="glyphicon glyphicon-user"></span> admin</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <aside class="main-sidebar">
+    <section class="sidebar">
+      <ul class="sidebar-menu">
+        <li><a href="#"><span class="glyphicon glyphicon-cog"></span> <span>Главное</span></a></li>
+        <li class="header">Содержимое</li>
+        <li><a href="#"><span class="glyphicon glyphicon-user"></span> <span>Партнеры</span></a></li>
+        <li><a href="#"><span class="glyphicon glyphicon-user"></span> <span>Пользователи</span></a></li>
+        <li><a href="#"><span class="glyphicon glyphicon-credit-card"></span> <span>Финансы</span></a></li>
+        <li><a href="#"><span class="glyphicon glyphicon-picture"></span> <span>Фотографии</span></a></li>
+        <li class="header">Система</li>
+        <li class="active treeview">
+          <a href="#"><span class="glyphicon glyphicon-map-marker"></span> <span>Countries &amp; Cities</span></a>
+          <ul class="treeview-menu menu-open">
+            <li><a href="#"><span class="glyphicon glyphicon-flag"></span> Countries</a></li>
+            <li class="active"><a href="#"><span class="glyphicon glyphicon-map-marker"></span> Cities</a></li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+  </aside>
+
+  <div class="content-wrapper">
+    <section class="content-header">
+      <h1>Update geoname</h1>
+      <ol class="breadcrumb">
+        <li><a href="./geo-admin-migration/index.html">Migration handoff</a></li>
+        <li><a href="#">Администрация</a></li>
+        <li><a href="#">Manage cities</a></li>
+        <li class="active">Update geoname</li>
+      </ol>
+    </section>
+
+    <section class="content">
+      <div class="box box-solid">
+        <div class="box-body">
+          <ul class="nav nav-tabs" role="tablist">
+            <li class="active"><a href="#tab-info" role="tab" data-toggle="tab">Информация</a></li>
+            <li><a href="#tab-description" role="tab" data-toggle="tab">Описание</a></li>
+            <li><a href="#tab-images" role="tab" data-toggle="tab">Изображения</a></li>
+            <li><a href="#tab-faq" role="tab" data-toggle="tab">FAQ</a></li>
+            <li><a href="#tab-seo" role="tab" data-toggle="tab">SEO</a></li>
+            <li><a href="#tab-variables" role="tab" data-toggle="tab">Глобальные переменные</a></li>
+          </ul>
+
+          <div class="tab-content geo-tab-content">
+            <div class="geo-language-note">
+              Поля на вкладках редактируются для выбранного значения <strong>Language</strong>. Формат работы с языками остается как в текущей админке: без отдельных языковых вкладок.
+            </div>
+            <div class="geo-status-panel" aria-label="Готовность страницы">
+              <span class="geo-status-item geo-status-item--ok js-status-language">Language: Русский</span>
+              <span class="geo-status-item geo-status-item--ok js-status-active">Активно</span>
+              <span class="geo-status-item geo-status-item--ok js-status-main">Show on main</span>
+              <span class="geo-status-item geo-status-item--ok js-status-html">HTML заполнен</span>
+              <span class="geo-status-item geo-status-item--ok js-status-seo">SEO заполнено</span>
+              <span class="geo-status-item geo-status-item--ok js-status-photo">Фото 2/2</span>
+              <span class="geo-status-item geo-status-item--info js-status-faq">FAQ: 4 вопроса</span>
+            </div>
+
+            <div class="tab-pane active" id="tab-info">
+              <h4 class="section-title">Основные данные страницы</h4>
+              <div class="row">
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label class="control-label">Имя</label>
+                      <input class="form-control js-geo-name" value="Delhi" readonly>
+                  </div>
+                </div>
+                <div class="col-md-1">
+                  <div class="form-group">
+                    <label class="control-label">Страна</label>
+                    <input class="form-control" value="IN" readonly>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label class="control-label">Slug</label>
+                    <input class="form-control" value="in-delhi" readonly>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label class="control-label">Translated name</label>
+                    <input class="form-control" value="Дели">
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="form-group">
+                    <label class="control-label">ID</label>
+                    <input class="form-control" value="1273294" readonly>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-5">
+                  <div class="form-group">
+                    <label class="control-label">Reference for view on site</label>
+                    <input class="form-control" value="https://confideline.com/ru/city/in-delhi">
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="form-group">
+                    <label class="control-label">Sort</label>
+                    <input class="form-control" value="100">
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="form-group">
+                    <label class="control-label">Is Active</label>
+                    <select class="form-control js-status-active-source">
+                      <option></option>
+                      <option selected>Активно</option>
+                      <option>Не активно</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-1">
+                  <div class="checkbox geo-main-toggle">
+                    <label><input type="checkbox" class="js-status-main-source" checked> <strong>Show on main</strong></label>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="form-group">
+                    <label class="control-label">Language</label>
+                    <select class="form-control js-status-language-source">
+                      <option>Deutsch</option>
+                      <option>English (US)</option>
+                      <option>Español (España)</option>
+                      <option>Italiano</option>
+                      <option>Português (Brasil)</option>
+                      <option selected>Русский</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="tab-description">
+              <div class="geo-box">
+                <h3 class="geo-box__title">Hero страницы</h3>
+                <p class="geo-box__note">Основной заголовок, подзаголовок и короткий текст, который пользователь видит первым.</p>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label class="control-label">H1 Hero</label>
+                      <input class="form-control" value="Дели: астрокартография для отношений, карьеры и переезда">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="control-label">H2 Hero</label>
+                  <textarea class="form-control" rows="2">Разберите, как Дели, район или период жизни могут влиять на отношения, работу, переезд и следующий шаг.</textarea>
+                </div>
+                <div class="form-group">
+                  <label class="control-label">Teaser Description</label>
+                  <textarea class="form-control" rows="3">Статус, официальные решения, переговоры, переезд и давление большого города. Подходит, если вопрос связан с документами, выбором роли, семьей или необходимостью быстро принять взрослое решение.</textarea>
+                </div>
+              </div>
+
+              <div class="row geo-equal-row">
+                <div class="col-md-8">
+                  <div class="geo-box">
+                    <h3 class="geo-box__title">Правая карточка Hero</h3>
+                    <p class="geo-box__note">Короткий смысловой блок рядом с изображением: зачем выбрать именно эту страницу.</p>
+                    <div class="form-group">
+                      <label class="control-label">Заголовок карточки</label>
+                      <input class="form-control" value="Дели задает плотный фон для вопроса">
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Текст карточки</label>
+                      <textarea class="form-control" rows="2">Выберите тему, если важны переезд, отношения, работа, документы или личный выбор в городской среде с сильным социальным давлением.</textarea>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="geo-box">
+                    <h3 class="geo-box__title">CTA в Hero</h3>
+                    <p class="geo-box__note">Тексты кнопок. Ссылки и поведение задаются шаблоном.</p>
+                    <div class="form-group">
+                      <label class="control-label">Основная CTA</label>
+                      <input class="form-control" value="Выбрать эксперта">
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Вторичная CTA</label>
+                      <input class="form-control" value="Подобрать направление">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 class="section-title">Html Description</h4>
+              <div class="geo-editor">
+                <div class="geo-editor__menu">
+                  <span>Файл</span><span>Изменить</span><span>Вид</span><span>Вставить</span><span>Формат</span><span>Инструменты</span><span>Таблица</span><span>Help</span>
+                  <span class="pull-right text-primary geo-editor-upgrade">⚡ Upgrade</span>
+                </div>
+                <div class="geo-editor__toolbar">
+                  <span>↶</span><span>↷</span><strong>B</strong><em>I</em><span>☰</span><span>☷</span><span>≡</span><span>•</span><span>1.</span><span>🔗</span><span>&lt;&gt;</span>
+                </div>
+                <div class="geo-editor__body">
+                  <h2>Пульс города: Юпитер и Раху в одном потоке</h2>
+                  <p>Дели встречает плотным, гудящим полем, где запахи специй, дорогих ароматов и пыли смешиваются в один непрерывный поток. В астрологической карте {{siteName}} это территория Юпитера и Раху: расширения, амбиций и контролируемого хаоса.</p>
+                  <p>Здесь важен не порядок в привычном смысле, а способность находить структуру внутри перегруженного движения и множества событий.</p>
+                  <h2>Urban Flow: город-экспандер и игра на масштаб</h2>
+                  <p>Дели не дает оставаться в стороне: он выталкивает в социальное и профессиональное поле. Это не спринт, а стратегическая партия, где решает не скорость, а вес решений и контактов.</p>
+                  <p>Карьерная динамика здесь связана с масштабными проектами, институтами и международными связями. Но избыточная информация и постоянные стимулы легко рассеивают внимание, если нет внутреннего фокуса.</p>
+                  <h2>Astro-Mapping: зоны силы города</h2>
+                  <p>Нью-Дели формирует зону Солнца и Юпитера: пространство власти, статуса и долгосрочных решений. Гургаон работает как поле Меркурия и Раху: цифровой поток, стартапы и скорость информации. Хауз-Кхас и южные районы дают Венеру и Луну: здесь снижается напряжение и появляется пространство для восстановления.</p>
+                  <h2>{{siteName}} City Guide: навигация в перегруженной системе</h2>
+                  <p>Дели усиливает любые ошибки в стратегии и любые точные попадания. Поэтому случайные решения здесь быстро превращаются либо в перегруз, либо в прорыв. Аналитика {{siteName}} помогает отделить шум от ключевых циклов и точек роста.</p>
+                  <p>{{whatWeOfferBlock}}</p>
+                  <p>{{geoServiceListBlock}}</p>
+                  <h2>Стратегия синхронизации</h2>
+                  <ul>
+                    <li>Мыслить масштабнее, чем текущая ситуация: город усиливает амбиции.</li>
+                    <li>Отслеживать, где действие, а где информационный шум.</li>
+                    <li>Регулярно уходить в более спокойные зоны для восстановления фокуса.</li>
+                  </ul>
+                  <p>{{informationalDisclaimerBlock}}</p>
+                </div>
+                <div class="geo-editor-assist">
+                  <div class="geo-editor-assist__head">
+                    <div class="geo-editor-assist__title">Быстрые переменные для текста</div>
+                    <div class="geo-editor-assist__hint">Нажмите переменную, чтобы скопировать</div>
+                  </div>
+                  <div class="geo-variable-chips">
+                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{siteName}}" data-toggle="tooltip" data-placement="top" title="Название проекта">{{siteName}}</button>
+                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{whatWeOfferBlock}}" data-toggle="tooltip" data-placement="top" title="Готовый блок “Что предлагаем”">{{whatWeOfferBlock}}</button>
+                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{geoServiceListBlock}}" data-toggle="tooltip" data-placement="top" title="Готовый список гео-услуг">{{geoServiceListBlock}}</button>
+                    <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{informationalDisclaimerBlock}}" data-toggle="tooltip" data-placement="top" title="Единый информационный дисклеймер">{{informationalDisclaimerBlock}}</button>
+                  </div>
+                  <p class="geo-field-help">Название страны, города и язык берутся из текущей карточки страницы и не вводятся как переменные в тексте.</p>
+                </div>
+                <div class="geo-editor__footer"><span>p</span><span>Press Alt+0 for help</span><span>0 words &nbsp; Build with tinyMCE</span></div>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="tab-images">
+              <h4 class="section-title">Изображения страницы</h4>
+              <div class="geo-upload-grid">
+                <div class="geo-upload-card">
+                  <div class="form-group field-geo-main-photo">
+                    <label class="control-label" for="geo-main-photo">Main Photo</label>
+                    <p class="geo-field-help">Используется в карточках, списках, OG/Twitter-сниппетах.</p>
+                    <div class="upload-kit">
+                      <input type="hidden" id="geo-main-photo" class="empty-value js-main-photo" name="GeoPage[mainPhoto]">
+                      <input type="file" id="geo-main-photo-file" name="_fileinput_geo_main_photo" data-geo-upload-kit data-geo-upload-name="GeoPage[mainPhoto]" data-geo-upload-url="/ru/admin/default/upload-photo?fileparam=_fileinput_geo_main_photo">
+                    </div>
+                    <div class="help-block"></div>
+                  </div>
+                  <div class="geo-upload-meta">
+                    <div class="form-group">
+                      <label class="control-label">Alt</label>
+                      <input class="form-control" value="Дели: городская улица для страницы астрокартографии">
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Title</label>
+                      <input class="form-control" value="Дели: городская среда и плотный ритм">
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Description</label>
+                      <textarea class="form-control" rows="2">Главное изображение страницы Дели: городская среда, плотный ритм, переезд, работа и личные решения в мегаполисе.</textarea>
+                    </div>
+                  </div>
+                </div>
+                <div class="geo-upload-card">
+                  <div class="form-group field-geo-cover-photo">
+                    <label class="control-label" for="geo-cover-photo">Cover Photo</label>
+                    <p class="geo-field-help">Используется как визуальная обложка страницы и Hero-фон.</p>
+                    <div class="upload-kit">
+                      <input type="hidden" id="geo-cover-photo" class="empty-value js-cover-photo" name="GeoPage[coverPhoto]">
+                      <input type="file" id="geo-cover-photo-file" name="_fileinput_geo_cover_photo" data-geo-upload-kit data-geo-upload-name="GeoPage[coverPhoto]" data-geo-upload-url="/ru/admin/default/upload-photo?fileparam=_fileinput_geo_cover_photo">
+                    </div>
+                    <div class="help-block"></div>
+                  </div>
+                  <div class="geo-upload-meta">
+                    <div class="form-group">
+                      <label class="control-label">Alt</label>
+                      <input class="form-control" value="Обложка страницы Дели для Hero-блока">
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Title</label>
+                      <input class="form-control" value="Дели в Hero: астрокартография и консультация">
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Description</label>
+                      <textarea class="form-control" rows="2">Обложка Hero для страницы Дели: визуальный фон консультации по отношениям, карьере, переезду и личному выбору.</textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="tab-faq">
+              <h4 class="section-title">Вопросы и ответы</h4>
+              <div class="geo-faq-row">
+                <div class="row">
+                  <div class="col-md-5">
+                    <label class="control-label">Вопрос 1</label>
+                    <input class="form-control" value="Подходит ли Дели для переезда?">
+                  </div>
+                  <div class="col-md-7">
+                    <label class="control-label">Ответ</label>
+                    <textarea class="form-control" rows="2">Это зависит от натальной карты и текущей задачи: для одних Дели становится точкой роста, для других — зоной перегрузки и быстрых решений.</textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="geo-faq-row">
+                <div class="row">
+                  <div class="col-md-5">
+                    <label class="control-label">Вопрос 2</label>
+                    <input class="form-control" value="Чем Дели отличается в астрологическом разборе?">
+                  </div>
+                  <div class="col-md-7">
+                    <label class="control-label">Ответ</label>
+                    <textarea class="form-control" rows="2">Это город Юпитера и Раху, где расширение, статус и хаос создают условия для социальных и карьерных трансформаций.</textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="geo-faq-row">
+                <div class="row">
+                  <div class="col-md-5">
+                    <label class="control-label">Вопрос 3</label>
+                    <input class="form-control" value="Как в Дели работают отношения?">
+                  </div>
+                  <div class="col-md-7">
+                    <label class="control-label">Ответ</label>
+                    <textarea class="form-control" rows="2">Связи формируются быстро, но устойчивость зависит от совпадения целей, ценностей и долгосрочного вектора, а не только от эмоций момента.</textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="geo-faq-row">
+                <div class="row">
+                  <div class="col-md-5">
+                    <label class="control-label">Вопрос 4</label>
+                    <input class="form-control" value="Зачем нужна астрокартография для Дели?">
+                  </div>
+                  <div class="col-md-7">
+                    <label class="control-label">Ответ</label>
+                    <textarea class="form-control" rows="2">Она помогает понять, какие районы усиливают карьеру, восстановление или креатив, и как распределять энергию внутри города.</textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="tab-seo">
+              <h4 class="section-title">SEO и социальные сниппеты</h4>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="control-label">Meta Title</label>
+                    <input class="form-control js-counted-field js-meta-title" data-max="70" value="Дели: астрокартография для отношений и переезда | {{siteName}}">
+                    <div class="geo-field-meta">
+                      <span>Оптимально до 70 символов</span>
+                      <span class="geo-field-counter" data-for="meta-title">0/70</span>
+                    </div>
+                    <div class="geo-inline-vars">
+                      <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{siteName}}" data-toggle="tooltip" data-placement="top" title="Название проекта">{{siteName}}</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="control-label">Meta Description</label>
+                    <input class="form-control js-counted-field js-meta-description" data-max="160" value="Дели в разборе {{siteName}}: как городская среда влияет на отношения, карьеру, переезд, документы и личный выбор.">
+                    <div class="geo-field-meta">
+                      <span>Оптимально до 160 символов</span>
+                      <span class="geo-field-counter" data-for="meta-description">0/160</span>
+                    </div>
+                    <div class="geo-inline-vars">
+                      <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{siteName}}" data-toggle="tooltip" data-placement="top" title="Название проекта">{{siteName}}</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="control-label">H1</label>
+                    <input class="form-control" value="Дели: астрокартография для отношений, карьеры и переезда">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="control-label">Seo Text</label>
+                    <textarea class="form-control" rows="3">Дели в астрокартографии {{siteName}} — город Юпитера и Раху, где статус, документы, связи, работа и переезд быстро усиливают вопрос и требуют точного выбора следующего шага.</textarea>
+                    <div class="geo-inline-vars">
+                      <button type="button" class="btn btn-default btn-xs geo-variable-chip" data-variable="{{siteName}}" data-toggle="tooltip" data-placement="top" title="Название проекта">{{siteName}}</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="control-label">Canonical</label>
+                    <input class="form-control" value="https://confideline.com/ru/city/in-delhi">
+                    <p class="geo-field-help">Канонический URL текущей языковой версии.</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="control-label">OG image</label>
+                    <input class="form-control" value="/uploads/geo/delhi-main.jpg">
+                    <p class="geo-field-help">Главное изображение для Open Graph, Twitter/X и LLM-preview.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="control-label">Robots</label>
+                    <select class="form-control js-robots-source">
+                      <option selected>index, follow</option>
+                      <option>noindex, follow</option>
+                      <option>index, nofollow</option>
+                      <option>noindex, nofollow</option>
+                    </select>
+                    <p class="geo-field-help">Для опубликованной страницы должно быть index, follow.</p>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="control-label">Schema type</label>
+                    <select class="form-control js-schema-type-source">
+                      <option selected>WebPage + FAQPage + BreadcrumbList + ImageObject</option>
+                      <option>WebPage + BreadcrumbList + ImageObject</option>
+                      <option>Без JSON-LD</option>
+                    </select>
+                    <p class="geo-field-help">JSON-LD генерируется шаблоном из полей страницы.</p>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="control-label">Hreflang cluster</label>
+                    <select class="form-control js-hreflang-source">
+                      <option selected>ru, en, es, it, de, pt, x-default</option>
+                      <option>Только текущий язык</option>
+                      <option>Не выводить</option>
+                    </select>
+                    <p class="geo-field-help">Все языковые версии должны ссылаться друг на друга.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="geo-box">
+                <h3 class="geo-box__title">Предпросмотр JSON-LD</h3>
+                <p class="geo-box__note">Служебный предпросмотр того, что шаблон выведет в head/body страницы для поисковых систем и LLM.</p>
+                <pre class="geo-schema-preview">{
+  "@context": "https://schema.org",
+  "@graph": [
+    { "@type": "WebPage", "name": "Дели: астрокартография для отношений, карьеры и переезда", "url": "https://confideline.com/ru/city/in-delhi" },
+    { "@type": "BreadcrumbList", "itemListElement": ["Confideline", "Индия", "Дели"] },
+    { "@type": "FAQPage", "mainEntity": "4 вопроса из вкладки FAQ" },
+    { "@type": "ImageObject", "contentUrl": "/uploads/geo/delhi-main.jpg", "name": "Дели: городская среда и плотный ритм" }
+  ]
+}</pre>
+              </div>
+              <div class="geo-check-list">
+                <span class="label label-success">H1/H2 заполнены</span>
+                <span class="label label-success">Фото 2/2</span>
+                <span class="label label-success">FAQ 4/4</span>
+                <span class="label label-success">SEO заполнено</span>
+                <span class="label label-success">Robots index/follow</span>
+                <span class="label label-success">JSON-LD включен</span>
+                <span class="label label-success">Hreflang 6 языков</span>
+                <span class="label label-danger">RU опубликован, остальные языки требуют проверки</span>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="tab-variables">
+              <h4 class="section-title">Глобальные переменные</h4>
+              <div class="geo-box">
+                <div class="table-responsive">
+                  <table class="table table-bordered table-striped geo-variable-table">
+                    <thead>
+                      <tr>
+                        <th class="geo-variable-table__variable">Переменная</th>
+                        <th>Что подставляется</th>
+                        <th class="geo-variable-table__usage">Где использовать</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><code>{{siteName}}</code></td>
+                        <td>Название проекта.</td>
+                        <td>Тексты, Meta Title, Meta Description</td>
+                      </tr>
+                      <tr>
+                        <td><code>{{whatWeOfferBlock}}</code></td>
+                        <td>Единый блок “Что предлагаем”.</td>
+                        <td>Html Description</td>
+                      </tr>
+                      <tr>
+                        <td><code>{{geoServiceListBlock}}</code></td>
+                        <td>Единый список услуг для гео-страниц.</td>
+                        <td>Html Description</td>
+                      </tr>
+                      <tr>
+                        <td><code>{{informationalDisclaimerBlock}}</code></td>
+                        <td>Единый информационный дисклеймер.</td>
+                        <td>Низ Html Description, FAQ</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <p class="geo-field-help">Локальные значения: страна, город, slug, язык и URL берутся из текущей записи админки. В текстах и SEO-полях оператор использует только глобальные переменные из этой таблицы.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-primary">Обновить</button>
+          <button type="button" class="btn btn-default">Отмена</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="./geo-admin-migration/assets/youdate-original/application/vendor/bower-asset/jquery/dist/jquery.min.js"></script>
+<script src="./geo-admin-migration/assets/original/confideline.com/content/assets/143941b/js/bootstrap.js"></script>
+<script src="./geo-admin-migration/assets/original/confideline.com/content/assets/f1d4c03c/js/load-image.all.min.js"></script>
+<script src="./geo-admin-migration/assets/original/confideline.com/content/assets/5da65002/js/vendor/jquery.ui.widget.js"></script>
+<script src="./geo-admin-migration/assets/original/confideline.com/content/assets/5da65002/js/jquery.iframe-transport.js"></script>
+<script src="./geo-admin-migration/assets/original/confideline.com/content/assets/5da65002/js/jquery.fileupload.js"></script>
+<script src="./geo-admin-migration/assets/original/confideline.com/content/assets/5da65002/js/jquery.fileupload-process.js"></script>
+<script src="./geo-admin-migration/assets/original/confideline.com/content/assets/5da65002/js/jquery.fileupload-image.js"></script>
+<script src="./geo-admin-migration/assets/original/confideline.com/content/assets/5da65002/js/jquery.fileupload-validate.js"></script>
+<script src="./geo-admin-migration/assets/original/confideline.com/content/assets/7dcc4b22/upload-kit.js"></script>
+<script src="./geo-admin-migration/assets/youdate-original/application/modules/admin/static/js/jquery.fancybox.min.js"></script>
+<script src="./geo-admin-migration/custom.js"></script>
+</body>
+</html>
+
+
