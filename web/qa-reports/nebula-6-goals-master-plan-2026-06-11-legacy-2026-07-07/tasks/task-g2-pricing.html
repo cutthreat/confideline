@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Nebula - G6.1 Назначение анкет агенту и консультаций</title>
+  <title>Nebula - G2.1 Цена за минуту и баланс клиента</title>
   <style>
 
     :root {
@@ -145,14 +145,14 @@ main.page-main { padding:22px 28px 42px; }
 </head>
 <body>
   <header class="page-head">
-    <h1>G6.1 Назначение анкет агенту и консультаций</h1>
+    <h1>G2.1 Цена за минуту и баланс клиента</h1>
     <p>Отдельная страница задачи Nebula. Главный список остается на главной странице.</p>
   </header>
   <main class="page-main">
     <a class="back-link" href="../index.html">← Назад к списку задач</a>
-    <article class="task-card" id="task-g6-assignment" style="--goal-color:#475569">
-        <header><h3>G6.1 Назначение анкет агенту и консультаций</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 6: Команда</span></div></header>
-        <div class="body"><p><b>Что сделать:</b> очередь назначений: кто клиент, какая тема, какой эксперт/анкета, какой внутренний агент, какой статус и срок реакции.</p><div class="flow-list"><div class="flow-box"><b>Что уже есть на сайте</b><ul><li>в админке есть агент Kristy;</li><li>Kristy назначены анкеты Solara, Stella и Talia;</li><li>есть вход в контекст агента через Login as user;</li><li>проверено: чат открылся как Kristy с agent id 12;</li><li>проверено: возврат в admin работает через профиль Kristy -> Выйти.</li></ul></div><div class="flow-box"><b>Что сломано для Nebula</b><ul><li>Kristy может открыть чужие назначения userId=15;</li><li>это показывает Orion Esposito, хотя анкета не закреплена за Kristy;</li><li>значит текущая админка не дает нужную изоляцию доступа сама по себе.</li></ul></div><div class="flow-box"><b>Что надо доказать</b><ul><li>агент видит только свои анкеты;</li><li>чужие анкеты недоступны для чтения и ответа;</li><li>клиент видит только эксперта/анкету;</li><li>супер-админ видит внутреннего исполнителя.</li></ul></div><div class="flow-box"><b>Данные и правила</b><ul><li>агент;</li><li>публичная анкета эксперта;</li><li>клиент;</li><li>отдельный диалог пары клиент + анкета;</li><li>журнал: кто реально писал и от чьего имени.</li></ul></div><div class="flow-box"><b>Проверка</b><ul><li>открыть Kristy через Login as user;</li><li>проверить список анкет в чате;</li><li>проверить попытку чужой анкеты;</li><li>вернуться в admin через профиль -> Выйти;</li><li>проверить audit в карточке консультации.</li></ul></div></div><div class="mock-card"><h4>Макет: очередь назначений</h4><div class="mock-body"><table class="mock-table"><thead><tr><th>Консультация</th><th>Тема</th><th>Кого назначить</th><th>срок реакции</th><th>Действие</th></tr></thead><tbody><tr><td>SS-184</td><td>Отношения</td><td>Kristy -> Solara Ortiz</td><td><span class="mock-pill yellow">12 мин осталось</span></td><td>Назначить</td></tr><tr><td>SS-185</td><td>Карьера</td><td>Нужен агент</td><td><span class="mock-pill red">просрочка</span></td><td>Эскалировать</td></tr></tbody></table></div></div></div>
+    <article class="task-card" id="task-g2-pricing" style="--goal-color:#0f766e">
+        <header><h3>G2.1 Цена за минуту и баланс клиента</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 2: Деньги</span><span class="badge status-green">Срез согласован</span></div></header>
+        <div class="body"><p><b>Что сделать:</b> показать цену за минуту у эксперта, баланс клиента, бонусные минуты и понятные условия до старта. Цена должна быть закреплена за конкретной консультацией, а не храниться отдельно в заказе или балансе.</p><div class="flow-list"><div class="flow-box"><b>Путь пользователя</b><ul><li>клиент видит цену;</li><li>понимает, когда начнется списание.</li></ul></div><div class="flow-box"><b>Данные и правила</b><ul><li>снимок цены внутри консультации;</li><li>правило допуска к старту;</li><li>проверка цены перед стартом;</li><li>связь предложения с экспертом до старта.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>цена и бонусный старт - ключевые предложения рекламной воронки.</li></ul></div><div class="flow-box"><b>Проверка</b><ul><li>цена на витрине совпадает с ценой в консультации;</li><li>без зафиксированной цены старт блокируется.</li></ul></div></div><div class="mock-card"><h4>Макет: блок цены перед стартом</h4><div class="mock-body"><div class="mock-grid"><div class="mock-box"><strong>Solara Ortiz</strong><ul><li>45 кредитов/мин</li><li>первые 3 минуты бонусом</li><li>старт только после подтверждения условий</li></ul></div><div class="mock-box"><strong>Баланс клиента</strong><ul><li>630 кредитов</li><li>примерно 14 минут</li><li>пополнить баланс</li></ul></div><div class="mock-box"><strong>Перед стартом</strong><ul><li>показать цену;</li><li>показать правила списания;</li><li>дать согласие с условиями.</li></ul></div></div></div></div><div class="status-proof"><b>Проверено локально:</b> успешный старт с зафиксированной ценой и блокировка старта без цены уже доказаны.</div></div>
       </article>
   </main>
   <script>

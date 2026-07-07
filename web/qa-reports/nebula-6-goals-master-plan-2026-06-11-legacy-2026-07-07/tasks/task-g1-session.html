@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Nebula - G6.1 Назначение анкет агенту и консультаций</title>
+  <title>Nebula - G1.1 Карточка одной консультации</title>
   <style>
 
     :root {
@@ -145,14 +145,124 @@ main.page-main { padding:22px 28px 42px; }
 </head>
 <body>
   <header class="page-head">
-    <h1>G6.1 Назначение анкет агенту и консультаций</h1>
-    <p>Отдельная страница задачи Nebula. Главный список остается на главной странице.</p>
+    <h1>G1.1 Карточка одной консультации</h1>
+    <p>Подробная страница задачи Nebula. Главный список остается отдельно.</p>
   </header>
   <main class="page-main">
     <a class="back-link" href="../index.html">← Назад к списку задач</a>
-    <article class="task-card" id="task-g6-assignment" style="--goal-color:#475569">
-        <header><h3>G6.1 Назначение анкет агенту и консультаций</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 6: Команда</span></div></header>
-        <div class="body"><p><b>Что сделать:</b> очередь назначений: кто клиент, какая тема, какой эксперт/анкета, какой внутренний агент, какой статус и срок реакции.</p><div class="flow-list"><div class="flow-box"><b>Что уже есть на сайте</b><ul><li>в админке есть агент Kristy;</li><li>Kristy назначены анкеты Solara, Stella и Talia;</li><li>есть вход в контекст агента через Login as user;</li><li>проверено: чат открылся как Kristy с agent id 12;</li><li>проверено: возврат в admin работает через профиль Kristy -> Выйти.</li></ul></div><div class="flow-box"><b>Что сломано для Nebula</b><ul><li>Kristy может открыть чужие назначения userId=15;</li><li>это показывает Orion Esposito, хотя анкета не закреплена за Kristy;</li><li>значит текущая админка не дает нужную изоляцию доступа сама по себе.</li></ul></div><div class="flow-box"><b>Что надо доказать</b><ul><li>агент видит только свои анкеты;</li><li>чужие анкеты недоступны для чтения и ответа;</li><li>клиент видит только эксперта/анкету;</li><li>супер-админ видит внутреннего исполнителя.</li></ul></div><div class="flow-box"><b>Данные и правила</b><ul><li>агент;</li><li>публичная анкета эксперта;</li><li>клиент;</li><li>отдельный диалог пары клиент + анкета;</li><li>журнал: кто реально писал и от чьего имени.</li></ul></div><div class="flow-box"><b>Проверка</b><ul><li>открыть Kristy через Login as user;</li><li>проверить список анкет в чате;</li><li>проверить попытку чужой анкеты;</li><li>вернуться в admin через профиль -> Выйти;</li><li>проверить audit в карточке консультации.</li></ul></div></div><div class="mock-card"><h4>Макет: очередь назначений</h4><div class="mock-body"><table class="mock-table"><thead><tr><th>Консультация</th><th>Тема</th><th>Кого назначить</th><th>срок реакции</th><th>Действие</th></tr></thead><tbody><tr><td>SS-184</td><td>Отношения</td><td>Kristy -> Solara Ortiz</td><td><span class="mock-pill yellow">12 мин осталось</span></td><td>Назначить</td></tr><tr><td>SS-185</td><td>Карьера</td><td>Нужен агент</td><td><span class="mock-pill red">просрочка</span></td><td>Эскалировать</td></tr></tbody></table></div></div></div>
+    <article class="task-card" id="task-g1-session" style="--goal-color:#2563eb">
+        <header>
+          <h3>G1.1 Карточка одной консультации</h3>
+          <div class="meta"><span class="badge p0">P0</span><span>Цель 1: Глобальный чат</span><span class="badge status-green">Срез согласован</span></div>
+        </header>
+        <div class="body">
+          <p><b>Что сделать:</b> создать единую карточку консультации: клиент, вопрос, эксперт, агент, чат, цена минуты, списания, начисления, поддержка, жалоба/возврат, отзыв, статус и оценка качества.</p>
+          <div class="flow-list">
+            <div class="flow-box"><b>Путь клиента</b><ul><li>клиент создает вопрос;</li><li>выбирается эксперт/агент;</li><li>консультация получает статус.</li></ul></div>
+            <div class="flow-box"><b>Данные и связи</b><ul><li>ID отдельной консультации;</li><li>связь с чатом, балансом и поддержкой;</li><li>история событий.</li></ul></div>
+            <div class="flow-box"><b>Маркетинг</b><ul><li>основа измеримой воронки;</li><li>доказательство, что реклама приводит к реальной консультации.</li></ul></div>
+            <div class="flow-box"><b>Проверка</b><ul><li>одна консультация открывается целиком;</li><li>все связанные данные видны админу.</li></ul></div>
+          </div>
+          <div class="session-mock" aria-label="Интерактивный макет карточки одной консультации">
+            <div class="session-mock-head">
+              <div>
+                <h4>Макет: карточка одной консультации</h4>
+                <p>Одна карточка связывает клиента, вопрос, эксперта/агента, чат, минуты, деньги, поддержку, возвраты, отзыв и контроль качества.</p>
+              </div>
+              <span class="badge status-yellow">Демо-макет, не реальные данные</span>
+            </div>
+            <div class="session-mock-controls" aria-label="Выбор роли">
+              <button class="is-active" type="button" data-session-role="admin">Супер-админ</button>
+              <button type="button" data-session-role="agent">Агент</button>
+              <button type="button" data-session-role="expert">Эксперт</button>
+              <button type="button" data-session-role="client">Клиент</button>
+            </div>
+            <div class="session-kpis">
+              <div class="session-kpi"><span>Статус</span><b>Идет консультация</b></div>
+              <div class="session-kpi"><span>Цена</span><b>45 кредитов/мин</b></div>
+              <div class="session-kpi"><span>Минуты</span><b>08:42 из лимита</b></div>
+              <div class="session-kpi"><span>Баланс</span><b>достаточно на 14 мин</b></div>
+              <div class="session-kpi"><span>Риск</span><b>support не открыт</b></div>
+            </div>
+            <div class="session-layout">
+              <aside class="session-side">
+                <h5>Паспорт консультации</h5>
+                <dl>
+                  <div><dt>ID</dt><dd>SS-2026-000184</dd></div>
+                  <div><dt>Клиент</dt><dd>Maria K.</dd></div>
+                  <div><dt>Вопрос</dt><dd>Отношения и совместимость</dd></div>
+                  <div><dt>Эксперт</dt><dd>Solara Ortiz</dd></div>
+                  <div><dt>Агент</dt><dd>Kristy</dd></div>
+                  <div><dt>Источник</dt><dd>Главная -> карточка эксперта</dd></div>
+                </dl>
+              </aside>
+              <div class="session-main">
+                <div class="session-role-note" data-role-note="admin">
+                  <b>Вид супер-админа:</b> видит все: чат, деньги, возвраты, поддержку, качество, владельцев, сроки реакции и историю решений.
+                </div>
+                <div class="session-role-note is-hidden" data-role-note="agent">
+                  <b>Вид агента:</b> видит назначенные анкеты, вопросы клиентов, чат, сроки реакции, инструкции и свои начисления, но не всю финансовую админку.
+                </div>
+                <div class="session-role-note is-hidden" data-role-note="expert">
+                  <b>Вид эксперта:</b> видит свою анкету, вопрос, контекст клиента, чат и правила ответа, без чужих клиентов и админских решений.
+                </div>
+                <div class="session-role-note is-hidden" data-role-note="client">
+                  <b>Вид клиента:</b> видит свой вопрос, выбранного эксперта, чат, цену/баланс, условия, поддержку и итог консультации.
+                </div>
+                <div class="session-tabs" aria-label="Разделы консультации">
+                  <button class="is-active" type="button" data-session-tab="overview">Обзор</button>
+                  <button type="button" data-session-tab="chat">Чат</button>
+                  <button type="button" data-session-tab="money">Деньги</button>
+                  <button type="button" data-session-tab="support">Поддержка/возвраты</button>
+                  <button type="button" data-session-tab="quality">Качество</button>
+                </div>
+                <div class="session-panel" data-session-panel="overview">
+                  <h5>Что должно быть видно сразу</h5>
+                  <div class="session-row-list">
+                    <div class="session-row"><span>Кто участвует</span><div>Клиент Maria K., эксперт Solara Ortiz, агент Kristy, ответственный модератор.</div></div>
+                    <div class="session-row"><span>Что происходит</span><div>Клиент задал вопрос, консультация идет в чате, счетчик минут активен.</div></div>
+                    <div class="session-row"><span>Что важно админу</span><div>Баланс достаточен, сроки реакции не нарушены, жалоб нет, качество пока не проверено.</div></div>
+                  </div>
+                </div>
+                <div class="session-panel is-hidden" data-session-panel="chat">
+                  <h5>Чат внутри консультации</h5>
+                  <div class="session-chat">
+                    <div class="session-msg"><b>Клиент</b>Хочу понять, стоит ли продолжать отношения и что он чувствует.</div>
+                    <div class="session-msg agent"><b>Агент от имени Solara Ortiz</b>Я посмотрю вашу ситуацию. Уточните, пожалуйста, дату рождения партнера, если готовы.</div>
+                    <div class="session-msg"><b>Клиент</b>Да, могу отправить. Сколько примерно займет консультация?</div>
+                  </div>
+                  <div class="session-note">В реальной версии здесь нужны: владелец ответа, таймер, лимит баланса, статус печати, внутренние заметки агента и лог модерации.</div>
+                </div>
+                <div class="session-panel is-hidden" data-session-panel="money">
+                  <h5>Поминутная логика</h5>
+                  <div class="session-row-list">
+                    <div class="session-row"><span>Списание</span><div>45 кредитов за минуту, списание идет только при активной консультации.</div></div>
+                    <div class="session-row"><span>Стоп</span><div>Если баланса меньше следующей минуты, чат должен остановить платную часть и показать понятное сообщение.</div></div>
+                    <div class="session-row"><span>Начисление</span><div>После завершения минуты попадают в расчет эксперта/агента с учетом возвратов и качества.</div></div>
+                  </div>
+                </div>
+                <div class="session-panel is-hidden" data-session-panel="support">
+                  <h5>Поддержка и возвраты</h5>
+                  <div class="session-row-list">
+                    <div class="session-row"><span>Обращение</span><div>Клиент может открыть обращение из этой консультации, чтобы поддержка видела весь контекст.</div></div>
+                    <div class="session-row"><span>Возврат</span><div>Решение о возврате должно ссылаться на чат, минуты, правила и решение модератора.</div></div>
+                    <div class="session-row"><span>История</span><div>Нельзя терять, кто принял решение, когда и почему.</div></div>
+                  </div>
+                </div>
+                <div class="session-panel is-hidden" data-session-panel="quality">
+                  <h5>Контроль качества</h5>
+                  <ul>
+                    <li>ответ не нарушает правила и не дает запрещенных обещаний;</li>
+                    <li>агент/эксперт соблюдает тон, скорость и регламент;</li>
+                    <li>жалоба или плохая оценка переводят консультацию в очередь проверки;</li>
+                    <li>итог качества влияет на обучение, допуск и начисления.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="status-proof"><b>Проверено локально:</b> карточка опирается не на обычную переписку, а на отдельную запись консультации. Для одной консультации доказано, что запись существует и открывается как карточка в админском контуре.</div>
+        </div>
       </article>
   </main>
   <script>

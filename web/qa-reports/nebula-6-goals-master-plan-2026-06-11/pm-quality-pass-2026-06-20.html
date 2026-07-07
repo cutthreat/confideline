@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nebula - PM quality pass</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink:#172033;
+      --muted:#667085;
+      --line:#d9e2f3;
+      --bg:#f6f8fb;
+      --panel:#ffffff;
+      --blue:#1f4e78;
+      --green:#0f766e;
+      --red:#842029;
+      --yellow:#7a4e00;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Arial, sans-serif; color:var(--ink); background:var(--bg); }
+    a { color:#175cd3; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    header { background:#1f4e78; color:#fff; padding:28px 32px; }
+    header h1 { margin:0 0 8px; font-size:30px; }
+    header p { margin:0; max-width:1120px; line-height:1.5; }
+    main { padding:22px 28px 42px; max-width:1380px; margin:0 auto; }
+    .top-links { display:flex; flex-wrap:wrap; gap:10px; margin:0 0 18px; }
+    .top-link { display:inline-block; padding:10px 14px; border:1px solid #d8e6ff; border-radius:6px; background:#fff; color:#175cd3; font-weight:700; }
+    .notice { background:#fff; border:1px solid var(--line); border-left:6px solid var(--green); border-radius:8px; padding:14px 16px; margin:0 0 16px; line-height:1.5; }
+    .warning { border-left-color:var(--red); }
+    .grid { display:grid; grid-template-columns:repeat(3, minmax(240px,1fr)); gap:14px; margin:0 0 18px; }
+    .card { background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px; }
+    .card h2, .card h3 { margin:0 0 8px; }
+    .card p { margin:0; line-height:1.5; color:var(--muted); }
+    table { width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; margin:0 0 18px; }
+    th { background:#1f4e78; color:#fff; text-align:left; padding:10px; vertical-align:top; }
+    td { border-top:1px solid var(--line); padding:10px; vertical-align:top; line-height:1.45; }
+    .badge { display:inline-block; padding:4px 8px; border-radius:999px; font-weight:700; font-size:12px; white-space:nowrap; }
+    .p0 { background:#f4cccc; color:#842029; }
+    .p1 { background:#fff2cc; color:#7a4e00; }
+    .ok { background:#d9ead3; color:#1f5e2e; }
+    .muted { color:var(--muted); }
+    .section-title { display:flex; justify-content:space-between; gap:16px; align-items:flex-end; margin:24px 0 10px; }
+    .section-title h2 { margin:0; font-size:24px; }
+    .section-title p { margin:0; color:var(--muted); max-width:760px; line-height:1.45; }
+    ul { margin:8px 0 0; padding-left:18px; line-height:1.5; }
+    li { margin:5px 0; }
+    .footer { margin-top:22px; color:var(--muted); font-size:13px; line-height:1.5; }
+    @media (max-width:980px) {
+      .grid { grid-template-columns:1fr; }
+      .section-title { display:block; }
+      table { font-size:14px; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>PM-ревизия Nebula: что закрывать следующим</h1>
+  <p>Качественный проход по текущему мастер-плану, PM-watch, роли агента/эксперта, askNebula/PbExpert логике и локальным proof-пакетам. Цель страницы - убрать шум и показать, какие пробелы реально блокируют пилот, рекламу и первого платного клиента.</p>
+</header>
+
+<main>
+  <nav class="top-links" aria-label="Навигация">
+    <a class="top-link" href="./index.html">К мастер-плану</a>
+    <a class="top-link" href="./task-tz.html?task=task-g6-assignment">G6.1 назначение</a>
+    <a class="top-link" href="./task-tz.html?task=task-g1-chat">G1.2 чат</a>
+    <a class="top-link" href="./agent-workspace-pbexpert-v0-1.html">Макет агента</a>
+  </nav>
+
+  <section class="notice">
+    <b>PM-вывод.</b> 6 глобальных целей остаются правильной рамкой. Главная доработка сейчас не в добавлении новых целей, а в закрытии P0-gates: назначение/доступ, единая карточка консультации, деньги по минутам, support/refund, экспертный допуск, dashboard/marketing gate.
+  </section>
+
+  <section class="notice warning">
+    <b>Главный blocker.</b> Role-based chat нельзя принимать как готовый, пока G6.1 assignment enforcement не докажет, что агент видит и использует только назначенные анкеты, клиент видит правильную публичную анкету, а супер-админ видит реального автора и audit.
+  </section>
+
+  <section class="grid" aria-label="Короткое состояние">
+    <article class="card">
+      <h2>Что уже есть</h2>
+      <p>Есть мастер-план на 6 целей, ролевой план, карта текущего Confideline, source-bounded база PbExpert/askNebula, макет рабочего места агента и task readiness/TZ scoring.</p>
+    </article>
+    <article class="card">
+      <h2>Чего еще нет</h2>
+      <p>Нет runtime-proof полной консультации: клиент - анкета/эксперт - агент - чат - минуты/баланс - поддержка - возврат - начисление - качество - аналитика.</p>
+    </article>
+    <article class="card">
+      <h2>Что делать первым</h2>
+      <p>Закрывать не страницы, а сквозные proof-пакеты. Первый пакет: G6.1 assignment enforcement + G1.2 role chat proof.</p>
+    </article>
+  </section>
+
+  <section aria-labelledby="closure-title">
+    <div class="section-title">
+      <h2 id="closure-title">Закрывающие пакеты</h2>
+      <p>Это не новые глобальные цели, а рабочие пакеты, которые превращают текущий план в готовность к пилоту.</p>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Пакет</th>
+          <th>Что закрывает</th>
+          <th>Нужный результат</th>
+          <th>Доказательство приемки</th>
+          <th>Статус PM</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge p0">P0</span><br><b>1. Assignment + role chat proof</b></td>
+          <td>G6.1 + G1.2. Агент, эксперт, анкета, клиентская видимость, запрет чужой анкеты, audit.</td>
+          <td>Один рабочий сценарий: агент входит, видит только свои анкеты/назначения, отвечает от имени нужной анкеты, клиент видит только публичного эксперта, супер-админ видит реального автора.</td>
+          <td>Скрин/HTML/QA: разрешенный доступ, запрещенный прямой URL на чужую анкету, audit-запись, отдельный диалог клиент + анкета.</td>
+          <td>Следующий пакет</td>
+        </tr>
+        <tr>
+          <td><span class="badge p0">P0</span><br><b>2. Service session contract</b></td>
+          <td>G1.1 + G1.3. Одна консультация как единый объект, а не разрозненный чат.</td>
+          <td>Карточка консультации хранит клиента, вопрос, публичную анкету, реального автора, чат, цену/мин, баланс, списания, support, refund, качество, события.</td>
+          <td>Data contract + один демо-сценарий, где все ключевые поля открываются из одной service_session.</td>
+          <td>Частично описано, нужен канон</td>
+        </tr>
+        <tr>
+          <td><span class="badge p0">P0</span><br><b>3. Деньги и минута</b></td>
+          <td>G2.1-G2.4. Цена, таймер, стоп, возврат, начисления.</td>
+          <td>Клиент понимает цену до старта, баланс списывается по минутам, при нехватке денег сессия останавливается, возврат фиксируется, начисление рассчитывается по утвержденной формуле.</td>
+          <td>Сценарии: баланс 0, баланс хватает, баланс заканчивается, refund, полный возврат отменяет начисление.</td>
+          <td>Формула начислений открыта</td>
+        </tr>
+        <tr>
+          <td><span class="badge p0">P0</span><br><b>4. Support / dispute / documents</b></td>
+          <td>G4.1-G4.3. Поддержка, жалобы, возвраты, правила консультации.</td>
+          <td>Клиент до старта видит условия, после проблемы может обратиться в поддержку, оператор видит консультацию и принимает решение по правилам.</td>
+          <td>Client-visible path: открыть обращение, увидеть статус, получить решение; admin path: разобрать спор по service_session.</td>
+          <td>Сейчас master-plan only</td>
+        </tr>
+        <tr>
+          <td><span class="badge p0">P0</span><br><b>5. Expert/agent readiness</b></td>
+          <td>G6.2-G6.4. SLA, качество, обучение, допуск 3-5 экспертов.</td>
+          <td>Есть 3-5 допущенных экспертов/агентов, каждый знает правила, проходит тест, работает по SLA и попадает в quality review.</td>
+          <td>Candidate tracker, proof packet по каждому, тестовый ответ, чек качества, тренировочная консультация.</td>
+          <td>Expert-ready около 20%</td>
+        </tr>
+        <tr>
+          <td><span class="badge p0">P0</span><br><b>6. Backend binding сайта</b></td>
+          <td>G3.1-G3.5. Натянуть дизайн на реальные данные и путь клиента.</td>
+          <td>Главная, каталог, карточка эксперта и старт консультации читают реальные анкеты, цены, доступность, статусы и ведут в рабочую консультацию.</td>
+          <td>Путь: витрина -> каталог/эксперт -> цена/баланс -> старт -> чат/service_session. Без фейковых claims и чужих цифр.</td>
+          <td>Дизайн/структура есть, data-ready нет</td>
+        </tr>
+        <tr>
+          <td><span class="badge p0">P0</span><br><b>7. Dashboard + marketing gate</b></td>
+          <td>G5.1-G5.4. События, дашборд, показатели, допуск рекламы.</td>
+          <td>Команда видит консультации, деньги, проблемные сессии, качество, SLA, support/refund и воронку. Реклама получает явный gate да/нет.</td>
+          <td>Один пилотный dashboard с реальными событиями и чек-листом: можно ли брать платного клиента.</td>
+          <td>Сейчас master-plan only</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section aria-labelledby="gaps-title">
+    <div class="section-title">
+      <h2 id="gaps-title">Пробелы, которые нужно дозакрыть</h2>
+      <p>Это зоны, где PM не должен позволять команде считать задачу готовой только потому, что есть макет или частичная реализация.</p>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Зона</th>
+          <th>Пробел</th>
+          <th>Как закрывать</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Доступы агента</td>
+          <td>Найден риск доступа к чужим назначениям. Это ломает доверие к роли агента и чату.</td>
+          <td>Сначала verifier: разрешенный сценарий + запрещенный сценарий + audit. Только потом принимать чат по ролям.</td>
+        </tr>
+        <tr>
+          <td>Service_session</td>
+          <td>Есть понятие, но нужен канонический контракт полей и статусов для программиста.</td>
+          <td>Сделать одну таблицу данных: обязательные поля, кто видит, кто меняет, какие события пишутся.</td>
+        </tr>
+        <tr>
+          <td>Деньги</td>
+          <td>Поминутная логика и баланс описаны, но формула начислений и частичный refund не утверждены до конца.</td>
+          <td>Owner decision: формула выплаты, правило частичного возврата, влияние качества/SLA на начисление.</td>
+        </tr>
+        <tr>
+          <td>Support/documents</td>
+          <td>Поддержка и документы пока выглядят как список, а не как клиентский сценарий.</td>
+          <td>Описать сценарии: до старта условия, после старта жалоба, спор, решение, возврат, история.</td>
+        </tr>
+        <tr>
+          <td>Эксперты</td>
+          <td>Есть модель отбора и обучения, но нет 3-5 допущенных людей.</td>
+          <td>Запускать pipeline кандидатов: анкета, тест, интервью, пробный ответ, допуск, карточка, обучение.</td>
+        </tr>
+        <tr>
+          <td>Маркетинг</td>
+          <td>Реклама заблокирована не копирайтом, а отсутствием runtime-proof консультации.</td>
+          <td>Marketing gate ставить после пилота: 3-5 экспертов, рабочие деньги, support/refund, dashboard, честные claims.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section aria-labelledby="next-title">
+    <div class="section-title">
+      <h2 id="next-title">Рекомендуемый следующий ход</h2>
+      <p>Если выбирать один PM-пакет сейчас, это должен быть не новый дизайн и не реклама.</p>
+    </div>
+    <div class="notice">
+      <b>Следующий пакет:</b> G6.1 assignment enforcement + G1.2 role chat proof. Он дает фундамент для агента, эксперта, супер-админа, service_session, денег, support и quality. Без него все остальные экраны могут выглядеть готовыми, но операционно не выдержат первого платного клиента.
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Шаг</th>
+          <th>Что сделать</th>
+          <th>Когда считать готовым</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Описать точный контракт доступа: агент, эксперт/анкета, супер-админ, клиентская видимость.</td>
+          <td>Нет двусмысленности, кто что видит и от чьего имени пишет.</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Сделать verifier для прямого URL чужой анкеты/назначения.</td>
+          <td>Чужой доступ заблокирован, причина понятна, событие логируется.</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Связать чат с service_session и публичной анкетой.</td>
+          <td>Супер-админ видит реального автора; клиент видит только публичного эксперта/анкету.</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Обновить макет/ТЗ рабочего места агента по результату verifier.</td>
+          <td>Игорю/Codex понятно, что строить и как принимать.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section aria-labelledby="owner-title">
+    <div class="section-title">
+      <h2 id="owner-title">Решения от Алексея</h2>
+      <p>Только те решения, которые нельзя честно закрыть локальными источниками.</p>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Решение</th>
+          <th>Зачем нужно</th>
+          <th>Можно ли продолжать без него</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Формула начислений агенту/эксперту</td>
+          <td>Без нее G2.4 остается пакетом, но не рабочей логикой денег.</td>
+          <td>Можно делать чат и assignment, но нельзя закрывать выплаты.</td>
+        </tr>
+        <tr>
+          <td>Правило частичного возврата</td>
+          <td>Полный возврат уже понятен, частичный влияет на деньги, support и качество.</td>
+          <td>Можно строить журнал refund, но нельзя принимать финальный финансовый контур.</td>
+        </tr>
+        <tr>
+          <td>Кто проверяет тестовые ответы кандидатов</td>
+          <td>Без владельца проверки hiring pipeline не доводит до допуска экспертов.</td>
+          <td>Можно готовить материалы, но нельзя закрывать expert-ready выше 40-60%.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="notice">
+    <b>Что не делать сейчас:</b> не запускать рекламу, не расширять SEO/category pages, не принимать статичные карточки экспертов как data-ready, не переносить чужие trust claims, не считать LMS заменой CRM/chat/billing/support.
+  </section>
+
+  <div class="footer">
+    Источники: текущий 6-goals master plan, PM-watch docs, role-based master plan, askNebula functional map, PbExpert source-bounded study, agent workspace mockup. Эта страница является PM-сводкой и не заменяет runtime QA proof.
+  </div>
+</main>
+</body>
+</html>

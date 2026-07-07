@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nebula - мастер-план по 6 целям</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink:#172033;
+      --muted:#667085;
+      --line:#d9e2f3;
+      --bg:#f6f8fb;
+      --panel:#ffffff;
+      --blue:#1f4e78;
+      --green:#0f766e;
+      --red:#842029;
+      --yellow:#7a4e00;
+      --purple:#6d28d9;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Arial, sans-serif; color:var(--ink); background:var(--bg); }
+    a { color:#175cd3; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    header { background:#1f4e78; color:#fff; padding:28px 32px; }
+    header h1 { margin:0 0 8px; font-size:30px; }
+    header p { margin:0; max-width:1180px; line-height:1.5; }
+    main { padding:22px 28px 42px; }
+    .top-nav { display:flex; flex-wrap:wrap; gap:10px; margin:0 0 16px; }
+    .top-nav button { background:#fff; border:1px solid var(--line); color:#175cd3; padding:10px 14px; border-radius:6px; font-weight:700; cursor:pointer; }
+    .top-nav button.is-active { background:#e8f1ff; border-color:#175cd3; color:#0b3f91; }
+    .notice { background:#fff; border:1px solid var(--line); border-left:6px solid var(--green); border-radius:8px; padding:14px 16px; margin:0 0 16px; line-height:1.5; }
+    .legend { display:flex; flex-wrap:wrap; gap:10px; align-items:center; background:#fff; border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin:0 0 18px; }
+    .legend-text { color:var(--muted); font-size:13px; }
+    .badge { display:inline-block; padding:4px 8px; border-radius:999px; font-weight:700; font-size:12px; white-space:nowrap; }
+    .p0 { background:#f4cccc; color:#842029; }
+    .p1 { background:#fff2cc; color:#7a4e00; }
+    .p2 { background:#e7e6e6; color:#344054; }
+    .tz-ready { background:#d9ead3; color:#1f5e2e; }
+    .tz-progress { background:#fff2cc; color:#7a4e00; }
+    .tz-блокируется { background:#f4cccc; color:#842029; }
+    .tab-panel.is-hidden { display:none; }
+    .section-title { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin:0 0 12px; }
+    .section-title h2 { margin:0; font-size:24px; }
+    .section-title p { margin:0; color:var(--muted); line-height:1.45; max-width:820px; }
+    .goals-grid { display:grid; grid-template-columns:repeat(2, minmax(320px,1fr)); gap:14px; }
+    .goal-card { background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+    .goal-head { padding:14px 16px; color:#fff; background:var(--goal-color); }
+    .goal-head b { display:block; font-size:18px; margin-bottom:4px; }
+    .goal-body { padding:14px 16px; }
+    .goal-body p { margin:0 0 10px; line-height:1.45; }
+    .task-table { width:100%; border-collapse:collapse; border:1px solid #e4e9f2; border-radius:8px; overflow:hidden; }
+    .task-table th { background:#f8fafc; text-align:left; padding:9px 10px; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+    .task-table td { padding:10px; border-top:1px solid #e4e9f2; vertical-align:top; line-height:1.4; }
+    .task-title { font-weight:700; }
+    .term-en { display:block; margin-top:2px; color:var(--muted); font-size:11px; font-weight:600; line-height:1.2; letter-spacing:.01em; }
+    .th-sub { display:block; margin-top:2px; color:#667085; font-size:10px; font-weight:600; text-transform:none; letter-spacing:0; }
+    .task-link { display:block; color:inherit; text-decoration:none; }
+    .task-link .task-title { color:#175cd3; text-decoration:underline; text-underline-offset:2px; }
+    .task-link:hover .task-title { color:#0b3f91; }
+    .progress-wrap { min-width:110px; }
+    .tz-wrap { min-width:150px; }
+    .tz-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px; }
+    .tz-percent { color:#0f766e; font-weight:700; font-size:12px; }
+    .progress-line { height:8px; background:#e9eef7; border-radius:999px; overflow:hidden; margin-top:5px; }
+    .progress-bar { height:100%; background:#175cd3; border-radius:999px; }
+    .progress-bar.tz-bar { background:#0f766e; }
+    .readiness-link { position:relative; display:block; color:#175cd3; text-decoration:none; padding:8px 28px 8px 10px; border:1px solid #d8e6ff; border-radius:8px; background:#f4f8ff; }
+    .readiness-link b { display:block; color:#0b3f91; }
+    .readiness-link::after { content:"›"; position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:20px; font-weight:700; color:#175cd3; }
+    .readiness-link:hover { background:#e8f1ff; border-color:#175cd3; }
+    .readiness-link:hover .progress-line { box-shadow:0 0 0 2px rgba(23,92,211,.16); }
+    .tz-link { display:block; color:inherit; text-decoration:none; padding:8px 10px; border:1px solid #d8e6ff; border-radius:8px; background:#f8fbff; }
+    .tz-link:hover { background:#eefaf7; border-color:#0f766e; }
+    .tz-link:hover .progress-line { box-shadow:0 0 0 2px rgba(15,118,110,.14); }
+    .role-table, .source-table { width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    .role-table th, .source-table th { background:#1f4e78; color:#fff; text-align:left; padding:10px; vertical-align:top; }
+    .role-table td, .source-table td { border-top:1px solid var(--line); padding:10px; vertical-align:top; line-height:1.45; }
+    .task-chip-list { display:flex; flex-wrap:wrap; gap:8px; }
+    .task-chip { display:inline-flex; align-items:center; gap:6px; padding:6px 8px; border-radius:999px; background:#f4f8ff; border:1px solid #d8e6ff; }
+    .footer { margin-top:22px; color:var(--muted); font-size:13px; line-height:1.5; }
+    @media (max-width:1080px) {
+      .goals-grid { grid-template-columns:1fr; }
+      .section-title { flex-direction:column; align-items:flex-start; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Мастер-план Nebula по 6 глобальным целям</h1>
+</header>
+
+<main>
+  <section id="six-goals" class="tab-panel" data-tab-panel="six-goals">
+    <div class="section-title">
+      <h2>Список задач по 6 глобальным целям</h2>
+      <p>Для каждой задачи видно, насколько она готова по сайту и по ТЗ.</p>
+    </div>
+    <div id="goals-grid" class="goals-grid"></div>
+  </section>
+
+  <section id="role-plan" class="tab-panel is-hidden" data-tab-panel="role-plan">
+    <div class="section-title">
+      <h2>2. Мастер-план по ролям</h2>
+      <p>Та же карта, но через роли.</p>
+    </div>
+    <table class="role-table">
+      <thead>
+        <tr>
+          <th>Роль</th>
+          <th>Что должно стать рабочим</th>
+          <th>Ключевые задачи</th>
+          <th>Готово когда</th>
+        </tr>
+      </thead>
+      <tbody id="role-body"></tbody>
+    </table>
+  </section>
+
+  <section id="sources" class="tab-panel is-hidden" data-tab-panel="sources">
+    <div class="section-title">
+      <h2>Источники и статус</h2>
+      <p>Материалы, на которые опирается план.</p>
+    </div>
+    <table class="source-table">
+      <thead>
+        <tr><th>Источник</th><th>Как использован</th><th>Статус</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Функциональная карта askNebula</td><td>Логика страниц, путь подбора, доверие, правила и маркетинг.</td><td><span class="badge stage-accepted">Учтено</span></td></tr>
+        <tr><td>Карта страниц, сценариев и маркетинга</td><td>Связка задач с пользователем, данными, деньгами, поддержкой, аналитикой и маркетингом.</td><td><span class="badge stage-accepted">Учтено</span></td></tr>
+        <tr><td>Role-based master plan 2026-06-10</td><td>Ролевая рамка: клиент, эксперт, агент, супер-админ.</td><td><span class="badge stage-accepted">Учтено</span></td></tr>
+        <tr><td>Nebula G1-G3 status model 2026-06-15</td><td>Базовая модель статусов и готовности задач.</td><td><span class="badge stage-accepted">Учтено</span></td></tr>
+        <tr><td>Nebula frontier status update 2026-06-15</td><td>Текущая очередь следующего слоя работ.</td><td><span class="badge stage-packet">Учтено</span></td></tr>
+        <tr><td>task-details.html</td><td>Подробные карточки задач.</td><td><span class="badge stage-accepted">Используется</span></td></tr>
+      </tbody>
+    </table>
+    <div class="footer">
+      Связанные файлы:
+      <a href="../asknebula-functional-map-2026-06-11/asknebula-functional-map-and-nebula-transfer.md">askNebula transfer</a> ·
+      <a href="../asknebula-functional-map-2026-06-11/nebula-per-page-flow-and-marketing-strategy-map.md">карта страниц и сценариев</a> ·
+      <a href="../nebula-3-role-live-functional-map-2026-06-10/role-based-master-plan.html">предыдущий мастер-план по ролям</a> ·
+      <a href="../nebula-6-goals-master-plan-2026-06-11-legacy-2026-06-17/index.html">предыдущая публичная версия</a> ·
+      status model ·
+      frontier update ·
+      readiness methodology
+    </div>
+  </section>
+
+  <div class="footer">
+    Служебно:
+    `% сайта` = текущая готовность сайта по задаче.
+    `100%` = реально реализовано на сайте.
+    `25-75%` = частично собрано, но есть gap.
+    `0-10%` = пока только план, задел или частичный контур.
+  </div>
+  <div class="footer">
+    Приоритет:
+    <span class="badge p0">P0</span> нельзя принимать платного клиента без этого ·
+    <span class="badge p1">P1</span> следующий критичный слой ·
+    <span class="badge p2">P2</span> после базового запуска
+  </div>
+  <div class="footer">
+    ТЗ в этом контуре = рабочий пакет для Игоря + Codex:
+    цель и пользовательский результат, источники правды, контракт переноса из HTML/Figma-макета, данные и состояния, объем интерфейса и логики, затрагиваемые файлы и интеграции, проверка, критерии приемки, откат и стоп-условия.
+    `100% ТЗ` = любой участник реализации понимает, что строим, откуда переносим, как интегрируем, как проверяем и по чему принимаем результат без догадок.
+  </div>
+</main>
+
+<script>
+(function () {
+  const taskMeta = {
+    "task-g1-session": { code:"G1.1", title:"Карточка консультации", priority:"P0", stage:"accepted_bounded_slice", progress:45, tz:true, tzReady:60 },
+    "task-g1-chat": { code:"G1.2", title:"Чат по ролям", priority:"P0", stage:"accepted_bounded_slice", progress:50, tz:true, tzReady:45 },
+    "task-g1-statuses": { code:"G1.3", title:"Статусы и история", priority:"P0", stage:"accepted_bounded_slice", progress:45, tz:true, tzReady:65 },
+    "task-g1-chat-notifications": { code:"G1.4", title:"Уведомления чата", priority:"P1", stage:"accepted_bounded_slice", progress:35, tz:true, tzReady:55 },
+
+    "task-g2-pricing": { code:"G2.1", title:"Цена и баланс", priority:"P0", stage:"accepted_bounded_slice", progress:45, tz:true, tzReady:70 },
+    "task-g2-timer": { code:"G2.2", title:"Таймер и остановка", priority:"P0", stage:"accepted_bounded_slice", progress:40, tz:true, tzReady:70 },
+    "task-g2-refund": { code:"G2.3", title:"Возвраты", priority:"P0", stage:"packet_ready", progress:40, tz:true, tzReady:55 },
+    "task-g2-accruals": { code:"G2.4", title:"Начисления", priority:"P1", stage:"packet_ready", progress:10, tz:true, tzReady:45 },
+
+    "task-g3-home": { code:"G3.1", title:"Витрина", priority:"P0", stage:"inventoried", progress:15, tz:true, tzReady:20 },
+    "task-g3-catalog": { code:"G3.2", title:"Каталог", priority:"P0", stage:"inventoried", progress:15, tz:true, tzReady:20 },
+    "task-g3-profile": { code:"G3.3", title:"Карточка эксперта", priority:"P0", stage:"packet_ready", progress:20, tz:true, tzReady:40 },
+    "task-g3-quiz": { code:"G3.4", title:"Подбор и старт", priority:"P1", stage:"inventoried", progress:10, tz:true, tzReady:20 },
+    "task-g3-qa": { code:"G3.5", title:"Проверка клиентского пути", priority:"P0", stage:"packet_ready", progress:10, tz:true, tzReady:35 },
+
+    "task-g4-support": { code:"G4.1", title:"Поддержка", priority:"P0", stage:"master_plan_only", progress:5, tz:true, tzReady:15 },
+    "task-g4-complaints": { code:"G4.2", title:"Жалобы и возвраты", priority:"P0", stage:"master_plan_only", progress:5, tz:true, tzReady:15 },
+    "task-g4-docs": { code:"G4.3", title:"Документы", priority:"P0", stage:"master_plan_only", progress:5, tz:true, tzReady:15 },
+    "task-g4-support-notifications": { code:"G4.4", title:"Уведомления поддержки", priority:"P1", stage:"master_plan_only", progress:0, tz:true, tzReady:10 },
+
+    "task-g5-events": { code:"G5.1", title:"События воронки", priority:"P0", stage:"master_plan_only", progress:5, tz:true, tzReady:15 },
+    "task-g5-dashboard": { code:"G5.2", title:"Дашборд", priority:"P0", stage:"master_plan_only", progress:5, tz:true, tzReady:15 },
+    "task-g5-kpi": { code:"G5.3", title:"Таблица показателей", priority:"P1", stage:"master_plan_only", progress:0, tz:true, tzReady:10 },
+    "task-g5-marketing-gate": { code:"G5.4", title:"Допуск рекламы", priority:"P0", stage:"master_plan_only", progress:0, tz:true, tzReady:10 },
+
+    "task-g6-assignment": { code:"G6.1", title:"Назначение", priority:"P0", stage:"master_plan_only", progress:5, tz:true, tzReady:15 },
+    "task-g6-sla": { code:"G6.2", title:"Сроки реакции", priority:"P0", stage:"master_plan_only", progress:5, tz:true, tzReady:15 },
+    "task-g6-quality": { code:"G6.3", title:"Контроль качества", priority:"P0", stage:"master_plan_only", progress:5, tz:true, tzReady:15 },
+    "task-g6-training": { code:"G6.4", title:"Обучение и регламенты", priority:"P1", stage:"master_plan_only", progress:0, tz:true, tzReady:10 },
+    "task-g6-team-notifications": { code:"G6.5", title:"Командные уведомления", priority:"P1", stage:"master_plan_only", progress:0, tz:true, tzReady:10 }
+  };
+
+  const taskTermEn = {
+    "task-g1-session": "service session",
+    "task-g1-chat": "role-based chat",
+    "task-g1-statuses": "state machine / lifecycle",
+    "task-g1-chat-notifications": "chat notifications",
+    "task-g2-pricing": "pricing gate",
+    "task-g2-timer": "timer / debit / hard stop",
+    "task-g2-refund": "refund ledger",
+    "task-g2-accruals": "accruals / incentives",
+    "task-g3-home": "storefront",
+    "task-g3-catalog": "expert catalog",
+    "task-g3-profile": "expert profile",
+    "task-g3-quiz": "quiz / matching / start",
+    "task-g3-qa": "end-to-end path proof",
+    "task-g4-support": "support",
+    "task-g4-complaints": "complaints / disputes",
+    "task-g4-docs": "terms / documents",
+    "task-g4-support-notifications": "support notifications",
+    "task-g5-events": "funnel events",
+    "task-g5-dashboard": "dashboard",
+    "task-g5-kpi": "KPI table",
+    "task-g5-marketing-gate": "marketing gate",
+    "task-g6-assignment": "assignment queue",
+    "task-g6-sla": "SLA / response time",
+    "task-g6-quality": "QA / quality control",
+    "task-g6-training": "training / playbook",
+    "task-g6-team-notifications": "team notifications"
+  };
+
+  const goals = [
+    {
+      color:"#2563eb",
+      title:"1) Глобальный чат",
+      month:"Месяц 1",
+      summary:"Сделать рабочий чат для всех ролей и карточку одной конкретной консультации.",
+      tasks:["task-g1-session","task-g1-chat","task-g1-statuses","task-g1-chat-notifications"]
+    },
+    {
+      color:"#0f766e",
+      title:"2) Деньги и поминутная логика",
+      month:"Месяц 2",
+      summary:"Сделать продуктовую денежную механику: цена, баланс, лимиты, стоп, возвраты, начисления.",
+      tasks:["task-g2-pricing","task-g2-timer","task-g2-refund","task-g2-accruals"]
+    },
+    {
+      color:"#7c3aed",
+      title:"3) Связать дизайн сайта с рабочей логикой",
+      month:"Месяц 3",
+      summary:"Перенести дизайн сайта на рабочую логику и связать с реальными данными.",
+      tasks:["task-g3-home","task-g3-catalog","task-g3-profile","task-g3-quiz","task-g3-qa"]
+    },
+    {
+      color:"#b7791f",
+      title:"4) Поддержка, документы и правила",
+      month:"Месяц 4",
+      summary:"Собрать безопасный контур поддержки, жалоб, спорных ситуаций и правил консультации.",
+      tasks:["task-g4-support","task-g4-complaints","task-g4-docs","task-g4-support-notifications"]
+    },
+    {
+      color:"#be185d",
+      title:"5) Маркетинг, аналитика и дашборды",
+      month:"Месяц 5",
+      summary:"Сделать измеримый контур: статусы консультаций, деньги, проблемные сессии, качество, показатели и воронка.",
+      tasks:["task-g5-events","task-g5-dashboard","task-g5-kpi","task-g5-marketing-gate"]
+    },
+    {
+      color:"#475569",
+      title:"6) Рабочий контур команды",
+      month:"Месяц 6",
+      summary:"Сделать операционный контур для модератора, агентов, экспертов и контроля качества.",
+      tasks:["task-g6-assignment","task-g6-sla","task-g6-quality","task-g6-training","task-g6-team-notifications"]
+    }
+  ];
+
+  const roles = [
+    {
+      role:"Клиент",
+      what:"Понимает продукт, выбирает эксперта или проходит подбор, задает вопрос, видит условия, стартует чат, платит за минуты, получает поддержку и может оставить отзыв.",
+      tasks:["task-g3-home","task-g3-catalog","task-g3-profile","task-g3-quiz","task-g1-chat","task-g2-pricing","task-g4-support"],
+      done:"Клиент проходит путь от входа до консультации без ручного объяснения."
+    },
+    {
+      role:"Эксперт",
+      what:"Имеет понятную анкету, допуск, рабочий кабинет консультаций, сроки ответа, историю, начисления и правила качества.",
+      tasks:["task-g3-profile","task-g1-chat","task-g2-accruals","task-g6-sla","task-g6-quality","task-g6-training"],
+      done:"Эксперт может принимать и проводить консультации без ручной поддержки разработчика."
+    },
+    {
+      role:"Агент",
+      what:"Видит назначенные анкеты экспертов, свои консультации, чаты, поддержку, сроки ответа, эскалации и мотивацию.",
+      tasks:["task-g1-session","task-g1-chat","task-g4-support","task-g6-assignment","task-g6-sla","task-g2-accruals"],
+      done:"Агент ведет несколько консультаций и понимает статус каждой без внешних пояснений."
+    },
+    {
+      role:"Супер-админ",
+      what:"Видит весь сервис: консультации, деньги, проблемы, сроки ответа, поддержку, возвраты, качество, роли, обучение, дашборды и готовность к рекламе.",
+      tasks:["task-g1-session","task-g2-refund","task-g5-dashboard","task-g5-kpi","task-g6-assignment","task-g6-quality","task-g5-marketing-gate"],
+      done:"Админ видит каждую консультацию целиком и понимает, можно ли включать рекламу."
+    }
+  ];
+
+  function priorityClass(priority) {
+    return priority.toLowerCase();
+  }
+
+  function priorityHint(priority) {
+    const hints = {
+      P0: "Обязательно для запуска.",
+      P1: "Нужно следующим слоем.",
+      P2: "Можно делать позже."
+    };
+    return hints[priority] || priority;
+  }
+
+  function tzStatus(item) {
+    const ready = item.tzReady || 0;
+    if (ready >= 100) return { label: "ТЗ готово", className: "tz-ready" };
+    if (ready > 0) return { label: "ТЗ в работе", className: "tz-progress" };
+    return { label: "Нет ТЗ", className: "tz-блокируется" };
+  }
+
+  function taskHref(id) {
+    return "tasks/" + encodeURIComponent(id) + ".html";
+  }
+
+  function readinessHref(id) {
+    return "task-readiness.html?task=" + encodeURIComponent(id);
+  }
+
+  function tzHref(id) {
+    return "task-tz.html?task=" + encodeURIComponent(id);
+  }
+
+  const goalsGrid = document.getElementById("goals-grid");
+  goals.forEach((goal) => {
+    const article = document.createElement("article");
+    article.className = "goal-card";
+    article.style.setProperty("--goal-color", goal.color);
+
+    const rows = goal.tasks.map((id) => {
+      const item = taskMeta[id];
+      const tz = tzStatus(item);
+      return `
+        <tr>
+          <td>
+            <a class="task-link" href="${taskHref(id)}" title="Открыть детали задачи">
+              <div class="task-title">${item.code} ${item.title}<span class="term-en">${taskTermEn[id] || ""}</span></div>
+              <div><span class="badge ${priorityClass(item.priority)}" title="${priorityHint(item.priority)}">${item.priority}</span></div>
+            </a>
+          </td>
+          <td class="progress-wrap">
+            <a class="readiness-link" href="${readinessHref(id)}" title="Открыть оценку готовности сайта">
+              <b>${item.progress}%</b>
+              <div class="progress-line"><div class="progress-bar" style="width:${item.progress}%"></div></div>
+            </a>
+          </td>
+          <td class="tz-wrap">
+            <a class="tz-link" href="${tzHref(id)}" title="Открыть ТЗ задачи">
+              <div class="tz-head">
+                <span class="badge ${tz.className}">${tz.label}</span>
+                <span class="tz-percent">${item.tzReady || 0}%</span>
+              </div>
+              <div class="progress-line"><div class="progress-bar tz-bar" style="width:${item.tzReady || 0}%"></div></div>
+            </a>
+          </td>
+        </tr>`;
+    }).join("");
+
+    article.innerHTML = `
+      <div class="goal-head"><b>${goal.title}</b>${goal.month}</div>
+      <div class="goal-body">
+        <p>${goal.summary}</p>
+        <table class="task-table">
+          <thead>
+            <tr>
+              <th>Задача<span class="th-sub">task</span></th>
+              <th>% сайта<span class="th-sub">site readiness</span></th>
+              <th>ТЗ<span class="th-sub">spec</span></th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+
+    goalsGrid.appendChild(article);
+  });
+
+  const roleBody = document.getElementById("role-body");
+  roles.forEach((row) => {
+    const chips = row.tasks.map((id) => {
+      const item = taskMeta[id];
+      return `<a class="task-chip" href="${taskHref(id)}"><span>${item.code}</span><span>${item.title}<span class="term-en">${taskTermEn[id] || ""}</span></span></a>`;
+    }).join("");
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><b>${row.role}</b></td>
+      <td>${row.what}</td>
+      <td><div class="task-chip-list">${chips}</div></td>
+      <td>${row.done}</td>`;
+    roleBody.appendChild(tr);
+  });
+
+  const tabButtons = Array.from(document.querySelectorAll("[data-tab-target]"));
+  const tabPanels = Array.from(document.querySelectorAll("[data-tab-panel]"));
+
+  function showTab(tabName) {
+    tabPanels.forEach((panel) => {
+      panel.classList.toggle("is-hidden", panel.dataset.tabPanel !== tabName);
+    });
+    tabButtons.forEach((button) => {
+      button.classList.toggle("is-active", button.dataset.tabTarget === tabName);
+    });
+  }
+
+  tabButtons.forEach((button) => {
+    button.addEventListener("click", () => showTab(button.dataset.tabTarget));
+  });
+})();
+</script>
+</body>
+</html>
