@@ -1,0 +1,1358 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nebula service_session: словарь и паспорт для согласования</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --text: #17202a;
+      --muted: #657080;
+      --line: #d9e0e8;
+      --head: #eef3f8;
+      --accent: #285f9f;
+      --danger: #a83232;
+      --warn: #8a5a00;
+      --ok: #1f6b45;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 14px/1.45 "Segoe UI", Tahoma, sans-serif;
+      overflow-x: hidden;
+    }
+
+    main {
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      font-size: 20px;
+      margin-bottom: 14px;
+    }
+
+    h3 {
+      font-size: 16px;
+      margin: 20px 0 10px;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .top {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 16px;
+      width: 100%;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .nav button {
+      color: var(--accent);
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-weight: 600;
+      cursor: pointer;
+      font: inherit;
+      white-space: normal;
+    }
+
+    .nav button:hover,
+    .nav button:focus {
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    .nav button.active {
+      color: #fff;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 16px;
+      width: 100%;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .note {
+      border-left: 4px solid var(--accent);
+      background: #f7fbff;
+      padding: 10px 12px;
+      margin: 12px 0;
+    }
+
+    .warning {
+      border-left-color: var(--warn);
+      background: #fff9ed;
+    }
+
+    .danger {
+      border-left-color: var(--danger);
+      background: #fff5f5;
+    }
+
+    table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 10px 0 18px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 0;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 9px 10px;
+      text-align: left;
+      vertical-align: top;
+      overflow-wrap: anywhere;
+    }
+
+    th:last-child,
+    td:last-child {
+      border-right: 0;
+    }
+
+    tr:last-child th,
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    th {
+      background: var(--head);
+      font-weight: 700;
+    }
+
+    td:first-child {
+      font-weight: 650;
+      width: 24%;
+    }
+
+    th:first-child,
+    #passport td:first-child {
+      width: 24%;
+    }
+
+    th:nth-child(2),
+    #passport td:nth-child(2) {
+      width: 56%;
+    }
+
+    th:nth-child(3),
+    #passport td:nth-child(3) {
+      width: 20%;
+    }
+
+    .status {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .must { color: var(--ok); background: #e8f6ef; }
+    .decide { color: var(--warn); background: #fff1d6; }
+    .block { color: var(--danger); background: #ffe1e1; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    ul {
+      margin: 8px 0 0 18px;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    code {
+      background: #eef3f8;
+      border: 1px solid #dce4ed;
+      border-radius: 4px;
+      padding: 1px 4px;
+    }
+
+    .field-token {
+      position: relative;
+      display: inline-block;
+      margin: 1px 2px;
+      padding: 1px 5px;
+      border: 1px solid #c9d6e4;
+      border-radius: 4px;
+      background: #eef3f8;
+      color: #20384f;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 13px;
+      cursor: help;
+      outline: none;
+    }
+
+    .field-token::after {
+      content: attr(data-hint);
+      position: absolute;
+      left: 0;
+      bottom: calc(100% + 8px);
+      z-index: 20;
+      display: none;
+      width: max-content;
+      max-width: 320px;
+      padding: 8px 10px;
+      border: 1px solid #b9c8d8;
+      border-radius: 6px;
+      background: #17202a;
+      color: #fff;
+      font: 12px/1.35 "Segoe UI", Tahoma, sans-serif;
+      white-space: normal;
+      box-shadow: 0 8px 24px rgba(23, 32, 42, .18);
+    }
+
+    .field-token:hover::after,
+    .field-token:focus::after {
+      display: block;
+    }
+
+    footer {
+      color: var(--muted);
+      font-size: 12px;
+      padding: 8px 2px 24px;
+    }
+
+    @media (max-width: 760px) {
+      main {
+        width: 100vw;
+        max-width: 100vw;
+        padding: 12px;
+      }
+
+      h1 {
+        font-size: 23px;
+        line-height: 1.28;
+      }
+
+      h2 {
+        font-size: 19px;
+        line-height: 1.3;
+      }
+
+      h1, h2, h3, p, li, td, th {
+        max-width: 100%;
+        min-width: 0;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+
+      .top,
+      section {
+        width: calc(100vw - 24px);
+        max-width: calc(100vw - 24px);
+        min-width: 0;
+        overflow: hidden;
+      }
+
+      .grid { grid-template-columns: 1fr; }
+
+      .nav {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .nav button {
+        min-width: 0;
+        width: 100%;
+        text-align: center;
+        overflow-wrap: anywhere;
+      }
+
+      table,
+      thead,
+      tbody,
+      tr,
+      th,
+      td {
+        display: block;
+        width: 100%;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tr {
+        border-bottom: 1px solid var(--line);
+      }
+
+      tr:last-child {
+        border-bottom: 0;
+      }
+
+      th,
+      td {
+        border-right: 0;
+      }
+
+      td {
+        min-width: 0;
+      }
+
+      td:first-child {
+        width: auto;
+        min-width: 0;
+        background: #f8fbff;
+      }
+
+      td:nth-child(2)::before {
+        content: "Описание: ";
+        display: block;
+        margin-bottom: 3px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      td:nth-child(3)::before {
+        content: "Статус: ";
+        display: block;
+        margin-bottom: 3px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      th:first-child,
+      th:nth-child(2),
+      th:nth-child(3),
+      #passport td:first-child,
+      #passport td:nth-child(2),
+      #passport td:nth-child(3) {
+        width: auto;
+        min-width: 180px;
+      }
+
+      .field-token::after {
+        left: auto;
+        right: 0;
+        max-width: 260px;
+      }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <h1>Nebula: словарь терминов и паспорт service_session</h1>
+    <p class="muted">Версия для согласования. Это не финальный дизайн и не production-экран.</p>
+    <p>Цель документа: чтобы владелец, PM, Игорь и Codex одинаково понимали, что такое платная консультация, какие поля нужны в паспорте и какие доказательства должны быть сохранены.</p>
+    <nav class="nav" aria-label="Разделы" role="tablist">
+      <button type="button" class="active" data-tab="purpose" role="tab" aria-selected="true">Цель</button>
+      <button type="button" data-tab="open-questions" role="tab" aria-selected="false">Решения и правила</button>
+      <button type="button" data-tab="glossary" role="tab" aria-selected="false">Словарь</button>
+      <button type="button" data-tab="user-fields" role="tab" aria-selected="false">Пользовательские поля</button>
+      <button type="button" data-tab="passport" role="tab" aria-selected="false">Паспорт</button>
+      <button type="button" data-tab="events" role="tab" aria-selected="false">События</button>
+      <button type="button" data-tab="pm-control" role="tab" aria-selected="false">PM-контроль</button>
+      <button type="button" data-tab="not-included" role="tab" aria-selected="false">Границы</button>
+    </nav>
+  </header>
+
+  <section id="purpose" class="tab-panel active" role="tabpanel">
+    <h2>1. Цель паспорта</h2>
+    <div class="note">
+      <p><strong>Паспорт service_session</strong> отвечает на один вопрос: что произошло в одной конкретной платной консультации клиента с экспертом, можно ли этому доверять, и что делать дальше.</p>
+    </div>
+    <table>
+      <tbody>
+      <tr>
+        <td>Для кого</td>
+        <td>Сейчас для супер-админа, который видит все. Позже права можно разнести по ролям: модератор, поддержка, бухгалтерия, QA.</td>
+      </tr>
+      <tr>
+        <td>Что разбирает</td>
+        <td>Один платный цикл консультации внутри диалога: старт, подтверждение, бесплатные минуты, платные минуты, списание, SLA, перевод, связь, жалобу, возврат.</td>
+      </tr>
+      <tr>
+        <td>Чего не делает</td>
+        <td>Не заменяет чат, не считает выплаты агентам, не назначает анкеты, не управляет настройками чата.</td>
+      </tr>
+      <tr>
+        <td>Критерий готовности</td>
+        <td>Каждое важное состояние имеет доказательство: событие, сообщение, offer, списание, лог, обращение или системное правило.</td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="glossary" class="tab-panel" role="tabpanel">
+    <h2>3. Словарь терминов</h2>
+    <table>
+      <thead>
+      <tr>
+        <th>Термин</th>
+        <th>Простое значение</th>
+        <th>Зачем нужен</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>service_session</td>
+        <td>Одна конкретная консультация как отдельная сущность, а не просто чат.</td>
+        <td>Чтобы доказать старт, время, списание, остановку, жалобу и итог.</td>
+      </tr>
+      <tr>
+        <td>Диалог / conversation</td>
+        <td>Общая переписка клиента с экспертной анкетой.</td>
+        <td>Один диалог может содержать несколько платных консультаций.</td>
+      </tr>
+      <tr>
+        <td>Паспорт диалога</td>
+        <td>Страница разбора одной service_session.</td>
+        <td>Супер-админ видит факты и принимает решение.</td>
+      </tr>
+      <tr>
+        <td>Эксперт</td>
+        <td>Анкета, которую видит клиент.</td>
+        <td>Для клиента существует только эксперт, не агент.</td>
+      </tr>
+      <tr>
+        <td>Агент</td>
+        <td>Внутренний исполнитель, которому назначены анкеты.</td>
+        <td>Не показывается клиенту. В паспорт попадает только если нужен внутренний audit, но не как клиентский факт.</td>
+      </tr>
+      <tr>
+        <td>paid_action</td>
+        <td>Конкретное платное действие внутри диалога.</td>
+        <td>Для Nebula v1 это поминутная консультация. Позже могут быть пакеты или дополнительные услуги.</td>
+      </tr>
+      <tr>
+        <td>pricing_offer</td>
+        <td>Предложение условий: цена, бесплатные минуты, купон, правила списания.</td>
+        <td>Доказывает, что клиент видел условия до старта.</td>
+      </tr>
+      <tr>
+        <td>pricing_snapshot</td>
+        <td>Снимок цены и правил на момент старта.</td>
+        <td>Если настройки потом изменятся, старая консультация не должна пересчитаться задним числом.</td>
+      </tr>
+      <tr>
+        <td>free minutes</td>
+        <td>Бесплатные минуты до платного списания.</td>
+        <td>Нужно точно видеть, где бесплатная часть закончилась и где началась платная.</td>
+      </tr>
+      <tr>
+        <td>paid minutes</td>
+        <td>Минуты, за которые клиент реально платит.</td>
+        <td>Основа суммы списания и возможного возврата.</td>
+      </tr>
+      <tr>
+        <td>billing tick</td>
+        <td>Системное событие списания за время консультации.</td>
+        <td>Доказывает, почему списалась конкретная сумма.</td>
+      </tr>
+      <tr>
+        <td>hard stop</td>
+        <td>Принудительная остановка сессии по правилу: баланс, риск, лимит, ошибка.</td>
+        <td>Не дает продолжать платную часть без права на списание.</td>
+      </tr>
+      <tr>
+        <td>SLA</td>
+        <td>Регламент скорости ответа в платном чате.</td>
+        <td>Помогает понять, была ли задержка ответа и влияет ли она на качество/возврат.</td>
+      </tr>
+      <tr>
+        <td>SLA pause</td>
+        <td>Пауза расчета SLA.</td>
+        <td>Например, сессия остановлена по балансу, идет жалоба, есть техническая проблема.</td>
+      </tr>
+      <tr>
+        <td>Risk</td>
+        <td>Состояние, когда продажа или продолжение может быть небезопасным.</td>
+        <td>Например, клиент требует гарантию результата или тема требует осторожного ответа.</td>
+      </tr>
+      <tr>
+        <td>Support case</td>
+        <td>Обращение клиента в поддержку.</td>
+        <td>Связывает жалобу с конкретной консультацией и решением.</td>
+      </tr>
+      <tr>
+        <td>Refund review</td>
+        <td>Проверка возможности возврата.</td>
+        <td>Возврат должен считаться по платной части, а не по бесплатным минутам.</td>
+      </tr>
+      <tr>
+        <td>event_id</td>
+        <td>Уникальный ID события в журнале.</td>
+        <td>Каждое важное изменение должно быть доказуемым.</td>
+      </tr>
+      <tr>
+        <td>proof_ref</td>
+        <td>Ссылка на доказательство: сообщение, offer, списание, лог, обращение.</td>
+        <td>Без proof_ref паспорт превращается в мнение, а не доказательство.</td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="passport" class="tab-panel" role="tabpanel">
+    <h2>5. Паспорт service_session: состав полей</h2>
+
+    <h3>5.1. Главная информация</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Поле</th>
+        <th>Что показывает</th>
+        <th>Обязательность</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>session_id</td><td>Уникальный ID консультации.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>status</td><td>Идет, остановлена, на разборе, закрыта.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>conversation_id</td><td>ID общего диалога, где проходила консультация.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>Ссылка на диалог</td><td>Переход в исходный чат. Фрагмент переписки в паспорте не показываем.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>client_id</td><td>Клиент, который получил консультацию.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>expert_profile_id</td><td>Анкета эксперта, которую видел клиент.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>channel</td><td>chat / voice / video. Для старта вероятно chat.</td><td><span class="status decide">уточнить</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>5.2. Граница консультации</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Поле</th>
+        <th>Что показывает</th>
+        <th>Обязательность</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>opened_reason</td><td>Почему сессия открылась: клиент начал, клиент продолжил, эксперт предложил, повторная консультация.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>started_by</td><td>Кто инициировал платную часть: клиент, эксперт через предложение, система.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>client_confirmed_at</td><td>Когда клиент подтвердил платные условия.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>started_at</td><td>Когда началась платная часть.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>ended_at</td><td>Когда сессия завершилась.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>close_reason</td><td>Почему завершилась: клиент, эксперт, баланс, жалоба, ошибка, модератор.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>previous_session_id</td><td>Предыдущая платная сессия в этом же диалоге.</td><td><span class="status decide">желательно</span></td></tr>
+      <tr><td>next_session_id</td><td>Следующая платная сессия, если создана.</td><td><span class="status decide">желательно</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>5.3. Платное действие</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Поле</th>
+        <th>Что показывает</th>
+        <th>Обязательность</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>paid_action_id</td><td>Конкретное платное действие внутри диалога.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>paid_action_type</td><td>Тип: поминутная консультация.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>source_message_id</td><td>Сообщение или кнопка, из которой начался платный action.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>pricing_offer_id</td><td>ID условий, которые подтвердил клиент.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>access_status</td><td>Открыт, заблокирован, завершен, оспаривается.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>billing_trace</td><td>Связь с debit_tx_id / balance_tx_id / refund_tx_id.</td><td><span class="status must">обязательно</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>5.4. Условия оплаты клиента</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Поле</th>
+        <th>Что показывает</th>
+        <th>Обязательность</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>rate_per_minute</td><td>Цена за минуту на момент старта.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>opening_balance</td><td>Баланс клиента до начала платной части.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>free_minutes_total</td><td>Сколько бесплатных минут было доступно.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>free_minutes_used</td><td>Сколько бесплатных минут использовано.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>paid_started_at</td><td>Момент, когда закончились бесплатные минуты и началась платная часть.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>coupon_snapshot</td><td>Купон, скидка, размер влияния на списание.</td><td><span class="status decide">если есть</span></td></tr>
+      <tr><td>bonus_snapshot</td><td>Бонусные credits и порядок их использования.</td><td><span class="status decide">если есть</span></td></tr>
+      <tr><td>paid_minutes</td><td>Сколько минут реально оплачивалось.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>charged_credits</td><td>Сколько списано с клиента.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>balance_after</td><td>Баланс клиента после списания.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>refundable_amount_max</td><td>Максимум возврата по этой сессии.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>billing_state</td><td>Идет, закрыто, остановлено, на проверке.</td><td><span class="status must">обязательно</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>5.5. SLA и ответы</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Поле</th>
+        <th>Что показывает</th>
+        <th>Обязательность</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>last_client_message_at</td><td>От какого сообщения клиента считаем ожидание ответа.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>last_expert_reply_at</td><td>Когда эксперт ответил.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>sla_rule_snapshot</td><td>Правило: OK, warning, breach.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>reply_due_at</td><td>До какого времени должен быть ответ.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>reply_owner</td><td>Кто должен ответить: эксперт, клиент, поддержка, никто.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>sla_pause_reason</td><td>Почему SLA временно не считается.</td><td><span class="status decide">если есть</span></td></tr>
+      <tr><td>sla_state</td><td>OK, warning, breach, paused.</td><td><span class="status must">обязательно</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>5.6. Связь, доставка и перевод</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Поле</th>
+        <th>Что показывает</th>
+        <th>Обязательность</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>message_delivery_state</td><td>Все доставлено, задержка, ошибка.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>client_connection_quality</td><td>Качество связи клиента.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>expert_connection_quality</td><td>Качество связи эксперта.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>reconnect_count</td><td>Сколько раз было переподключение.</td><td><span class="status decide">желательно</span></td></tr>
+      <tr><td>connection_billing_impact</td><td>Повлияла ли связь на списание.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>client_to_expert_translation</td><td>Перевод текста клиента для эксперта.</td><td><span class="status decide">если перевод включен</span></td></tr>
+      <tr><td>expert_to_client_translation</td><td>Перевод ответа эксперта для клиента.</td><td><span class="status decide">если перевод включен</span></td></tr>
+      <tr><td>translated_chars</td><td>Количество символов, ушедших в переводчик.</td><td><span class="status decide">если перевод включен</span></td></tr>
+      <tr><td>translation_status</td><td>Успешно, ошибка, частично, спорный перевод.</td><td><span class="status decide">если перевод включен</span></td></tr>
+      <tr><td>translation_sla_impact</td><td>Повлиял ли перевод на скорость ответа.</td><td><span class="status decide">если перевод включен</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>5.7. Жалоба, поддержка, возврат</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Поле</th>
+        <th>Что показывает</th>
+        <th>Обязательность</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>support_case_id</td><td>ID обращения клиента.</td><td><span class="status decide">если есть жалоба</span></td></tr>
+      <tr><td>complaint_reason</td><td>Причина: качество, списание, связь, перевод, другое.</td><td><span class="status decide">если есть жалоба</span></td></tr>
+      <tr><td>case_status</td><td>Открыта, проверяется, закрыта.</td><td><span class="status decide">если есть жалоба</span></td></tr>
+      <tr><td>refund_window_until</td><td>До какого времени клиент может подать запрос по правилам.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>refund_cap</td><td>Максимальный возможный возврат по правилам.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>refund_decision</td><td>Вернуть, отказать, частично вернуть, еще не принято.</td><td><span class="status decide">если есть жалоба</span></td></tr>
+      <tr><td>client_explanation</td><td>Что объясняем клиенту.</td><td><span class="status decide">если есть решение</span></td></tr>
+      <tr><td>client_explanation_sent_at</td><td>Когда ответ отправлен клиенту.</td><td><span class="status decide">если есть решение</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>5.8. Риск и безопасность</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Поле</th>
+        <th>Что показывает</th>
+        <th>Обязательность</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>risk_state</td><td>Нет риска, риск открыт, риск снят.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>risk_reason</td><td>Почему риск появился.</td><td><span class="status decide">если есть риск</span></td></tr>
+      <tr><td>blocked_action</td><td>Что заблокировано: продажа, старт, продолжение, ничего.</td><td><span class="status decide">если есть риск</span></td></tr>
+      <tr><td>safe_resolution</td><td>Что нужно сделать, чтобы снять риск.</td><td><span class="status decide">если есть риск</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>5.9. Решение по сессии</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Поле</th>
+        <th>Что показывает</th>
+        <th>Обязательность</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>passport_verdict</td><td>Короткий итог: все нормально, нужен разбор, остановить, вернуть, отказать.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>next_action</td><td>Что нужно сделать сейчас.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>decision_owner</td><td>Кто отвечает за действие.</td><td><span class="status must">обязательно</span></td></tr>
+      <tr><td>decision_due_at</td><td>До какого времени нужно закрыть действие.</td><td><span class="status decide">желательно</span></td></tr>
+      <tr><td>decision_status</td><td>Не требуется, требуется, принято, закрыто.</td><td><span class="status must">обязательно</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="user-fields" class="tab-panel" role="tabpanel">
+    <h2>4. Пользовательские поля для клиента и эксперта</h2>
+    <p>Перечень собран из текущей админки/кода Confideline, чата, финансовых сущностей, локальных Figma-макетов кабинета/чата, макетов service_session и правил платного чата. Это не финальная структура таблиц, а согласованный список данных, которые нельзя потерять при интеграции.</p>
+
+    <h3>4.1. Источники полей</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Источник</th>
+        <th>Что оттуда берем</th>
+        <th>Роль в ТЗ</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>Текущая Yii-админка</td><td>User, Profile, ProfileField, ProfileExtra, Country, Language, Report.</td><td>Переиспользуем как текущую основу аккаунта, профиля, страны, языка и жалоб.</td></tr>
+      <tr><td>Текущий чат</td><td>Conversation, Message, MessageAttachment, MessageTranslation, MessageShellService, admin-agent-chat.js.</td><td>Переиспользуем как транспорт сообщений и рабочую CRM-панель, но не как service_session truth.</td></tr>
+      <tr><td>Финансы</td><td>Balance, BalanceTransaction, Order, PaymentCustomer, настройки prices/payment.</td><td>Переиспользуем как финансовую основу, но Nebula-правду платной консультации фиксируем в service_session.</td></tr>
+      <tr><td>Назначение анкет агенту</td><td>Partner info, chief-under, Login as user, users-log/log.</td><td>Фиксируем связь agent -> expert profiles и ограничения доступа к чатам.</td></tr>
+      <tr><td>Figma/HTML-макеты кабинета</td><td>Chatroom, expert sidebar, profile, onboarding, paid/free intro handoff.</td><td>Добавляем поля, которые нужны фронту и пользовательскому сценарию Nebula.</td></tr>
+      <tr><td>Макеты service_session</td><td>Паспорт, список консультаций, правила платного чата, SLA, Sell/Risk, refund.</td><td>Добавляем Nebula-only поля для доказательной базы консультации.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.2. Клиент: аккаунт, профиль, контекст</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Поле</th>
+        <th>Зачем нужно</th>
+        <th>Источник / статус</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>client_user_id</td><td>Уникальный ID клиента.</td><td>User.id / есть</td></tr>
+      <tr><td>username</td><td>Техническое имя пользователя.</td><td>User.username / есть</td></tr>
+      <tr><td>email</td><td>Контакт и идентификатор аккаунта. Эксперту не показывать.</td><td>User.email / есть, private</td></tr>
+      <tr><td>registered_at</td><td>Дата регистрации клиента.</td><td>User.created_at / есть</td></tr>
+      <tr><td>confirmed_at</td><td>Подтверждение аккаунта.</td><td>User.confirmed_at / есть</td></tr>
+      <tr><td>blocked_at</td><td>Блокировка аккаунта.</td><td>User.blocked_at / есть</td></tr>
+      <tr><td>last_login_at</td><td>Последний вход.</td><td>User.last_login_at / есть</td></tr>
+      <tr><td>last_active_at</td><td>Последняя активность в продукте.</td><td>User/Profile + чат / derived</td></tr>
+      <tr><td>public_name</td><td>Имя клиента, допустимое в админке/чате.</td><td>Profile.name / есть</td></tr>
+      <tr><td>gender</td><td>Пол клиента, если нужен сценарию.</td><td>Profile.sex / есть</td></tr>
+      <tr><td>relationship_status</td><td>Статус отношений, если используется в консультации.</td><td>Profile.status / есть</td></tr>
+      <tr><td>date_of_birth</td><td>Дата рождения клиента.</td><td>Profile.dob + Figma onboarding / есть</td></tr>
+      <tr><td>birth_time</td><td>Время рождения, если клиент указал.</td><td>Figma onboarding / добавить Nebula</td></tr>
+      <tr><td>birth_place</td><td>Место рождения: город и страна.</td><td>Figma onboarding / добавить Nebula</td></tr>
+      <tr><td>current_country</td><td>Текущая страна клиента.</td><td>Profile.country, Country / есть</td></tr>
+      <tr><td>current_city</td><td>Текущий город клиента.</td><td>Profile.city / есть</td></tr>
+      <tr><td>timezone</td><td>Часовой пояс клиента.</td><td>Profile.timezone / есть</td></tr>
+      <tr><td>interface_language</td><td>Язык интерфейса клиента.</td><td>Profile.language_id, Language / есть</td></tr>
+      <tr><td>consultation_language</td><td>Язык общения в консультации.</td><td>Figma/chat/translator / добавить Nebula</td></tr>
+      <tr><td>client_device</td><td>Устройство клиента: web/mobile/browser.</td><td>Паспорт/аналитика / добавить Nebula</td></tr>
+      <tr><td>client_source</td><td>Откуда клиент пришел в консультацию: анкета, чат, onboarding, реклама.</td><td>Figma handoff + analytics / добавить Nebula</td></tr>
+      <tr><td>client_context_json</td><td>Разрешенный контекст клиента для эксперта, поддержки и QA.</td><td>CRM-панель чата / добавить Nebula</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.3. Экспертная анкета и агент</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Поле</th>
+        <th>Зачем нужно</th>
+        <th>Источник / статус</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>expert_profile_id</td><td>Уникальная анкета эксперта, которую видит клиент.</td><td>Profile.user_id / есть</td></tr>
+      <tr><td>expert_user_id</td><td>Технический пользователь, на котором держится анкета.</td><td>User/Profile / есть</td></tr>
+      <tr><td>public_display_name</td><td>Публичное имя эксперта.</td><td>Profile.name / есть</td></tr>
+      <tr><td>slug</td><td>Публичный URL анкеты.</td><td>Фронт/SEO / проверить в текущей реализации</td></tr>
+      <tr><td>avatar_photo_id</td><td>Главная фотография анкеты.</td><td>Profile.photo_id, Photo / есть</td></tr>
+      <tr><td>gallery_photo_ids</td><td>Дополнительные фотографии.</td><td>Photo / есть</td></tr>
+      <tr><td>short_intro</td><td>Короткое описание эксперта.</td><td>Profile.description / есть частично</td></tr>
+      <tr><td>full_bio</td><td>Полное описание анкеты.</td><td>Profile.description/ProfileExtra / есть частично</td></tr>
+      <tr><td>specializations_json</td><td>Направления и специализации.</td><td>ProfileField aliases value, specialistic / есть</td></tr>
+      <tr><td>experience_label</td><td>Опыт эксперта.</td><td>ProfileField aliases ncons, experience / есть</td></tr>
+      <tr><td>languages_json</td><td>Языки работы анкеты.</td><td>Profile.language_id + Nebula extension / частично</td></tr>
+      <tr><td>primary_consultation_language</td><td>Основной язык консультации.</td><td>Figma/chat/translator / добавить Nebula</td></tr>
+      <tr><td>service_countries_json</td><td>Страны/рынки, для которых подходит анкета.</td><td>Country/Profile + Nebula matching / добавить Nebula</td></tr>
+      <tr><td>service_cities_json</td><td>Города/регионы, если это важно для подбора.</td><td>Profile.city + Nebula matching / добавить Nebula</td></tr>
+      <tr><td>timezone</td><td>Рабочий часовой пояс анкеты/исполнителя.</td><td>Profile.timezone / есть</td></tr>
+      <tr><td>is_verified</td><td>Верификация анкеты.</td><td>Profile.is_verified / есть</td></tr>
+      <tr><td>profile_status</td><td>Активна, скрыта, на модерации, заблокирована.</td><td>User/Profile/admin / есть частично</td></tr>
+      <tr><td>online_status</td><td>Online, offline, busy.</td><td>User.isOnline + чат / есть</td></tr>
+      <tr><td>allowed_channels_json</td><td>Доступные форматы: chat, voice, video, async.</td><td>Figma formats / добавить Nebula</td></tr>
+      <tr><td>default_rate_per_minute</td><td>Базовая цена минуты для анкеты.</td><td>Settings prices + Nebula pricing / добавить snapshot</td></tr>
+      <tr><td>welcome_coupon_allowed</td><td>Можно ли применять welcome-купон.</td><td>Paid/free intro макет / добавить Nebula</td></tr>
+      <tr><td>assigned_agent_user_id</td><td>Агент, который отвечает от имени анкеты.</td><td>chief-under / есть в админке как логика</td></tr>
+      <tr><td>assigned_at</td><td>Когда анкета назначена агенту.</td><td>chief-under + logs / проверить хранение</td></tr>
+      <tr><td>assigned_by_admin_id</td><td>Кто назначил анкету агенту.</td><td>users-log/log / проверить хранение</td></tr>
+      <tr><td>training_level</td><td>Допуск по обучению.</td><td>G6 / добавить Nebula</td></tr>
+      <tr><td>qa_status</td><td>Текущий статус качества.</td><td>G6 QA / добавить Nebula</td></tr>
+      <tr><td>can_receive_new_chats</td><td>Можно ли давать новые диалоги.</td><td>Chat routing / добавить Nebula</td></tr>
+      <tr><td>can_initiate_paid_offer</td><td>Можно ли инициировать предложение платной части.</td><td>Paid chat rules / добавить Nebula</td></tr>
+      <tr><td>risk_restrictions_json</td><td>Ограничения по продаже, рискам и safe wording.</td><td>Sell/Risk rules / добавить Nebula</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.4. Связка клиент - эксперт - диалог</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Поле</th>
+        <th>Зачем нужно</th>
+        <th>Источник / статус</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>client_expert_relation_id</td><td>Устойчивая связь клиента с одной экспертной анкетой.</td><td>Добавить Nebula; сейчас conversation строится по паре users</td></tr>
+      <tr><td>client_user_id</td><td>Клиент в этой паре.</td><td>User/Message / есть</td></tr>
+      <tr><td>expert_profile_id</td><td>Экспертная анкета в этой паре.</td><td>Profile/chief-under / есть частично</td></tr>
+      <tr><td>agent_user_id</td><td>Агент, который обслуживает эту анкету внутри админки.</td><td>chief-under / есть как связка</td></tr>
+      <tr><td>conversation_id</td><td>Диалог пары клиент-эксперт.</td><td>Conversation pair key / есть как логика</td></tr>
+      <tr><td>current_service_session_id</td><td>Активная или последняя платная сессия в диалоге.</td><td>Добавить Nebula</td></tr>
+      <tr><td>relation_status</td><td>lead, trial, paid, live, paused, complaint, blocked.</td><td>Бейджи чата / добавить Nebula</td></tr>
+      <tr><td>topic</td><td>Тема обращения: relationship, career, family, astrology и т.д.</td><td>Figma onboarding / добавить Nebula</td></tr>
+      <tr><td>clarify_option</td><td>Уточнение темы: например current relationship, ex, compatibility.</td><td>Figma onboarding / добавить Nebula</td></tr>
+      <tr><td>main_question</td><td>Первичный вопрос клиента.</td><td>Figma onboarding + chat / добавить Nebula</td></tr>
+      <tr><td>client_country_at_relation</td><td>Страна клиента на момент создания пары.</td><td>Profile snapshot / добавить Nebula</td></tr>
+      <tr><td>client_city_at_relation</td><td>Город клиента на момент создания пары.</td><td>Profile snapshot / добавить Nebula</td></tr>
+      <tr><td>expert_country_scope</td><td>Страна/рынок, под который подходит анкета.</td><td>Matching / добавить Nebula</td></tr>
+      <tr><td>expert_city_scope</td><td>Город/регион анкеты, если важен локальный контекст.</td><td>Matching / добавить Nebula</td></tr>
+      <tr><td>language_match_state</td><td>same_language, translator_required, unsupported.</td><td>Translator/SLA / добавить Nebula</td></tr>
+      <tr><td>timezone_gap_minutes</td><td>Разница часовых поясов клиента и исполнителя.</td><td>SLA/scheduling / добавить Nebula</td></tr>
+      <tr><td>geo_language_match_score</td><td>Внутренняя оценка совпадения страны, города, языка и времени.</td><td>Matching/QA / добавить Nebula</td></tr>
+      <tr><td>geo_language_match_reason</td><td>Почему выбрана эта анкета.</td><td>Matching/support / добавить Nebula</td></tr>
+      <tr><td>match_snapshot_json</td><td>Снимок правил подбора на момент старта.</td><td>Service_session evidence / добавить Nebula</td></tr>
+      <tr><td>private_admin_notes</td><td>Внутренние заметки поддержки/модератора.</td><td>CRM right panel / добавить Nebula</td></tr>
+      <tr><td>last_client_message_at</td><td>Последнее сообщение клиента.</td><td>Message.created_at / derived</td></tr>
+      <tr><td>last_expert_reply_at</td><td>Последний ответ эксперта/агента.</td><td>Message.created_at / derived</td></tr>
+      <tr><td>sell_state</td><td>sell_ready, waiting_client, expired, paused_risk, converted.</td><td>Badges rules / добавить Nebula</td></tr>
+      <tr><td>risk_state</td><td>none, risk, safe, blocked.</td><td>Sell/Risk rules / добавить Nebula</td></tr>
+      <tr><td>support_case_open</td><td>Есть ли открытая жалоба по этой паре.</td><td>Report/support / derived + добавить связь</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.5. Чат и сообщения</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Поле</th>
+        <th>Зачем нужно</th>
+        <th>Источник / статус</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>message_id</td><td>Конкретное сообщение.</td><td>Message.id / есть</td></tr>
+      <tr><td>from_user_id</td><td>Кто отправил сообщение.</td><td>Message.from_user_id / есть</td></tr>
+      <tr><td>to_user_id</td><td>Кому отправлено сообщение.</td><td>Message.to_user_id / есть</td></tr>
+      <tr><td>service_session_id</td><td>К какой платной сессии относится сообщение.</td><td>Message.service_session_id / уже добавлялось в G1.1 lane, нужно принять в ТЗ</td></tr>
+      <tr><td>text</td><td>Текст сообщения.</td><td>Message.text / есть</td></tr>
+      <tr><td>created_at</td><td>Время сообщения.</td><td>Message.created_at / есть</td></tr>
+      <tr><td>is_new</td><td>Непрочитанное сообщение.</td><td>Message.is_new / есть</td></tr>
+      <tr><td>is_deleted_by_sender</td><td>Удаление у отправителя.</td><td>Message / есть</td></tr>
+      <tr><td>is_deleted_by_receiver</td><td>Удаление у получателя.</td><td>Message / есть</td></tr>
+      <tr><td>consultation_role</td><td>Роль сообщения: client, expert, agent, support, system.</td><td>G1.1 lane / добавить Nebula</td></tr>
+      <tr><td>visibility_scope</td><td>Кто видит сообщение: client-visible, admin-only, system-only.</td><td>G1.1 lane / добавить Nebula</td></tr>
+      <tr><td>message_kind</td><td>Тип: user_text, paid_offer, system_event, support_note, translator_note.</td><td>G1.1 lane / добавить Nebula</td></tr>
+      <tr><td>attachment_id</td><td>Связь с вложением.</td><td>MessageAttachment / есть</td></tr>
+      <tr><td>attachment_type</td><td>Тип вложения: image/file.</td><td>MessageAttachment.type / есть</td></tr>
+      <tr><td>attachment_data</td><td>Служебные данные вложения.</td><td>MessageAttachment.data / есть, проверить безопасность</td></tr>
+      <tr><td>pinned_state</td><td>Закреплено ли сообщение для разбора.</td><td>Chat UI pin / добавить Nebula</td></tr>
+      <tr><td>copy_allowed</td><td>Можно ли копировать сообщение из админки.</td><td>Chat UI copy / UI-only или permission</td></tr>
+      <tr><td>unread_count</td><td>Сколько непрочитанных в диалоге.</td><td>MessageShellService / derived</td></tr>
+      <tr><td>unanswered_state</td><td>Есть ли входящее без ответа.</td><td>Chat filters / derived</td></tr>
+      <tr><td>operator_sender_id</td><td>От чьего имени отправляет оператор в админке.</td><td>admin-agent-chat.js senderSelect / есть в UI, закрепить в ТЗ</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.6. Платная консультация и финансовая правда клиента</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Поле</th>
+        <th>Зачем нужно</th>
+        <th>Источник / статус</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>service_session_id</td><td>Паспорт одной платной консультации.</td><td>Добавить Nebula</td></tr>
+      <tr><td>session_status</td><td>draft, ready_to_start, active, paused_low_balance, ended, disputed.</td><td>Service_session state machine / добавить Nebula</td></tr>
+      <tr><td>opened_reason</td><td>Почему сессия создана: client_start, expert_offer_confirmed, paid_continue_confirmed.</td><td>Paid chat сценарии / добавить Nebula</td></tr>
+      <tr><td>started_by_role</td><td>Кто инициировал: client или expert_offer. Клиент всегда подтверждает действием.</td><td>Решение Алексея / добавить Nebula</td></tr>
+      <tr><td>pricing_offer_id</td><td>Предложение платной части.</td><td>G2.1 / добавить Nebula</td></tr>
+      <tr><td>offer_message_id</td><td>Сообщение, из которого начался paid offer.</td><td>Chat + G2.1 / добавить Nebula</td></tr>
+      <tr><td>client_confirmed_at</td><td>Когда клиент подтвердил условия.</td><td>G2.1 / добавить Nebula</td></tr>
+      <tr><td>pricing_snapshot_json</td><td>Цена, валюта, credits, правила на момент старта.</td><td>Order/settings + G2.1 / добавить Nebula</td></tr>
+      <tr><td>rate_per_minute</td><td>Цена минуты.</td><td>settings/prices + snapshot / добавить Nebula</td></tr>
+      <tr><td>opening_balance</td><td>Баланс клиента на старте.</td><td>Balance.balance / есть + snapshot</td></tr>
+      <tr><td>free_minutes_total</td><td>Размер бесплатного пакета. Сейчас 3 минуты welcome-купона.</td><td>Решение Алексея / добавить Nebula</td></tr>
+      <tr><td>coupon_code</td><td>Купон, который дал бесплатные минуты или скидку.</td><td>Paid/free intro / добавить Nebula</td></tr>
+      <tr><td>free_minutes_used</td><td>Сколько бесплатных минут использовано.</td><td>G2.2 / добавить Nebula</td></tr>
+      <tr><td>paid_started_at</td><td>Когда началась платная часть после free minutes.</td><td>G2.2 / добавить Nebula</td></tr>
+      <tr><td>paid_minutes</td><td>Сколько минут реально тарифицировалось.</td><td>G2.2 / добавить Nebula</td></tr>
+      <tr><td>charged_credits</td><td>Сколько списано с клиента.</td><td>BalanceTransaction.amount + G2.2 / добавить связь</td></tr>
+      <tr><td>balance_after</td><td>Баланс клиента после списания.</td><td>Balance / snapshot</td></tr>
+      <tr><td>order_id</td><td>Заказ пополнения/платежа, если был.</td><td>Order.id/guid / есть</td></tr>
+      <tr><td>order_status</td><td>NEW, IN_PROGRESS, COMPLETED, CANCELLED.</td><td>Order.status / есть</td></tr>
+      <tr><td>payment_customer_id</td><td>ID клиента у платежного провайдера без карточных данных.</td><td>PaymentCustomer / есть</td></tr>
+      <tr><td>balance_tx_id</td><td>Транзакция списания/начисления credits.</td><td>BalanceTransaction / есть + добавить session link</td></tr>
+      <tr><td>refundable_amount_max</td><td>Максимум возврата по оплаченной части консультации.</td><td>G2.3/refund policy / добавить Nebula</td></tr>
+      <tr><td>billing_state</td><td>Идет, закрыто, остановлено, на проверке.</td><td>G2.2/G2.3 / добавить Nebula</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.7. SLA, риск, поддержка, возврат</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Поле</th>
+        <th>Зачем нужно</th>
+        <th>Источник / статус</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>sla_rule_version_id</td><td>Какая версия SLA применялась.</td><td>Chat conditions / добавить Nebula</td></tr>
+      <tr><td>reply_owner</td><td>Кто должен ответить сейчас: client, expert, support, none.</td><td>SLA rules / добавить Nebula</td></tr>
+      <tr><td>reply_due_at</td><td>До какого времени должен быть ответ.</td><td>SLA rules / добавить Nebula</td></tr>
+      <tr><td>sla_state</td><td>OK, warning, breach, paused.</td><td>Chat conditions / добавить Nebula</td></tr>
+      <tr><td>sla_pause_reason</td><td>Почему SLA не считается: клиент отвечает, оплата, support, risk, связь, перевод.</td><td>Chat conditions / добавить Nebula</td></tr>
+      <tr><td>risk_state</td><td>none, risk, safe, blocked.</td><td>Sell/Risk rules / добавить Nebula</td></tr>
+      <tr><td>risk_reason</td><td>Причина риска: гарантия результата, опасная тема, давление, жалоба, нет условий.</td><td>Решения Risk / добавить Nebula</td></tr>
+      <tr><td>risk_set_by</td><td>Кто поставил Risk.</td><td>Модератор/система / добавить Nebula</td></tr>
+      <tr><td>risk_resolved_by</td><td>Кто снял Risk. Снимать может роль/право moderator.</td><td>Решение Алексея / добавить Nebula</td></tr>
+      <tr><td>support_case_id</td><td>Обращение клиента в поддержку.</td><td>Report/support макет / добавить связь</td></tr>
+      <tr><td>report_id</td><td>Жалоба на пользователя или диалог.</td><td>Report.id / есть</td></tr>
+      <tr><td>complaint_reason</td><td>Причина жалобы.</td><td>Report.reason + support / есть частично</td></tr>
+      <tr><td>complaint_description</td><td>Описание жалобы.</td><td>Report.description / есть</td></tr>
+      <tr><td>refund_case_id</td><td>Кейс возврата по конкретной service_session.</td><td>G2.3 / добавить Nebula</td></tr>
+      <tr><td>refund_decision</td><td>Возврат, отказ, частичный возврат, еще не принято.</td><td>G2.3 / добавить Nebula</td></tr>
+      <tr><td>client_explanation</td><td>Что объясняем клиенту по решению.</td><td>Support/refund / добавить Nebula</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.8. Перевод, связь, аудит</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Поле</th>
+        <th>Зачем нужно</th>
+        <th>Источник / статус</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>translation_required</td><td>Нужен ли перевод в этой паре.</td><td>MessageTranslation + matching / добавить relation flag</td></tr>
+      <tr><td>preferred_language_pair</td><td>Направление перевода: client -> expert и expert -> client.</td><td>Translator / добавить Nebula</td></tr>
+      <tr><td>translation_id</td><td>Запись перевода сообщения.</td><td>MessageTranslation.id / есть</td></tr>
+      <tr><td>translation_provider</td><td>Провайдер перевода.</td><td>MessageTranslation.provider / есть</td></tr>
+      <tr><td>source_language</td><td>Исходный язык сообщения.</td><td>MessageTranslation.source_language / есть</td></tr>
+      <tr><td>target_language</td><td>Целевой язык перевода.</td><td>MessageTranslation.target_language / есть</td></tr>
+      <tr><td>source_text_hash</td><td>Хэш исходного текста без лишнего дублирования.</td><td>MessageTranslation.source_text_hash / есть</td></tr>
+      <tr><td>translated_text</td><td>Переведенный текст.</td><td>MessageTranslation.translated_text / есть</td></tr>
+      <tr><td>translation_status</td><td>success, error, partial.</td><td>MessageTranslation.status / есть частично</td></tr>
+      <tr><td>translation_error_message</td><td>Ошибка перевода, если была.</td><td>MessageTranslation.error_message / есть</td></tr>
+      <tr><td>client_to_expert_chars</td><td>Символы перевода от клиента к эксперту.</td><td>Паспорт / добавить Nebula</td></tr>
+      <tr><td>expert_to_client_chars</td><td>Символы перевода от эксперта к клиенту.</td><td>Паспорт / добавить Nebula</td></tr>
+      <tr><td>translation_latency_ms</td><td>Задержка перевода.</td><td>Translator/SLA / добавить Nebula</td></tr>
+      <tr><td>translation_sla_impact</td><td>Повлиял ли перевод на SLA.</td><td>Паспорт / добавить Nebula</td></tr>
+      <tr><td>client_connection_quality</td><td>Качество связи клиента.</td><td>Паспорт / добавить Nebula</td></tr>
+      <tr><td>expert_connection_quality</td><td>Качество связи эксперта/агента.</td><td>Паспорт / добавить Nebula</td></tr>
+      <tr><td>reconnect_count</td><td>Количество переподключений.</td><td>Паспорт / добавить Nebula</td></tr>
+      <tr><td>connection_billing_impact</td><td>Повлияла ли связь на списание.</td><td>Паспорт/refund / добавить Nebula</td></tr>
+      <tr><td>event_id</td><td>Событие service_session.</td><td>G1.3 event ledger / добавить Nebula</td></tr>
+      <tr><td>event_type</td><td>session_created, pricing_bound, started, debited, warning, stopped, disputed.</td><td>G1.3/G2.* / добавить Nebula</td></tr>
+      <tr><td>event_payload_json</td><td>Данные события без секретов.</td><td>Event ledger / добавить Nebula</td></tr>
+      <tr><td>rule_version_id</td><td>Версия правил, по которой принято решение.</td><td>Chat conditions / добавить Nebula</td></tr>
+      <tr><td>audit_actor_id</td><td>Кто изменил состояние: admin, moderator, system.</td><td>Users-log/log + Nebula events / добавить связь</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note warning">
+      <p><strong>Важно для программиста:</strong> платежные карты, токены, cookie, browser/session data, raw OAuth и raw browser history не храним в этих сущностях. Нужны только безопасные внутренние ID, snapshots, статусы, rule_version_id и ссылки на транзакции внутри нашей системы.</p>
+    </div>
+  </section>
+
+  <section id="events" class="tab-panel" role="tabpanel">
+    <h2>6. Журнал событий service_session</h2>
+    <p>Журнал событий нужен не для красоты. Это доказательная база паспорта. Каждая важная строка должна отвечать: кто, когда, что изменил и чем это доказано.</p>
+    <table>
+      <thead>
+      <tr>
+        <th>Поле</th>
+        <th>Что значит</th>
+        <th>Пример</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>event_id</td><td>Уникальный ID события.</td><td>EV-2030</td></tr>
+      <tr><td>created_at</td><td>Время события.</td><td>14:12:44</td></tr>
+      <tr><td>event_type</td><td>Тип события.</td><td>consultation_started</td></tr>
+      <tr><td>actor_type</td><td>Кто инициировал.</td><td>client / expert / system / support / admin</td></tr>
+      <tr><td>source</td><td>Откуда пришло событие.</td><td>chat UI / pricing gate / runtime meter / support form</td></tr>
+      <tr><td>change_before</td><td>Что было до события.</td><td>status: ready</td></tr>
+      <tr><td>change_after</td><td>Что стало после события.</td><td>status: active</td></tr>
+      <tr><td>proof_ref_type</td><td>Тип доказательства.</td><td>message_id / offer_id / debit_tx_id / case_id / log_id</td></tr>
+      <tr><td>proof_ref_id</td><td>Конкретный ID доказательства.</td><td>message_id 15240</td></tr>
+      </tbody>
+    </table>
+    <div class="note warning">
+      <p>Событие без <code>event_id</code>, изменения <code>было -> стало</code> и <code>proof_ref</code> не считается полноценным доказательством.</p>
+    </div>
+  </section>
+
+  <section id="not-included" class="tab-panel" role="tabpanel">
+    <h2>8. Границы паспорта</h2>
+    <table>
+      <thead>
+      <tr>
+        <th>Не включаем</th>
+        <th>Почему</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td>Выплаты эксперту или агенту</td><td>Это отдельная страница начислений, не паспорт клиентской консультации.</td></tr>
+      <tr><td>Процент платформы</td><td>Это финансовая модель бизнеса, не факт клиентского диалога.</td></tr>
+      <tr><td>Назначение анкет агенту</td><td>Это управление ролями и доступами, не консультация.</td></tr>
+      <tr><td>Фрагмент переписки</td><td>В паспорте должна быть ссылка на диалог, а не копия чата.</td></tr>
+      <tr><td>Общие KPI без решения</td><td>Если метрика не помогает принять решение по сессии, она создает шум.</td></tr>
+      <tr><td>Демо-кнопки без реального действия</td><td>Для production каждое действие должно иметь право, подтверждение и audit log.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="open-questions" class="tab-panel" role="tabpanel">
+    <h2>2. Решения и правила</h2>
+
+    <h3>2.1. Зафиксированные решения</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Вопрос</th>
+        <th>Решение</th>
+        <th>Как отражаем в паспорте</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>Бесплатные минуты</td>
+        <td>Даем всем новым клиентам 3 бесплатные минуты. Это и есть размер welcome-купона.</td>
+        <td>Нужны поля <span class="field-token" tabindex="0" data-hint="Код welcome-купона, который дает новому клиенту бесплатные минуты.">coupon_code</span>, <span class="field-token" tabindex="0" data-hint="Фиксированное значение: welcome-купон дает 3 бесплатные минуты.">welcome_free_minutes=3</span>, <span class="field-token" tabindex="0" data-hint="Сколько бесплатных минут было выдано клиенту на старт консультации.">free_minutes_total</span>, <span class="field-token" tabindex="0" data-hint="Сколько бесплатных минут уже израсходовано в этой консультации.">free_minutes_used</span>, <span class="field-token" tabindex="0" data-hint="Источник бесплатных минут: welcome-купон для нового клиента.">free_minutes_source=welcome_coupon</span>.</td>
+      </tr>
+      <tr>
+        <td>Инициация платной части экспертом</td>
+        <td>Эксперт может только инициировать предложение. Клиент всегда подтверждает платный старт своим действием.</td>
+        <td>Нужны поля <span class="field-token" tabindex="0" data-hint="Кто запустил платный сценарий: клиент или экспертская инициатива.">started_by</span>, <span class="field-token" tabindex="0" data-hint="Кто создал предложение платной консультации до подтверждения клиента.">offer_initiated_by</span>, <span class="field-token" tabindex="0" data-hint="Время, когда клиент подтвердил платный старт своим действием.">client_confirmed_at</span>, <span class="field-token" tabindex="0" data-hint="ID сообщения или кнопки, из которой началось платное предложение.">source_message_id</span>, <span class="field-token" tabindex="0" data-hint="ID условий оплаты: цена, бесплатные минуты, купон, правила списания.">pricing_offer_id</span>.</td>
+      </tr>
+      <tr>
+        <td>Refund policy</td>
+        <td>Берем AskNebula-like модель: клиент обращается в поддержку; решение может быть возврат деньгами, credits или комбинация. По умолчанию cap не больше фактически оплаченной части консультации.</td>
+        <td>Нужны поля <span class="field-token" tabindex="0" data-hint="ID обращения клиента в поддержку по этой консультации.">support_case_id</span>, <span class="field-token" tabindex="0" data-hint="Причина жалобы: качество ответа, списание, связь, перевод или другое.">complaint_reason</span>, <span class="field-token" tabindex="0" data-hint="Решение по обращению: вернуть, отказать, компенсировать credits или комбинировать.">refund_decision</span>, <span class="field-token" tabindex="0" data-hint="Сумма денежного возврата, если он выбран.">refund_amount</span>, <span class="field-token" tabindex="0" data-hint="Сколько credits начисляем клиенту как компенсацию.">credits_compensation</span>, <span class="field-token" tabindex="0" data-hint="Ограничение: возврат не больше фактически оплаченной части консультации.">refund_cap=paid_part_only</span>, <span class="field-token" tabindex="0" data-hint="Текст объяснения клиенту: что решили и почему.">client_explanation</span>.</td>
+      </tr>
+      <tr>
+        <td>SLA на пилоте</td>
+        <td>Делаем минимальный управляемый SLA: первый ответ, следующий ответ, пауза SLA, причина нарушения.</td>
+        <td>Нужны поля <span class="field-token" tabindex="0" data-hint="До какого времени должен быть первый ответ после старта paid.">first_reply_due_at</span>, <span class="field-token" tabindex="0" data-hint="До какого времени должен быть следующий ответ в активной сессии.">next_reply_due_at</span>, <span class="field-token" tabindex="0" data-hint="Состояние SLA: OK, warning, breach или paused.">sla_state</span>, <span class="field-token" tabindex="0" data-hint="Почему SLA временно не считается: баланс, клиент должен ответить, risk/support, связь или перевод.">sla_pause_reason</span>, <span class="field-token" tabindex="0" data-hint="Причина нарушения SLA, если оно произошло.">sla_breach_reason</span>.</td>
+      </tr>
+      <tr>
+        <td>Risk-блокеры</td>
+        <td>Продажу и старт блокируют только ситуации, где продолжение может быть небезопасным или нечестным для клиента. Снять Risk может пользователь с ролью/правами модератора.</td>
+        <td>Нужны поля <span class="field-token" tabindex="0" data-hint="Текущее состояние риска: нет, открыт, снят.">risk_state</span>, <span class="field-token" tabindex="0" data-hint="Почему появился риск: гарантия результата, опасная тема, давление, жалоба и т.д.">risk_reason</span>, <span class="field-token" tabindex="0" data-hint="Что заблокировано: продажа, старт paid, продолжение paid или списание.">blocked_action</span>, <span class="field-token" tabindex="0" data-hint="Что нужно сделать, чтобы безопасно снять риск.">safe_resolution</span>, <span class="field-token" tabindex="0" data-hint="Кто снял Risk и когда: пользователь с правами модератора.">risk_resolved_by</span>, <span class="field-token" tabindex="0" data-hint="Требование к правам: снять Risk может только роль/право модератора.">moderator_permission_required</span>.</td>
+      </tr>
+      <tr>
+        <td>Действия из паспорта</td>
+        <td>Паспорт только для просмотра и переходов. Супер-админ не принимает действия прямо в паспорте.</td>
+        <td>В паспорте оставляем read-only данные и ссылки: открыть диалог, открыть support case, открыть транзакции, открыть логи. Любое изменение выполняется на профильной странице.</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <h3>2.2. Пилотные SLA-пороги</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>SLA</th>
+        <th>Пилотное правило</th>
+        <th>Почему так</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>Первый ответ после старта paid</td>
+        <td>OK до 1 минуты, warning после 2 минут, breach после 5 минут.</td>
+        <td>Live chat ожидается как быстрый канал. Intercom приводит примеры first-response под 1-2 минуты; Zendesk считает first reply именно от первого агентского ответа.</td>
+      </tr>
+      <tr>
+        <td>Следующий ответ в активной paid-сессии</td>
+        <td>OK до 2 минут, warning после 3 минут, breach после 5 минут.</td>
+        <td>В поминутной консультации клиент платит за ожидание, поэтому следующий ответ тоже должен быть контролируемым.</td>
+      </tr>
+      <tr>
+        <td>Пауза SLA</td>
+        <td>SLA не считается, если сессия остановлена по балансу, клиент должен ответить, идет support/risk-разбор, есть доказанная проблема связи или перевода.</td>
+        <td>Иначе мы ошибочно накажем эксперта за ситуацию, где он не может корректно продолжать.</td>
+      </tr>
+      <tr>
+        <td>Нарушение SLA</td>
+        <td>Нарушение обязательно получает причину: эксперт не ответил, связь, перевод, клиент не подтвердил, риск, поддержка.</td>
+        <td>Без причины breach не помогает принять решение по возврату и качеству.</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <h3>2.3. Risk-блокеры продажи и старта</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Блокер</th>
+        <th>Что блокирует</th>
+        <th>Что нужно сделать</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>Клиент требует гарантию результата</td>
+        <td>Продажу и старт paid.</td>
+        <td>Дать безопасный ответ без обещаний результата; снять risk только после нормального контекста.</td>
+      </tr>
+      <tr>
+        <td>Запрещенная или опасная тема</td>
+        <td>Продолжение продажи, иногда весь paid-start.</td>
+        <td>Перевести в безопасный сценарий или остановить консультацию.</td>
+      </tr>
+      <tr>
+        <td>Давление на клиента купить / продолжить</td>
+        <td>Sell и экспертскую инициацию paid.</td>
+        <td>Остановить sales-pressure, проверить диалог, при необходимости открыть QA-разбор.</td>
+      </tr>
+      <tr>
+        <td>Открытый Skeptic / возражение клиента</td>
+        <td>Жесткую продажу. Мягкое объяснение допускается.</td>
+        <td>Сначала закрыть возражение, затем возвращать Sell только если клиент сам продолжает интерес.</td>
+      </tr>
+      <tr>
+        <td>Недостаточно средств или не подтверждены условия</td>
+        <td>Старт paid и продолжение paid.</td>
+        <td>Показать условия/пополнение; старт только после действия клиента.</td>
+      </tr>
+      <tr>
+        <td>Открыта жалоба по этой сессии</td>
+        <td>Новый paid-start по этой паре до решения.</td>
+        <td>Проверить диалог, списания, связь, перевод и принять решение.</td>
+      </tr>
+      <tr>
+        <td>Сбой связи/перевода влияет на консультацию</td>
+        <td>Списание спорного времени и иногда продолжение paid.</td>
+        <td>Зафиксировать technical proof, паузу SLA и billing impact.</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div class="note warning">
+      <h3>2.4. Осталось для ТЗ</h3>
+      <ul>
+        <li>Назвать welcome-купон и определить, как он создается в админке.</li>
+        <li>Описать, где поддержка выбирает тип компенсации: деньги, credits или комбинация.</li>
+        <li>Описать permission для роли/права модератора на снятие Risk.</li>
+        <li>Составить список ссылок-переходов из паспорта на профильные страницы: диалог, support case, транзакции, логи.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="pm-control" class="tab-panel" role="tabpanel">
+    <h2>7. PM-контроль</h2>
+
+    <h3>7.1. PM-вывод</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Пункт</th>
+        <th>Решение</th>
+        <th>Что значит для работы</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>Статус документа</td>
+        <td>Согласовательный черновик, не production-макет.</td>
+        <td>Можно использовать как основу для ТЗ, но нельзя считать реализацию принятой.</td>
+      </tr>
+      <tr>
+        <td>Роль паспорта</td>
+        <td>Read-only страница супер-админа с переходами.</td>
+        <td>В паспорте не делаем кнопки изменения статусов, возвратов, Risk или списаний.</td>
+      </tr>
+      <tr>
+        <td>Главная сущность</td>
+        <td><code>service_session</code> - truth entity консультации.</td>
+        <td>Чат остается транспортом, но не источником истины по платной консультации.</td>
+      </tr>
+      <tr>
+        <td>Бизнес-решения</td>
+        <td>3 free minutes, клиент подтверждает paid, refund cap paid part only, Risk снимает модератор.</td>
+        <td>Эти правила должны попасть в ТЗ, миграции, админку, verifier и acceptance criteria.</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <h3>7.2. Порядок интеграции</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Очередь</th>
+        <th>Что делать</th>
+        <th>Почему так</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>1</td>
+        <td>Утвердить data contract: <code>service_session</code>, <code>paid_action</code>, события, billing/refund/SLA/risk поля.</td>
+        <td>Без единой структуры Игорь и Codex будут реализовывать разные смыслы.</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Сделать read-only паспорт в админке с переходами в диалог, support case, транзакции, логи.</td>
+        <td>Это безопасный первый слой: видим доказательства, но не ломаем рабочие процессы действиями из паспорта.</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Подключить события service_session: старт, подтверждение, free minutes, billing tick, stop, complaint, refund review.</td>
+        <td>Паспорт без событий будет статичной карточкой, а не доказательством.</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>Подключить настройки правил: SLA, welcome coupon, refund cap, risk permissions.</td>
+        <td>Пилотные правила должны меняться из админки, а не быть зашиты в код навсегда.</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Сделать acceptance proof на реальном сценарии: клиент подтвердил paid, прошли free minutes, началось списание, виден паспорт.</td>
+        <td>Только runtime-proof показывает, что сайт готов, а не просто описан.</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <h3>7.3. Критерии приемки</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Критерий</th>
+        <th>Что должно быть доказано</th>
+        <th>Стоп, если</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>Паспорт открывается</td>
+        <td>Супер-админ видит одну конкретную service_session и ссылки на связанные сущности.</td>
+        <td>Показывается общий чат без отдельной session truth.</td>
+      </tr>
+      <tr>
+        <td>Клиентское подтверждение</td>
+        <td>Есть <code>client_confirmed_at</code> и <code>pricing_offer_id</code> до платного старта.</td>
+        <td>Платная часть стартует без действия клиента.</td>
+      </tr>
+      <tr>
+        <td>Welcome-купон</td>
+        <td>3 free minutes списаны как бесплатная часть до paid billing.</td>
+        <td>Бесплатные минуты смешаны с платными или не доказаны событием.</td>
+      </tr>
+      <tr>
+        <td>Billing proof</td>
+        <td>Есть paid minutes, debit transaction, balance transaction, paid_action_id.</td>
+        <td>Списание видно только как общий баланс без связи с консультацией.</td>
+      </tr>
+      <tr>
+        <td>Risk proof</td>
+        <td>Risk имеет причину, заблокированное действие, кто снял, и proof event.</td>
+        <td>Risk можно снять без роли/права модератора или без лога.</td>
+      </tr>
+      <tr>
+        <td>Refund proof</td>
+        <td>Жалоба связана с session_id, суммой paid part и объяснением клиенту.</td>
+        <td>Возврат живет отдельно от consultation evidence.</td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>
+    Локальный артефакт для согласования. Git не обновлялся. Route card: oracle_nebula_status_promotion_gate_route.
+  </footer>
+</main>
+<script>
+  const tabs = Array.from(document.querySelectorAll('[data-tab]'));
+  const panels = Array.from(document.querySelectorAll('.tab-panel'));
+
+  function activateTab(tabId) {
+    tabs.forEach((tab) => {
+      const isActive = tab.dataset.tab === tabId;
+      tab.classList.toggle('active', isActive);
+      tab.setAttribute('aria-selected', String(isActive));
+    });
+
+    panels.forEach((panel) => {
+      panel.classList.toggle('active', panel.id === tabId);
+    });
+  }
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => activateTab(tab.dataset.tab));
+  });
+
+  const requestedTab = new URLSearchParams(window.location.search).get('tab');
+  if (requestedTab && document.getElementById(requestedTab)) {
+    activateTab(requestedTab);
+  }
+
+  if (window.location.hash) {
+    try {
+      history.replaceState(null, '', window.location.pathname);
+    } catch (error) {
+      // Local file previews can restrict History API. Tabs still work without URL cleanup.
+    }
+  }
+</script>
+</body>
+</html>
