@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nebula - итог MVP PM / 6 целей</title>
+  <style>
+    :root {
+      --ink:#172033;
+      --muted:#647084;
+      --line:#d9e2f3;
+      --bg:#f6f8fb;
+      --panel:#ffffff;
+      --blue:#1f4e78;
+      --green:#0f766e;
+      --red:#842029;
+      --yellow:#7a4e00;
+      --purple:#6d28d9;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Arial, sans-serif; color:var(--ink); background:var(--bg); }
+    header { background:#102a43; color:#fff; padding:26px 32px; }
+    header h1 { margin:0 0 8px; font-size:28px; }
+    header p { margin:0; color:#dbeafe; line-height:1.45; }
+    main { max-width:1240px; margin:0 auto; padding:22px; }
+    a { color:#175cd3; }
+    .top-nav { display:flex; flex-wrap:wrap; gap:10px; margin:0 0 16px; }
+    .top-nav a { background:#fff; border:1px solid var(--line); color:#175cd3; padding:10px 14px; border-radius:6px; font-weight:700; font-size:14px; text-decoration:none; }
+    .top-nav a.is-active { background:#e8f1ff; border-color:#175cd3; color:#0b3f91; }
+    .notice { background:#fff; border:1px solid var(--line); border-left:6px solid var(--green); border-radius:8px; padding:14px 16px; margin:0 0 16px; line-height:1.5; }
+    .warning { border-left-color:#d97706; background:#fffaf0; }
+    .grid { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:12px; margin:0 0 18px; }
+    .metric { background:#fff; border:1px solid var(--line); border-radius:8px; padding:14px; }
+    .metric span { display:block; color:var(--muted); font-size:12px; font-weight:700; text-transform:uppercase; }
+    .metric b { display:block; margin-top:4px; font-size:24px; color:#0f172a; }
+    section { background:#fff; border:1px solid var(--line); border-radius:10px; padding:18px; margin:0 0 18px; }
+    section h2 { margin:0 0 10px; font-size:22px; }
+    section p { line-height:1.5; }
+    table { width:100%; border-collapse:collapse; margin-top:10px; }
+    th, td { border-top:1px solid #e7edf7; padding:10px; text-align:left; vertical-align:top; line-height:1.45; }
+    th { background:#f8fbff; color:#334155; font-size:12px; text-transform:uppercase; }
+    .badge { display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:700; white-space:nowrap; }
+    .p0 { background:#ffe3e3; color:#842029; }
+    .p1 { background:#fff2cc; color:#7a4e00; }
+    .ok { background:#d9ead3; color:#1f5e2e; }
+    .hold { background:#e8f1ff; color:#0b3f91; }
+    .blocked { background:#f8d7da; color:#842029; }
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .list { margin:8px 0 0; padding-left:20px; line-height:1.5; }
+    .footer { color:var(--muted); font-size:13px; line-height:1.5; margin-top:22px; }
+    @media (max-width:900px) {
+      .grid, .two-col { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Nebula - итог MVP PM по 6 главным целям</h1>
+  <p>Версия 2026-07-10. Итоговый PM-слой для owner review и подготовки P0-only handoff для Игоря/QA.</p>
+</header>
+
+<main>
+  <nav class="top-nav" aria-label="Навигация панели">
+    <a href="./index.html">6 целей</a>
+    <a href="./task-tz.html">ТЗ</a>
+    <a href="./task-readiness.html">Готовность</a>
+    <a href="./pm-quality-pass-2026-06-20.html">PM-ревизия</a>
+    <a href="./agent-workspace-pbexpert-v0-1.html">Макет агента</a>
+    <a href="./mvp-pm-final-2026-07-10.html" class="is-active">Итог MVP</a>
+  </nav>
+
+  <div class="notice">
+    <b>Честный статус:</b> PM-понимание и P0 handoff draft готовы. Финальный handoff Игорю/QA еще не утвержден, потому что нужны owner approval по 10 рекомендациям и runtime proof от Игоря/QA.
+  </div>
+
+  <div class="grid" aria-label="Ключевые числа">
+    <div class="metric"><span>MVP</span><b>5 / 25 / 1 / 1</b></div>
+    <div class="metric"><span>P0 workstreams</span><b>15</b></div>
+    <div class="metric"><span>Owner decisions</span><b>10</b></div>
+    <div class="metric"><span>Статус</span><b>Owner review</b></div>
+  </div>
+
+  <section>
+    <h2>Что такое Nebula в текущем PM-понимании</h2>
+    <p>Nebula - это клиентский marketplace консультаций на базе логики AskNebula: публичная воронка, выбор эксперта, кабинет, чат, credits/min, free minutes, refill/top-up, support/refund/legal и операционный контур ролей.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Слой</th>
+          <th>Что означает</th>
+          <th>Статус</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Reference</td><td>AskNebula задает продуктовую логику и модель поведения.</td><td><span class="badge ok">baseline</span></td></tr>
+        <tr><td>Figma</td><td>Выбранный redesign scope: публичные страницы, app, чат, payment/support/legal states.</td><td><span class="badge ok">PM covered</span></td></tr>
+        <tr><td>Oracle</td><td>Верстает визуальный слой, но не доказывает backend runtime.</td><td><span class="badge hold">visual lane</span></td></tr>
+        <tr><td>Yii2 / Игорь</td><td>Доказывает runtime: session, chat, billing, support/refund, roles, admin proof.</td><td><span class="badge blocked">runtime proof required</span></td></tr>
+        <tr><td>Owner/legal/training</td><td>Утверждает цены, legal/support, обучение и допуск экспертов.</td><td><span class="badge blocked">approval required</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>MVP-граница</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Роль / сущность</th>
+          <th>P0 объем</th>
+          <th>Смысл для запуска</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Agents</td><td>5</td><td>Каждый агент ведет назначенные экспертные профили и консультации.</td></tr>
+        <tr><td>Expert profiles</td><td>25</td><td>Клиентские профили экспертов, примерно 5 на агента.</td></tr>
+        <tr><td>Moderator</td><td>1</td><td>Review/escalation по QA/support/refund без супер-админских прав.</td></tr>
+        <tr><td>Super-admin</td><td>1</td><td>Финальная операционная видимость и proof role.</td></tr>
+        <tr><td>Clients</td><td>не ограничиваем</td><td>Controlled pilot path: public/app/chat/billing/support/legal/profile.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>PM-рекомендации по 10 owner decisions</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Рекомендация PM</th>
+          <th>Статус</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>DEC-MVP-001</td><td>25 expert profiles, распределить по 5 на 5 agents.</td><td><span class="badge blocked">owner approval</span></td></tr>
+        <tr><td>DEC-MVP-002</td><td>Agent-operated profiles в MVP; отдельный expert self-service workspace в P1.</td><td><span class="badge blocked">owner approval</span></td></tr>
+        <tr><td>DEC-MVP-003</td><td>Moderator = review/escalation only, без final money/admin rights.</td><td><span class="badge blocked">owner approval</span></td></tr>
+        <tr><td>DEC-MVP-004</td><td>AskNebula-style credits/free-minutes model. Candidate: 160 credits / $2.99, 45 credits/min, 3 free minutes.</td><td><span class="badge blocked">value approval</span></td></tr>
+        <tr><td>DEC-MVP-005</td><td>Auto-refill вынести в P1; в MVP manual top-up/refill + failure/retry/support.</td><td><span class="badge blocked">owner approval</span></td></tr>
+        <tr><td>DEC-MVP-006</td><td>Support/refund - manual case linked to session/payment.</td><td><span class="badge blocked">owner/legal</span></td></tr>
+        <tr><td>DEC-MVP-007</td><td>US/English legal pack: Terms, Privacy, Cookie, Payment Terms, Refund, Disclaimer, Live Chat Rules, Trust/Safety.</td><td><span class="badge blocked">legal approval</span></td></tr>
+        <tr><td>DEC-MVP-008</td><td>Минимальные profile/account/astrology fields; advanced personalization в P1/P2.</td><td><span class="badge blocked">owner/privacy</span></td></tr>
+        <tr><td>DEC-MVP-009</td><td>Курс, тесты, final exam, trial consultation, Ksenia review, owner approval. Full LMS в P1.</td><td><span class="badge blocked">training approval</span></td></tr>
+        <tr><td>DEC-MVP-010</td><td>Controlled internal pilot gate; paid traffic только после proof pack.</td><td><span class="badge blocked">owner approval</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>P0 handoff v2 для Игоря/QA</h2>
+    <p>Handoff v2 готов как условный P0-draft. Его нельзя отправлять как финальный, пока owner не утвердит, не поправит или явно не заблокирует 10 решений.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Группа</th>
+          <th>Что должен доказать P0</th>
+          <th>Статус</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Intent/session</td><td>Public/app intent -> auth/account -> consultation/session passport.</td><td><span class="badge blocked">runtime proof</span></td></tr>
+        <tr><td>Experts/agents</td><td>25 профилей, 5 agents, assigned access, hidden/unavailable states.</td><td><span class="badge blocked">owner + runtime</span></td></tr>
+        <tr><td>Chat/transcript</td><td>Client chat, transcript/history, role visibility, reconnect/error states.</td><td><span class="badge blocked">runtime proof</span></td></tr>
+        <tr><td>Credits/payment</td><td>Balance, free minutes, credits/min, manual top-up/refill, failure/retry/support.</td><td><span class="badge blocked">owner + QA proof</span></td></tr>
+        <tr><td>Support/refund/legal</td><td>Case linked to session/payment, manual refund review, approved policy routes.</td><td><span class="badge blocked">owner/legal/runtime</span></td></tr>
+        <tr><td>Training/admission</td><td>25 experts cannot become active without course/test/final/trial/review/owner gate.</td><td><span class="badge blocked">training inventory</span></td></tr>
+        <tr><td>End-to-end</td><td>One full MVP chain with green/yellow/red QA verdict.</td><td><span class="badge blocked">after decisions</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Что не входит в P0</h2>
+    <div class="two-col">
+      <div>
+        <ul class="list">
+          <li>Separate expert self-service workspace - P1.</li>
+          <li>Full Moodle/LMS - P1.</li>
+          <li>Auto-refill/subscription automation - P1.</li>
+          <li>Advanced analytics/workforce dashboards - P1/P2.</li>
+        </ul>
+      </div>
+      <div>
+        <ul class="list">
+          <li>Unlimited marketplace scale - P2.</li>
+          <li>Automated refund engine - P2.</li>
+          <li>Full privacy self-service portal - P2.</li>
+          <li>Paid traffic launch - P2 after controlled pilot proof.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Следующее действие</h2>
+    <div class="notice warning">
+      Owner должен пройти 10 PM-рекомендаций: approve / edit / reject / accepted blocker. После этого PM продвигает handoff v2 в финальный P0-only пакет для Игоря и QA.
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Источник</th>
+          <th>Назначение</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>mvp-owner-decision-pm-recommendation-record-2026-07-10.md</td><td>PM-рекомендации по 10 решениям.</td></tr>
+        <tr><td>igor-qa-mvp-p0-handoff-v2-pm-recommended-2026-07-10.md</td><td>Условный P0 handoff draft для Игоря/QA.</td></tr>
+        <tr><td>nebula-proofed-pm-action-plan-2026-07-10.md</td><td>Верхний PM-навигатор по всему плану.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <p class="footer">Статус страницы: HTML-панель для просмотра итогового PM-слоя. Это не runtime proof, не legal approval и не финальный handoff Игорю.</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nebula - G6.7 Изолированный доступ в админку</title>
+  <style>
+    :root { color-scheme:light; --ink:#172033; --muted:#667085; --line:#d9e2f3; --bg:#f6f8fb; --blue:#1f4e78; --red:#b42318; --amber:#b54708; --green:#067647; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Arial, sans-serif; color:var(--ink); background:var(--bg); }
+    header.page-head { background:var(--blue); color:#fff; padding:22px 28px; }
+    header.page-head h1 { margin:0 0 8px; font-size:28px; }
+    header.page-head p { margin:0; line-height:1.45; max-width:980px; }
+    main { padding:22px 28px 42px; }
+    .back-link { display:inline-block; margin:0 0 16px; padding:9px 12px; border:1px solid #d8e6ff; border-radius:6px; background:#f4f8ff; color:#175cd3; font-weight:700; text-decoration:none; }
+    .task-card { background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    .task-card header { background:#f8fafc; color:var(--ink); padding:14px 16px; border-left:8px solid #475569; border-bottom:1px solid var(--line); }
+    .task-card h2 { margin:0 0 6px; font-size:21px; }
+    .meta { color:var(--muted); font-size:13px; }
+    .body { padding:16px; line-height:1.5; }
+    .grid { display:grid; grid-template-columns:repeat(2, minmax(240px,1fr)); gap:12px; margin-top:12px; }
+    .box { background:#fbfdff; border:1px solid #e4e9f2; border-radius:8px; padding:12px; }
+    .box b { display:block; margin-bottom:6px; }
+    .box ul, .box ol { margin:0; padding-left:18px; }
+    .box li { margin:4px 0; }
+    .status { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
+    .badge { display:inline-flex; align-items:center; border-radius:999px; padding:4px 9px; font-size:12px; font-weight:700; border:1px solid transparent; }
+    .badge-red { color:var(--red); background:#fff1f0; border-color:#fecdca; }
+    .badge-amber { color:var(--amber); background:#fffaeb; border-color:#fedf89; }
+    .badge-green { color:var(--green); background:#ecfdf3; border-color:#abefc6; }
+    table { width:100%; border-collapse:collapse; margin-top:10px; }
+    th, td { border:1px solid #e4e9f2; padding:9px 10px; text-align:left; vertical-align:top; }
+    th { background:#f8fafc; font-size:13px; }
+    .footer { color:var(--muted); font-size:13px; margin-top:18px; line-height:1.5; }
+    @media (max-width:800px) { .grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <header class="page-head">
+    <h1>G6.7 Изолированный доступ в админку</h1>
+    <p>Агент как внутренняя staff-роль работает только в admin/workspace-контуре. Экспертный аккаунт остаётся отдельным User, но прямой вход не является штатным способом ответа и не должен обходить фактическое авторство.</p>
+  </header>
+  <main>
+    <a class="back-link" href="../index.html">← Назад к списку задач</a>
+    <article class="task-card">
+      <header>
+        <h2>Что требуется</h2>
+        <div class="meta">P0 · Цель 6: рабочий контур команды · isolated admin access / no frontend access</div>
+      </header>
+      <div class="body">
+        <div class="status">
+          <span class="badge badge-red">Сайт: 5%</span>
+          <span class="badge badge-amber">ТЗ: 90%</span>
+          <span class="badge badge-red">Приемка: заблокирована до server-side proof</span>
+        </div>
+
+        <p><b>Результат:</b> кандидат проходит проверку и только после допуска получает staff-доступ. Эксперт появляется на сайте и получает реальные клиентские диалоги только после верификации, обучения, назначения анкеты и включения нужных прав.</p>
+
+        <div class="grid">
+          <div class="box">
+            <b>Зачем это нужно</b>
+            <ul>
+              <li>Снизить риск переманивания реальных клиентов экспертом или агентом.</li>
+              <li>Разделить клиента и сотрудника: сотрудник работает в админке, клиент работает на фронте.</li>
+              <li>Не публиковать неподготовленного эксперта до проверки и допуска.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <b>Что запрещаем</b>
+            <ul>
+              <li>Вход staff-роли в клиентский фронт как обычного пользователя.</li>
+              <li>Просмотр клиентского поиска, списка клиентов и клиентских профилей вне разрешенной админки.</li>
+              <li>Работу с неназначенными анкетами и чужими диалогами.</li>
+              <li>Любой обход через прямую ссылку, если роль не имеет права.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <b>Цепочка допуска</b>
+            <ol>
+              <li>Кандидат подает заявку или регистрируется как кандидат.</li>
+              <li>Супер-админ или модератор проверяет кандидата.</li>
+              <li>Кандидат проходит обучение и тест допуска.</li>
+              <li>Создается или активируется staff-аккаунт.</li>
+              <li>Назначается анкета эксперта.</li>
+              <li>После допуска анкета публикуется для клиента.</li>
+            </ol>
+          </div>
+          <div class="box">
+            <b>Что должен фиксировать сайт</b>
+            <ul>
+              <li>статус допуска кандидата;</li>
+              <li>роль и разрешенные страницы;</li>
+              <li>назначенные анкеты;</li>
+              <li>попытки открыть запрещенный фронт или чужие данные;</li>
+              <li>кто и когда выдал, изменил или снял доступ.</li>
+            </ul>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Правило</th>
+              <th>Как должно работать</th>
+              <th>Критерий приемки</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Admin-only вход</td>
+              <td>Эксперт/агент входит в рабочую область через admin/staff route.</td>
+              <td>Staff-роль открывает разрешенную админку и не проходит клиентский сценарий.</td>
+            </tr>
+            <tr>
+              <td>Frontend deny</td>
+              <td>Клиентские страницы для staff-роли закрываются сервером, а не только скрываются в меню.</td>
+              <td>Прямая ссылка на фронт дает отказ, редирект или безопасную страницу без клиентских данных.</td>
+            </tr>
+            <tr>
+              <td>Verification before publish</td>
+              <td>Эксперт не появляется в каталоге до верификации, обучения и допуска.</td>
+              <td>Непроверенный кандидат не виден клиенту и не получает реальные клиентские диалоги.</td>
+            </tr>
+            <tr>
+              <td>Assigned profiles only</td>
+              <td>Агент видит только назначенные анкеты и связанные с ними диалоги.</td>
+              <td>Assigned profile доступен, unassigned profile и чужая страница назначений заблокированы.</td>
+            </tr>
+            <tr>
+              <td>Audit</td>
+              <td>Система пишет историю изменений доступа и попытки открыть запрещенные страницы.</td>
+              <td>Супер-админ видит кто, когда и что изменил или попытался открыть.</td>
+            </tr>
+            <tr>
+              <td>Direct expert login</td>
+              <td>Технический вход в экспертный аккаунт не используется агентом как штатный workflow и не подменяет actual agent.</td>
+              <td>Любое действие через impersonation/direct login хранит реального actor, режим входа и не стирает историю назначения.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="grid">
+          <div class="box">
+            <b>Зависимости</b>
+            <ul>
+              <li>G6.6 отдельный URL админки.</li>
+              <li>G6.1 назначение анкет и запрет чужих анкет.</li>
+              <li>G1.2 чат по ролям.</li>
+              <li>G6.4 обучение и допуск.</li>
+              <li>G6.3 контроль качества.</li>
+            </ul>
+          </div>
+          <div class="box">
+            <b>Stop condition</b>
+            <ul>
+              <li>Если запрет фронта сделан только визуально, задачу нельзя принимать.</li>
+              <li>Если эксперт может увидеть клиентские данные вне назначенной админки, задачу нельзя принимать.</li>
+              <li>Если эксперт публикуется до верификации, задачу нельзя принимать.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer">
+          Служебно: эта задача дополняет G6.6. Отдельный URL отвечает за вход в рабочий контур, G6.7 отвечает за запрет клиентского фронта и безопасный допуск эксперта.
+        </div>
+      </div>
+    </article>
+  </main>
+</body>
+</html>

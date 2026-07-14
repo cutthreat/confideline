@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nebula - G3.7 Выдача и ротация анкет</title>
+  <style>
+    :root { --ink:#172033; --muted:#667085; --line:#d9e2f3; --bg:#f6f8fb; --blue:#1f4e78; --violet:#7c3aed; --green:#0f766e; --yellow:#7a4e00; --red:#842029; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Arial, sans-serif; color:var(--ink); background:var(--bg); }
+    header.page-head { background:var(--blue); color:#fff; padding:22px 28px; }
+    header.page-head h1 { margin:0 0 8px; font-size:28px; }
+    header.page-head p { margin:0; line-height:1.45; }
+    main { padding:22px 28px 42px; max-width:1280px; }
+    .back-link { display:inline-block; margin:0 0 16px; padding:9px 12px; border:1px solid #d8e6ff; border-radius:6px; background:#f4f8ff; color:#175cd3; font-weight:700; text-decoration:none; }
+    .card { background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; margin:0 0 16px; }
+    .card h2 { margin:0; padding:12px 14px; background:#f8fafc; border-left:8px solid var(--violet); border-bottom:1px solid var(--line); font-size:20px; }
+    .body { padding:14px; line-height:1.5; }
+    .badge { display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:700; white-space:nowrap; }
+    .p0 { background:#f4cccc; color:var(--red); }
+    .status-yellow { background:#fff2cc; color:var(--yellow); }
+    .status-blue { background:#e8f1ff; color:#0b3f91; }
+    .grid { display:grid; grid-template-columns:repeat(2, minmax(260px,1fr)); gap:12px; }
+    .box { border:1px solid #e4e9f2; border-radius:8px; background:#fbfdff; padding:12px; }
+    .box b { display:block; margin-bottom:6px; }
+    ul { margin:8px 0 0; padding-left:19px; }
+    li { margin:4px 0; }
+    table { width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--line); }
+    th { background:#edf3fb; text-align:left; padding:9px; }
+    td { border-top:1px solid var(--line); padding:9px; vertical-align:top; }
+    .proof { border-left:5px solid var(--green); background:#f0fdf4; padding:12px; margin-top:12px; }
+    .warn { border-left:5px solid #f39c12; background:#fffbeb; padding:12px; margin-top:12px; }
+    @media (max-width:800px) { main { padding:16px; } .grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <header class="page-head">
+    <h1>G3.7 Выдача и ротация анкет</h1>
+    <p>Отдельная задача про то, кто и почему показывается клиенту в общем списке экспертов, подборе и рекомендательных блоках.</p>
+  </header>
+  <main>
+    <a class="back-link" href="../index.html">← Назад к списку задач</a>
+
+    <section class="card">
+      <h2>Статус</h2>
+      <div class="body">
+        <p><span class="badge p0">P0</span> <span class="badge status-yellow">implementation_in_progress</span> <span class="badge status-blue">сайт 5% / ТЗ 90%</span></p>
+        <p><b>Почему сайт не выше:</b> owner-модель определена и ТЗ передано программисту, но нет runtime readback существующих weights/pinning/exclusions/preview и новой KPI-логики на всех типах страниц.</p>
+        <div class="proof"><b>Связь с G3.6:</b> вес полей анкеты дает один из входных сигналов. Ротация не должна быть только score: она должна учитывать доступность, язык, тему, цену, качество, SLA, конверсию, риск и бизнес-режим страницы.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Оптимальная стартовая формула</h2>
+      <div class="body">
+        <table>
+          <thead><tr><th>Слой</th><th>Что делает</th><th>Пример правила</th></tr></thead>
+          <tbody>
+            <tr><td><b>1. Gate допуска</b></td><td>Решает, можно ли вообще показывать анкету клиенту.</td><td>анкета опубликована, фото есть, описание промодерировано, цена задана, язык/тема указаны, Risk не блокирует продажу</td></tr>
+            <tr><td><b>2. Базовый score</b></td><td>Оценивает силу анкеты.</td><td>profile readiness score из G3.6 + отзывы + качество + отсутствие жалоб</td></tr>
+            <tr><td><b>3. Контекст клиента</b></td><td>Поднимает тех, кто подходит под запрос.</td><td>язык, страна/город, тема, цена, метод, доступность сейчас</td></tr>
+            <tr><td><b>4. Операционный фактор</b></td><td>Защищает качество сервиса.</td><td>online/busy/off/admin-blocked, SLA, глобальный paid-lock агента, нет active Risk</td></tr>
+            <tr><td><b>5. Cold start</b></td><td>Не штрафует новую анкету отсутствием истории.</td><td>до порога KPI имеет статус insufficient_data; тестовый трафик измеряется и проходит QA</td></tr>
+          </tbody>
+        </table>
+        <div class="warn"><b>Принятое правило:</b> лимит числа анкет одного агента в верхней выдаче не вводится. Вместо выдуманного cap панель собирает долю top-N по агентам. На пилоте нужен простой объяснимый score, insufficient_data до KPI-порога и журнал причин позиции/override.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Где применяется</h2>
+      <div class="body grid">
+        <div class="box"><b>Каталог экспертов</b><ul><li>основной список;</li><li>фильтры и сортировки;</li><li>порядок карточек на первой странице.</li></ul></div>
+        <div class="box"><b>Подбор</b><ul><li>рекомендация по вопросу клиента;</li><li>не показывать неподходящих по языку/теме/цене;</li><li>учитывать доступность.</li></ul></div>
+        <div class="box"><b>Главная и лендинги</b><ul><li>блок “популярные/онлайн”;</li><li>платный трафик нельзя вести на случайную выдачу;</li><li>SEO-страницы требуют стабильной логики.</li></ul></div>
+        <div class="box"><b>Админка</b><ul><li>настройка весов;</li><li>журнал изменений правил;</li><li>просмотр причин позиции каждой анкеты.</li></ul></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Приемка</h2>
+      <div class="body">
+        <table>
+          <tbody>
+            <tr><th>Минимальный proof</th><td>На 3-5 анкетах видно: eligibility по странице/городу, почему одна выше другой, почему одна скрыта, как меняются online/busy/off/admin-blocked и почему новая имеет insufficient_data.</td></tr>
+            <tr><th>Что блокирует</th><td>Любая выдача, где порядок нельзя объяснить, или где анкета без обязательных данных попадает к клиенту.</td></tr>
+            <tr><th>График</th><td>Начать сейчас, до финальной сборки G3.2/G3.3. Принимать после G3.6 и до запуска SEO/paid traffic.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

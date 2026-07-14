@@ -117,6 +117,8 @@
     "task-g3-profile": [5,5,5,0,5],
     "task-g3-quiz": [5,0,0,0,5],
     "task-g3-qa": [5,0,0,0,5],
+    "task-g3-field-weight": [5,5,0,0,0],
+    "task-g3-rotation": [5,0,0,0,0],
     "task-g4-support": [5,0,0,0,0],
     "task-g4-complaints": [5,0,0,0,0],
     "task-g4-docs": [5,0,0,0,0],
@@ -130,7 +132,8 @@
     "task-g6-quality": [5,0,0,0,0],
     "task-g6-training": [0,0,0,0,0],
     "task-g6-team-notifications": [0,0,0,0,0],
-    "task-g6-admin-url": [0,0,0,0,0]
+    "task-g6-admin-url": [0,0,0,0,0],
+    "task-g6-isolated-admin-access": [5,0,0,0,0]
   };
 
   const criterionDetailsByTask = {
@@ -151,19 +154,21 @@
   };
 
   const tzReadyByTask = {
-    "task-g1-session": 70,
+    "task-g1-session": 95,
     "task-g1-chat": 75,
     "task-g1-statuses": 65,
     "task-g1-chat-notifications": 55,
     "task-g2-pricing": 70,
     "task-g2-timer": 70,
     "task-g2-refund": 75,
-    "task-g2-accruals": 85,
+    "task-g2-accruals": 95,
     "task-g3-home": 25,
     "task-g3-catalog": 25,
     "task-g3-profile": 50,
     "task-g3-quiz": 25,
     "task-g3-qa": 35,
+    "task-g3-field-weight": 45,
+    "task-g3-rotation": 90,
     "task-g4-support": 75,
     "task-g4-complaints": 75,
     "task-g4-docs": 55,
@@ -177,21 +182,22 @@
     "task-g6-quality": 65,
     "task-g6-training": 65,
     "task-g6-team-notifications": 20,
-    "task-g6-admin-url": 35
+    "task-g6-admin-url": 35,
+    "task-g6-isolated-admin-access": 90
   };
 
   const tasks = {
     "task-g1-session": {
-      code:"G1.1", title:"Карточка консультации", goal:"Цель 1", stage:"proof_gap", progress:30, tzReady:70, detailHref:"tasks/task-g1-session.html",
+      code:"G1.1", title:"Карточка консультации", goal:"Цель 1", stage:"implementation_in_progress", progress:30, tzReady:95, detailHref:"tasks/task-g1-session.html",
       ready:[
         "Подтверждено владельцем: на live-сайте сейчас реализован только базовый чат /ru/admin/message/chat.",
         "Зафиксирована продуктовая граница: чат не равен консультационной сессии.",
         "Есть service_session foundation/proof как внутренний слой.",
-        "Понятно, что service session нужно предусмотреть заранее до обновления чата программистом."
+        "Функциональная модель service_session согласована, ТЗ передано программисту, внедрение начато."
       ],
       needed:[
-        "Получить от Алексея финальный чат и описание будущего обновления.",
-        "Спроектировать live-карточку одной консультации в админке как отдельную сущность.",
+        "Получить от программиста scope текущей итерации и build/runtime refs.",
+        "Реализовать live-карточку одной консультации в админке как отдельную сущность.",
         "Связать service session с конкретным conversation/message, обычным языком: с каким диалогом и какими сообщениями связана консультация.",
         "Предусмотреть связь с ценой, таймером, списанием, остановкой, поддержкой и качеством.",
         "Разделить видимость: что видит супер-админ, что видит агент, что видит клиент.",
@@ -316,7 +322,7 @@
       ]
     },
     "task-g2-accruals": {
-      code:"G2.4", title:"Начисления", goal:"Цель 2", stage:"packet_ready", progress:20, tzReady:85, detailHref:"tasks/task-g2-accruals.html",
+      code:"G2.4", title:"Начисления", goal:"Цель 2", stage:"implementation_in_progress", progress:20, tzReady:95, detailHref:"tasks/task-g2-accruals.html",
       ready:[
         "Контракт начислений подготовлен: начисление должно объясняться конкретной консультацией.",
         "Понятны статусы: ожидает, заработано, удержано, уменьшено, отменено, отклонено.",
@@ -326,11 +332,11 @@
         "Собран implementation packet: настройки, registry/detail, data contract, статусы, integration rules, verifier cases и stop conditions."
       ],
       needed:[
-        "Реализовать в админке настройки начислений: режим, база расчета, получатель, процент/ставка, hold, возврат, QA/SLA-влияние, ручной override.",
+        "Проверить реализованные настройки трех компонентов оплаты, процент/ставку, возврат и ручной override с причиной.",
         "Реализовать registry/detail начислений по консультациям.",
         "Реализовать policy version snapshot у каждого начисления, чтобы было понятно, по каким правилам оно рассчитано.",
         "Связать начисление с конкретной консультацией, а не только с общей балансовой операцией.",
-        "Уточнить частичный возврат и правила влияния качества/сроков ответа на деньги.",
+        "Доказать proportional partial refund и super-admin override базы/процента с полной историей.",
         "Доказать живой сценарий: завершенная консультация -> начисление -> спор или возврат -> операторская проверка.",
         "Найти или получить актуальный source-код live partner finance pages, потому что в текущем локальном extracted source эти страницы не найдены."
       ],
@@ -425,6 +431,48 @@
         "Все критичные пути от входа до консультации проходят без ручной помощи.",
         "Каждый найденный разрыв зафиксирован и объяснен.",
         "Есть финальный вывод о готовности, а не общий оптимизм."
+      ]
+    },
+    "task-g3-field-weight": {
+      code:"G3.6", title:"Вес полей анкеты", goal:"Цель 3", stage:"inventoried", progress:10, tzReady:45, detailHref:"tasks/task-g3-field-weight.html",
+      ready:[
+        "Найден текущий admin-контур: /ru/admin/profile-field/index управляет полями анкеты.",
+        "По локальному YouDate-коду подтверждены visible, searchable, searchable premium и sort order для profile fields.",
+        "Понятно, что текущая сортировка полей не равна Nebula-score анкеты."
+      ],
+      needed:[
+        "Определить обязательные поля анкеты эксперта для допуска в каталог.",
+        "Разделить поля на блокирующие, весовые и информационные.",
+        "Собрать формулу completeness/quality score: заполненность, качество, модерация, фото, язык, город/страна, специализация, цена, availability.",
+        "Решить, где админ видит score и какие ошибки блокируют публикацию или понижают выдачу.",
+        "Доказать на тестовых анкетах: заполнение поля меняет score и влияет на downstream-ротацию."
+      ],
+      accept:[
+        "У каждой анкеты есть понятный score и расшифровка, из чего он собран.",
+        "Админ видит, что нужно дозаполнить, чтобы анкета была допущена или поднялась в выдаче.",
+        "Нет скрытого магического ранжирования: каждая весовая причина объяснима.",
+        "Score не заменяет модерацию и не принимает эксперта автоматически."
+      ]
+    },
+    "task-g3-rotation": {
+      code:"G3.7", title:"Выдача и ротация анкет", goal:"Цель 3", stage:"implementation_in_progress", progress:5, tzReady:90, detailHref:"tasks/task-g3-rotation.html",
+      ready:[
+        "Понятно, что каталог нельзя принимать без правил выдачи: клиент должен видеть не случайный набор анкет.",
+        "Есть текущий общий механизм выдачи в YouDate: boost и порядок пользователей, но он не описывает Nebula-ротацию экспертов.",
+        "Зафиксирована зависимость от G3.6: ротация должна использовать score анкеты, но не сводиться только к нему."
+      ],
+      needed:[
+        "Проверить стартовую формулу: eligibility, score анкеты, online/busy/off/admin-blocked, язык, город, тема, цена, SLA и KPI-порог.",
+        "Разделить режимы: обычный каталог, подбор, рекомендуемые, новые эксперты, paid traffic landing.",
+        "До KPI-порога показывать insufficient_data; мониторить долю top-N по агентам без автоматического лимита анкет.",
+        "Определить админскую страницу правил ротации и журнал изменений.",
+        "Проверить на 3-5 пилотных анкетах, что порядок объясним и не ломает бизнес-цель."
+      ],
+      accept:[
+        "Есть понятная rotation policy для клиента, админа и разработчика.",
+        "Анкета попадает в выдачу только если прошла минимальные gates.",
+        "Порядок выдачи можно объяснить по факторам, а не только по ID/дате/ручному мнению.",
+        "Реклама и SEO не запускаются на каталог без принятой политики ротации."
       ]
     },
     "task-g4-support": {
@@ -654,6 +702,27 @@
         "Супер-админ видит контрольный контур пилота."
       ]
     },
+    "task-g6-isolated-admin-access": {
+      code:"G6.7", title:"Изолированный доступ в админку", goal:"Цель 6", stage:"implementation_in_progress", progress:5, tzReady:90, detailHref:"tasks/task-g6-isolated-admin-access.html",
+      ready:[
+        "Понятна бизнес-причина: агент как staff-роль работает в изолированном workspace и не получает чужие клиентские данные.",
+        "В плане уже есть G6.6: отдельный URL админки как инфраструктурная основа.",
+        "Понятна цепочка допуска: регистрация кандидата -> проверка -> обучение/допуск -> staff-доступ -> назначение анкеты."
+      ],
+      needed:[
+        "Реализовать отдельный staff/admin-only вход для агента; direct expert login не считать штатным workflow.",
+        "Запретить staff-ролям клиентский фронт, поиск клиентов, клиентские профили и обычные пользовательские действия.",
+        "Определить, как эксперт появляется на сайте только после верификации, модерации анкеты и назначения.",
+        "Добавить server-side frontend deny policy, не только скрытие ссылок в интерфейсе.",
+        "Фиксировать audit попыток входа на фронт и запрещенные страницы."
+      ],
+      accept:[
+        "Агент входит только в разрешенную админскую рабочую область; direct/impersonation action сохраняет actual actor.",
+        "Попытка открыть фронт как клиент блокируется сервером.",
+        "До верификации эксперт не опубликован и не может работать с реальными клиентами.",
+        "Супер-админ видит статус допуска, назначение и историю изменений доступа."
+      ]
+    },
     "task-g6-team-notifications": {
       code:"G6.5", title:"Командные уведомления", goal:"Цель 6", stage:"master_plan_only", progress:0, tzReady:20, detailHref:"tasks/task-g6-team-notifications.html",
       ready:[
@@ -686,6 +755,8 @@
     "task-g3-profile": "expert profile",
     "task-g3-quiz": "quiz / matching / start",
     "task-g3-qa": "end-to-end path proof",
+    "task-g3-field-weight": "profile field weight / completeness score",
+    "task-g3-rotation": "expert ranking / rotation",
     "task-g4-support": "support",
     "task-g4-complaints": "complaints / disputes",
     "task-g4-docs": "terms / documents",
@@ -699,11 +770,13 @@
     "task-g6-quality": "QA / quality control",
     "task-g6-training": "training / playbook",
     "task-g6-team-notifications": "team notifications",
-    "task-g6-admin-url": "separate admin URL"
+    "task-g6-admin-url": "separate admin URL",
+    "task-g6-isolated-admin-access": "isolated admin access / no frontend access"
   };
 
   function stageClass(stage) {
     if (stage === "accepted_bounded_slice") return "stage-accepted";
+    if (stage === "implementation_in_progress") return "stage-packet";
     if (stage === "proof_gap") return "stage-packet";
     if (stage === "packet_ready") return "stage-packet";
     if (stage === "inventoried") return "stage-inventory";
@@ -712,6 +785,7 @@
 
   function stageLabel(stage) {
     if (stage === "accepted_bounded_slice") return "Срез согласован";
+    if (stage === "implementation_in_progress") return "Внедрение начато / proof открыт";
     if (stage === "proof_gap") return "Нужна проверка";
     if (stage === "packet_ready") return "Пакет готов";
     if (stage === "inventoried") return "Оценка собрана";
