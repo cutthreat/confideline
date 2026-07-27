@@ -7,7 +7,9 @@ Coverage mapping: G1.2, G1.3, G1.4, G2.1, G2.2, G2.3, G3.3, G3.4, G3.7, G4.1, G4
 
 ## Результат разработки
 
-В staff/admin-контуре существует отдельный раздел управления продуктовой конфигурацией. Уполномоченная роль может увидеть, изменить, проверить и активировать настройки времени/SLA и качества/admission; каждое изменение версионируется и применяется без переписывания уже начавшихся периодов и исторических решений.
+В существующем staff/admin settings-контуре имеются отдельные доменные страницы продуктовой конфигурации. Уполномоченная роль может увидеть, изменить, проверить и активировать разрешенные настройки; каждое изменение версионируется и применяется без переписывания уже начавшихся периодов и исторических решений.
+
+Каноническая карта размещения: `product-architecture-g1-g6-ownership-map.md`. Один параметр редактируется только на одной доменной странице. Сводный readback может показывать параметры из нескольких доменов, но не создает вторую точку редактирования.
 
 ## Навигация и общая поверхность
 
@@ -15,27 +17,42 @@ Coverage mapping: G1.2, G1.3, G1.4, G2.1, G2.2, G2.3, G3.3, G3.4, G3.7, G4.1, G4
 
 1. список групп настроек со статусом `configured / configuration_missing / draft / active / retired`;
 2. текущую активную версию, дату действия и автора последнего изменения;
-3. переход в отдельные экраны `Время и SLA`, `Качество и допуск`, `KPI и влияние`, `Trust & Safety`, `Возвраты` и `Credits, цены и промо`;
+3. переход в отдельные экраны `Настройки консультаций`, `Настройки чата`, `Настройки поддержки`, `Качество и допуск`, `KPI и влияние`, `Trust & Safety`, `Возвраты` и `Credits, цены и промо`;
 4. понятные pending/success/failure при сохранении;
 5. preview/readback фактически сохраняемой версии до и после активации;
 6. историю версий и изменений;
 7. role/permission guard для просмотра, редактирования, активации и override;
 8. отсутствие dead controls: недоступное действие объяснено или скрыто, прямой вызов запрещен тем же правилом.
 
-## Экран 1. Время и SLA
+## Сквозной контракт времени и SLA
+
+Это сводная карта clocks, а не самостоятельная дублирующая страница редактирования. Каждый параметр изменяется на указанной канонической странице.
 
 Обязательные управляемые поля:
 
-| Поле | Текущее значение | Единица/тип |
-|---|---:|---|
-| Paid request accept/decline | 60 | секунд |
-| First meaningful response | 60 | секунд |
-| Support first response | 15 | минут |
-| Ordinary escalation threshold | 2 | multiplier SLA |
-| Critical incident escalation | immediate | режим |
-| Balance pause duration | 5 | минут |
-| Agent reconnect grace | 60 | секунд |
-| Support hours/calendar/timezone | operational config | schedule/timezone |
+| Поле | Текущее значение | Единица/тип | Каноническая страница |
+|---|---:|---|---|
+| Request hard expiry | 15 | минут | Настройки консультаций |
+| Paid request accept/decline SLA | 60 | секунд | G6.2 SLA settings/readback |
+| Clarification client response | 60 | минут | Настройки консультаций |
+| Expert proposal validity | 15 | минут | Настройки консультаций |
+| Connection timeout | 3 | минут | Настройки консультаций |
+| Inactivity reminder | 2 | минут | Настройки консультаций |
+| Client return window | 4 | часа | Настройки консультаций |
+| Balance pause duration | 5 | минут | Настройки консультаций |
+| Agent reconnect grace | 60 | секунд | Настройки консультаций |
+| Client reconnect grace | 60 | секунд | Настройки консультаций |
+| First meaningful response | 60 | секунд | Настройки консультаций / G6.2 contract |
+| Support first response | 15 | минут | Настройки поддержки |
+| Ordinary support escalation | 2 | multiplier SLA | Настройки поддержки |
+| Critical support escalation | immediate | режим | Настройки поддержки |
+| Expert SLA compensation | `unset` | минут coupon grant | Credits, цены и промо / compensation |
+| Consultation history retention | 24 | месяцев после завершения | Lifecycle/privacy G1.3/G4.3 |
+| Support hours/calendar/timezone | operational config | schedule/timezone | Настройки поддержки |
+
+`Expert SLA compensation` — число минут, автоматически выдаваемых coupon после подтвержденного Expert/Agent SLA failure. Клиентское уведомление может показывать это число только после успешного grant. Отдельный client reconnect timeout не использует это автоматическое правило: возможный coupon выдается Экспертом по самостоятельному регламенту.
+
+`Consultation history retention` управляет клиентской историей сообщений. Legal/privacy review может изменить default. Dispute/refund/safety/legal hold применяется только к связанному evidence с обязательными reason, scope, owner, expiry/review и audit; финансовые/audit записи имеют отдельную retention policy.
 
 Правила validation/readback/snapshot и AS1-AS10 определены в `tz-crosscut-admin-managed-settings.md`.
 
@@ -69,6 +86,16 @@ Admin управляет версионированным перечнем. Дл
 - Первичный verdict: moderator/QA lead по разрешенной роли.
 - Override/unblock: super-admin с обязательной причиной и audit.
 - Admin-панель управляет role bindings через разрешенные роли, но не позволяет выдать право самому себе обходом текущего ACL.
+
+### Appeal Агента
+
+- feature toggle применяется только к новым quality decisions;
+- текущий deadline — `7 дней`, numeric/admin-managed;
+- обязательный комментарий;
+- reviewer/decision actor в MVP — `super-admin`;
+- Эксперт/Агент видит только допустимую категорию, action, effective period, deadline и appeal status;
+- support ticket, refund details, raw client evidence и внутренняя переписка не раскрываются;
+- уже открытая апелляция сохраняется при последующем отключении feature.
 
 ### Re-admission workflow
 
@@ -228,40 +255,85 @@ Protected categories по умолчанию:
 6. passport/identity/tax/social identifiers и изображения документов;
 7. bank card/account/payment/crypto details;
 8. authentication secrets, passwords, codes и recovery data;
-9. полное юридическое имя, точная дата рождения и иные direct identifiers, если они не собираются через отдельный approved structured field с consent;
+9. полное юридическое имя и иные direct identifiers; дата, время и место рождения разрешены как consultation data;
 10. любой набор данных, который в контексте позволяет обойти запрет внешнего контакта или идентифицировать частное лицо вне необходимого service scope.
 
-First name, возрастной диапазон, город/регион, zodiac/topic и обезличенный relationship context не считаются автоматически запрещенными, пока не образуют direct identifier. Необходимые astrology/Tarot inputs передаются через approved structured fields с purpose/consent/version, а не требуют раскрытия контактов в свободном чате.
+First name, возрастной диапазон, город/регион, дата/время/место рождения, zodiac/topic и обезличенный relationship context не считаются автоматически запрещенными, пока не образуют direct contact identifier. Structured fields для astrology/Tarot inputs предпочтительны, но не обязательны: разрешенные consultation data могут передаваться свободным текстом.
 
 ### Поведение перед отправкой
 
-1. Protected direct-contact/payment/identity/secret match использует current mode `hard_block`: сообщение целиком не доставляется и не попадает в conversation history как отправленное.
-2. Пользователь видит, какая категория обнаружена, почему сообщение не отправлено и что нужно удалить/переформулировать; интерфейс не повторяет полный запрещенный value.
-3. Для явно разрешенной low-risk категории admin может задать `warn_and_edit` или `redact_and_send`, но protected minimum нельзя ослабить обычным toggle.
+1. Protected direct-contact/payment/identity/secret match использует current mode `sender_original_recipient_censored`: сообщение считается отправленным, но получатель получает версию с заменой каждого запрещенного фрагмента на `ЦЕНЗУРА`.
+2. Отправитель видит исходный текст в своей истории и отдельное системное предупреждение о нарушении политики. Получатель не видит raw value.
+3. Для каждой категории `super-admin` может отдельно включить или выключить проверку. Изменение требует причины, создает новую version/effective date и audit record.
 4. Проверяются paste/edit/retry, разделение по нескольким последовательным сообщениям, пробелы/слова/символы/emoji/leet-like obfuscation и language/locale variants.
 5. Проверяются message text, link metadata и поддерживаемые attachments/images/QR/OCR. Если тип вложения нельзя надежно проверить, он блокируется в consultation chat либо направляется в отдельный approved secure-support route.
 6. Approved internal product links и approved safety resources проходят только по versioned allowlist; redirect/shortener не наследует доверие автоматически.
-7. Raw blocked value не сохраняется в обычном message history, analytics или audit. Incident evidence хранит category, rule/version, actor/session, masked excerpt/fingerprint и action без полного контакта/секрета.
+7. Recipient-facing history и обычная analytics сохраняют только censored content. Raw prohibited value, необходимый для расследования и sender history, изолируется в restricted evidence storage с минимальными правами, retention и audit каждого staff-view.
 8. Повторные попытки связываются в один incident. Для агента repeated bypass становится critical quality/privacy signal; для клиента — понятное предупреждение и при необходимости support route без автоматического обвинения.
 9. False positive не дает пользователю bypass protected rule: сообщение можно исправить; staff корректирует rule/allowlist через versioned review.
 10. Support, refund или identity evidence, реально необходимое для обработки, собирается только через отдельные защищенные поля/маршрут с минимальными правами, purpose и retention, не через consultation chat.
 
 ### Admin settings для chat privacy
 
-Admin управляет:
+На странице «Настройки чата» только `super-admin` управляет:
 
 - protected/optional categories и active rule version;
-- direction/role/channel scope;
-- mode `hard_block / warn_and_edit / redact_and_send` в разрешенных границах;
+- enabled/disabled toggle для каждой категории;
 - language/locale/pattern/detector settings и obfuscation window;
 - internal-domain/safety-resource allowlist и external deny rules;
-- attachment types, inspection requirement и uninspectable fallback;
-- user-facing templates без echo raw value;
+- sender warning template и recipient replacement label;
 - repeated-attempt thresholds и agent/client action mapping;
-- masked evidence/context/retention rules;
+- evidence retention rules и audit staff-view;
 - detector version, preview fixtures, effective date и rollback.
 
-Protected contact, payment, identity-document и authentication-secret categories нельзя перевести в bypass/disabled без отдельного owner/legal/privacy approval. При detector unavailable protected send действует fail-closed и показывает понятную временную недоступность, а не отправляет непроверенный content.
+Двусторонняя проверка и режим `sender_original_recipient_censored` являются утвержденными правилами G1.2 и не выводятся как переключатели. Назначение reviewer role/queue на этой странице отсутствует.
+
+Отключение любой категории доступно только `super-admin`, требует обязательной причины и предупреждения о риске перед активацией новой версии. При detector unavailable protected send действует fail-closed и показывает понятную временную недоступность, а не отправляет получателю непроверенный raw content.
+
+### Место страницы «Настройки чата»
+
+В существующем разделе настроек по адресу `/ru/admin/settings/index` нужно добавить самостоятельную страницу **«Настройки чата»**.
+
+- предлагаемая route: `/ru/admin/settings/chat`;
+- пункт показывается в существующем левом списке страниц настроек;
+- положение: сразу после **«Основные настройки»** и перед **«Настройки фото»**;
+- это отдельная страница текущего settings-контура, без создания нового верхнеуровневого раздела меню;
+- ранее предложенная вложенность `Настройки консультаций → Чат и роли` не используется.
+
+Страница группирует только относящиеся к consultation chat настройки: лимиты сообщений, документы/вложения, цензура, in-chat templates/system messages, причины скрытия сообщения и chat-specific delivery/edit/censorship/attachment texts.
+
+На странице **не размещаются** создание и редактирование ролей, назначение роли сотруднику и общий редактор permissions. Эти функции уже существуют на `/ru/admin/settings/role`, `/ru/admin/role/create`, `/ru/admin/role/update` и `/ru/admin/settings/admin`. Страница чата только проверяет выданные там права; она не создает второй контур управления доступом.
+
+В MVP вся страница, preview, сохранение, активация и rollback доступны только `super-admin`. Отдельный monitoring/evidence surface в контуре «Сообщения» также доступен только `super-admin`. Новая роль и новые role assignments сейчас не создаются. Возможное последующее делегирование оформляется через существующий RBAC-контур отдельным решением.
+
+### Проверка на дублирование с live admin
+
+По live-аудиту существующей админ-панели от 2026-07-27:
+
+- `/ru/admin/settings/prices` уже управляет пакетами credits, базовой ценой, скидкой, ценой за credit и итоговой ценой — этих полей на странице чата нет;
+- `/ru/admin/settings/payment` уже управляет валютой и платежными системами — этих полей на странице чата нет;
+- `/ru/admin/settings/photo` уже управляет общими image size/dimensions/quality — страница чата использует эти ограничения и не создает их копию;
+- `/ru/admin/settings/stories` управляет только stories media — эти значения не переиспользуются как скрытые chat defaults;
+- `/ru/admin/settings/premium` уже содержит dating/premium quotas для incoming/outgoing messages, read status, edit sent messages и mutual timer — они остаются на прежней странице и не становятся вторым набором consultation-chat настроек;
+- `/ru/admin/email-template/index` остается контуром email, а chat templates являются отдельными сообщениями внутри продукта;
+- `/ru/admin/message/index` остается операционным реестром сообщений; мониторинг censored attempts расширяет этот контур либо его дочернюю страницу, но не помещается в конфигурацию чата. В MVP новый фильтр/дочерняя страница и restricted-original evidence доступны только `super-admin`; действие physical delete для consultation messages заменяется на hide with mandatory reason and audit;
+- `/ru/admin/support/index` остается очередью support cases;
+- `/ru/admin/users-log/index` используется для audit действий `super-admin`, но не хранит значения конфигурации.
+
+### Admin settings для форматов и поведения чата
+
+В секции «Форматы и поведение» страницы `/ru/admin/settings/chat` только `super-admin` управляет:
+
+- максимальной длиной одного сообщения;
+- количеством сообщений в одном rate-limit окне и длительностью этого окна;
+- разрешенными MIME/форматами документов, максимальным размером документа и максимальным количеством вложений в одном сообщении;
+- обязательным inspection fallback для документов, изображений и QR/OCR;
+- staff hide reasons без physical delete;
+- библиотекой optional agent templates/suggestions и in-chat system messages, доступностью по языку/сценарию и версиями.
+
+Text, system, emoji и approved images являются разрешенным MVP-поведением; audio, video и arbitrary files запрещены. Эти продуктовые правила, typing/delivered/read, edited marker, idempotent retry и запрет physical delete не выводятся как включаемые переключатели. Общие image size/dimensions/quality берутся из `/ru/admin/settings/photo`, а страница чата задает только channel-specific inspection и attachment count.
+
+Максимальная длина сообщения, rate-limit count/window, размер документа и количество вложений являются отдельными числовыми полями с единицами измерения и валидацией. Client/Agent reconnect, request/session timers, причины завершения и consultation-history retention редактируются в lifecycle/privacy-контурах G1.3/G4.3, а не на странице чата. Автоматическая отправка template/suggestion запрещена и не может быть включена настройкой.
 
 ### Управляемые detection parameters
 
@@ -271,7 +343,6 @@ Protected contact, payment, identity-document и authentication-secret categorie
 - monitoring mode `manual_only / flag_after_send / hold_before_send / immediate_safety_route`;
 - warning/hold/critical confidence thresholds;
 - provisional action и final action mapping;
-- reviewer role/queue и review SLA;
 - dedup/link window;
 - evidence/context limit и retention/review period;
 - detector/rule version, effective date и fallback behavior;
@@ -307,10 +378,11 @@ Session, message review, incident, admission и training record сохраняю
 | Quality complaint automatic percent | `unset` | numeric, % | manual decision only |
 | Safety violation automatic percent | `unset` | numeric, % | refund candidate/manual decision |
 | Minimum/maximum case amount | `unset` | numeric, session currency | no artificial limit; never above eligible remaining charges |
-| Claim submission window | `unset` | numeric, days | staff sees configuration missing; no invented expiry |
+| Claim submission window | 30 | numeric, days | current product default до legal review |
 | Refund decision target | `unset` | numeric, hours/days | separate from O1 first-response SLA |
-| Automatic-processing amount cap | `unset` | numeric, session currency | automatic optional path disabled |
-| Manual-approval threshold | `unset` | numeric amount/% | all discretionary refunds require allowed approver |
+| Client appeal window | 7 | numeric, days | one client appeal per final decision |
+| Automatic-processing amount cap | `disabled` | numeric, session currency | actual refund automation disabled |
+| Manual-approval threshold | 0 | numeric amount/% | every actual refund requires super-admin |
 
 ### Требования к числовым ячейкам
 
@@ -350,6 +422,8 @@ Session, message review, incident, admission и training record сохраняю
 - warning/error при превышении protected ceiling или отсутствии approver/evidence.
 
 Save/confirm различает draft decision и фактическое financial action. Повтор confirm/retry не создает второе движение. Session хранит consent/terms version, case — decision policy version; более поздняя admin policy не уменьшает уже обещанные клиенту права и не переписывает завершенный refund.
+
+Любой фактический refund подтверждает `super-admin`. Автоматические категории формируют candidate/default calculation, но не выполняют движение credits. Финансовая ошибка оставляет case открытым до успешного движения и корректного клиентского сообщения.
 
 ### Protected invariants
 
@@ -596,12 +670,12 @@ fixtures и готовность к QA:
 | AP38 | Duplicate signals from monitoring/report/QA | Один связанный incident либо явная linkage, без повторного action |
 | AP39 | Detector unavailable | `monitoring_degraded`; staff incident; обязательный hold/critical route действует fail-closed |
 | AP40 | Unobservable off-platform allegation | Complaint/evidence route без ложного заявления об автоматическом proof |
-| AP41 | Plain/spaced/worded phone number | Hard block до отправки; raw number не появляется в history/audit |
-| AP42 | Email, messenger handle, social invite | Hard block с category explanation |
-| AP43 | External URL/shortener/QR/contact card | Block; approved internal/safety allowlist проходит только по active version |
-| AP44 | Address, document, bank/payment/crypto details | Hard block; masked evidence only |
-| AP45 | Password/code/secret | Hard block без echo secret |
-| AP46 | Contact split across sequential messages | Один связанный incident; обход не доставлен |
+| AP41 | Plain/spaced/worded phone number | Sender видит original + warning; recipient видит `ЦЕНЗУРА`; один incident |
+| AP42 | Email, messenger handle, social invite | Recipient-safe censorship с category/rule version и sender warning |
+| AP43 | External URL/shortener/QR/contact card | Recipient видит censored value; approved internal/safety allowlist проходит по active version |
+| AP44 | Address, document, bank/payment/crypto details | Recipient видит `ЦЕНЗУРА`; raw evidence доступен только через restricted audited route |
+| AP45 | Password/code/secret | Recipient не получает raw secret; sender получает policy warning |
+| AP46 | Contact split across sequential messages | Один связанный incident; recipient не восстанавливает значение из частей |
 | AP47 | Paste/edit/retry/direct send | Один и тот же server-side guard и результат |
 | AP48 | Benign price/date/time/card-number-like discussion | Нет ложной доставки PII; допустимый service context проходит или дает edit route |
 | AP49 | Approved structured birth-data field | Purpose/consent/version сохранены; данные не требуют публикации в free chat |

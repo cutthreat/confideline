@@ -165,7 +165,7 @@
   const tzScoreByTask = {
     "task-g1-session": [10,10,10,10,10,10,10,10,10,5],
     "task-g1-chat": [10,10,10,10,5,5,10,10,5,0],
-    "task-g1-statuses": [10,5,5,10,5,5,5,10,5,5],
+    "task-g1-statuses": [10,10,10,10,10,10,10,10,10,10],
     "task-g1-chat-notifications": [10,5,5,5,5,0,5,5,10,5],
     "task-g2-pricing": [10,5,5,10,5,0,5,10,10,10],
     "task-g2-timer": [10,5,5,10,5,0,5,10,10,10],
@@ -239,10 +239,10 @@
       has:["Product-only TZ создан: reports/tz-product-g1-2-role-chat-consultation-2026-07-16.md.", "Зафиксирована owner-модель: клиент видит только эксперта/анкету, агент скрыт.", "Зафиксировано: агент пишет только от назначенной анкеты; разные анкеты создают разные диалоги; один агент может вести несколько анкет.", "Частично доказано: админ назначает анкеты агенту, а вход Kristy через Login as user открывает агентский chat-контур.", "Live proof 29 июня 2026 подтвердил отдельные conversations для Solara, Stella и Talia.", "Training corpus добавил продуктовый слой поведения: presence, first useful value, relevance, empathy, explicit instrument/source, balanced answer, transparent trial/paid state, respectful close and no pressure."],
       missing:["Нужно закрыть P0-разрыв доступа: агент не должен открывать чужие анкеты по прямому URL.", "Нужно доказать, что agent chat API фильтрует диалоги только по назначенным анкетам.", "Нужно доказать или реализовать backend guard: чужой userOfAgentId отклоняется при отправке.", "Нужно зафиксировать внутренний audit: кто реально писал, от какой анкеты, кто вмешивался и что видит клиент.", "Нужно доказать правило: если у агента нет доступа к анкете, он не видит диалоги этой анкеты.", "Нужно owner/legal решение по запрещенным engagement tactics: artificial incompleteness, hidden billing state, fear/dependency pressure, unsupported guarantees, repeated unsolicited booking pressure."],
       done:["ТЗ станет 100%, когда роли, видимость, назначение анкет, отдельные диалоги, backend guard, внутренний audit и поведение консультации будут описаны без неоднозначности.", "Игорь получает продуктовый контракт: что пользователь/агент/супер-админ должны видеть и какие состояния/запреты должны соблюдаться, без указания способа реализации.", "Приемка G1.2 требует не только send-as, но и examples/negative cases по прозрачному trial/paid поведению и no-pressure consultation behavior."] },
-    "task-g1-statuses": { code:"G1.3", title:"Статусы и история", goal:"Цель 1", stage:"accepted_bounded_slice", tzReady:65, detailHref:"tasks/task-g1-statuses.html",
-      has:["Статусы и история событий описаны.", "Есть правила допустимых переходов.", "Есть контракт проверки."],
-      missing:["Нет полного контракта интерфейса для истории на сайте.", "Надо явно описать пакет передачи для интеграции статусов в пользовательские и операторские экраны.", "Надо собрать контракт переноса и приемку уже не только для внутренней основы, но и для финальной поверхности."],
-      done:["ТЗ готово, когда статусы, переходы и визуальная поверхность истории описаны как один интеграционный контракт.", "Игорю должно быть понятно, куда и как это вшивается без домысливания."] },
+    "task-g1-statuses": { code:"G1.3", title:"Статусы и история консультации", goal:"Цель 1", stage:"spec_handoff_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-3-for-igor.html",
+      has:["Готово самостоятельное продуктовое ТЗ для Игоря: request, consultation session, lifecycle, ожидание/reconnect, история и связанные процессы.", "Готов отдельный технический контекст для Codex Игоря: состояния, переходы, invariants, data/readback, integration points и acceptance matrix.", "Все изменяемые лимиты распределены по каноническим разделам существующей админ-панели без дублирования."],
+      missing:["Пробелов в продуктовой постановке G1.3 по принятому стандарту нет.", "Implementation status открыт: нужен mapped build/commit.", "Runtime acceptance открыт: нужны state/timeout/idempotency/concurrency/admin readback и role proof."],
+      done:["Spec completeness = 100%; focused verifier = 78/78; hard gates = pass.", "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.", "Реализация и runtime acceptance оцениваются отдельно."] },
     "task-g1-chat-notifications": { code:"G1.4", title:"Уведомления чата", goal:"Цель 1", stage:"accepted_bounded_slice", tzReady:55, detailHref:"tasks/task-g1-chat-notifications.html",
       has:["Понятна задача и ее границы.", "Есть зависимость от контура консультации и чата."],
       missing:["Надо описать список событий.", "Надо развести получателей по ролям.", "Надо зафиксировать критерии полезности и анти-спама."],
@@ -389,7 +389,7 @@
   };
 
   Object.entries(tasks).forEach(([taskId, taskItem]) => {
-    if (taskId === "task-g1-session" || taskId === "task-g1-chat") return;
+    if (taskId === "task-g1-session" || taskId === "task-g1-chat" || taskId === "task-g1-statuses") return;
     taskItem.stage = `${taskItem.stage}_legacy_score_pending_standard_audit`;
     taskItem.done = [
       `Текущая оценка ${taskItem.tzReady}% сохранена как исходная, но еще не подтверждена новым стандартом.`,
@@ -466,6 +466,41 @@
     "Приведены 13 positive и 11 negative/retry acceptance cases с наблюдаемым результатом.",
     "Готовы отдельные PM-ТЗ для Игоря и технический контекст для его Codex.",
     "Definition of Done требует mapped build, runtime proof, persisted audit/readback, rollback и отдельный PM verdict."
+  ];
+
+  tasks["task-g1-statuses"].stage = "etalon_spec_ready_runtime_open";
+  tasks["task-g1-statuses"].tzReady = 100;
+  tasks["task-g1-statuses"].detailHref = "../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-3-for-igor.html";
+  tasks["task-g1-statuses"].has = [
+    "Создано автономное продуктовое ТЗ для Игоря: отдельный consultation request, одна service session, compact lifecycle, подстатусы ожидания/reconnect и единый terminal result.",
+    "Создан отдельный технический контекст для Codex Игоря с transitions, invariants, data/readback, negative/concurrent cases и acceptance matrix.",
+    "Создана сквозная PM-карта G1-G6: Support, Refund, Quality, Appeal, Events и KPI связаны с consultation, но не становятся ее состояниями.",
+    "Настройки распределены по существующей логике админки без дублирования: consultation, chat, prices, support, refunds, quality, KPI и RBAC."
+  ];
+  tasks["task-g1-statuses"].missing = [
+    "Пробелов в продуктовой спецификации G1.3 по принятому стандарту не осталось.",
+    "Implementation status открыт: нужен mapped build/commit.",
+    "Runtime acceptance открыт: нужны state/timeout/idempotency/concurrency/admin readback и role proof."
+  ];
+  tasks["task-g1-statuses"].done = [
+    "Spec completeness = 100%; focused verifier = 78/78; hard gates = pass.",
+    "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.",
+    "Реализация и runtime acceptance оцениваются отдельно."
+  ];
+  tzScoreByTask["task-g1-statuses"] = [5,8,10,7,12,12,12,8,6,12,5,3];
+  criterionDetailsByTask["task-g1-statuses"] = [
+    "Есть цель, измеримый результат, версия и независимая граница spec/runtime.",
+    "Scope разделяет G1.1/G1.2/G1.3/G2/G4/G5/G6 и ссылается на сквозную ownership map.",
+    "Определены Client, Expert, Agent, Moderator и Super-admin с role-specific readback.",
+    "Request и session creation имеют отдельные preconditions/triggers.",
+    "Описаны request states, primary session states, operational substates, terminal metadata и forbidden transitions.",
+    "Покрыты request/proposal/clarification/connecting/trial/paid/waiting/pause/reconnect/end.",
+    "Покрыты duplicate, retry, concurrent action, late top-up/reconnect, invalid transition и dependency failure.",
+    "Определены applied settings, deadlines, actor/reason, history и linked-process readback.",
+    "Описаны client, Agent, Support link и Super-admin поверхности, включая статусную панель и My consultations.",
+    "Есть 22 PM acceptance checks и 18 технических Given/When/Then cases.",
+    "Готовы отдельные PM-ТЗ и технический контекст для Codex.",
+    "Definition of Done и proof boundary отделяют документы от implementation/runtime."
   ];
 
   const taskTermEn = {
@@ -553,6 +588,11 @@
       igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-2-for-igor.html",
       codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g1-2-role-chat.md",
       docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-2-for-igor.docx"
+    },
+    "task-g1-statuses": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-3-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g1-3-status-history.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-3-for-igor.docx"
     }
   };
   const artifacts = artifactByTask[id] || {};
