@@ -101,7 +101,7 @@
     .task-link .task-title { color:#175cd3; text-decoration:underline; text-underline-offset:2px; }
     .task-link:hover .task-title { color:#0b3f91; }
     .progress-wrap { min-width:110px; }
-    .tz-wrap { min-width:150px; }
+    .tz-wrap { min-width:210px; }
     .tz-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px; }
     .tz-percent { color:#0f766e; font-weight:700; font-size:12px; }
     .progress-line { height:8px; background:#e9eef7; border-radius:999px; overflow:hidden; margin-top:5px; }
@@ -112,9 +112,12 @@
     .readiness-link::after { content:"›"; position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:20px; font-weight:700; color:#175cd3; }
     .readiness-link:hover { background:#e8f1ff; border-color:#175cd3; }
     .readiness-link:hover .progress-line { box-shadow:0 0 0 2px rgba(23,92,211,.16); }
-    .tz-link { display:block; color:inherit; text-decoration:none; padding:8px 10px; border:1px solid #d8e6ff; border-radius:8px; background:#f8fbff; }
-    .tz-link:hover { background:#eefaf7; border-color:#0f766e; }
-    .tz-link:hover .progress-line { box-shadow:0 0 0 2px rgba(15,118,110,.14); }
+    .tz-summary { padding:8px 10px; border:1px solid #d8e6ff; border-radius:8px; background:#f8fbff; }
+    .tz-doc-links { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px; }
+    .tz-doc-link { display:flex; align-items:center; justify-content:center; min-height:38px; padding:7px 8px; border:1px solid #c9dcff; border-radius:6px; color:#175cd3; background:#fff; font-size:11px; font-weight:700; line-height:1.2; text-align:center; text-decoration:none; }
+    .tz-doc-link.codex { color:#0f766e; border-color:#b8ddd7; }
+    .tz-doc-link:hover { background:#eaf2ff; border-color:#175cd3; }
+    .tz-doc-link.codex:hover { background:#eefaf7; border-color:#0f766e; }
     .role-table, .source-table { width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
     .role-table th, .source-table th { background:#1f4e78; color:#fff; text-align:left; padding:10px; vertical-align:top; }
     .role-table td, .source-table td { border-top:1px solid var(--line); padding:10px; vertical-align:top; line-height:1.45; }
@@ -161,6 +164,8 @@
     <button type="button" data-tab-target="sources">Источники</button>
     <a href="./pm-quality-pass-2026-06-20.html">PM-ревизия</a>
     <a href="./agent-workspace-pbexpert-v0-1.html">Макет агента</a>
+    <a href="./mvp-pm-final-2026-07-10.html">Итог MVP</a>
+    <a href="./support-ticket-contour-2026-07-13.html">Контур поддержки</a>
   </nav>
 
   <section id="six-goals" class="tab-panel" data-tab-panel="six-goals">
@@ -213,9 +218,9 @@
           <ul>
             <li>3-5 допущенных экспертов или обученных кандидатов.</li>
             <li>Темы, цена, профиль, правила ответа.</li>
-            <li>Агент = эксперт, ведущий несколько анкет.</li>
+            <li>Агент = внутренний технический пользователь, ведущий назначенные экспертные аккаунты.</li>
             <li>Отдельный URL админки для работы команды.</li>
-            <li>Рабочий стол агента: очередь, анкеты, лимиты, карточка клиента, быстрые действия.</li>
+            <li>Рабочий стол агента: сквозной чат, назначенные анкеты, SLA, карточка клиента и быстрые действия.</li>
             <li>Контроль качества, поддержка и возвраты.</li>
           </ul>
         </article>
@@ -385,8 +390,10 @@
         <tr><td>Role-based master plan 2026-06-10</td><td>Ролевая рамка: клиент, эксперт, агент, супер-админ.</td><td><span class="badge stage-accepted">Учтено</span></td></tr>
         <tr><td>Nebula G1-G3 status model 2026-06-15</td><td>Базовая модель статусов и готовности задач.</td><td><span class="badge stage-accepted">Учтено</span></td></tr>
         <tr><td>Nebula frontier status update 2026-06-15</td><td>Текущая очередь следующего слоя работ.</td><td><span class="badge stage-packet">Учтено</span></td></tr>
-        <tr><td>Nebula expert hiring research 2026-06-17</td><td>ЦА кандидата, текст вакансии, площадки поиска, анкета, тест и онлайн-собеседование.</td><td><span class="badge stage-packet">Учтено</span></td></tr>
-        <tr><td>PbExpert encyclopedia 2026-06-18</td><td>Рабочий кабинет агента: очередь диалогов, анкеты, клиентская карточка, лимиты, Book Now, бейджи, обучение и зависимости G3/G4/G6.</td><td><span class="badge stage-packet">Готово source-bounded</span></td></tr>
+<tr><td>Nebula expert hiring research 2026-06-17</td><td>ЦА кандидата, текст вакансии, площадки поиска, анкета, тест и онлайн-собеседование.</td><td><span class="badge stage-packet">Учтено</span></td></tr>
+<tr><td>Nebula expert-training source recovery 2026-07-16</td><td>15 локальных оригиналов, Drive/Notion refs, Days 1-3, исторические Days 4-7, 102 ten-minute packets, proof catalog и closeout. Используется как доказательная база обучения, ролей, QA и admission; не является policy/runtime approval.</td><td><span class="badge stage-packet">Corpus complete</span></td></tr>
+<tr><td>Six-goals training product addendum 2026-07-16</td><td>G1/G4/G5/G6 дополнены P0-требованиями: role dictionary, transparent trial/paid UX, engagement hard fails, QA scorecard, admission sequence, Trust & Safety dependency, domain competence, MVP manual coaching.</td><td><span class="badge stage-packet">Addendum ready / owner gates open</span></td></tr>
+<tr><td>PbExpert encyclopedia 2026-06-18</td><td>Рабочий кабинет агента: очередь диалогов, анкеты, клиентская карточка, лимиты, Book Now, бейджи, обучение и зависимости G3/G4/G6.</td><td><span class="badge stage-packet">Готово source-bounded</span></td></tr>
         <tr><td>PbExpert role visibility / regulation 2026-06-18</td><td>Кто что видит в одной консультации: клиент, публичная анкета, агент, супер-админ; рабочий цикл от очереди до QA/refund.</td><td><span class="badge stage-packet">Готово source-bounded</span></td></tr>
         <tr><td>Nebula certification roadmap from PbExpert 2026-06-18</td><td>Pipeline кандидата, gates допуска, proof packet, owner approval и календарная логика подготовки команды.</td><td><span class="badge stage-packet">Готово как пакет</span></td></tr>
         <tr><td>Nebula training/admin/QA dependency map 2026-06-18</td><td>Порядок зависимостей: что можно начинать сейчас, что нужно до практики, что блокирует реальный допуск команды.</td><td><span class="badge stage-packet">Готово source-bounded</span></td></tr>
@@ -437,6 +444,8 @@
         <tr><td>Nebula G2.4 flexible settings model 2026-06-30</td><td>Зафиксирована новая вводная: проверенной рабочей модели начислений пока нет, поэтому нужна админка с гибкими настройками правил начисления, hold, возвратов, QA/SLA-влияния и audit policy version.</td><td><span class="badge stage-packet">Settings-first модель</span></td></tr>
         <tr><td>Nebula G2.4 implementation packet 2026-06-30</td><td>Собран передаваемый пакет: страницы админки, поля, таблицы, статусы, права, интеграции, acceptance cases и stop conditions для гибких начислений по consultation session.</td><td><span class="badge stage-packet">Packet ready</span></td></tr>
         <tr><td>Nebula PM review 2026-07-03</td><td>PM проверил текущий 6-месячный план: маршрут верный, но нужен операционный слой контроля - capacity, gates, QA owner, SEO brief, события, SLA settings и support walkthrough.</td><td><span class="badge stage-packet">PM review complete</span></td></tr>
+        <tr><td>Nebula profile field weight review 2026-07-07</td><td>Изучен локальный YouDate profile-field контур: visible/searchable/searchable premium/sort order есть, но Nebula-score заполненности анкеты и влияние на выдачу/ротацию не доказаны. Добавлена G3.6.</td><td><span class="badge stage-packet">Inventoried / task added</span></td></tr>
+        <tr><td>Nebula expert rotation policy packet 2026-07-07</td><td>Отдельно добавлена G3.7: механизм выдачи и ротации анкет экспертов в клиентском списке. Стартовать до принятия каталога, карточки эксперта, SEO и paid traffic.</td><td><span class="badge stage-packet">Packet ready</span></td></tr>
         <tr><td>Nebula Igor chat update packet 2026-07-03</td><td>Пакет для обновления чата: service_session, role/access, assigned profiles only, real operator audit, pricing/start hooks, support/refund hooks.</td><td><span class="badge stage-packet">Packet ready</span></td></tr>
         <tr><td>Nebula SLA admin settings contract 2026-07-03</td><td>Строгие SLA-лимиты оформлены как гибкие настройки админки: thresholds, warnings, overdue, escalation, QA/payout impact и audit.</td><td><span class="badge stage-packet">Packet ready</span></td></tr>
         <tr><td>Nebula SEO specialist brief 2026-07-03</td><td>Бриф SEO-специалисту: SERP review, semantic map, technical SEO audit, page templates, content clusters и first 2-week deliverables.</td><td><span class="badge stage-packet">Brief ready</span></td></tr>
@@ -511,6 +520,7 @@
         <tr><td>PbExpert D5-2 recovery / visual / targeted STT pass18 2026-06-18</td><td>День 5 часть 2 получен локально; targeted-интервалы усилили free-value boundary, купоны, спорные чаты, support/refund-risk и обучение на эталонных чатах.</td><td><span class="badge stage-packet">Готово bounded</span></td></tr>
         <tr><td>PbExpert D5-1 recovery / visual / targeted STT pass19 2026-06-18</td><td>День 5 часть 1 получен локально; targeted-интервалы усилили platform/promo source, first meaningful answer, paid/free boundary, buffer-zone и refund evidence.</td><td><span class="badge stage-packet">Готово bounded</span></td></tr>
         <tr><td>Agent workspace HTML mockup v0.1</td><td>Интерактивный макет отдельного кабинета агента по PbExpert: очередь, чат, карточка консультации, лимиты, QA и демо-действия.</td><td><span class="badge stage-packet">Готово v0.1</span></td></tr>
+        <tr><td>Nebula isolated admin access packet 2026-07-07</td><td>Добавлена G6.7: эксперт/агент работает только через изолированный admin/staff-контур, без клиентского фронта; эксперт появляется на сайте только после верификации и допуска.</td><td><span class="badge stage-packet">Task added</span></td></tr>
         <tr><td>task-details.html</td><td>Подробные карточки задач.</td><td><span class="badge stage-accepted">Используется</span></td></tr>
       </tbody>
     </table>
@@ -645,9 +655,16 @@
     <span class="badge p2">P2</span> после базового запуска
   </div>
   <div class="footer">
-    ТЗ в этом контуре = рабочий пакет для Игоря + Codex:
-    цель и пользовательский результат, источники правды, контракт переноса из HTML/Figma-макета, данные и состояния, объем интерфейса и логики, затрагиваемые файлы и интеграции, проверка, критерии приемки, откат и стоп-условия.
+    Для каждой из 30 задач панель теперь содержит два самостоятельных типа документа:
+    `ТЗ для Игоря` описывает цель, продуктовую логику, желаемый функционал и критерии результата;
+    `Контекст для Codex Игоря` передает техническую картину, источники, интеграционные границы, проверки и доказательства.
     `100% ТЗ` = любой участник реализации понимает, что строим, откуда переносим, как интегрируем, как проверяем и по чему принимаем результат без догадок.
+    С 27.07.2026 действует новый стандарт из 12 критериев и 12 hard gates. G1.1 оформлено двумя автономными эталонными документами и подтверждено на 100%; для остальных 29 задач созданы оба рабочих контура, но их исходная оценка сохраняется до отдельного повторного аудита. Структурное покрытие `30 задач × 2 типа ТЗ` не равно автоматически 100% полноты документов.
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/readiness-summary.md">Открыть карту готовности</a> ·
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/functional-tz-quality-standard.md">Стандарт ТЗ</a> ·
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-1-for-igor.html">ТЗ G1.1 для Игоря</a> ·
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g1-1-service-session.md">Контекст G1.1 для Codex</a> ·
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/owner-enablements-pilot-defaults-proposal.md">Рекомендуемые owner defaults</a>.
   </div>
   <div class="footer">
     Зависимости:
@@ -666,10 +683,11 @@
     Стартовая экспертная модель:
     ищем либо практикующих экспертов, либо людей, готовых обучиться профессии.
     Минимум пилота = 3-5 допущенных людей.
-    Агент = эксперт, который может вести несколько анкет.
-    Денежная модель старта утверждена как пилотное направление: доля от признанной выручки, 20/30/35%, hold 7 дней, QA/refund/SLA review.
+    Агент = внутренний технический пользователь, который в едином рабочем интерфейсе ведет назначенные ему экспертные аккаунты; клиент видит только публичного эксперта.
+    Правила G2.4 подтверждены владельцем, функциональное ТЗ передано программисту и внедрение начато. Статус остается implementation_in_progress, а не implemented: runtime proof еще нет.
     Качество старта: допуск, тестовая консультация, чек-лист, выборочная проверка, запрет обещаний результата.
     Формулировки клиенту: не обещаем исход; говорим, что показывают карты, звезды или выбранный метод.
+    Обучение после video-intelligence closeout 16.07.2026: G6.4 является P0 для MVP 5 агентов / 25 экспертов / 1 модератор / 1 супер-админ. Корпус источников готов, но policy/runtime acceptance остаются отдельными gates.
     Верстка: Игорь + Codex; внешний верстальщик только как точечный ручной контроль при необходимости.
     Маркетинг: стратегию готовит Codex; SEO ищем заранее; paid traffic только после gate.
   </div>
@@ -678,39 +696,59 @@
 <script>
 (function () {
   const taskMeta = {
-    "task-g1-session": { code:"G1.1", title:"Карточка консультации", priority:"P0", stage:"proof_gap", progress:30, tz:true, tzReady:70 },
-    "task-g1-chat": { code:"G1.2", title:"Чат по ролям", priority:"P0", stage:"proof_gap", progress:40, tz:true, tzReady:75 },
-    "task-g1-statuses": { code:"G1.3", title:"Статусы и история", priority:"P0", stage:"accepted_bounded_slice", progress:45, tz:true, tzReady:65 },
-    "task-g1-chat-notifications": { code:"G1.4", title:"Уведомления чата", priority:"P1", stage:"accepted_bounded_slice", progress:35, tz:true, tzReady:55 },
+    "task-g1-session": { code:"G1.1", title:"Карточка консультации", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:30, tz:true, tzReady:100 },
+    "task-g1-chat": { code:"G1.2", title:"Чат по ролям", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:40, tz:true, tzReady:100 },
+    "task-g1-statuses": { code:"G1.3", title:"Статусы и история", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:45, tz:true, tzReady:100 },
+    "task-g1-chat-notifications": { code:"G1.4", title:"Уведомления чата", priority:"P1", stage:"functional_tz_handoff_ready_runtime_open", progress:35, tz:true, tzReady:100 },
 
-    "task-g2-pricing": { code:"G2.1", title:"Цена и баланс", priority:"P0", stage:"accepted_bounded_slice", progress:45, tz:true, tzReady:70 },
-    "task-g2-timer": { code:"G2.2", title:"Таймер и остановка", priority:"P0", stage:"accepted_bounded_slice", progress:40, tz:true, tzReady:70 },
-    "task-g2-refund": { code:"G2.3", title:"Возвраты", priority:"P0", stage:"accepted_bounded_slice", progress:40, tz:true, tzReady:75 },
-    "task-g2-accruals": { code:"G2.4", title:"Начисления", priority:"P1", stage:"packet_ready", progress:20, tz:true, tzReady:85 },
+    "task-g2-pricing": { code:"G2.1", title:"Цена и баланс", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:45, tz:true, tzReady:100 },
+    "task-g2-timer": { code:"G2.2", title:"Таймер и остановка", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:40, tz:true, tzReady:100 },
+    "task-g2-refund": { code:"G2.3", title:"Возвраты", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:40, tz:true, tzReady:100 },
+    "task-g2-accruals": { code:"G2.4", title:"Начисления / ЗП сотрудников", priority:"P1", stage:"functional_tz_handoff_ready_runtime_open", progress:20, tz:true, tzReady:100 },
 
-    "task-g3-home": { code:"G3.1", title:"Витрина", priority:"P0", stage:"inventoried", progress:15, tz:true, tzReady:25 },
-    "task-g3-catalog": { code:"G3.2", title:"Каталог", priority:"P0", stage:"inventoried", progress:15, tz:true, tzReady:25 },
-    "task-g3-profile": { code:"G3.3", title:"Карточка эксперта", priority:"P0", stage:"packet_ready", progress:20, tz:true, tzReady:50 },
-    "task-g3-quiz": { code:"G3.4", title:"Подбор и старт", priority:"P1", stage:"inventoried", progress:10, tz:true, tzReady:25 },
-    "task-g3-qa": { code:"G3.5", title:"Проверка клиентского пути", priority:"P0", stage:"packet_ready", progress:10, tz:true, tzReady:35 },
+    "task-g3-home": { code:"G3.1", title:"Витрина", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:15, tz:true, tzReady:100 },
+    "task-g3-catalog": { code:"G3.2", title:"Каталог", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:15, tz:true, tzReady:100 },
+    "task-g3-profile": { code:"G3.3", title:"Карточка эксперта", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:20, tz:true, tzReady:100 },
+    "task-g3-quiz": { code:"G3.4", title:"Подбор и старт", priority:"P1", stage:"functional_tz_handoff_ready_runtime_open", progress:10, tz:true, tzReady:100 },
+    "task-g3-qa": { code:"G3.5", title:"Проверка клиентского пути", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:10, tz:true, tzReady:100 },
+    "task-g3-field-weight": { code:"G3.6", title:"Вес полей анкеты", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:10, tz:true, tzReady:100 },
+    "task-g3-rotation": { code:"G3.7", title:"Выдача и ротация анкет", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:5, tz:true, tzReady:100 },
 
-    "task-g4-support": { code:"G4.1", title:"Поддержка", priority:"P0", stage:"packet_ready", progress:5, tz:true, tzReady:75 },
-    "task-g4-complaints": { code:"G4.2", title:"Жалобы и возвраты", priority:"P0", stage:"packet_ready", progress:5, tz:true, tzReady:75 },
-    "task-g4-docs": { code:"G4.3", title:"Документы", priority:"P0", stage:"packet_ready", progress:5, tz:true, tzReady:55 },
-    "task-g4-support-notifications": { code:"G4.4", title:"Уведомления поддержки", priority:"P1", stage:"master_plan_only", progress:0, tz:true, tzReady:20 },
+    "task-g4-support": { code:"G4.1", title:"Поддержка", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:15, tz:true, tzReady:100 },
+    "task-g4-complaints": { code:"G4.2", title:"Жалобы и возвраты", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:5, tz:true, tzReady:100 },
+    "task-g4-docs": { code:"G4.3", title:"Документы", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:5, tz:true, tzReady:100 },
+    "task-g4-support-notifications": { code:"G4.4", title:"Уведомления поддержки", priority:"P1", stage:"functional_tz_handoff_ready_runtime_open", progress:0, tz:true, tzReady:100 },
 
-    "task-g5-events": { code:"G5.1", title:"События воронки", priority:"P0", stage:"packet_ready", progress:5, tz:true, tzReady:70 },
-    "task-g5-dashboard": { code:"G5.2", title:"Дашборд", priority:"P0", stage:"master_plan_only", progress:5, tz:true, tzReady:30 },
-    "task-g5-kpi": { code:"G5.3", title:"Таблица показателей", priority:"P1", stage:"master_plan_only", progress:0, tz:true, tzReady:25 },
-    "task-g5-marketing-gate": { code:"G5.4", title:"Допуск рекламы", priority:"P0", stage:"packet_ready", progress:0, tz:true, tzReady:65 },
+    "task-g5-events": { code:"G5.1", title:"События воронки", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:5, tz:true, tzReady:100 },
+    "task-g5-dashboard": { code:"G5.2", title:"Дашборд", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:5, tz:true, tzReady:100 },
+    "task-g5-kpi": { code:"G5.3", title:"Таблица показателей", priority:"P1", stage:"functional_tz_handoff_ready_runtime_open", progress:0, tz:true, tzReady:100 },
+    "task-g5-marketing-gate": { code:"G5.4", title:"Допуск рекламы", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:0, tz:true, tzReady:100 },
 
-    "task-g6-assignment": { code:"G6.1", title:"Назначение", priority:"P0", stage:"proof_gap", progress:35, tz:true, tzReady:70 },
-    "task-g6-sla": { code:"G6.2", title:"Сроки реакции", priority:"P0", stage:"packet_ready", progress:5, tz:true, tzReady:75 },
-    "task-g6-quality": { code:"G6.3", title:"Контроль качества", priority:"P0", stage:"packet_ready", progress:5, tz:true, tzReady:65 },
-    "task-g6-training": { code:"G6.4", title:"Обучение и регламенты", priority:"P1", stage:"packet_ready", progress:0, tz:true, tzReady:65 },
-    "task-g6-team-notifications": { code:"G6.5", title:"Командные уведомления", priority:"P1", stage:"master_plan_only", progress:0, tz:true, tzReady:20 },
-    "task-g6-admin-url": { code:"G6.6", title:"Админка на отдельном URL", priority:"P0", stage:"master_plan_only", progress:0, tz:true, tzReady:35 }
+    "task-g6-assignment": { code:"G6.1", title:"Назначение", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:35, tz:true, tzReady:100 },
+    "task-g6-sla": { code:"G6.2", title:"Сроки реакции", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:5, tz:true, tzReady:100 },
+    "task-g6-quality": { code:"G6.3", title:"Контроль качества", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:5, tz:true, tzReady:100 },
+    "task-g6-training": { code:"G6.4", title:"Обучение и регламенты", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:5, tz:true, tzReady:100 },
+    "task-g6-team-notifications": { code:"G6.5", title:"Командные уведомления", priority:"P1", stage:"functional_tz_handoff_ready_runtime_open", progress:0, tz:true, tzReady:100 },
+    "task-g6-admin-url": { code:"G6.6", title:"Админка на отдельном URL", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:0, tz:true, tzReady:100 },
+    "task-g6-isolated-admin-access": { code:"G6.7", title:"Изолированный доступ в админку", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:5, tz:true, tzReady:100 }
   };
+
+  const standardAuditReadiness = {
+    "task-g1-session":100, "task-g1-chat":90, "task-g1-statuses":65, "task-g1-chat-notifications":55,
+    "task-g2-pricing":90, "task-g2-timer":90, "task-g2-refund":90, "task-g2-accruals":95,
+    "task-g3-home":25, "task-g3-catalog":25, "task-g3-profile":50, "task-g3-quiz":25,
+    "task-g3-qa":35, "task-g3-field-weight":45, "task-g3-rotation":90,
+    "task-g4-support":90, "task-g4-complaints":90, "task-g4-docs":85, "task-g4-support-notifications":20,
+    "task-g5-events":70, "task-g5-dashboard":30, "task-g5-kpi":85, "task-g5-marketing-gate":65,
+    "task-g6-assignment":70, "task-g6-sla":75, "task-g6-quality":85, "task-g6-training":90,
+    "task-g6-team-notifications":20, "task-g6-admin-url":35, "task-g6-isolated-admin-access":90
+  };
+  Object.entries(taskMeta).forEach(([taskId, taskItem]) => {
+    taskItem.tzReady = standardAuditReadiness[taskId];
+    taskItem.stage = taskId === "task-g1-session"
+      ? "etalon_spec_ready_runtime_open"
+      : `${taskItem.stage}_legacy_score_pending_standard_audit`;
+  });
 
   const taskTermEn = {
     "task-g1-session": "service session",
@@ -726,6 +764,8 @@
     "task-g3-profile": "expert profile",
     "task-g3-quiz": "quiz / matching / start",
     "task-g3-qa": "end-to-end path proof",
+    "task-g3-field-weight": "profile field weight / completeness score",
+    "task-g3-rotation": "expert ranking / rotation",
     "task-g4-support": "support",
     "task-g4-complaints": "complaints / disputes",
     "task-g4-docs": "terms / documents",
@@ -739,7 +779,8 @@
     "task-g6-quality": "QA / quality control",
     "task-g6-training": "training / playbook",
     "task-g6-team-notifications": "team notifications",
-    "task-g6-admin-url": "separate admin URL"
+    "task-g6-admin-url": "separate admin URL",
+    "task-g6-isolated-admin-access": "isolated admin access / no frontend access"
   };
 
   const acceptanceBlockers = [
@@ -775,9 +816,9 @@
     },
     {
       code:"G2.4",
-      title:"Начисления не связаны с консультацией и гибкими правилами",
-      text:"Live-срез подтвердил общий финансовый контур, а implementation packet уже описал гибкие настройки. Блокер теперь не в ТЗ, а в отсутствии реализации и runtime proof.",
-      need:"Реализовать packet и доказать цепочку consultation session -> policy version -> списание -> начисление -> удержание/возврат -> выплата."
+      title:"ЗП/начисления продуманы как пакет, но не выполнены как результат",
+      text:"Владелец подтвердил три независимо настраиваемых компонента оплаты, немедленное начисление и отрицательную корректировку при возврате. ТЗ передано программисту, внедрение начато. Готовность сайта остается около 20%, потому что runtime proof новой цепочки отсутствует.",
+      need:"Получить scope текущей итерации и доказать цепочку service_session -> immutable policy snapshot -> списание -> начисление -> refund correction -> исторический агент -> audit."
     }
   ];
 
@@ -785,8 +826,8 @@
     {
       step:"1",
       title:"G1.1 - live-карточка консультации",
-      question:"Отдельной карточки сейчас нет. Нужно получить от Алексея финальный чат и описание обновления, затем заранее встроить в ТЗ service session: какие данные создаются, где видны и как связаны с чатом.",
-      proof:"Нужен пакет по будущему чату: экран, описание, роли, события и точки интеграции service session."
+      question:"Функциональная модель service_session согласована и передана программисту. Нужно получить scope текущей итерации и проверить реализацию полного lifecycle без повышения статуса по одному макету или commit.",
+      proof:"Нужны build/runtime refs и acceptance: trial -> paid -> balance pause -> resume/timeout -> end, роли и audit."
     },
     {
       step:"2",
@@ -882,9 +923,12 @@
     "task-g2-timer": { startQueue:1, acceptQueue:1, order:40, reason:"поминутная логика и стоп" },
     "task-g2-refund": { startQueue:1, acceptQueue:1, order:50, reason:"проверенный внутренний срез принят: спор, возврат и журнал решения связаны с конкретной консультацией; до 100% нужен клиентский путь и поддержка" },
     "task-g1-chat": { startQueue:1, acceptQueue:1, order:15, reason:"новая роль-модель зависит от G6.1: нужно доказать назначенную анкету, запрет чужой анкеты, клиентскую видимость и audit" },
+    "task-g3-field-weight": { startQueue:1, acceptQueue:2, order:66, reason:"вес полей нужен до карточки и каталога: иначе непонятно, какие анкеты готовы к показу клиенту" },
+    "task-g3-rotation": { startQueue:1, acceptQueue:3, order:68, reason:"механизм выдачи нужно спроектировать до запуска каталога, SEO и платного трафика" },
     "task-g3-profile": { startQueue:1, acceptQueue:3, order:70, reason:"экспертная карточка нужна заранее для поиска, отбора и допуска" },
     "task-g6-training": { startQueue:1, acceptQueue:4, order:80, reason:"PbExpert показывает, что обучение, регламенты и практика должны стартовать до пилота, а не в последний месяц" },
     "task-g6-admin-url": { startQueue:1, acceptQueue:2, order:76, reason:"после assignment enforcement нужен отдельный рабочий контур админки: команда должна работать без клиентского фронта" },
+    "task-g6-isolated-admin-access": { startQueue:1, acceptQueue:2, order:77, reason:"эксперты и агенты должны работать через staff/admin-only контур без доступа к клиентскому фронту и без возможности переманивать клиентов" },
     "task-g6-quality": { startQueue:1, acceptQueue:3, order:90, reason:"критерии качества нужны до обучения, допуска и тестовых консультаций" },
     "task-g6-sla": { startQueue:1, acceptQueue:3, order:100, reason:"сроки реакции нужны для очереди диалогов, обучения и правил работы агента" },
     "task-g4-docs": { startQueue:1, acceptQueue:3, order:110, reason:"условия, запреты и правила нужны до реального клиента и обучения" },
@@ -914,9 +958,9 @@
       title:"1) Глобальный чат",
       month:"Месяц 1",
       summary:"Сделать рабочий чат для всех ролей и карточку одной конкретной консультации.",
-      current:"На live-сайте сейчас есть только базовый чат /ru/admin/message/chat. Отдельной consultation session нет. Чат скоро будет обновляться программистом, поэтому service session нужно заложить заранее в ТЗ.",
-      blocker:"G1.1 нельзя принимать как готовую функцию сайта: отдельная сессия консультации, карточка, связь с диалогом/сообщениями, ценой, таймером и поддержкой пока не реализованы. G1.2 также блокируют чужие страницы под агентом и отсутствие явного operator audit.",
-      next:"Собрать от Алексея финальный пакет по будущему чату и сразу встроить в него service session: какие поля создаются, где видны, кто что видит и какие события пишутся.",
+      current:"Функциональная модель одной service_session согласована: persistent dialog содержит несколько консультаций, одна session охватывает trial и paid, действует глобальный paid-lock агента и одна 5-минутная balance-pause. ТЗ передано, внедрение начато, runtime proof отсутствует.",
+      blocker:"Нельзя принимать G1 по static HTML или факту старта разработки. Не доказаны state machine, поминутное списание, одноразовый pause-reserve, role views и actual-agent audit; старый foreign-access proof остается P0.",
+      next:"Получить scope и build от программиста, затем прогнать lifecycle suite и ACL negative cases. Перед первой платной минутой показать countdown без второго акцепта.",
       tasks:["task-g1-session","task-g1-chat","task-g1-statuses","task-g1-chat-notifications"]
     },
     {
@@ -924,9 +968,9 @@
       title:"2) Деньги и поминутная логика",
       month:"Месяц 2",
       summary:"Сделать продуктовую денежную механику: цена, баланс, лимиты, стоп, возвраты, начисления.",
-      current:"Сильный технический слой. G2.1-G2.3 приняты как bounded slices, а live-срез 29 июня 2026 подтвердил общий финансовый контур сайта: заказы, баланс, транзакции, начисления, удержания, выплаты, платежи и цены.",
-      blocker:"До полной готовности не хватает реализации G2.4: гибких настроек начислений, связи с конкретной consultation session, policy version, правил hold/refund/QA/SLA и runtime proof.",
-      next:"Передать G2.4 implementation packet в реализацию: settings page, accrual registry/detail, service_session accrual block, calculator, audit events и verifier cases.",
+      current:"Сильный технический слой плюс product-only G2 billing truth pack и owner billing decision pack от 16.07.2026: AskNebula/reference модель принята для credits/minutes, free/trial, packages, top-up/refill, payment failure, refund и accrual boundaries. G2.1-G2.3 остаются bounded slices, live-срез 29 июня 2026 подтвердил общий финансовый контур сайта.",
+      blocker:"Открыты owner/legal/runtime gates: значения exact package table, free/trial amount, credit/minute rule, refill/auto-refill policy, refund eligibility wording, exact Figma node/export proof и Confideline/Yii2 front/admin proof. G2.4 не принят как runtime без immutable policy snapshot, started-minute billing, начисления, refund correction и исторической атрибуции.",
+      next:"Использовать reports/tz-product-g2-billing-truth-2026-07-16.md как продуктовый truth pack, reports/nebula-owner-billing-decision-pack-2026-07-16.md как owner-fill таблицу решений, reports/nebula-g2-figma-oracle-state-map-2026-07-16.md как карту G2 billing states, reports/nebula-g2-figma-node-export-gap-register-2026-07-16.md как gap-register exact-node очереди и reports/nebula-figma-exact-node-inventory-2026-07-16.md как текущий Figma node inventory; затем получить approved values, Figma screenshot/design-context proof и runtime QA proof без предписания реализации Игорю.",
       tasks:["task-g2-pricing","task-g2-timer","task-g2-refund","task-g2-accruals"]
     },
     {
@@ -934,19 +978,19 @@
       title:"3) Связать дизайн сайта с рабочей логикой",
       month:"Месяц 3",
       summary:"Перенести дизайн сайта на рабочую логику и связать с реальными данными.",
-      current:"Пока ранний слой: витрина, каталог, карточка эксперта и старт консультации в основном inventoried/packet, не acceptance-ready.",
-      blocker:"Нельзя честно принимать storefront без реальных или пилотных экспертов, карточек, цены и доказанного старта консультации.",
-      next:"Сначала собрать эталонную карточку эксперта и каталог на 3-5 пилотных профилях, затем проверить путь до paid/live chat.",
-      tasks:["task-g3-home","task-g3-catalog","task-g3-profile","task-g3-quiz","task-g3-qa"]
+      current:"Owner-модель ротации определена: правила по типам страниц, multi-city эксперта, city filter клиента, веса/закрепления/исключения/preview и будущие KPI агента. Лимита анкет одного агента в top выдачи не вводим. Реализация и существующие controls требуют runtime proof.",
+      blocker:"Не доказаны rotation readback на всех page types, единые переходы online/busy/off/admin-blocked и cold-start KPI. Owner-confirmed existing не равен runtime verified.",
+      next:"Проверить eligibility и порядок на fixture 3-5 анкет; до KPI-порога показывать insufficient_data, вести мониторинг доли top-N по агентам без автоматического cap.",
+      tasks:["task-g3-home","task-g3-catalog","task-g3-profile","task-g3-quiz","task-g3-qa","task-g3-field-weight","task-g3-rotation"]
     },
     {
       color:"#b7791f",
       title:"4) Поддержка, документы и правила",
       month:"Месяц 4",
       summary:"Собрать безопасный контур поддержки, жалоб, спорных ситуаций и правил консультации.",
-      current:"Почти только plan layer. Интерфейс жалобы можно считать теоретической основой, но операционный процесс еще не доказан.",
-      blocker:"Нет проверенной цепочки: клиент пожаловался -> команда видит консультацию -> принимает решение -> объясняет результат.",
-      next:"Собрать минимальный support/refund flow вокруг service_session: жалоба, просмотр evidence, решение, текст ответа клиенту.",
+      current:"Появился проверенный интерактивный frontend-прототип рабочего места поддержки: очередь, фильтры, SLA, назначение, приоритет, чат тикета, поиск, шаблоны, перевод, внутренние заметки, платежный контекст, эскалация, решение и закрытие. Это еще не готовая функция сайта: серверное сохранение, права и связь с консультацией не доказаны.",
+      blocker:"Нет Yii2/backend-интеграции, RBAC, клиентского экрана обращения, audit trail, реальных уведомлений и связи ticket -> клиент -> платеж/refund -> будущая service_session. Закрытие прототипа ведет на live URL очереди и не доказывает backend-операцию.",
+      next:"Использовать проверенный прототип как frontend handoff и реализовать P0 backend-контур: ticket/message/attachment/internal_note, статусы, ownership, роли, revision/idempotency, аудит, уведомления и сквозной QA.",
       tasks:["task-g4-support","task-g4-complaints","task-g4-docs","task-g4-support-notifications"]
     },
     {
@@ -956,7 +1000,7 @@
       summary:"Сделать измеримый контур: статусы консультаций, деньги, проблемные сессии, качество, показатели и воронка.",
       current:"Рекламный контур не готов. Сейчас это в основном master plan: события, dashboard и marketing gate еще не доказаны.",
       blocker:"Рекламу нельзя включать без качества, поддержки, E2E proof, событий воронки и dashboard.",
-      next:"Сначала определить события и dashboard пилота, затем сделать явный no-ad gate до прохождения качества/support/E2E.",
+      next:"Зафиксировать event dictionary, idempotency, freshness и coverage. Dashboard обязан отличать zero от insufficient_data; затем сделать явный no-ad gate до quality/support/E2E.",
       tasks:["task-g5-events","task-g5-dashboard","task-g5-kpi","task-g5-marketing-gate"]
     },
     {
@@ -964,10 +1008,10 @@
       title:"6) Рабочий контур команды",
       month:"Месяц 6",
       summary:"Сделать операционный контур для модератора, агентов, экспертов и контроля качества.",
-      current:"Самый важный календарный риск. Назначение анкет агенту работает: Kristy получила тестовую анкету `jlkdjaldkjadla / ufojkdsjkda`, но scoped-доступ еще не защищен.",
-      blocker:"P0: под Kristy открываются чужой профиль id=25 и чужая страница назначений userId=3. G6.1 нельзя принимать, пока агент не ограничен только своими анкетами.",
-      next:"Закрыть server-side access gate: assigned profile доступен, unassigned profile и foreign assignment page заблокированы; затем повторить proof и перейти к G1.2.",
-      tasks:["task-g6-assignment","task-g6-sla","task-g6-quality","task-g6-training","task-g6-admin-url","task-g6-team-notifications"]
+      current:"Самый важный календарный риск. Назначение анкет агенту работает: Kristy получила тестовую анкету `jlkdjaldkjadla / ufojkdsjkda`, но scoped-доступ еще не защищен. Добавлен отдельный слой G6.7: эксперт/агент должен работать только через изолированный admin/staff-контур.",
+      blocker:"P0: под Kristy открываются чужой профиль id=25 и чужая страница назначений userId=3. G6.1 нельзя принимать, пока агент не ограничен только своими анкетами. Дополнительный blocker: эксперт/агент не должен иметь доступ к клиентскому фронту, поиску клиентов и прямому клиентскому пути.",
+      next:"Закрыть server-side access gate: assigned доступен; foreign profile/dialog/send заблокированы. Проверить atomic reassignment, запрет в paid_active/balance_pause и неизменяемое actual-agent authorship после передачи анкеты.",
+      tasks:["task-g6-assignment","task-g6-sla","task-g6-quality","task-g6-training","task-g6-admin-url","task-g6-isolated-admin-access","task-g6-team-notifications"]
     }
   ];
 
@@ -987,19 +1031,19 @@
     {
       role:"Эксперт",
       what:"Имеет понятную анкету, допуск, рабочий кабинет консультаций, сроки ответа, историю, начисления и правила качества.",
-      tasks:["task-g3-profile","task-g1-chat","task-g2-accruals","task-g6-sla","task-g6-quality","task-g6-training","task-g6-admin-url"],
+      tasks:["task-g3-profile","task-g1-chat","task-g2-accruals","task-g6-sla","task-g6-quality","task-g6-training","task-g6-admin-url","task-g6-isolated-admin-access"],
       done:"Эксперт может принимать и проводить консультации без ручной поддержки разработчика."
     },
     {
       role:"Агент",
       what:"Это эксперт, который ведет несколько анкет: видит свои профили, консультации, чаты, сроки ответа, эскалации и мотивацию.",
-      tasks:["task-g1-session","task-g1-chat","task-g4-support","task-g6-assignment","task-g6-sla","task-g2-accruals","task-g6-admin-url"],
+      tasks:["task-g1-session","task-g1-chat","task-g4-support","task-g6-assignment","task-g6-sla","task-g2-accruals","task-g6-admin-url","task-g6-isolated-admin-access"],
       done:"Агент ведет несколько анкет и консультаций без захода через фронт."
     },
     {
       role:"Супер-админ",
       what:"Видит весь сервис: консультации, деньги, проблемы, сроки ответа, поддержку, возвраты, качество, роли, обучение, дашборды и готовность к рекламе.",
-      tasks:["task-g1-session","task-g2-refund","task-g5-dashboard","task-g5-kpi","task-g6-assignment","task-g6-quality","task-g6-admin-url","task-g5-marketing-gate"],
+      tasks:["task-g1-session","task-g2-refund","task-g5-dashboard","task-g5-kpi","task-g6-assignment","task-g6-quality","task-g6-admin-url","task-g6-isolated-admin-access","task-g5-marketing-gate"],
       done:"Админ видит каждую консультацию целиком и понимает, можно ли включать рекламу."
     }
   ];
@@ -1032,8 +1076,8 @@
     return "task-readiness.html?task=" + encodeURIComponent(id);
   }
 
-  function tzHref(id) {
-    return "task-tz.html?task=" + encodeURIComponent(id);
+  function tzHref(id, docType) {
+    return "task-tz.html?task=" + encodeURIComponent(id) + "&doc=" + encodeURIComponent(docType);
   }
 
   function executionRank(id) {
@@ -1076,13 +1120,17 @@
             </a>
           </td>
           <td class="tz-wrap">
-            <a class="tz-link" href="${tzHref(id)}" title="Открыть ТЗ задачи">
+            <div class="tz-summary">
               <div class="tz-head">
                 <span class="badge ${tz.className}">${tz.label}</span>
                 <span class="tz-percent">${item.tzReady || 0}%</span>
               </div>
               <div class="progress-line"><div class="progress-bar tz-bar" style="width:${item.tzReady || 0}%"></div></div>
-            </a>
+              <div class="tz-doc-links" aria-label="Два типа ТЗ для ${item.code}">
+                <a class="tz-doc-link" href="${tzHref(id, "igor")}" title="Открыть продуктово-функциональное ТЗ для Игоря">ТЗ для Игоря</a>
+                <a class="tz-doc-link codex" href="${tzHref(id, "codex")}" title="Открыть технический контекст для Codex Игоря">Контекст для Codex</a>
+              </div>
+            </div>
           </td>
         </tr>`;
     }).join("");
@@ -1184,4 +1232,3 @@
 </script>
 </body>
 </html>
-
