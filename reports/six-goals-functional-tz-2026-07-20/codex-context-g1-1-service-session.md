@@ -1,7 +1,7 @@
 # Технический контекст G1.1 для Codex Игоря: карточка консультации / `service_session`
 
-Версия: `1.1`  
-Дата: 2026-07-27  
+Версия: `1.2`  
+Дата: 2026-07-28  
 Task ID: `G1.1`  
 Фаза: `pilot_core`  
 Приоритет: `P0`  
@@ -113,6 +113,13 @@ Product owner / PM Nebula. Реализация и техническое реш
 
 G1.1 обязана хранить ссылки/snapshots результатов этих контрактов, но не дублирует их внутренние формулы.
 
+Жёсткая граница ответственности:
+
+- G1.1 владеет identity, составом, связями, видимостью и readback карточки;
+- G1.3 единолично владеет lifecycle state machine, guards, переходами, deadlines, pause/reconnect и terminal behavior;
+- G2 единолично владеет расчётами credits, started minute, debit, refund и compensation;
+- действие из карточки является командой в систему-владелец, а не локальным изменением карточки.
+
 ### Зависимости
 
 | Dependency | Что потребляет G1.1 |
@@ -183,75 +190,67 @@ Service session создаётся атомарно, когда consultation req
 12. Duplicate/concurrent command не создаёт вторую session или второй side effect.
 13. Недопустимый transition не меняет session, ledger или history.
 14. Client и internal readback получают одну source truth с различной разрешённой видимостью.
-15. Terminal session не возобновляется late top-up или reconnect; деньги остаются в balance для новой session.
+15. G1.1 не меняет terminal result, полученный от G1.3, и не изменяет financial result, полученный от G2.
 
 ## 9. Состояния и граница с G1.3
 
-G1.3 владеет полным state machine. G1.1 обязана хранить current state, state version, timestamps, events и terminal reason.
+G1.3 владеет полным state machine. G1.1 обязана хранить и показывать current state, state version, timestamps, events и terminal reason, но не определяет ни один переход или timeout.
 
 Минимально распознаваемые состояния session:
 
-| State | Смысл для G1.1 |
+| State | Что отображает G1.1 |
 |---|---|
-| `connecting` | session создана, paid debit ещё не начался |
-| `trial_active` | необязательная бесплатная фаза этой session |
-| `paid_active` | активна тарифицируемая фаза |
-| `balance_pause` | session остаётся той же; новой paid minute нет |
-| `ended_normal` | штатный terminal result |
-| `ended_balance_timeout` | terminal result после единственной pause |
-| `ended_technical` | terminal result из-за technical/reconnect timeout |
-| `ended_safety_or_abnormal` | terminal result с обязательным reason/support route |
+| `connecting` | label, actor readiness, deadline и разрешённое действие из readback G1.3 |
+| `trial_active` | label, остаток entitlement и consent indicator из G1.3/G2 |
+| `paid_active` | label, timer и финансовый summary из G1.3/G2 |
+| `balance_pause` | label, deadline, причина и действие пополнения из G1.3/G2 |
+| `completed` | terminal label, initiator, type, разрешённая причина и связанные routes из G1.3 |
 
-Session history хранит каждый переход с `from`, `to`, trigger, occurred time, actor, rule/version и reason/context в разрешённом объёме.
+Request до создания session имеет собственный lifecycle G1.3 и не является состоянием service session. Session history хранит каждый переход с `from`, `to`, trigger, occurred time, actor, rule/version и reason/context в разрешённом объёме.
 
-## 10. Функциональные сценарии
+## 10. Функциональные сценарии карточки
 
-### S1. First consultation с trial
+Эти сценарии проверяют identity, связи и отображение. Правильность самих переходов отдельно принимается по G1.3, а правильность денег — по G2.
 
-1. Client отправляет request выбранной анкете.
-2. Authorized agent принимает request.
-3. Система проверяет preconditions и создаёт одну session в `connecting`.
-4. Session получает client/profile/actual-agent/assignment и config references.
-5. При успешном соединении начинается `trial_active`.
-6. Messages/transition events связываются с session.
-7. После consent и окончания trial G2/G1.3 переводят ту же session в `paid_active`.
-8. End создаёт terminal state и итоговый readback.
+### S1. Создание одной карточки
 
-### S2. First consultation без trial
+После принятого G1.3 request создаётся одна session. Карточка показывает client, expert profile, actual agent во внутреннем readback, assignment snapshot и связь с постоянным dialog.
 
-Session создаётся после accept до billable start. Paid transition разрешён только при valid price, balance и consent. Отсутствие trial не меняет identity/history contract.
+### S2. Получение нового состояния
 
-### S3. Declined/missed/unavailable request
+После валидного перехода G1.3 карточка показывает новое состояние, state version, timestamp, actor, deadline и разрешённые действия. Карточка не вычисляет переход повторно.
 
-Request attempt получает outcome и next action. Service session, paid state, debit и accrual не создаются. Клиент не видит попытку как оплаченную consultation.
+### S3. Request без session
+
+Declined, cancelled, missed или expired request остаётся результатом G1.3. G1.1 не создаёт для него карточку оказанной консультации и не изображает paid result.
 
 ### S4. Повторная consultation в существующем dialog
 
-После terminal end новый accepted request создаёт новый session identifier. Старые и новые messages/totals/states доступны раздельно.
+Новый принятый request создаёт новый session identifier. Карточки, messages, totals и states разных консультаций доступны раздельно.
 
-### S5. Duplicate/retry/concurrent start
+### S5. Duplicate/retry/concurrent creation
 
-Повтор с тем же idempotency key возвращает исходный result. Два одновременных accepted commands дают максимум одну session; проигравшая команда не создаёт debit/event.
+Повтор или конкурирующая команда дают максимум одну карточку. Повторный UI-readback открывает уже созданную session и не добавляет бизнес-событие.
 
-### S6. Reconnect
+### S6. Отображение pause/reconnect/waiting
 
-Reconnect в разрешённом grace продолжает ту же session, сохраняет trial/paid/minute truth и не создаёт новый start. Timeout закрывает session по G1.3; поздний reconnect её не открывает.
+Карточка показывает фактический primary state, operational substate, deadline и действия из G1.3. Она не продлевает период, не выдаёт второй период и не решает, можно ли продолжить.
 
-### S7. Balance pause/top-up
+### S7. Финансовый readback
 
-Pause/resume являются событиями той же session. Top-up до deadline может разрешить resume. Late top-up после terminal timeout остаётся на balance и не меняет завершённую session.
+Цена, started minutes, debit, refund, correction и итог показываются по ledger G2. Карточка не пересчитывает и не исправляет их локально.
 
 ### S8. Reassignment после консультации
 
-Новая assignment действует только для новых sessions. Historical session продолжает показывать прежний actual agent и assignment snapshot во внутреннем readback.
+Historical session продолжает показывать прежний actual agent и assignment snapshot во внутреннем readback.
 
-### S9. Support/refund
+### S9. Support/refund linkage
 
-Case открывается из конкретной session. Support видит service summary, relevant messages, debits/refunds и actor truth без ручного угадывания диапазона общего dialog. Refund/correction добавляются, не переписывая исходный итог.
+Связанный case открывается из конкретной session. Карточка показывает разрешённый статус процесса, не превращая его в lifecycle state консультации.
 
-### S10. Technical/abnormal end
+### S10. Terminal readback
 
-Terminal state хранит machine-readable reason code, human-readable safe outcome, actor/system source, time и support/refund route. Нельзя завершить abnormal без причины.
+Карточка показывает terminal result G1.3: safe outcome, actor/system source, time и связанные routes. Повторное открытие карточки не меняет результат.
 
 ## 11. Продуктовый контракт данных
 

@@ -1,6 +1,6 @@
 # Технический контекст G1.3 для Codex Игоря: запрос, lifecycle и история consultation
 
-Версия: `1.1`  
+Версия: `1.2`  
 Дата: 2026-07-28  
 Task ID: `G1.3`  
 Фаза: `pilot_core`  
@@ -47,6 +47,8 @@ Product Owner / Project Manager Nebula. Продуктовые ответы за
 
 G1.3 разделяет бесплатный диалог, pre-session request и одну принятую service session. Это позволяет не создавать фиктивные консультации для отказов и timeout, не смешивать несколько консультаций одной пары и не раздувать state machine состояниями Support/Refund/Quality.
 
+G1.3 является единственным техническим контрактом для lifecycle state machine, guards, переходов, deadlines, pause/reconnect и terminal behavior. G1.1 потребляет и отображает эти результаты, но не реализует параллельный автомат состояний.
+
 ## 3. Результат
 
 Система должна обеспечивать:
@@ -89,6 +91,8 @@ dialog
 - client/agent/admin history/readback;
 - idempotency/concurrency;
 - lifecycle settings placement.
+
+Любое действие, инициированное из карточки G1.1, входит в G1.3 только как lifecycle-команда с серверной проверкой текущего state/version/guard.
 
 ### Не входит
 

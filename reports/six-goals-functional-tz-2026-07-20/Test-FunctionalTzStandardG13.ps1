@@ -106,6 +106,19 @@ Add-Check 'boundary:no-linked-process-states' (
     $pm.Contains('Их статусы не становятся состояниями consultation')
 ) 'support/refund/quality separation'
 
+Add-Check 'boundary:g13-single-lifecycle-owner' (
+    $pm.Contains('единственным источником истины') -and
+    $codex.Contains('единственным техническим контрактом') -and
+    $g11.Contains('Единственный источник этих правил — G1.3')
+) 'G1.3 owns lifecycle; G1.1 only renders it'
+
+Add-Check 'boundary:g11-no-lifecycle-defaults' (
+    -not $g11.Contains('текущая длительность паузы — 5 минут') -and
+    -not $g11.Contains('текущее значение — 60 секунд') -and
+    -not $g11.Contains('| Длительность balance pause |') -and
+    -not $g11.Contains('| Reconnect grace агента |')
+) 'G1.1 does not duplicate G1.3 managed values'
+
 Add-Check 'settings:price-owned-by-prices' (
     $g11.Contains('глобальной ценой paid-минуты') -and
     $g11.Contains('«Настройки цен»')
