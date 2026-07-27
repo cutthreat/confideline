@@ -389,7 +389,7 @@
   };
 
   Object.entries(tasks).forEach(([taskId, taskItem]) => {
-    if (taskId === "task-g1-session") return;
+    if (taskId === "task-g1-session" || taskId === "task-g1-chat") return;
     taskItem.stage = `${taskItem.stage}_legacy_score_pending_standard_audit`;
     taskItem.done = [
       `Текущая оценка ${taskItem.tzReady}% сохранена как исходная, но еще не подтверждена новым стандартом.`,
@@ -431,6 +431,41 @@
     "Определены 26 атомарных positive/negative acceptance-кейсов G11-A01-G11-A26.",
     "Handoff разделён: PM-ТЗ для Игоря не диктует реализацию, а отдельный Codex-файл содержит current source, integration points, fixtures и implementation gaps.",
     "Definition of Done и proof boundary запрещают считать код, HTML или model review runtime-доказательством."
+  ];
+
+  tasks["task-g1-chat"].stage = "spec_handoff_ready_runtime_open";
+  tasks["task-g1-chat"].tzReady = 100;
+  tasks["task-g1-chat"].detailHref = "../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-2-for-igor.html";
+  tasks["task-g1-chat"].has = [
+    "Создано автономное продуктовое ТЗ для Игоря: постоянный free dialogue, отдельные paid consultation sessions, роли, видимость, сообщения, цензура, история и проверяемая приёмка.",
+    "Отдельно создан технический контекст для Codex Игоря с current-source navigation, ACL/state/invariant contract, admin ownership и negative/runtime proof.",
+    "Зафиксировано место в существующей админ-панели: «Настройки чата», /ru/admin/settings/chat, после «Основные настройки» и перед «Настройки фото».",
+    "Все изменяемые chat-specific лимиты имеют поля управления, version/audit/readback; существующие RBAC, prices/payments, photo, monitoring, support и logs не дублируются."
+  ];
+  tasks["task-g1-chat"].missing = [
+    "Пробелов в продуктовой спецификации G1.2 по принятому стандарту нет.",
+    "Реализация и runtime acceptance остаются открыты: нужны mapped build/commit, server-side ACL proof, censorship/attachment/idempotency proof и persisted historical readback.",
+    "Legal/privacy review retention и G4.3 Trust & Safety wording остаются release gates, а не скрытыми пробелами ТЗ."
+  ];
+  tasks["task-g1-chat"].done = [
+    "Spec completeness = 100%; hard gates = pass; двухфайловый handoff готов.",
+    "Implementation status = open_until_mapped_build.",
+    "Runtime acceptance = open_until_positive_negative_QA."
+  ];
+  tzScoreByTask["task-g1-chat"] = [5,8,10,7,12,12,12,8,6,12,5,3];
+  criterionDetailsByTask["task-g1-chat"] = [
+    "Есть задача G1.2, версия, цель, измеримый результат и независимая граница spec/runtime.",
+    "Явно разделены scope, non-goals и зависимости G1.1/G1.3/G1.4/G2/G4/G6.",
+    "Определены Клиент, публичный Эксперт, внутренний Агент, moderator/support и super-admin с правами и видимостью.",
+    "Описаны создание dialogue, запрос конкретного кейса, start conditions, unavailable Expert и end.",
+    "Зафиксированы free dialogue, requested, trial/paid/pause/reconnect/end и неизменяемые invariants авторства/назначения.",
+    "Полностью описаны основной flow, сообщения, edit/hide, цензура, reconnect, завершение и история.",
+    "Есть direct ACL, duplicate/retry, concurrent session, attachment, censorship, partial-failure и privacy cases.",
+    "Есть applied config version, actual actor, previous message version, audit, retention и historical readback.",
+    "Описаны client, Agent, moderator/support, super-admin, «Сообщения» и «Настройки чата».",
+    "Приведены 13 positive и 11 negative/retry acceptance cases с наблюдаемым результатом.",
+    "Готовы отдельные PM-ТЗ для Игоря и технический контекст для его Codex.",
+    "Definition of Done требует mapped build, runtime proof, persisted audit/readback, rollback и отдельный PM verdict."
   ];
 
   const taskTermEn = {
@@ -508,10 +543,21 @@
 
   const panelHref = (type) => "task-tz.html?task=" + encodeURIComponent(id) + "&doc=" + type;
   const taskSourceHref = "tasks/" + encodeURIComponent(id) + ".html";
-  const isEtalon = id === "task-g1-session";
-  const artifactHref = docType === "igor"
-    ? "../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-1-for-igor.html"
-    : "../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g1-1-service-session.md";
+  const artifactByTask = {
+    "task-g1-session": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-1-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g1-1-service-session.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-1-for-igor.docx"
+    },
+    "task-g1-chat": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-2-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g1-2-role-chat.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-2-for-igor.docx"
+    }
+  };
+  const artifacts = artifactByTask[id] || {};
+  const artifactHref = artifacts[docType];
+  const isSpecReady = Boolean(artifactHref);
 
   igorLink.href = panelHref("igor");
   codexLink.href = panelHref("codex");
@@ -521,15 +567,16 @@
   pageTitle.textContent = docType === "igor" ? "ТЗ для Игоря" : "Контекст для Codex Игоря";
   document.title = `${task.code} — ${pageTitle.textContent}`;
 
-  if (isEtalon) {
+  if (isSpecReady) {
     artifactLink.hidden = false;
     artifactLink.href = artifactHref;
     artifactLink.textContent = docType === "igor" ? "Открыть готовое ТЗ" : "Открыть готовый Codex-контекст";
-    docxLink.hidden = docType !== "igor";
+    docxLink.hidden = docType !== "igor" || !artifacts.docx;
+    if (artifacts.docx) docxLink.href = artifacts.docx;
   }
 
   const scoreVector = tzScoreByTask[id] || [0,0,0,0,0,0,0,0,0,0];
-  const activeCriteria = id === "task-g1-session" ? standardTzCriteria : tzCriteria;
+  const activeCriteria = artifactByTask[id] ? standardTzCriteria : tzCriteria;
   const totalScore = scoreVector.reduce((sum, value) => sum + value, 0);
 
   function renderList(items) {
@@ -608,8 +655,8 @@
   }
 
   function renderDocumentContract() {
-    const statusClass = isEtalon ? "" : " draft";
-    const statusText = isEtalon ? "Эталонный документ готов" : "Рабочий контур создан — требуется отдельная вычитка";
+    const statusClass = isSpecReady ? "" : " draft";
+    const statusText = isSpecReady ? "Готовый документ для передачи" : "Рабочий контур создан — требуется отдельная вычитка";
     if (docType === "igor") {
       return `
         <section class="document-contract">
@@ -677,7 +724,7 @@
       <summary>Критерии оценки ТЗ</summary>
       <div class="disclosure-body">
         <div class="score-list">${renderScoreRows()}</div>
-        <div class="score-note">${id === "task-g1-session" ? "Эталон оценивается по 12 взвешенным критериям (100 баллов) и 12 обязательным hard gates." : "Это исходная оценка по прежней шкале. Для подтвержденных 100% нужен повторный аудит по новому стандарту."}</div>
+        <div class="score-note">${artifactByTask[id] ? "ТЗ оценивается по 12 взвешенным критериям (100 баллов) и обязательным hard gates." : "Это исходная оценка по прежней шкале. Для подтвержденных 100% нужен повторный аудит по новому стандарту."}</div>
       </div>
     </details>
 
