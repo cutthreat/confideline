@@ -311,48 +311,47 @@ Technical end, balance timeout, завершение клиентом/Агент
 9. Финансовые и staff-audit записи могут иметь отдельный legal retention, но не продлевают автоматически широкий доступ к raw conversation.
 10. Persisted terminal state один — `completed`; initiator, type, internal reason, client message и linked routes являются отдельными полями результата.
 
-## G1.4 Уведомления чата
+## G1.4 Уведомления консультации
 
-### Pilot minimum
+Каноническое продуктовое ТЗ для Игоря: `etalon-tz-g1-4-chat-notifications.md`. Техническая картина для его Codex: `codex-context-g1-4-chat-notifications.md`. При расхождении в желаемом поведении приоритет имеет продуктовое ТЗ.
 
-Уведомления обязательны для:
+G1.4 отвечает за in-app уведомления, существующие chat badges, email fallback, пользовательские email preferences, правила доставки, дедупликацию, stale guards и delivery log. Lifecycle остается в G1.3; Email Templates владеет текстом писем; support/team notifications остаются в G4.4/G6.5.
 
-- нового paid request;
-- принятия/отклонения запроса;
-- приближения окончания trial;
-- фактического начала paid;
-- low/zero balance и начала pause;
-- результата top-up;
-- resume или end;
-- критической ошибки отправки/доставки;
-- client reconnect grace/start/resume/technical timeout;
-- Expert/Agent SLA failure с подтвержденным coupon grant либо сообщением о review без ложного обещания;
-- missed paid request/SLA breach для ответственной staff-роли.
+### Обязательный результат
 
-### Общие требования
+1. Пользовательский центр получает одну категорию «Консультации».
+2. Новые сообщения используют существующие индикаторы `/ru/messages`.
+3. Важные события получают email, если пользователь отсутствует или не просмотрел событие за управляемый срок.
+4. Browser push остается следующим этапом.
+5. События покрывают сообщения, запросы, подключение, trial/paid/credits, завершение, технические ошибки и фактически выданную компенсацию.
+6. Получатель определяется по authoritative role/session assignment; чужой dialog/session не раскрывается.
+7. Повтор одного business event не создает дубли.
+8. Устаревшее уведомление открывает актуальное состояние и не повторяет action/debit/coupon/end.
+9. Ошибка доставки не изменяет session, деньги или уже состоявшийся business result.
+10. После подтвержденной критической недоставки создается один сигнал super-admin.
 
-1. Получатель и содержание соответствуют роли и конкретной consultation.
-2. Одно событие не создает неконтролируемые дубли.
-3. Уведомление не раскрывает чужой диалог, баланс, actual agent или внутренние данные.
-4. Сигнал не противоречит фактическому состоянию session.
-5. Клиентское уведомление содержит понятное следующее действие, если оно необходимо.
-6. Staff critical alert имеет владельца или понятный маршрут принятия ответственности.
-7. Неуспешная доставка не изменяет session и деньги сама по себе.
+### Настройки
 
-### Public launch extension
+В «Общих настройках» рядом с Email Templates создается отдельный пункт «Настройки уведомлений» с рекомендуемым маршрутом `/ru/admin/notification-rule/index`.
 
-- Канальные предпочтения.
-- Полный escalation tree.
-- Digest/quiet-hours там, где это не ломает critical paid alerts.
-- Operational настройка типов уведомлений по ролям.
+Стартовые управляемые значения:
+
+- email о непрочитанном важном событии — через 5 минут;
+- critical delivery failure signal — через 1 минуту;
+- тихие часы некритических email — 22:00–08:00 в локальном времени;
+- delivery log retention — 90 дней.
+
+Email Templates редактирует subject/body/translations/macros. «Настройки уведомлений» редактируют event, recipient, priority, channels, required/optional, delay, quiet hours, retry, dedup policy, retention и связь с шаблоном.
 
 ### Приемка
 
-- Dedup на повторном событии.
-- Только разрешенные получатели.
-- Правильный текст/действие для trial, paid, pause и end.
-- Foreign-conversation negative case.
-- Устаревшее notification не обещает действие, которое уже невозможно.
+- правильный получатель и foreign-session negative case;
+- один user-visible результат при duplicate/concurrent delivery;
+- корректные delay, quiet hours и user preferences;
+- stale link не повторяет business action;
+- delivery failure не меняет lifecycle/деньги;
+- critical failure создает один super-admin signal;
+- email не раскрывает transcript, контакты, платежные данные или цензурированный оригинал.
 
 ## Зависимости и proof
 

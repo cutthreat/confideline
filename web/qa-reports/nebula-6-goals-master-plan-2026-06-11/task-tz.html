@@ -166,8 +166,8 @@
   const tzScoreByTask = {
     "task-g1-session": [5,8,10,7,12,12,12,8,6,12,5,3],
     "task-g1-chat": [5,8,10,7,12,12,12,8,6,12,5,3],
-    "task-g1-statuses": [10,10,10,10,10,10,10,10,10,10],
-    "task-g1-chat-notifications": [10,5,5,5,5,0,5,5,10,5],
+    "task-g1-statuses": [5,8,10,7,12,12,12,8,6,12,5,3],
+    "task-g1-chat-notifications": [5,8,10,7,12,12,12,8,6,12,5,3],
     "task-g2-pricing": [10,5,5,10,5,0,5,10,10,10],
     "task-g2-timer": [10,5,5,10,5,0,5,10,10,10],
     "task-g2-refund": [10,10,10,10,5,5,5,10,5,5],
@@ -244,10 +244,10 @@
       has:["Готово самостоятельное продуктовое ТЗ для Игоря: request, consultation session, lifecycle, ожидание/reconnect, история и связанные процессы.", "Готов отдельный технический контекст для Codex Игоря: состояния, переходы, invariants, data/readback, integration points и acceptance matrix.", "Все изменяемые лимиты распределены по каноническим разделам существующей админ-панели без дублирования."],
       missing:["Пробелов в продуктовой постановке G1.3 по принятому стандарту нет.", "Implementation status открыт: нужен mapped build/commit.", "Runtime acceptance открыт: нужны state/timeout/idempotency/concurrency/admin readback и role proof."],
       done:["Spec completeness = 100%; focused verifier = 80/80; hard gates = pass.", "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.", "Реализация и runtime acceptance оцениваются отдельно."] },
-    "task-g1-chat-notifications": { code:"G1.4", title:"Уведомления чата", goal:"Цель 1", stage:"accepted_bounded_slice", tzReady:55, detailHref:"tasks/task-g1-chat-notifications.html",
-      has:["Понятна задача и ее границы.", "Есть зависимость от контура консультации и чата."],
-      missing:["Надо описать список событий.", "Надо развести получателей по ролям.", "Надо зафиксировать критерии полезности и анти-спама."],
-      done:["ТЗ готово, когда по каждому уведомлению ясно: кто, когда, зачем и куда переходит.", "Есть приемка без неясных мест."] },
+    "task-g1-chat-notifications": { code:"G1.4", title:"Уведомления консультации", goal:"Цель 1", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-4-for-igor.html",
+      has:["Готовы самостоятельное продуктовое ТЗ для Игоря и отдельный технический контекст для Codex.", "Описаны in-app, существующие chat badges, email fallback, пользовательские настройки, каталог событий, получатели, ошибки доставки и журнал.", "Зафиксирован отдельный super-admin раздел «Настройки уведомлений» рядом с Email Templates без дублирования lifecycle, support, team notifications и RBAC."],
+      missing:["Пробелов в продуктовой спецификации G1.4 по принятому стандарту нет.", "Для implementation/runtime нужны mapped build, полный event catalog, role-safe delivery, dedup/concurrency, admin readback и positive/negative QA."],
+      done:["Spec completeness = 100%; hard gates = pass.", "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.", "Реализация и runtime acceptance оцениваются отдельно."] },
     "task-g2-pricing": { code:"G2.1", title:"Цена и баланс", goal:"Цель 2", stage:"product_tz_ready_owner_runtime_policy_open", tzReady:90, detailHref:"tasks/task-g2-pricing.html",
       has:["Правило цены, закрепленное за конкретной консультацией, описано.", "Блокировка старта без цены и проверочные сценарии описаны.", "Граница приемки понятна."],
       missing:["Нужно заполнить owner billing decision pack: цены, credits/minutes, free/trial amount, refill/auto-refill policy и legal/payment wording.", "Нужен Figma/Oracle mapping всех видимых billing states.", "Нужен current Confideline/Yii2 front/admin proof."],
@@ -390,7 +390,7 @@
   };
 
   Object.entries(tasks).forEach(([taskId, taskItem]) => {
-    if (taskId === "task-g1-session" || taskId === "task-g1-chat" || taskId === "task-g1-statuses") return;
+    if (taskId === "task-g1-session" || taskId === "task-g1-chat" || taskId === "task-g1-statuses" || taskId === "task-g1-chat-notifications") return;
     taskItem.stage = `${taskItem.stage}_legacy_score_pending_standard_audit`;
     taskItem.done = [
       `Текущая оценка ${taskItem.tzReady}% сохранена как исходная, но еще не подтверждена новым стандартом.`,
@@ -504,6 +504,41 @@
     "Definition of Done и proof boundary отделяют документы от implementation/runtime."
   ];
 
+  tasks["task-g1-chat-notifications"].stage = "etalon_spec_ready_runtime_open";
+  tasks["task-g1-chat-notifications"].tzReady = 100;
+  tasks["task-g1-chat-notifications"].detailHref = "../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-4-for-igor.html";
+  tasks["task-g1-chat-notifications"].has = [
+    "Создано автономное продуктовое ТЗ для Игоря: in-app, chat badges, email fallback, приоритеты, полный каталог consultation events, настройки пользователя и super-admin.",
+    "Создан отдельный технический контекст для Codex Игоря: current source navigation, event/rule/delivery contracts, ACL, dedup, retry, stale guards, privacy и acceptance matrix.",
+    "Зафиксировано место в существующей админ-панели: отдельный пункт «Настройки уведомлений» в «Общих настройках» рядом с Email Templates, рекомендуемый маршрут /ru/admin/notification-rule/index.",
+    "Email Templates владеет текстом писем; G1.4 владеет событием, получателем, приоритетом, каналом, задержкой, quiet hours, retry, retention и связью с шаблоном."
+  ];
+  tasks["task-g1-chat-notifications"].missing = [
+    "Пробелов в продуктовой спецификации G1.4 по принятому стандарту не осталось.",
+    "Implementation status открыт: локальный consultation-message slice имеет статус code_present_unmapped и требует сопоставленного build/commit.",
+    "Runtime acceptance открыт: нужны role-positive/negative, dedup/concurrency, stale-link, email/template, admin version/rollback и delivery-log proof."
+  ];
+  tasks["task-g1-chat-notifications"].done = [
+    "Spec completeness = 100%; focused verifier и hard gates должны пройти.",
+    "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.",
+    "Реализация и production acceptance не заявлены."
+  ];
+  tzScoreByTask["task-g1-chat-notifications"] = [5,8,10,7,12,12,12,8,6,12,5,3];
+  criterionDetailsByTask["task-g1-chat-notifications"] = [
+    "Есть цель, измеримый результат, версия и независимая граница spec/implementation/runtime.",
+    "Scope разделяет G1.1/G1.2/G1.3/G2/G4.4/G5.1/G6.5 и Email Templates.",
+    "Определены Client, public Expert, actual Agent, Moderator boundary и Super-admin с server-authoritative recipient ACL.",
+    "Описаны business event, presence/unread threshold, rule snapshot и channel preconditions.",
+    "Есть группы событий, приоритеты, delivery states, stale state и неизменяемые business/delivery invariants.",
+    "Покрыты messages, requests, connection, trial/paid/credits, completion, technical и compensation flows.",
+    "Покрыты duplicate, retry, concurrent worker, stale link, lost access, missing template, privacy и partial failure.",
+    "Определены event/rule/delivery metadata, version/audit/readback и управляемое хранение 90 дней.",
+    "Описаны notification center, chat badges, user settings, Email Templates boundary и отдельная admin page.",
+    "Есть 24 продуктовых и 24 технических positive/negative acceptance cases.",
+    "Готовы отдельные PM-ТЗ для Игоря и технический контекст для Codex.",
+    "Definition of Done и proof boundary запрещают считать локальный code slice или документы runtime-доказательством."
+  ];
+
   const taskTermEn = {
     "task-g1-session": "service session",
     "task-g1-chat": "role-based chat",
@@ -595,6 +630,11 @@
       igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-3-for-igor.html",
       codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g1-3-status-history.md",
       docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-3-for-igor.docx"
+    },
+    "task-g1-chat-notifications": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-4-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g1-4-chat-notifications.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-4-for-igor.docx"
     }
   };
   const artifacts = artifactByTask[id] || {};

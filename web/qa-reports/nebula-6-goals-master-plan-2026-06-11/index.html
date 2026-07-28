@@ -699,7 +699,7 @@
     "task-g1-session": { code:"G1.1", title:"Карточка консультации", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:30, tz:true, tzReady:100 },
     "task-g1-chat": { code:"G1.2", title:"Чат по ролям", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:40, tz:true, tzReady:100 },
     "task-g1-statuses": { code:"G1.3", title:"Статусы и история", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:45, tz:true, tzReady:100 },
-    "task-g1-chat-notifications": { code:"G1.4", title:"Уведомления чата", priority:"P1", stage:"functional_tz_handoff_ready_runtime_open", progress:35, tz:true, tzReady:100 },
+    "task-g1-chat-notifications": { code:"G1.4", title:"Уведомления консультации", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:35, tz:true, tzReady:100 },
 
     "task-g2-pricing": { code:"G2.1", title:"Цена и баланс", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:45, tz:true, tzReady:100 },
     "task-g2-timer": { code:"G2.2", title:"Таймер и остановка", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:40, tz:true, tzReady:100 },
@@ -734,7 +734,7 @@
   };
 
   const standardAuditReadiness = {
-"task-g1-session":100, "task-g1-chat":100, "task-g1-statuses":100, "task-g1-chat-notifications":55,
+"task-g1-session":100, "task-g1-chat":100, "task-g1-statuses":100, "task-g1-chat-notifications":100,
     "task-g2-pricing":90, "task-g2-timer":90, "task-g2-refund":90, "task-g2-accruals":95,
     "task-g3-home":25, "task-g3-catalog":25, "task-g3-profile":50, "task-g3-quiz":25,
     "task-g3-qa":35, "task-g3-field-weight":45, "task-g3-rotation":90,
@@ -745,7 +745,7 @@
   };
   Object.entries(taskMeta).forEach(([taskId, taskItem]) => {
     taskItem.tzReady = standardAuditReadiness[taskId];
-    taskItem.stage = taskId === "task-g1-session"
+    taskItem.stage = ["task-g1-session","task-g1-chat","task-g1-statuses","task-g1-chat-notifications"].includes(taskId)
       ? "etalon_spec_ready_runtime_open"
       : `${taskItem.stage}_legacy_score_pending_standard_audit`;
   });
