@@ -315,7 +315,7 @@ Technical end, balance timeout, завершение клиентом/Агент
 
 Каноническое продуктовое ТЗ для Игоря: `etalon-tz-g1-4-chat-notifications.md`. Техническая картина для его Codex: `codex-context-g1-4-chat-notifications.md`. При расхождении в желаемом поведении приоритет имеет продуктовое ТЗ.
 
-G1.4 отвечает за in-app уведомления, существующие chat badges, email fallback, пользовательские email preferences, правила доставки, дедупликацию, stale guards и delivery log. Lifecycle остается в G1.3; Email Templates владеет текстом писем; support/team notifications остаются в G4.4/G6.5.
+G1.4 отвечает за обязательные для пользователя in-app уведомления, существующие chat badges, email fallback, пользовательские preferences только для email, правила доставки, дедупликацию, stale guards и delivery log. Lifecycle остается в G1.3; Email Templates владеет текстом писем; support/team notifications остаются в G4.4/G6.5.
 
 ### Обязательный результат
 
@@ -336,12 +336,15 @@ G1.4 отвечает за in-app уведомления, существующи
 
 Стартовые управляемые значения:
 
-- email о непрочитанном важном событии — через 5 минут;
+- email по критическому request/connection/financial/technical событию — после 1 минуты подтвержденного отсутствия;
+- email о новом или уточняющем сообщении — после 5 минут непрочитанного состояния;
 - critical delivery failure signal — через 1 минуту;
 - тихие часы некритических email — 22:00–08:00 в локальном времени;
 - delivery log retention — 90 дней.
 
-Email Templates редактирует subject/body/translations/macros. «Настройки уведомлений» редактируют event, recipient, priority, channels, required/optional, delay, quiet hours, retry, dedup policy, retention и связь с шаблоном.
+Тихие часы действуют только на некритические email. Пользовательские переключатели управляют только email; отключить in-app уведомления внутри сайта пользователь не может.
+
+Email Templates редактирует subject/body/translations/macros. «Настройки уведомлений» редактируют event, recipient, priority, channels, required/optional email, delay, quiet hours, retry, dedup policy, retention и связь с шаблоном.
 
 ### Приемка
 

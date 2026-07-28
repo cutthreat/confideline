@@ -93,6 +93,22 @@ foreach ($value in $defaults) {
     Add-Check "managed-default:$value" $pm.Contains($value) 'admin-managed starting value'
 }
 
+Add-Check 'timing:critical-absence-email' (
+    $pm.Contains('Задержка email по критическому request/connection/financial/technical событию при подтвержденном отсутствии') -and
+    $codex.Contains('confirmed absence: 60 seconds')
+) 'critical event email uses its own managed absence timer'
+
+Add-Check 'timing:message-unread-email' (
+    $pm.Contains('Задержка email о новом или уточняющем сообщении, если оно не прочитано') -and
+    $codex.Contains('unread email delay: 300 seconds')
+) 'message email uses its own managed unread timer'
+
+Add-Check 'channels:user-switches-email-only' (
+    $pm.Contains('Пользовательские переключатели управляют **только email**') -and
+    $pm.Contains('не могут быть отключены пользователем') -and
+    $codex.Contains('No in-app notification switch is exposed')
+) 'user cannot disable any in-app notification'
+
 $groups = @(
     '### 7.1. Сообщения',
     '### 7.2. Запросы и предложения',
@@ -131,7 +147,7 @@ Add-Check 'privacy:safe-email' (
 ) 'safe email content'
 
 Add-Check 'channels:critical-mandatory' (
-    $pm.Contains('Их нельзя отключить в пользовательских настройках') -and
+    $pm.Contains('Их email нельзя отключить в пользовательских настройках') -and
     $pm.Contains('Критические уведомления тихими часами не задерживаются')
 ) 'mandatory critical route'
 

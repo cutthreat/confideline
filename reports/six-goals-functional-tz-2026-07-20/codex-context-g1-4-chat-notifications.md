@@ -347,16 +347,20 @@ Relevant existing packages:
 
 Starting managed values:
 
-- important unread email delay: 5 minutes;
+- critical request/connection/financial/technical event email after confirmed absence: 60 seconds;
+- new or clarification message unread email delay: 300 seconds;
 - confirmed critical delivery failure delay: 1 minute;
 - noncritical quiet hours: 22:00–08:00 recipient local time;
 - delivery log retention: 90 days.
 
 Presence must not rely solely on an old session flag. The accepted observable behavior:
 
-- if user is active and views the event before delay, optional fallback email is not needed;
-- if the event stays unseen, email is sent once;
+- critical request/connection/financial/technical email is scheduled once only after server-authoritative confirmed absence lasts the full 60 seconds;
+- new or clarification message email is scheduled once only if the message remains unread for the full 300 seconds;
+- if the message is read before 300 seconds, its optional fallback email is suppressed;
+- if critical and message rules could both apply, the critical event rule wins and one email is produced;
 - critical email ignores quiet hours;
+- quiet hours delay only noncritical email;
 - timezone change applies to new scheduling decisions;
 - existing pending delivery retains applied rule snapshot unless explicitly cancelled by a safe current-state guard.
 
@@ -423,7 +427,7 @@ Extend `/ru/settings/notifications`:
 - rating request email;
 - other optional consultation email categories.
 
-Mandatory in-app and critical email are read-only/explained, not toggleable.
+User switches control email only. No in-app notification switch is exposed: every catalogued in-app notification remains mandatory for the user, including ordinary events. Mandatory critical email is read-only/explained, not toggleable.
 
 Settings changes affect future scheduling. If an optional email is pending and the user disables it before send, apply a defined safe suppression rule and record why it was suppressed.
 
@@ -505,9 +509,9 @@ Session completed before notification opens -> link goes to history/current stat
 ## 21. Acceptance matrix
 
 1. Given a free message, when recipient is authorized, then one chat badge and one safe notification appear.
-2. Given an active consultation message, when unread for 5 minutes, then one optional email is sent if enabled.
-3. Given event viewed before 5 minutes, then optional email is suppressed.
-4. Given paid started, when user is in quiet hours, then critical notification is not delayed.
+2. Given a new or clarification message, when unread for 300 seconds, then one optional email is sent if enabled.
+3. Given that message read before 300 seconds, then optional email is suppressed.
+4. Given a critical request/connection/financial/technical event and 60 seconds of confirmed absence, then one mandatory email is sent even during quiet hours.
 5. Given duplicate event, when processed concurrently, then one visible result exists.
 6. Given internal note, when notification pipeline runs, then client receives nothing.
 7. Given censored message, then no original prohibited content appears in any delivery.
@@ -520,8 +524,8 @@ Session completed before notification opens -> link goes to history/current stat
 14. Given critical delivery terminal failure, after 1 minute one super-admin signal exists.
 15. Given optional email failure, then no critical signal is created solely for it.
 16. Given rule version change, then historical record retains applied version.
-17. Given user preference off, then optional email is not sent.
-18. Given critical preference, then user cannot disable mandatory channel.
+17. Given user email preference off, then optional email is not sent and in-app still appears.
+18. Given any catalogued in-app event, then user has no switch that can disable its in-app delivery.
 19. Given delivery log, then super-admin can filter and read safe metadata.
 20. Given retention cleanup at 90 days, then only G1.4 delivery metadata expires according to policy.
 21. Given RU/EN locale, then correct translation/template is used.
