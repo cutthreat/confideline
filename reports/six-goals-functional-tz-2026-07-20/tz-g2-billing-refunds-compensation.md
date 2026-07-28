@@ -50,22 +50,30 @@
 
 ## G2.2 Таймер, trial, started minute и pause
 
+Эталонное продуктовое ТЗ для Игоря: `etalon-tz-g2-2-timer-debit-pause.md`.
+Технический контекст для Codex Игоря: `codex-context-g2-2-timer-debit-pause.md`.
+
 ### Trial и consent
 
-1. Trial предоставляется только если он применим к клиенту/session по текущим настройкам.
-2. До фактического старта клиент явно принимает переход в paid после окончания trial.
-3. Клиент видит длительность предоставленного trial и countdown.
-4. Окончание trial без действующего consent не должно незаметно начать списание.
-5. Reconnect, retry и повторное открытие чата не дают новый trial в той же session.
+1. Trial предоставляется как coupon/bonus entitlement на фиксированное количество бесплатных минут; стартовое значение — 3 минуты, admin-managed.
+2. Trial не списывает credits и не зависит от цены Эксперта.
+3. При entitlement=0 trial пропускается.
+4. До фактического старта клиент явно принимает переход в paid после окончания trial.
+5. Consent + достаточный balance автоматически начинают первую paid-минуту после trial без второй modal.
+6. Окончание trial без действующего consent не начинает списание.
+7. Reconnect/retry/reload не дают новый trial и не восстанавливают использованное время.
 
 ### Paid minute
 
 1. Тарификация поминутная.
-2. Каждая начатая paid minute оплачивается полностью.
-3. Краткий disconnect клиента не обнуляет уже начатую минуту и не создает второе списание.
-4. Одно и то же minute-result действие не может списаться повторно.
-5. Время connecting/waiting до фактического paid start не считается paid time.
-6. Недоступность услуги по причине платформы/агента должна иметь technical interruption readback и support/refund path, а не скрытую оплату.
+2. Paid start требует server-confirmed readiness обеих сторон, consent, price snapshot и полную стоимость.
+3. Полная цена списывается атомарно в момент начала каждой paid minute.
+4. Early end не возвращает started minute автоматически.
+5. Minute ordinal/debit является exactly-once; повторный tick/retry/reload читает прежний результат.
+6. Время connecting/waiting до фактического paid start не считается paid time.
+7. Inactivity reminder 2 минуты не выполняет auto-transition; пока state остается paid-active, timer и billing продолжаются.
+8. Low-balance warning срабатывает при 2 полных минутах; threshold admin-managed.
+9. Waiting/reconnect/pause блокируют только следующую минуту; текущая уже оплаченная сохраняет итог.
 
 ### Balance pause
 
@@ -73,20 +81,26 @@
 2. Длительность pause управляется в админ-панели; текущее значение — 5 минут. Примененное значение фиксируется при начале pause и доступно в session/admin readback.
 3. Клиент видит deadline, сумму/действие для продолжения и возможность завершить consultation.
 4. Агент остается связан с этой session и не начинает другой paid chat.
-5. Успешный top-up до deadline возобновляет ту же session без нового trial.
-6. Клиент или агент может завершить pause раньше.
-7. Истечение deadline завершает session.
-8. Pause предоставляется один раз на session; второй zero-balance завершает ее.
-9. Top-up после deadline остается на балансе, но не оживляет завершенную session.
+5. Успешный top-up только пополняет balance и не запускает paid автоматически.
+6. Клиент явно нажимает «Продолжить консультацию»; система повторно проверяет pause, присутствие и полную стоимость.
+7. Только после успешной проверки начинается одна новая paid minute и debit.
+8. Клиент или Агент может завершить pause раньше.
+9. Истечение deadline завершает session.
+10. Pause предоставляется один раз на session; второй zero-balance завершает ее.
+11. Top-up после deadline остается на балансе, но не оживляет завершенную session.
 
-### Потеря связи агентом
+### Reconnect и technical interruption
 
-1. Во время paid/pause агенту предоставляется reconnect grace, управляемый в админ-панели; текущее значение — 60 секунд.
+1. Client и Agent имеют отдельные admin-managed reconnect grace по 60 секунд.
 2. Уже начатая paid minute сохраняет итог, но следующая minute во время grace не начинается.
-3. Возврат до deadline продолжает ту же session без нового trial, повторного debit или новой pause.
-4. Если агент не вернулся, session завершается как technical end с support/refund route.
-5. Top-up во время grace остается на балансе; после technical end он не возобновляет session.
-6. Примененное значение grace фиксируется при его начале и доступно в session/admin readback.
+3. Возврат до deadline продолжает ту же session без нового trial или повторного debit.
+4. Timeout завершает session как technical end с одним incident/support/refund candidate.
+5. Simultaneous disconnect/platform failure создают один linked incident, а не дубли.
+6. Client disconnect не создает automatic compensation.
+7. Agent/platform interruption также не выполняет automatic refund/compensation.
+8. Любое фактическое начисление выполняется вручную super-admin; до successful grant клиенту не обещается сумма.
+9. Top-up во время grace остается на балансе; после technical end он не возобновляет session.
+10. Примененное значение grace фиксируется при начале clock и доступно в readback.
 
 ### Приемка
 
@@ -98,7 +112,13 @@
 - Early manual end pause.
 - Second zero-balance.
 - Trial end + consent + zero balance: одна pause без debit.
-- Agent disconnect: reconnect до deadline и technical end после deadline.
+- Trial end + consent + balance: одна paid minute/debit без второй modal.
+- Debit выполняется в начале minute и защищен от duplicate.
+- Inactivity продолжает paid до явного waiting/end.
+- Low balance warning использует admin threshold 2.
+- Top-up не auto-resume; требуется explicit continuation.
+- Client/Agent disconnect: reconnect до deadline и technical end после deadline.
+- Simultaneous/platform failure: один incident и только manual compensation/refund.
 - Admin readback и изменение будущих значений 5 минут/60 секунд без изменения уже активного периода.
 - Technical interruption и согласованный financial readback.
 

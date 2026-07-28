@@ -213,6 +213,23 @@ Reconnect grace управляется в админ-панели; текуще�
 - Appeal Агента содержит обязательный комментарий, действует 7 дней, управляется feature toggle для новых решений и рассматривается `super-admin` в MVP.
 - Уже открытая appeal не исчезает при отключении функции.
 
+## O12. Полный финансовый контракт G2.2
+
+`owner_decision_accepted_2026-07-28`
+
+- Trial предоставляется как фиксированные бесплатные минуты по coupon/bonus entitlement; стартовое значение 3 минуты, при `0` этап пропускается. Trial не списывает credits и не зависит от цены Эксперта.
+- При заранее данном consent и достаточном balance первая paid-минута автоматически начинается после trial без второй modal.
+- Paid start происходит только после server-confirmed readiness обеих сторон, consent, price snapshot и полной стоимости.
+- Полная session price атомарно списывается в начале каждой paid-минуты; early end не возвращает started minute автоматически.
+- Пока consultation остается paid-active, inactivity не останавливает timer/billing. Reminder 2 минуты не выполняет auto-transition.
+- Low-balance warning threshold — 2 полные минуты, admin-managed.
+- Confirmed top-up только пополняет balance. Для paid resume клиент явно нажимает «Продолжить консультацию»; auto-resume запрещен.
+- Client reconnect grace — 60 секунд: started minute сохраняется, следующая не начинается, timeout дает technical end; automatic compensation отсутствует.
+- Simultaneous disconnect/platform failure создают один linked incident/manual-review candidate.
+- Любые refund/compensation начисления выполняются вручную super-admin. До successful grant клиенту не обещается конкретная сумма.
+
+Канонические handoff: `etalon-tz-g2-2-timer-debit-pause.md`, `codex-context-g2-2-timer-debit-pause.md`.
+
 ## Правило работы с открытыми решениями
 
 Открытый owner gate не блокирует написание остальных требований. Он блокирует только включение зависящего поведения или соответствующий launch gate. Значение не подставляется по конкуренту или рекомендации модели без решения владельца.

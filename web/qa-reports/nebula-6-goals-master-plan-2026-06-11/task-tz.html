@@ -169,7 +169,7 @@
     "task-g1-statuses": [5,8,10,7,12,12,12,8,6,12,5,3],
     "task-g1-chat-notifications": [5,8,10,7,12,12,12,8,6,12,5,3],
     "task-g2-pricing": [5,8,10,7,12,12,12,8,6,12,5,3],
-    "task-g2-timer": [10,5,5,10,5,0,5,10,10,10],
+    "task-g2-timer": [5,8,10,7,12,12,12,8,6,12,5,3],
     "task-g2-refund": [10,10,10,10,5,5,5,10,5,5],
     "task-g2-accruals": [10,10,10,10,10,10,10,10,10,5],
     "task-g3-home": [5,5,5,0,5,0,0,5,0,0],
@@ -252,10 +252,10 @@
       has:["Готовы самостоятельное продуктовое ТЗ для Игоря и отдельный технический контекст для Codex.", "Зафиксированы credits как продаваемая единица, USD checkout, global 30 credits/мин, profile override и immutable session price snapshot.", "Приняты starter 60/9.99 и regular 150/22.99, 300/42.99, 600/79.99 packages, скидки, coupons, expiry и spending order.", "Живая /ru/admin/settings/prices расширяется без дублирования; coupons, profile override, manual grant, Payment systems, Orders и Transactions распределены по существующим владельцам."],
       missing:["Пробелов в продуктовой спецификации G2.1 по принятому стандарту нет.", "Для implementation/runtime нужны mapped build, migrations/config, payment/grant idempotency, balance concurrency, admin readback и client/role QA."],
       done:["Spec completeness = 100%; hard gates = pass.", "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.", "Реализация и runtime acceptance оцениваются отдельно."] },
-    "task-g2-timer": { code:"G2.2", title:"Таймер и остановка", goal:"Цель 2", stage:"product_tz_ready_owner_runtime_policy_open", tzReady:90, detailHref:"tasks/task-g2-timer.html",
-      has:["Поля учета времени и списаний описаны.", "Предупреждение, остановка и запрет продолжения заданы.", "Сценарии приемки понятны."],
-      missing:["Нужно заполнить owner decision pack по billable minute/unit, low/no balance pause, late top-up и reconnect behavior.", "Нужен Figma/Oracle mapping timer/free/trial/paid states.", "Нужен current Confideline/Yii2 front/admin proof."],
-      done:["Product-only G2 billing truth pack готов: ../../../../reports/tz-product-g2-billing-truth-2026-07-16.md.", "Owner-fill decision pack готов: ../../../../reports/nebula-owner-billing-decision-pack-2026-07-16.md.", "Figma/Oracle state map готов: ../../../../reports/nebula-g2-figma-oracle-state-map-2026-07-16.md.", "ТЗ фиксирует прозрачный free/trial -> paid transition и запрещает скрывать окончание free/trial."] },
+    "task-g2-timer": { code:"G2.2", title:"Таймер и остановка", goal:"Цель 2", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-2-for-igor.html",
+      has:["Готовы самостоятельное продуктовое ТЗ для Игоря и отдельный технический контекст для Codex.", "Зафиксированы бесплатный trial, server-authoritative таймер, полное списание в начале started minute и запрет следующей минуты без средств.", "Описаны low-balance warning, одна balance pause, explicit continuation после пополнения, отдельные reconnect grace и единый technical incident."],
+      missing:["Пробелов в продуктовой спецификации G2.2 по принятому стандарту нет.", "Для implementation/runtime нужны mapped build, atomic debit, idempotency/concurrency, authoritative clock, admin snapshots/readback и role QA."],
+      done:["Spec completeness = 100%; hard gates = pass.", "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.", "Реализация и runtime acceptance оцениваются отдельно."] },
     "task-g2-refund": { code:"G2.3", title:"Возвраты", goal:"Цель 2", stage:"product_tz_ready_support_refund_runtime_open", tzReady:90, detailHref:"tasks/task-g2-refund.html",
       has:["Есть доказанный внутренний срез возврата/спора, привязанный к конкретной консультации.", "Зафиксированы журнал решений, дело возврата, синхронизация статусов и операторская поверхность проверки.", "Проверены два исхода: возврат одобрен и спор решен без возврата."],
       missing:["Нужно заполнить owner/legal refund eligibility policy в decision pack.", "Нужен current клиентский/support route proof на Confideline/Yii2.", "Нужна связка финального wording с G4 legal/support pack."],
@@ -574,6 +574,41 @@
     "Definition of Done и proof boundary запрещают считать документы или source map runtime-доказательством."
   ];
 
+  tasks["task-g2-timer"].stage = "etalon_spec_ready_runtime_open";
+  tasks["task-g2-timer"].tzReady = 100;
+  tasks["task-g2-timer"].detailHref = "../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-2-for-igor.html";
+  tasks["task-g2-timer"].has = [
+    "Создано автономное продуктовое ТЗ для Игоря: фиксированный бесплатный trial, переход в paid, started-minute debit, low-balance warning, balance pause, reconnect и остановка.",
+    "Создан отдельный технический контекст для Codex Игоря: server-authoritative clock, atomic ledger transaction, minute idempotency, concurrency, incidents, admin snapshots и acceptance matrix.",
+    "Приняты стартовые значения: trial 3 минуты, low-balance threshold 2 полные минуты, balance pause 5 минут один раз, client и Agent reconnect grace по 60 секунд.",
+    "Любой refund или compensation grant выполняется вручную super-admin; top-up не возобновляет paid автоматически."
+  ];
+  tasks["task-g2-timer"].missing = [
+    "Пробелов в продуктовой спецификации G2.2 по принятому стандарту не осталось.",
+    "Implementation status открыт: локальный source slice не сопоставлен с принятым build/commit.",
+    "Runtime acceptance открыт: нужны atomic/exactly-once debit, authoritative clock, pause/reconnect concurrency, role-positive/negative и admin historical readback."
+  ];
+  tasks["task-g2-timer"].done = [
+    "Spec completeness = 100%; focused verifier и hard gates должны пройти.",
+    "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.",
+    "Реализация и production acceptance не заявлены."
+  ];
+  tzScoreByTask["task-g2-timer"] = [5,8,10,7,12,12,12,8,6,12,5,3];
+  criterionDetailsByTask["task-g2-timer"] = [
+    "Есть цель, измеримый результат, версия и независимая граница spec/implementation/runtime.",
+    "Scope отделяет G2.2 от G2.1 purchase/price, G2.3 refund, G2.4 accrual, G1.3 lifecycle и G4 incidents.",
+    "Определены Client, public Expert, actual Agent и Super-admin; exact balance и денежные действия ограничены.",
+    "Зафиксированы trial entitlement, price snapshot, paid-minute ordinal, debit, timer episode, pause, reconnect и incident.",
+    "Определены preconditions: обе стороны готовы, consent действителен, trial исчерпан или равен нулю, на полную минуту хватает credits.",
+    "Покрыты trial, trial-to-paid, paid minute, inactivity, low balance, balance pause, top-up, explicit continuation, reconnect и technical end.",
+    "Покрыты duplicate tick, concurrent debit, stale client clock, late top-up, repeated pause, simultaneous disconnect и delivery retry.",
+    "Определены server timestamps, immutable snapshots, ledger linkage, idempotency key, incident dedup и audit/readback.",
+    "Описаны client/Agent/Super-admin поверхности и новая страница /ru/admin/settings/consultation без дублирования соседних настроек.",
+    "Есть 34 продуктовых и 38 технических positive/negative/concurrency acceptance cases.",
+    "Готовы отдельные PM-ТЗ для Игоря и технический контекст для Codex.",
+    "Definition of Done и proof boundary запрещают считать локальный code slice или документы runtime-доказательством."
+  ];
+
   const taskTermEn = {
     "task-g1-session": "service session",
     "task-g1-chat": "role-based chat",
@@ -675,6 +710,11 @@
       igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-1-for-igor.html",
       codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g2-1-price-balance.md",
       docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-1-for-igor.docx"
+    },
+    "task-g2-timer": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-2-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g2-2-timer-debit-pause.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-2-for-igor.docx"
     }
   };
   const artifacts = artifactByTask[id] || {};

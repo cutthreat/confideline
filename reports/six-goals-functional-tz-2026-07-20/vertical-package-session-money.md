@@ -13,7 +13,7 @@ Coverage: G1.1, G1.3, G2.1, G2.2, G2.3, G2.4
 - G1.1: отдельная service session и неизменяемая историческая карточка.
 - G1.3: состояния, переходы, history и technical end.
 - G2.1: global/profile credits/minute, credit balance, package/coupon/bonus catalog и snapshot примененных правил; money currency только на purchase surface.
-- G2.2: trial, consent, started minute, admin-managed pause 5 минут и reconnect grace 60 секунд.
+- G2.2: фиксированный free-minute trial, consent, atomic debit в начале started minute, low-balance threshold 2, explicit continuation, admin-managed pause 5 минут и client/agent reconnect grace по 60 секунд; refund/compensation только вручную.
 - G2.3: no/partial/full refund, duplicate guard и override с причиной.
 - G2.4: consultation accrual и отрицательная correction после refund.
 
@@ -44,6 +44,12 @@ Coverage: G1.1, G1.3, G2.1, G2.2, G2.3, G2.4
 | M15 | Global price/profile override | Effective credits/minute и inheritance readback совпадают |
 | M16 | Package/coupon/bonus purchase retry | Один money result и один credit/bonus grant |
 | M17 | Price/promo change after session start | Active snapshot прежний; новая session использует новую version |
+| M18 | Trial coupon 3 minutes / trial=0 | Бесплатные минуты без wallet debit / этап пропущен |
+| M19 | Inactivity in paid | Reminder видим; billing продолжается до explicit waiting/end |
+| M20 | Low-balance threshold 2 | Один warning episode; Agent не видит exact balance |
+| M21 | Top-up during pause | Balance увеличен; auto-resume отсутствует; explicit continue создает одну minute |
+| M22 | Client disconnect before/after 60 seconds | Resume / technical end без automatic compensation |
+| M23 | Simultaneous/platform interruption | Один incident; manual super-admin financial decision only |
 
 ## Handoff программиста
 

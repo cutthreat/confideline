@@ -37,20 +37,25 @@ Coverage mapping: G1.2, G1.3, G1.4, G2.1, G2.2, G2.3, G3.3, G3.4, G3.7, G4.1, G4
 | Clarification client response | 60 | минут | Настройки консультаций |
 | Expert proposal validity | 15 | минут | Настройки консультаций |
 | Connection timeout | 3 | минут | Настройки консультаций |
+| Trial entitlement default | 3 | бесплатных минут | Настройки консультаций |
 | Inactivity reminder | 2 | минут | Настройки консультаций |
+| Low-balance warning threshold | 2 | полных оплачиваемых минут | Настройки консультаций |
 | Client return window | 4 | часа | Настройки консультаций |
 | Balance pause duration | 5 | минут | Настройки консультаций |
+| Balance pause count per consultation | 1 | раз | Настройки консультаций |
 | Agent reconnect grace | 60 | секунд | Настройки консультаций |
 | Client reconnect grace | 60 | секунд | Настройки консультаций |
 | First meaningful response | 60 | секунд | Настройки консультаций / G6.2 contract |
 | Support first response | 15 | минут | Настройки поддержки |
 | Ordinary support escalation | 2 | multiplier SLA | Настройки поддержки |
 | Critical support escalation | immediate | режим | Настройки поддержки |
-| Expert SLA compensation | `unset` | минут coupon grant | Credits, цены и промо / compensation |
+| Expert SLA compensation proposal | `unset` | минут coupon grant | Credits, цены и промо / compensation |
 | Consultation history retention | 24 | месяцев после завершения | Lifecycle/privacy G1.3/G4.3 |
 | Support hours/calendar/timezone | operational config | schedule/timezone | Настройки поддержки |
 
-`Expert SLA compensation` — число минут, автоматически выдаваемых coupon после подтвержденного Expert/Agent SLA failure. Клиентское уведомление может показывать это число только после успешного grant. Отдельный client reconnect timeout не использует это автоматическое правило: возможный coupon выдается Экспертом по самостоятельному регламенту.
+`Expert SLA compensation proposal` — стартовое значение для ручного решения super-admin после подтвержденного Expert/Agent SLA failure. Оно не создает автоматического начисления. Клиентское уведомление может показывать конкретное число только после успешного ручного grant. Client reconnect, Agent reconnect и общий platform failure создают факты/кандидат для проверки, но сами не выдают coupon, refund или compensation.
+
+Страница `/ru/admin/settings/consultation` размещается внутри существующего `/ru/admin/settings/index` отдельным пунктом «Настройки консультаций»: сразу после «Настройки чата» и перед «Настройки фото». Здесь находятся только lifecycle/timer-параметры consultation. Цена, coupons, refunds, support, RBAC и chat moderation остаются на своих канонических страницах и не дублируются.
 
 `Consultation history retention` управляет клиентской историей сообщений. Legal/privacy review может изменить default. Dispute/refund/safety/legal hold применяется только к связанному evidence с обязательными reason, scope, owner, expiry/review и audit; финансовые/audit записи имеют отдельную retention policy.
 
