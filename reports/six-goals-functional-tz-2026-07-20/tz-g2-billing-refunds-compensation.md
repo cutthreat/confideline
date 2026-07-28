@@ -124,9 +124,13 @@
 
 ## G2.3 Возвраты
 
+Эталонное продуктовое ТЗ для Игоря: `etalon-tz-g2-3-refunds.md`.
+
+Технический контекст для Codex Игоря: `codex-context-g2-3-refunds.md`.
+
 ### Функциональные требования
 
-1. Refund создается только в контексте конкретной service session и support/dispute case.
+1. Refund создается только в контексте конкретной service session и support/dispute case, но не меняет terminal status consultation.
 2. Доступны результаты: no refund, partial refund, full refund в credits в пределах фактических session debits; cash refund покупки credit package является отдельным payment-dispute route.
 3. Повтор обработки того же решения не создает второе финансовое движение.
 4. Суммарный refund по session не может превышать ее eligible charges.
@@ -143,13 +147,25 @@
 15. Case readback показывает eligible charges, prior refunds, remaining amount, proposed percent/amount, client balance и agent correction до confirm.
 16. Любой фактический refund ранее списанных credits выполняется только после ручного решения `super-admin`. Автоматическое правило может создать candidate и calculation preview, но не исполняет refund самостоятельно.
 17. Ошибочный/дублированный debit, предотвращенный idempotency до commit, не требует refund. Если неправильное движение уже сохранено, оно исправляется отдельной защищенной correction после решения `super-admin`.
-18. Compensation bonus отделен от refund. Автоматическое начисление допустимо только по явно включенному правилу; клиентское сообщение обещает бонус только после успешного grant.
+18. Compensation bonus отделен от refund и также начисляется только вручную super-admin; клиентское сообщение обещает бонус только после successful grant.
+19. Client request window - 30 дней; decision target - 72 часа после полного evidence; client appeal window - 7 дней. Все значения admin-managed и snapshot.
+20. Один active case допускается на `session + category/problem identity`; другая category создает linked case под общим cumulative ceiling.
+21. Case statuses не подменяют support statuses: candidate/requested/under_review/waiting_client/decision_ready/approved/declined/execution_pending/completed/execution_failed/appealed/closed.
+22. Partial refund выбирается по affected paid minutes или точному количеству credits; percentage рассчитывается для preview.
+23. Purchased credits восстанавливаются без expiry; bonus source восстанавливается с original expiry и minimum refund-use grace 30 дней, если срок истек или короче grace.
+24. Completed refund immutable; исправление - отдельная super-admin correction без скрытого отрицательного balance.
+25. Settings находятся в `/ru/admin/settings/refunds` внутри `/ru/admin/settings/index`, после «Настройки цен» и перед «Group settings».
 
 ### Приемка
 
 - Full, partial и no-refund cases.
 - Повторное решение и повторное действие.
 - Несколько partial refunds с cumulative limit.
+- Same-category duplicate и different-category linked case.
+- Decision SLA pause/resume на waiting client.
+- Purchased/bonus source restoration и 30-day grace.
+- Execution failure/retry и immutable completion.
+- One client appeal within 7 days.
 - Override с причиной.
 - Reassignment после session.
 - Refund после изменения compensation policy.

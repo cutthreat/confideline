@@ -14,7 +14,7 @@ Coverage: G1.1, G1.3, G2.1, G2.2, G2.3, G2.4
 - G1.3: состояния, переходы, history и technical end.
 - G2.1: global/profile credits/minute, credit balance, package/coupon/bonus catalog и snapshot примененных правил; money currency только на purchase surface.
 - G2.2: фиксированный free-minute trial, consent, atomic debit в начале started minute, low-balance threshold 2, explicit continuation, admin-managed pause 5 минут и client/agent reconnect grace по 60 секунд; refund/compensation только вручную.
-- G2.3: no/partial/full refund, duplicate guard и override с причиной.
+- G2.3: отдельный session-linked refund case, no/partial/full manual super-admin decision, affected-minute/exact-credit preview, exactly-once bucket restoration, appeal и immutable correction.
 - G2.4: consultation accrual и отрицательная correction после refund.
 
 ## Enablement gates, не блокирующие build
@@ -50,6 +50,11 @@ Coverage: G1.1, G1.3, G2.1, G2.2, G2.3, G2.4
 | M21 | Top-up during pause | Balance увеличен; auto-resume отсутствует; explicit continue создает одну minute |
 | M22 | Client disconnect before/after 60 seconds | Resume / technical end без automatic compensation |
 | M23 | Simultaneous/platform interruption | Один incident; manual super-admin financial decision only |
+| M24 | Same-category repeated refund request | Существующий active case дополнен; duplicate case/movement отсутствует |
+| M25 | Different refund category | Создан linked case; общий cumulative ceiling сохранен |
+| M26 | Refund purchased/bonus allocation | Purchased без expiry; bonus source/original expiry или 30-day grace |
+| M27 | Refund execution retry | Один logical balance result; failure остается открытым |
+| M28 | Client appeal | Одна appeal за 7 дней; original decision immutable |
 
 ## Handoff программиста
 

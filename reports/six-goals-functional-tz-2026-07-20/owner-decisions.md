@@ -230,6 +230,24 @@ Reconnect grace управляется в админ-панели; текуще�
 
 Канонические handoff: `etalon-tz-g2-2-timer-debit-pause.md`, `codex-context-g2-2-timer-debit-pause.md`.
 
+## O13. Полный продуктовый контракт G2.3
+
+`owner_decision_accepted_2026-07-28`
+
+- Refund является отдельным связанным процессом и не меняет terminal status consultation.
+- Клиент открывает request из «Моих консультаций» или support route; system/super-admin могут создать candidate без обещания денег.
+- Один active case допускается на `session + category/problem identity`; другая причина создает отдельный linked case.
+- Lifecycle: candidate, requested, under_review, waiting_client, decision_ready, approved/declined, execution_pending, completed/execution_failed, appealed, closed.
+- Category и description обязательны; клиент может выбрать messages/minutes и приложить evidence, а session timeline/debit ledger система добавляет сама.
+- Partial refund выбирается по paid minutes или точному количеству credits; percentage и последствия рассчитываются в preview.
+- Purchased credits возвращаются без expiry; bonus credits восстанавливают source/original expiry, а при expired/short expiry получают minimum 30-day refund-use grace.
+- Claim window - 30 дней, decision target - 72 часа после полного evidence с pause на waiting_client, appeal - один раз в течение 7 дней. Все значения admin-managed.
+- Любой actual refund выполняется только вручную super-admin; completed movement immutable, исправление append-only и не создает скрытый negative balance.
+- Клиент видит safe status, affected minutes, actual credits и reason; Agent не видит refund/support details.
+- Настройки размещаются в `/ru/admin/settings/index` как «Настройки возвратов» (`/ru/admin/settings/refunds`) после «Настройки цен» и перед «Group settings».
+
+Канонические handoff: `etalon-tz-g2-3-refunds.md`, `codex-context-g2-3-refunds.md`.
+
 ## Правило работы с открытыми решениями
 
 Открытый owner gate не блокирует написание остальных требований. Он блокирует только включение зависящего поведения или соответствующий launch gate. Значение не подставляется по конкуренту или рекомендации модели без решения владельца.

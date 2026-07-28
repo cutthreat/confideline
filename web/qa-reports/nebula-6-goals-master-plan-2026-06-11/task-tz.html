@@ -170,7 +170,7 @@
     "task-g1-chat-notifications": [5,8,10,7,12,12,12,8,6,12,5,3],
     "task-g2-pricing": [5,8,10,7,12,12,12,8,6,12,5,3],
     "task-g2-timer": [5,8,10,7,12,12,12,8,6,12,5,3],
-    "task-g2-refund": [10,10,10,10,5,5,5,10,5,5],
+    "task-g2-refund": [5,8,10,7,12,12,12,8,6,12,5,3],
     "task-g2-accruals": [10,10,10,10,10,10,10,10,10,5],
     "task-g3-home": [5,5,5,0,5,0,0,5,0,0],
     "task-g3-catalog": [5,5,5,0,5,0,0,5,0,0],
@@ -256,10 +256,10 @@
       has:["Готовы самостоятельное продуктовое ТЗ для Игоря и отдельный технический контекст для Codex.", "Зафиксированы бесплатный trial, server-authoritative таймер, полное списание в начале started minute и запрет следующей минуты без средств.", "Описаны low-balance warning, одна balance pause, explicit continuation после пополнения, отдельные reconnect grace и единый technical incident."],
       missing:["Пробелов в продуктовой спецификации G2.2 по принятому стандарту нет.", "Для implementation/runtime нужны mapped build, atomic debit, idempotency/concurrency, authoritative clock, admin snapshots/readback и role QA."],
       done:["Spec completeness = 100%; hard gates = pass.", "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.", "Реализация и runtime acceptance оцениваются отдельно."] },
-    "task-g2-refund": { code:"G2.3", title:"Возвраты", goal:"Цель 2", stage:"product_tz_ready_support_refund_runtime_open", tzReady:90, detailHref:"tasks/task-g2-refund.html",
-      has:["Есть доказанный внутренний срез возврата/спора, привязанный к конкретной консультации.", "Зафиксированы журнал решений, дело возврата, синхронизация статусов и операторская поверхность проверки.", "Проверены два исхода: возврат одобрен и спор решен без возврата."],
-      missing:["Нужно заполнить owner/legal refund eligibility policy в decision pack.", "Нужен current клиентский/support route proof на Confideline/Yii2.", "Нужна связка финального wording с G4 legal/support pack."],
-      done:["Product-only G2 billing truth pack готов: ../../../../reports/tz-product-g2-billing-truth-2026-07-16.md.", "Owner-fill decision pack готов: ../../../../reports/nebula-owner-billing-decision-pack-2026-07-16.md.", "Figma/Oracle state map готов: ../../../../reports/nebula-g2-figma-oracle-state-map-2026-07-16.md.", "Refund должен быть связан с consultation/support case, не дублироваться и не превышать eligible charges."] },
+    "task-g2-refund": { code:"G2.3", title:"Возвраты", goal:"Цель 2", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-3-for-igor.html",
+      has:["Готовы самостоятельное продуктовое ТЗ для Игоря и отдельный технический контекст для Codex.", "Refund отделен от terminal consultation и связан с session, support, ledger и agent correction.", "Зафиксированы candidate/request, no/partial/full manual decision, bucket restoration, execution retry и client appeal."],
+      missing:["Пробелов в продуктовой спецификации G2.3 по принятому стандарту нет.", "Для implementation/runtime нужны mapped build, separate case lifecycle, eligibility/cumulative guard, exactly-once wallet restoration, admin/readback и role QA."],
+      done:["Spec completeness = 100%; hard gates = pass.", "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.", "Реализация и runtime acceptance оцениваются отдельно."] },
     "task-g2-accruals": { code:"G2.4", title:"Начисления", goal:"Цель 2", stage:"product_tz_ready_compensation_runtime_open", tzReady:95, detailHref:"tasks/task-g2-accruals.html",
       has:["Есть контракт для реализации: начисление должно объясняться конкретной консультацией.", "Описаны статусы начисления, связь с возвратом/спором и минимальная видимость для оператора/эксперта.", "Есть сценарии проверки и stop conditions.", "Live-срез 29 июня 2026 подтвердил общий финансовый фундамент сайта: заказы, баланс, транзакции, начисления, удержания, выплаты, реквизиты, платежные настройки и цены.", "Зафиксировано: проверенной рабочей модели начислений пока нет, поэтому нужна админка с гибкими настройками правил.", "Собран implementation packet: страницы админки, поля, таблицы, статусы, интеграции, acceptance cases и stop conditions."],
       missing:["Нужен current runtime proof новых настроек/сценариев.", "Стартовые числа: доля/ставка, фикс, task rates и KPI-пороги задаются pilot-конфигурацией.", "Нужно доказать immutable policy snapshot, proportional refund/override и историческую атрибуцию после reassignment."],
@@ -609,6 +609,41 @@
     "Definition of Done и proof boundary запрещают считать локальный code slice или документы runtime-доказательством."
   ];
 
+  tasks["task-g2-refund"].stage = "etalon_spec_ready_runtime_open";
+  tasks["task-g2-refund"].tzReady = 100;
+  tasks["task-g2-refund"].detailHref = "../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-3-for-igor.html";
+  tasks["task-g2-refund"].has = [
+    "Создано автономное продуктовое ТЗ для Игоря: client/system/staff intake, отдельный refund lifecycle, no/partial/full decision, balance execution, appeal и client readback.",
+    "Создан отдельный технический контекст для Codex Игоря: current source incompatibilities, case identity, eligibility, bucket restoration, atomic/idempotent execution, RBAC, events и acceptance matrix.",
+    "Приняты значения: claim 30 дней, decision target 72 часа, appeal 7 дней, bonus refund-use grace 30 дней.",
+    "Настройки размещены в /ru/admin/settings/refunds после «Настройки цен» и перед «Group settings»; actual refund только вручную super-admin."
+  ];
+  tasks["task-g2-refund"].missing = [
+    "Пробелов в продуктовой спецификации G2.3 по принятому стандарту не осталось.",
+    "Implementation status открыт: локальный refund slice не сопоставлен с принятым build/commit и конфликтует с accepted process boundary.",
+    "Runtime acceptance открыт: нужны request/candidate dedup, separate lifecycle, cumulative guard, exactly-once bucket restoration, appeal, RBAC и reconciliation."
+  ];
+  tasks["task-g2-refund"].done = [
+    "Spec completeness = 100%; focused verifier и hard gates должны пройти.",
+    "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.",
+    "Реализация и production acceptance не заявлены."
+  ];
+  tzScoreByTask["task-g2-refund"] = [5,8,10,7,12,12,12,8,6,12,5,3];
+  criterionDetailsByTask["task-g2-refund"] = [
+    "Есть цель, измеримый результат, версия и независимая граница spec/implementation/runtime.",
+    "Scope отделяет session refund от G2.1 purchase, G2.2 debit, G2.4 payout, G4 support/evidence и cash dispute.",
+    "Определены Client, Agent/Expert boundary и Super-admin; internal evidence/correction защищены.",
+    "Зафиксированы candidate, request, case, evidence, decision, execution, appeal, buckets и truth owners.",
+    "Описаны entry points, duplicate handling, withdrawal, review, decision, execution, failure, appeal и correction.",
+    "Есть category rules, eligibility, partial/full calculation, cumulative ceiling, expiry grace и manual-only approval.",
+    "Покрыты stale revision, concurrent decisions, double confirm, lost worker, execution failure, policy change и unauthorized access.",
+    "Определены immutable decisions/movements, versions, audit, evidence retention, ledger and support linkage.",
+    "Описаны client/support/consultation/refund surfaces и /ru/admin/settings/refunds без дублирования case queue.",
+    "Есть 34 продуктовых и 42 технических positive/negative/concurrency acceptance cases.",
+    "Готовы отдельные PM-ТЗ для Игоря и технический контекст для Codex.",
+    "Definition of Done и proof boundary запрещают считать локальный code slice или support prototype runtime-доказательством."
+  ];
+
   const taskTermEn = {
     "task-g1-session": "service session",
     "task-g1-chat": "role-based chat",
@@ -715,6 +750,11 @@
       igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-2-for-igor.html",
       codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g2-2-timer-debit-pause.md",
       docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-2-for-igor.docx"
+    },
+    "task-g2-refund": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-3-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g2-3-refunds.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-3-for-igor.docx"
     }
   };
   const artifacts = artifactByTask[id] || {};

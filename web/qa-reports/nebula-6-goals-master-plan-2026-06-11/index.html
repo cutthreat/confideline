@@ -735,7 +735,7 @@
 
   const standardAuditReadiness = {
 "task-g1-session":100, "task-g1-chat":100, "task-g1-statuses":100, "task-g1-chat-notifications":100,
-    "task-g2-pricing":100, "task-g2-timer":100, "task-g2-refund":90, "task-g2-accruals":95,
+    "task-g2-pricing":100, "task-g2-timer":100, "task-g2-refund":100, "task-g2-accruals":95,
     "task-g3-home":25, "task-g3-catalog":25, "task-g3-profile":50, "task-g3-quiz":25,
     "task-g3-qa":35, "task-g3-field-weight":45, "task-g3-rotation":90,
     "task-g4-support":90, "task-g4-complaints":90, "task-g4-docs":85, "task-g4-support-notifications":20,
@@ -968,9 +968,9 @@
       title:"2) Деньги и поминутная логика",
       month:"Месяц 2",
       summary:"Сделать продуктовую денежную механику: цена, баланс, лимиты, стоп, возвраты, начисления.",
-      current:"G2.1 и G2.2 приведены к эталону. G2.2 фиксирует trial 3 минуты, полное списание в начале started minute, low-balance threshold 2, одну balance pause 5 минут, explicit continuation после пополнения, client/Agent reconnect grace по 60 секунд и только ручные refund/compensation decisions. Оба двухфайловых handoff готовы; runtime остается открытым.",
-      blocker:"Для G2.1/G2.2 нужны mapped build/commit, migrations/config, payment/grant и minute-debit idempotency, balance concurrency, server-authoritative timer, pause/reconnect proof, admin/historical readback и client/role QA. G2.3 refund и G2.4 accrual еще требуют отдельного эталонного прохода.",
-      next:"Перейти к эталонному ТЗ G2.3 «Возвраты», используя факты debit/incident G2.2 и не смешивая refund со статусом consultation.",
+      current:"G2.1, G2.2 и G2.3 приведены к эталону. G2.3 отделяет refund от terminal consultation: один active case на session/category, manual no/partial/full decision, exactly-once bucket restoration, claim 30 дней, decision target 72 часа, appeal 7 дней и bonus-use grace 30 дней. Все три двухфайловых handoff готовы; runtime остается открытым.",
+      blocker:"Для G2.1-G2.3 нужны mapped build/commit, migrations/config, payment/minute/refund idempotency, balance concurrency, separate refund lifecycle, cumulative eligibility, bucket restoration, admin/historical readback и role QA. G2.4 accrual еще требует отдельного эталонного прохода.",
+      next:"Перейти к эталонному ТЗ G2.4 «Начисления агентам», используя успешный refund execution как единственный trigger отрицательной correction.",
       tasks:["task-g2-pricing","task-g2-timer","task-g2-refund","task-g2-accruals"]
     },
     {

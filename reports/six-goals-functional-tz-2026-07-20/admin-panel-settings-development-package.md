@@ -384,8 +384,9 @@ Session, message review, incident, admission и training record сохраняю
 | Safety violation automatic percent | `unset` | numeric, % | refund candidate/manual decision |
 | Minimum/maximum case amount | `unset` | numeric, session currency | no artificial limit; never above eligible remaining charges |
 | Claim submission window | 30 | numeric, days | current product default до legal review |
-| Refund decision target | `unset` | numeric, hours/days | separate from O1 first-response SLA |
+| Refund decision target | 72 | numeric, hours | starts after complete evidence; paused in waiting_client |
 | Client appeal window | 7 | numeric, days | one client appeal per final decision |
+| Bonus refund-use grace | 30 | numeric, days | minimum usable term if original bonus expiry is shorter or expired |
 | Automatic-processing amount cap | `disabled` | numeric, session currency | actual refund automation disabled |
 | Manual-approval threshold | 0 | numeric amount/% | every actual refund requires super-admin |
 
@@ -429,6 +430,12 @@ Session, message review, incident, admission и training record сохраняю
 Save/confirm различает draft decision и фактическое financial action. Повтор confirm/retry не создает второе движение. Session хранит consent/terms version, case — decision policy version; более поздняя admin policy не уменьшает уже обещанные клиенту права и не переписывает завершенный refund.
 
 Любой фактический refund подтверждает `super-admin`. Автоматические категории формируют candidate/default calculation, но не выполняют движение credits. Финансовая ошибка оставляет case открытым до успешного движения и корректного клиентского сообщения.
+
+### Размещение и граница страницы
+
+В существующем `/ru/admin/settings/index` добавляется пункт **«Настройки возвратов»** с маршрутом `/ru/admin/settings/refunds`. В вертикальном списке он располагается сразу после **«Настройки цен»** и перед **«Group settings»**.
+
+Страница содержит только policy/settings, версии и preview. Она не является очередью refund cases и не дублирует support conversation, consultation card, balance transactions или cash/payment disputes. Операционный refund case открывается из связанного support ticket, consultation card или защищенного financial readback.
 
 ### Protected invariants
 
