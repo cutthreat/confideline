@@ -1,7 +1,7 @@
 # Owner decisions для завершения комплекта G1-G6
 
 Дата: 2026-07-21  
-Статус: `O1_O2_O3_O6_O7_O8_R1_P1_USD_30_credits_starter_package_accepted_remaining_discount_grid_refill_O4_O5_open`
+Статус: `O1_O2_O3_O4_O6_O7_O8_R1_P1_USD_30_credits_starter_package_accepted_remaining_discount_grid_refill_O5_open`
 
 ## Уже подтверждено и не требует повторного вопроса
 
@@ -72,17 +72,24 @@
 
 ## O4. Полная compensation policy
 
-Нужно утвердить перед включением соответствующего компонента:
+`owner_decision_accepted_2026-07-28`
 
-- consultation percentage и область его применения;
-- размер/условия fixed за график/SLA;
-- правила оплаты additional tasks;
-- случаи уменьшения/отмены каждого компонента;
-- период расчета и роль, утверждающая исключения.
+- Consultation percentage в limited pilot - 30%.
+- Percentage управляется в админ-панели, версионируется и применяется только к новым session.
+- Eligible base состоит из фактически списанных credits; purchased, welcome, trial, promo и compensation sources включаются/выключаются отдельными toggles.
+- Начальная policy включает все пять перечисленных sources. Refunded, erroneous, reversed и duplicate credits исключаются.
+- Unknown/unmapped source обрабатывается fail-closed и создает configuration incident.
+- Conversion rate управляется в админ-панели; стартовое значение - `1 credit = 0.1665 USD`.
+- Начисление создается сразу после завершения consultation и получает hold. Стартовый hold - 7 календарных дней; значение admin-managed и snapshot.
+- Расчетный период - weekly, Monday-Sunday; type, timezone и границы новых периодов admin-managed.
+- Выплата выполняется вручную вне системы. Super-admin только сохраняет amount, currency, date, method и reference; автоматический bank/payroll payout в MVP не входит.
+- Refund до выплаты создает negative correction в открытом периоде. Refund после выплаты создает carry-forward correction в следующем периоде и не списывает деньги автоматически.
+- Fixed/SLA и additional-task components остаются `disabled` до отдельного owner enablement.
+- В MVP все управление и просмотр доступны только super-admin; будущие роли выдаются через отдельные permissions.
 
-Это не блокирует consultation accrual/correction в limited pilot.
+Проверены действующие partner surfaces: `payment-info`, `payments`, `payouts` и `payments&mode=minus`. G2.4 расширяет их и не создает дубликаты. Общая операционная сводка размещается в `Финансы -> Вознаграждение агентов`, правила - в `Настройки -> Настройки вознаграждений`.
 
-Функциональная/admin-модель закрыта: отдельный screen `Вознаграждение агентов` управляет consultation percentage/base, fixed/SLA, task pay, periods, scopes/overrides, caps, rounding, refund corrections, permissions, preview, versions и audit. До O4 consultation component остается `draft/unset`, fixed/SLA и task pay — `disabled`; session ledger продолжает собираться. Открытым owner/economics gate остается только initial consultation percentage и eligible-base policy, а дополнительные компоненты требуют чисел лишь перед их включением.
+Канонические handoff: `etalon-tz-g2-4-agent-compensation.md`, `codex-context-g2-4-agent-compensation.md`.
 
 ## O5. Public traffic gate
 
@@ -260,6 +267,6 @@ Reconnect grace управляется в админ-панели; текуще�
 - изменение значения имеет версию/readback и применяется только к новым соответствующим периодам;
 - O5 нельзя закрыть до появления pilot baseline.
 
-Таким образом, открытые O4/O5 больше не являются пробелами функционального ТЗ; это отдельные enablement/launch gates. USD, global `30 credits/started minute`, starter `9.99 USD -> 60 credits` и управляемые credit packages/discounts приняты; auto-refill не входит в MVP. O1/O2/O3/O6/O7/O8/R1/P1 требуют runtime/admin proof; post-pilot KPI influence и точный legal/domain wording остаются отдельными gates.
+Таким образом, O4 закрыт для consultation pilot component. Открытым остается O5 public traffic gate, а fixed/SLA и additional-task components остаются выключенными до отдельного enablement. USD, global `30 credits/started minute`, starter `9.99 USD -> 60 credits` и управляемые credit packages/discounts приняты; auto-refill не входит в MVP. O1/O2/O3/O4/O6/O7/O8/R1/P1 требуют runtime/admin proof; post-pilot KPI influence и точный legal/domain wording остаются отдельными gates.
 
 Консервативные рекомендуемые pilot defaults и короткий формат ответа собраны в `owner-enablements-pilot-defaults-proposal.md`. Пока владелец их не подтвердил, они остаются предложением и не заменяют решения выше.

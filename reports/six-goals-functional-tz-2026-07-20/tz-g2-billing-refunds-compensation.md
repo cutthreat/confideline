@@ -1,6 +1,6 @@
 # G2. Функциональное ТЗ: цена, billing, refunds и compensation
 
-Статус: `g2_1_spec_handoff_ready_other_g2_owner_values_partially_open_not_runtime_verified`  
+Статус: `g2_1_g2_2_g2_3_g2_4_spec_handoff_ready_not_runtime_verified`
 Задачи: G2.1-G2.4  
 Фазы: consultation money — `pilot_core`; полный compensation contour — `public_launch`
 
@@ -183,8 +183,26 @@
 5. Reassignment не меняет прошлые начисления и corrections.
 6. Изменение compensation policy применяется к новым периодам/session и не переписывает историю.
 7. Super-admin может объяснить итог через исходную консультацию, примененное правило, refund и override.
-8. Consultation percentage, eligible base, purchased/bonus/refund treatment, currency/conversion, period, global/group/agent scope, caps, rounding и permissions управляются на admin screen `Вознаграждение агентов` по `admin-panel-settings-development-package.md`.
-9. Неутвержденный consultation percentage остается `draft/unset`; это не создает скрытое начисление, но не блокирует сбор session ledger для будущего расчета.
+8. Стартовый consultation percentage - 30%; значение admin-managed/versioned.
+9. Purchased, welcome, trial, promo и compensation credit sources включаются независимо; стартово все включены.
+10. Refunded, erroneous, reversed и duplicate credits исключаются; unknown source fail-closed.
+11. Conversion rate admin-managed; стартовое значение `1 credit = 0.1665 USD`.
+12. Начисление создается сразу и получает 7-day hold; hold admin-managed и snapshot.
+13. Расчетный период weekly Monday-Sunday; type/timezone admin-managed.
+14. Выплата выполняется вручную и только отмечается в системе с amount/date/method/reference.
+15. Refund после paid period переносится correction в будущий period и не вызывает automatic external debit.
+16. Все управление в MVP доступно только super-admin.
+
+Полный самостоятельный handoff: `etalon-tz-g2-4-agent-compensation.md` и `codex-context-g2-4-agent-compensation.md`.
+
+### Existing admin reuse
+
+- `/ru/admin/partner/payment-info?id={id}` остается владельцем платежной информации.
+- `/ru/admin/partner/payments?id={id}` расширяется consultation accrual breakdown.
+- `/ru/admin/partner/payouts?id={id}` расширяется period, Plan/Fact, correction, reference и status.
+- `/ru/admin/partner/payments?id={id}&mode=minus` разделяет compensation correction и legacy platform spending.
+- Общая сводка создается в `Финансы -> Вознаграждение агентов` (`/ru/admin/agent-compensation/index`).
+- Policy размещается в `Настройки -> Настройки вознаграждений` (`/ru/admin/settings/agent-compensation`).
 
 ### Полный compensation contour — public launch
 
@@ -217,10 +235,10 @@
 
 ## Открытые owner gates
 
-- O4 initial consultation percentage и точная eligible-base/economics policy.
-- Числовая сетка fixed/SLA и additional tasks нужна только перед включением этих компонентов; до этого они корректно `disabled`.
+- O4 consultation pilot economics приняты: 30%, independently managed sources, 0.1665 USD conversion, 7-day hold и weekly period.
+- Числовая сетка fixed/SLA и additional tasks нужна только перед отдельным включением этих компонентов; до этого они корректно `disabled`.
 - Refund framework R1 принят; неутвержденные operational numeric inputs остаются явными `unset` admin fields, а не owner-policy blocker.
-- Открытые compensation values не блокируют реализацию общей логики и consultation slice.
+- Открытых owner values для consultation slice G2.4 нет.
 
 ## Proof
 
@@ -228,7 +246,7 @@
 
 ## Knowledge basis
 
-- Claim class: owner decisions + accepted canonical product rules; refund, USD, global price, starter package и managed discount model приняты; O4/additional tiers/refill и runtime открыты.
+- Claim class: owner decisions + accepted canonical product rules; refund, USD, global price, starter package, managed discount model и O4 consultation compensation приняты; fixed/SLA/task enablement, refill и runtime открыты.
 - `reports/six-global-goals-owner-facts-update-2026-07-12.md`.
 - `reports/six-global-goals-final-canonical-pm-plan-2026-07-14.md`, G2.
 - `reports/tz-product-g2-billing-truth-2026-07-16.md` используется только там, где не противоречит более поздней owner-confirmed модели.

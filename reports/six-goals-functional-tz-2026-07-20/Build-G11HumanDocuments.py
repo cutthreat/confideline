@@ -406,7 +406,7 @@ def configure_styles(doc: Document) -> None:
         style.paragraph_format.left_indent = Inches(0.375)
         style.paragraph_format.first_line_indent = Inches(-0.188)
         style.paragraph_format.space_after = Pt(4)
-        style.paragraph_format.line_spacing = Pt(15)
+        style.paragraph_format.line_spacing = 1.0
 
 
 def populate_footer(footer) -> None:
@@ -489,10 +489,19 @@ def build_docx(blocks: list[dict]) -> None:
                 p.paragraph_format.left_indent = Inches(0.42)
                 p.paragraph_format.first_line_indent = Inches(-0.26)
                 p.paragraph_format.space_after = Pt(4)
-                p.paragraph_format.line_spacing = Pt(15)
+                # Relative spacing is rendered consistently by Word and LibreOffice.
+                # Exact point spacing can place adjacent list paragraphs on one
+                # visual baseline during headless LibreOffice PDF conversion.
+                p.paragraph_format.line_spacing = 1.0
                 prefix = "•  " if kind == "bullets" else f"{item_index}.  "
                 set_run(p.add_run(prefix), size=11, color=INK)
                 add_rich_text(p, item)
+            # LibreOffice may collapse the last literal-list paragraph onto the
+            # following paragraph during headless conversion. A small explicit
+            # separator keeps the reading order stable without adding a full line.
+            spacer = doc.add_paragraph()
+            spacer.paragraph_format.space_after = Pt(0)
+            spacer.paragraph_format.line_spacing = Pt(3)
         elif kind == "quote":
             metadata_mode = False
             table = doc.add_table(rows=1, cols=1)

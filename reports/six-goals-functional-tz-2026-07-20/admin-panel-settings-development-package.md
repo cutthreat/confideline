@@ -570,7 +570,7 @@ Global/profile price, package money/credits/bonus, discount, caps, limits, expir
 
 | Компонент | Initial mode | Управляемые поля | Unset behavior |
 |---|---|---|---|
-| Consultation percentage | `draft/unset` до O4 | active, percentage, eligible base, currency, period, scope, effective date | accrual не активируется; session ledger остается доступен |
+| Consultation percentage | `active` для pilot | active, percentage, eligible base, currency, period, scope, effective date | invalid config блокирует payout и создает incident |
 | Fixed за график/SLA | `disabled` | amount, currency, period, schedule/SLA conditions, reduction/cancel rules | component не начисляется |
 | Additional-task pay | `disabled` | task type, amount/rate, evidence, approval, limits, period | component не начисляется |
 
@@ -590,6 +590,19 @@ Admin управляет:
 8. minimum/maximum amount, rounding и negative-correction carry-forward;
 9. eligible session states и исключения technical/cancelled/fraud/duplicate;
 10. approval roles, optional dual control, reason/evidence и export fields.
+
+Принятые initial values:
+
+- consultation percentage - 30%;
+- purchased, welcome, trial, promo и compensation sources - отдельные toggles, стартово включены;
+- refunded, erroneous, reversed и duplicate credits - исключены;
+- unknown source - fail-closed с configuration incident;
+- payout currency - USD;
+- conversion rate - 0.1665 USD за credit;
+- hold - 7 календарных дней;
+- period - weekly, Monday-Sunday;
+- payout execution - manual;
+- initial access - super-admin only.
 
 Каждая session accrual хранит service session, expert profile, actual agent, eligible base, rule/version, percentage, calculated amount, currency/conversion snapshot и state. Reassignment после session не меняет actual-agent accrual.
 
@@ -614,6 +627,17 @@ Admin может независимо настроить fixed amount/currency �
 Уполномоченный admin видит current/draft policy, расчет по session/agent/period, pending/approved/paid/corrected states, refund linkage и export reconciliation. Агент видит только разрешенный собственный breakdown без чужих данных, внутренних fraud/security деталей и чужих ставок. Изменение требует `compensation.manage`; approve/pay/override разделяются отдельными permissions.
 
 Все percentage, amount, threshold, cap, period, rate, precision и conversion inputs имеют отдельные видимые cells с unit, allowed range, unset/zero distinction, preview, old/new, actor, reason, version и effective date. Retroactive activation запрещена; исторический результат воспроизводится по snapshot.
+
+### Размещение и переиспользование
+
+- `Финансы -> Вознаграждение агентов` (`/ru/admin/agent-compensation/index`) - общая операционная сводка по Агентам и периодам.
+- `Настройки -> Настройки вознаграждений` (`/ru/admin/settings/agent-compensation`) - только policy, versions, preview и audit.
+- `/ru/admin/partner/payments?id={id}` - consultation accrual detail внутри существующей карточки партнера.
+- `/ru/admin/partner/payouts?id={id}` - period Plan/Fact и manual payout result.
+- `/ru/admin/partner/payments?id={id}&mode=minus` - compensation corrections отдельно от legacy balance spending.
+- `/ru/admin/partner/payment-info?id={id}` - единственный владелец payout details; копия реквизитов не создается.
+
+Existing partner balance operations, premium, gifts, spotlight и group spending не являются compensation deductions и не входят в payout totals без отдельного G2.4 classification.
 
 ## Общий жизненный цикл конфигурации
 

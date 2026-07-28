@@ -31,14 +31,18 @@
 - New/insufficient-data agent не получает скрытый штраф; включение KPI-влияния требует отдельного owner decision после pilot review.
 - Все изменяемые KPI parameters вынесены в отдельный admin screen по `admin-panel-settings-development-package.md`.
 
-## O4. Compensation — безопасный pilot route
+## O4. Compensation — принято 2026-07-28
 
-- Consultation percentage: требуется конкретное значение владельца.
-- Eligible base: требуется owner/economics решение о purchased/bonus/promo/refund treatment; неописанная категория исключается fail-closed.
-- Fixed/SLA component: disabled до утверждения экономики и SLA.
-- Additional-task pay: disabled до утверждения перечня и ставок.
-- Refund correction: пропорциональна возвращенной части по принятому правилу; override только super-admin с причиной.
-- Вся functional/admin model уже описана в screen `Вознаграждение агентов`: component states, bases, periods, scopes/overrides, preview, permissions, versions, snapshots и corrections. Это не требует дополнительных owner-вопросов.
+- Consultation percentage: 30%, admin-managed/versioned.
+- Eligible base: purchased, welcome, trial, promo и compensation sources управляются отдельными toggles; стартово включены.
+- Refunded, erroneous, reversed и duplicate credits исключаются; unknown category fail-closed.
+- Conversion rate: 0.1665 USD за credit, admin-managed.
+- Hold: 7 календарных дней, admin-managed.
+- Period: weekly Monday-Sunday, admin-managed.
+- Payout: manual record only; external bank/payroll integration не входит в MVP.
+- Fixed/SLA component и Additional-task pay: disabled до отдельного enablement.
+- Refund correction: пропорциональна возвращенной eligible части; paid period не переписывается, correction переносится вперед.
+- Existing partner payment-info/payments/payouts/minus расширяются без дублирования.
 
 ## O5. Public traffic gate
 
@@ -83,7 +87,7 @@ P1 model принят: consultation price только в credits/minute; global
 Можно одной строкой:
 
 ```text
-O4 consultation %=...; packages/refill=...; O5 — после pilot baseline.
+O4 принят; packages/refill=...; O5 — после pilot baseline.
 ```
 
 O5 вернется после pilot baseline и сейчас ответа не требует.

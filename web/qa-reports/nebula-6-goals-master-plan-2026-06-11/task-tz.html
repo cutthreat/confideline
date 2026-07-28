@@ -171,7 +171,7 @@
     "task-g2-pricing": [5,8,10,7,12,12,12,8,6,12,5,3],
     "task-g2-timer": [5,8,10,7,12,12,12,8,6,12,5,3],
     "task-g2-refund": [5,8,10,7,12,12,12,8,6,12,5,3],
-    "task-g2-accruals": [10,10,10,10,10,10,10,10,10,5],
+    "task-g2-accruals": [5,8,10,7,12,12,12,8,6,12,5,3],
     "task-g3-home": [5,5,5,0,5,0,0,5,0,0],
     "task-g3-catalog": [5,5,5,0,5,0,0,5,0,0],
     "task-g3-profile": [10,5,5,5,10,0,5,5,5,0],
@@ -260,10 +260,10 @@
       has:["Готовы самостоятельное продуктовое ТЗ для Игоря и отдельный технический контекст для Codex.", "Refund отделен от terminal consultation и связан с session, support, ledger и agent correction.", "Зафиксированы candidate/request, no/partial/full manual decision, bucket restoration, execution retry и client appeal."],
       missing:["Пробелов в продуктовой спецификации G2.3 по принятому стандарту нет.", "Для implementation/runtime нужны mapped build, separate case lifecycle, eligibility/cumulative guard, exactly-once wallet restoration, admin/readback и role QA."],
       done:["Spec completeness = 100%; hard gates = pass.", "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.", "Реализация и runtime acceptance оцениваются отдельно."] },
-    "task-g2-accruals": { code:"G2.4", title:"Начисления", goal:"Цель 2", stage:"product_tz_ready_compensation_runtime_open", tzReady:95, detailHref:"tasks/task-g2-accruals.html",
-      has:["Есть контракт для реализации: начисление должно объясняться конкретной консультацией.", "Описаны статусы начисления, связь с возвратом/спором и минимальная видимость для оператора/эксперта.", "Есть сценарии проверки и stop conditions.", "Live-срез 29 июня 2026 подтвердил общий финансовый фундамент сайта: заказы, баланс, транзакции, начисления, удержания, выплаты, реквизиты, платежные настройки и цены.", "Зафиксировано: проверенной рабочей модели начислений пока нет, поэтому нужна админка с гибкими настройками правил.", "Собран implementation packet: страницы админки, поля, таблицы, статусы, интеграции, acceptance cases и stop conditions."],
-      missing:["Нужен current runtime proof новых настроек/сценариев.", "Стартовые числа: доля/ставка, фикс, task rates и KPI-пороги задаются pilot-конфигурацией.", "Нужно доказать immutable policy snapshot, proportional refund/override и историческую атрибуцию после reassignment."],
-      done:["Product-only G2 billing truth pack готов: ../../../../reports/tz-product-g2-billing-truth-2026-07-16.md.", "Публичная статистика эксперта и internal agent compensation разделены.", "Приемка G2.4 требует service_session -> snapshot -> debit -> accrual -> refund correction -> actual historical agent -> audit."] },
+    "task-g2-accruals": { code:"G2.4", title:"Начисления и выплаты Агентам", goal:"Цель 2", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-4-for-igor.html",
+      has:["Готовы самостоятельное продуктовое ТЗ для Игоря и отдельный технический контекст для Codex.", "Приняты 30%, independently managed credit sources, 0.1665 USD conversion, 7-day hold, weekly period и manual payout.", "Проверенные partner payment-info/payments/payouts/minus расширяются без дублирования.", "Операционная сводка размещена в Finance, policy - в Settings; fixed/SLA/task остаются disabled."],
+      missing:["Пробелов в продуктовой спецификации G2.4 по принятому стандарту нет.", "Для implementation/runtime нужны mapping actual build, session-linked ledger, idempotency, reconciliation, period close, RBAC и live admin proof."],
+      done:["Spec completeness = 100%; hard gates = pass.", "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.", "Реализация и runtime acceptance оцениваются отдельно."] },
     "task-g3-home": { code:"G3.1", title:"Витрина", goal:"Цель 3", stage:"inventoried", tzReady:25, detailHref:"tasks/task-g3-home.html",
       has:["Есть понимание места главной страницы в Nebula.", "Есть источник для сравнения."],
       missing:["Надо описать состав блоков и кнопок действия.", "Надо зафиксировать слой доверия, правил и предложения.", "Надо определить приемку для главной страницы и контракт переноса из макета."],
@@ -365,7 +365,7 @@
 
   const enablementGateByTask = {
     "task-g2-pricing":"implementation/runtime proof; credits packages, USD, global 30, starter 9.99/60, regular package discounts and admin ownership are accepted",
-    "task-g2-accruals":"O4 initial consultation percentage and eligible-base policy; fixed/SLA/task stay disabled",
+    "task-g2-accruals":"O4 consultation pilot accepted; implementation/runtime proof required; fixed/SLA/task stay disabled",
     "task-g3-home":"pilot pool selection",
     "task-g3-qa":"limited pilot GO after runtime proof",
     "task-g3-field-weight":"operational weights",
@@ -386,7 +386,7 @@
     "task-g2-refund":"R1/P1: session refund returns credits; cash package refund is separate; protected ceilings, numeric inputs and preview; admin-managed/versioned",
     "task-g4-complaints":"R1: no/partial/full evidence decision, roles, numeric limits, calculation preview and exactly-once action; admin-managed/versioned",
     "task-g2-pricing":"P1: credits/minute; USD, global 30 and starter 9.99 USD to 60 credits accepted; credit packages, purchase discounts, profile override and immutable snapshots are admin-managed"
-    ,"task-g2-accruals":"O4 admin model: consultation/fixed/SLA/task components, scopes, periods, corrections and snapshots are admin-managed; numeric enablement remains gated"
+    ,"task-g2-accruals":"O4: 30%, independent source toggles, 0.1665 USD conversion, 7-day hold, weekly period and manual payout are admin-managed/versioned; fixed/SLA/task disabled"
   };
 
   Object.entries(tasks).forEach(([taskId, taskItem]) => {
@@ -644,6 +644,41 @@
     "Definition of Done и proof boundary запрещают считать локальный code slice или support prototype runtime-доказательством."
   ];
 
+  tasks["task-g2-accruals"].stage = "etalon_spec_ready_runtime_open";
+  tasks["task-g2-accruals"].tzReady = 100;
+  tasks["task-g2-accruals"].detailHref = "../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-4-for-igor.html";
+  tasks["task-g2-accruals"].has = [
+    "Создано автономное продуктовое ТЗ: formula, sources, hold, weekly periods, corrections, manual payout и readback.",
+    "Создан отдельный Codex-контекст: live-route facts, source boundary, conceptual records, idempotency, reconciliation, RBAC и 34 acceptance cases.",
+    "Приняты значения: 30%, source toggles, conversion 0.1665 USD, hold 7 дней, weekly Monday-Sunday.",
+    "Existing partner payment-info/payments/payouts/minus расширяются; Finance aggregate и Settings policy разделены."
+  ];
+  tasks["task-g2-accruals"].missing = [
+    "Пробелов в продуктовой спецификации G2.4 по принятому стандарту не осталось.",
+    "Implementation status открыт: требуется mapping фактического runtime build и существующих partner financial models.",
+    "Runtime acceptance открыт: нужны exactly-once accrual/correction/payout, period reconciliation, legacy-minus separation, admin readback и RBAC."
+  ];
+  tasks["task-g2-accruals"].done = [
+    "Spec completeness = 100%; focused verifier и hard gates должны пройти.",
+    "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.",
+    "Реализация и production acceptance не заявлены."
+  ];
+  tzScoreByTask["task-g2-accruals"] = [5,8,10,7,12,12,12,8,6,12,5,3];
+  criterionDetailsByTask["task-g2-accruals"] = [
+    "Есть цель, измеримый результат, версия и независимая граница spec/implementation/runtime.",
+    "Scope отделяет compensation от price/debit/refund/support/public Expert metrics и external payroll.",
+    "Определены Super-admin, Agent/Expert/Client visibility и будущие permissions.",
+    "Зафиксированы policy, accrual, correction, period, payout и truth owners.",
+    "Описаны completion trigger, hold, review, weekly period, manual payout и carry-forward.",
+    "Есть formula, source toggles, percentage, conversion, rounding, precedence и limits.",
+    "Покрыты duplicate completion/refund/payout, concurrent close, late correction и unknown source.",
+    "Определены immutable snapshots, idempotency, append-only audit и reconciliation.",
+    "Live partner pages переиспользуются; Finance aggregate и Settings policy не дублируют операции.",
+    "Есть 38 продуктовых и 34 технических positive/negative/concurrency acceptance cases.",
+    "Готовы отдельные PM-ТЗ для Игоря и технический контекст для Codex.",
+    "Definition of Done запрещает считать документы или HTTP 200 runtime-доказательством."
+  ];
+
   const taskTermEn = {
     "task-g1-session": "service session",
     "task-g1-chat": "role-based chat",
@@ -755,6 +790,11 @@
       igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-3-for-igor.html",
       codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g2-3-refunds.md",
       docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-3-for-igor.docx"
+    },
+    "task-g2-accruals": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-4-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g2-4-agent-compensation.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-4-for-igor.docx"
     }
   };
   const artifacts = artifactByTask[id] || {};

@@ -21,7 +21,7 @@ Coverage: G1.1, G1.3, G2.1, G2.2, G2.3, G2.4
 
 - P1 credit model принят; global default `30 credits/started minute`, package purchase currency `USD`, starter package `9.99 USD -> 60 credits`. Package продает credits, а не минуты; доступные минуты рассчитываются отдельно по active global/profile price выбранного Эксперта. Discount grid управляется в admin; auto-refill не входит в MVP; неполный package не активируется. Paid start использует принятую active global/profile price configuration.
 - R1 refund policy принят; все variable/numeric fields управляются в admin. Unset operational input отключает только зависимый auto path, но не protected duplicate/incorrect-debit correction.
-- Compensation admin model готова в `Экран 7. Вознаграждение агентов`: consultation component draft/unset до O4, fixed/SLA/task disabled; ledger, component scopes, preview, snapshot, refund correction и permissions реализуются независимо от numeric enablement.
+- Compensation pilot policy принята: 30% от включенных credit sources, independently managed purchased/welcome/trial/promo/compensation toggles, 0.1665 USD conversion, 7-day hold и weekly period; все значения admin-managed/versioned. Fixed/SLA/task остаются disabled. Existing partner payments/payouts/minus/payment-info расширяются без дублирования.
 
 ## Acceptance suite
 
