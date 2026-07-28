@@ -134,7 +134,7 @@
     .footer { color:var(--muted); font-size:13px; margin-top:26px; line-height:1.5; }
     .footer a { color:#175cd3; }
     @media (max-width:1050px) { .goals-grid, .tasks-grid, .flow-list, .session-layout, .session-kpis, .mock-grid, .mock-grid.two, .status-grid { grid-template-columns:1fr; } .session-mock-head { flex-direction:column; } }
-  
+
 body { margin:0; }
 header.page-head { background:#1f4e78; color:#fff; padding:22px 28px; }
 header.page-head h1 { margin:0 0 8px; font-size:28px; }
@@ -145,14 +145,29 @@ main.page-main { padding:22px 28px 42px; }
 </head>
 <body>
   <header class="page-head">
-    <h1>G2.1 Цена за минуту и баланс клиента</h1>
-    <p>Отдельная страница задачи Nebula. Главный список остается на главной странице.</p>
+    <h1>G2.1 Цена, credits и баланс клиента</h1>
+    <p>Эталонная постановка: price resolution, credit packages, discounts, coupons, checkout, balance buckets и административное управление.</p>
   </header>
   <main class="page-main">
     <a class="back-link" href="../index.html">← Назад к списку задач</a>
+<div class="status-proof"><b>Текущий статус:</b> полное продуктовое ТЗ G2.1 и двухфайловый handoff готовы. Клиент покупает credits, а не минуты; пакет не обещает фиксированную длительность. Implementation и runtime остаются открыты.</div>
     <article class="task-card" id="task-g2-pricing" style="--goal-color:#0f766e">
-        <header><h3>G2.1 Цена за минуту и баланс клиента</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 2: Деньги</span><span class="badge status-green">Срез согласован</span></div></header>
-        <div class="body"><p><b>Что сделать:</b> показать цену за минуту у эксперта, баланс клиента, бонусные минуты и понятные условия до старта. Цена должна быть закреплена за конкретной консультацией, а не храниться отдельно в заказе или балансе.</p><div class="flow-list"><div class="flow-box"><b>PbExpert-ориентир</b><ul><li>баланс клиента виден в правой карточке агента;</li><li>денежный статус должен быть понятен до приглашения в сессию;</li><li>Book Now нельзя отделять от цены, лимита и анкеты.</li></ul></div><div class="flow-box"><b>Путь пользователя</b><ul><li>клиент видит цену;</li><li>понимает, когда начнется списание.</li></ul></div><div class="flow-box"><b>Данные и правила</b><ul><li>снимок цены внутри консультации;</li><li>правило допуска к старту;</li><li>проверка цены перед стартом;</li><li>связь предложения с экспертом до старта.</li></ul></div><div class="flow-box"><b>Маркетинг</b><ul><li>цена и бонусный старт - ключевые предложения рекламной воронки.</li></ul></div><div class="flow-box"><b>Проверка</b><ul><li>цена на витрине совпадает с ценой в консультации;</li><li>без зафиксированной цены старт блокируется.</li></ul></div></div><div class="mock-card"><h4>Макет: блок цены перед стартом</h4><div class="mock-body"><div class="mock-grid"><div class="mock-box"><strong>Solara Ortiz</strong><ul><li>45 кредитов/мин</li><li>первые 3 минуты бонусом</li><li>старт только после подтверждения условий</li></ul></div><div class="mock-box"><strong>Баланс клиента</strong><ul><li>630 кредитов</li><li>примерно 14 минут</li><li>пополнить баланс</li></ul></div><div class="mock-box"><strong>Перед стартом</strong><ul><li>показать цену;</li><li>показать правила списания;</li><li>дать согласие с условиями.</li></ul></div></div></div></div><div class="status-proof"><b>Проверено локально:</b> успешный старт с зафиксированной ценой и блокировка старта без цены уже доказаны.</div></div>
+        <header><h3>G2.1 Цена, credits и баланс клиента</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 2: Деньги</span><span class="badge status-green">ТЗ 100% / runtime открыт</span></div></header>
+        <div class="body">
+          <p><b>Результат:</b> клиент видит цену выбранного Эксперта в credits/мин, покупает прозрачный пакет credits в USD, понимает скидку и доступное время, а повторный payment callback не может начислить credits дважды.</p>
+          <div class="flow-list">
+            <div class="flow-box"><b>Цена консультации</b><ul><li>global default — 30 credits/мин;</li><li>profile override;</li><li>immutable session snapshot;</li><li>изменение только для новых sessions.</li></ul></div>
+            <div class="flow-box"><b>Стартовые пакеты</b><ul><li>60 credits — 9.99 USD;</li><li>150 — 22.99 USD;</li><li>300 — 42.99 USD;</li><li>600 — 79.99 USD.</li></ul></div>
+            <div class="flow-box"><b>Баланс</b><ul><li>купленные credits бессрочны;</li><li>bonus expiry управляется отдельно;</li><li>ближайший expiry расходуется первым;</li><li>Эксперт видит только операционные бейджи.</li></ul></div>
+            <div class="flow-box"><b>Checkout</b><ul><li>credits, base USD и discount;</li><li>coupon, tax и final USD;</li><li>способы из Payment systems;</li><li>confirmed grant exactly once.</li></ul></div>
+          </div>
+          <div class="mock-card"><h4>Размещение в существующей админке</h4><div class="mock-body"><div class="mock-grid">
+            <div class="mock-box"><strong>/admin/settings/prices</strong><ul><li>global consultation price;</li><li>существующие dynamic package rows;</li><li>starter, discounts, limits и versions;</li><li>legacy prices отделены.</li></ul></div>
+            <div class="mock-box"><strong>/admin/settings/coupons</strong><ul><li>welcome;</li><li>purchase discount;</li><li>promo и compensation;</li><li>audience, expiry, stacking и audit.</li></ul></div>
+            <div class="mock-box"><strong>Существующие владельцы</strong><ul><li>карточка Эксперта — override;</li><li>карточка клиента — manual grant;</li><li>Orders — payment status;</li><li>Transactions — credit ledger.</li></ul></div>
+          </div></div></div>
+          <div class="status-proof"><b>Граница доказательства:</b> живая страница цен и Yii2 financial contour изучены. Полная G2.1 реализация должна быть привязана к mapped build/commit и пройти payment, idempotency, concurrency, role и admin-readback QA.</div>
+        </div>
       </article>
   </main>
   <script>

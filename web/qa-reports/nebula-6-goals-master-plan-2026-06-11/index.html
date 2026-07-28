@@ -701,7 +701,7 @@
     "task-g1-statuses": { code:"G1.3", title:"Статусы и история", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:45, tz:true, tzReady:100 },
     "task-g1-chat-notifications": { code:"G1.4", title:"Уведомления консультации", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:35, tz:true, tzReady:100 },
 
-    "task-g2-pricing": { code:"G2.1", title:"Цена и баланс", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:45, tz:true, tzReady:100 },
+    "task-g2-pricing": { code:"G2.1", title:"Цена, credits и баланс", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:45, tz:true, tzReady:100 },
     "task-g2-timer": { code:"G2.2", title:"Таймер и остановка", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:40, tz:true, tzReady:100 },
     "task-g2-refund": { code:"G2.3", title:"Возвраты", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:40, tz:true, tzReady:100 },
     "task-g2-accruals": { code:"G2.4", title:"Начисления / ЗП сотрудников", priority:"P1", stage:"functional_tz_handoff_ready_runtime_open", progress:20, tz:true, tzReady:100 },
@@ -735,7 +735,7 @@
 
   const standardAuditReadiness = {
 "task-g1-session":100, "task-g1-chat":100, "task-g1-statuses":100, "task-g1-chat-notifications":100,
-    "task-g2-pricing":90, "task-g2-timer":90, "task-g2-refund":90, "task-g2-accruals":95,
+    "task-g2-pricing":100, "task-g2-timer":90, "task-g2-refund":90, "task-g2-accruals":95,
     "task-g3-home":25, "task-g3-catalog":25, "task-g3-profile":50, "task-g3-quiz":25,
     "task-g3-qa":35, "task-g3-field-weight":45, "task-g3-rotation":90,
     "task-g4-support":90, "task-g4-complaints":90, "task-g4-docs":85, "task-g4-support-notifications":20,
@@ -968,9 +968,9 @@
       title:"2) Деньги и поминутная логика",
       month:"Месяц 2",
       summary:"Сделать продуктовую денежную механику: цена, баланс, лимиты, стоп, возвраты, начисления.",
-      current:"Сильный технический слой плюс product-only G2 billing truth pack и owner billing decision pack от 16.07.2026: AskNebula/reference модель принята для credits/minutes, free/trial, packages, top-up/refill, payment failure, refund и accrual boundaries. G2.1-G2.3 остаются bounded slices, live-срез 29 июня 2026 подтвердил общий финансовый контур сайта.",
-      blocker:"Открыты owner/legal/runtime gates: значения exact package table, free/trial amount, credit/minute rule, refill/auto-refill policy, refund eligibility wording, exact Figma node/export proof и Confideline/Yii2 front/admin proof. G2.4 не принят как runtime без immutable policy snapshot, started-minute billing, начисления, refund correction и исторической атрибуции.",
-      next:"Использовать reports/tz-product-g2-billing-truth-2026-07-16.md как продуктовый truth pack, reports/nebula-owner-billing-decision-pack-2026-07-16.md как owner-fill таблицу решений, reports/nebula-g2-figma-oracle-state-map-2026-07-16.md как карту G2 billing states, reports/nebula-g2-figma-node-export-gap-register-2026-07-16.md как gap-register exact-node очереди и reports/nebula-figma-exact-node-inventory-2026-07-16.md как текущий Figma node inventory; затем получить approved values, Figma screenshot/design-context proof и runtime QA proof без предписания реализации Игорю.",
+      current:"G2.1 приведена к эталону: продажа credits, USD checkout, global 30 credits/мин, profile override, immutable session price, starter и regular packages, discounts/coupons, balance buckets, честный tax/final total и развитие живой /admin/settings/prices. ТЗ для Игоря и Codex-контекст готовы; runtime остается открытым.",
+      blocker:"Для G2.1 нужны mapped build/commit, migrations/config, payment-to-grant idempotency, balance concurrency, admin/historical readback и client/role QA. По остальным задачам G2 отдельно остаются G2.2 timer/trial/pause, G2.3 refund и G2.4 accrual runtime/owner gates.",
+      next:"После публикации G2.1 перейти к эталонному ТЗ G2.2, не смешивая package purchase с minute debit и balance pause.",
       tasks:["task-g2-pricing","task-g2-timer","task-g2-refund","task-g2-accruals"]
     },
     {

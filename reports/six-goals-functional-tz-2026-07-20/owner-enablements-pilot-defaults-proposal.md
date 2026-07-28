@@ -67,7 +67,7 @@
 
 ### Price/package table
 
-P1 model принят: consultation price только в credits/minute; global default + profile override; session snapshot; packages/coupons/bonus credits admin-managed. Приняты `USD`, global `30 credits/started minute` и starter package `9.99 USD -> 60 credits -> 2 standard-rate minutes`. Admin-конструктор управляет nominal minutes, credits conversion, list/sale price, percent/fixed/bonus discount, stacking, limits и dates. Остались owner values: числовая сетка дополнительных package discounts и refill/auto-refill behavior. Неполный package не активируется. Source boundary: `asknebula-pricing-benchmark-2026-07-21.md`.
+P1 model принят: consultation price только в credits/minute; global default + profile override; session snapshot; packages/coupons/bonus credits admin-managed. Приняты `USD`, global `30 credits/started minute`, starter package `9.99 USD -> 60 credits` и regular packages из G2.1. Admin-конструктор управляет credits, list/sale price, percent/fixed/bonus-credit discount, stacking, limits и dates. Package не обещает фиксированные минуты; auto-refill не входит в MVP. Неполный package не активируется. Source boundary: `asknebula-pricing-benchmark-2026-07-21.md`.
 
 ### Refund eligibility — принято 2026-07-21
 

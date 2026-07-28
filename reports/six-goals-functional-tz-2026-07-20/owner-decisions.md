@@ -143,12 +143,12 @@ R1 снял policy blocker для G2.3/G4.2. Runtime/admin/money reconciliation 
 - Изменение global/override действует только на новые service sessions; начавшаяся session хранит snapshot credits/minute.
 - Credit packages, discounts, coupons и bonus credits являются отдельной управляемой admin-разработкой.
 - Coupon/package discount не скрывает фактический результат: до покупки видны money price/currency, purchased credits, bonus credits, coupon effect и итог.
-- Стартовый package принят: `9.99 USD -> 60 credits`, что соответствует двум полным started minutes по global default `30 credits/minute`.
-- Admin создает и версионирует управляемые packages минут: nominal minutes, reference credits/minute, purchased/bonus credits, list price, sale price и package discount.
-- Package discount может быть задан как percent, fixed USD reduction, bonus credits или bonus minutes; stacking, limits, audience и dates управляются отдельно.
+- Стартовый package принят: `9.99 USD -> 60 credits`. Package продает credits и не обещает фиксированное число минут.
+- Admin создает и версионирует управляемые packages credits: purchased/bonus credits, list price, sale price и package discount.
+- Package discount может быть задан как percent, fixed USD reduction или bonus credits; stacking, limits, audience и dates управляются отдельно.
 - Для profile override клиенту показывается реальное число доступных полных минут по effective profile price. Название package не может обещать одинаковое число минут для всех анкет, если цена отличается.
 
-Все variable/numeric values имеют отдельные admin input cells: global/profile credits per minute, nominal minutes, reference rate, package list/sale price, credits amount, bonus credits/minutes, discount/coupon value, caps/minimums, usage limits, dates, stacking, expiry и balance-bucket spending rules. Принятые initial values: global `30 credits/started minute`, purchase currency `USD`, starter package `9.99 USD -> 60 credits -> 2 standard-rate minutes`. Неутвержденные дополнительные tiers остаются draft/unset; неполный package fail-closed и не активируется.
+Все variable/numeric values имеют отдельные admin input cells: global/profile credits per minute, package list/sale price, credits amount, bonus credits, discount/coupon value, caps/minimums, usage limits, dates, stacking, expiry и balance-bucket spending rules. Принятые initial values: global `30 credits/started minute`, purchase currency `USD`, starter package `9.99 USD -> 60 credits` и regular packages из G2.1. Неполный package fail-closed и не активируется.
 
 Consultation refund возвращает credits по R1 в client credit balance. Cash/payment refund покупки credit package является отдельным payment-dispute route и не смешивается с session refund.
 
@@ -225,6 +225,6 @@ Reconnect grace управляется в админ-панели; текуще�
 - изменение значения имеет версию/readback и применяется только к новым соответствующим периодам;
 - O5 нельзя закрыть до появления pilot baseline.
 
-Таким образом, открытые O4/O5, additional discount tiers и refill values больше не являются пробелами функционального ТЗ; это отдельные enablement/launch gates. USD, global `30 credits/started minute`, starter `9.99 USD -> 60 credits` и managed minute packages/discounts приняты. O1/O2/O3/O6/O7/O8/R1/P1 требуют runtime/admin proof; post-pilot KPI influence и точный legal/domain wording остаются отдельными gates.
+Таким образом, открытые O4/O5 больше не являются пробелами функционального ТЗ; это отдельные enablement/launch gates. USD, global `30 credits/started minute`, starter `9.99 USD -> 60 credits` и управляемые credit packages/discounts приняты; auto-refill не входит в MVP. O1/O2/O3/O6/O7/O8/R1/P1 требуют runtime/admin proof; post-pilot KPI influence и точный legal/domain wording остаются отдельными gates.
 
 Консервативные рекомендуемые pilot defaults и короткий формат ответа собраны в `owner-enablements-pilot-defaults-proposal.md`. Пока владелец их не подтвердил, они остаются предложением и не заменяют решения выше.

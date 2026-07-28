@@ -464,51 +464,53 @@ Admin-панель обязана позволять уполномоченно�
 
 ### Credit package catalog
 
-Initial active package:
+Initial active packages:
 
-| Package | Nominal minutes | Reference rate | Purchased credits | Price | Discount |
-|---|---:|---:|---:|---:|---:|
-| Starter | 2 | 30 credits/minute | 60 | 9.99 USD | none / 0% |
+| Package | Purchased credits | List price | Package discount | Final price |
+|---|---:|---:|---:|---:|
+| Starter | 60 | 9.99 USD | none / 0% | 9.99 USD |
+| Basic | 150 | 24.98 USD | 1.99 USD | 22.99 USD |
+| Standard | 300 | 49.95 USD | 6.96 USD | 42.99 USD |
+| Plus | 600 | 99.90 USD | 19.91 USD | 79.99 USD |
+
+Package продает credits, а не фиксированное число минут. Доступные полные минуты всегда являются расчетной проекцией `floor(balance credits / effective Expert credits per minute)` и меняются в зависимости от выбранной экспертной анкеты.
 
 Для каждого package admin управляет отдельными fields:
 
 - internal/admin name и client label;
 - active/draft/retired state;
-- package presentation mode: `credits / standard-rate minutes / both`;
-- nominal minutes и обязательная подпись `по стандартной цене`, если package показывается в минутах;
-- reference credits/minute и зафиксированный расчет purchased credits;
+- package presentation mode: `credits`;
 - purchase currency;
 - regular/list money price;
 - sale money price;
-- discount mode `none / percent / fixed USD / bonus credits / bonus minutes` и numeric value;
+- discount mode `none / percent / fixed USD / bonus credits` и numeric value;
 - автоматически рассчитанные saved USD и effective discount percent;
 - purchased credits amount;
 - bonus credits amount;
-- bonus minutes и их credits conversion snapshot;
 - total credits preview;
 - effective money-per-credit readback на purchase screen, не как consultation price;
 - market/language/audience;
 - start/end/timezone;
 - minimum/maximum purchases и per-client/global limits;
 - coupon/promo eligibility;
-- refill/auto-refill eligibility;
+- ручные точки top-up; auto-refill в MVP отключен;
 - tax/payment wording status;
 - display order и version/effective date.
 
-Package с unset currency, sale price или credits amount не активируется. Minute package дополнительно требует nominal minutes, reference rate и согласованный conversion snapshot. Sale price не может превышать list price при активной discount-метке; фальшивая зачеркнутая цена запрещена. `0`, `unset`, bonus и purchased credits различаются. Историческая purchase хранит package version, money paid, currency, nominal minutes/reference rate, purchased/bonus credits, discount и applied coupon.
+Package с unset currency, sale price или credits amount не активируется. Sale price не может превышать list price при активной discount-метке; фальшивая зачеркнутая цена запрещена. `0`, `unset`, bonus и purchased credits различаются. Историческая purchase хранит package version, money paid, currency, purchased/bonus credits, discount и applied coupon.
 
-### Управляемые пакеты минут и package discount
+### Управляемые пакеты credits и package discount
 
-Admin может создавать любое число draft packages и для каждого управлять minutes/credits/price/discount независимо. Перед activation preview показывает:
+Admin может создавать любое число draft packages и для каждого управлять credits/price/discount независимо. Перед activation preview показывает:
 
-- package card для клиента: nominal minutes по standard rate, purchased и bonus credits, regular и final USD price;
+- package card для клиента: purchased и bonus credits, regular и final USD price;
 - saved USD и фактический discount percent;
 - полные started minutes для global price и для выбранной expert profile override: `floor(total credits / effective credits per minute)`;
 - остаток credits после указанного числа полных минут;
 - результат совместного применения package discount, coupon и bonus с объяснением stacking priority;
 - old/new catalog version и effective date.
 
-Если expert profile имеет override, клиентская карточка говорит `до N полных минут по выбранной цене` или показывает точный расчет для выбранного эксперта. Универсальное обещание `N минут` допустимо только при цене, совпадающей с package reference rate. Изменение global/profile price не меняет credits уже купленного package.
+Если expert profile имеет override, клиентская карточка показывает точный расчет доступных полных минут по цене выбранного Эксперта. Package никогда не обещает универсальное `N минут`. Изменение global/profile price не меняет credits уже купленного package.
 
 ### Coupons, discounts и bonus credits
 
@@ -720,10 +722,10 @@ fixtures и готовность к QA:
 | AP88 | Unauthorized price/package/coupon change | Запрещено; active values/history сохранены |
 | AP89 | Numeric unset versus zero | UI/readback/behavior различают состояния |
 | AP90 | Client transparency | До purchase/start видны все применимые credits, bonus, price и expiry без скрытого conversion |
-| AP91 | Starter package | Purchase/readback совпадают: 9.99 USD, 60 credits, 2 minutes at standard rate |
-| AP92 | Minute package with profile override | Preview показывает реальное число полных минут и остаток credits |
+| AP91 | Starter package | Purchase/readback совпадают: 9.99 USD и 60 credits; минуты не являются содержимым package |
+| AP92 | Credit package with profile override | Preview показывает реальное число полных минут по выбранной цене и остаток credits |
 | AP93 | Package percent/fixed discount | Final USD, saved USD и фактический percent совпадают с расчетом |
-| AP94 | Bonus minutes | Bonus конвертирован в credits по сохраненному reference snapshot; grant не меняется задним числом |
+| AP94 | Bonus credits | Bonus grant хранит точное количество credits, источник и expiry; grant не меняется задним числом |
 | AP95 | False discount/list price | Activation запрещена, если saving <= 0 или list price не подтверждена active package version |
 | AP96 | Package discount plus coupon | Stacking priority дает один объяснимый итог без double discount |
 | AP97 | Package price/rate changed after purchase | Historical money/credits/discount snapshot и баланс клиента не переписаны |
