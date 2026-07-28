@@ -64,7 +64,7 @@ Dialogue mode:
 - `consultation_attached`
 - `returned_to_free`
 
-Session states are owned by G1.1/G1.3. G1.2 must render and enforce at least trial/paid/pause/reconnect/end meanings without creating a competing lifecycle.
+Session states and transitions are owned only by G1.3. G1.1 displays the administrative card. G1.2 renders chat permissions and trial/paid/pause/reconnect/end meanings received from G1.3 without creating a competing lifecycle.
 
 Invalid transitions must fail without message, debit, session, incident or coupon side effects.
 
@@ -122,7 +122,9 @@ Global photo settings should be reused or referenced, not copied into chat setti
 
 ## 10. Reconnect, SLA and idempotency
 
-Client reconnect grace default is 60 seconds, admin-managed separately from Agent reconnect.
+G1.3/G6 own reconnect and SLA timers, state transitions, technical end and compensation eligibility. G1.2 consumes those facts, renders the correct chat state and guarantees message delivery/idempotency; it must not start those timers, end the session or grant compensation.
+
+Client reconnect grace default is 60 seconds, managed in consultation settings separately from Agent reconnect.
 
 During client grace no new paid minute starts. Timeout gives technical end plus support route and does not auto-grant compensation.
 
@@ -145,7 +147,7 @@ Historical readback must recover:
 - staff reason/action;
 - reconnect/technical end/incident links.
 
-Changing a setting or assignment must not rewrite prior events. Consultation history retention default is 24 months, admin-managed and pending legal/privacy review.
+Changing a setting or assignment must not rewrite prior events. G1.3/G4.3 own consultation-history availability and retention; the current default is 24 months, admin-managed and pending legal/privacy review. G1.2 must preserve the message/audit data required by that contract.
 
 ## 12. Surfaces
 
@@ -178,12 +180,11 @@ Chat page owns:
 - document MIME/size/count;
 - attachment inspection fallback;
 - censorship categories, allowlist, warning, replacement label, repeat threshold and detector version/rollback;
-- client reconnect grace;
 - in-chat templates/system messages;
-- hide/end reason dictionaries;
-- history retention.
+- hide-message reason dictionary;
+- chat-specific client messages for delivery, editing, censorship and attachment outcomes.
 
-It does not own RBAC, assignments, price, coupons, payments, generic image policy, premium dating messages, email templates, message monitoring, support queues or general logs.
+It does not own RBAC, assignments, price, coupons, payments, generic image policy, premium dating messages, email templates, message monitoring, support queues, general logs, reconnect/request/session timers, balance pause, end-reason dictionaries or consultation-history retention.
 
 Fixed rules are not toggles: allowed message families, audio/video ban, delivery indicators, edited marker, idempotent retry and no physical deletion.
 

@@ -36,7 +36,7 @@ if ($issues.Count -eq 0) {
         '## 7. Сообщения и вложения',
         '## 8. Цензура контактов и защищённых данных',
         '## 9. Потеря связи и повторная доставка',
-        '## 10. «История консультации»',
+        '## 10. Отображение «Истории консультации» в чате',
         '## 11. Что видно Агенту',
         '## 12. Что видно super-admin',
         '## 13. Настройки через админ-панель',
@@ -56,13 +56,16 @@ if ($issues.Count -eq 0) {
         'одновременно иметь только одну session',
         'Поддержка Nebula',
         'слово **«ЦЕНЗУРА»**',
-        'Начальное значение — **60 секунд**',
+        'Его начальное значение — **60 секунд**',
         'Срок доступности клиентской истории и legal/privacy retention определяются G1.3/G4.3',
         'название: **«Настройки чата»**',
         'route: `/ru/admin/settings/chat`',
         'существующий RBAC-контур',
         'Скачивание и экспорт относятся к следующему этапу',
-        'Повторная доставка, reconnect или повторное нажатие не должны создавать дубликаты'
+        'Повторная доставка, reconnect или повторное нажатие не должны создавать дубликаты',
+        'G1.3 — единственный владелец lifecycle, статусов, таймеров и клиентской истории consultation session',
+        'G1.2 не определяет, кто и при каких условиях завершает session',
+        'не запускает lifecycle-таймер, не завершает session и не начисляет компенсацию самостоятельно'
     )) {
         if ($product.Contains($phrase)) { $passed++ }
         else { $issues.Add([pscustomobject]@{ check = 'product_rule'; item = $phrase; issue = 'missing' }) }
@@ -74,6 +77,17 @@ if ($issues.Count -eq 0) {
     foreach ($forbidden in @('ServiceSessionController', 'CREATE TABLE', 'ALTER TABLE', 'class Chat', 'TODO', 'TBD')) {
         if ($product -match [regex]::Escape($forbidden)) {
             $issues.Add([pscustomobject]@{ check = 'product_technical_leak'; item = $forbidden; issue = 'present' })
+        } else { $passed++ }
+    }
+
+    foreach ($forbidden in @(
+        'G1.1 — карточка и lifecycle consultation session',
+        'Session states are owned by G1.1/G1.3',
+        '- client reconnect grace;',
+        '- history retention.'
+    )) {
+        if ($product.Contains($forbidden) -or $codex.Contains($forbidden)) {
+            $issues.Add([pscustomobject]@{ check = 'scope_ownership_conflict'; item = $forbidden; issue = 'present' })
         } else { $passed++ }
     }
 
@@ -100,6 +114,16 @@ if ($issues.Count -eq 0) {
     )) {
         if ($codex.Contains($phrase)) { $passed++ }
         else { $issues.Add([pscustomobject]@{ check = 'codex_contract'; item = $phrase; issue = 'missing' }) }
+    }
+
+    foreach ($phrase in @(
+        'Session states and transitions are owned only by G1.3',
+        'G1.3/G6 own reconnect and SLA timers',
+        'G1.3/G4.3 own consultation-history availability and retention',
+        'It does not own RBAC, assignments, price'
+    )) {
+        if ($codex.Contains($phrase)) { $passed++ }
+        else { $issues.Add([pscustomobject]@{ check = 'codex_scope_ownership'; item = $phrase; issue = 'missing' }) }
     }
 
     $scoreRows = [regex]::Matches($codex, '(?m)^\| Q(?:[1-9]|1[0-2]).*?\| (\d+)/(\d+) \|$')

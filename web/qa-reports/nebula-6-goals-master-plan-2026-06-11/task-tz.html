@@ -116,6 +116,7 @@
     <a class="top-link codex-link" id="codex-link" href="index.html">Контекст для Codex Игоря</a>
     <a class="top-link artifact-link" id="artifact-link" href="index.html" hidden>Открыть готовый документ</a>
     <a class="top-link docx-link" id="docx-link" href="../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-1-for-igor.docx" hidden>Скачать ТЗ в DOCX</a>
+    <a class="top-link artifact-link" id="admin-mockup-link" href="g11-consultation-admin-mockup.html" hidden>Интерактивный макет админ-карточки</a>
   </div>
 
   <section id="content"></section>
@@ -163,8 +164,8 @@
   ];
 
   const tzScoreByTask = {
-    "task-g1-session": [10,10,10,10,10,10,10,10,10,5],
-    "task-g1-chat": [10,10,10,10,5,5,10,10,5,0],
+    "task-g1-session": [5,8,10,7,12,12,12,8,6,12,5,3],
+    "task-g1-chat": [5,8,10,7,12,12,12,8,6,12,5,3],
     "task-g1-statuses": [10,10,10,10,10,10,10,10,10,10],
     "task-g1-chat-notifications": [10,5,5,5,5,0,5,5,10,5],
     "task-g2-pricing": [10,5,5,10,5,0,5,10,10,10],
@@ -218,15 +219,15 @@
       "Файлы и точки интеграции пока не собраны как пакет для Игоря: нужен список route, policy, model, view, JS и verifier.",
       "Зависимости понятны: G1.2 зависит от G6.1 assignment enforcement и влияет на G2.4, G3.3, G4 и G6.",
       "Проверка частичная: live proof есть, но acceptance блокируют найденный доступ к чужой анкете, недоказанный backend guard userOfAgentId и отсутствие operator audit.",
-      "Не закрыто: Алексей должен утвердить итоговый контракт ролей и видимости перед тем, как G1.2 станет 100% ТЗ."
+      "Owner-контракт ролей и видимости утвержден 2026-07-27. Открыто подтверждение предложенной границы free dialogue / paid consultation и оформление двух финальных документов для передачи."
     ]
   };
 
   const tasks = {
-    "task-g1-session": { code:"G1.1", title:"Карточка консультации", goal:"Цель 1", stage:"implementation_in_progress", tzReady:95, detailHref:"tasks/task-g1-session.html",
-      has:["Цель и результат задачи уже понятны.", "Подтверждено: сейчас на live-сайте есть только базовый чат, отдельных консультационных сессий нет.", "Есть основа: отдельная запись консультации, пакет реализации, интерактивный HTML-макет и черновой материал для передачи в работу.", "Есть внутренняя service_session-основа, но это не live-функция сайта."],
-      missing:["Нужен scope текущей итерации и build/runtime refs от программиста.", "Нужен runtime lifecycle trial -> paid -> balance_pause -> resume/timeout -> end.", "Нужны role views, actual-agent audit и server-side negative ACL cases.", "Числовые pilot-настройки остаются admin-конфигурацией, а не пробелом функциональной модели."],
-      done:["ТЗ находится на 95%: owner-модель принята и передана программисту.", "Оставшиеся 5% закрываются pilot-конфигурацией и привязкой acceptance к конкретному build.", "Макет и старт реализации не повышают процент сайта без runtime proof."],
+    "task-g1-session": { code:"G1.1", title:"Карточка консультации", goal:"Цель 1", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-1-for-igor.html",
+      has:["Готовы самостоятельное продуктовое ТЗ для Игоря и отдельный технический контекст для Codex.", "G1.1 ограничена административной карточкой одной консультации, role-based доступом, связями и audit/readback; lifecycle принадлежит G1.3.", "Изменяемые параметры вынесены в настройки со snapshot и audit."],
+      missing:["Пробелов в спецификации G1.1 по принятому стандарту нет.", "Для runtime-приёмки нужны mapped build/commit, role proof и persisted audit/readback."],
+      done:["Spec completeness = 100%; hard gates = pass.", "Implementation и runtime acceptance оцениваются отдельно."],
       htmlMock:{
         required:"Да",
         sourcePath:"tasks/task-g1-session.html",
@@ -235,14 +236,14 @@
         demoOnly:["Демо-имена людей.", "Демо-ID и тестовые цифры минут/цены/баланса.", "Текст-заглушки, если они не подтверждены продуктовым источником."],
         transfer:["Сохраняем структуру и состав блоков как источник правды для интерфейса.", "Заменяем демо-данные на реальные поля консультации и связанные сущности.", "Не переносим слепо декоративные значения; переносим только контракт экрана и сценария.", "Фиксируем отдельно, какие блоки идут 1:1, а какие требуют адаптации под живую модель данных."]
       } },
-    "task-g1-chat": { code:"G1.2", title:"Чат по ролям", goal:"Цель 1", stage:"product_tz_ready_runtime_proof_open", tzReady:90, detailHref:"tasks/task-g1-chat.html",
-      has:["Product-only TZ создан: reports/tz-product-g1-2-role-chat-consultation-2026-07-16.md.", "Зафиксирована owner-модель: клиент видит только эксперта/анкету, агент скрыт.", "Зафиксировано: агент пишет только от назначенной анкеты; разные анкеты создают разные диалоги; один агент может вести несколько анкет.", "Частично доказано: админ назначает анкеты агенту, а вход Kristy через Login as user открывает агентский chat-контур.", "Live proof 29 июня 2026 подтвердил отдельные conversations для Solara, Stella и Talia.", "Training corpus добавил продуктовый слой поведения: presence, first useful value, relevance, empathy, explicit instrument/source, balanced answer, transparent trial/paid state, respectful close and no pressure."],
-      missing:["Нужно закрыть P0-разрыв доступа: агент не должен открывать чужие анкеты по прямому URL.", "Нужно доказать, что agent chat API фильтрует диалоги только по назначенным анкетам.", "Нужно доказать или реализовать backend guard: чужой userOfAgentId отклоняется при отправке.", "Нужно зафиксировать внутренний audit: кто реально писал, от какой анкеты, кто вмешивался и что видит клиент.", "Нужно доказать правило: если у агента нет доступа к анкете, он не видит диалоги этой анкеты.", "Нужно owner/legal решение по запрещенным engagement tactics: artificial incompleteness, hidden billing state, fear/dependency pressure, unsupported guarantees, repeated unsolicited booking pressure."],
-      done:["ТЗ станет 100%, когда роли, видимость, назначение анкет, отдельные диалоги, backend guard, внутренний audit и поведение консультации будут описаны без неоднозначности.", "Игорь получает продуктовый контракт: что пользователь/агент/супер-админ должны видеть и какие состояния/запреты должны соблюдаться, без указания способа реализации.", "Приемка G1.2 требует не только send-as, но и examples/negative cases по прозрачному trial/paid поведению и no-pressure consultation behavior."] },
+    "task-g1-chat": { code:"G1.2", title:"Чат по ролям", goal:"Цель 1", stage:"spec_handoff_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-2-for-igor.html",
+      has:["Готовы самостоятельное продуктовое ТЗ для Игоря и отдельный технический контекст для Codex.", "G1.2 владеет постоянным диалогом, ролями и видимостью внутри чата, сообщениями, вложениями, цензурой, доставкой и версиями сообщений.", "Lifecycle, reconnect-таймеры, завершение и retention консультаций принадлежат G1.3/G4.3 и не дублируются в настройках чата.", "Страница «Настройки чата» размещена в существующей логике /ru/admin/settings/index; RBAC, prices, support и monitoring не дублируются."],
+      missing:["Пробелов в продуктовой спецификации G1.2 по принятому стандарту нет.", "Для runtime-приёмки нужны mapped build/commit, server-side ACL, censorship/attachment/idempotency proof и persisted historical readback."],
+      done:["Spec completeness = 100%; hard gates = pass; двухфайловый handoff готов.", "Implementation и runtime acceptance оцениваются отдельно."] },
     "task-g1-statuses": { code:"G1.3", title:"Статусы и история консультации", goal:"Цель 1", stage:"spec_handoff_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-3-for-igor.html",
       has:["Готово самостоятельное продуктовое ТЗ для Игоря: request, consultation session, lifecycle, ожидание/reconnect, история и связанные процессы.", "Готов отдельный технический контекст для Codex Игоря: состояния, переходы, invariants, data/readback, integration points и acceptance matrix.", "Все изменяемые лимиты распределены по каноническим разделам существующей админ-панели без дублирования."],
       missing:["Пробелов в продуктовой постановке G1.3 по принятому стандарту нет.", "Implementation status открыт: нужен mapped build/commit.", "Runtime acceptance открыт: нужны state/timeout/idempotency/concurrency/admin readback и role proof."],
-      done:["Spec completeness = 100%; focused verifier = 78/78; hard gates = pass.", "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.", "Реализация и runtime acceptance оцениваются отдельно."] },
+      done:["Spec completeness = 100%; focused verifier = 80/80; hard gates = pass.", "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.", "Реализация и runtime acceptance оцениваются отдельно."] },
     "task-g1-chat-notifications": { code:"G1.4", title:"Уведомления чата", goal:"Цель 1", stage:"accepted_bounded_slice", tzReady:55, detailHref:"tasks/task-g1-chat-notifications.html",
       has:["Понятна задача и ее границы.", "Есть зависимость от контура консультации и чата."],
       missing:["Надо описать список событий.", "Надо развести получателей по ролям.", "Надо зафиксировать критерии полезности и анти-спама."],
@@ -483,7 +484,7 @@
     "Runtime acceptance открыт: нужны state/timeout/idempotency/concurrency/admin readback и role proof."
   ];
   tasks["task-g1-statuses"].done = [
-    "Spec completeness = 100%; focused verifier = 78/78; hard gates = pass.",
+    "Spec completeness = 100%; focused verifier = 80/80; hard gates = pass.",
     "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.",
     "Реализация и runtime acceptance оцениваются отдельно."
   ];
@@ -568,6 +569,7 @@
   const codexLink = document.getElementById("codex-link");
   const artifactLink = document.getElementById("artifact-link");
   const docxLink = document.getElementById("docx-link");
+  const adminMockupLink = document.getElementById("admin-mockup-link");
   const taskSourceLink = document.getElementById("task-source-link");
   const pageTitle = document.getElementById("page-title");
 
@@ -609,6 +611,7 @@
 
   if (isSpecReady) {
     artifactLink.hidden = false;
+    adminMockupLink.hidden = id !== "task-g1-session";
     artifactLink.href = artifactHref;
     artifactLink.textContent = docType === "igor" ? "Открыть готовое ТЗ" : "Открыть готовый Codex-контекст";
     docxLink.hidden = docType !== "igor" || !artifacts.docx;
