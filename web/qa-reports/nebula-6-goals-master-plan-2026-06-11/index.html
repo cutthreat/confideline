@@ -101,7 +101,7 @@
     .task-link .task-title { color:#175cd3; text-decoration:underline; text-underline-offset:2px; }
     .task-link:hover .task-title { color:#0b3f91; }
     .progress-wrap { min-width:110px; }
-    .tz-wrap { min-width:150px; }
+    .tz-wrap { min-width:210px; }
     .tz-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px; }
     .tz-percent { color:#0f766e; font-weight:700; font-size:12px; }
     .progress-line { height:8px; background:#e9eef7; border-radius:999px; overflow:hidden; margin-top:5px; }
@@ -112,9 +112,33 @@
     .readiness-link::after { content:"›"; position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:20px; font-weight:700; color:#175cd3; }
     .readiness-link:hover { background:#e8f1ff; border-color:#175cd3; }
     .readiness-link:hover .progress-line { box-shadow:0 0 0 2px rgba(23,92,211,.16); }
-    .tz-link { display:block; color:inherit; text-decoration:none; padding:8px 10px; border:1px solid #d8e6ff; border-radius:8px; background:#f8fbff; }
-    .tz-link:hover { background:#eefaf7; border-color:#0f766e; }
-    .tz-link:hover .progress-line { box-shadow:0 0 0 2px rgba(15,118,110,.14); }
+    .tz-summary { padding:8px 10px; border:1px solid #d8e6ff; border-radius:8px; background:#f8fbff; }
+    .tz-doc-links { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px; }
+    .tz-doc-link { display:flex; align-items:center; justify-content:center; min-height:38px; padding:7px 8px; border:1px solid #c9dcff; border-radius:6px; color:#175cd3; background:#fff; font-size:11px; font-weight:700; line-height:1.2; text-align:center; text-decoration:none; }
+    .tz-doc-link.codex { color:#0f766e; border-color:#b8ddd7; }
+    .tz-doc-link.visual { grid-column:1 / -1; color:#6d28d9; border-color:#d9c9ff; background:#fbf9ff; }
+    .tz-doc-link:hover { background:#eaf2ff; border-color:#175cd3; }
+    .tz-doc-link.codex:hover { background:#eefaf7; border-color:#0f766e; }
+    .tz-doc-link.visual:hover { background:#f3eeff; border-color:#6d28d9; }
+    .implementation-package { margin-top:12px; padding:14px; border:1px solid #d9c9ff; border-left:5px solid #7c3aed; border-radius:9px; background:linear-gradient(135deg,#fbf9ff 0%,#f7fbff 100%); }
+    .implementation-package-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+    .implementation-package-title { margin:0; color:#4c1d95; font-size:15px; line-height:1.35; }
+    .implementation-package-kicker { display:block; margin-bottom:3px; color:#6d28d9; font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+    .implementation-package p { margin:8px 0; line-height:1.45; }
+    .implementation-package-meta { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
+    .implementation-package-note { color:#5b6472; font-size:11px; }
+    .post-mvp-panel { margin:16px 0 18px; background:#fff; border:1px solid #d7dce5; border-left:6px solid #667085; border-radius:10px; overflow:hidden; }
+    .post-mvp-panel summary { cursor:pointer; padding:13px 16px; color:#344054; font-weight:800; list-style:none; }
+    .post-mvp-panel summary::-webkit-details-marker { display:none; }
+    .post-mvp-panel summary::after { content:"›"; float:right; color:#667085; font-size:20px; line-height:1; }
+    .post-mvp-panel[open] summary::after { transform:rotate(90deg); }
+    .post-mvp-body { padding:0 16px 16px; line-height:1.5; }
+    .post-mvp-body > p { margin:0 0 12px; }
+    .post-mvp-grid { display:grid; grid-template-columns:repeat(2, minmax(280px,1fr)); gap:10px; }
+    .post-mvp-card { border:1px solid #e4e7ec; background:#f9fafb; border-radius:8px; padding:10px 12px; }
+    .post-mvp-card b { display:block; margin-bottom:3px; color:#344054; }
+    .post-mvp-card small { display:block; color:var(--muted); line-height:1.4; }
+    .post-mvp-link { display:inline-flex; margin-top:12px; padding:8px 11px; border:1px solid #cfd5df; border-radius:6px; background:#fff; font-weight:700; }
     .role-table, .source-table { width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
     .role-table th, .source-table th { background:#1f4e78; color:#fff; text-align:left; padding:10px; vertical-align:top; }
     .role-table td, .source-table td { border-top:1px solid var(--line); padding:10px; vertical-align:top; line-height:1.45; }
@@ -142,8 +166,8 @@
     details.dependency-details[open] summary::after { transform:rotate(90deg); }
     .dependency-body { padding:0 16px 16px; }
     .footer { margin-top:22px; color:var(--muted); font-size:13px; line-height:1.5; }
-    @media (max-width:1080px) {
-      .goals-grid, .planning-grid { grid-template-columns:1fr; }
+  @media (max-width:1080px) {
+      .goals-grid, .planning-grid, .post-mvp-grid { grid-template-columns:1fr; }
       .section-title { flex-direction:column; align-items:flex-start; }
       .goal-status { grid-template-columns:1fr; }
     }
@@ -163,14 +187,31 @@
     <a href="./agent-workspace-pbexpert-v0-1.html">Макет агента</a>
     <a href="./mvp-pm-final-2026-07-10.html">Итог MVP</a>
     <a href="./support-ticket-contour-2026-07-13.html">Контур поддержки</a>
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/current-site-state-g1-g3-2026-07-29.md">Сайт сейчас</a>
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/target-site-vision-g1-g3.md">Целевой сайт</a>
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-product-consistency-register.md">Согласованность G1–G3</a>
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/expert-specialization-taxonomy-v2-2026-07-29.md">Категории и специализации</a>
   </nav>
 
   <section id="six-goals" class="tab-panel" data-tab-panel="six-goals">
     <div class="section-title">
       <h2>Список задач по 6 глобальным целям</h2>
-      <p>Для каждой задачи видно, насколько она готова по сайту и по ТЗ.</p>
+      <p>Все 30 задач — P0 шестимесячной программы запуска MVP. Очерёдность задают зависимости и vertical-пакеты, а не пониженный приоритет.</p>
     </div>
     <div id="goals-grid" class="goals-grid"></div>
+    <details id="post-mvp-backlog" class="post-mvp-panel">
+      <summary>Вне шести целей — отдельный список «После MVP»</summary>
+      <div class="post-mvp-body">
+        <p>Эти расширения не входят в канонические 30 задач, проценты шести целей и шестимесячный MVP-дедлайн. Они возвращаются в работу только отдельным решением владельца.</p>
+        <div class="post-mvp-grid">
+          <div class="post-mvp-card"><b>Автоматизация денег и выплат</b><small>Auto-refill, fixed/SLA/task pay, автоматические payout и refund-решения.</small></div>
+          <div class="post-mvp-card"><b>Продвинутая выдача</b><small>AI/advanced matching, KPI-ротация, predictive scoring и коммерческие стимулы.</small></div>
+          <div class="post-mvp-card"><b>Расширенная аналитика</b><small>Full BI, сложные когорты, экспорты, predictive и расширенная атрибуция.</small></div>
+          <div class="post-mvp-card"><b>Дополнительные каналы и сервисы</b><small>Browser push, некритические дайджесты, transcript export, paid queue и async paid consultation.</small></div>
+        </div>
+        <a class="post-mvp-link" href="../../../reports/six-goals-functional-tz-2026-07-20/post-mvp-backlog-2026-07-29.md">Открыть полный post-MVP backlog</a>
+      </div>
+    </details>
     <details class="acceptance-blockers" open>
       <summary>Блокеры приемки</summary>
       <div id="acceptance-blockers" class="blocker-list"></div>
@@ -387,8 +428,10 @@
         <tr><td>Role-based master plan 2026-06-10</td><td>Ролевая рамка: клиент, эксперт, агент, супер-админ.</td><td><span class="badge stage-accepted">Учтено</span></td></tr>
         <tr><td>Nebula G1-G3 status model 2026-06-15</td><td>Базовая модель статусов и готовности задач.</td><td><span class="badge stage-accepted">Учтено</span></td></tr>
         <tr><td>Nebula frontier status update 2026-06-15</td><td>Текущая очередь следующего слоя работ.</td><td><span class="badge stage-packet">Учтено</span></td></tr>
-        <tr><td>Nebula expert hiring research 2026-06-17</td><td>ЦА кандидата, текст вакансии, площадки поиска, анкета, тест и онлайн-собеседование.</td><td><span class="badge stage-packet">Учтено</span></td></tr>
-        <tr><td>PbExpert encyclopedia 2026-06-18</td><td>Рабочий кабинет агента: очередь диалогов, анкеты, клиентская карточка, лимиты, Book Now, бейджи, обучение и зависимости G3/G4/G6.</td><td><span class="badge stage-packet">Готово source-bounded</span></td></tr>
+<tr><td>Nebula expert hiring research 2026-06-17</td><td>ЦА кандидата, текст вакансии, площадки поиска, анкета, тест и онлайн-собеседование.</td><td><span class="badge stage-packet">Учтено</span></td></tr>
+<tr><td>Nebula expert-training source recovery 2026-07-16</td><td>15 локальных оригиналов, Drive/Notion refs, Days 1-3, исторические Days 4-7, 102 ten-minute packets, proof catalog и closeout. Используется как доказательная база обучения, ролей, QA и admission; не является policy/runtime approval.</td><td><span class="badge stage-packet">Corpus complete</span></td></tr>
+<tr><td>Six-goals training product addendum 2026-07-16</td><td>G1/G4/G5/G6 дополнены P0-требованиями: role dictionary, transparent trial/paid UX, engagement hard fails, QA scorecard, admission sequence, Trust & Safety dependency, domain competence, MVP manual coaching.</td><td><span class="badge stage-packet">Addendum ready / owner gates open</span></td></tr>
+<tr><td>PbExpert encyclopedia 2026-06-18</td><td>Рабочий кабинет агента: очередь диалогов, анкеты, клиентская карточка, лимиты, Book Now, бейджи, обучение и зависимости G3/G4/G6.</td><td><span class="badge stage-packet">Готово source-bounded</span></td></tr>
         <tr><td>PbExpert role visibility / regulation 2026-06-18</td><td>Кто что видит в одной консультации: клиент, публичная анкета, агент, супер-админ; рабочий цикл от очереди до QA/refund.</td><td><span class="badge stage-packet">Готово source-bounded</span></td></tr>
         <tr><td>Nebula certification roadmap from PbExpert 2026-06-18</td><td>Pipeline кандидата, gates допуска, proof packet, owner approval и календарная логика подготовки команды.</td><td><span class="badge stage-packet">Готово как пакет</span></td></tr>
         <tr><td>Nebula training/admin/QA dependency map 2026-06-18</td><td>Порядок зависимостей: что можно начинать сейчас, что нужно до практики, что блокирует реальный допуск команды.</td><td><span class="badge stage-packet">Готово source-bounded</span></td></tr>
@@ -516,7 +559,7 @@
         <tr><td>PbExpert D5-1 recovery / visual / targeted STT pass19 2026-06-18</td><td>День 5 часть 1 получен локально; targeted-интервалы усилили platform/promo source, first meaningful answer, paid/free boundary, buffer-zone и refund evidence.</td><td><span class="badge stage-packet">Готово bounded</span></td></tr>
         <tr><td>Agent workspace HTML mockup v0.1</td><td>Интерактивный макет отдельного кабинета агента по PbExpert: очередь, чат, карточка консультации, лимиты, QA и демо-действия.</td><td><span class="badge stage-packet">Готово v0.1</span></td></tr>
         <tr><td>Nebula isolated admin access packet 2026-07-07</td><td>Добавлена G6.7: эксперт/агент работает только через изолированный admin/staff-контур, без клиентского фронта; эксперт появляется на сайте только после верификации и допуска.</td><td><span class="badge stage-packet">Task added</span></td></tr>
-        <tr><td>task-details.html</td><td>Подробные карточки задач.</td><td><span class="badge stage-accepted">Используется</span></td></tr>
+        <tr><td>task-details.html</td><td>Архивные карточки и ранние рабочие макеты; не являются источником требований G1–G3. Канонические документы открываются через «ТЗ по задачам».</td><td><span class="badge stage-frontier">Архив</span></td></tr>
       </tbody>
     </table>
     <div class="footer">
@@ -644,15 +687,25 @@
     `0-10%` = пока только план, задел или частичный контур.
   </div>
   <div class="footer">
-    Приоритет:
-    <span class="badge p0">P0</span> нельзя принимать платного клиента без этого ·
-    <span class="badge p1">P1</span> следующий критичный слой ·
-    <span class="badge p2">P2</span> после базового запуска
+    Правило приоритета:
+    <span class="badge p0">P0</span> каждая из 30 задач обязательна для запуска MVP в рамках шестимесячной программы.
+    Всё, что не относится к MVP, находится в отдельном списке «После MVP» и не влияет на задачи или проценты целей.
   </div>
   <div class="footer">
-    ТЗ в этом контуре = рабочий пакет для Игоря + Codex:
-    цель и пользовательский результат, источники правды, контракт переноса из HTML/Figma-макета, данные и состояния, объем интерфейса и логики, затрагиваемые файлы и интеграции, проверка, критерии приемки, откат и стоп-условия.
+    Для каждой задачи панель теперь показывает класс исполнения и правильного основного владельца:
+    `DEV` — разработка; `MIXED` — отдельные admin и development дорожки; `OPS_FIRST` — сначала существующая админ-панель; `CONTENT_POLICY` — сначала утверждённый смысл и публикация; `QA_GATE` — независимая проверка.
+    `Основной документ задачи` может быть ТЗ разработчику, операционным runbook, policy/content-пакетом или QA-протоколом.
+    `Технический контекст / эскалация` используется только для обязательного development scope или доказанного technical gap.
     `100% ТЗ` = любой участник реализации понимает, что строим, откуда переносим, как интегрируем, как проверяем и по чему принимаем результат без догадок.
+    С 29.07.2026 универсальная передача всех задач Игорю отменена. G3.5 и G5.4 являются QA/PM gates; G2.GEO, G3.6 и G3.INT.I18N начинаются с operations; G4.3 и G6.4 — с content/policy owner. Implementation/runtime по-прежнему показаны отдельно колонкой «сайт».
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/readiness-summary.md">Открыть карту готовности</a> ·
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/functional-tz-quality-standard.md">Стандарт ТЗ</a> ·
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/task-execution-ownership-matrix.md">Админка / разработка по всем задачам</a> ·
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-documentation-matrix.md">Матрица G1–G3</a> ·
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/current-site-state-g1-g3-2026-07-29.md">Сайт сейчас</a> ·
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/target-site-vision-g1-g3.md">Целевой сайт</a> ·
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-product-consistency-register.md">Реестр согласованности</a> ·
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-documentation-closeout-2026-07-29.md">Closeout G1–G3</a>.
   </div>
   <div class="footer">
     Зависимости:
@@ -672,9 +725,10 @@
     ищем либо практикующих экспертов, либо людей, готовых обучиться профессии.
     Минимум пилота = 3-5 допущенных людей.
     Агент = внутренний технический пользователь, который в едином рабочем интерфейсе ведет назначенные ему экспертные аккаунты; клиент видит только публичного эксперта.
-    Правила G2.4 подтверждены владельцем, функциональное ТЗ передано программисту и внедрение начато. Статус остается implementation_in_progress, а не implemented: runtime proof еще нет.
+    Правила G2.4 подтверждены; mixed-пакет разделяет settlement/reconciliation super-admin и разработку ledger/correction. Реализация и runtime proof ещё не приняты.
     Качество старта: допуск, тестовая консультация, чек-лист, выборочная проверка, запрет обещаний результата.
     Формулировки клиенту: не обещаем исход; говорим, что показывают карты, звезды или выбранный метод.
+    Обучение после video-intelligence closeout 16.07.2026: G6.4 является P0 для MVP 5 агентов / 25 экспертов / 1 модератор / 1 супер-админ. Корпус источников готов, но policy/runtime acceptance остаются отдельными gates.
     Верстка: Игорь + Codex; внешний верстальщик только как точечный ручной контроль при необходимости.
     Маркетинг: стратегию готовит Codex; SEO ищем заранее; paid traffic только после gate.
   </div>
@@ -683,42 +737,105 @@
 <script>
 (function () {
   const taskMeta = {
-    "task-g1-session": { code:"G1.1", title:"Карточка консультации", priority:"P0", stage:"implementation_in_progress", progress:30, tz:true, tzReady:95 },
-    "task-g1-chat": { code:"G1.2", title:"Чат по ролям", priority:"P0", stage:"proof_gap", progress:40, tz:true, tzReady:75 },
-    "task-g1-statuses": { code:"G1.3", title:"Статусы и история", priority:"P0", stage:"accepted_bounded_slice", progress:45, tz:true, tzReady:65 },
-    "task-g1-chat-notifications": { code:"G1.4", title:"Уведомления чата", priority:"P1", stage:"accepted_bounded_slice", progress:35, tz:true, tzReady:55 },
+    "task-g1-session": { code:"G1.1", title:"Карточка консультации", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:30, tz:true, tzReady:100 },
+    "task-g1-chat": { code:"G1.2", title:"Чат по ролям", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:40, tz:true, tzReady:100 },
+    "task-g1-statuses": { code:"G1.3", title:"Статусы и история", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:45, tz:true, tzReady:100 },
+    "task-g1-chat-notifications": { code:"G1.4", title:"Уведомления консультации", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:35, tz:true, tzReady:100 },
 
-    "task-g2-pricing": { code:"G2.1", title:"Цена и баланс", priority:"P0", stage:"accepted_bounded_slice", progress:45, tz:true, tzReady:70 },
-    "task-g2-timer": { code:"G2.2", title:"Таймер и остановка", priority:"P0", stage:"accepted_bounded_slice", progress:40, tz:true, tzReady:70 },
-    "task-g2-refund": { code:"G2.3", title:"Возвраты", priority:"P0", stage:"accepted_bounded_slice", progress:40, tz:true, tzReady:75 },
-    "task-g2-accruals": { code:"G2.4", title:"Начисления / ЗП сотрудников", priority:"P1", stage:"implementation_in_progress", progress:20, tz:true, tzReady:95 },
+    "task-g2-pricing": { code:"G2.1", title:"Цена, credits и баланс", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:45, tz:true, tzReady:100, visualHref:"task-tz.html?task=task-g2-pricing&doc=igor#oracle-nebula-pages" },
+    "task-g2-timer": { code:"G2.2", title:"Таймер и остановка", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:40, tz:true, tzReady:100, visualHref:"task-tz.html?task=task-g2-timer&doc=igor#oracle-nebula-pages" },
+    "task-g2-refund": { code:"G2.3", title:"Возвраты", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:40, tz:true, tzReady:100, visualHref:"task-tz.html?task=task-g2-refund&doc=igor#oracle-nebula-pages" },
+    "task-g2-accruals": { code:"G2.4", title:"Начисления / ЗП сотрудников", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:20, tz:true, tzReady:100, visualHref:"task-tz.html?task=task-g2-accruals&doc=igor#oracle-nebula-pages", visualLabel:"Oracle / Nebula: design gap" },
 
-    "task-g3-home": { code:"G3.1", title:"Витрина", priority:"P0", stage:"inventoried", progress:15, tz:true, tzReady:25 },
-    "task-g3-catalog": { code:"G3.2", title:"Каталог", priority:"P0", stage:"inventoried", progress:15, tz:true, tzReady:25 },
-    "task-g3-profile": { code:"G3.3", title:"Карточка эксперта", priority:"P0", stage:"packet_ready", progress:20, tz:true, tzReady:50 },
-    "task-g3-quiz": { code:"G3.4", title:"Подбор и старт", priority:"P1", stage:"inventoried", progress:10, tz:true, tzReady:25 },
-    "task-g3-qa": { code:"G3.5", title:"Проверка клиентского пути", priority:"P0", stage:"packet_ready", progress:10, tz:true, tzReady:35 },
-    "task-g3-field-weight": { code:"G3.6", title:"Вес полей анкеты", priority:"P0", stage:"inventoried", progress:10, tz:true, tzReady:45 },
-    "task-g3-rotation": { code:"G3.7", title:"Выдача и ротация анкет", priority:"P0", stage:"implementation_in_progress", progress:5, tz:true, tzReady:90 },
+    "task-g3-home": { code:"G3.1", title:"Витрина", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:15, tz:true, tzReady:100 },
+    "task-g3-catalog": { code:"G3.2", title:"Каталог", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:15, tz:true, tzReady:100 },
+    "task-g3-profile": { code:"G3.3", title:"Карточка эксперта", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:20, tz:true, tzReady:100 },
+    "task-g3-quiz": { code:"G3.4", title:"Подбор и старт", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:10, tz:true, tzReady:100 },
+    "task-g3-qa": { code:"G3.5", title:"Проверка клиентского пути", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:10, tz:true, tzReady:100 },
+    "task-g3-field-weight": { code:"G3.6", title:"Полнота и таксономия анкеты", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:10, tz:true, tzReady:100 },
+    "task-g3-rotation": { code:"G3.7", title:"Выдача и ротация анкет", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:5, tz:true, tzReady:100 },
 
-    "task-g4-support": { code:"G4.1", title:"Поддержка", priority:"P0", stage:"packet_ready", progress:15, tz:true, tzReady:90 },
-    "task-g4-complaints": { code:"G4.2", title:"Жалобы и возвраты", priority:"P0", stage:"packet_ready", progress:5, tz:true, tzReady:75 },
-    "task-g4-docs": { code:"G4.3", title:"Документы", priority:"P0", stage:"packet_ready", progress:5, tz:true, tzReady:55 },
-    "task-g4-support-notifications": { code:"G4.4", title:"Уведомления поддержки", priority:"P1", stage:"master_plan_only", progress:0, tz:true, tzReady:20 },
+    "task-g4-support": { code:"G4.1", title:"Поддержка", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:15, tz:true, tzReady:100 },
+    "task-g4-complaints": { code:"G4.2", title:"Жалобы и возвраты", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:5, tz:true, tzReady:100 },
+    "task-g4-docs": { code:"G4.3", title:"Документы", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:5, tz:true, tzReady:100 },
+    "task-g4-support-notifications": { code:"G4.4", title:"Уведомления поддержки", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:0, tz:true, tzReady:100 },
 
-    "task-g5-events": { code:"G5.1", title:"События воронки", priority:"P0", stage:"packet_ready", progress:5, tz:true, tzReady:70 },
-    "task-g5-dashboard": { code:"G5.2", title:"Дашборд", priority:"P0", stage:"master_plan_only", progress:5, tz:true, tzReady:30 },
-    "task-g5-kpi": { code:"G5.3", title:"Таблица показателей", priority:"P1", stage:"master_plan_only", progress:0, tz:true, tzReady:25 },
-    "task-g5-marketing-gate": { code:"G5.4", title:"Допуск рекламы", priority:"P0", stage:"packet_ready", progress:0, tz:true, tzReady:65 },
+    "task-g5-events": { code:"G5.1", title:"События воронки", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:5, tz:true, tzReady:100 },
+    "task-g5-dashboard": { code:"G5.2", title:"Дашборд", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:5, tz:true, tzReady:100 },
+    "task-g5-kpi": { code:"G5.3", title:"Таблица показателей", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:0, tz:true, tzReady:100 },
+    "task-g5-marketing-gate": { code:"G5.4", title:"Допуск рекламы", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:0, tz:true, tzReady:100 },
 
-    "task-g6-assignment": { code:"G6.1", title:"Назначение", priority:"P0", stage:"proof_gap", progress:35, tz:true, tzReady:70 },
-    "task-g6-sla": { code:"G6.2", title:"Сроки реакции", priority:"P0", stage:"packet_ready", progress:5, tz:true, tzReady:75 },
-    "task-g6-quality": { code:"G6.3", title:"Контроль качества", priority:"P0", stage:"packet_ready", progress:5, tz:true, tzReady:65 },
-    "task-g6-training": { code:"G6.4", title:"Обучение и регламенты", priority:"P1", stage:"packet_ready", progress:0, tz:true, tzReady:65 },
-    "task-g6-team-notifications": { code:"G6.5", title:"Командные уведомления", priority:"P1", stage:"master_plan_only", progress:0, tz:true, tzReady:20 },
-    "task-g6-admin-url": { code:"G6.6", title:"Админка на отдельном URL", priority:"P0", stage:"master_plan_only", progress:0, tz:true, tzReady:35 },
-    "task-g6-isolated-admin-access": { code:"G6.7", title:"Изолированный доступ в админку", priority:"P0", stage:"implementation_in_progress", progress:5, tz:true, tzReady:90 }
+    "task-g6-assignment": { code:"G6.1", title:"Назначение", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:35, tz:true, tzReady:100 },
+    "task-g6-sla": { code:"G6.2", title:"Сроки реакции", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:5, tz:true, tzReady:100 },
+    "task-g6-quality": { code:"G6.3", title:"Контроль качества", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:5, tz:true, tzReady:100 },
+    "task-g6-training": { code:"G6.4", title:"Обучение и регламенты", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:5, tz:true, tzReady:100 },
+    "task-g6-team-notifications": { code:"G6.5", title:"Командные уведомления", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:0, tz:true, tzReady:100 },
+    "task-g6-admin-url": { code:"G6.6", title:"Админка на отдельном URL", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:0, tz:true, tzReady:100 },
+    "task-g6-isolated-admin-access": { code:"G6.7", title:"Изолированный доступ в админку", priority:"P0", stage:"functional_tz_handoff_ready_runtime_open", progress:5, tz:true, tzReady:100 }
   };
+
+  const executionRoutingByTask = {
+    "task-g1-session":{workClass:"MIXED", executor:"super-admin + Игорь"},
+    "task-g1-chat":{workClass:"MIXED", executor:"moderator/super-admin + Игорь"},
+    "task-g1-statuses":{workClass:"MIXED", executor:"super-admin + Игорь"},
+    "task-g1-chat-notifications":{workClass:"MIXED", executor:"moderator/super-admin + Игорь"},
+    "task-g2-pricing":{workClass:"MIXED", executor:"super-admin + Игорь"},
+    "task-g2-timer":{workClass:"MIXED", executor:"super-admin + Игорь"},
+    "task-g2-refund":{workClass:"MIXED", executor:"moderator → super-admin + Игорь"},
+    "task-g2-accruals":{workClass:"MIXED", executor:"super-admin + Игорь"},
+    "task-g3-home":{workClass:"MIXED", executor:"moderator/super-admin + Игорь"},
+    "task-g3-catalog":{workClass:"MIXED", executor:"super-admin + Игорь"},
+    "task-g3-profile":{workClass:"MIXED", executor:"moderator/super-admin + Игорь"},
+    "task-g3-quiz":{workClass:"MIXED", executor:"PM/moderator + Игорь"},
+    "task-g3-qa":{workClass:"QA_GATE", executor:"QA/super-admin → PM", primaryLabel:"QA-протокол", technicalLabel:"Дефекты / техконтекст"},
+    "task-g3-field-weight":{workClass:"OPS_FIRST", executor:"super-admin → Игорь по gap", primaryLabel:"Операционный пакет", technicalLabel:"Техническая эскалация"},
+    "task-g3-rotation":{workClass:"MIXED", executor:"super-admin + Игорь"},
+    "task-g4-support":{workClass:"MIXED", executor:"moderator/support + Игорь"},
+    "task-g4-complaints":{workClass:"MIXED", executor:"moderator → super-admin + Игорь"},
+    "task-g4-docs":{workClass:"CONTENT_POLICY", executor:"PM/legal → moderator → Игорь по gap", primaryLabel:"Policy/content пакет", technicalLabel:"Техническая эскалация"},
+    "task-g4-support-notifications":{workClass:"MIXED", executor:"support/super-admin + Игорь"},
+    "task-g5-events":{workClass:"DEV", executor:"PM/data owner → Игорь", primaryLabel:"ТЗ разработчику"},
+    "task-g5-dashboard":{workClass:"DEV", executor:"PM/staff → Игорь", primaryLabel:"ТЗ разработчику"},
+    "task-g5-kpi":{workClass:"MIXED", executor:"PM/super-admin + Игорь"},
+    "task-g5-marketing-gate":{workClass:"QA_GATE", executor:"PM/super-admin", primaryLabel:"Launch-gate протокол", technicalLabel:"Дефекты / техконтекст"},
+    "task-g6-assignment":{workClass:"MIXED", executor:"super-admin + Игорь"},
+    "task-g6-sla":{workClass:"MIXED", executor:"moderator/super-admin + Игорь"},
+    "task-g6-quality":{workClass:"MIXED", executor:"moderator/QA + super-admin + Игорь"},
+    "task-g6-training":{workClass:"CONTENT_POLICY", executor:"PM/domain/legal + moderator/Ксения + Игорь по gate", primaryLabel:"Training/policy пакет", technicalLabel:"Техническая эскалация"},
+    "task-g6-team-notifications":{workClass:"MIXED", executor:"staff/super-admin + Игорь"},
+    "task-g6-admin-url":{workClass:"DEV", executor:"PM/staff → Игорь", primaryLabel:"ТЗ разработчику"},
+    "task-g6-isolated-admin-access":{workClass:"DEV", executor:"super-admin + Игорь", primaryLabel:"ТЗ разработчику"}
+  };
+
+  Object.entries(taskMeta).forEach(([taskId, taskItem]) => {
+    Object.assign(taskItem, executionRoutingByTask[taskId] || {
+      workClass:"MIXED",
+      executor:"уточняется по ownership matrix"
+    });
+  });
+
+  const standardAuditReadiness = {
+    "task-g1-session":100, "task-g1-chat":100, "task-g1-statuses":100, "task-g1-chat-notifications":100,
+    "task-g2-pricing":100, "task-g2-timer":100, "task-g2-refund":100, "task-g2-accruals":100,
+    "task-g3-home":100, "task-g3-catalog":100, "task-g3-profile":100, "task-g3-quiz":100,
+    "task-g3-qa":100, "task-g3-field-weight":100, "task-g3-rotation":100,
+    "task-g4-support":90, "task-g4-complaints":90, "task-g4-docs":85, "task-g4-support-notifications":20,
+    "task-g5-events":70, "task-g5-dashboard":30, "task-g5-kpi":85, "task-g5-marketing-gate":65,
+    "task-g6-assignment":70, "task-g6-sla":75, "task-g6-quality":85, "task-g6-training":90,
+    "task-g6-team-notifications":20, "task-g6-admin-url":35, "task-g6-isolated-admin-access":90
+  };
+  const etalonSpecTaskIds = new Set([
+    "task-g1-session","task-g1-chat","task-g1-statuses","task-g1-chat-notifications",
+    "task-g2-pricing","task-g2-timer","task-g2-refund","task-g2-accruals",
+    "task-g3-home","task-g3-catalog","task-g3-profile","task-g3-quiz",
+    "task-g3-qa","task-g3-field-weight","task-g3-rotation"
+  ]);
+  Object.entries(taskMeta).forEach(([taskId, taskItem]) => {
+    taskItem.tzReady = standardAuditReadiness[taskId];
+    taskItem.stage = etalonSpecTaskIds.has(taskId)
+      ? "etalon_spec_ready_runtime_open"
+      : `${taskItem.stage}_legacy_score_pending_standard_audit`;
+  });
 
   const taskTermEn = {
     "task-g1-session": "service session",
@@ -938,20 +1055,46 @@
       title:"2) Деньги и поминутная логика",
       month:"Месяц 2",
       summary:"Сделать продуктовую денежную механику: цена, баланс, лимиты, стоп, возвраты, начисления.",
-      current:"Сильный технический слой. G2.1-G2.3 приняты как bounded slices, а live-срез 29 июня 2026 подтвердил общий финансовый контур сайта: заказы, баланс, транзакции, начисления, удержания, выплаты, платежи и цены.",
-      blocker:"G2.4 находится в implementation_in_progress, но не доказаны immutable policy snapshot при начале paid, started-minute billing, немедленное начисление, proportional refund и историческая атрибуция после reassignment.",
-      next:"Получить реализованный scope и проверить no-double-charge/no-double-correction, override с причиной и три независимо управляемых компонента оплаты.",
-      tasks:["task-g2-pricing","task-g2-timer","task-g2-refund","task-g2-accruals"]
+      current:"G2.1–G2.4 приведены к единому эталону. G2.GEO оформлен как operator-first content package. Пятистрановой text-pilot Japan, South Korea, Mexico, Vietnam и Thailand имеет финальный статус complete: 5/5 controlled before/after RU, 30/30 final source↔CMS readback и 5/5 RU visual checks доказаны.",
+      blocker:"Финансовый runtime не принят. Пилот пяти стран не доказывает полный G2.GEO coverage: общий denominator после обновления шаблона неизвестен; фото 0/2 не входили в text-scope.",
+      next:"Продолжать G2.GEO через moderator/super-admin: fresh inventory → source reconciliation → Codex draft → human review → controlled publish → admin/public readback → rollback evidence. Игорю передавать только доказанные missing/broken field, route, binding, save/readback или version/rollback gaps.",
+      tasks:["task-g2-pricing","task-g2-timer","task-g2-refund","task-g2-accruals"],
+      implementationPackage:{
+        id:"task-g2-geo-content",
+        code:"G2.GEO",
+        title:"Восстановление и AI-заполнение страниц стран и городов",
+        priority:"P0",
+        siteReady:5,
+        specReady:100,
+        description:"Operator-first пакет: fresh inventory, сохранённые source-пакеты, Codex drafts, human review, публикация через существующие country/geoname editors и readback. Пять стран уже прошли ограниченный text-pilot с известными пределами.",
+        acceptanceLabel:"PM + geo-content QA",
+        extraHref:"../../../reports/g2-geo-five-country-pilot-2026-07-29/review.html",
+        extraLabel:"Review live-пилота пяти стран",
+        boundary:"Класс OPS_FIRST + CONTENT_POLICY. Moderator/super-admin владеет review/publish/readback; Игорь подключается только по evidence-backed technical gap. Не является G2.5 и не входит в 30 канонических задач."
+      }
     },
     {
       color:"#7c3aed",
       title:"3) Связать дизайн сайта с рабочей логикой",
       month:"Месяц 3",
       summary:"Перенести дизайн сайта на рабочую логику и связать с реальными данными.",
-      current:"Owner-модель ротации определена: правила по типам страниц, multi-city эксперта, city filter клиента, веса/закрепления/исключения/preview и будущие KPI агента. Лимита анкет одного агента в top выдачи не вводим. Реализация и существующие controls требуют runtime proof.",
-      blocker:"Не доказаны rotation readback на всех page types, единые переходы online/busy/off/admin-blocked и cold-start KPI. Owner-confirmed existing не равен runtime verified.",
-      next:"Проверить eligibility и порядок на fixture 3-5 анкет; до KPI-порога показывать insufficient_data, вести мониторинг доли top-N по агентам без автоматического cap.",
-      tasks:["task-g3-home","task-g3-catalog","task-g3-profile","task-g3-quiz","task-g3-qa","task-g3-field-weight","task-g3-rotation"]
+      current:"G3.1–G3.7 разведены по функциональным владельцам и классам исполнения. G3.5 — независимый QA gate, G3.6 — operator-first taxonomy/completeness, остальные задачи смешивают admin и development lanes. G3.INT связывает Oracle / Nebula с backend. Его I18N-поток теперь moderator-first: existing-key search, переводы и readback выполняются в существующем разделе «Языки».",
+      blocker:"Runtime не принят: текущий public остаётся YouDate/dating-oriented; Figma/HTML не имеют свежей полной visual acceptance; не доказаны route/view/data binding, expert-only query, geo scope, profile/review data, stable public=preview, auth intent, полный i18n key registry и required-locale coverage, безопасный cutover/rollback и сквозной клиентский путь.",
+      next:"Moderator/super-admin сначала закрывает G3.INT.I18N inventory, existing-key search, translations и readback; Игорь исправляет только key_missing/broken_binding/hardcode/runtime/import-safety gaps и собирает backend-интеграцию восьми поверхностей. Затем независимый G3.5 проверяет оба initiation path, paid/history/support/refund, пять ширин и rollback. Любой P0 FAIL сохраняет NO_GO.",
+      tasks:["task-g3-home","task-g3-catalog","task-g3-profile","task-g3-quiz","task-g3-qa","task-g3-field-weight","task-g3-rotation"],
+      implementationPackage:{
+        id:"task-g3-integration",
+        code:"G3.INT",
+        title:"Интеграция Oracle / Nebula-верстки с backend Confideline",
+        priority:"P0",
+        siteReady:5,
+        specReady:100,
+        description:"Mixed-пакет: Игорь выполняет route/view/assets/data/action binding и rollout; moderator/super-admin выполняет I18N inventory, existing-key search, translations и readback. Technical gaps переводов исправляет разработка.",
+        acceptanceLabel:"принимает G3.5",
+        extraHref:"task-tz.html?task=task-g3-integration&doc=igor#oracle-nebula-pages",
+        extraLabel:"Исходники Oracle / Nebula и карта backend binding",
+        boundary:"Не добавляет новую бизнес-логику, не входит в 30 канонических задач и не меняет их реестр; существующий раздел «Языки» остаётся единственным владельцем ключей и переводов, G4 утверждает смысл support/refund/policy/legal-текстов, финальный E2E/GO-NO_GO — G3.5."
+      }
     },
     {
       color:"#b7791f",
@@ -980,7 +1123,7 @@
       summary:"Сделать операционный контур для модератора, агентов, экспертов и контроля качества.",
       current:"Самый важный календарный риск. Назначение анкет агенту работает: Kristy получила тестовую анкету `jlkdjaldkjadla / ufojkdsjkda`, но scoped-доступ еще не защищен. Добавлен отдельный слой G6.7: эксперт/агент должен работать только через изолированный admin/staff-контур.",
       blocker:"P0: под Kristy открываются чужой профиль id=25 и чужая страница назначений userId=3. G6.1 нельзя принимать, пока агент не ограничен только своими анкетами. Дополнительный blocker: эксперт/агент не должен иметь доступ к клиентскому фронту, поиску клиентов и прямому клиентскому пути.",
-      next:"Закрыть server-side access gate: assigned доступен; foreign profile/dialog/send заблокированы. Проверить atomic reassignment, запрет в paid_active/balance_pause и неизменяемое actual-agent authorship после передачи анкеты.",
+      next:"Закрыть server-side access gate: assigned доступен; foreign profile/dialog/send заблокированы. Проверить atomic reassignment, запрет в paid/balance_pause и неизменяемое actual-agent authorship после передачи анкеты.",
       tasks:["task-g6-assignment","task-g6-sla","task-g6-quality","task-g6-training","task-g6-admin-url","task-g6-isolated-admin-access","task-g6-team-notifications"]
     }
   ];
@@ -1024,9 +1167,7 @@
 
   function priorityHint(priority) {
     const hints = {
-      P0: "Обязательно для запуска.",
-      P1: "Нужно следующим слоем.",
-      P2: "Можно делать позже."
+      P0: "Обязательно для запуска MVP в шестимесячной программе."
     };
     return hints[priority] || priority;
   }
@@ -1039,6 +1180,7 @@
   }
 
   function taskHref(id) {
+    if (etalonSpecTaskIds.has(id)) return tzHref(id, "igor");
     return "tasks/" + encodeURIComponent(id) + ".html";
   }
 
@@ -1046,8 +1188,8 @@
     return "task-readiness.html?task=" + encodeURIComponent(id);
   }
 
-  function tzHref(id) {
-    return "task-tz.html?task=" + encodeURIComponent(id);
+  function tzHref(id, docType) {
+    return "task-tz.html?task=" + encodeURIComponent(id) + "&doc=" + encodeURIComponent(docType);
   }
 
   function executionRank(id) {
@@ -1080,7 +1222,11 @@
           <td>
             <a class="task-link" href="${taskHref(id)}" title="Открыть детали задачи">
               <div class="task-title">${item.code} ${item.title}<span class="term-en">${taskTermEn[id] || ""}</span></div>
-              <div><span class="badge ${priorityClass(item.priority)}" title="${priorityHint(item.priority)}">${item.priority}</span></div>
+              <div>
+                <span class="badge ${priorityClass(item.priority)}" title="${priorityHint(item.priority)}">${item.priority}</span>
+                <span class="badge" title="Класс исполнения">${item.workClass}</span>
+                <span class="badge" title="Основной маршрут исполнения">${item.executor}</span>
+              </div>
             </a>
           </td>
           <td class="progress-wrap">
@@ -1090,16 +1236,45 @@
             </a>
           </td>
           <td class="tz-wrap">
-            <a class="tz-link" href="${tzHref(id)}" title="Открыть ТЗ задачи">
+            <div class="tz-summary">
               <div class="tz-head">
                 <span class="badge ${tz.className}">${tz.label}</span>
                 <span class="tz-percent">${item.tzReady || 0}%</span>
               </div>
               <div class="progress-line"><div class="progress-bar tz-bar" style="width:${item.tzReady || 0}%"></div></div>
-            </a>
+              <div class="tz-doc-links" aria-label="Документы и визуальные материалы для ${item.code}">
+                <a class="tz-doc-link" href="${tzHref(id, "igor")}" title="Открыть основной документ задачи">${item.primaryLabel || "Основной документ"}</a>
+                <a class="tz-doc-link codex" href="${tzHref(id, "codex")}" title="Открыть применимый технический контекст или эскалацию">${item.technicalLabel || "Технический контекст"}</a>
+                ${item.visualHref ? `<a class="tz-doc-link visual" href="${item.visualHref}" title="Открыть сверстанные страницы новой версии Oracle / Nebula и границы их применения">${item.visualLabel || "Верстка Oracle / Nebula"}</a>` : ""}
+              </div>
+            </div>
           </td>
         </tr>`;
     }).join("");
+    const implementationPackage = goal.implementationPackage;
+    const implementationPackageHtml = implementationPackage ? `
+      <section class="implementation-package" aria-label="${implementationPackage.code} — связанный P0-пакет реализации">
+        <div class="implementation-package-head">
+          <div>
+            <span class="implementation-package-kicker">Связанный implementation package · не новая продуктовая задача · вне реестра 30 функциональных задач</span>
+            <h3 class="implementation-package-title">${implementationPackage.code} ${implementationPackage.title}</h3>
+          </div>
+          <span class="badge ${priorityClass(implementationPackage.priority)}">${implementationPackage.priority}</span>
+        </div>
+        <p>${implementationPackage.description}</p>
+        <div class="implementation-package-meta">
+          <span class="badge done">ТЗ ${implementationPackage.specReady}%</span>
+          <span class="badge partial">runtime ${implementationPackage.siteReady}%</span>
+          <span class="badge">${implementationPackage.acceptanceLabel || "focused acceptance"}</span>
+          <span class="badge">${implementationPackage.id === "task-g2-geo-content" ? "OPS_FIRST + CONTENT_POLICY" : "MIXED"}</span>
+        </div>
+        <div class="tz-doc-links" aria-label="Документы ${implementationPackage.code}">
+          <a class="tz-doc-link" href="${tzHref(implementationPackage.id, "igor")}">${implementationPackage.id === "task-g2-geo-content" ? "Операционный пакет" : "Функциональное ТЗ"}</a>
+          <a class="tz-doc-link codex" href="${tzHref(implementationPackage.id, "codex")}">${implementationPackage.id === "task-g2-geo-content" ? "Техническая эскалация" : "Технический контекст"}</a>
+          ${implementationPackage.extraHref ? `<a class="tz-doc-link visual" href="${implementationPackage.extraHref}">${implementationPackage.extraLabel || "Связанные материалы"}</a>` : ""}
+        </div>
+        <div class="implementation-package-note">${implementationPackage.boundary}</div>
+      </section>` : "";
 
     article.innerHTML = `
       <div class="goal-head"><b>${goal.title}</b>${goal.month}</div>
@@ -1131,6 +1306,7 @@
           </thead>
           <tbody>${rows}</tbody>
         </table>
+        ${implementationPackageHtml}
       </div>`;
 
     goalsGrid.appendChild(article);

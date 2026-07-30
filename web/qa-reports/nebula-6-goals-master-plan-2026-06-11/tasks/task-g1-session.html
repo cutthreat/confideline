@@ -159,8 +159,8 @@ main.page-main { padding:22px 28px 42px; }
           <p><b>Что сделать:</b> создать минимальную service_session для одной синхронной консультации внутри постоянного диалога. Session хранит идентичности, времена и состояния, trial/paid, immutable price/policy snapshot, итоговые финансовые audit-срезы и ссылки на chat, ledger, support, QA и admin audit.</p>
           <div class="flow-list">
             <div class="flow-box"><b>Граница сущностей</b><ul><li>dialog = постоянная история клиент + экспертная анкета;</li><li>service_session = одна консультация внутри dialog;</li><li>agent = фактический внутренний автор, не видимый клиенту.</li></ul></div>
-            <div class="flow-box"><b>Путь клиента</b><ul><li>клиент принимает условия и запускает paid chat;</li><li>trial и paid проходят в одной session;</li><li>перед первой платной минутой виден countdown без второго акцепта.</li></ul></div>
-            <div class="flow-box"><b>State machine</b><ul><li>requested -> connected_trial -> paid_active;</li><li>balance_pause -> resumed_paid либо timeout;</li><li>completed / manual_end / abnormal_end.</li></ul></div>
+            <div class="flow-box"><b>Путь клиента</b><ul><li>принятие request Агентом только открывает клиенту confirmation card и не создаёт session;</li><li>явный consent клиента создаёт exactly one service_session в primary state <code>connecting</code>;</li><li>trial и paid проходят в этой же session; заранее сохранённый consent позволяет перейти к paid без второго акцепта.</li></ul></div>
+            <div class="flow-box"><b>State machine</b><ul><li>primary states: <code>connecting</code>, <code>trial</code>, <code>paid</code>, <code>balance_pause</code>, <code>completed</code>;</li><li><code>balance_pause</code> возвращается в <code>paid</code> после явного продолжения либо переходит в <code>completed</code>;</li><li><code>completed</code> — единственный terminal state; <code>initiator</code>, <code>end_reason</code> и <code>technical_reason</code> хранятся отдельно.</li></ul></div>
             <div class="flow-box"><b>Маркетинг</b><ul><li>основа измеримой воронки;</li><li>доказательство, что реклама приводит к реальной консультации.</li></ul></div>
             <div class="flow-box"><b>Проверка</b><ul><li>одна консультация открывается целиком;</li><li>все связанные данные видны админу.</li></ul></div>
           </div>
@@ -179,7 +179,7 @@ main.page-main { padding:22px 28px 42px; }
               <button type="button" data-session-role="client">Клиент</button>
             </div>
             <div class="session-kpis">
-              <div class="session-kpi"><span>Статус</span><b>Идет консультация</b></div>
+              <div class="session-kpi"><span>Primary state</span><b>paid · идет консультация</b></div>
               <div class="session-kpi"><span>Цена</span><b>45 кредитов/мин</b></div>
               <div class="session-kpi"><span>Минуты</span><b>08:42 из лимита</b></div>
               <div class="session-kpi"><span>Баланс</span><b>достаточно на 14 мин</b></div>
@@ -195,6 +195,10 @@ main.page-main { padding:22px 28px 42px; }
                   <div><dt>Эксперт</dt><dd>Solara Ortiz</dd></div>
                   <div><dt>Агент</dt><dd>Kristy</dd></div>
                   <div><dt>Источник</dt><dd>Главная -> карточка эксперта</dd></div>
+                  <div><dt>Старт</dt><dd>request принят Агентом -> явный consent клиента -> exactly one <code>connecting</code> session</dd></div>
+                  <div><dt>initiator</dt><dd>—, заполняется при завершении</dd></div>
+                  <div><dt>end_reason</dt><dd>—, session не завершена</dd></div>
+                  <div><dt>technical_reason</dt><dd>—</dd></div>
                 </dl>
               </aside>
               <div class="session-main">
@@ -221,8 +225,9 @@ main.page-main { padding:22px 28px 42px; }
                   <h5>Что должно быть видно сразу</h5>
                   <div class="session-row-list">
                     <div class="session-row"><span>Кто участвует</span><div>Клиент Maria K., эксперт Solara Ortiz, агент Kristy, ответственный модератор.</div></div>
-                    <div class="session-row"><span>Что происходит</span><div>Клиент задал вопрос, консультация идет в чате, счетчик минут активен.</div></div>
+                    <div class="session-row"><span>Что происходит</span><div>После явного consent создана одна session: <code>connecting</code> -> <code>trial</code> -> текущий primary state <code>paid</code>; счетчик минут активен.</div></div>
                     <div class="session-row"><span>Что важно админу</span><div>Баланс достаточен, сроки реакции не нарушены, жалоб нет, качество пока не проверено.</div></div>
+                    <div class="session-row"><span>Как завершится</span><div>Primary state станет <code>completed</code>; кто и почему завершил session фиксируется отдельно в <code>initiator</code>, <code>end_reason</code> и <code>technical_reason</code>.</div></div>
                   </div>
                 </div>
                 <div class="session-panel is-hidden" data-session-panel="chat">
@@ -246,7 +251,7 @@ main.page-main { padding:22px 28px 42px; }
                   <h5>Поддержка и возвраты</h5>
                   <div class="session-row-list">
                     <div class="session-row"><span>Обращение</span><div>Клиент может открыть обращение из этой консультации, чтобы поддержка видела весь контекст.</div></div>
-                    <div class="session-row"><span>Возврат</span><div>Решение о возврате должно ссылаться на чат, минуты, правила и решение модератора.</div></div>
+                    <div class="session-row"><span>Возврат</span><div>Модератор собирает evidence; ручное решение super-admin о возврате ссылается на чат, минуты и применённые правила.</div></div>
                     <div class="session-row"><span>История</span><div>Нельзя терять, кто принял решение, когда и почему.</div></div>
                   </div>
                 </div>
@@ -263,6 +268,7 @@ main.page-main { padding:22px 28px 42px; }
             </div>
           </div>
           <div class="status-proof"><b>Доказательный статус:</b> функциональная модель согласована, ТЗ передано программисту и внедрение начато. Эта HTML-карточка является handoff-макетом и не доказывает существование service_session в runtime. Приёмка требует lifecycle suite, role views, billing readback и отрицательные ACL-сценарии.</div>
+          <p><a class="task-ref" href="../g11-consultation-admin-mockup.html">Открыть интерактивный макет «Карточка консультации» в текущем стиле админ-панели</a></p>
         </div>
       </article>
   </main>

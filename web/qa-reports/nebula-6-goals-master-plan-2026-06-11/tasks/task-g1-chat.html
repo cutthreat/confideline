@@ -146,32 +146,39 @@ main.page-main { padding:22px 28px 42px; }
 <body>
   <header class="page-head">
     <h1>G1.2 Чат для клиента, эксперта, агента и админа</h1>
-    <p>Статус: модель ролей уточнена, но нужно доказать запрет доступа к чужим анкетам.</p>
+    <p>Статус ТЗ: готово к передаче. Реализация и runtime-проверка доступа остаются отдельным этапом.</p>
   </header>
   <main class="page-main">
     <a class="back-link" href="../index.html">← Назад к списку задач</a>
     <article class="task-card" id="task-g1-chat" style="--goal-color:#2563eb">
         <header>
           <h3>G1.2 Чат для клиента, эксперта, агента и админа</h3>
-          <div class="meta"><span class="badge p0">P0</span><span>Цель 1: Глобальный чат</span><span class="badge status-yellow">Нужна проверка доступа</span></div>
+<div class="meta"><span class="badge p0">P0</span><span>Цель 1: Глобальный чат</span><span class="badge status-yellow">Spec handoff ready / runtime open</span></div>
         </header>
         <div class="body">
-          <p><b>Что уже зафиксировано:</b> для клиента существует только эксперт/анкета. Агент клиенту не виден. Назначение анкет агенту и вход Kristy в агентский чат доказаны частично. Нужно закрыть запрет чужих анкет и полный внутренний аудит.</p>
+          <p><b>Готовое ТЗ:</b> <a href="../../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-2-for-igor.html">открыть продуктовую постановку G1.2 для Игоря</a>. Отдельно подготовлен <a href="../../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g1-2-role-chat.md">технический контекст для его Codex</a>. Публичная роль называется «Эксперт», внутренний сотрудник — «Агент», а модератор выполняет support-функции. Реализация и runtime/ACL proof не смешиваются с готовностью спецификации.</p>
           <div class="flow-list">
-            <div class="flow-box"><b>Роли</b><ul><li>эксперт = одна анкета/личность;</li><li>агент = человек, ведущий несколько анкет;</li><li>клиент не видит агента.</li></ul></div>
-            <div class="flow-box"><b>Путь пользователя</b><ul><li>клиент пишет эксперту;</li><li>агент должен отвечать только от назначенной анкеты;</li><li>поддержка может писать отдельно.</li></ul></div>
-            <div class="flow-box"><b>Данные и правила</b><ul><li>отдельный диалог для пары клиент + эксперт/анкета;</li><li>админ назначает анкеты агенту;</li><li>внутренний аудит должен хранить реального автора.</li></ul></div>
+            <div class="flow-box"><b>Роли</b><ul><li>Эксперт = публичная анкета/личность;</li><li>Агент = внутренний человек, ведущий назначенные анкеты;</li><li>модератор выполняет support-функции;</li><li>клиент не видит Агента.</li></ul></div>
+            <div class="flow-box"><b>Путь пользователя</b><ul><li>клиент бесплатно и асинхронно общается с Экспертом;</li><li>платная консультация начинается отдельным запросом по конкретному кейсу;</li><li>после завершения диалог возвращается в бесплатный режим;</li><li>недоступный Эксперт: выбрать другого или получить уведомление.</li></ul></div>
+            <div class="flow-box"><b>Данные и правила</b><ul><li>один постоянный диалог для пары клиент + Эксперт;</li><li>каждая платная консультация — отдельная session внутри диалога;</li><li>Агент видит только историю этой пары без контактов, платежных данных и внутренних ID;</li><li>внутренний аудит хранит реального автора.</li></ul></div>
+            <div class="flow-box"><b>Сообщения MVP</b><ul><li>текст, системные сообщения, emoji, изображения и документы;</li><li>аудио, видео и произвольные файлы запрещены;</li><li>Эксперт может редактировать с edited marker и сохранением прошлой версии;</li><li>staff может только скрыть запрещённый контент с причиной и audit.</li></ul></div>
+            <div class="flow-box"><b>Настройки чата</b><ul><li>максимальная длина сообщения и частота отправки задаются отдельно в админ-панели;</li><li>typing/delivered/read не влияют на credits;</li><li>шаблоны — только редактируемые подсказки;</li><li>автоматическая отправка запрещена.</li></ul></div>
+            <div class="flow-box"><b>Место в админ-панели</b><ul><li>страница «Настройки чата»;</li><li>route: /ru/admin/settings/chat;</li><li>в существующем списке /ru/admin/settings/index;</li><li>сразу после «Основные настройки» и перед «Настройки фото»;</li><li>MVP-доступ только для super-admin;</li><li>только message/rate limits, document/attachment policy, цензура, client reconnect, in-chat templates, hide/end reasons и retention;</li><li>роли, prices/payments, global photo limits, premium dating-message settings, email templates, message monitoring, support и logs не дублируются.</li></ul></div>
+            <div class="flow-box"><b>Цензура контактов</b><ul><li>проверка действует для клиента и Агента;</li><li>отправитель видит original и policy warning;</li><li>получатель видит запрещённые фрагменты как «ЦЕНЗУРА»;</li><li>каждая попытка попадает в существующий операционный контур «Сообщения»;</li><li>MVP-просмотр попыток и originals — только super-admin;</li><li>для consultation message вместо physical delete доступно только hide с причиной/audit;</li><li>категории можно включать и выключать в админ-панели с version/audit.</li></ul></div>
+            <div class="flow-box"><b>Связь и SLA</b><ul><li>client reconnect grace — отдельные управляемые 60 секунд без новой paid minute;</li><li>timeout клиента: technical end + support route, coupon решает Эксперт по отдельному регламенту;</li><li>SLA failure Эксперта: started minute завершается, следующая не начинается, создаётся incident;</li><li>уведомление обещает N компенсационных минут только после реального coupon grant;</li><li>retry не создаёт дубли.</li></ul></div>
+            <div class="flow-box"><b>Завершение и история</b><ul><li>завершить могут клиент, Агент, модератор, super-admin и система;</li><li>Агент/staff выбирают причину, система фиксирует automatic reason;</li><li>клиент получает итог времени, credits, цены, причины и следующие действия;</li><li>в MVP «История консультации» доступна только для чтения в кабинете;</li><li>скачивание и экспорт переносятся на следующий этап доработки;</li><li>стартовый retention — 24 месяца, управляется из админ-панели.</li></ul></div>
             <div class="flow-box"><b>Маркетинг</b><ul><li>чат - главный продаваемый продукт;</li><li>обещание рекламы должно подтверждаться скоростью ответа.</li></ul></div>
-            <div class="flow-box"><b>Проверка</b><ul><li>клиент видит только эксперта;</li><li>агент не открывает чужие анкеты;</li><li>супер-админ видит весь внутренний след.</li></ul></div>
+            <div class="flow-box"><b>Проверка</b><ul><li>клиент видит только эксперта;</li><li>агент не открывает чужие анкеты;</li><li>супер-админ видит весь внутренний след;</li><li>есть first useful value, прозрачный trial/paid state и no-pressure continuation.</li></ul></div>
+            <div class="flow-box"><b>Training-derived behavior</b><ul><li>presence and relevance to the client's question;</li><li>empathy, instrument/source clarity and balanced answer;</li><li>no hidden billing, artificial incompleteness, fear pressure or unsupported guarantee.</li></ul></div>
           </div>
           <div class="mock-card">
             <h4>Макет: рабочий чат по ролям</h4>
             <div class="mock-body">
               <div class="mock-strip">
-                <span class="mock-pill green">Клиент: пишет и видит баланс</span>
-                <span class="mock-pill yellow">Агент: отвечает за назначенную анкету</span>
-                <span class="mock-pill">Анкета: видна клиенту</span>
-                <span class="mock-pill">Админ: видит внутренний след</span>
+                <span class="mock-pill green">Клиент: free dialogue → consultation request</span>
+                <span class="mock-pill yellow">Агент: одна active paid/pause session</span>
+                <span class="mock-pill">Эксперт: виден клиенту</span>
+                <span class="mock-pill">Поддержка Nebula: отдельное авторство</span>
               </div>
               <div class="mock-grid two">
                 <div class="mock-box">
@@ -195,7 +202,7 @@ main.page-main { padding:22px 28px 42px; }
               </div>
             </div>
           </div>
-          <div class="status-proof"><b>Проверено:</b> старый срез чата разделяет клиентское сообщение, ответ эксперта и внутреннюю заметку. Дополнительно подтвержден вход Kristy как агента. <b>Не принято:</b> найден доступ к чужой анкете по прямому URL, поэтому нужна отдельная проверка доступа.</div>
+          <div class="status-proof"><b>Проверено:</b> старый срез чата разделяет клиентское сообщение, ответ эксперта и внутреннюю заметку. Дополнительно подтвержден вход Kristy как агента. Training corpus добавил продуктовый behavior layer для консультации. <b>Не принято:</b> найден доступ к чужой анкете по прямому URL; runtime/ACL proof and owner/legal engagement policy still required.</div>
         </div>
       </article>
   </main>

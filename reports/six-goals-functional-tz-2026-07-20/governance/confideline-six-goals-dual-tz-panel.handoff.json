@@ -1,0 +1,126 @@
+{
+  "schema": "codex_task_execution_governance_handoff.v1",
+  "task_name": "confideline-six-goals-dual-tz-panel",
+  "mode": "scoped_patch",
+  "dry_run": false,
+  "status": "ready_for_governed_execution",
+  "created_at_utc": "2026-07-27T08:37:32.3136524Z",
+  "preflight": {
+    "schema": "codex_task_execution_governance_preflight.v1",
+    "status": "pass",
+    "task_name": "confideline-six-goals-dual-tz-panel",
+    "mode": "scoped_patch",
+    "live_gate": null,
+    "allowed": true,
+    "checked_at_utc": "2026-07-27T08:37:32.3090946Z",
+    "checks": [
+      {
+        "name": "policy_exists",
+        "status": "pass",
+        "value": "H:\\GPT-Codex\\Codex-Contour-Next\\registries\\task-execution-governance-policy.registry.json"
+      },
+      {
+        "name": "w320_complete",
+        "status": "pass",
+        "value": "pass"
+      },
+      {
+        "name": "root_git_mutation_guard",
+        "status": "pass",
+        "value": {
+          "root_git_present": true,
+          "root_git_mutation_allowed": false
+        }
+      },
+      {
+        "name": "mode_route_resolved",
+        "status": "pass",
+        "value": {
+          "mode": "scoped_patch",
+          "mode_is_safe": true,
+          "owner_gate_required": false,
+          "live_gate_present": false
+        }
+      },
+      {
+        "name": "legacy_dangerous_defaults_mapped",
+        "status": "pass",
+        "value": {
+          "target_effect": "request_missing_input",
+          "owner_gate_modes": [
+            "live_activation",
+            "direct_openclaw",
+            "scheduler_activation",
+            "global_fanout"
+          ],
+          "legacy_defaults": {
+            "execution_policy_required": true,
+            "tooling_first_required": true,
+            "evidence_required": true,
+            "verifier_required": true,
+            "rollback_required": true,
+            "governance_default_effect": "route_status",
+            "safe_modes": [
+              "planning",
+              "artifact_only",
+              "verifier_only",
+              "tool_enablement_shadow",
+              "scoped_patch",
+              "site_route_assignment"
+            ],
+            "owner_gate_modes": [
+              "live_activation",
+              "direct_openclaw",
+              "scheduler_activation",
+              "global_fanout"
+            ],
+            "owner_gate_target_effect": "request_missing_input",
+            "live_activation_allowed": false,
+            "direct_openclaw_dispatch_allowed": false,
+            "scheduler_activation_allowed": false,
+            "global_agent_fanout_allowed": false,
+            "runtime_default_switch_allowed": false,
+            "root_git_mutation_allowed": false,
+            "cookies_tokens_browser_vpn_openai_routes_allowed": false,
+            "persistent_browser_profile_ui_use_via_manhattan_allowed": true,
+            "cookies_tokens_browser_vpn_openai_routes_allowed_meaning": "Direct read/export/copy/dump/clear/reset/rotate/replace/internal mutation of secrets, browser profile internals, VPN/OpenAI route material, or raw browser history is disallowed. Normal task-scoped use of assigned persistent browser profiles through Manhattan UI is allowed.",
+            "site_route_assignment_allowed": true
+          }
+        }
+      }
+    ],
+    "failed": [],
+    "decision": {
+      "proceed": true,
+      "owner_gate_required": false,
+      "owner_gate_target_effect": null,
+      "recommended_next_action": "proceed",
+      "live_activation_allowed": false,
+      "direct_openclaw_dispatch_allowed": false,
+      "scheduler_activation_allowed": false,
+      "global_agent_fanout_allowed": false,
+      "rollback_required": true,
+      "evidence_required": true
+    }
+  },
+  "allowed_scope": "Task-scoped local file patch only after source-backed evidence; no publish/deploy, no browser/session/profile/cookie/token mutation, no broad refactor.",
+  "required_before_completion": [
+    "task evidence",
+    "relevant verifier pass",
+    "rollback note",
+    "no forbidden live/fanout/scheduler/direct OpenClaw action"
+  ],
+  "rollback": "Remove only task-local artifacts produced after this handoff unless a narrower rollback contract says otherwise.",
+  "forbidden_actions": [
+    "publish/deploy",
+    "cookies/tokens/browser profile mutation",
+    "VPN/OpenAI route mutation",
+    "root .git mutation",
+    "uncontrolled live activation",
+    "scheduler activation",
+    "direct OpenClaw dispatch",
+    "global fan-out",
+    "broad redesign outside the named owner/component"
+  ],
+  "evidence_path": "H:\\GPT-Codex\\Confideline\\reports\\six-goals-functional-tz-2026-07-20\\governance\\confideline-six-goals-dual-tz-panel.handoff.json"
+}

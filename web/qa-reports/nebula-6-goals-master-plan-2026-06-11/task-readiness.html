@@ -155,12 +155,12 @@
 
   const tzReadyByTask = {
     "task-g1-session": 95,
-    "task-g1-chat": 75,
+"task-g1-chat": 90,
     "task-g1-statuses": 65,
     "task-g1-chat-notifications": 55,
-    "task-g2-pricing": 70,
-    "task-g2-timer": 70,
-    "task-g2-refund": 75,
+    "task-g2-pricing": 90,
+    "task-g2-timer": 90,
+    "task-g2-refund": 90,
     "task-g2-accruals": 95,
     "task-g3-home": 25,
     "task-g3-catalog": 25,
@@ -171,16 +171,16 @@
     "task-g3-rotation": 90,
     "task-g4-support": 75,
     "task-g4-complaints": 75,
-    "task-g4-docs": 55,
+"task-g4-docs": 85,
     "task-g4-support-notifications": 20,
     "task-g5-events": 70,
     "task-g5-dashboard": 30,
-    "task-g5-kpi": 25,
+"task-g5-kpi": 85,
     "task-g5-marketing-gate": 65,
     "task-g6-assignment": 70,
     "task-g6-sla": 75,
-    "task-g6-quality": 65,
-    "task-g6-training": 65,
+"task-g6-quality": 85,
+"task-g6-training": 90,
     "task-g6-team-notifications": 20,
     "task-g6-admin-url": 35,
     "task-g6-isolated-admin-access": 90
@@ -211,25 +211,29 @@
       ]
     },
     "task-g1-chat": {
-      code:"G1.2", title:"Чат по ролям", goal:"Цель 1", stage:"proof_gap", progress:40, tzReady:75, detailHref:"tasks/task-g1-chat.html",
+      code:"G1.2", title:"Чат по ролям", goal:"Цель 1", stage:"product_tz_ready_runtime_proof_open", progress:40, tzReady:95, detailHref:"tasks/task-g1-chat.html",
       ready:[
+        "Product-only TZ создан: reports/tz-product-g1-2-role-chat-consultation-2026-07-16.md.",
         "Owner-модель ролей уточнена: клиент видит только эксперта/анкету, агент клиенту не раскрывается.",
         "Назначение анкет агенту Kristy и вход через Login as user доказаны частично.",
         "Live proof 29 июня 2026 подтвердил: Kristy видит несколько диалогов от назначенных анкет Solara, Stella и Talia.",
         "Live payload подтвердил: ответы в диалоге Talia идут от публичной анкеты Talia Munkrest через userOfAgentId=105.",
-        "Фронт клиента частично подтвержден: Kristy видит отдельные диалоги с Talia, Stella и Solara."
+        "Фронт клиента частично подтвержден: Kristy видит отдельные диалоги с Talia, Stella и Solara.",
+        "Training corpus добавил продуктовый слой поведения консультации: presence, first useful value, relevance, empathy, instrument/source clarity, transparent trial/paid state and no pressure."
       ],
       needed:[
         "Закрыть P0-разрыв доступа: агент не должен открывать чужие анкеты по прямому URL.",
         "Доказать, что agent chat API фильтрует диалоги только по назначенным анкетам.",
         "Доказать, что backend отклоняет чужой userOfAgentId при отправке сообщения.",
         "Добавить или доказать operator audit: публичная анкета, реальный оператор, время и действие.",
-        "Доказать, что после снятия анкеты агент сразу теряет доступ к ее диалогам."
+        "Доказать, что после снятия анкеты агент сразу теряет доступ к ее диалогам.",
+        "Owner/legal gate: утвердить prohibited engagement tactics и границу helpful continuation vs pressure."
       ],
       accept:[
         "Клиент видит только эксперта/анкету и поддержку.",
         "Агент видит только назначенные анкеты и не может использовать чужую анкету.",
-        "Внутренний след показывает реального оператора, публичную анкету, назначение и вмешательство админа/супер-админа."
+        "Внутренний след показывает реального оператора, публичную анкету, назначение и вмешательство админа/супер-админа.",
+        "Positive/negative examples prove transparent trial/paid behavior, useful first answer and no-pressure consultation behavior."
       ]
     },
     "task-g1-statuses": {
@@ -268,16 +272,16 @@
       ]
     },
     "task-g2-pricing": {
-      code:"G2.1", title:"Цена и баланс", goal:"Цель 2", stage:"accepted_bounded_slice", progress:45, tzReady:70, detailHref:"tasks/task-g2-pricing.html",
+      code:"G2.1", title:"Цена и баланс", goal:"Цель 2", stage:"product_tz_ready_owner_runtime_policy_open", progress:45, tzReady:90, detailHref:"tasks/task-g2-pricing.html",
       ready:[
         "Правило цены привязано к конкретной консультации.",
         "Старт блокируется, если цена и условия не зафиксированы.",
-        "Проверены успешный старт и блокировка ошибочного старта."
+        "Есть единый product-only billing truth pack: reports/tz-product-g2-billing-truth-2026-07-16.md."
       ],
       needed:[
-        "Вывести эту механику в прозрачный клиентский интерфейс на сайте.",
-        "Показать понятную цену, условия старта и последствия до начала консультации.",
-        "Проверить путь витрина сайта -> старт консультации без ручных костылей."
+        "Утвердить exact package table, free/trial amount, credit/minute rule, refill/auto-refill policy и legal/payment wording.",
+        "Привязать все billing states к Figma/Oracle screens.",
+        "Доказать путь на current Confideline/Yii2 front/admin без runtime assumptions."
       ],
       accept:[
         "Клиент до старта видит цену и правило допуска.",
@@ -286,16 +290,16 @@
       ]
     },
     "task-g2-timer": {
-      code:"G2.2", title:"Таймер и остановка", goal:"Цель 2", stage:"accepted_bounded_slice", progress:40, tzReady:70, detailHref:"tasks/task-g2-timer.html",
+      code:"G2.2", title:"Таймер и остановка", goal:"Цель 2", stage:"product_tz_ready_owner_runtime_policy_open", progress:40, tzReady:90, detailHref:"tasks/task-g2-timer.html",
       ready:[
         "Есть учет времени и списаний, привязанный к конкретной консультации.",
         "Предупреждение, остановка и итог списаний уже доказаны.",
-        "Продолжение без доступного баланса уже блокируется."
+        "Product TZ запрещает скрывать окончание free/trial и требует прозрачного paid transition."
       ],
       needed:[
-        "Сделать живой понятный таймер для клиентского и операторского интерфейса.",
-        "Довести поведение предупреждений перед остановкой.",
-        "Проверить продолжение/остановку консультации в реальном пользовательском потоке."
+        "Утвердить точные правила billable minute/unit, low/no balance pause, late top-up и reconnect behavior.",
+        "Привязать timer/free/trial/paid states к Figma/Oracle screens.",
+        "Доказать текущий живой пользовательский поток на Confideline/Yii2."
       ],
       accept:[
         "На сайте видно, сколько консультация уже идет и что произойдет дальше.",
@@ -304,16 +308,16 @@
       ]
     },
     "task-g2-refund": {
-      code:"G2.3", title:"Возвраты", goal:"Цель 2", stage:"accepted_bounded_slice", progress:40, tzReady:75, detailHref:"tasks/task-g2-refund.html",
+      code:"G2.3", title:"Возвраты", goal:"Цель 2", stage:"product_tz_ready_support_refund_runtime_open", progress:40, tzReady:90, detailHref:"tasks/task-g2-refund.html",
       ready:[
         "Принят проверенный внутренний срез: спор, возврат и журнал решения привязаны к конкретной консультации.",
         "Внутренний журнал хранит списание, возврат и итог решения по консультации, а не как общий финансовый шум.",
-        "Операторская поверхность уже показывает дело возврата, журнал консультации и историю статусов на данных приложения."
+        "Product TZ требует consultation/support-case linkage, duplicate prevention and cumulative refund limit."
       ],
       needed:[
-        "Довести клиентский/support E2E: как клиент подает спор, видит статус и получает объяснение решения.",
-        "Связать G2.3 с G4 поддержкой и жалобами, чтобы возврат не решался только внутренним журналом.",
-        "Описать owner-approved правила: когда возвращаем, когда отказываем, кто принимает решение и какой текст видит клиент."
+        "Утвердить owner/legal refund eligibility policy.",
+        "Доказать current клиентский/support route на Confideline/Yii2.",
+        "Связать финальное wording с G4 legal/support pack."
       ],
       accept:[
         "Любой возврат или отказ объясняется через конкретную консультацию и ее доказательства.",
@@ -322,19 +326,19 @@
       ]
     },
     "task-g2-accruals": {
-      code:"G2.4", title:"Начисления", goal:"Цель 2", stage:"implementation_in_progress", progress:20, tzReady:95, detailHref:"tasks/task-g2-accruals.html",
+      code:"G2.4", title:"Начисления", goal:"Цель 2", stage:"product_tz_ready_compensation_runtime_open", progress:20, tzReady:95, detailHref:"tasks/task-g2-accruals.html",
       ready:[
         "Контракт начислений подготовлен: начисление должно объясняться конкретной консультацией.",
         "Понятны статусы: ожидает, заработано, удержано, уменьшено, отменено, отклонено.",
         "Понятна связь с возвратами и спорами: спор удерживает начисление, возврат уменьшает или отменяет.",
         "Live-срез 29 июня 2026 подтвердил общий финансовый фундамент сайта: заказы, баланс, транзакции, начисления, удержания, выплаты, реквизиты, платежные настройки и цены.",
         "Зафиксирована новая вводная: модель начислений еще не проверена, значит нужна гибкая админская настройка правил, а не одна жесткая формула.",
-        "Собран implementation packet: настройки, registry/detail, data contract, статусы, integration rules, verifier cases и stop conditions."
+        "Product TZ отделяет public expert statistics от internal agent compensation and refund correction."
       ],
       needed:[
-        "Проверить реализованные настройки трех компонентов оплаты, процент/ставку, возврат и ручной override с причиной.",
-        "Реализовать registry/detail начислений по консультациям.",
-        "Реализовать policy version snapshot у каждого начисления, чтобы было понятно, по каким правилам оно рассчитано.",
+        "Проверить реализованный runtime scope по трем компонентам оплаты, процент/ставку, возврат и ручной override с причиной.",
+        "Получить current front/admin proof начислений по консультациям.",
+        "Доказать, что по каждому начислению понятно, какие правила действовали на момент консультации.",
         "Связать начисление с конкретной консультацией, а не только с общей балансовой операцией.",
         "Доказать proportional partial refund и super-admin override базы/процента с полной историей.",
         "Доказать живой сценарий: завершенная консультация -> начисление -> спор или возврат -> операторская проверка.",
@@ -476,51 +480,61 @@
       ]
     },
     "task-g4-support": {
-      code:"G4.1", title:"Поддержка", goal:"Цель 4", stage:"packet_ready", progress:5, tzReady:75, detailHref:"tasks/task-g4-support.html",
+      code:"G4.1", title:"Поддержка", goal:"Цель 4", stage:"product_tz_ready_runtime_billing_policy_open", progress:5, tzReady:90, detailHref:"tasks/task-g4-support.html",
       ready:[
-        "Понимание, что поддержка должна быть частью контура консультации, уже есть."
+        "Product-only TZ создан: reports/tz-product-g4-1-g4-2-support-refund-2026-07-16.md.",
+        "Понимание, что поддержка должна быть частью контура консультации, уже есть.",
+        "Support route связан с consultation, billing/payment, quality review, policy escalation and client-visible outcome."
       ],
       needed:[
-        "Определить роли, входы в поддержку, очереди и типы обращений.",
-        "Связать поддержку с консультацией, возвратами и качеством.",
-        "Собрать операторский и клиентский контур."
+        "Current Yii2/front/admin runtime proof for case creation, role access, consultation linkage and decision/outcome.",
+        "Approved billing/legal/support truth for credits/minutes/free allowance/refill/refund.",
+        "Client-facing Figma/Oracle entry points for support/report/refund states."
       ],
       accept:[
         "Любое обращение привязывается к реальной консультации или продуктовой проблеме.",
-        "Оператор понимает, что делать дальше.",
-        "Клиент видит понятный способ получить помощь."
+        "Support восстанавливает контекст и понимает, что делать дальше.",
+        "Клиент видит понятный способ получить помощь, статус и результат."
       ]
     },
     "task-g4-complaints": {
-      code:"G4.2", title:"Жалобы и возвраты", goal:"Цель 4", stage:"packet_ready", progress:5, tzReady:75, detailHref:"tasks/task-g4-complaints.html",
+      code:"G4.2", title:"Жалобы и возвраты", goal:"Цель 4", stage:"product_tz_ready_runtime_billing_policy_open", progress:5, tzReady:90, detailHref:"tasks/task-g4-complaints.html",
       ready:[
-        "Есть понимание связи жалоб с возвратами и спорными ситуациями."
+        "Product-only TZ создан: reports/tz-product-g4-1-g4-2-support-refund-2026-07-16.md.",
+        "Есть понимание связи жалоб с возвратами и спорными ситуациями.",
+        "Жалоба/возврат описаны как evidence-based decision with no/partial/full refund, correction, quality review or owner/legal review."
       ],
       needed:[
-        "Описать прием обращения, разбор, решение, эскалации и исходы.",
-        "Привязать это к доказательствам по консультации и операторским действиям.",
-        "Сделать понятную поверхность для владельца процесса."
+        "G2 billing truth for refund eligibility, paid units and cumulative refund limits.",
+        "Runtime proof that duplicate refund/correction actions are blocked or merged.",
+        "Owner/legal-approved wording for refund/support route."
       ],
       accept:[
         "Жалоба проходит полный путь до решения.",
         "Каждое решение имеет след и объяснение.",
-        "Нет жалоб, которые висят вне контекста консультации."
+        "Нет жалоб, которые висят вне контекста консультации.",
+        "Refund/no-refund/correction is consistent with client-visible and internal financial outcome."
       ]
     },
     "task-g4-docs": {
-      code:"G4.3", title:"Документы", goal:"Цель 4", stage:"packet_ready", progress:5, tzReady:55, detailHref:"tasks/task-g4-docs.html",
+      code:"G4.3", title:"Документы", goal:"Цель 4", stage:"product_tz_ready_owner_legal_policy_open", progress:5, tzReady:85, detailHref:"tasks/task-g4-docs.html",
       ready:[
-        "Понято, что документы и правила являются обязательной частью контура доверия."
+        "Понято, что документы и правила являются обязательной частью контура доверия.",
+        "Training corpus exposed required policy zones: billing/trial boundary, refund/support, prohibited claims, Trust & Safety, privacy and consultant behavior.",
+        "Product-only TZ создан: reports/tz-product-g4-3-rules-trust-safety-2026-07-16.md."
       ],
       needed:[
-        "Определить список документов и где они должны появляться.",
-        "Связать документы с ключевыми действиями пользователя.",
-        "Сделать приемочный список обязательных текстов и мест."
+        "Owner/legal-approved US-English Trust & Safety route.",
+        "Prohibited claims and engagement policy wording.",
+        "Approved billing/legal/support truth for credits/minutes/free allowance/refill/refund.",
+        "Display proof before payment, trial/paid transition, chat, refund/support and admission/course.",
+        "Remove YouDate/dating leakage and avoid raw competitor scripts as policy.",
+        "Runtime/front/admin proof after Igor implementation."
       ],
       accept:[
-        "Пользователь видит нужные правила в нужный момент.",
-        "Оператор и админ понимают, на что можно ссылаться.",
-        "Нет критичных юридических и продуктовых дыр."
+        "User sees the relevant rule before the risky action.",
+        "Agent/moderator/support know what may be said, what is forbidden and when to escalate.",
+        "Approved policy version is linked to exam/QA hard-fail cases."
       ]
     },
     "task-g4-support-notifications": {
@@ -572,19 +586,24 @@
       ]
     },
     "task-g5-kpi": {
-      code:"G5.3", title:"Таблица показателей", goal:"Цель 5", stage:"master_plan_only", progress:0, tzReady:25, detailHref:"tasks/task-g5-kpi.html",
+      code:"G5.3", title:"Таблица показателей", goal:"Цель 5", stage:"product_tz_ready_thresholds_runtime_open", progress:0, tzReady:85, detailHref:"tasks/task-g5-kpi.html",
       ready:[
-        "Есть только базовое понимание, что показатели нужны."
+        "Product-only TZ создан: reports/tz-product-g5-3-kpi-scorecard-measurement-2026-07-16.md.",
+        "Training corpus identified quality/operations metrics for pilot consultations.",
+        "Reference timings are measurement candidates, not approved hard thresholds.",
+        "Quality must be reported separately from profit/conversion."
       ],
       needed:[
-        "Определить список показателей, владельцев и периодичность.",
-        "Зафиксировать формулы и источники.",
-        "Отвязаться от общих слов и перейти к измеримым метрикам."
+        "Owner-approved numeric thresholds and hard-fail vs coaching-only split.",
+        "Runtime/event proof before treating dashboard numbers as true.",
+        "Decision link: coaching, re-check, paid-access block, refund review, launch/marketing gate.",
+        "Approved billing/legal/support truth for refund and paid-unit definitions.",
+        "Preserve public expert metrics vs internal agent KPI separation."
       ],
       accept:[
-        "Каждый показатель имеет владельца, формулу и действие.",
-        "Таблица не спорит с дашбордом и событиями.",
-        "По показателям можно понять, что улучшать дальше."
+        "Each metric has product definition, owner, decision use, source proof and status.",
+        "The table supports pilot readiness, quality, admission, support/refund and marketing-gate decisions.",
+        "Approved thresholds are clearly separated from pilot measurement candidates."
       ]
     },
     "task-g5-marketing-gate": {
@@ -647,41 +666,46 @@
       ]
     },
     "task-g6-quality": {
-      code:"G6.3", title:"Контроль качества", goal:"Цель 6", stage:"packet_ready", progress:5, tzReady:65, detailHref:"tasks/task-g6-quality.html",
+      code:"G6.3", title:"Контроль качества", goal:"Цель 6", stage:"scorecard_requirements_ready_thresholds_open", progress:5, tzReady:85, detailHref:"tasks/task-g6-quality.html",
       ready:[
-        "Есть понимание, что слой качества нужен поверх всей консультации."
+        "Training corpus дал P0 scorecard dimensions for pilot consultation review.",
+        "Hard-fail classes identified: hidden billing, prohibited guarantee, unsafe crisis response, manipulation/fear pressure, privacy breach, invented context and refusal to correct material error.",
+        "Manual review of every pilot consultation is acceptable for MVP scale."
       ],
       needed:[
-        "Описать критерии хорошей/плохой консультации.",
-        "Связать качество с жалобами, возвратами, сроками реакции и обучением.",
-        "Собрать операторскую форму оценки."
+        "Owner/legal approval for exact engagement and Trust & Safety wording.",
+        "Numeric thresholds and severity mapping.",
+        "Operator surface: review record, source excerpt, correction, appeal/re-check and paid-access block.",
+        "Anonymized good/bad example library."
       ],
       accept:[
-        "Каждая проблемная консультация может быть оценена по правилам.",
-        "Есть понятные триггеры для разбора и исправления.",
-        "Оценка качества влияет на действия, а не просто хранится."
+        "Every pilot consultation can be reviewed against the scorecard.",
+        "Every score or hard fail leads to a clear action.",
+        "Positive and negative walkthroughs cover manipulation, hidden billing, unsafe claim and correction/re-check cases."
       ]
     },
     "task-g6-training": {
-      code:"G6.4", title:"Обучение и регламенты", goal:"Цель 6", stage:"packet_ready", progress:0, tzReady:65, detailHref:"tasks/task-g6-training.html",
+code:"G6.4", title:"Обучение и регламенты", goal:"Цель 6", stage:"product_tz_ready_owner_policy_runtime_open", progress:5, tzReady:90, detailHref:"tasks/task-g6-training.html",
       ready:[
-        "Пока только базовый замысел слоя обучения.",
-        "Подтверждено: подготовку запуска нельзя откладывать на последний месяц.",
-        "Собраны первичные элементы найма: ЦА кандидата, текст вакансии, площадки поиска, анкета, тест и онлайн-собеседование."
+        "Product-only TZ создан: reports/tz-product-g6-4-expert-training-admission-2026-07-16.md.",
+        "Корпус обучения закрыт как доказательная база: локальные оригиналы, transcript, frame/OCR, 102 ten-minute packets, proof catalog и closeout.",
+        "Подтверждено: G6.4 является P0 для MVP 5 агентов / 25 экспертов / 1 модератор / 1 супер-админ.",
+        "Зафиксирована admission sequence: course, lesson tests, final exam, trial consultation, Ksenia review, owner approval, controlled first shifts and re-check.",
+        "Подготовку запуска нельзя откладывать на последний месяц."
       ],
       needed:[
-        "Определить набор регламентов по ролям.",
-        "Описать путь поиска: реальные эксперты или кандидаты на обучение.",
-        "Утвердить текст вакансии и бриф онлайн-собеседования владельцем.",
-        "Подготовить утвержденные ответы на вопросы кандидатов про деньги, график, выплаты, юридический формат, поток клиентов и правила работы.",
-        "Связать обучение с проблемами качества, сроков реакции и поддержки.",
-        "Сделать понятный операторский пакет, а не набор заметок."
+        "Owner должен утвердить финальные названия ролей и границу expert profile vs internal agent.",
+        "Owner/legal должны утвердить US-English Trust & Safety route и prohibited claims.",
+        "Нужен domain-owner review для пилотных Astrology/Tarot материалов и глоссария.",
+        "Нужны числовые thresholds для QA/SLA/admission.",
+        "Нужна approved rewritten/anonymized example library.",
+        "Нужно runtime/admin proof после реализации: paid access остается закрыт до полного admission gate."
       ],
       accept:[
-        "3-5 человек прошли допуск или обучение.",
-        "Новая роль может начать работу без устной расшифровки.",
-        "Регламенты покрывают типовые ошибки, эскалации и правило: не обещаем исход клиенту.",
-        "Обучение опирается на реальный продуктовый контур."
+        "Positive admission walkthrough проходит все gates до paid access.",
+        "Failed test, failed final exam, failed trial consultation, missing Ksenia review and stale policy cases block paid access.",
+        "Курс/тесты/экзамен/пробная консультация используют approved rules and anonymized examples.",
+        "Runtime proof подтверждает блокировку paid access до допуска и controlled first shifts после допуска."
       ]
     },
     "task-g6-admin-url": {
@@ -741,6 +765,34 @@
     }
   };
 
+  const canonicalG1G3SpecIds = [
+    "task-g1-session", "task-g1-chat", "task-g1-statuses", "task-g1-chat-notifications",
+    "task-g2-pricing", "task-g2-timer", "task-g2-refund", "task-g2-accruals",
+    "task-g3-home", "task-g3-catalog", "task-g3-profile", "task-g3-quiz",
+    "task-g3-qa", "task-g3-field-weight", "task-g3-rotation"
+  ];
+  canonicalG1G3SpecIds.forEach((taskId) => {
+    const item = tasks[taskId];
+    if (!item) return;
+    tzReadyByTask[taskId] = 100;
+    item.tzReady = 100;
+    item.stage = "etalon_spec_ready_runtime_open";
+    item.detailHref = `task-tz.html?task=${taskId}&doc=igor`;
+    item.ready = [
+      "Эталонное ТЗ для Игоря и отдельный Codex-контекст готовы и связаны с панелью.",
+      "Продуктовая логика, роли, состояния, admin ownership, границы и acceptance согласованы сквозным комплектом G1–G3."
+    ];
+    item.needed = [
+      "Реализация и runtime-приемка остаются открытыми; процент сайта слева не является процентом готовности ТЗ.",
+      "Build-specific proof, positive/negative ACL, money/state/audit и визуальная приемка выполняются по критериям канонического ТЗ."
+    ];
+    item.accept = [
+      "Все обязательные runtime-cases канонического ТЗ проходят на одной mapped build/config version.",
+      "Один P0 FAIL сохраняет NO_GO; наличие HTML/Figma/ТЗ само по себе не доказывает готовый сайт."
+    ];
+  });
+  tasks["task-g3-field-weight"].title = "Полнота и таксономия анкеты";
+
   const taskTermEn = {
     "task-g1-session": "service session",
     "task-g1-chat": "role-based chat",
@@ -775,6 +827,7 @@
   };
 
   function stageClass(stage) {
+    if (stage === "etalon_spec_ready_runtime_open") return "stage-accepted";
     if (stage === "accepted_bounded_slice") return "stage-accepted";
     if (stage === "implementation_in_progress") return "stage-packet";
     if (stage === "proof_gap") return "stage-packet";
@@ -784,6 +837,7 @@
   }
 
   function stageLabel(stage) {
+    if (stage === "etalon_spec_ready_runtime_open") return "ТЗ 100% · runtime открыт";
     if (stage === "accepted_bounded_slice") return "Срез согласован";
     if (stage === "implementation_in_progress") return "Внедрение начато / proof открыт";
     if (stage === "proof_gap") return "Нужна проверка";

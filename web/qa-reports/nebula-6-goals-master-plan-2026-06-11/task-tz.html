@@ -26,6 +26,20 @@
     a:hover { text-decoration:underline; }
     .top-links { display:flex; flex-wrap:wrap; gap:10px; margin:0 0 18px; }
     .top-link { display:inline-block; padding:9px 12px; border:1px solid #d8e6ff; border-radius:6px; background:#f4f8ff; font-weight:700; }
+    .review-link { color:#fff; background:#175cd3; border-color:#175cd3; }
+    .codex-link.review-link { background:#0f766e; border-color:#0f766e; }
+    .artifact-link[hidden], .docx-link[hidden] { display:none; }
+    .document-contract { background:#fff; border:1px solid var(--line); border-left:6px solid #175cd3; border-radius:10px; padding:16px 18px; margin:0 0 16px; }
+    .document-contract.codex { border-left-color:#0f766e; }
+    .document-contract h2 { margin:0 0 8px; font-size:24px; }
+    .document-contract p { margin:0 0 10px; line-height:1.5; }
+    .document-contract ul { margin:0; padding-left:18px; line-height:1.5; }
+    .document-contract .document-state { display:inline-block; margin-bottom:10px; padding:4px 8px; border-radius:999px; color:#1f5e2e; background:#d9ead3; font-size:12px; font-weight:700; }
+    .document-contract .document-state.draft { color:#7a4e00; background:#fff2cc; }
+    .related-materials { margin-top:24px; padding-top:18px; border-top:1px solid var(--line); }
+    .related-materials h2 { margin:0 0 10px; font-size:17px; }
+    .related-materials p { margin:0 0 12px; color:var(--muted); }
+    .related-links { display:flex; flex-wrap:wrap; gap:10px; }
     .hero { background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin:0 0 16px; }
     .hero-head { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0 0 8px; }
     .hero h2 { margin:0; font-size:26px; }
@@ -66,6 +80,12 @@
     .mock-box b { display:block; margin-bottom:6px; }
     .mock-box ul { margin:0; padding-left:18px; }
     .mock-box li { margin:4px 0; }
+    .oracle-nebula-pages { border-left:6px solid #6d28d9; scroll-margin-top:16px; }
+    .oracle-nebula-pages .visual-status { display:inline-block; margin:0 0 8px; padding:4px 8px; border-radius:999px; color:#5b21b6; background:#f0e9ff; font-size:12px; font-weight:700; }
+    .oracle-nebula-pages .visual-actions { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
+    .oracle-nebula-pages .visual-action { display:inline-block; padding:7px 9px; border:1px solid #d9c9ff; border-radius:6px; color:#6d28d9; background:#fbf9ff; font-size:13px; font-weight:700; }
+    .oracle-nebula-pages .visual-path { margin:8px 0 0; color:var(--muted); font-size:12px; overflow-wrap:anywhere; }
+    .oracle-nebula-pages .visual-boundary { margin-top:12px; padding:10px 12px; border-left:4px solid #7a4e00; background:#fff8e6; line-height:1.45; }
     .summary-grid { display:grid; grid-template-columns:repeat(3, minmax(160px,1fr)); gap:10px; margin:12px 0 0; }
     .summary-box { background:#fbfdff; border:1px solid #e4e9f2; border-radius:8px; padding:10px; }
     .summary-box span { display:block; color:var(--muted); font-size:12px; margin-bottom:4px; }
@@ -91,17 +111,41 @@
 </head>
 <body>
 <header>
-  <h1>ТЗ задачи</h1>
-  <p>Здесь только ТЗ-часть: что уже описано, что еще надо дописать и по какому критерию ТЗ можно считать достаточно готовым для реализации и приемки.</p>
+  <h1 id="page-title">ТЗ задачи</h1>
+  <p id="page-description">Тип документа зависит от класса задачи: разработка, смешанный пакет, операционная работа в админ-панели, content/policy или QA gate. Технический контекст используется только для обязательной разработки либо доказанного технического gap.</p>
 </header>
 
 <main>
   <div class="top-links">
     <a class="top-link" href="index.html">← Назад к списку</a>
-    <a class="top-link" id="detail-link" href="index.html">Полные детали задачи</a>
+    <a class="top-link" href="../../../reports/six-goals-functional-tz-2026-07-20/task-execution-ownership-matrix.md">Админка / разработка: вся матрица</a>
+    <a class="top-link" id="igor-link" href="index.html">Основной документ задачи</a>
+    <a class="top-link codex-link" id="codex-link" href="index.html">Технический контекст / эскалация</a>
+    <a class="top-link artifact-link" id="artifact-link" href="index.html" hidden>Открыть готовый документ</a>
+    <a class="top-link docx-link" id="docx-link" href="../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-1-for-igor.docx" hidden>Скачать основной документ DOCX</a>
+    <a class="top-link artifact-link" id="admin-mockup-link" href="g11-consultation-admin-mockup.html" hidden>Интерактивный макет админ-карточки</a>
   </div>
 
   <section id="content"></section>
+
+  <section class="related-materials" aria-labelledby="related-materials-title">
+    <h2 id="related-materials-title">Связанные материалы</h2>
+    <p>Методология и общие пакеты вынесены вниз, чтобы не мешать вычитке текущего ТЗ.</p>
+    <div class="related-links">
+      <a class="top-link" href="../../../reports/six-goals-functional-tz-2026-07-20/current-site-state-g1-g3-2026-07-29.md">Что есть на сайте сейчас</a>
+      <a class="top-link" href="../../../reports/six-goals-functional-tz-2026-07-20/target-site-vision-g1-g3.md">Какой сайт строим</a>
+      <a class="top-link" href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-product-consistency-register.md">Согласованность G1–G3</a>
+      <a class="top-link" href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-product-object-dictionary.md">Словарь объектов</a>
+      <a class="top-link" href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-route-and-admin-ownership-matrix.md">Маршруты и админ-владение</a>
+      <a class="top-link" href="../../../reports/six-goals-functional-tz-2026-07-20/expert-specialization-taxonomy-v2-2026-07-29.md">Категории и специализации Экспертов</a>
+      <a class="top-link" href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-documentation-closeout-2026-07-29.md">Closeout G1–G3</a>
+      <a class="top-link" href="../../../reports/six-goals-functional-tz-2026-07-20/readiness-summary.md">Карта 30/30 и 6 vertical packets</a>
+      <a class="top-link" href="../../../reports/six-goals-functional-tz-2026-07-20/functional-tz-quality-standard.md">Стандарт полноты ТЗ</a>
+      <a class="top-link" href="../../../reports/six-goals-functional-tz-2026-07-20/tz-crosscut-admin-managed-settings.md">ТЗ настроек админ-панели</a>
+      <a class="top-link" href="../../../reports/six-goals-functional-tz-2026-07-20/admin-panel-settings-development-package.md">Handoff разработки admin-панели</a>
+      <a class="top-link" id="task-source-link" href="index.html">Архивная карточка задачи</a>
+    </div>
+  </section>
 </main>
 
 <script>
@@ -116,25 +160,41 @@
     { key:"files", label:"Файлы и точки интеграции", max:10 },
     { key:"deps", label:"Зависимости и порядок", max:10 },
     { key:"proof", label:"Проверка, приемка и откат", max:10 },
-    { key:"owner", label:"Понимание и утверждение владельцем", max:10 }
+    { key:"owner", label:"Owner gates отделены и зафиксированы", max:10 }
+  ];
+  const standardTzCriteria = [
+    { key:"passport", label:"Q1. Паспорт и измеримый результат", max:5 },
+    { key:"scope", label:"Q2. Scope, non-goals и зависимости", max:8 },
+    { key:"roles", label:"Q3. Термины, роли и доступ", max:10 },
+    { key:"triggers", label:"Q4. Preconditions и triggers", max:7 },
+    { key:"states", label:"Q5. Состояния и инварианты", max:12 },
+    { key:"flow", label:"Q6. Функциональные сценарии", max:12 },
+    { key:"edge", label:"Q7. Edge/security/idempotency", max:12 },
+    { key:"data", label:"Q8. Данные, audit и readback", max:8 },
+    { key:"surfaces", label:"Q9. Пользовательские поверхности", max:6 },
+    { key:"acceptance", label:"Q10. Acceptance-кейсы", max:12 },
+    { key:"handoff", label:"Q11. Programmer handoff", max:5 },
+    { key:"proof", label:"Q12. DoD и proof boundary", max:3 }
   ];
 
   const tzScoreByTask = {
-    "task-g1-session": [10,10,10,10,10,10,10,10,10,5],
-    "task-g1-chat": [10,10,10,10,5,5,10,10,5,0],
-    "task-g1-statuses": [10,5,5,10,5,5,5,10,5,5],
-    "task-g1-chat-notifications": [10,5,5,5,5,0,5,5,10,5],
-    "task-g2-pricing": [10,5,5,10,5,0,5,10,10,10],
-    "task-g2-timer": [10,5,5,10,5,0,5,10,10,10],
-    "task-g2-refund": [10,10,10,10,5,5,5,10,5,5],
-    "task-g2-accruals": [10,10,10,10,10,10,10,10,10,5],
-    "task-g3-home": [5,5,5,0,5,0,0,5,0,0],
-    "task-g3-catalog": [5,5,5,0,5,0,0,5,0,0],
-    "task-g3-profile": [10,5,5,5,10,0,5,5,5,0],
-    "task-g3-quiz": [5,5,5,0,5,0,0,5,0,0],
-    "task-g3-qa": [10,5,0,5,0,0,5,5,5,0],
-    "task-g3-field-weight": [10,10,5,5,5,0,0,5,5,0],
-    "task-g3-rotation": [10,10,10,10,10,10,10,10,10,0],
+    "task-g1-session": [5,8,10,7,12,12,12,8,6,12,5,3],
+    "task-g1-chat": [5,8,10,7,12,12,12,8,6,12,5,3],
+    "task-g1-statuses": [5,8,10,7,12,12,12,8,6,12,5,3],
+    "task-g1-chat-notifications": [5,8,10,7,12,12,12,8,6,12,5,3],
+    "task-g2-pricing": [5,8,10,7,12,12,12,8,6,12,5,3],
+    "task-g2-timer": [5,8,10,7,12,12,12,8,6,12,5,3],
+    "task-g2-refund": [5,8,10,7,12,12,12,8,6,12,5,3],
+    "task-g2-accruals": [5,8,10,7,12,12,12,8,6,12,5,3],
+    "task-g2-geo-content": [5,8,10,7,12,12,12,8,6,12,5,3],
+    "task-g3-home": [5,8,10,7,12,12,12,8,6,12,5,3],
+    "task-g3-catalog": [5,8,10,7,12,12,12,8,6,12,5,3],
+    "task-g3-profile": [5,8,10,7,12,12,12,8,6,12,5,3],
+    "task-g3-quiz": [5,8,10,7,12,12,12,8,6,12,5,3],
+    "task-g3-qa": [5,8,10,7,12,12,12,8,6,12,5,3],
+    "task-g3-field-weight": [5,8,10,7,12,12,12,8,6,12,5,3],
+    "task-g3-rotation": [5,8,10,7,12,12,12,8,6,12,5,3],
+    "task-g3-integration": [5,8,10,7,12,12,12,8,6,12,5,3],
     "task-g4-support": [10,10,10,10,10,0,10,10,5,0],
     "task-g4-complaints": [10,10,10,10,10,0,10,10,5,0],
     "task-g4-docs": [10,10,10,5,5,0,5,5,5,0],
@@ -154,112 +214,120 @@
 
   const criterionDetailsByTask = {
     "task-g1-session": [
-      "Строим одну карточку консультации: клиент, вопрос, эксперт, статус и связь с чатом должны собираться вокруг отдельной записи консультации.",
-      "Источник есть частично: подтверждено, что на live-сайте сейчас есть только базовый чат /ru/admin/message/chat; отдельных сессий нет. Есть HTML-макет, пакет реализации и черновой материал, но нет одного принятого канонического ТЗ.",
-      "Граница описана частично: G1.1 не включает деньги, возвраты, поддержку и полный ход консультации. Нужно еще закрепить это в принятом ТЗ.",
-      "Отдельная запись консультации, базовые поля, связи с клиентом/экспертом/сообщениями и стартовые статусы уже описаны.",
-      "Экран описан частично: понятно, какой должна быть карточка консультации, но на live-сайте такой карточки в админке сейчас нет.",
-      "Не закрыто: нет принятого контракта, что из HTML-макета переносим 1:1, что адаптируем, что остается для следующих задач и как показываем связь с чатом/сообщениями.",
-      "Файлы описаны частично: есть список миграции, модели, сервиса, контроллера, вида, скрипта и стилей, но он еще не оформлен как финальный пакет для передачи в работу.",
-      "Порядок понятен: сначала запись консультации, затем статусы, цена, таймер/списания/остановка и возвраты.",
-      "Проверка описана: нужно доказать, что live-карточка консультации связана с конкретным диалогом и сообщениями.",
-      "Не закрыто: Алексей еще не утвердил ТЗ как понятный рабочий документ для передачи Игорю."
+      "Цель зафиксирована: одна консультация представлена отдельной административной карточкой, связанной с клиентом, Экспертом, Агентом и постоянным диалогом.",
+      "Канонический источник требований — открытый основной функциональный документ G1.1; рядом доступны технический контекст и интерактивный макет. Live-сайт пока доказывает только базовый чат, а не реализованную карточку consultation session.",
+      "Граница принята: G1.1 владеет карточкой, связями, role-based доступом и audit/readback; lifecycle, деньги, возвраты и support остаются у G1.3, G2 и G4.",
+      "Состав записи, обязательные связи, server-derived actor, terminal initiator и снимки управляемых настроек описаны.",
+      "Состав экрана и место новой страницы в существующей админ-панели определены; live-реализация пока не доказана.",
+      "Интерактивный HTML-макет является визуальным приложением. Он не подменяет основной документ и не превращает демо-данные в требования.",
+      "Технический контекст фиксирует предполагаемые integration points, но точный mapped build/commit и реализацию определяет Игорь.",
+      "Зависимости разведены: G1.2 даёт диалог, G1.3 — lifecycle, G2 — деньги, G4 — support/refund, G6 — assignment и доступ.",
+      "Приёмка требует role proof, связи карточки с реальным диалогом и persisted audit/readback; одного HTML-макета недостаточно.",
+      "Спецификация принята как полная; открыты только implementation и runtime acceptance."
     ],
     "task-g1-chat": [
-      "Цель понятна: клиент видит эксперта/анкету, а внутренний агент может вести назначенные анкеты без раскрытия клиенту.",
-      "Источник есть частично: решения Алексея, старый proof чата, live proof Kristy, фронтовая проверка клиентской видимости, AJAX/JS proof и скриншоты assignment. Не хватает одного принятого рабочего ТЗ.",
-      "Граница понятна: G1.2 про роли, видимость, отдельные диалоги и внутренний аудит; деньги, обучение и выплаты остаются в связанных задачах.",
-      "Данные описаны частично: live payload показывает contact, userOfAgentId и сообщения от публичной анкеты; не хватает поля/события реального оператора.",
-      "Экран описан частично: admin/agent chat и фронт messages проверены, но не закрыт полный сценарий супер-админского audit и снятия доступа.",
-      "Контракт миграции не готов: нужно решить, что добавляем в message/conversation/assignment для operator audit и server-side access gate.",
-      "Файлы и точки интеграции пока не собраны как пакет для Игоря: нужен список route, policy, model, view, JS и verifier.",
-      "Зависимости понятны: G1.2 зависит от G6.1 assignment enforcement и влияет на G2.4, G3.3, G4 и G6.",
-      "Проверка частичная: live proof есть, но acceptance блокируют найденный доступ к чужой анкете, недоказанный backend guard userOfAgentId и отсутствие operator audit.",
-      "Не закрыто: Алексей должен утвердить итоговый контракт ролей и видимости перед тем, как G1.2 станет 100% ТЗ."
+      "Цель зафиксирована: клиент общается с публичным Экспертом, а назначенный Агент работает от имени анкеты с обязательным внутренним audit.",
+      "Канонический функциональный документ и отдельный технический контекст готовы; live proof используется как evidence текущего состояния, а не как замена требованиям.",
+      "Граница принята: G1.2 владеет постоянным free dialogue, ролями и видимостью в чате, сообщениями, вложениями, цензурой, доставкой и версиями.",
+      "Требования к actual actor, public sender, assignment, censorship incident и message versions описаны; реализация server-side guard остаётся открытой.",
+      "Клиентские и staff-поверхности, Support identity, super-admin monitoring и правила скрытия внутренних данных определены.",
+      "Миграция и точная структура кода остаются решением Игоря при сохранении role, audit, idempotency и visibility invariants.",
+      "Техническая эскалация передаётся разработке только для недостающих ACL, audit, censorship, attachment, delivery и versioning capabilities.",
+      "G1.2 использует assignment G6.1 и передаёт consultation lifecycle в G1.3; деньги, выплаты, support workflow и retention не дублируются.",
+      "Runtime-приёмка требует server-side ACL, попытки чужого доступа, censorship/attachment/idempotency proof и persisted historical readback.",
+      "Продуктовая спецификация закрыта; implementation и runtime acceptance остаются отдельными."
     ]
   };
 
   const tasks = {
-    "task-g1-session": { code:"G1.1", title:"Карточка консультации", goal:"Цель 1", stage:"implementation_in_progress", tzReady:95, detailHref:"tasks/task-g1-session.html",
-      has:["Цель и результат задачи уже понятны.", "Подтверждено: сейчас на live-сайте есть только базовый чат, отдельных консультационных сессий нет.", "Есть основа: отдельная запись консультации, пакет реализации, интерактивный HTML-макет и черновой материал для передачи в работу.", "Есть внутренняя service_session-основа, но это не live-функция сайта."],
-      missing:["Нужен scope текущей итерации и build/runtime refs от программиста.", "Нужен runtime lifecycle trial -> paid -> balance_pause -> resume/timeout -> end.", "Нужны role views, actual-agent audit и server-side negative ACL cases.", "Числовые pilot-настройки остаются admin-конфигурацией, а не пробелом функциональной модели."],
-      done:["ТЗ находится на 95%: owner-модель принята и передана программисту.", "Оставшиеся 5% закрываются pilot-конфигурацией и привязкой acceptance к конкретному build.", "Макет и старт реализации не повышают процент сайта без runtime proof."],
+    "task-g1-session": { code:"G1.1", title:"Карточка консультации", goal:"Цель 1", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-1-for-igor.html",
+      has:["Готовы самостоятельное продуктовое ТЗ для Игоря и отдельный технический контекст для Codex.", "G1.1 ограничена административной карточкой одной консультации, role-based доступом, связями и audit/readback; lifecycle принадлежит G1.3.", "Изменяемые параметры вынесены в настройки со snapshot и audit."],
+      missing:["Пробелов в спецификации G1.1 по принятому стандарту нет.", "Для runtime-приёмки нужны mapped build/commit, role proof и persisted audit/readback."],
+      done:["Spec completeness = 100%; hard gates = pass.", "Implementation и runtime acceptance оцениваются отдельно."],
       htmlMock:{
         required:"Да",
-        sourcePath:"tasks/task-g1-session.html",
-        handoffPath:"локальный служебный источник",
-        truth:["Паспорт консультации как единая карточка.", "Ролевые состояния: супер-админ, агент, эксперт, клиент.", "Вкладки и блоки: обзор, чат, деньги, поддержка/возвраты, качество.", "Полоса ключевых показателей и состав главных видимых полей."],
+        sourcePath:"g11-consultation-admin-mockup.html",
+        handoffPath:"Активный демонстрационный макет; канонические требования находятся в основном функциональном документе G1.1.",
+        truth:["Паспорт консультации как единая карточка.", "Ролевые состояния: супер-админ, агент, эксперт, клиент.", "Primary states: connecting, trial, paid, balance_pause, completed; причины завершения хранятся отдельно.", "Session создаётся exactly once только после явного client consent.", "Вкладки и блоки: обзор, чат, деньги, поддержка/возвраты, качество.", "Полоса ключевых показателей и состав главных видимых полей."],
         demoOnly:["Демо-имена людей.", "Демо-ID и тестовые цифры минут/цены/баланса.", "Текст-заглушки, если они не подтверждены продуктовым источником."],
-        transfer:["Сохраняем структуру и состав блоков как источник правды для интерфейса.", "Заменяем демо-данные на реальные поля консультации и связанные сущности.", "Не переносим слепо декоративные значения; переносим только контракт экрана и сценария.", "Фиксируем отдельно, какие блоки идут 1:1, а какие требуют адаптации под живую модель данных."]
+        transfer:["Сохраняем согласованную структуру и состав блоков как наглядную реализацию требований из ТЗ.", "Заменяем демо-данные на реальные поля консультации и связанные сущности.", "Не переносим слепо декоративные значения; переносим только контракт экрана и сценария.", "Фиксируем отдельно, какие блоки идут 1:1, а какие требуют адаптации под живую модель данных."]
       } },
-    "task-g1-chat": { code:"G1.2", title:"Чат по ролям", goal:"Цель 1", stage:"proof_gap", tzReady:75, detailHref:"tasks/task-g1-chat.html",
-      has:["Зафиксирована owner-модель: клиент видит только эксперта/анкету, агент скрыт.", "Зафиксировано: агент пишет только от назначенной анкеты; разные анкеты создают разные диалоги; один агент может вести несколько анкет.", "Частично доказано: админ назначает анкеты агенту, а вход Kristy через Login as user открывает агентский chat-контур.", "Live proof 29 июня 2026 подтвердил отдельные conversations для Solara, Stella и Talia.", "Live payload подтвердил send-as: ответы Talia идут от from_user_id=105, а JS отправляет userOfAgentId.", "Фронт клиента частично подтвержден: Kristy видит публичные диалоги с Talia, Stella и Solara."],
-      missing:["Нужно закрыть P0-разрыв доступа: агент не должен открывать чужие анкеты по прямому URL.", "Нужно доказать, что agent chat API фильтрует диалоги только по назначенным анкетам.", "Нужно доказать или реализовать backend guard: чужой userOfAgentId отклоняется при отправке.", "Нужно зафиксировать внутренний audit: кто реально писал, от какой анкеты, кто вмешивался и что видит клиент.", "Нужно доказать правило: если у агента нет доступа к анкете, он не видит диалоги этой анкеты."],
-      done:["ТЗ станет 100%, когда роли, видимость, назначение анкет, отдельные диалоги, backend guard и внутренний audit будут описаны без неоднозначности.", "Игорь и Codex должны получить рабочий контракт: где проверяется назначение, как блокируется чужая анкета, что видит клиент, что видит супер-админ.", "Алексей должен понять и утвердить этот контракт до приемки G1.2."] },
-    "task-g1-statuses": { code:"G1.3", title:"Статусы и история", goal:"Цель 1", stage:"accepted_bounded_slice", tzReady:65, detailHref:"tasks/task-g1-statuses.html",
-      has:["Статусы и история событий описаны.", "Есть правила допустимых переходов.", "Есть контракт проверки."],
-      missing:["Нет полного контракта интерфейса для истории на сайте.", "Надо явно описать пакет передачи для интеграции статусов в пользовательские и операторские экраны.", "Надо собрать контракт переноса и приемку уже не только для внутренней основы, но и для финальной поверхности."],
-      done:["ТЗ готово, когда статусы, переходы и визуальная поверхность истории описаны как один интеграционный контракт.", "Игорю должно быть понятно, куда и как это вшивается без домысливания."] },
-    "task-g1-chat-notifications": { code:"G1.4", title:"Уведомления чата", goal:"Цель 1", stage:"accepted_bounded_slice", tzReady:55, detailHref:"tasks/task-g1-chat-notifications.html",
-      has:["Понятна задача и ее границы.", "Есть зависимость от контура консультации и чата."],
-      missing:["Надо описать список событий.", "Надо развести получателей по ролям.", "Надо зафиксировать критерии полезности и анти-спама."],
-      done:["ТЗ готово, когда по каждому уведомлению ясно: кто, когда, зачем и куда переходит.", "Есть приемка без неясных мест."] },
-    "task-g2-pricing": { code:"G2.1", title:"Цена и баланс", goal:"Цель 2", stage:"accepted_bounded_slice", tzReady:70, detailHref:"tasks/task-g2-pricing.html",
-      has:["Правило цены, закрепленное за конкретной консультацией, описано.", "Блокировка старта без цены и проверочные сценарии описаны.", "Граница приемки понятна."],
-      missing:["Нет полного контракта интерфейса для показа цены и старта консультации клиенту.", "Надо описать пакет передачи Игорю: где цена показывается, из каких полей собирается, как проверяется на сайте.", "Надо добавить контракт переноса из макета/витрины в живой сценарий."],
-      done:["ТЗ полностью достаточно только когда цена, интерфейс и проверка описаны как единый рабочий пакет.", "Одной внутренней проверки недостаточно."] },
-    "task-g2-timer": { code:"G2.2", title:"Таймер и остановка", goal:"Цель 2", stage:"accepted_bounded_slice", tzReady:70, detailHref:"tasks/task-g2-timer.html",
-      has:["Поля учета времени и списаний описаны.", "Предупреждение, остановка и запрет продолжения заданы.", "Сценарии приемки понятны."],
-      missing:["Нет полного контракта интерфейса таймера и предупреждений на живом сайте.", "Надо описать пакет передачи для оператора, клиента и эксперта.", "Надо собрать проверку не только внутренней логики, но и финального пользовательского поведения."],
-      done:["ТЗ закрывает задачу только когда таймер, предупреждение и остановка описаны как финальный интеграционный сценарий.", "Есть четкая зависимость от предыдущих задач и полный пакет передачи в реализацию."] },
-    "task-g2-refund": { code:"G2.3", title:"Возвраты", goal:"Цель 2", stage:"accepted_bounded_slice", tzReady:75, detailHref:"tasks/task-g2-refund.html",
-      has:["Есть доказанный внутренний срез возврата/спора, привязанный к конкретной консультации.", "Зафиксированы журнал решений, дело возврата, синхронизация статусов и операторская поверхность проверки.", "Проверены два исхода: возврат одобрен и спор решен без возврата."],
-      missing:["Нужен утвержденный регламент решений: когда возвращаем, когда отказываем, кто принимает финальный вердикт.", "Нужно описать клиентскую и support-поверхность: подача спора, статус, объяснение решения.", "Нужно связать G2.3 с G4 поддержкой и жалобами, чтобы продуктовый путь был полным."],
-      done:["ТЗ станет 100%, когда кроме внутреннего проверенного среза будет утвержден полный клиентский и support-путь спора/возврата.", "Ни одно решение по возврату или спору не должно жить вне доказательств по конкретной консультации."] },
-    "task-g2-accruals": { code:"G2.4", title:"Начисления", goal:"Цель 2", stage:"implementation_in_progress", tzReady:95, detailHref:"tasks/task-g2-accruals.html",
-      has:["Есть контракт для реализации: начисление должно объясняться конкретной консультацией.", "Описаны статусы начисления, связь с возвратом/спором и минимальная видимость для оператора/эксперта.", "Есть сценарии проверки и stop conditions.", "Live-срез 29 июня 2026 подтвердил общий финансовый фундамент сайта: заказы, баланс, транзакции, начисления, удержания, выплаты, реквизиты, платежные настройки и цены.", "Зафиксировано: проверенной рабочей модели начислений пока нет, поэтому нужна админка с гибкими настройками правил.", "Собран implementation packet: страницы админки, поля, таблицы, статусы, интеграции, acceptance cases и stop conditions."],
-      missing:["Нужен scope реализуемой итерации и runtime proof новых настроек.", "Стартовые числа: доля/ставка, фикс, task rates и KPI-пороги задаются pilot-конфигурацией.", "Нужно доказать immutable policy snapshot, proportional refund/override и историческую атрибуцию после reassignment."],
-      done:["ТЗ находится на 95%: бизнес-правила утверждены, packet передан программисту.", "Ни одно начисление не должно жить вне доказательств по конкретной консультации.", "Приемка G2.4 требует service_session -> snapshot -> debit -> accrual -> refund correction -> actual historical agent -> audit."] },
-    "task-g3-home": { code:"G3.1", title:"Витрина", goal:"Цель 3", stage:"inventoried", tzReady:25, detailHref:"tasks/task-g3-home.html",
-      has:["Есть понимание места главной страницы в Nebula.", "Есть источник для сравнения."],
-      missing:["Надо описать состав блоков и кнопок действия.", "Надо зафиксировать слой доверия, правил и предложения.", "Надо определить приемку для главной страницы и контракт переноса из макета."],
-      done:["ТЗ готово, когда главная страница описана как конкретная продуктовая поверхность.", "Из ТЗ должно быть ясно, как принимать страницу без догадок."] },
-    "task-g3-catalog": { code:"G3.2", title:"Каталог", goal:"Цель 3", stage:"inventoried", tzReady:25, detailHref:"tasks/task-g3-catalog.html",
-      has:["Понята роль каталога на витрине сайта."],
-      missing:["Надо описать реальные поля каталога.", "Надо задать фильтры, сортировки и переходы.", "Надо связать каталог с профилем эксперта, стартом консультации и макетом."],
-      done:["ТЗ готово, когда каталог описан как рабочий путь выбора.", "Есть критерии, по которым видно, что он не декоративный."] },
-    "task-g3-profile": { code:"G3.3", title:"Карточка эксперта", goal:"Цель 3", stage:"packet_ready", tzReady:50, detailHref:"tasks/task-g3-profile.html",
-      has:["Понятен состав ключевых блоков профиля.", "Есть опора на уже согласованную основу."],
-      missing:["Надо дописать точные поля и состояния.", "Надо описать кнопку действия и связь со стартом консультации.", "Надо зафиксировать приемку на телефоне и компьютере, а также передачу макета в интеграцию."],
-      done:["ТЗ готово, когда профиль описан как рабочий экран выбора и старта.", "Нет фальшивых полей без опоры на реальные данные."] },
-    "task-g3-quiz": { code:"G3.4", title:"Подбор и старт", goal:"Цель 3", stage:"inventoried", tzReady:25, detailHref:"tasks/task-g3-quiz.html",
-      has:["Есть понимание продуктового смысла пути подбора."],
-      missing:["Надо описать вопросы и ветвления.", "Надо задать бизнес-правила рекомендации.", "Надо описать финальный переход в консультацию."],
-      done:["ТЗ готово, когда весь путь подбор -> рекомендация -> старт описан однозначно.", "Есть проверяемый путь приемки."] },
-    "task-g3-qa": { code:"G3.5", title:"Проверка клиентского пути", goal:"Цель 3", stage:"packet_ready", tzReady:35, detailHref:"tasks/task-g3-qa.html",
-      has:["Есть понимание списка критичных путей.", "Есть черновая рамка проверки."],
-      missing:["Надо дописать полный перечень сценариев.", "Надо формализовать критерии пройдено/не пройдено.", "Надо описать итоговый вывод о готовности и контур проверки для Игоря/Codex."],
-      done:["ТЗ готово, когда каждый путь можно проверить по чек-листу.", "Итог не должен зависеть от субъективной оценки."] },
-    "task-g3-field-weight": { code:"G3.6", title:"Вес полей анкеты", goal:"Цель 3", stage:"inventoried", tzReady:45, detailHref:"tasks/task-g3-field-weight.html",
-      has:["Есть источник: /ru/admin/profile-field/index и локальный YouDate-код profile fields.", "Понятно, что текущий sort_order/searchable не равен весу анкеты для Nebula.", "Есть первичная модель: блокирующие поля, весовые поля, информационные поля."],
-      missing:["Нужно утвердить список обязательных полей анкеты эксперта.", "Нужно задать веса и пороги: что блокирует публикацию, что понижает выдачу, что повышает доверие.", "Нужно описать экран админа: score, расшифровка, что дозаполнить, кто утвердил.", "Нужно проверить влияние на тестовых анкетах."],
-      done:["ТЗ готово, когда Игорь понимает, какие поля участвуют в score, где хранится snapshot, как пересчитывается score и как админ видит причины.", "Алексей должен утвердить веса, пороги и минимальный набор полей для пилота."] },
-    "task-g3-rotation": { code:"G3.7", title:"Выдача и ротация анкет", goal:"Цель 3", stage:"implementation_in_progress", tzReady:90, detailHref:"tasks/task-g3-rotation.html",
-      has:["Есть постановка: каталог должен показывать экспертов не случайно, а по понятной политике.", "Есть базовые источники факторов: score анкеты, доступность, язык, страна/город, тема, цена, качество, SLA, конверсия.", "Есть зависимость от G3.6 и G6/G2/G5."],
-      missing:["Нужно получить runtime readback weights/pinning/exclusions/preview по всем page types.", "Нужно доказать state transitions online/busy/off/admin-blocked и KPI threshold/insufficient_data.", "Лимит числа анкет агента не вводится; нужен только мониторинг доли top-N и журнал overrides."],
-      done:["ТЗ находится на 90%: owner-модель принята, числовые веса остаются pilot-конфигурацией.", "Порядок выдачи принимается только после объяснимого proof на 3-5 анкетах.", "Каталог нельзя запускать в рекламу до runtime verification rotation policy."] },
-    "task-g4-support": { code:"G4.1", title:"Поддержка", goal:"Цель 4", stage:"packet_ready", tzReady:75, detailHref:"tasks/task-g4-support.html",
-      has:["Есть только верхнеуровневое понимание слоя поддержки."],
-      missing:["Надо описать роли и типы обращений.", "Надо задать связи с консультацией, возвратами и качеством.", "Надо собрать контур приемки."],
-      done:["ТЗ готово, когда поддержка описана как работающий продуктовый контур.", "Есть конкретные сценарии и владелец следующего шага."] },
-    "task-g4-complaints": { code:"G4.2", title:"Жалобы и возвраты", goal:"Цель 4", stage:"packet_ready", tzReady:75, detailHref:"tasks/task-g4-complaints.html",
-      has:["Есть только верхнеуровневая постановка."],
-      missing:["Надо описать прием обращения, разбор, решение и исход.", "Надо привязать жалобы к доказательствам по консультации.", "Надо определить операторский экран проверки."],
-      done:["ТЗ готово, когда жалоба проходит полный путь до решения на бумаге.", "Ни один шаг не остается неописанным."] },
-    "task-g4-docs": { code:"G4.3", title:"Документы", goal:"Цель 4", stage:"packet_ready", tzReady:55, detailHref:"tasks/task-g4-docs.html",
-      has:["Есть только общее понимание важности документов."],
-      missing:["Надо определить список документов.", "Надо задать точки показа.", "Надо зафиксировать критерии обязательности."],
-      done:["ТЗ готово, когда понятно, какие документы где и зачем показываются.", "Есть приемочный список обязательных мест и текстов."] },
+    "task-g1-chat": { code:"G1.2", title:"Чат по ролям", goal:"Цель 1", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-2-for-igor.html",
+      has:["Готовы самостоятельное продуктовое ТЗ для Игоря и отдельный технический контекст для Codex.", "G1.2 владеет постоянным диалогом, ролями и видимостью внутри чата, сообщениями, вложениями, цензурой, доставкой и версиями сообщений.", "Lifecycle, reconnect-таймеры, завершение и retention консультаций принадлежат G1.3/G4.3 и не дублируются в настройках чата.", "Страница «Настройки чата» размещена в существующей логике /ru/admin/settings/index; RBAC, prices, support и monitoring не дублируются."],
+      missing:["Пробелов в продуктовой спецификации G1.2 по принятому стандарту нет.", "Для runtime-приёмки нужны mapped build/commit, server-side ACL, censorship/attachment/idempotency proof и persisted historical readback."],
+      done:["Spec completeness = 100%; hard gates = pass; двухфайловый handoff готов.", "Implementation и runtime acceptance оцениваются отдельно."] },
+    "task-g1-statuses": { code:"G1.3", title:"Статусы и история консультации", goal:"Цель 1", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-3-for-igor.html",
+      has:["Готово самостоятельное продуктовое ТЗ для Игоря: request, consultation session, lifecycle, ожидание/reconnect, история и связанные процессы.", "Готов отдельный технический контекст для Codex Игоря: состояния, переходы, invariants, data/readback, integration points и acceptance matrix.", "Все изменяемые лимиты распределены по каноническим разделам существующей админ-панели без дублирования."],
+      missing:["Пробелов в продуктовой постановке G1.3 по принятому стандарту нет.", "Implementation status открыт: нужен mapped build/commit.", "Runtime acceptance открыт: нужны state/timeout/idempotency/concurrency/admin readback и role proof."],
+      done:["Spec completeness = 100%; focused verifier = 80/80; hard gates = pass.", "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.", "Реализация и runtime acceptance оцениваются отдельно."] },
+    "task-g1-chat-notifications": { code:"G1.4", title:"Уведомления консультации", goal:"Цель 1", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-4-for-igor.html",
+      has:["Готовы самостоятельное продуктовое ТЗ для Игоря и отдельный технический контекст для Codex.", "Описаны обязательные для пользователя in-app, существующие chat badges, email fallback, пользовательские переключатели только для email, каталог событий, получатели, ошибки доставки и журнал.", "Разделены управляемые таймеры: critical event email после 1 минуты подтвержденного отсутствия, message email после 5 минут непрочтения и critical delivery failure signal после 1 минуты.", "Зафиксирован отдельный super-admin раздел «Настройки уведомлений» рядом с Email Templates без дублирования lifecycle, support, team notifications и RBAC."],
+      missing:["Пробелов в продуктовой спецификации G1.4 по принятому стандарту нет.", "Для implementation/runtime нужны mapped build, полный event catalog, role-safe delivery, dedup/concurrency, admin readback и positive/negative QA."],
+      done:["Spec completeness = 100%; hard gates = pass.", "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.", "Реализация и runtime acceptance оцениваются отдельно."] },
+    "task-g2-pricing": { code:"G2.1", title:"Цена, credits и баланс", goal:"Цель 2", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-1-for-igor.html",
+      has:["Готовы самостоятельное продуктовое ТЗ для Игоря и отдельный технический контекст для Codex.", "Зафиксированы credits как продаваемая единица, USD checkout, global 30 credits/мин, profile override и immutable session price snapshot.", "Приняты starter 60/9.99 и regular 150/22.99, 300/42.99, 600/79.99 packages, скидки, coupons, expiry и spending order.", "Живая /ru/admin/settings/prices расширяется без дублирования; coupons, profile override, manual grant, Payment systems, Orders и Transactions распределены по существующим владельцам."],
+      missing:["Пробелов в продуктовой спецификации G2.1 по принятому стандарту нет.", "Для implementation/runtime нужны mapped build, migrations/config, payment/grant idempotency, balance concurrency, admin readback и client/role QA."],
+      done:["Spec completeness = 100%; hard gates = pass.", "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.", "Реализация и runtime acceptance оцениваются отдельно."] },
+    "task-g2-timer": { code:"G2.2", title:"Таймер и остановка", goal:"Цель 2", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-2-for-igor.html",
+      has:["Готовы самостоятельное продуктовое ТЗ для Игоря и отдельный технический контекст для Codex.", "Consent фиксируется до session для обоих путей и при trial=0/trial>0; trial не создаёт и не заменяет согласие клиента.", "Зафиксированы server-authoritative таймер, полное списание в начале started minute и запрет следующей минуты без средств.", "Описаны low-balance warning, одна balance pause, explicit continuation после пополнения, отдельные reconnect grace и единый technical incident."],
+      missing:["Пробелов в продуктовой спецификации G2.2 по принятому стандарту нет.", "Для implementation/runtime нужны mapped build, atomic debit, idempotency/concurrency, authoritative clock, admin snapshots/readback и role QA."],
+      done:["Spec completeness = 100%; hard gates = pass.", "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.", "Реализация и runtime acceptance оцениваются отдельно."] },
+    "task-g2-refund": { code:"G2.3", title:"Возвраты", goal:"Цель 2", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-3-for-igor.html",
+      has:["Готовы самостоятельное продуктовое ТЗ для Игоря и отдельный технический контекст для Codex.", "Refund отделен от terminal consultation и связан с session, support, ledger и agent correction.", "Зафиксированы candidate/request, no/partial/full manual decision, bucket restoration, execution retry и client appeal."],
+      missing:["Пробелов в продуктовой спецификации G2.3 по принятому стандарту нет.", "Для implementation/runtime нужны mapped build, separate case lifecycle, eligibility/cumulative guard, exactly-once wallet restoration, admin/readback и role QA."],
+      done:["Spec completeness = 100%; hard gates = pass.", "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.", "Реализация и runtime acceptance оцениваются отдельно."] },
+    "task-g2-accruals": { code:"G2.4", title:"Начисления Агентам", goal:"Цель 2", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-4-for-igor.html",
+      has:["Готовы автономные PM-ТЗ и Codex-контекст.", "Зафиксированы weekly default, независимые consultation/fixed-SLA/task components, policy snapshots, refund corrections и actual historical Agent.", "Переиспользуются partner payments/payouts/minus; percentage/base остаются unset, а дополнительные компоненты disabled до enablement."],
+      missing:["Пробелов функционального ТЗ нет.", "Runtime открыт: нужны ledger, idempotency, period close, correction, reassignment, permissions и reconciliation proof."],
+      done:["Spec completeness = 100%; открытые economics values оформлены fail-closed gates.", "Implementation и runtime acceptance оцениваются отдельно."] },
+    "task-g2-geo-content": { code:"G2.GEO", title:"Восстановление и AI-заполнение страниц стран и городов", goal:"Цель 2 · implementation package", stage:"etalon_spec_ready_runtime_population_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-geo-content-for-igor.html",
+      has:["Готов operator-first пакет и gap-only технический контекст.", "Moderator/super-admin публикует через существующие country/geoname editors; Игорь подключается только по доказанному technical gap.", "Пилот Japan, South Korea, Mexico, Vietnam и Thailand повторно доказал 5/5 controlled before/after RU и 30/30 final source↔CMS readback.", "Сохранён source-first контур 39 стран и 118 городов; historical snapshot не выдан за полный live coverage."],
+      missing:["Пробелов в спецификации G2.GEO нет.", "Полный runtime открыт: нужен fresh denominator всех active entity×locale и закрытие фото 0/2 вне text-pilot."],
+      done:["Spec completeness = 100%; five-country text-pilot = complete; G2.GEO не входит в реестр 30 функциональных задач.", "Full rollout всего country/city denominator является отдельным scope и не выводится из пяти стран автоматически."] },
+    "task-g3-home": { code:"G3.1", title:"Витрина", goal:"Цель 3", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-1-for-igor.html",
+      has:["Готовы автономные PM-ТЗ и Codex-контекст.", "Зафиксированы /{lang}/, Figma как visual-only truth, блоки, персональные состояния, translation keys, real expert slice, reviews/FAQ/trust, admin draft/preview/publish.", "Стартовые versioned numeric cells витрины: темы 6 desktop / 4 mobile, 6 карточек Экспертов, 3 специализации, 6 FAQ, 3 последние консультации, 3 home reviews.", "Главная читает versioned taxonomy и итоговый eligible/ranked slice только из G3.7; G3.6 поставляет completeness/blocker input.", "Недоказанные claims и параллельный ручной пул запрещены."],
+      missing:["Пробелов функционального ТЗ нет.", "Runtime открыт: нужны integration с G1/G2/G3.7, visual proof на пяти ширинах, SEO/performance/accessibility и реальные данные."],
+      done:["Spec completeness = 100%; текущий HTML/Figma не выдан за принятую production-страницу.", "Implementation и runtime acceptance оцениваются отдельно."] },
+    "task-g3-catalog": { code:"G3.2", title:"Каталог и dashboard", goal:"Цель 3", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-2-for-igor.html",
+      has:["Готовы автономные PM-ТЗ и Codex-контекст.", "Зафиксирована expert-only выдача и пять единых однословных фильтров: Отношения, Карьера, Будущее, Развитие, Духовность.", "Active expert_specialization_taxonomy_v2 исключает legacy Energy Diagnostics из specialization, добавляет Relocation and Life Changes и мигрирует Energy Diagnostics в append-only method Energy Practices; исторические IDs не переиндексируются.", "G3.6 владеет expert_specialization_taxonomy_v2 и передаёт completeness/blocker input; только G3.7 возвращает display_eligible, capabilities, reason_codes и порядок.", "Geo является hard scope для country/city и использует ту же taxonomy version без отдельного hardcode тем."],
+      missing:["Пробелов функционального ТЗ нет.", "Runtime открыт: нужны query/ACL/caching/ordering/geo и responsive proofs."],
+      done:["Spec completeness = 100%; dating-выдача и скрытый city hard-filter исключены.", "Implementation и runtime acceptance оцениваются отдельно."] },
+    "task-g3-profile": { code:"G3.3", title:"Профиль Эксперта", goal:"Цель 3", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-3-for-igor.html",
+      has:["Готовы автономные PM-ТЗ и Codex-контекст.", "Определены реальные поля карточки/профиля, credits/min, availability, CTA через auth в бесплатный диалог, reviews и safe historical override.", "Agent/KPI/dating fields скрыты; id=19 не является фактическим счетчиком."],
+      missing:["Пробелов функционального ТЗ нет.", "Runtime открыт: нужны profile data migration, review moderation, stale-state/start guards и visual proof."],
+      done:["Spec completeness = 100%; fixed-duration booking из reference-макета не переносится.", "Implementation и runtime acceptance оцениваются отдельно."] },
+    "task-g3-quiz": { code:"G3.4", title:"Подбор и старт", goal:"Цель 3", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-4-for-igor.html",
+      has:["Готовы автономные PM-ТЗ и Codex-контекст.", "Подбор необязателен, объясняет 3–5 совпадений и сохраняет intent через auth.", "Единственный редактор вопросов, branching и matching mapping — /ru/admin/settings/matching; taxonomy и eligibility там только read-only.", "Он открывает профиль/free dialog и не создаёт paid session напрямую."],
+      missing:["Пробелов функционального ТЗ нет.", "Runtime открыт: нужны deterministic matching, auth restoration, stale/busy/no-result и privacy proofs."],
+      done:["Spec completeness = 100%; paid start остаётся у G1/G2.", "Implementation и runtime acceptance оцениваются отдельно."] },
+    "task-g3-qa": { code:"G3.5", title:"Проверка клиентского пути", goal:"Цель 3", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-5-for-igor.html",
+      has:["Готов независимый QA-протокол и диагностический контекст для defect/retest.", "QA/super-admin выполняет evidence run, PM выдаёт GO/NO_GO, Игорь предоставляет build/fixtures и исправляет отдельные FAIL.", "E2E gate отдельно проверяет два initiation path и полный connecting → trial → paid → history → support/refund путь.", "Positive, negative, ACL, concurrency, stale data и failure evidence обязательны."],
+      missing:["Пробелов в gate-спецификации нет.", "Сам gate не пройден: один P0 FAIL сохраняет NO_GO."],
+      done:["Spec completeness = 100%; G3.5 не выдана за продуктовую страницу.", "Runtime/cross-flow acceptance = открыто."] },
+    "task-g3-field-weight": { code:"G3.6", title:"Полнота и таксономия анкеты", goal:"Цель 3", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-6-for-igor.html",
+      has:["Готов operator-first пакет и gap-only технический контекст.", "Super-admin сначала фиксирует semantics/readback profile fields, taxonomy и rules; Игорю передаются только missing evaluator/version/binding/admin capability.", "V3 pilot minimum: taxonomy v2 + manual completeness/blocker input; automation scale относится к V5.", "Единые редакторы mapping и completeness не дублируются.", "Полный registry включает восемь surface IDs; скрытая inheritance запрещена."],
+      missing:["Пробелов функционального ТЗ нет.", "Runtime открыт: нужны migration/reuse decision, taxonomy publish/rollback, recalculation, input-only override expiry и preview/readback proof."],
+      done:["Spec completeness = 100%; только G3.7 формирует display_eligible, capabilities, reason_codes и порядок, а paid start проверяется свежим G1/G2/G6 guard.", "Implementation и runtime acceptance оцениваются отдельно."] },
+    "task-g3-rotation": { code:"G3.7", title:"Eligibility и ротация", goal:"Цель 3", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-7-for-igor.html",
+      has:["Готовы автономные PM-ТЗ и Codex-контекст.", "V3 pilot minimum: eligibility + manual order для home, dashboard_catalog, country, city, category, matching_result, thematic_block, expert_profile при KPI disabled; automation/KPI scale относится к V5.", "Eligibility отделена от ranking; единый результат — display_eligible + capabilities[] + reason_codes[].", "paid_start_eligible не кэшируется каталогом и вычисляется свежим транзакционным guard G1/G2/G6.", "Surface records, явные base_policy_ref/field-level overrides, pin/priority/weight, stable tie-break, preview и audit описаны; скрытая inheritance запрещена."],
+      missing:["Пробелов функционального ТЗ нет.", "Runtime открыт: нужны public=preview, stable ordering, state exclusion, override и post-pilot gate proofs."],
+      done:["Spec completeness = 100%; V3 manual eligibility/order settings версионируются, а automation/KPI influence остаются disabled до V5 post-pilot gate.", "Implementation и runtime acceptance оцениваются отдельно."] },
+    "task-g3-integration": { code:"G3.INT", title:"Интеграция верстки и backend", goal:"Цель 3 · implementation package", stage:"etalon_spec_ready_runtime_open", tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-int-for-igor.html",
+      has:["Готов mixed functional/development пакет.", "Игорь связывает восемь surfaces с routes/views/assets/data/actions; существующие admin owners сохраняются.", "G3.INT.I18N выполняется moderator-first: inventory, existing-key search, RU/EN и rollout-locale translations, cache/admin/public readback; Игорю передаются только key_missing/broken_binding/hardcode/runtime/import-safety gaps.", "Безопасный translation-only import требует dry-run/diff, conflict guard, atomic result, audit, idempotency и rollback.", "Собранная mapped build передаётся в независимый G3.5."],
+      missing:["Пробелов функционального ТЗ по integration envelope нет.", "Runtime открыт: нужны source-lock по каждой поверхности, route/controller/view/data crosswalk, additive migration, key registry, surface×rollout-locale settings, required-locale coverage/readback, безопасный translation-only import, пять ширин, auth/cache/ACL proof, controlled cutover и rollback."],
+      done:["Spec completeness = 100%; G3.INT.I18N является частью G3.INT и не создаёт нового product task code или новую translation-админку.", "Implementation acceptance требует identified build, полного i18n evidence packet и focused proof; G3.5 остается отдельным GO/NO_GO."] },
+    "task-g4-support": { code:"G4.1", title:"Поддержка", goal:"Цель 4", stage:"product_tz_ready_runtime_billing_policy_open", tzReady:90, detailHref:"tasks/task-g4-support.html",
+      has:["Product-only TZ создан: reports/tz-product-g4-1-g4-2-support-refund-2026-07-16.md.", "Есть проверенный frontend-прототип support ticket queue/chat как UI reference, но не runtime proof.", "Поддержка описана как consultation-linked trust route: client issue -> evidence -> decision -> result."],
+      missing:["Нужен current Yii2/front/admin runtime proof: case creation, role access, consultation linkage, decision/outcome.", "Нужен approved billing/legal/support truth for credits/minutes/free allowance/refill/refund.", "Нужны client-facing Figma/Oracle entry points for support/report/refund states."],
+      done:["Product-ТЗ готово: клиент видит путь и результат обращения, support восстанавливает consultation context, quality/billing/policy escalation routes are defined.", "Acceptance невозможен без runtime proof and approved billing/legal wording."] },
+    "task-g4-complaints": { code:"G4.2", title:"Жалобы и возвраты", goal:"Цель 4", stage:"product_tz_ready_runtime_billing_policy_open", tzReady:90, detailHref:"tasks/task-g4-complaints.html",
+      has:["Product-only TZ создан: reports/tz-product-g4-1-g4-2-support-refund-2026-07-16.md.", "Жалоба/возврат описаны как evidence-based decision, а не отдельная финансовая кнопка.", "Исходы определены: no refund, partial refund, full refund, correction/explanation, quality review, owner/legal review."],
+      missing:["Нужен G2 billing truth для refund eligibility, paid units and cumulative refund limits.", "Нужен runtime proof that duplicate refund/correction actions are blocked or merged.", "Нужна owner/legal-approved wording for refund/support route."],
+      done:["Product-ТЗ готово: жалоба проходит путь evidence -> decision -> money/support/quality outcome.", "Acceptance невозможен без current runtime proof and approved refund/billing truth."] },
+    "task-g4-docs": { code:"G4.3", title:"Документы", goal:"Цель 4", stage:"product_tz_ready_owner_legal_policy_open", tzReady:85, detailHref:"tasks/task-g4-docs.html",
+      has:["Product-only TZ создан: reports/tz-product-g4-3-rules-trust-safety-2026-07-16.md.", "Есть список policy-зон из training corpus: billing/trial/paid boundary, refund/support route, prohibited claims, difficult situations, Trust & Safety, privacy/anonymized examples, consultant behavior rules.", "Понятно, что документы нужны до paid admission и до публичного paid traffic."],
+      missing:["Owner/legal должны утвердить US-English Trust & Safety route: suicide/self-harm, serious illness, illegal activity, drugs, sexual content, prohibited material, threats/abuse.", "Нужно утвердить prohibited claims: guarantees, medical/clinical impersonation, fabricated certainty, fear/dependency pressure.", "Нужно утвердить billing/legal/support truth for credits/minutes/free allowance/refill/refund.", "Нужно убрать YouDate/dating leakage и не переносить raw competitor scripts как policy.", "Нужно получить runtime/front/admin proof после реализации Игорем."],
+      done:["Product-ТЗ готово как handoff: что клиент видит, что агент может сказать, что запрещено, когда идет support/moderator escalation.", "Acceptance невозможен от одного списка страниц; нужен approved wording/version and proof of display/acknowledgement where required.", "Следующий gate: owner/legal-approved policy wording and display proof."] },
     "task-g4-support-notifications": { code:"G4.4", title:"Уведомления поддержки", goal:"Цель 4", stage:"master_plan_only", tzReady:20, detailHref:"tasks/task-g4-support-notifications.html",
       has:["Есть только ранняя идея слоя."],
       missing:["Надо описать события и получателей.", "Надо задать сигналы по срокам реакции.", "Надо собрать проверку полезности."],
@@ -272,10 +340,10 @@
       has:["Есть только управленческий замысел дашборда."],
       missing:["Надо описать состав виджетов.", "Надо определить сигналы тревоги и фильтры.", "Надо задать критерии полезности."],
       done:["ТЗ готово, когда из него можно собрать дашборд без изобретений по ходу.", "Каждый блок отвечает на конкретный вопрос управления."] },
-    "task-g5-kpi": { code:"G5.3", title:"Таблица показателей", goal:"Цель 5", stage:"master_plan_only", tzReady:25, detailHref:"tasks/task-g5-kpi.html",
-      has:["Есть только намерение иметь слой показателей."],
-      missing:["Надо определить показатели, владельцев и формулы.", "Надо описать источники и периодичность.", "Надо связать показатели с решениями."],
-      done:["ТЗ готово, когда каждый показатель определен однозначно.", "По таблице можно принимать решения, а не просто смотреть числа."] },
+    "task-g5-kpi": { code:"G5.3", title:"Таблица показателей", goal:"Цель 5", stage:"product_tz_ready_thresholds_runtime_open", tzReady:85, detailHref:"tasks/task-g5-kpi.html",
+      has:["Product-only TZ создан: reports/tz-product-g5-3-kpi-scorecard-measurement-2026-07-16.md.", "Training corpus дал состав quality/operations metrics: first presence, first useful value, relevance, empathy, instrument/source clarity, message tempo, correct trial/paid behavior, continuation/close, complaint/escalation behavior.", "Reference timings можно хранить как pilot measurement candidates, но не как hard thresholds.", "Понятно, что качество должно быть отдельно от profit/conversion."],
+      missing:["Owner должен утвердить numeric QA/SLA thresholds и какие метрики являются hard fail vs coaching-only.", "Нужно связать KPI с действиями: coaching, re-check, block paid access, refund review, launch/marketing gate.", "Нужно доказать source events/runtime availability before treating dashboard numbers as true.", "Нужно сохранить separation: public expert metrics vs internal agent KPI."],
+      done:["Product-ТЗ готово: каждый показатель должен иметь definition, owner, denominator, window, sample, freshness, decision use and status.", "Таблица помогает принимать решения по pilot readiness, quality, admission, support/refund and marketing gate.", "Acceptance невозможен без current events/runtime proof and owner-approved thresholds."] },
     "task-g5-marketing-gate": { code:"G5.4", title:"Допуск рекламы", goal:"Цель 5", stage:"packet_ready", tzReady:65, detailHref:"tasks/task-g5-marketing-gate.html",
       has:["Есть только рамочное понимание необходимости допуска к рекламе."],
       missing:["Надо определить условия допуска: да/нет.", "Надо связать допуск с качеством, поддержкой и конверсией.", "Надо формализовать логику блокировки."],
@@ -288,27 +356,350 @@
       has:["Есть только верхнеуровневый замысел контроля сроков реакции."],
       missing:["Надо определить нормы реакции.", "Надо описать эскалации и контроль.", "Надо привязать сроки реакции к событиям и уведомлениям."],
       done:["ТЗ готово, когда по каждому критичному сценарию задан срок и реакция.", "Есть измеримый контур приемки."] },
-    "task-g6-quality": { code:"G6.3", title:"Контроль качества", goal:"Цель 6", stage:"packet_ready", tzReady:65, detailHref:"tasks/task-g6-quality.html",
-      has:["Есть только рамка слоя качества."],
-      missing:["Надо описать критерии хорошей и плохой консультации.", "Надо связать оценку с действиями.", "Надо собрать операторский экран."],
-      done:["ТЗ готово, когда качество можно применять как рабочий инструмент.", "Каждая оценка ведет к понятному действию."] },
-    "task-g6-training": { code:"G6.4", title:"Обучение и регламенты", goal:"Цель 6", stage:"packet_ready", tzReady:65, detailHref:"tasks/task-g6-training.html",
-      has:["Есть ранняя постановка слоя обучения.", "Подтверждено: подготовку запуска нужно начинать сейчас, а не ждать шестого месяца."],
-      missing:["Надо описать набор регламентов по ролям.", "Надо описать путь поиска: реальные эксперты или кандидаты на обучение.", "Надо закрепить текст вакансии и портрет ЦА кандидата как часть плана запуска.", "Надо закрепить бриф онлайн-собеседования: опыт, метод, речь, этика, дисциплина, мини-кейс.", "Надо подготовить ответы на вопросы кандидатов про деньги, график, выплаты, юридический формат, поток клиентов, бренд и правила работы.", "Надо закрепить правило: не обещаем исход, говорим то, что показывает выбранный метод.", "Надо привязать обучение к ошибкам и качеству.", "Надо определить критерии полноты пакета."],
-      done:["ТЗ готово, когда новая роль может стартовать по описанному пакету.", "Алексей понимает и утверждает правила допуска, обучения, вакансии, интервью, FAQ кандидата и запретов.", "Есть рабочий пакет: ЦА кандидата, текст вакансии, площадки поиска, анкета, тестовое задание, онлайн-собеседование, FAQ кандидата и критерии допуска.", "Нет критичных белых пятен в регламентах."] },
+    "task-g6-quality": { code:"G6.3", title:"Контроль качества", goal:"Цель 6", stage:"scorecard_requirements_ready_thresholds_open", tzReady:85, detailHref:"tasks/task-g6-quality.html",
+      has:["Training corpus дал P0 scorecard dimensions: first presence/response, relevance, first useful value, empathy, explicit instrument/source, balanced answer, readable tempo/dialogue, correct free/trial/paid behavior, continuation/closing, complaint/escalation behavior.", "Есть hard-fail classes: privacy breach, hidden billing state, prohibited guarantee, medical/clinical impersonation, unsafe crisis response, manipulation/dependency/fear pressure, invented context as fact, refusal to correct material error.", "Для MVP ручная проверка каждой pilot consultation приемлема."],
+      missing:["Owner/legal должны утвердить exact engagement and Trust & Safety wording.", "Нужны numeric thresholds and severity mapping.", "Нужна operator surface: review record, source excerpt, correction, appeal/re-check, paid-access block/unblock.", "Нужны anonymized/rewritten examples for good/bad library.", "Нужен runtime proof that moderation/support decisions connect to consultation/session evidence without exposing foreign data."],
+      done:["ТЗ готово, когда quality scorecard can be used by moderator/super-admin on every pilot consultation.", "Every score or hard fail leads to a clear action: coaching, correction, re-check, block, support/refund review, or owner escalation.", "Acceptance requires positive and negative walkthroughs, including manipulation, hidden billing, unsafe claim and correction/re-check cases."] },
+    "task-g6-training": { code:"G6.4", title:"Обучение и регламенты", goal:"Цель 6", stage:"product_tz_ready_owner_policy_runtime_open", tzReady:90, detailHref:"tasks/task-g6-training.html",
+      has:["Product-only TZ создан: reports/tz-product-g6-4-expert-training-admission-2026-07-16.md.", "Есть доказательная база обучения от 16.07.2026: локальные оригиналы, расшифровки, OCR/frame proof, 102 ten-minute packets, proof catalog и closeout.", "Есть product addendum к 6 целям: admission sequence, QA scorecard, role dictionary, Trust & Safety dependency, domain competence и manual coaching loop.", "Подтверждено: для MVP 5 агентов / 25 экспертов / 1 модератор / 1 супер-админ G6.4 является P0, а не поздним P1.", "ТЗ пишем продуктово: что должно быть видно, как работает, какие состояния и критерии приемки; без кода, БД и способа реализации."],
+      missing:["Owner должен утвердить финальные названия ролей и границу expert profile vs internal agent.", "Owner/legal должны утвердить US-English Trust & Safety route и prohibited claims.", "Нужен domain-owner review для пилотных Astrology/Tarot материалов и глоссария.", "Нужны числовые thresholds для QA/SLA/admission.", "Нужно решение, какие raw reference mechanics запрещены и какие rewritten examples разрешены в курсе.", "Нужно runtime/admin proof после реализации: paid access остается закрыт до полного admission gate."],
+      done:["Product-ТЗ G6.4 создан как handoff: курс, тесты, финальный экзамен, пробная консультация, Ksenia review, owner approval, first-shift oversight и re-check.", "Каждое правило имеет claim class: observed reference fact, inference, owner decision или proposed Nebula rule.", "Raw AskNebula/PbExpert examples не попадают в курс без анонимизации/переписывания.", "Приемка G6.4 невозможна без owner/legal/domain decisions и runtime proof admission gate."] },
     "task-g6-admin-url": { code:"G6.6", title:"Админка на отдельном URL", goal:"Цель 6", stage:"master_plan_only", tzReady:35, detailHref:"tasks/task-g6-admin-url.html",
       has:["Потребность подтверждена: рабочая админка должна быть доступна по отдельному URL.", "Есть первичная граница: это не редизайн фронта, а отдельный рабочий контур команды.", "Есть первичный критерий: эксперт и агент работают без захода через клиентский путь."],
       missing:["Надо определить точный URL/route и способ входа.", "Надо описать роли и доступы: супер-админ, агент-эксперт, эксперт.", "Надо описать, какие блоки видит каждая роль: анкеты, консультации, сроки, эскалации, качество.", "Надо связать с существующей админской основой и карточкой консультации.", "Нужно утверждение Алексея по составу первого экрана админки."],
       done:["ТЗ готово, когда Игорю и Codex понятно, какой отдельный админский контур строим и какие роли туда входят.", "Алексей утверждает состав первого экрана и критерии приемки.", "Есть проверка: команда открывает админку по отдельному URL, а не через фронт."] },
     "task-g6-isolated-admin-access": { code:"G6.7", title:"Изолированный доступ в админку", goal:"Цель 6", stage:"implementation_in_progress", tzReady:90, detailHref:"tasks/task-g6-isolated-admin-access.html",
       has:["Цель зафиксирована: agent — внутренняя staff-роль с доступом только к назначенным экспертным аккаунтам и диалогам.", "Эксперт остается отдельным User с публичной анкетой; direct login технически возможен, но не является штатным agent workflow.", "Actual actor каждого действия должен сохраняться независимо от assignment и impersonation.", "Есть связка с G6.6, G6.1 и G1.2."],
-      missing:["Нужен server-side verifier: assigned read/send allowed; foreign profile/dialog/send denied.", "Нужно доказать atomic reassignment и блокировку во время paid_active/balance_pause.", "Нужно доказать, что direct/impersonation action не стирает actual actor.", "Нужен runtime audit запрещенных маршрутов и действий."],
+      missing:["Нужен server-side verifier: assigned read/send allowed; foreign profile/dialog/send denied.", "Нужно доказать atomic reassignment и блокировку во время paid/balance_pause.", "Нужно доказать, что direct/impersonation action не стирает actual actor.", "Нужен runtime audit запрещенных маршрутов и действий."],
       done:["ТЗ находится на 90%; оставшийся пробел — build-specific verifier и итоговые route permissions.", "Приемка требует server-side deny, а не только скрытие UI.", "Супер-админ видит actual agent, assignment history и blocked attempts."] },
     "task-g6-team-notifications": { code:"G6.5", title:"Командные уведомления", goal:"Цель 6", stage:"master_plan_only", tzReady:20, detailHref:"tasks/task-g6-team-notifications.html",
       has:["Есть только рамочное понимание слоя."],
       missing:["Надо описать командные сигналы и адресатов.", "Надо задать полезность и правила против лишнего шума.", "Надо связать их с назначением ответственных, сроками реакции и поддержкой."],
       done:["ТЗ готово, когда по каждому сигналу ясно, кто получает и что делает.", "Слой можно реализовывать без домысливания."] }
   };
+
+  const verticalByTask = {
+    "task-g6-assignment":"V1 assignment/ACL/chat", "task-g6-isolated-admin-access":"V1 assignment/ACL/chat", "task-g1-chat":"V1 assignment/ACL/chat",
+    "task-g1-session":"V2 session/money", "task-g1-statuses":"V2 session/money", "task-g2-pricing":"V2 session/money", "task-g2-timer":"V2 session/money", "task-g2-refund":"V2 session/money", "task-g2-accruals":"V2 session/money", "task-g2-geo-content":"V2 content restoration prerequisite · implementation package",
+    "task-g1-chat-notifications":"V3 client pilot", "task-g3-home":"V3 client pilot", "task-g3-catalog":"V3 client pilot", "task-g3-profile":"V3 client pilot", "task-g3-quiz":"V3 client pilot", "task-g3-qa":"V3 client pilot", "task-g3-field-weight":"V3 client pilot", "task-g3-rotation":"V3 client pilot", "task-g3-integration":"V3 client pilot · implementation package", "task-g4-support":"V3 client pilot", "task-g4-complaints":"V3 client pilot", "task-g4-docs":"V3 client pilot", "task-g5-events":"V3 client pilot",
+    "task-g6-sla":"V4 operations", "task-g6-quality":"V4 operations", "task-g6-training":"V3 prerequisite admission gate / V4 operations", "task-g6-team-notifications":"V4 operations",
+    "task-g4-support-notifications":"V5 public scale", "task-g5-kpi":"V5 public scale", "task-g6-admin-url":"V5 public scale",
+    "task-g5-dashboard":"V6 analytics/launch", "task-g5-marketing-gate":"V6 analytics/launch"
+  };
+
+  const enablementGateByTask = {
+    "task-g2-pricing":"implementation/runtime proof; credits packages, USD, global 30, starter 9.99/60, regular package discounts and admin ownership are accepted",
+    "task-g2-accruals":"O4 initial consultation percentage and eligible-base policy; fixed/SLA/task stay disabled",
+    "task-g2-geo-content":"fresh CMS denominator + current country/geoname form fingerprints + source reconciliation + controlled publish/readback/rollback proof",
+    "task-g3-home":"V3 G3.7 home eligibility/manual-order policy + runtime proof; отдельный pilot pool не создаётся",
+    "task-g3-qa":"limited pilot GO after runtime proof, including current G6.4 admission and missing/stale/failed fail-closed cases",
+    "task-g3-field-weight":"V3 taxonomy v2 + manual completeness input; V5 automation deferred",
+    "task-g3-rotation":"V3 requires early G6.4 versioned-admission prerequisite; V5 KPI automation deferred",
+    "task-g3-integration":"source-lock + mapped Confideline build + route/view/data crosswalk + focused proof; final GO/NO_GO stays in G3.5",
+    "task-g5-marketing-gate":"O5 after pilot baseline",
+  };
+
+  const acceptedAdminSettingByTask = {
+    "task-g4-support":"O1: support first response 15 минут; admin-managed/versioned",
+    "task-g4-support-notifications":"O1: ordinary escalation 2x, critical immediate; admin-managed/versioned",
+    "task-g6-sla":"O1: paid decision 60 сек, first response 60 сек, support 15 мин, 2x/immediate; admin-managed/versioned",
+    "task-g6-team-notifications":"O1/O6: 2x ordinary, immediate critical escalation и protected safety route; admin-managed/versioned",
+    "task-g6-quality":"O2/O6: max 100/pass 80, critical-fail/prohibited registry, safety signal vs confirmed verdict; separate admin development package",
+    "task-g6-training":"O2/O6: versioned re-admission и protected Trust & Safety workflow; separate admin development package",
+    "task-g3-rotation":"O3: KPI influence disabled for pilot; modes/weights/thresholds admin-managed; post-pilot enablement deferred",
+    "task-g5-kpi":"O3: 30-day window, 20 paid + 5 QA minimum; all variable KPI parameters admin-managed/versioned",
+    "task-g4-docs":"O6: protected prohibited registry, six-source detection, incident routes, client templates/resources; admin-managed, legal release gate retained",
+    "task-g1-chat":"O6 privacy: server-side pre-send contact/PII censorship, obfuscation/attachment guard, masked evidence; admin-managed protected policy",
+    "task-g2-refund":"R1/P1: session refund returns credits; cash package refund is separate; protected ceilings, numeric inputs and preview; admin-managed/versioned",
+    "task-g4-complaints":"R1: no/partial/full evidence decision, roles, numeric limits, calculation preview and exactly-once action; admin-managed/versioned",
+    "task-g2-pricing":"P1: credits/minute; USD, global 30 and starter 9.99 USD to 60 credits accepted; credit packages, purchase discounts, profile override and immutable snapshots are admin-managed"
+    ,"task-g2-accruals":"O4 admin model: consultation/fixed/SLA/task components, scopes, periods, corrections and snapshots are admin-managed; numeric enablement remains gated"
+  };
+
+  Object.entries(tasks).forEach(([taskId, taskItem]) => {
+    if (/^task-g[123]-/.test(taskId)) return;
+    taskItem.stage = `${taskItem.stage}_legacy_score_pending_standard_audit`;
+    taskItem.done = [
+      `Текущая оценка ${taskItem.tzReady}% сохранена как исходная, но еще не подтверждена новым стандартом.`,
+      "Для статуса 100% требуется отдельное автономное ТЗ, прохождение 12 hard gates и task-level verifier.",
+      "Реализация и runtime-приёмка оцениваются отдельно от полноты документа."
+    ];
+  });
+
+  tasks["task-g1-session"].stage = "etalon_spec_ready_runtime_open";
+  tasks["task-g1-session"].tzReady = 100;
+  tasks["task-g1-session"].detailHref = "../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-1-for-igor.html";
+  tasks["task-g1-session"].has = [
+    "Создано чистое продуктовое ТЗ для Игоря: логика, желаемый функционал, роли, поверхности и критерии готового результата без предписания реализации.",
+    "Отдельно создан технический контекст для Codex Игоря: вся картина системы, current source navigation, gaps, proof boundary и 26 acceptance-кейсов.",
+    "Для обоих путей запуска service_session создаётся exactly once только после committed client consent: принятие запроса Агентом лишь открывает confirmation card, а trial не обходит consent.",
+    "Числовые параметры и изменяемые политики вынесены в управляемые admin settings со snapshot, audit и readback."
+  ];
+  tasks["task-g1-session"].missing = [
+    "Пробелов в спецификации G1.1 по принятому стандарту нет.",
+    "Реализация пока имеет статус code_present_unmapped: нужен сопоставленный build/commit и controller/application integration.",
+    "Runtime acceptance пока fail: нужны positive/negative role proof, persisted audit/readback и независимая QA-приёмка."
+  ];
+  tasks["task-g1-session"].done = [
+    "Spec completeness = 100%; hard gates = pass; owner policy closure = closed_for_G1.1.",
+    "Implementation status = code_present_unmapped.",
+    "Runtime acceptance = fail_not_acceptance_ready."
+  ];
+  tzScoreByTask["task-g1-session"] = [5,8,10,7,12,12,12,8,6,12,5,3];
+  criterionDetailsByTask["task-g1-session"] = [
+    "Есть ID, версия, цель, измеримый результат и независимые статусы spec/implementation/runtime.",
+    "Зафиксированы in-scope, non-goals и зависимости G1.2/G1.3/G2/G6 без скрытого контекста.",
+    "Определены client, public expert profile, actual agent, super-admin и participant ACL.",
+    "Описаны accepted request, authoritative binding, idempotency key и условия, при которых session не создается.",
+    "Primary state model охватывает только connecting, trial, paid, balance_pause и completed; consent является предшествующим фактом, а reconnect — подстатусом с отдельным clock.",
+    "S1-S10 задают основной и альтернативные потоки от accept до восстановления истории.",
+    "Закрыты duplicate/concurrent start, foreign actor, reassignment, reconnect, no balance и exactly-once invariants.",
+    "Есть логический data contract, immutable snapshots, actor audit, event lineage и разрешенный readback.",
+    "Разделены client, agent и super-admin поверхности, включая loading/empty/error/forbidden.",
+    "Определены 26 атомарных positive/negative acceptance-кейсов G11-A01-G11-A26.",
+    "Handoff разделён: PM-ТЗ для Игоря не диктует реализацию, а отдельный Codex-файл содержит current source, integration points, fixtures и implementation gaps.",
+    "Definition of Done и proof boundary запрещают считать код, HTML или model review runtime-доказательством."
+  ];
+
+  tasks["task-g1-chat"].stage = "etalon_spec_ready_runtime_open";
+  tasks["task-g1-chat"].tzReady = 100;
+  tasks["task-g1-chat"].detailHref = "../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-2-for-igor.html";
+  tasks["task-g1-chat"].has = [
+    "Создано автономное продуктовое ТЗ для Игоря: постоянный free dialogue, отдельные paid consultation sessions, роли, видимость, сообщения, цензура, история и проверяемая приёмка.",
+    "Отдельно создан технический контекст для Codex Игоря с current-source navigation, ACL/state/invariant contract, admin ownership и negative/runtime proof.",
+    "Зафиксировано место в существующей админ-панели: «Настройки чата», /ru/admin/settings/chat, после «Основные настройки» и перед «Настройки фото».",
+    "Все изменяемые chat-specific лимиты имеют поля управления, version/audit/readback; существующие RBAC, prices/payments, photo, monitoring, support и logs не дублируются."
+  ];
+  tasks["task-g1-chat"].missing = [
+    "Пробелов в продуктовой спецификации G1.2 по принятому стандарту нет.",
+    "Реализация и runtime acceptance остаются открыты: нужны mapped build/commit, server-side ACL proof, censorship/attachment/idempotency proof и persisted historical readback.",
+    "Legal/privacy review retention и G4.3 Trust & Safety wording остаются release gates, а не скрытыми пробелами ТЗ."
+  ];
+  tasks["task-g1-chat"].done = [
+    "Spec completeness = 100%; hard gates = pass; двухфайловый handoff готов.",
+    "Implementation status = open_until_mapped_build.",
+    "Runtime acceptance = open_until_positive_negative_QA."
+  ];
+  tzScoreByTask["task-g1-chat"] = [5,8,10,7,12,12,12,8,6,12,5,3];
+  criterionDetailsByTask["task-g1-chat"] = [
+    "Есть задача G1.2, версия, цель, измеримый результат и независимая граница spec/runtime.",
+    "Явно разделены scope, non-goals и зависимости G1.1/G1.3/G1.4/G2/G4/G6.",
+    "Определены Клиент, публичный Эксперт, внутренний Агент, moderator/support и super-admin с правами и видимостью.",
+    "Описаны создание dialogue, запрос конкретного кейса, start conditions, unavailable Expert и end.",
+    "Зафиксированы free dialogue, requested, trial/paid/pause/reconnect/end и неизменяемые invariants авторства/назначения.",
+    "Полностью описаны основной flow, сообщения, edit/hide, цензура, reconnect, завершение и история.",
+    "Есть direct ACL, duplicate/retry, concurrent session, attachment, censorship, partial-failure и privacy cases.",
+    "Есть applied config version, actual actor, previous message version, audit, retention и historical readback.",
+    "Описаны client, Agent, moderator/support, super-admin, «Сообщения» и «Настройки чата».",
+    "Приведены 13 positive и 11 negative/retry acceptance cases с наблюдаемым результатом.",
+    "Готовы отдельные PM-ТЗ для Игоря и технический контекст для его Codex.",
+    "Definition of Done требует mapped build, runtime proof, persisted audit/readback, rollback и отдельный PM verdict."
+  ];
+
+  tasks["task-g1-statuses"].stage = "etalon_spec_ready_runtime_open";
+  tasks["task-g1-statuses"].tzReady = 100;
+  tasks["task-g1-statuses"].detailHref = "../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-3-for-igor.html";
+  tasks["task-g1-statuses"].has = [
+    "Создано автономное продуктовое ТЗ для Игоря: отдельный consultation request, одна service session, compact lifecycle, подстатусы ожидания/reconnect и единый terminal result.",
+    "Уточнение заменяет активный 15-минутный request clock на 60-минутный; после ответа клиента запускается новый 15-минутный срок Эксперта, а оба snapshots сохраняются.",
+    "Принятие клиентского запроса Агентом открывает confirmation card, но не создаёт session; consent фиксируется только явным подтверждением клиента. Принятие предложения Эксперта является consent.",
+    "Создан отдельный технический контекст для Codex Игоря с transitions, invariants, data/readback, negative/concurrent cases и acceptance matrix.",
+    "Создана сквозная PM-карта G1-G6: Support, Refund, Quality, Appeal, Events и KPI связаны с consultation, но не становятся ее состояниями.",
+    "Настройки распределены по существующей логике админки без дублирования: consultation, chat, prices, support, refunds, quality, KPI и RBAC."
+  ];
+  tasks["task-g1-statuses"].missing = [
+    "Пробелов в продуктовой спецификации G1.3 по принятому стандарту не осталось.",
+    "Implementation status открыт: нужен mapped build/commit.",
+    "Runtime acceptance открыт: нужны state/timeout/idempotency/concurrency/admin readback и role proof."
+  ];
+  tasks["task-g1-statuses"].done = [
+    "Spec completeness = 100%; focused verifier = 80/80; hard gates = pass.",
+    "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.",
+    "Реализация и runtime acceptance оцениваются отдельно."
+  ];
+  tzScoreByTask["task-g1-statuses"] = [5,8,10,7,12,12,12,8,6,12,5,3];
+  criterionDetailsByTask["task-g1-statuses"] = [
+    "Есть цель, измеримый результат, версия и независимая граница spec/runtime.",
+    "Scope разделяет G1.1/G1.2/G1.3/G2/G4/G5/G6 и ссылается на сквозную ownership map.",
+    "Определены Client, Expert, Agent, Moderator и Super-admin с role-specific readback.",
+    "Request и session creation имеют отдельные preconditions/triggers.",
+    "Описаны request states, primary session states, operational substates, terminal metadata и forbidden transitions.",
+    "Покрыты request/proposal/clarification/connecting/trial/paid/waiting/pause/reconnect/end.",
+    "Покрыты duplicate, retry, concurrent action, late top-up/reconnect, invalid transition и dependency failure.",
+    "Определены applied settings, deadlines, actor/reason, history и linked-process readback.",
+    "Описаны client, Agent, Support link и Super-admin поверхности, включая статусную панель и My consultations.",
+    "Есть 22 PM acceptance checks и 18 технических Given/When/Then cases.",
+    "Готовы отдельные PM-ТЗ и технический контекст для Codex.",
+    "Definition of Done и proof boundary отделяют документы от implementation/runtime."
+  ];
+
+  tasks["task-g1-chat-notifications"].stage = "etalon_spec_ready_runtime_open";
+  tasks["task-g1-chat-notifications"].tzReady = 100;
+  tasks["task-g1-chat-notifications"].detailHref = "../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-4-for-igor.html";
+  tasks["task-g1-chat-notifications"].has = [
+    "Создано автономное продуктовое ТЗ для Игоря: in-app, chat badges, email fallback, приоритеты, полный каталог consultation events, настройки пользователя и super-admin.",
+    "Создан отдельный технический контекст для Codex Игоря: current source navigation, event/rule/delivery contracts, ACL, dedup, retry, stale guards, privacy и acceptance matrix.",
+    "Зафиксировано место в существующей админ-панели: отдельный пункт «Настройки уведомлений» в «Общих настройках» рядом с Email Templates, рекомендуемый маршрут /ru/admin/notification-rule/index.",
+    "Email Templates владеет текстом писем; G1.4 владеет событием, получателем, приоритетом, каналом, задержкой, quiet hours, retry, retention и связью с шаблоном."
+  ];
+  tasks["task-g1-chat-notifications"].missing = [
+    "Пробелов в продуктовой спецификации G1.4 по принятому стандарту не осталось.",
+    "Implementation status открыт: локальный consultation-message slice имеет статус code_present_unmapped и требует сопоставленного build/commit.",
+    "Runtime acceptance открыт: нужны role-positive/negative, dedup/concurrency, stale-link, email/template, admin version/rollback и delivery-log proof."
+  ];
+  tasks["task-g1-chat-notifications"].done = [
+    "Spec completeness = 100%; focused verifier и hard gates должны пройти.",
+    "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.",
+    "Реализация и production acceptance не заявлены."
+  ];
+  tzScoreByTask["task-g1-chat-notifications"] = [5,8,10,7,12,12,12,8,6,12,5,3];
+  criterionDetailsByTask["task-g1-chat-notifications"] = [
+    "Есть цель, измеримый результат, версия и независимая граница spec/implementation/runtime.",
+    "Scope разделяет G1.1/G1.2/G1.3/G2/G4.4/G5.1/G6.5 и Email Templates.",
+    "Определены Client, public Expert, actual Agent, Moderator boundary и Super-admin с server-authoritative recipient ACL.",
+    "Описаны business event, presence/unread threshold, rule snapshot и channel preconditions.",
+    "Есть группы событий, приоритеты, delivery states, stale state и неизменяемые business/delivery invariants.",
+    "Покрыты messages, requests, connection, trial/paid/credits, completion, technical и compensation flows.",
+    "Покрыты duplicate, retry, concurrent worker, stale link, lost access, missing template, privacy и partial failure.",
+    "Определены event/rule/delivery metadata, version/audit/readback и управляемое хранение 90 дней.",
+    "Описаны notification center, chat badges, user settings, Email Templates boundary и отдельная admin page.",
+    "Есть 24 продуктовых и 24 технических positive/negative acceptance cases.",
+    "Готовы отдельные PM-ТЗ для Игоря и технический контекст для Codex.",
+    "Definition of Done и proof boundary запрещают считать локальный code slice или документы runtime-доказательством."
+  ];
+
+  tasks["task-g2-pricing"].stage = "etalon_spec_ready_runtime_open";
+  tasks["task-g2-pricing"].tzReady = 100;
+  tasks["task-g2-pricing"].detailHref = "../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-1-for-igor.html";
+  tasks["task-g2-pricing"].has = [
+    "Создано автономное продуктовое ТЗ для Игоря: клиент покупает credits со скидкой, а не минуты; минуты рассчитываются по цене выбранного Эксперта.",
+    "Создан отдельный технический контекст для Codex Игоря: current source navigation, price/package/coupon snapshots, balance buckets, payment idempotency, concurrency, admin ownership и acceptance matrix.",
+    "Приняты стартовые значения: global 30 credits/мин, starter 60 credits за 9.99 USD и regular packages 150/22.99, 300/42.99, 600/79.99 USD.",
+    "Зафиксировано размещение: единственный редактор global/profile price — /ru/admin/settings/prices; карточка анкеты показывает read-only effective price и ссылку; /ru/admin/settings/coupons владеет правилами купонов/бонусов; ручное начисление выполняется в существующей карточке пользователя."
+  ];
+  tasks["task-g2-pricing"].missing = [
+    "Пробелов в продуктовой спецификации G2.1 по принятому стандарту не осталось.",
+    "Implementation status открыт: нужен mapped build/commit и сопоставление существующего финансового контура.",
+    "Runtime acceptance открыт: нужны payment/grant idempotency, balance concurrency, role-positive/negative, admin readback, reconciliation и client checkout QA."
+  ];
+  tasks["task-g2-pricing"].done = [
+    "Spec completeness = 100%; focused verifier и hard gates должны пройти.",
+    "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.",
+    "Реализация и production acceptance не заявлены."
+  ];
+  tzScoreByTask["task-g2-pricing"] = [5,8,10,7,12,12,12,8,6,12,5,3];
+  criterionDetailsByTask["task-g2-pricing"] = [
+    "Есть цель, измеримый результат, версия и независимая граница spec/implementation/runtime.",
+    "Scope разделяет G2.1 от timer/debit, refund, payout, provider configuration, support и tax/legal engine.",
+    "Определены Client, Expert/Agent и Super-admin; точный баланс доступен только клиенту и Super-admin.",
+    "Зафиксированы credits, price rule, package, coupon, order snapshot, balance bucket, ledger movement и владельцы истины.",
+    "Описаны выбор Эксперта, расчет минут, package purchase, checkout, return context, balance pause и administrative flows.",
+    "Есть global/profile price resolution, starter/regular packages, discount cap, stacking, expiry и spending order.",
+    "Покрыты failed/cancelled/late payment, duplicate callback, grant failure, concurrent debit, stale context и invalid configuration.",
+    "Определены snapshots, idempotency identities, ledger reconciliation, retention boundary, privacy и audit.",
+    "Размещены client surfaces, /settings/prices, /settings/coupons, expert card, user balance, Payment systems, Orders и Transactions.",
+    "Есть 32 продуктовых и 28 технических positive/negative/concurrency acceptance cases.",
+    "Готовы отдельные PM-ТЗ для Игоря и технический контекст для Codex.",
+    "Definition of Done и proof boundary запрещают считать документы или source map runtime-доказательством."
+  ];
+
+  tasks["task-g2-timer"].stage = "etalon_spec_ready_runtime_open";
+  tasks["task-g2-timer"].tzReady = 100;
+  tasks["task-g2-timer"].detailHref = "../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-2-for-igor.html";
+  tasks["task-g2-timer"].has = [
+    "Создано автономное продуктовое ТЗ для Игоря: фиксированный бесплатный trial, переход в paid, started-minute debit, low-balance warning, balance pause, reconnect и остановка.",
+    "Создан отдельный технический контекст для Codex Игоря: server-authoritative clock, atomic ledger transaction, minute idempotency, concurrency, incidents, admin snapshots и acceptance matrix.",
+    "Приняты стартовые значения: trial 3 минуты из G2.1 Coupons, low-balance threshold 2 полные минуты, balance pause 5 минут один раз, client и Agent reconnect grace по 60 секунд.",
+    "Любой refund или compensation grant выполняется вручную super-admin; top-up не возобновляет paid автоматически."
+  ];
+  tasks["task-g2-timer"].missing = [
+    "Пробелов в продуктовой спецификации G2.2 по принятому стандарту не осталось.",
+    "Implementation status открыт: локальный source slice не сопоставлен с принятым build/commit.",
+    "Runtime acceptance открыт: нужны atomic/exactly-once debit, authoritative clock, pause/reconnect concurrency, role-positive/negative и admin historical readback."
+  ];
+  tasks["task-g2-timer"].done = [
+    "Spec completeness = 100%; focused verifier и hard gates должны пройти.",
+    "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.",
+    "Реализация и production acceptance не заявлены."
+  ];
+  tzScoreByTask["task-g2-timer"] = [5,8,10,7,12,12,12,8,6,12,5,3];
+  criterionDetailsByTask["task-g2-timer"] = [
+    "Есть цель, измеримый результат, версия и независимая граница spec/implementation/runtime.",
+    "Scope отделяет G2.2 от G2.1 purchase/price, G2.3 refund, G2.4 accrual, G1.3 lifecycle и G4 incidents.",
+    "Определены Client, public Expert, actual Agent и Super-admin; exact balance и денежные действия ограничены.",
+    "Зафиксированы trial entitlement, price snapshot, paid-minute ordinal, debit, timer episode, pause, reconnect и incident.",
+    "Определены preconditions: обе стороны готовы, consent действителен, trial исчерпан или равен нулю, на полную минуту хватает credits.",
+    "Покрыты trial, trial-to-paid, paid minute, inactivity, low balance, balance pause, top-up, explicit continuation, reconnect и technical end.",
+    "Покрыты duplicate tick, concurrent debit, stale client clock, late top-up, repeated pause, simultaneous disconnect и delivery retry.",
+    "Определены server timestamps, immutable snapshots, ledger linkage, idempotency key, incident dedup и audit/readback.",
+    "Описаны client/Agent/Super-admin поверхности и новая страница /ru/admin/settings/consultations без дублирования соседних настроек; trial entitlement здесь только read-only.",
+    "Есть 34 продуктовых и 38 технических positive/negative/concurrency acceptance cases.",
+    "Готовы отдельные PM-ТЗ для Игоря и технический контекст для Codex.",
+    "Definition of Done и proof boundary запрещают считать локальный code slice или документы runtime-доказательством."
+  ];
+
+  tasks["task-g2-refund"].stage = "etalon_spec_ready_runtime_open";
+  tasks["task-g2-refund"].tzReady = 100;
+  tasks["task-g2-refund"].detailHref = "../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-3-for-igor.html";
+  tasks["task-g2-refund"].has = [
+    "Создано автономное продуктовое ТЗ для Игоря: client/system/staff intake, отдельный refund lifecycle, no/partial/full decision, balance execution, appeal и client readback.",
+    "Создан отдельный технический контекст для Codex Игоря: current source incompatibilities, case identity, eligibility, bucket restoration, atomic/idempotent execution, RBAC, events и acceptance matrix.",
+    "Приняты значения: claim 30 дней, decision target 72 часа, appeal 7 дней, bonus refund-use grace 30 дней.",
+    "Настройки размещены в /ru/admin/settings/refunds после «Настройки цен» и перед «Group settings»; actual refund только вручную super-admin."
+  ];
+  tasks["task-g2-refund"].missing = [
+    "Пробелов в продуктовой спецификации G2.3 по принятому стандарту не осталось.",
+    "Implementation status открыт: локальный refund slice не сопоставлен с принятым build/commit и конфликтует с accepted process boundary.",
+    "Runtime acceptance открыт: нужны request/candidate dedup, separate lifecycle, cumulative guard, exactly-once bucket restoration, appeal, RBAC и reconciliation."
+  ];
+  tasks["task-g2-refund"].done = [
+    "Spec completeness = 100%; focused verifier и hard gates должны пройти.",
+    "PM-ТЗ, HTML, DOCX и Codex-контекст готовы.",
+    "Реализация и production acceptance не заявлены."
+  ];
+  tzScoreByTask["task-g2-refund"] = [5,8,10,7,12,12,12,8,6,12,5,3];
+  criterionDetailsByTask["task-g2-refund"] = [
+    "Есть цель, измеримый результат, версия и независимая граница spec/implementation/runtime.",
+    "Scope отделяет session refund от G2.1 purchase, G2.2 debit, G2.4 payout, G4 support/evidence и cash dispute.",
+    "Определены Client, Agent/Expert boundary и Super-admin; internal evidence/correction защищены.",
+    "Зафиксированы candidate, request, case, evidence, decision, execution, appeal, buckets и truth owners.",
+    "Описаны entry points, duplicate handling, withdrawal, review, decision, execution, failure, appeal и correction.",
+    "Есть category rules, eligibility, partial/full calculation, cumulative ceiling, expiry grace и manual-only approval.",
+    "Покрыты stale revision, concurrent decisions, double confirm, lost worker, execution failure, policy change и unauthorized access.",
+    "Определены immutable decisions/movements, versions, audit, evidence retention, ledger and support linkage.",
+    "Описаны client/support/consultation/refund surfaces и /ru/admin/settings/refunds без дублирования case queue.",
+    "Есть 34 продуктовых и 42 технических positive/negative/concurrency acceptance cases.",
+    "Готовы отдельные PM-ТЗ для Игоря и технический контекст для Codex.",
+    "Definition of Done и proof boundary запрещают считать локальный code slice или support prototype runtime-доказательством."
+  ];
+  criterionDetailsByTask["task-g2-geo-content"] = [
+    "Есть измеримая цель: заполненный текущий denominator country/city locale pages с admin/public readback и отдельной границей spec/implementation/runtime.",
+    "Scope включает inventory, source binding, Codex draft, QA, review, publish и rollback; G2.1–G2.4, G3.INT, taxonomy и regional Expert listing не дублируются.",
+    "В MVP изменяющие действия доступны только super-admin; Codex является draft-инструментом, а посетитель видит только published/verified content.",
+    "Зафиксированы geo entity, locale page, source package, draft/published revision, evidence record и fresh reconciliation classes.",
+    "Описаны source-first restore, controlled adapt/repair/translate/generate-missing, preview/diff, approval, publish, admin/public readback и rollback.",
+    "Установлены no-auto-publish, preimage, revision binding, current form fingerprint, dynamic denominator и один editor на каждый параметр.",
+    "Покрыты source conflict, missing source, wrong locale/geo, duplicate, unsafe claim, form drift, concurrent edit, worker loss, partial batch и readback failure.",
+    "Определены source/prompt/policy/output hashes, actual actor, immutable revision history, audit, queue checkpoint и evidence refs.",
+    "Описана новая queue/status page внутри Countries & Cities, ссылки в canonical country/geoname editors и public readback без дублирования справочников.",
+    "Есть 36 продуктовых и 48 технических positive/negative/concurrency/rollback acceptance cases.",
+    "Готовы отдельные PM-ТЗ, HTML/DOCX и технический контекст для Codex с текущими source/QA paths.",
+    "Definition of Done запрещает считать historical 157 packages, старый PASS или единичный live fill доказательством текущей полной публикации."
+  ];
+  criterionDetailsByTask["task-g3-integration"] = [
+    "Есть измеримая цель: одна mapped Confideline build с новой presentation-частью и отдельной границей spec/implementation/runtime.",
+    "Scope ограничен route/view/assets/data binding, migration, rollout и rollback; product rules G3.1–G3.7 и финальный gate G3.5 не дублируются.",
+    "Определены guest, Client, public Expert, Agent и Super-admin; presentation не расширяет права и не раскрывает private/Agent data.",
+    "Зафиксированы восемь stable surface IDs, auth как shared path и владельцы routes, projections, actions, versions и audit.",
+    "Описаны happy paths от SSR/public data до auth intent, canonical dialogue/request handoff, admin preview и controlled activation.",
+    "Установлены source-lock, no-demo-data, server ACL, idempotency, stale/cache, migration, coexistence, cutover и rollback rules.",
+    "Покрыты missing source, blocked Expert, duplicate callback, dependency/asset/translation failure, concurrent rollout и rollback during session.",
+    "Требуются immutable intake/build identity, route/data crosswalk, applied-version readback, audit и evidence index.",
+    "Описаны восемь публичных поверхностей, auth states, G3.INT.I18N key registry, RU/EN source copy, required-locale coverage, SEO, accessibility, five-width visual proof и admin/public readback.",
+    "Есть 32 продуктовых и 40 технических positive/negative/concurrency/rollback acceptance cases.",
+    "Готовы отдельные PM-ТЗ, HTML/DOCX и технический контекст для Codex с source navigation.",
+    "Definition of Done запрещает считать Figma/HTML runtime-интеграцией; G3.5 принимает только named build с focused proof."
+  ];
 
   const taskTermEn = {
     "task-g1-session": "service session",
@@ -319,6 +710,7 @@
     "task-g2-timer": "timer / debit / hard stop",
     "task-g2-refund": "refund ledger",
     "task-g2-accruals": "accruals / incentives",
+    "task-g2-geo-content": "country/city content restoration and Codex workflow",
     "task-g3-home": "storefront",
     "task-g3-catalog": "expert catalog",
     "task-g3-profile": "expert profile",
@@ -326,6 +718,7 @@
     "task-g3-qa": "end-to-end path proof",
     "task-g3-field-weight": "profile field weight / completeness score",
     "task-g3-rotation": "expert ranking / rotation",
+    "task-g3-integration": "Oracle/Nebula frontend to Confideline backend integration",
     "task-g4-support": "support",
     "task-g4-complaints": "complaints / disputes",
     "task-g4-docs": "terms / documents",
@@ -344,6 +737,8 @@
   };
 
   function stageClass(stage) {
+    if (stage === "etalon_spec_ready_runtime_open") return "stage-accepted";
+    if (stage === "functional_tz_handoff_ready_runtime_open") return "stage-accepted";
     if (stage === "accepted_bounded_slice") return "stage-accepted";
     if (stage === "implementation_in_progress") return "stage-packet";
     if (stage === "proof_gap") return "stage-packet";
@@ -353,6 +748,9 @@
   }
 
   function stageLabel(stage) {
+    if (stage === "etalon_spec_ready_runtime_open") return "Эталон ТЗ 100% / runtime не принят";
+    if (stage.endsWith("_legacy_score_pending_standard_audit")) return "Исходная оценка / новый аудит не пройден";
+    if (stage === "functional_tz_handoff_ready_runtime_open") return "ТЗ 100% / runtime открыт";
     if (stage === "accepted_bounded_slice") return "Срез согласован";
     if (stage === "implementation_in_progress") return "Внедрение начато / proof открыт";
     if (stage === "proof_gap") return "Нужна проверка";
@@ -361,19 +759,310 @@
     return "Только план";
   }
 
+  const executionRoutingByTask = {
+    "task-g1-session":{workClass:"MIXED", executor:"super-admin + Игорь"},
+    "task-g1-chat":{workClass:"MIXED", executor:"moderator/super-admin + Игорь"},
+    "task-g1-statuses":{workClass:"MIXED", executor:"super-admin + Игорь"},
+    "task-g1-chat-notifications":{workClass:"MIXED", executor:"moderator/super-admin + Игорь"},
+    "task-g2-pricing":{workClass:"MIXED", executor:"super-admin + Игорь"},
+    "task-g2-timer":{workClass:"MIXED", executor:"super-admin + Игорь"},
+    "task-g2-refund":{workClass:"MIXED", executor:"moderator → super-admin + Игорь"},
+    "task-g2-accruals":{workClass:"MIXED", executor:"super-admin + Игорь"},
+    "task-g2-geo-content":{workClass:"OPS_FIRST + CONTENT_POLICY", executor:"moderator/super-admin → Игорь по gap", primaryTitle:"Операционный пакет", technicalTitle:"Техническая эскалация", primaryDesc:"Codex готовит source-first draft, moderator/super-admin проверяет и публикует через существующие country/geoname editors. Игорь подключается только при доказанном technical gap."},
+    "task-g3-home":{workClass:"MIXED", executor:"moderator/super-admin + Игорь"},
+    "task-g3-catalog":{workClass:"MIXED", executor:"super-admin + Игорь"},
+    "task-g3-profile":{workClass:"MIXED", executor:"moderator/super-admin + Игорь"},
+    "task-g3-quiz":{workClass:"MIXED", executor:"PM/moderator + Игорь"},
+    "task-g3-qa":{workClass:"QA_GATE", executor:"QA/super-admin → PM", primaryTitle:"QA-протокол", technicalTitle:"Дефекты / технический контекст", primaryDesc:"Независимый QA/super-admin выполняет проверку и собирает evidence, PM выдаёт GO/NO_GO. Игорь предоставляет сборку и исправляет отдельные FAIL."},
+    "task-g3-field-weight":{workClass:"OPS_FIRST", executor:"super-admin → Игорь по gap", primaryTitle:"Операционный пакет", technicalTitle:"Техническая эскалация", primaryDesc:"Super-admin сначала инвентаризирует profile fields и управляет taxonomy/completeness. Игорю передаётся только missing/broken evaluator, binding, versioning или admin capability."},
+    "task-g3-rotation":{workClass:"MIXED", executor:"super-admin + Игорь"},
+    "task-g3-integration":{workClass:"MIXED", executor:"moderator/super-admin + Игорь", primaryTitle:"Функциональное ТЗ", primaryDesc:"Игорь интегрирует layout/backend; moderator/super-admin ведёт существующие настройки и весь G3.INT.I18N existing-key/translation/readback поток."},
+    "task-g4-support":{workClass:"MIXED", executor:"moderator/support + Игорь"},
+    "task-g4-complaints":{workClass:"MIXED", executor:"moderator → super-admin + Игорь"},
+    "task-g4-docs":{workClass:"CONTENT_POLICY", executor:"PM/legal → moderator → Игорь по gap", primaryTitle:"Policy/content пакет", technicalTitle:"Техническая эскалация", primaryDesc:"PM/legal утверждают смысл, moderator переводит и публикует, super-admin активирует версию. Игорь исправляет только missing/broken capability."},
+    "task-g4-support-notifications":{workClass:"MIXED", executor:"support/super-admin + Игорь"},
+    "task-g5-events":{workClass:"DEV", executor:"PM/data owner → Игорь", primaryTitle:"ТЗ разработчику"},
+    "task-g5-dashboard":{workClass:"DEV", executor:"PM/staff → Игорь", primaryTitle:"ТЗ разработчику"},
+    "task-g5-kpi":{workClass:"MIXED", executor:"PM/super-admin + Игорь"},
+    "task-g5-marketing-gate":{workClass:"QA_GATE", executor:"PM/super-admin", primaryTitle:"Launch-gate протокол", technicalTitle:"Дефекты / технический контекст", primaryDesc:"PM/super-admin вручную принимает GO/NO_GO по свежим доказательствам. Разработчик получает только дефекты evidence/readback/traffic-control runtime."},
+    "task-g6-assignment":{workClass:"MIXED", executor:"super-admin + Игорь"},
+    "task-g6-sla":{workClass:"MIXED", executor:"moderator/super-admin + Игорь"},
+    "task-g6-quality":{workClass:"MIXED", executor:"moderator/QA + super-admin + Игорь"},
+    "task-g6-training":{workClass:"CONTENT_POLICY", executor:"PM/domain/legal + moderator/Ксения + Игорь по gate", primaryTitle:"Training/policy пакет", technicalTitle:"Техническая эскалация", primaryDesc:"Обучение, review и policy принадлежат предметным владельцам; Игорь реализует только admission/re-admission gates и fail-closed paid access."},
+    "task-g6-team-notifications":{workClass:"MIXED", executor:"staff/super-admin + Игорь"},
+    "task-g6-admin-url":{workClass:"DEV", executor:"PM/staff → Игорь", primaryTitle:"ТЗ разработчику"},
+    "task-g6-isolated-admin-access":{workClass:"DEV", executor:"super-admin + Игорь", primaryTitle:"ТЗ разработчику"}
+  };
+
   const params = new URLSearchParams(window.location.search);
   const id = params.get("task");
+  const docType = params.get("doc") === "codex" ? "codex" : "igor";
   const task = id ? tasks[id] : null;
   const content = document.getElementById("content");
-  const detailLink = document.getElementById("detail-link");
+  const igorLink = document.getElementById("igor-link");
+  const codexLink = document.getElementById("codex-link");
+  const artifactLink = document.getElementById("artifact-link");
+  const docxLink = document.getElementById("docx-link");
+  const adminMockupLink = document.getElementById("admin-mockup-link");
+  const taskSourceLink = document.getElementById("task-source-link");
+  const pageTitle = document.getElementById("page-title");
 
   if (!task) {
     content.innerHTML = '<div class="empty"><b>Задача не найдена.</b><br>Вернитесь к списку и откройте ТЗ заново.</div>';
     return;
   }
 
-  detailLink.href = task.detailHref;
+  const panelHref = (type) => "task-tz.html?task=" + encodeURIComponent(id) + "&doc=" + type;
+  const implementationPackageSourceByTask = {
+    "task-g2-geo-content":"../../../reports/six-goals-functional-tz-2026-07-20/etalon-tz-g2-geo-content-restoration.md",
+    "task-g3-integration":"../../../reports/six-goals-functional-tz-2026-07-20/etalon-tz-g3-int-layout-backend-integration.md"
+  };
+  const isImplementationPackage = Boolean(implementationPackageSourceByTask[id]);
+  const taskSourceHref = implementationPackageSourceByTask[id]
+    || "tasks/" + encodeURIComponent(id) + ".html";
+  const artifactByTask = {
+    "task-g1-session": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-1-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g1-1-service-session.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-1-for-igor.docx"
+    },
+    "task-g1-chat": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-2-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g1-2-role-chat.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-2-for-igor.docx"
+    },
+    "task-g1-statuses": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-3-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g1-3-status-history.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-3-for-igor.docx"
+    },
+    "task-g1-chat-notifications": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-4-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g1-4-chat-notifications.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g1-4-for-igor.docx"
+    },
+    "task-g2-pricing": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-1-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g2-1-price-balance.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-1-for-igor.docx"
+    },
+    "task-g2-timer": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-2-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g2-2-timer-debit-pause.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-2-for-igor.docx"
+    },
+    "task-g2-refund": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-3-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g2-3-refunds.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-3-for-igor.docx"
+    },
+    "task-g2-accruals": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-4-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g2-4-agent-accruals.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-4-for-igor.docx"
+    },
+    "task-g2-geo-content": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-geo-content-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g2-geo-content-restoration.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g2-geo-content-for-igor.docx"
+    },
+    "task-g3-home": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-1-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g3-1-storefront.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-1-for-igor.docx"
+    },
+    "task-g3-catalog": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-2-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g3-2-expert-catalog.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-2-for-igor.docx"
+    },
+    "task-g3-profile": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-3-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g3-3-expert-profile.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-3-for-igor.docx"
+    },
+    "task-g3-quiz": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-4-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g3-4-matching-start.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-4-for-igor.docx"
+    },
+    "task-g3-qa": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-5-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g3-5-client-path-qa.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-5-for-igor.docx"
+    },
+    "task-g3-field-weight": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-6-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g3-6-profile-completeness.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-6-for-igor.docx"
+    },
+    "task-g3-rotation": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-7-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g3-7-eligibility-rotation.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-7-for-igor.docx"
+    },
+    "task-g3-integration": {
+      igor:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-int-for-igor.html",
+      codex:"../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g3-int-layout-backend-integration.md",
+      docx:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g3-int-for-igor.docx"
+    }
+  };
+  const oracleNebulaPagesByTask = {
+    "task-g2-pricing": {
+      summary:"Визуальная связка G2.1: клиент видит баланс и цену Эксперта, переходит к пополнению и подтверждает покупку пакета credits.",
+      pages:[
+        {
+          title:"Личный кабинет: баланс, цена и пополнение",
+          status:"concept_html / desktop / только локально",
+          localPath:"H:\\Nebula\\GPT\\_unzipped\\lk-psychics-dashboard-proposal.html",
+          localHref:"file:///H:/Nebula/GPT/_unzipped/lk-psychics-dashboard-proposal.html",
+          role:"Показывает balance card, CTA пополнения, цену Эксперта в credits/мин и переход в платежный контур.",
+          binding:"Использовать как визуальный источник кабинета. Реальные баланс, effective price, доступные минуты и статусы должны приходить из G2.1/G2.2; демонстрационные значения не являются настройками продукта."
+        },
+        {
+          title:"Paid consultation funnel — Package tab",
+          status:"AI product mockup / historical logic",
+          localPath:"H:\\Nebula\\GPT\\_unzipped\\nebula-lk-paid-funnel-desktop-mockups.html",
+          localHref:"file:///H:/Nebula/GPT/_unzipped/nebula-lk-paid-funnel-desktop-mockups.html",
+          role:"Интерактивно показывает путь из кабинета к вкладке выбора предложения, checkout summary, refill и payment states.",
+          binding:"Использовать композицию и набор состояний, но не старую продажу фиксированных минут, async package, цифры и автоматический start. Текущий финансовый контракт всегда берётся из G2.1/G2.2."
+        },
+        {
+          title:"Payment Modal — checkout",
+          status:"candidate / source boundary blocked",
+          publicHref:"https://cutthreat.github.io/nebula-pages-public/payment-modal-new.html",
+          publicLabel:"Открыть более старый опубликованный snapshot",
+          localPath:"H:\\Nebula\\GPT\\_unzipped\\payment-modal-new.html",
+          localHref:"file:///H:/Nebula/GPT/_unzipped/payment-modal-new.html",
+          role:"Показывает визуальную оболочку checkout и подтверждения оплаты.",
+          binding:"Привязать к актуальному контракту G2.1: пакет credits, базовая цена USD, скидка, coupon, tax при наличии, итоговая сумма, payment method и состояния pending/success/failure. Текущий текст и цифры страницы не задают бизнес-логику; GitHub Pages показывает более старую публичную копию."
+        }
+      ],
+      gap:"Нет принятой полной responsive-страницы package picker + checkout + payment states внутри кабинета. Опубликованный Payment Modal — визуальный snapshot, а не доказательство payment/grant/idempotency runtime."
+    },
+    "task-g2-timer": {
+      summary:"Визуальная связка G2.2: базовый чат дополняется отдельным paid-active состоянием с ценой, таймером и завершением консультации.",
+      pages:[
+        {
+          title:"LK Chatroom C76 — базовый чат",
+          status:"default state / ready for Head review only",
+          localPath:"H:\\Nebula\\GPT\\lk-chatroom-c76.html",
+          localHref:"file:///H:/Nebula/GPT/lk-chatroom-c76.html",
+          role:"Задает source-backed оболочку диалога на пяти контрольных ширинах.",
+          binding:"Это общий визуальный владелец G1.2 для чата. G2.2 добавляет поверх него только финансовые состояния consultation session и не меняет правила сообщений, ролей и цензуры."
+        },
+        {
+          title:"LK Chatroom C76 — paid active 1200",
+          status:"source-backed candidate / recorded proof stale",
+          localPath:"H:\\Nebula\\GPT\\lk-chatroom-c76-paid-active.html",
+          localHref:"file:///H:/Nebula/GPT/lk-chatroom-c76-paid-active.html",
+          role:"Показывает desktop paid-active state: Эксперт, online, credits balance, цена в credits/мин, session timer и End chat.",
+          binding:"Сервер остается единственным источником времени и списаний. Значения 120 credits, 45 credits/мин и статический таймер — демо. Responsive counterparts 992/768/576/320 пока не подтверждены; recorded visual proof нужно повторить после изменения общего chat CSS."
+        },
+        {
+          title:"Paid consultation funnel — исторический desktop reference",
+          status:"historical concept / не каноническое ТЗ",
+          localPath:"H:\\Nebula\\GPT\\_unzipped\\nebula-lk-paid-funnel-desktop-mockups.html",
+          localHref:"file:///H:/Nebula/GPT/_unzipped/nebula-lk-paid-funnel-desktop-mockups.html",
+          role:"Связывает onboarding, подбор, checkout, вопрос, paid chat и результат в одном интерактивном прототипе.",
+          binding:"Использовать только для понимания экранной последовательности. Не переносить продажу минут, async package, автоматический start и прочие старые решения, если они расходятся с текущими G1.3/G2.1/G2.2."
+        }
+      ],
+      gap:"Не сверстаны как принятые отдельные состояния low balance, единственная balance pause, explicit resume после пополнения, reconnect grace, technical end и late top-up. Они остаются обязательными по ТЗ G2.2."
+    },
+    "task-g2-refund": {
+      summary:"Для G2.3 существует публичная policy-страница Oracle / Nebula; экран обращения и ручного решения возврата пока отсутствует.",
+      pages:[
+        {
+          title:"Refund Policy",
+          status:"candidate visual smoke / promotion blocked",
+          publicHref:"https://cutthreat.github.io/nebula-pages-public/refund-policy-new.html",
+          publicLabel:"Открыть более старый опубликованный snapshot",
+          localPath:"H:\\Nebula\\GPT\\_unzipped\\refund-policy-new.html",
+          localHref:"file:///H:/Nebula/GPT/_unzipped/refund-policy-new.html",
+          role:"Показывает публичную структуру объяснения refund scenarios и маршрута в поддержку.",
+          binding:"Это только visual/content shell. Финальный текст принадлежит G4.3/legal review, а eligibility, manual super-admin decision, bucket restoration, execution retry и appeal принадлежат G2.3/G4.2. GitHub Pages показывает более старую публичную копию."
+        }
+      ],
+      gap:"Нет сверстанных клиентской карточки refund case, статусов рассмотрения/исполнения/appeal и super-admin решения. Публичная policy-страница не заменяет эти продуктовые поверхности."
+    },
+    "task-g2-accruals": {
+      summary:"G2.4 — внутренний финансовый контур для super-admin и Агентов; подходящей пользовательской Oracle / Nebula-страницы для него сейчас нет.",
+      pages:[],
+      gap:"Нужно отдельно спроектировать страницы «Настройки начислений», «Начисления по консультациям» и карточку начисления в стилях существующей Confideline-admin. Не следует помещать этот функционал в публичный Oracle / Nebula-кабинет или подменять его payment/refund страницами клиента."
+    },
+    "task-g3-integration": {
+      summary:"G3.INT связывает Oracle / Nebula presentation packages с существующим Yii2 backend Confideline. В него входит P0 workstream G3.INT.I18N: inventory строк, missing keys, переводы всех допускаемых к rollout локалей и admin/public readback. Ни один HTML-файл ниже не является runtime-доказательством сам по себе: до реализации фиксируется crosswalk source → route → controller/view → data/action/i18n owner → focused proof.",
+      pages:[
+        {
+          title:"Home — публичная витрина",
+          status:"source-backed / 5 widths / implementation_ready_claim=false",
+          localPath:"H:\\Nebula\\GPT\\_unzipped\\home.html",
+          localHref:"file:///H:/Nebula/GPT/_unzipped/home.html",
+          role:"Визуальный источник для surface home и маршрута /{lang}/; source packet содержит 11 секций на пяти ширинах.",
+          binding:"Разобрать в Yii2 layout/partials/assets и подключить published storefront composition G3.1, eligible home slice G3.7, реальные reviews/price/status и client-private blocks. Не переносить demo content или JS как backend logic."
+        },
+        {
+          title:"All Psychic New — общий expert catalog",
+          status:"source-backed candidate / route binding proposed",
+          localPath:"H:\\Nebula\\GPT\\_unzipped\\all-psychic-new.html",
+          localHref:"file:///H:/Nebula/GPT/_unzipped/all-psychic-new.html",
+          role:"Визуальный источник для dashboard_catalog; C76 также содержит отдельную authenticated 01-Psychics family.",
+          binding:"Связать с /{lang}/dashboard и G3.2/G3.7 expert-only query. До source decision не смешивать public и authenticated lineage; ordinary users, dating filters и фиктивная availability запрещены."
+        },
+        {
+          title:"Expert Page New — профиль Эксперта",
+          status:"proof_only_needed / source identity open",
+          localPath:"H:\\Nebula\\GPT\\_unzipped\\expert-page-new.html",
+          localHref:"file:///H:/Nebula/GPT/_unzipped/expert-page-new.html",
+          role:"Block inventory для expert_profile; в C76 существуют отдельные Psychic CARD и Profile families.",
+          binding:"Сначала утвердить public Expert lineage, затем связать с G3.3 projection: stable public identity, taxonomy, effective price, real availability, moderated reviews и canonical CTA. Fixed booking/session package из HTML не переносится."
+        },
+        {
+          title:"Login + Signup step 1/2 — auth entry",
+          status:"source-backed frames / backend contract open",
+          localPath:"H:\\Nebula\\GPT\\_unzipped\\login.html · signup-step-1.html · signup-step-2.html",
+          localHref:"file:///H:/Nebula/GPT/_unzipped/login.html",
+          role:"Shared auth path для guest CTA и сохранения выбранных Эксперта, темы и вопроса; auth не является девятой G3 surface.",
+          binding:"Интегрировать с существующими /login и /signup, server-side one-use return context, TTL/revalidation, RU/EN и ошибками. Raw question в URL, duplicate request/dialogue и автоматический paid start запрещены."
+        }
+      ],
+      gap:"Для country, city, category, matching_result и thematic_block пока нет принятого полного crosswalk Oracle/C76 → Confideline runtime. Geo имеет реальные routes, но source binding отсутствует; matching имеет точные C76 states, но нет утвержденного client route/backend contract. Такие строки закрываются как blocked_source, а не дорисовываются по общему CSS."
+    }
+  };
+  const routing = executionRoutingByTask[id] || {
+    workClass:"MIXED",
+    executor:"проверить ownership matrix",
+    primaryTitle:"Основной документ задачи",
+    technicalTitle:"Технический контекст / эскалация"
+  };
+  const artifacts = artifactByTask[id] || {};
+  const artifactHref = artifacts[docType];
+  const isSpecReady = Boolean(artifactHref);
+
+  igorLink.href = panelHref("igor");
+  codexLink.href = panelHref("codex");
+  igorLink.textContent = routing.primaryTitle || "Основной документ задачи";
+  codexLink.textContent = routing.technicalTitle || "Технический контекст / эскалация";
+  igorLink.classList.toggle("review-link", docType === "igor");
+  codexLink.classList.toggle("review-link", docType === "codex");
+  taskSourceLink.href = taskSourceHref;
+  pageTitle.textContent = docType === "igor"
+    ? (routing.primaryTitle || "Основной документ задачи")
+    : (routing.technicalTitle || "Технический контекст / эскалация");
+  document.title = `${task.code} — ${pageTitle.textContent}`;
+
+  if (isSpecReady) {
+    artifactLink.hidden = false;
+    adminMockupLink.hidden = id !== "task-g1-session";
+    artifactLink.href = artifactHref;
+    artifactLink.textContent = docType === "igor" ? "Открыть основной документ" : "Открыть технический контекст";
+    docxLink.hidden = docType !== "igor" || !artifacts.docx;
+    if (artifacts.docx) docxLink.href = artifacts.docx;
+  }
+
   const scoreVector = tzScoreByTask[id] || [0,0,0,0,0,0,0,0,0,0];
+  const activeCriteria = artifactByTask[id] ? standardTzCriteria : tzCriteria;
   const totalScore = scoreVector.reduce((sum, value) => sum + value, 0);
 
   function renderList(items) {
@@ -381,14 +1070,14 @@
   }
 
   function renderScoreSummary() {
-    const closed = scoreVector.filter((value) => value >= 10).length;
-    const partial = scoreVector.filter((value) => value > 0 && value < 10).length;
-    const missing = scoreVector.filter((value) => value <= 0).length;
+    const closed = activeCriteria.filter((criterion, index) => (scoreVector[index] || 0) >= criterion.max).length;
+    const partial = activeCriteria.filter((criterion, index) => (scoreVector[index] || 0) > 0 && (scoreVector[index] || 0) < criterion.max).length;
+    const missing = activeCriteria.filter((criterion, index) => (scoreVector[index] || 0) <= 0).length;
     return `
       <div class="summary-grid">
-        <div class="summary-box"><span>Закрыто</span><b>${closed}/10</b></div>
-        <div class="summary-box"><span>Частично</span><b>${partial}/10</b></div>
-        <div class="summary-box"><span>Не закрыто</span><b>${missing}/10</b></div>
+        <div class="summary-box"><span>Закрыто</span><b>${closed}/${activeCriteria.length}</b></div>
+        <div class="summary-box"><span>Частично</span><b>${partial}/${activeCriteria.length}</b></div>
+        <div class="summary-box"><span>Не закрыто</span><b>${missing}/${activeCriteria.length}</b></div>
       </div>`;
   }
 
@@ -403,15 +1092,15 @@
             <b>Источник</b>
             <ul>
               <li><a href="${mock.sourcePath}">${mock.sourcePath}</a></li>
-              <li>Draft-материал для ТЗ G1.1: локальный служебный источник</li>
+              <li>${mock.handoffPath}</li>
             </ul>
           </div>
           <div class="mock-box">
-            <b>Что берем как истину</b>
+            <b>Какие продуктовые решения демонстрирует</b>
             ${renderList(mock.truth)}
           </div>
           <div class="mock-box">
-            <b>Что не переносим как истину</b>
+            <b>Что не переносим как требование</b>
             ${renderList(mock.demoOnly)}
           </div>
           <div class="mock-box">
@@ -419,6 +1108,38 @@
             ${renderList(mock.transfer)}
           </div>
         </div>
+      </section>`;
+  }
+
+  function renderOracleNebulaPages() {
+    const visual = oracleNebulaPagesByTask[id];
+    if (!visual) return "";
+    const isLocalPanel = window.location.protocol === "file:";
+    const pages = visual.pages.length
+      ? visual.pages.map((page) => {
+          const publicAction = page.publicHref
+            ? `<a class="visual-action" href="${page.publicHref}" target="_blank" rel="noopener">${page.publicLabel || "Открыть опубликованный snapshot"}</a>`
+            : "";
+          const localAction = isLocalPanel
+            ? `<a class="visual-action" href="${page.localHref}">Открыть локальный исходник</a>`
+            : `<span class="visual-action" title="Доступно только в локальной рабочей среде">Локальный исходник не опубликован</span>`;
+          return `
+            <article class="mock-box">
+              <b>${page.title}</b>
+              <span class="visual-status">${page.status}</span>
+              <p><b>Что визуализирует:</b> ${page.role}</p>
+              <p><b>Как использовать в ${task.code}:</b> ${page.binding}</p>
+              <div class="visual-actions">${publicAction}${localAction}</div>
+              <div class="visual-path"><b>Рабочий локальный файл:</b> <code>${page.localPath}</code></div>
+            </article>`;
+        }).join("")
+      : `<article class="mock-box"><b>Отдельная страница отсутствует</b><p>Для этой задачи не найден подходящий сверстанный экран Oracle / Nebula.</p></article>`;
+    return `
+      <section class="mock-card oracle-nebula-pages" id="oracle-nebula-pages">
+        <h3>Сверстанные страницы новой версии Oracle / Nebula</h3>
+        <p>${visual.summary}</p>
+        <div class="mock-grid">${pages}</div>
+        <div class="visual-boundary"><b>Граница доказательства:</b> ${visual.gap} Наличие HTML подтверждает только визуальный слой и не повышает процент реализации сайта без backend, данных, ролей и runtime-проверки.</div>
       </section>`;
   }
 
@@ -430,10 +1151,14 @@
 
   function renderScoreRows() {
     const details = criterionDetailsByTask[id] || [];
-    return tzCriteria.map((criterion, index) => {
+    return activeCriteria.map((criterion, index) => {
       const value = scoreVector[index] || 0;
       const percent = Math.round((value / criterion.max) * 100);
-      const detail = details[index] || "Расшифровка для этой задачи еще не собрана.";
+      const detail = details[index] || (
+        value >= criterion.max
+          ? "Критерий закрыт в автономной паре PM-ТЗ и Codex-контекста; реализация и runtime-приёмка оцениваются отдельно."
+          : "Расшифровка для этой задачи еще не собрана."
+      );
       return `
         <details class="criterion-detail">
           <summary>
@@ -451,20 +1176,60 @@
     }).join("");
   }
 
+  function renderDocumentContract() {
+    const statusClass = isSpecReady ? "" : " draft";
+    const statusText = isSpecReady ? "Готовый документ для передачи" : "Рабочий контур создан — требуется отдельная вычитка";
+    if (docType === "igor") {
+      return `
+        <section class="document-contract">
+          <span class="document-state${statusClass}">${statusText}</span>
+          <h2>${task.code} — ${routing.primaryTitle || "основной документ задачи"}</h2>
+          <p>${routing.primaryDesc || "Документ описывает продуктовый результат и отдельно разделяет операционную работу в админ-панели, development scope и приёмку."}</p>
+          <ul>
+            <li>Класс исполнения: <b>${routing.workClass}</b>. Основной маршрут: <b>${routing.executor}</b>.</li>
+            <li>${isImplementationPackage
+              ? `Канонический источник — открытый основной документ; <a href="${taskSourceHref}">исходный пакет ${task.code}</a> не является новой функциональной задачей и не меняет реестр 30 задач.`
+              : `Канонический источник — открытый основной документ; <a href="${taskSourceHref}">старая карточка ${task.code}</a> сохранена как справочный материал.`}</li>
+            <li>Все изменяемые числовые лимиты, цены, KPI и политики должны быть управляемыми из админ-панели, если это относится к задаче.</li>
+            <li>Игорь подключается только к development scope; content, configuration, protected staff decisions и QA/PM verdict остаются у указанных владельцев.</li>
+            <li>Процент ниже показывает полноту содержания, а не факт реализации на сайте.</li>
+          </ul>
+        </section>`;
+    }
+    return `
+      <section class="document-contract codex">
+        <span class="document-state${statusClass}">${statusText}</span>
+        <h2>${task.code} — ${routing.technicalTitle || "технический контекст / эскалация"}</h2>
+        <p>Документ ограничен обязательным development scope или evidence-backed technical gap. Он не передаёт разработчику работу moderator/super-admin, автора policy/content либо независимого QA.</p>
+        <ul>
+          <li>Класс исполнения: <b>${routing.workClass}</b>. Основной маршрут: <b>${routing.executor}</b>.</li>
+          <li>Системный объект: <b>${taskTermEn[id] || task.code}</b>.</li>
+          <li>Вертикальный пакет: <b>${verticalByTask[id] || "определяется по карточке задачи"}</b>.</li>
+          <li>Исходная карточка и связанные материалы являются навигацией; код или макет без runtime-проверки не доказывает готовность.</li>
+          <li>После исправления moderator/super-admin завершает исходную настройку, публикацию или readback; QA/PM выполняет независимую приёмку.</li>
+        </ul>
+      </section>`;
+  }
+
   content.innerHTML = `
+    ${renderDocumentContract()}
     <section class="hero">
       <div class="hero-head">
         <span class="badge ${stageClass(task.stage)}">${stageLabel(task.stage)}</span>
         <span class="badge">${task.goal}</span>
+        <span class="badge">${routing.workClass}</span>
+        <span class="badge">${routing.executor}</span>
       </div>
       <h2>${task.code} ${task.title}<span class="term-en">${taskTermEn[id] || ""}</span></h2>
       <div class="meta-grid">
         <div class="meta-box"><span>Готовность ТЗ</span><b>${totalScore}%</b></div>
         <div class="meta-box"><span>Статус</span><b>${stageLabel(task.stage)}</b></div>
         <div class="meta-box"><span>Задача</span><b>${task.code}</b></div>
-        <div class="meta-box"><span>Полные детали</span><b><a href="${task.detailHref}">Открыть</a></b></div>
+        <div class="meta-box"><span>${isImplementationPackage ? "Источник пакета" : "Исходная карточка"}</span><b><a href="${taskSourceHref}">Открыть</a></b></div>
       </div>
     </section>
+
+    ${renderOracleNebulaPages()}
 
     <section class="score-card">
       <h3>${totalScore}% ТЗ</h3>
@@ -473,15 +1238,15 @@
 
     <section class="section-grid">
       <article class="card has">
-        <h3>Что уже описано</h3>
+        <h3>${docType === "igor" ? "Что уже определено" : "Контекст и подтвержденные факты"}</h3>
         <div class="card-body">${renderList(task.has)}</div>
       </article>
       <article class="card miss">
-        <h3>Что надо дописать</h3>
+        <h3>${docType === "igor" ? "Что нужно уточнить" : "Разрывы и точки реализации"}</h3>
         <div class="card-body">${renderList(task.missing)}</div>
       </article>
       <article class="card done">
-        <h3>Когда ТЗ готово</h3>
+        <h3>${docType === "igor" ? "Когда ТЗ готово" : "Граница реализации и приемки"}</h3>
         <div class="card-body">${renderList(task.done)}</div>
       </article>
     </section>
@@ -490,7 +1255,7 @@
       <summary>Критерии оценки ТЗ</summary>
       <div class="disclosure-body">
         <div class="score-list">${renderScoreRows()}</div>
-        <div class="score-note">Шаг оценки: 0 / 5 / 10. Итог = сумма критериев. Методология оценки ТЗ хранится как локальный служебный источник.</div>
+        <div class="score-note">${artifactByTask[id] ? "ТЗ оценивается по 12 взвешенным критериям (100 баллов) и обязательным hard gates." : "Это исходная оценка по прежней шкале. Для подтвержденных 100% нужен повторный аудит по новому стандарту."}</div>
       </div>
     </details>
 

@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nebula — Карточка консультации №10482</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --admin-blue:#47598f;
+      --admin-blue-dark:#3f4e7e;
+      --sidebar:#262c38;
+      --sidebar-hover:#222732;
+      --canvas:#e9eef2;
+      --panel:#ffffff;
+      --line:#d2d6de;
+      --text:#333333;
+      --muted:#777777;
+      --green:#48bb78;
+      --yellow:#f6ad55;
+      --red:#ee5e5a;
+      --aqua:#4299e1;
+      --navy:#001f3f;
+    }
+    * { box-sizing:border-box; }
+    html, body { min-height:100%; }
+    body { margin:0; background:var(--canvas); color:var(--text); font:14px/1.4 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    button, select, textarea, input { font:inherit; }
+    button, a { -webkit-tap-highlight-color:transparent; }
+    a { color:#3c8dbc; text-decoration:none; }
+    a:hover { color:#23527c; text-decoration:underline; }
+    .app { min-height:100vh; }
+    .main-header { position:fixed; inset:0 0 auto 0; z-index:20; height:50px; background:var(--admin-blue); color:#fff; box-shadow:0 1px 2px rgba(0,0,0,.14); }
+    .logo { position:absolute; left:0; top:0; width:230px; height:50px; display:flex; align-items:center; padding:0 20px; background:var(--admin-blue-dark); color:#27a9e8; font:700 24px/1 "Segoe Script", "Brush Script MT", cursive; }
+    .logo:hover { color:#42b9ef; text-decoration:none; }
+    .header-tools { margin-left:230px; height:50px; display:flex; align-items:center; justify-content:space-between; }
+    .sidebar-toggle { width:50px; height:50px; display:grid; place-items:center; color:#fff; border:0; background:transparent; cursor:pointer; font-size:19px; }
+    .sidebar-toggle:hover { background:rgba(0,0,0,.09); }
+    .header-search { display:flex; width:min(360px,38vw); margin-left:auto; }
+    .header-search input { width:100%; height:34px; padding:6px 12px; border:0; border-radius:4px 0 0 4px; background:#fff; }
+    .header-search button { width:40px; height:34px; border:0; border-radius:0 4px 4px 0; background:#467fcf; color:#fff; cursor:pointer; }
+    .header-right { display:flex; align-items:center; height:100%; margin-left:14px; }
+    .header-item { height:50px; min-width:48px; padding:0 15px; display:flex; align-items:center; gap:8px; color:#fff; border-left:1px solid rgba(255,255,255,.12); }
+    .avatar-sm { width:26px; height:26px; border-radius:50%; display:grid; place-items:center; background:#eaf4fb; color:#367fa9; font-weight:700; }
+    .main-sidebar { position:fixed; z-index:19; top:50px; bottom:0; left:0; width:230px; overflow:auto; background:var(--sidebar); color:#bdc4d3; transition:transform .2s ease; }
+    .sidebar-menu { list-style:none; margin:0; padding:0 0 30px; }
+    .sidebar-menu .header { padding:10px 25px 10px 15px; color:#4f5c75; background:#1e222c; font-size:11px; }
+    .sidebar-menu a { display:flex; align-items:center; gap:10px; height:44px; padding:12px 5px 12px 15px; border-left:3px solid transparent; color:#bdc4d3; text-decoration:none; }
+    .sidebar-menu a:hover { background:var(--sidebar-hover); color:#fff; }
+    .sidebar-menu .active > a { background:var(--sidebar-hover); border-left-color:var(--admin-blue); color:#fff; }
+    .sidebar-submenu { margin:0; padding:0; list-style:none; background:#242a35; }
+    .sidebar-submenu a { height:38px; padding:9px 5px 9px 38px; color:#9ca6ba; }
+    .nav-icon { width:18px; text-align:center; opacity:.9; }
+    .nav-count { margin-left:auto; min-width:18px; padding:1px 5px; border-radius:8px; background:#f39c12; color:#fff; font-size:10px; text-align:center; }
+    .nav-arrow { margin-left:auto; color:#8d96a8; }
+    .content-wrapper { min-height:100vh; margin-left:230px; padding-top:50px; transition:margin-left .2s ease; }
+    .content-header { position:relative; padding:15px 15px 0; }
+    .content-header h1 { margin:0; font-size:24px; font-weight:300; }
+    .content-header h1 small { display:inline-block; margin-left:8px; color:#777; font-size:15px; font-weight:400; }
+    .breadcrumb { position:absolute; top:18px; right:15px; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:6px; color:#777; list-style:none; font-size:12px; }
+    .breadcrumb li + li::before { content:"›"; margin-right:6px; color:#bbb; }
+    .content { min-height:250px; padding:15px; }
+    .prototype-note { margin-bottom:12px; padding:9px 12px; border-left:4px solid var(--aqua); background:#d9edf7; color:#31708f; }
+    .box { margin-bottom:16px; overflow:hidden; background:var(--panel); border-top:3px solid #d2d6de; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,.10), 0 1px 2px rgba(0,0,0,.06); }
+    .box-primary { border-top-color:var(--admin-blue); }
+    .box-success { border-top-color:var(--green); }
+    .box-warning { border-top-color:var(--yellow); }
+    .box-danger { border-top-color:var(--red); }
+    .box-header { min-height:48px; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; gap:12px; border-bottom:1px solid #f4f4f4; }
+    .box-title { margin:0; font-size:18px; font-weight:400; }
+    .box-body { padding:14px; }
+    .box-footer { padding:10px 14px; border-top:1px solid #f4f4f4; background:#fff; }
+    .workbar { border-top-width:0; border-left:4px solid var(--green); }
+    .workbar.pause { border-left-color:var(--yellow); }
+    .workbar.technical { border-left-color:var(--red); }
+    .workbar.completed { border-left-color:#999; }
+    .workbar-main { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
+    .workbar-copy { min-width:0; }
+    .badge-row { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:7px; }
+    .label { display:inline-block; padding:3px 7px; border-radius:2px; color:#fff; font-size:11px; font-weight:600; vertical-align:middle; }
+    .label-primary { background:var(--admin-blue); }
+    .label-success { background:var(--green); }
+    .label-warning { background:var(--yellow); }
+    .label-danger { background:var(--red); }
+    .label-info { background:var(--aqua); }
+    .label-default { background:#777; }
+    .workbar h2 { margin:0 0 4px; font-size:20px; font-weight:400; }
+    .meta-line { color:var(--muted); font-size:12px; }
+    .workbar-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:7px; }
+    .btn { display:inline-flex; min-height:34px; align-items:center; justify-content:center; gap:6px; padding:6px 12px; border:1px solid transparent; border-radius:4px; background:#fff; color:#444; cursor:pointer; line-height:1.2; text-decoration:none; white-space:nowrap; }
+    .btn:hover { text-decoration:none; filter:brightness(.98); }
+    .btn:focus-visible, select:focus-visible, textarea:focus-visible, input:focus-visible, [role="tab"]:focus-visible { outline:3px solid rgba(60,141,188,.28); outline-offset:2px; }
+    .btn-default { border-color:#ddd; background:#f4f4f4; }
+    .btn-primary { background:#467fcf; color:#fff; }
+    .btn-success { background:var(--green); color:#fff; }
+    .btn-warning { background:var(--yellow); color:#fff; }
+    .btn-danger { background:var(--red); color:#fff; }
+    .btn-xs { min-height:26px; padding:3px 7px; font-size:12px; }
+    .btn-sm { min-height:30px; padding:5px 10px; font-size:12px; }
+    .form-control { width:100%; min-height:34px; padding:6px 12px; border:1px solid #d2d6de; border-radius:4px; background:#fff; color:#555; }
+    .select-compact { width:auto; min-width:165px; }
+    .control-strip { display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding:10px 14px; border-top:1px solid #f4f4f4; background:#fafafa; }
+    .control-group { display:flex; align-items:center; gap:7px; }
+    .control-group label { color:#666; font-size:12px; font-weight:600; }
+    .stat-grid { display:grid; grid-template-columns:repeat(6, minmax(120px,1fr)); margin-bottom:16px; background:#fff; box-shadow:0 1px 1px rgba(0,0,0,.08); }
+    .stat { min-height:76px; padding:12px 14px; border-right:1px solid #eee; }
+    .stat:last-child { border-right:0; }
+    .stat span { display:block; margin-bottom:4px; color:#777; font-size:11px; text-transform:uppercase; letter-spacing:.025em; }
+    .stat b { display:block; font-size:20px; font-weight:400; }
+    .stat small { color:#999; }
+    .layout { display:grid; grid-template-columns:minmax(0,1fr) 310px; gap:16px; align-items:start; }
+    .nav-tabs { display:flex; flex-wrap:wrap; margin:0; padding:0 8px; border-bottom:1px solid #ddd; background:#fff; list-style:none; }
+    .nav-tabs button { margin-bottom:-1px; padding:11px 13px; border:0; border-bottom:3px solid transparent; background:transparent; color:#555; cursor:pointer; }
+    .nav-tabs button:hover { color:#222; }
+    .nav-tabs button.active { border-bottom-color:var(--admin-blue); color:#222; font-weight:600; }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; animation:panel-in .16s ease-out; }
+    @keyframes panel-in { from { opacity:.35; transform:translateY(2px); } to { opacity:1; transform:none; } }
+    .section-title { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0 0 10px; }
+    .section-title h3 { margin:0; font-size:16px; font-weight:600; }
+    .overview-grid { display:grid; grid-template-columns:1.15fr .85fr; gap:16px; }
+    .timeline { position:relative; margin:0; padding:0 0 0 28px; list-style:none; }
+    .timeline::before { content:""; position:absolute; left:8px; top:7px; bottom:8px; width:2px; background:#ddd; }
+    .timeline li { position:relative; padding:0 0 16px 8px; }
+    .timeline li:last-child { padding-bottom:0; }
+    .timeline li::before { content:""; position:absolute; left:-25px; top:3px; width:11px; height:11px; border:3px solid #fff; border-radius:50%; background:#bbb; box-shadow:0 0 0 1px #ccc; }
+    .timeline li.done::before { background:var(--green); }
+    .timeline li.current::before { background:var(--admin-blue); box-shadow:0 0 0 4px rgba(60,141,188,.16); }
+    .timeline li.problem::before { background:var(--red); }
+    .timeline b { display:block; font-size:13px; }
+    .timeline small { color:#888; }
+    .kv { margin:0; display:grid; grid-template-columns:125px minmax(0,1fr); }
+    .kv dt, .kv dd { margin:0; padding:8px 0; border-bottom:1px solid #f1f1f1; }
+    .kv dt { color:#777; font-weight:400; }
+    .kv dd { font-weight:600; overflow-wrap:anywhere; }
+    .staff-sensitive[data-hidden="true"] { display:none !important; }
+    .callout { margin:12px 0 0; padding:10px 12px; border-left:4px solid #ddd; background:#f7f7f7; }
+    .callout-info { border-left-color:var(--aqua); background:#edfaff; }
+    .callout-warning { border-left-color:var(--yellow); background:#fff9ed; }
+    .callout-danger { border-left-color:var(--red); background:#fff3f1; }
+    .related-list { margin:0; padding:0; list-style:none; }
+    .related-list li { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px solid #f1f1f1; }
+    .related-list li:last-child { border-bottom:0; }
+    .related-list small { display:block; color:#888; }
+    .thread { display:grid; gap:12px; max-height:510px; overflow:auto; padding-right:4px; }
+    .message { display:flex; gap:9px; max-width:82%; }
+    .message.client { margin-left:auto; flex-direction:row-reverse; }
+    .message-avatar { flex:0 0 32px; width:32px; height:32px; display:grid; place-items:center; border-radius:50%; background:#ddd; color:#555; font-size:11px; font-weight:700; }
+    .message.agent .message-avatar { background:#d9edf7; color:#31708f; }
+    .message.client .message-avatar { background:#e8f5e9; color:#2e7d32; }
+    .message-bubble { min-width:150px; padding:9px 11px; border:1px solid #ddd; border-radius:5px; background:#f7f7f7; }
+    .message.agent .message-bubble { background:#edf7fc; border-color:#cce4f0; }
+    .message.client .message-bubble { background:#f1f8f2; border-color:#d8eadb; }
+    .message-head { display:flex; justify-content:space-between; gap:12px; margin-bottom:4px; font-size:12px; }
+    .message-head span { color:#999; white-space:nowrap; }
+    .message p { margin:0; }
+    .system-event { align-self:center; max-width:86%; margin:1px auto; padding:6px 10px; border-radius:12px; background:#f2f2f2; color:#777; font-size:11px; text-align:center; }
+    .thread-toolbar { display:flex; align-items:center; gap:8px; }
+    .thread-toolbar input { max-width:250px; }
+    .table-wrap { overflow:auto; }
+    table { width:100%; border-collapse:collapse; background:#fff; }
+    th { padding:9px 10px; border-bottom:2px solid #ddd; color:#555; text-align:left; font-size:12px; }
+    td { padding:9px 10px; border-top:1px solid #eee; vertical-align:top; }
+    tbody tr:nth-child(even) { background:#fafafa; }
+    .amount-negative { color:var(--red); font-weight:600; }
+    .amount-positive { color:var(--green); font-weight:600; }
+    .empty-state { padding:36px 18px; color:#888; text-align:center; }
+    .empty-state strong { display:block; margin-bottom:5px; color:#555; font-size:17px; font-weight:400; }
+    .audit-list { margin:0; padding:0; list-style:none; }
+    .audit-list li { display:grid; grid-template-columns:125px 120px minmax(0,1fr); gap:10px; padding:9px 0; border-bottom:1px solid #f1f1f1; }
+    .audit-list time, .audit-list small { color:#888; }
+    .quality-score { display:grid; grid-template-columns:130px 1fr; gap:18px; align-items:center; }
+    .score-circle { width:116px; height:116px; display:grid; place-items:center; border:12px solid #d8f0e4; border-top-color:var(--green); border-radius:50%; color:#333; font-size:30px; }
+    .score-bars { display:grid; gap:9px; }
+    .score-row { display:grid; grid-template-columns:150px 1fr 42px; gap:10px; align-items:center; font-size:12px; }
+    .bar { height:8px; overflow:hidden; border-radius:4px; background:#eee; }
+    .bar i { display:block; height:100%; background:var(--green); }
+    .side-stack { display:grid; gap:16px; }
+    .side-stack .box { margin-bottom:0; }
+    .quick-actions { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+    .snapshot-list { margin:0; padding:0; list-style:none; }
+    .snapshot-list li { padding:8px 0; border-bottom:1px solid #f1f1f1; }
+    .snapshot-list li:last-child { border-bottom:0; }
+    .snapshot-list span { display:block; color:#777; font-size:11px; }
+    .snapshot-list b { display:block; margin-top:2px; font-size:13px; }
+    .toast { position:fixed; z-index:60; right:20px; bottom:20px; max-width:360px; padding:12px 15px; border-radius:3px; background:#222d32; color:#fff; box-shadow:0 4px 18px rgba(0,0,0,.25); opacity:0; transform:translateY(12px); pointer-events:none; transition:.2s ease; }
+    .toast.show { opacity:1; transform:none; }
+    .modal-backdrop { position:fixed; z-index:50; inset:0; display:none; align-items:center; justify-content:center; padding:18px; background:rgba(0,0,0,.45); }
+    .modal-backdrop.open { display:flex; }
+    .modal { width:min(520px,100%); background:#fff; border-radius:3px; box-shadow:0 10px 34px rgba(0,0,0,.25); animation:modal-in .16s ease-out; }
+    @keyframes modal-in { from { transform:translateY(-8px); opacity:.5; } to { transform:none; opacity:1; } }
+    .modal-header, .modal-footer { padding:12px 15px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .modal-header { border-bottom:1px solid #eee; }
+    .modal-footer { justify-content:flex-end; border-top:1px solid #eee; }
+    .modal-header h3 { margin:0; font-size:18px; font-weight:400; }
+    .modal-body { padding:15px; }
+    .modal-body label { display:block; margin:0 0 5px; font-weight:600; }
+    .modal-body .form-group { margin-bottom:13px; }
+    .close { border:0; background:transparent; color:#999; cursor:pointer; font-size:22px; }
+    .collapsed .main-sidebar { transform:translateX(-230px); }
+    .collapsed .content-wrapper { margin-left:0; }
+    .collapsed .logo { width:50px; font-size:0; }
+    .collapsed .logo::after { content:"N"; font-size:20px; font-weight:700; }
+    .collapsed .header-tools { margin-left:50px; }
+    @media (max-width:1180px) {
+      .stat-grid { grid-template-columns:repeat(3,1fr); }
+      .stat:nth-child(3) { border-right:0; }
+      .stat:nth-child(-n+3) { border-bottom:1px solid #eee; }
+      .layout { grid-template-columns:1fr; }
+      .side-stack { grid-template-columns:repeat(3,1fr); }
+    }
+    @media (max-width:780px) {
+      .main-header { position:relative; height:auto; }
+      .logo { position:relative; width:100%; }
+      .header-tools { margin-left:0; }
+      .header-item.user-name span { display:none; }
+      .main-sidebar { top:100px; transform:translateX(-230px); }
+      .content-wrapper { margin-left:0; padding-top:0; }
+      .app.mobile-menu .main-sidebar { transform:none; }
+      .header-search { width:min(320px,55vw); }
+      .content { padding:15px 12px 24px; }
+      .content-header { padding:15px 12px 9px; }
+      .breadcrumb { position:static; margin-top:7px; }
+      .workbar-main { flex-direction:column; }
+      .workbar-actions { justify-content:flex-start; }
+      .stat-grid { grid-template-columns:repeat(2,1fr); }
+      .stat { border-bottom:1px solid #eee; }
+      .stat:nth-child(2n) { border-right:0; }
+      .overview-grid, .side-stack { grid-template-columns:1fr; }
+      .audit-list li { grid-template-columns:1fr; gap:2px; }
+      .quality-score { grid-template-columns:1fr; }
+      .score-row { grid-template-columns:110px 1fr 38px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="main-header">
+    <a class="logo" href="index.html" aria-label="YouDate Admin">YouDate</a>
+    <div class="header-tools">
+      <button class="sidebar-toggle" id="sidebar-toggle" type="button" aria-label="Свернуть боковое меню">☰</button>
+      <div class="header-search" role="search">
+        <input type="search" placeholder="Поиск" aria-label="Поиск по админ-панели">
+        <button type="button" data-demo-action="search" aria-label="Найти">⌕</button>
+      </div>
+      <div class="header-right">
+        <div class="header-item user-name"><span>♟</span><span>admin ▾</span></div>
+      </div>
+    </div>
+  </header>
+
+  <aside class="main-sidebar" aria-label="Административное меню">
+    <ul class="sidebar-menu">
+      <li><a href="#"><span class="nav-icon">⚙</span>Главное</a></li>
+      <li class="header">Содержимое</li>
+      <li><a href="#"><span class="nav-icon">♙</span>Партнеры</a></li>
+      <li><a href="#"><span class="nav-icon">♟</span>Пользователи</a></li>
+      <li><a href="#"><span class="nav-icon">▣</span>Финансы<span class="nav-arrow">‹</span></a></li>
+      <li><a href="#"><span class="nav-icon">☝</span>Поддержка</a></li>
+      <li><a href="#"><span class="nav-icon">♟</span>Группы</a></li>
+      <li><a href="#"><span class="nav-icon">✉</span>Сообщения<span class="nav-arrow">⌄</span></a></li>
+      <li>
+        <ul class="sidebar-submenu">
+          <li><a href="#"><span class="nav-icon">☁</span>Chat</a></li>
+          <li><a href="#"><span class="nav-icon">✉</span>Сообщения</a></li>
+        </ul>
+      </li>
+      <li class="active"><a href="#"><span class="nav-icon">◷</span>Консультации<span class="nav-count">7</span></a></li>
+      <li><a href="#"><span class="nav-icon">▧</span>Фотографии<span class="nav-count">43</span></a></li>
+      <li><a href="#"><span class="nav-icon">▤</span>Содержимое<span class="nav-arrow">‹</span></a></li>
+      <li><a href="#"><span class="nav-icon">⚑</span>Жалобы<span class="nav-count">2</span></a></li>
+      <li><a href="#"><span class="nav-icon">●</span>Верификации</a></li>
+      <li><a href="#"><span class="nav-icon">♜</span>Подарки</a></li>
+      <li><a href="#"><span class="nav-icon">⊘</span>Баны</a></li>
+      <li class="header">Система</li>
+      <li><a href="#"><span class="nav-icon">⚙</span>Общие настройки<span class="nav-arrow">‹</span></a></li>
+      <li><a href="#"><span class="nav-icon">▤</span>Логи<span class="nav-arrow">‹</span></a></li>
+      <li><a href="#"><span class="nav-icon">▣</span>Поля профиля<span class="nav-arrow">‹</span></a></li>
+      <li><a href="#"><span class="nav-icon">◔</span>Мониторинг очереди</a></li>
+    </ul>
+  </aside>
+
+  <main class="content-wrapper">
+    <section class="content-header">
+      <h1>Карточка консультации №10482 <small>одна консультация внутри постоянного диалога</small></h1>
+      <ol class="breadcrumb">
+        <li>Главная</li>
+        <li>Консультации</li>
+        <li>№10482</li>
+      </ol>
+    </section>
+
+    <section class="content">
+      <div class="prototype-note"><b>Интерактивный макет G1.1.</b> Показывает желаемую логику и состав страницы в текущей стилистике админ-панели. Это не доказательство backend/runtime-реализации.</div>
+
+      <section class="box workbar" id="workbar">
+        <div class="box-body">
+          <div class="workbar-main">
+            <div class="workbar-copy">
+              <div class="badge-row">
+                <span class="label label-success" id="status-badge">Paid active</span>
+                <span class="label label-primary">Expert: Solara</span>
+                <span class="label label-info">Dialog #D-2804</span>
+                <span class="label label-default staff-sensitive">Agent A-017</span>
+              </div>
+              <h2 id="state-title">Платная консультация идёт</h2>
+              <div class="meta-line" id="state-note">Текущая начатая минута оплачена · новая минута начнётся только при допустимом состоянии и достаточном балансе.</div>
+            </div>
+            <div class="workbar-actions">
+              <a class="btn btn-default btn-sm" href="task-tz.html?task=task-g1-session&amp;doc=igor">← Каноническое ТЗ G1.1</a>
+              <button class="btn btn-default btn-sm" type="button" data-demo-action="chat">Открыть диалог</button>
+              <button class="btn btn-warning btn-sm staff-action" type="button" data-demo-action="support">Создать support ticket</button>
+              <button class="btn btn-danger btn-sm super-action" type="button" id="end-open">Завершить вручную</button>
+            </div>
+          </div>
+        </div>
+        <div class="control-strip">
+          <div class="control-group">
+            <label for="role-select">Просмотр как</label>
+            <select class="form-control select-compact" id="role-select">
+              <option value="super">Super-admin</option>
+              <option value="moderator">Support / moderator</option>
+              <option value="agent">Agent</option>
+            </select>
+          </div>
+            <div class="control-group">
+              <label for="state-select">Состояние макета</label>
+              <select class="form-control select-compact" id="state-select">
+                <option value="connecting">Connecting</option>
+                <option value="trial">Trial</option>
+                <option value="paid" selected>Paid</option>
+                <option value="balance_pause">Balance pause</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+            <span class="meta-line" id="role-hint">Полный staff-view с фактическим агентом, деньгами, audit и snapshot настроек. Technical end хранится как completed + причина, а не отдельное состояние.</span>
+        </div>
+      </section>
+
+      <section class="stat-grid" aria-label="Ключевые показатели консультации">
+        <div class="stat"><span>Текущий этап</span><b id="metric-stage">Paid</b><small id="metric-stage-note">00:02:18</small></div>
+        <div class="stat"><span>Цена</span><b>30 credits</b><small>за начатую минуту · snapshot</small></div>
+        <div class="stat"><span>Баланс клиента</span><b id="metric-balance">120 credits</b><small>4 полные минуты по текущей цене</small></div>
+        <div class="stat"><span>Trial</span><b>05:00</b><small>завершён · entitlement snapshot</small></div>
+        <div class="stat"><span>Paid duration</span><b id="metric-paid">02:18</b><small>3 начатые минуты</small></div>
+        <div class="stat"><span>Списано</span><b id="metric-debit">90 credits</b><small>ledger events: 3</small></div>
+      </section>
+
+      <div class="layout">
+        <section class="box box-primary">
+          <nav class="nav-tabs" role="tablist" aria-label="Разделы карточки консультации">
+            <button class="active" type="button" role="tab" aria-selected="true" data-tab="overview">Обзор</button>
+            <button type="button" role="tab" aria-selected="false" data-tab="chat">Чат <span class="label label-primary">8</span></button>
+            <button type="button" role="tab" aria-selected="false" data-tab="money">Деньги</button>
+            <button type="button" role="tab" aria-selected="false" data-tab="support">Support / возвраты</button>
+            <button type="button" role="tab" aria-selected="false" data-tab="quality">Качество и audit</button>
+          </nav>
+
+          <div class="box-body">
+            <section class="tab-panel active" id="tab-overview" role="tabpanel">
+              <div class="overview-grid">
+                <div>
+                   <div class="section-title"><h3>Ход консультации</h3><span class="label label-success" id="timeline-status">активна</span></div>
+                   <ol class="timeline" id="phase-timeline">
+                    <li class="done"><b>Агент принял запрос</b><small>14:03:12 · открыта confirmation card · session ещё не создана · без списания</small></li>
+                    <li class="done"><b>Committed consent клиента</b><small>14:03:18 · актуальные price/trial/условия подтверждены · exactly one session создана в connecting</small></li>
+                    <li class="current" id="timeline-current"><b id="timeline-current-title">Paid</b><small id="timeline-current-note">с 14:08:19 · 3 начатые минуты · 90 credits</small></li>
+                   </ol>
+                   <div class="callout callout-info" id="state-callout"><b>Почему сейчас идёт списание:</b> consent получен, баланс достаточен, агент подключён, consultation state разрешает paid.</div>
+                   <div class="callout callout-info"><b>Альтернативный initiation path:</b> если начать консультацию предлагает Эксперт, принятие предложения клиентом само является committed consent и создаёт exactly one session; второго Agent accept нет.</div>
+                 </div>
+                <div>
+                  <div class="section-title"><h3>Участники и связь</h3></div>
+                  <dl class="kv">
+                    <dt>Клиент</dt><dd><a href="#">Client #84021</a></dd>
+                    <dt>Экспертная анкета</dt><dd><a href="#">Solara · profile #573</a></dd>
+                    <dt class="staff-sensitive">Фактический агент</dt><dd class="staff-sensitive"><a href="#">Agent A-017</a> <span class="label label-success">assigned</span></dd>
+                    <dt>Постоянный диалог</dt><dd><a href="#">Dialog #D-2804</a></dd>
+                    <dt>Consultation ID</dt><dd>NS-10482</dd>
+                    <dt>Request ID</dt><dd>RQ-79204</dd>
+                    <dt>Создана</dt><dd>27.07.2026 14:03:18 · после committed consent</dd>
+                    <dt>Текущая версия</dt><dd>revision 18</dd>
+                  </dl>
+                </div>
+              </div>
+            </section>
+
+            <section class="tab-panel" id="tab-chat" role="tabpanel">
+              <div class="section-title">
+                <h3>Сообщения этой консультации</h3>
+                <div class="thread-toolbar">
+                  <input class="form-control" id="thread-search" type="search" placeholder="Поиск по сообщениям">
+                  <button class="btn btn-default btn-sm" type="button" id="thread-reset">Сбросить</button>
+                </div>
+              </div>
+              <div class="thread" id="thread">
+                <div class="system-event" data-searchable>14:03 · Агент принял request · confirmation card открыта · consultation ещё не создана</div>
+                <div class="system-event" data-searchable>14:03 · Клиент подтвердил актуальные условия · exactly one consultation NS-10482 создана в connecting</div>
+                <div class="message client" data-searchable>
+                  <div class="message-avatar">C</div>
+                  <div class="message-bubble"><div class="message-head"><b>Клиент</b><span>14:04 ✓✓</span></div><p>Хочу понять, есть ли перспектива восстановить наши отношения после недавнего разговора.</p></div>
+                </div>
+                <div class="message agent" data-searchable>
+                  <div class="message-avatar">S</div>
+                  <div class="message-bubble"><div class="message-head"><b>Solara</b><span>14:04 ✓✓</span></div><p>Я понимаю, почему эта неопределённость так тревожит. Сначала уточню: когда состоялся ваш последний разговор?</p></div>
+                </div>
+                <div class="message client" data-searchable>
+                  <div class="message-avatar">C</div>
+                  <div class="message-bubble"><div class="message-head"><b>Клиент</b><span>14:05 ✓✓</span></div><p>Три дня назад. Мы оба были очень эмоциональны.</p></div>
+                </div>
+                <div class="message agent" data-searchable>
+                  <div class="message-avatar">S</div>
+                  <div class="message-bubble"><div class="message-head"><b>Solara</b><span>14:06 ✓✓</span></div><p>Для расклада я посмотрю текущее состояние связи и ближайшую динамику, без обещания гарантированного результата.</p></div>
+                </div>
+                <div class="system-event" data-searchable>14:08 · Trial завершён · первая paid-минута началась по ранее зафиксированному consent</div>
+                <div class="message agent" data-searchable>
+                  <div class="message-avatar">S</div>
+                  <div class="message-bubble"><div class="message-head"><b>Solara</b><span>14:09 ✓</span></div><p>Сейчас связь выглядит не закрытой, но для восстановления потребуется спокойный контакт без давления. Покажу, на что обратить внимание в первую очередь.</p></div>
+                </div>
+                <div class="system-event" data-searchable>14:10 · Начата paid minute #3 · списано 30 credits</div>
+              </div>
+              <div class="callout callout-warning"><b>Граница:</b> это read-only staff-представление сообщений одной consultation session. Постоянный диалог может содержать другие консультации, но их деньги и статусы сюда не смешиваются.</div>
+            </section>
+
+            <section class="tab-panel super-moderator-panel" id="tab-money" role="tabpanel">
+              <div class="section-title"><h3>Финансовые события консультации</h3><button class="btn btn-default btn-sm" type="button" data-demo-action="ledger">Открыть полный ledger</button></div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Время</th><th>Событие</th><th>Credits</th><th>Основание</th><th>Статус</th></tr></thead>
+                  <tbody>
+                    <tr><td>14:08:19</td><td>Started minute #1</td><td class="amount-negative">−30</td><td>consent + price snapshot v7</td><td><span class="label label-success">posted</span></td></tr>
+                    <tr><td>14:09:19</td><td>Started minute #2</td><td class="amount-negative">−30</td><td>paid state active</td><td><span class="label label-success">posted</span></td></tr>
+                    <tr><td>14:10:19</td><td>Started minute #3</td><td class="amount-negative">−30</td><td>paid state active</td><td><span class="label label-success">posted</span></td></tr>
+                    <tr><td>—</td><td>Refund / correction</td><td>—</td><td>нет решения</td><td><span class="label label-default">none</span></td></tr>
+                    <tr class="staff-sensitive"><td>pending</td><td>Agent accrual</td><td class="amount-positive">linked</td><td>compensation policy snapshot</td><td><span class="label label-warning">open</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="callout callout-info">Карточка не рассчитывает деньги вручную: она показывает связанные движения и применённые snapshots. Повтор действия не должен создавать второй debit/refund.</div>
+            </section>
+
+            <section class="tab-panel super-moderator-panel" id="tab-support" role="tabpanel">
+              <div class="section-title"><h3>Support, жалобы и возвраты</h3><button class="btn btn-primary btn-sm staff-action" type="button" data-demo-action="support">Создать обращение из консультации</button></div>
+              <div class="empty-state" id="support-empty">
+                <strong>Связанных обращений пока нет</strong>
+                При создании ticket получает consultation ID, клиента, экспертную анкету, применённую цену, timeline и технический контекст без копирования карточки.
+              </div>
+              <div class="callout callout-warning"><b>Refund не выполняется из этой кнопки автоматически.</b> Карточка передаёт evidence в support/refund route; финансовое решение принимается отдельно по R1.</div>
+            </section>
+
+            <section class="tab-panel super-moderator-panel" id="tab-quality" role="tabpanel">
+              <div class="section-title"><h3>Качество и audit</h3><span class="label label-success">no critical fail</span></div>
+              <div class="quality-score">
+                <div class="score-circle">86</div>
+                <div class="score-bars">
+                  <div class="score-row"><span>Первый полезный ответ</span><div class="bar"><i style="width:92%"></i></div><b>18/20</b></div>
+                  <div class="score-row"><span>Релевантность</span><div class="bar"><i style="width:90%"></i></div><b>18/20</b></div>
+                  <div class="score-row"><span>Эмпатия</span><div class="bar"><i style="width:85%"></i></div><b>17/20</b></div>
+                  <div class="score-row"><span>Прозрачность billing</span><div class="bar"><i style="width:100%"></i></div><b>20/20</b></div>
+                  <div class="score-row"><span>Закрытие / next step</span><div class="bar"><i style="width:65%;background:#f39c12"></i></div><b>13/20</b></div>
+                </div>
+              </div>
+              <hr style="border:0;border-top:1px solid #eee;margin:18px 0">
+              <ul class="audit-list">
+                <li><time>14:03:12</time><small>agent A-017</small><span>Request RQ-79204 принят; confirmation card открыта; session отсутствует.</span></li>
+                <li><time>14:03:18</time><small>client</small><span>Committed consent по rule version 12; создана exactly one consultation NS-10482 в connecting.</span></li>
+                <li><time>14:03:18</time><small>system</small><span>Зафиксированы actual Agent A-017, экспертная анкета #573 и price snapshot 30 credits/started minute.</span></li>
+                <li><time>14:08:19</time><small>system</small><span>Trial завершён; posted debit первой started minute.</span></li>
+              </ul>
+            </section>
+          </div>
+        </section>
+
+        <aside class="side-stack">
+          <section class="box box-primary">
+            <div class="box-header"><h3 class="box-title">Быстрые переходы</h3></div>
+            <div class="box-body quick-actions">
+              <button class="btn btn-default btn-sm" type="button" data-demo-action="client">Клиент</button>
+              <button class="btn btn-default btn-sm" type="button" data-demo-action="profile">Эксперт</button>
+              <button class="btn btn-default btn-sm staff-sensitive" type="button" data-demo-action="agent">Агент</button>
+              <button class="btn btn-default btn-sm" type="button" data-demo-action="dialog">Диалог</button>
+              <button class="btn btn-default btn-sm super-action" type="button" data-demo-action="transaction">Transactions</button>
+              <button class="btn btn-default btn-sm staff-action" type="button" data-demo-action="complaint">Жалобы</button>
+            </div>
+          </section>
+
+          <section class="box box-success">
+            <div class="box-header"><h3 class="box-title">Применённые правила</h3><button class="btn btn-default btn-xs super-action" type="button" data-demo-action="snapshot">Подробнее</button></div>
+            <div class="box-body">
+              <ul class="snapshot-list">
+                <li><span>Consultation policy</span><b>v12 · active at 14:03</b></li>
+                <li><span>Trial</span><b>5 минут · snapshot</b></li>
+                <li><span>Price</span><b>30 credits/min · profile effective</b></li>
+                <li><span>Balance pause</span><b>5 минут · максимум 1</b></li>
+                <li><span>Agent reconnect grace</span><b>60 секунд</b></li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="box box-warning">
+            <div class="box-header"><h3 class="box-title">Связанные объекты</h3></div>
+            <div class="box-body">
+              <ul class="related-list">
+                <li><span><b>Dialog #D-2804</b><small>3 консультации всего</small></span><a href="#">Открыть</a></li>
+                <li><span><b>Request #RQ-79204</b><small>accepted</small></span><a href="#">Открыть</a></li>
+                <li><span><b>Ledger</b><small>3 debit events</small></span><a href="#">Открыть</a></li>
+                <li><span><b>Support</b><small>нет связанных tickets</small></span><a href="#">Открыть</a></li>
+              </ul>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="modal-backdrop" id="end-modal" role="dialog" aria-modal="true" aria-labelledby="end-modal-title">
+  <div class="modal">
+    <div class="modal-header"><h3 id="end-modal-title">Завершить консультацию вручную</h3><button class="close" type="button" data-modal-close aria-label="Закрыть">×</button></div>
+    <div class="modal-body">
+      <div class="callout callout-danger" style="margin-top:0"><b>Новая paid-минута после завершения не начинается.</b> Действие попадёт в staff audit с автором и причиной.</div>
+        <div class="form-group">
+          <label for="end-actual-actor">Фактический автор команды</label>
+          <input class="form-control" id="end-actual-actor" value="super-admin (server-derived)" readonly>
+          <p class="help-block">Берётся системой из авторизованной staff-сессии, сохраняется отдельно в audit и не может быть подменён выбранным инициатором события.</p>
+        </div>
+        <div class="form-group">
+          <label for="end-initiator">Terminal initiator события</label>
+          <select class="form-control" id="end-initiator">
+            <option value="">Выберите инициатора</option>
+            <option value="client">Клиент</option>
+            <option value="expert">Эксперт</option>
+            <option value="agent">Агент</option>
+            <option value="support">Поддержка Nebula</option>
+            <option value="system">Система</option>
+            <option value="super_admin">Super-admin</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="end-reason">Причина завершения</label>
+          <select class="form-control" id="end-reason">
+            <option value="">Выберите причину</option>
+            <option value="client_request">Запрос клиента</option>
+            <option value="normal_completion">Консультация завершена штатно</option>
+            <option value="technical">Техническая проблема</option>
+            <option value="safety">Safety / prohibited case</option>
+            <option value="super_admin_decision">Ручное решение super-admin</option>
+          </select>
+        </div>
+        <div class="form-group" id="technical-reason-group" hidden>
+          <label for="technical-reason">Техническая причина</label>
+          <select class="form-control" id="technical-reason">
+            <option value="">Выберите техническую причину</option>
+            <option value="agent_reconnect_timeout">Agent reconnect timeout</option>
+            <option value="client_reconnect_timeout">Client reconnect timeout</option>
+            <option value="service_unavailable">Service unavailable</option>
+            <option value="staff_technical_end">Ручное техническое завершение staff</option>
+          </select>
+        </div>
+      <div class="form-group">
+        <label for="end-comment">Служебный комментарий</label>
+        <textarea class="form-control" id="end-comment" rows="3" placeholder="Почему потребовалось ручное действие"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-default" type="button" data-modal-close>Отмена</button><button class="btn btn-danger" type="button" id="end-confirm">Подтвердить завершение</button></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const app = document.getElementById("app");
+  const toast = document.getElementById("toast");
+  const workbar = document.getElementById("workbar");
+  const roleSelect = document.getElementById("role-select");
+  const stateSelect = document.getElementById("state-select");
+  const endModal = document.getElementById("end-modal");
+  let toastTimer = null;
+
+  const states = {
+    connecting: {
+      badge:"Connecting", badgeClass:"label-info", title:"Ожидание фактической готовности",
+      note:"Session уже создана после committed consent · списание ещё не началось.",
+      className:"", stage:"Connecting", stageNote:"00:06", balance:"210 credits", paid:"00:00", debit:"0 credits",
+      timeline:"Connecting", timelineNote:"обе стороны подтверждают готовность · без списания", timelineClass:"current",
+      timelineStatus:"подключение", timelineStatusClass:"label-info",
+      callout:"<b>Session существует только потому, что client consent уже committed.</b> Agent accept до consent лишь открыл confirmation card.", calloutClass:"callout-info"
+    },
+    trial: {
+      badge:"Trial", badgeClass:"label-primary", title:"Бесплатный trial идёт",
+      note:"Trial entitlement применён после consent/readiness · balance и цена не уменьшают бесплатный trial.",
+      className:"", stage:"Trial", stageNote:"03:41 осталось", balance:"210 credits", paid:"00:00", debit:"0 credits",
+      timeline:"Trial", timelineNote:"5 минут entitlement · без списания credits", timelineClass:"current",
+      timelineStatus:"trial", timelineStatusClass:"label-primary",
+      callout:"<b>Trial бесплатен.</b> Нулевой balance остановит только переход к первой paid-минуте и переведёт session в balance_pause.", calloutClass:"callout-info"
+    },
+    paid: {
+      badge:"Paid", badgeClass:"label-success", title:"Платная консультация идёт",
+      note:"Текущая начатая минута оплачена · новая минута начнётся только при допустимом состоянии и достаточном балансе.",
+      className:"", stage:"Paid", stageNote:"00:02:18", balance:"120 credits", paid:"02:18", debit:"90 credits",
+      timeline:"Paid", timelineNote:"connecting и trial завершены · с 14:08:19 · 3 начатые минуты · 90 credits", timelineClass:"current",
+      timelineStatus:"активна", timelineStatusClass:"label-success",
+      callout:"<b>Почему сейчас идёт списание:</b> consent получен, баланс достаточен, агент подключён, consultation state разрешает paid.", calloutClass:"callout-info"
+    },
+    balance_pause: {
+      badge:"Balance pause", badgeClass:"label-warning", title:"Ожидание пополнения баланса",
+      note:"Списание остановлено · предоставлена единственная пауза · остаток 03:42 из 05:00.",
+      className:"pause", stage:"Balance pause", stageNote:"03:42 осталось", balance:"10 credits", paid:"02:18", debit:"90 credits",
+      timeline:"Balance pause", timelineNote:"с 14:10:37 · без списания · pause 1/1", timelineClass:"current",
+      timelineStatus:"на паузе", timelineStatusClass:"label-warning",
+      callout:"<b>Списание остановлено.</b> Пополнение до deadline только пополнит balance. Consultation продолжится лишь после явного нажатия клиентом «Продолжить консультацию» и повторных server-side проверок; позднее пополнение останется на балансе, но не оживит завершённую session.", calloutClass:"callout-warning"
+    },
+    completed: {
+      badge:"Completed", badgeClass:"label-default", title:"Консультация завершена штатно",
+      note:"Primary state completed · initiator=client · end_reason=normal_completion · история и финансовые события сохранены.",
+      className:"completed", stage:"Completed", stageNote:"14:12:07", balance:"70 credits", paid:"03:48", debit:"120 credits",
+      timeline:"Completed", timelineNote:"14:12:07 · initiator=client · end_reason=normal_completion", timelineClass:"done",
+      timelineStatus:"завершена", timelineStatusClass:"label-default",
+      callout:"<b>Technical end не является отдельным primary state.</b> Для технического исхода сохраняются completed + initiator + end_reason + technical_reason.", calloutClass:"callout-info"
+    }
+  };
+
+  const roleHints = {
+    super:"Полный staff-view с фактическим агентом, деньгами, audit и snapshot настроек.",
+    moderator:"Support/moderator видит контекст спора и качества, но не получает произвольных финансовых или системных действий.",
+    agent:"Agent видит только назначенную ему консультацию и разрешённые операционные данные."
+  };
+
+  function showToast(message) {
+    toast.textContent = message;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+  }
+
+  function setText(id, value) {
+    const node = document.getElementById(id);
+    if (node) node.textContent = value;
+  }
+
+  function applyState(key) {
+    const state = states[key] || states.paid;
+    workbar.className = "box workbar " + state.className;
+    const badge = document.getElementById("status-badge");
+    badge.className = "label " + state.badgeClass;
+    badge.textContent = state.badge;
+    setText("state-title", state.title);
+    setText("state-note", state.note);
+    setText("metric-stage", state.stage);
+    setText("metric-stage-note", state.stageNote);
+    setText("metric-balance", state.balance);
+    setText("metric-paid", state.paid);
+    setText("metric-debit", state.debit);
+    const current = document.getElementById("timeline-current");
+    current.className = state.timelineClass;
+    setText("timeline-current-title", state.timeline);
+    setText("timeline-current-note", state.timelineNote);
+    const timelineStatus = document.getElementById("timeline-status");
+    timelineStatus.className = "label " + state.timelineStatusClass;
+    timelineStatus.textContent = state.timelineStatus;
+    const callout = document.getElementById("state-callout");
+    callout.className = "callout " + state.calloutClass;
+    callout.innerHTML = state.callout;
+    document.getElementById("end-open").disabled = key === "completed";
+  }
+
+  function applyRole(role) {
+    document.querySelectorAll(".staff-sensitive").forEach((node) => {
+      node.dataset.hidden = role === "agent" ? "true" : "false";
+    });
+    document.querySelectorAll(".super-action").forEach((node) => {
+      node.style.display = role === "super" ? "" : "none";
+    });
+    document.querySelectorAll(".staff-action").forEach((node) => {
+      node.style.display = role === "agent" ? "none" : "";
+    });
+    document.querySelectorAll(".super-moderator-panel").forEach((node) => {
+      if (role === "agent" && node.classList.contains("active")) activateTab("overview");
+    });
+    document.querySelectorAll('[data-tab="money"], [data-tab="support"], [data-tab="quality"]').forEach((node) => {
+      node.style.display = role === "agent" ? "none" : "";
+    });
+    setText("role-hint", roleHints[role]);
+  }
+
+  function activateTab(name) {
+    document.querySelectorAll("[data-tab]").forEach((button) => {
+      const active = button.dataset.tab === name;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-selected", active ? "true" : "false");
+    });
+    document.querySelectorAll(".tab-panel").forEach((panel) => {
+      panel.classList.toggle("active", panel.id === "tab-" + name);
+    });
+  }
+
+  document.querySelectorAll("[data-tab]").forEach((button) => {
+    button.addEventListener("click", () => activateTab(button.dataset.tab));
+  });
+
+  document.getElementById("sidebar-toggle").addEventListener("click", () => {
+    if (window.innerWidth <= 780) app.classList.toggle("mobile-menu");
+    else app.classList.toggle("collapsed");
+  });
+
+  roleSelect.addEventListener("change", () => applyRole(roleSelect.value));
+  stateSelect.addEventListener("change", () => applyState(stateSelect.value));
+
+  document.querySelectorAll("[data-demo-action]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const labels = {
+        chat:"Открыта вкладка чата текущей консультации.",
+        support:"Демо: будет создан support ticket со ссылкой на consultation NS-10482.",
+        ledger:"Демо: переход в полный ledger консультации.",
+        client:"Демо: переход в карточку клиента.",
+        profile:"Демо: переход в экспертную анкету Solara.",
+        agent:"Демо: переход во внутреннюю карточку фактического агента.",
+        dialog:"Демо: переход в постоянный dialog #D-2804.",
+        transaction:"Демо: переход к связанным balance transactions.",
+        complaint:"Демо: открывается список жалоб по consultation NS-10482.",
+        snapshot:"Snapshot v12: значения зафиксированы при старте и не меняются задним числом."
+      };
+      if (button.dataset.demoAction === "chat") activateTab("chat");
+      if (button.dataset.demoAction === "support") activateTab("support");
+      showToast(labels[button.dataset.demoAction] || "Демонстрационное действие.");
+    });
+  });
+
+  const search = document.getElementById("thread-search");
+  function filterThread() {
+    const query = search.value.trim().toLowerCase();
+    document.querySelectorAll("#thread [data-searchable]").forEach((node) => {
+      node.style.display = !query || node.textContent.toLowerCase().includes(query) ? "" : "none";
+    });
+  }
+  search.addEventListener("input", filterThread);
+  document.getElementById("thread-reset").addEventListener("click", () => {
+    search.value = "";
+    filterThread();
+    search.focus();
+  });
+
+  document.getElementById("end-open").addEventListener("click", () => {
+    endModal.classList.add("open");
+    document.getElementById("end-reason").focus();
+  });
+  document.querySelectorAll("[data-modal-close]").forEach((button) => {
+    button.addEventListener("click", () => endModal.classList.remove("open"));
+  });
+  endModal.addEventListener("click", (event) => {
+    if (event.target === endModal) endModal.classList.remove("open");
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") endModal.classList.remove("open");
+  });
+  document.getElementById("end-reason").addEventListener("change", (event) => {
+    const technical = event.target.value === "technical";
+    document.getElementById("technical-reason-group").hidden = !technical;
+    if (!technical) document.getElementById("technical-reason").value = "";
+  });
+  document.getElementById("end-confirm").addEventListener("click", () => {
+    const initiator = document.getElementById("end-initiator").value;
+    const reason = document.getElementById("end-reason").value;
+    const technicalReason = document.getElementById("technical-reason").value;
+    if (!initiator || !reason) {
+      showToast("Выберите инициатора и причину завершения.");
+      return;
+    }
+    if (reason === "technical" && !technicalReason) {
+      showToast("Для технического завершения выберите technical_reason.");
+      return;
+    }
+    stateSelect.value = "completed";
+    applyState("completed");
+    setText("state-note", "Primary state completed · actual_actor=super_admin · terminal_initiator=" + initiator + " · end_reason=" + reason + (technicalReason ? " · technical_reason=" + technicalReason : ""));
+    setText("timeline-current-note", "actual_actor=super_admin · terminal_initiator=" + initiator + " · end_reason=" + reason + (technicalReason ? " · technical_reason=" + technicalReason : ""));
+    endModal.classList.remove("open");
+    showToast("Демо: completed сохранён с server-derived actual_actor, terminal initiator, причиной и audit.");
+  });
+
+  applyRole("super");
+  applyState("paid");
+})();
+</script>
+</body>
+</html>
