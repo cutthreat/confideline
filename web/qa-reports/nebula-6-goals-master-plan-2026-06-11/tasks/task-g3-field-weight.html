@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nebula - G3.6 Вес полей анкеты</title>
+  <style>
+    :root { --ink:#172033; --muted:#667085; --line:#d9e2f3; --bg:#f6f8fb; --blue:#1f4e78; --violet:#7c3aed; --green:#0f766e; --yellow:#7a4e00; --red:#842029; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Arial, sans-serif; color:var(--ink); background:var(--bg); }
+    header.page-head { background:var(--blue); color:#fff; padding:22px 28px; }
+    header.page-head h1 { margin:0 0 8px; font-size:28px; }
+    header.page-head p { margin:0; line-height:1.45; }
+    main { padding:22px 28px 42px; max-width:1280px; }
+    .back-link { display:inline-block; margin:0 0 16px; padding:9px 12px; border:1px solid #d8e6ff; border-radius:6px; background:#f4f8ff; color:#175cd3; font-weight:700; text-decoration:none; }
+    .card { background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; margin:0 0 16px; }
+    .card h2 { margin:0; padding:12px 14px; background:#f8fafc; border-left:8px solid var(--violet); border-bottom:1px solid var(--line); font-size:20px; }
+    .body { padding:14px; line-height:1.5; }
+    .badge { display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:700; white-space:nowrap; }
+    .p0 { background:#f4cccc; color:var(--red); }
+    .status-yellow { background:#fff2cc; color:var(--yellow); }
+    .status-blue { background:#e8f1ff; color:#0b3f91; }
+    .grid { display:grid; grid-template-columns:repeat(2, minmax(260px,1fr)); gap:12px; }
+    .box { border:1px solid #e4e9f2; border-radius:8px; background:#fbfdff; padding:12px; }
+    .box b { display:block; margin-bottom:6px; }
+    ul { margin:8px 0 0; padding-left:19px; }
+    li { margin:4px 0; }
+    table { width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--line); }
+    th { background:#edf3fb; text-align:left; padding:9px; }
+    td { border-top:1px solid var(--line); padding:9px; vertical-align:top; }
+    .proof { border-left:5px solid var(--green); background:#f0fdf4; padding:12px; margin-top:12px; }
+    .warn { border-left:5px solid #f39c12; background:#fffbeb; padding:12px; margin-top:12px; }
+    @media (max-width:800px) { main { padding:16px; } .grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <header class="page-head">
+    <h1>G3.6 Вес полей анкеты</h1>
+    <p>Задача про то, как заполненность и качество полей анкеты эксперта превращаются в понятный score для допуска, каталога и ротации.</p>
+  </header>
+  <main>
+    <a class="back-link" href="../index.html">← Назад к списку задач</a>
+
+    <section class="card">
+      <h2>Статус</h2>
+      <div class="body">
+        <p><span class="badge p0">P0</span> <span class="badge status-yellow">inventoried</span> <span class="badge status-blue">сайт 10% / ТЗ 45%</span></p>
+        <p><b>Почему не выше:</b> текущий сайт имеет админский контур profile fields, но нет доказанного Nebula-механизма, где заполненность полей анкеты дает score и влияет на выдачу экспертов.</p>
+        <div class="proof"><b>Источник:</b> на live-адресе задача находится в админке `https://confideline.com/ru/admin/profile-field/index`. В локальном YouDate-коде подтверждены `visible`, `searchable`, `searchable_premium`, `sort_order`, но не подтвержден отдельный вес анкеты для Nebula-ротации.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Что это должно решать</h2>
+      <div class="body grid">
+        <div class="box"><b>Для клиента</b><ul><li>в каталоге не должны появляться слабые, пустые или непонятные анкеты;</li><li>сильные анкеты должны объяснять доверие: специализация, метод, опыт, язык, цена, доступность;</li><li>выдача не должна выглядеть случайной.</li></ul></div>
+        <div class="box"><b>Для админа</b><ul><li>видеть, почему анкета готова или не готова к показу;</li><li>понимать, что нужно дозаполнить;</li><li>не гадать, какие поля важнее для запуска.</li></ul></div>
+        <div class="box"><b>Для агента/эксперта</b><ul><li>понимать, какие данные повышают шанс получить клиента;</li><li>не спорить с ручным субъективным решением;</li><li>видеть правила допуска до клиента.</li></ul></div>
+        <div class="box"><b>Для сайта</b><ul><li>получить расчетный `profile_readiness_score`;</li><li>передавать score в каталог, подбор и rotation policy;</li><li>фиксировать версию правил, по которым score рассчитан.</li></ul></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Оптимальная модель для старта</h2>
+      <div class="body">
+        <table>
+          <thead><tr><th>Тип поля</th><th>Как влияет</th><th>Примеры</th></tr></thead>
+          <tbody>
+            <tr><td><b>Блокирующее</b></td><td>Без него анкета не попадает в клиентский каталог.</td><td>имя/псевдоним, фото, язык, направление, цена, дисклеймер/правила, модерация описания</td></tr>
+            <tr><td><b>Весовое</b></td><td>Повышает или понижает score и влияет на порядок выдачи.</td><td>качество описания, методы, опыт, темы, город/страна, доступность, отзывы, SLA/качество</td></tr>
+            <tr><td><b>Информационное</b></td><td>Показывается в карточке, но не должно резко менять выдачу.</td><td>дополнительные био-детали, необязательные интересы, служебные примечания</td></tr>
+            <tr><td><b>Рисковое</b></td><td>Может блокировать продажу или понижать выдачу до модерации.</td><td>обещания результата, медицинские/финансовые гарантии, запрещенные формулировки, спорные фото</td></tr>
+          </tbody>
+        </table>
+        <div class="warn"><b>Ключевое правило:</b> `sort_order` поля в админке не должен автоматически становиться весом анкеты. Сортировка поля отвечает за порядок формы, а Nebula-score отвечает за готовность анкеты к клиенту.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>График</h2>
+      <div class="body">
+        <table>
+          <tbody>
+            <tr><th>Когда начинать</th><td>Очередь 1: до финальной сборки карточки эксперта и каталога.</td></tr>
+            <tr><th>Почему сейчас</th><td>Если сначала сверстать каталог, а потом думать про вес полей, придется переделывать карточки, фильтры, сортировку и маркетинговую готовность.</td></tr>
+            <tr><th>Когда принимать</th><td>После проверки на 3-5 пилотных анкетах: score считается, причины видны администратору, зависимость с ротацией описана.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
