@@ -47,7 +47,7 @@
 ## 4. Термины
 
 - **General catalog** — expert directory without hard geo scope.
-- **Regional catalog** — country/city surface with mandatory regional scope.
+- **Regional catalog** — country/city surface with primary regional scope and an explicit, audited general-pool fallback only when the regional eligible result is empty.
 - **Topic** — клиентский вопрос.
 - **Method** — способ/практика Эксперта.
 - **Facet** — filter group/value/count.
@@ -157,7 +157,7 @@
 
 1. Only Expert profiles; ordinary users are server-side excluded.
 2. Eligibility precedes filters and sorting.
-3. Regional hard scope cannot be removed by a filter, pin, sort or fallback.
+3. Regional scope is evaluated first; a general fallback is allowed only after a proven zero regional eligible result, with explicit banner/readback and no claim that fallback profiles belong to the region.
 4. General catalog never applies client's geo silently.
 5. One profile appears once per result.
 6. Filter state is explicit and reproducible.
@@ -210,7 +210,7 @@ Forbidden:
 
 - retaining stale page/cursor after filter change;
 - silently applying saved geo;
-- merging regional and general sets to avoid empty;
+- silently merging regional and general sets to avoid empty; the fallback must be a second explicit G3.7 query with `regional_result_count=0`, `fallback_scope=general` and the same non-geographic filters;
 - client control over internal pin/priority.
 
 ## 10. Функциональные сценарии
@@ -228,14 +228,16 @@ Forbidden:
 1. Resolve active country.
 2. Apply country hard scope.
 3. Apply topic/other explicit filters.
-4. Return only matching region profiles.
-5. City selector navigates to city surface.
+4. If regional result is non-empty, return only matching region profiles.
+5. If regional result is empty, request the general eligible pool with the same non-geographic filters and return it with a regional-empty banner and fallback metadata.
+6. City selector navigates to city surface.
 
 ### S3. City page
 
 1. Resolve city and parent country.
 2. Apply city hard scope from Expert multi-select assignment.
-3. Never broaden to country/general on empty.
+3. If the city result is non-empty, return only matching city profiles.
+4. If it is empty, request the general eligible pool with the same non-geographic filters and return it with the regional-empty banner and `regions_without_experts` operational marker.
 
 ### S4. Guest question intent
 
@@ -399,7 +401,7 @@ If current route is auth-only, implementation must align it with the owner rule 
 | unknown filter ID/slug | remove/explain or valid 404 policy | raw exception |
 | disabled taxonomy value in saved URL | safe removal + notice | reactivation |
 | country/city inactive | canonical redirect/404 policy | mixed region |
-| zero regional result | regional empty state | cross-region fallback |
+| zero regional result | explicit regional-empty banner + same-filter general eligible fallback + operational marker | silent fallback, local-region claim or regional notification subscription |
 | duplicate profile from joins | one result | duplicate cards/count |
 | stale cursor/version | controlled refresh | mixed pages |
 | concurrent availability change | latest safe state/action | stale paid start |
@@ -424,7 +426,7 @@ If current route is auth-only, implementation must align it with the owner rule 
 | A07 | country page | open | only assigned country profiles | admin assignment/public proof |
 | A08 | city multi-select Expert | open each city | profile appears in both | public/admin proof |
 | A09 | non-matching city | open | profile absent | result proof |
-| A10 | zero regional result | open | honest empty; no broadening | browser + IDs |
+| A10 | zero regional result | open | general eligible fallback with banner, same non-geographic filters and operational marker | browser + IDs + decision metadata |
 | A11 | one profile matches several values | query | one card | IDs/count |
 | A12 | default order | open | matches G3.7 preview | public/admin comparison |
 | A13 | price sort | apply/paginate | stable ascending eligible result | multi-page proof |

@@ -23,6 +23,8 @@
 - `H:\GPT-Codex\Confideline\reports\six-goals-functional-tz-2026-07-20\etalon-tz-g1-2-role-chat.md`
 - `H:\GPT-Codex\Confideline\reports\tz-product-g1-2-role-chat-consultation-2026-07-16.md`
 - `H:\GPT-Codex\Confideline\reports\six-goals-functional-tz-2026-07-20\etalon-tz-g1-1-service-session.md`
+- `H:\GPT-Codex\Confideline\reports\admin-chat-stage1-20260804-analysis\EXTENDED_PRODUCTION_SURFACES-RU.md` — обязательное приложение с production-поверхностями admin-макета;
+- `H:\GPT-Codex\Confideline\reports\admin-chat-stage1-20260804-analysis\PANEL-TZ-G1-2-DISCREPANCIES-RU.md` — реестр сверки и принятых границ.
 
 Известные текущие админ-поверхности:
 
@@ -149,7 +151,9 @@ Historical readback must recover:
 - staff reason/action;
 - reconnect/technical end/incident links.
 
-Changing a setting or assignment must not rewrite prior events. G1.3/G4.3 own consultation-history availability and retention; the current default is 24 months, admin-managed and pending legal/privacy review. G1.2 must preserve the message/audit data required by that contract.
+Changing a setting or assignment must not rewrite prior events. G1.3/G4.3 own consultation-history availability and retention; the provisional default is 24 months after completion, managed in that lifecycle/privacy contour and pending legal/privacy review. G1.2 must preserve the message/audit data required by that contract and must not expose retention controls on `/admin/settings/chat`.
+
+The accepted admin mock keeps `Copy history`. In MVP it is super-admin only; later staff access is granted through the existing permissions contour. It is never a client export/download. The copied content must come from a server-safe current dialogue/session view and exclude private notes, censored originals, payment data, internal IDs and staff comments. Record `history_copied` audit with actor, role, scope, timestamp and applied policy version.
 
 ## 12. Surfaces
 
@@ -187,6 +191,8 @@ Chat page owns:
 - chat-specific client messages for delivery, editing, censorship and attachment outcomes.
 
 It does not own RBAC, assignments, price, coupons, payments, generic image policy, premium dating messages, email templates, message monitoring, support queues, general logs, reconnect/request/session timers, balance pause, end-reason dictionaries or consultation-history retention.
+
+All visible labels, errors, aria-labels, system messages, templates and modal copy must use the existing translation-key system. Igor owns the key inventory and RU/EN integration; product/support/legal meaning is not changed during implementation.
 
 Fixed rules are not toggles: allowed message families, audio/video ban, delivery indicators, conditional edited-marker rule, idempotent retry and no physical deletion.
 

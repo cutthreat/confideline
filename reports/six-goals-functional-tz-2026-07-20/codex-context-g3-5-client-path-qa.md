@@ -376,7 +376,7 @@ Run/case evidence is append-only. Retest creates a new result linked to supersed
 | E07 | top-up before deadline | client continues | same session resumes explicitly | session + balance |
 | E08 | top-up after timeout | payment arrives | session remains completed; balance credited | history + ledger |
 | E09 | Agent reconnect timeout | Agent absent | technical end; no next minute | timeline + incident |
-| E10 | five concurrent starts | attempts sent | max one active session/debit | sessions + ledger |
+| E10 | five concurrent starts for the same client and/or the same Agent capacity | attempts sent in parallel | server-side two-sided capacity guard: max one active/waiting paid consultation per client and max one active `paid`/`balance_pause` session per Agent; one winner only, losers return current state/conflict with no second session/minute/debit | sessions + ledger + audit |
 | E11 | assigned Agent | read/send | allowed + actual actor audit | UI + audit |
 | E12 | foreign Agent | direct read/send | denied; no message/data leak | response + audit |
 | E13 | foreign client | opens session | denied safely | response + audit |

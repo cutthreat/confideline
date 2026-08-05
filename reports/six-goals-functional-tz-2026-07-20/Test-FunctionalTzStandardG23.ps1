@@ -227,10 +227,12 @@ Add-Check 'panel:spec-ready' (
     $panel.Contains('tasks["task-g2-refund"].tzReady = 100')
 ) 'panel separates specification from runtime'
 
-Add-Check 'index:readiness-100' (
-    $index.Contains('"task-g2-refund":100') -and
-    $index.Contains('все задачи G1.1–G3.7 имеют автономные пары PM-ТЗ и Codex-контекста')
-) 'master list updated'
+Add-Check 'task-tz:readiness-100' (
+    $index.Contains('"task-g2-refund": { code:"G2.3"') -and
+    $index.Contains('"task-g2-refund": { code:"G2.3", title:"Возвраты", priority:"P0"') -and
+    $panel.Contains('"task-g2-refund": { code:"G2.3"') -and
+    $panel.Contains('tzReady:100')
+) 'master list and task card status updated'
 
 Add-Check 'task:current' (
     $task.Contains('отдельный refund process') -and

@@ -309,8 +309,8 @@ Domain payloads remain owned by G1–G7 contracts and must not be duplicated int
 |---|---|---|
 | `home` | G3.1 + G3.7 | content blocks, eligible Expert slice, personalized return cards |
 | `dashboard_catalog` | G3.2 + G3.7 | expert-only query, filters, order, pagination |
-| `country` | G3.2 + G3.7 | country hard scope + canonical taxonomy |
-| `city` | G3.2 + G3.7 | city hard scope + canonical taxonomy |
+| `country` | G3.2 + G3.7 | primary country scope + canonical taxonomy; explicit same-filter general fallback when regional result is zero |
+| `city` | G3.2 + G3.7 | primary city scope + canonical taxonomy; explicit same-filter general fallback when regional result is zero |
 | `category` | G3.2/G3.6/G3.7 | versioned taxonomy + eligibility |
 | `matching_result` | G3.4 + G3.7 | explainable matches + allowed capabilities |
 | `thematic_block` | G3.1/G3.2/G3.7 | scoped eligible cards |

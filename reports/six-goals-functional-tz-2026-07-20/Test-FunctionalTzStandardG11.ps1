@@ -37,7 +37,7 @@ if ($issues.Count -eq 0) {
         '## 2. Четыре независимых показателя',
         '## 3. Шкала `spec_completeness`',
         '## 4. Hard gates',
-        '## 5. Обязательный двухфайловый handoff',
+        '## 5. Role-aware handoff',
         '## 7. Правила acceptance matrix',
         '## 9. Граница архитектуры',
         '## 10. Definition of Ready и Definition of Done'
@@ -224,10 +224,10 @@ if ($issues.Count -eq 0) {
     }
 
     $panelPhrases = @(
-        @{ Content = $panelIndex; File = 'index.html'; Phrase = 'все задачи G1.1–G3.7 имеют автономные пары PM-ТЗ и Codex-контекста' },
-        @{ Content = $panelIndex; File = 'index.html'; Phrase = '"task-g1-session":100, "task-g1-chat":100, "task-g1-statuses":100' },
+        @{ Content = $panelIndex; File = 'index.html'; Phrase = '"task-g1-session": { code:"G1.1"' },
+        @{ Content = $panelIndex; File = 'index.html'; Phrase = '"task-g1-session": { code:"G1.1", title:"Карточка консультации", priority:"P0"' },
         @{ Content = $panelTask; File = 'task-tz.html'; Phrase = 'const standardTzCriteria = [' },
-        @{ Content = $panelTask; File = 'task-tz.html'; Phrase = 'tasks["task-g1-session"].tzReady = 100' },
+        @{ Content = $panelTask; File = 'task-tz.html'; Phrase = '"task-g1-session": { code:"G1.1"' },
         @{ Content = $panelTask; File = 'task-tz.html'; Phrase = '"task-g1-chat": {' },
         @{ Content = $panelTask; File = 'task-tz.html'; Phrase = 'id="igor-link"' },
         @{ Content = $panelTask; File = 'task-tz.html'; Phrase = 'id="codex-link"' },
@@ -246,11 +246,12 @@ if ($issues.Count -eq 0) {
     $relatedLinksBlock = [regex]::Match($panelTask, '(?s)<section class="related-materials".*?<div class="related-links">(.*?)</div>').Groups[1].Value
     $topLinkCount = [regex]::Matches($topLinksBlock, '<a\b').Count
     $relatedLinkCount = [regex]::Matches($relatedLinksBlock, '<a\b').Count
-    if ($topLinkCount -eq 6 -and
+    if ($topLinkCount -eq 7 -and
         $topLinksBlock.Contains('id="igor-link"') -and
         $topLinksBlock.Contains('id="docx-link"') -and
         $topLinksBlock.Contains('id="codex-link"') -and
         $topLinksBlock.Contains('id="admin-mockup-link"') -and
+        $topLinksBlock.Contains('id="artifact-link"') -and
         -not $topLinksBlock.Contains('Карта 30/30') -and
         $relatedLinkCount -ge 5 -and
         $relatedLinksBlock.Contains('Карта 30/30') -and

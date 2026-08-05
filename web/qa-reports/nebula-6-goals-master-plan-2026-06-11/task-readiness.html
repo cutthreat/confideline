@@ -127,6 +127,7 @@
     "task-g5-dashboard": [5,0,0,0,0],
     "task-g5-kpi": [0,0,0,0,0],
     "task-g5-marketing-gate": [0,0,0,0,0],
+    "task-g5-seo": [5,5,0,0,0],
     "task-g6-assignment": [10,10,5,0,10],
     "task-g6-sla": [5,0,0,0,0],
     "task-g6-quality": [5,0,0,0,0],
@@ -177,6 +178,7 @@
     "task-g5-dashboard": 30,
 "task-g5-kpi": 85,
     "task-g5-marketing-gate": 65,
+    "task-g5-seo": 100,
     "task-g6-assignment": 70,
     "task-g6-sla": 75,
 "task-g6-quality": 85,
@@ -622,6 +624,28 @@
         "При провале проверки видно, что именно блокирует запуск."
       ]
     },
+    "task-g5-seo": {
+      code:"G5.SEO", title:"SEO-оптимизация и органический поиск", goal:"Цель 5 · связанный P0-пакет · основной месяц 4", stage:"plan_ready_execution_open", progress:10, tzReady:100, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g5-seo-team-plan.html",
+      ready:[
+        "Подготовлен полный план SEO-команды и отдельный технический контекст.",
+        "Основной спринт назначен на месяц 4; подготовка начинается в месяце 1, technical integration — в месяце 3.",
+        "Определены metadata contract, migration, multilingual/GEO, structured data, organic funnel, роли и acceptance.",
+        "Операционная работа и разработка разведены; новая SEO-админка не создаётся до аудита существующих возможностей."
+      ],
+      needed:[
+        "Fresh crawl текущего public и mapped backend build.",
+        "Фактический URL/redirect/semantic/metadata registry.",
+        "Инвентаризация Language, SEO translates, country/geoname, profile и page settings.",
+        "Реализация technical gaps и admin/public readback.",
+        "Production crawl без P0, sitemap/search-system evidence и фактический organic baseline."
+      ],
+      accept:[
+        "100% публичных URL классифицированы и имеют owner, locale, intent и index status.",
+        "100% index-ready URL имеют полный metadata contract; sitemap/hreflang/schema/private boundaries проходят проверку.",
+        "Нет dating leakage, fake local/review/rating/price claims и P0 crawl defects.",
+        "SEO runtime/indexing/baseline не объявляются готовыми по одному документу или submit sitemap."
+      ]
+    },
     "task-g6-assignment": {
       code:"G6.1", title:"Назначение", goal:"Цель 6", stage:"proof_gap", progress:35, tzReady:70, detailHref:"tasks/task-g6-assignment.html",
       ready:[
@@ -817,6 +841,7 @@ code:"G6.4", title:"Обучение и регламенты", goal:"Цель 6"
     "task-g5-dashboard": "dashboard",
     "task-g5-kpi": "KPI table",
     "task-g5-marketing-gate": "marketing gate",
+    "task-g5-seo": "SEO launch readiness / organic search",
     "task-g6-assignment": "assignment queue",
     "task-g6-sla": "SLA / response time",
     "task-g6-quality": "QA / quality control",
@@ -827,6 +852,7 @@ code:"G6.4", title:"Обучение и регламенты", goal:"Цель 6"
   };
 
   function stageClass(stage) {
+    if (stage === "plan_ready_execution_open") return "stage-accepted";
     if (stage === "etalon_spec_ready_runtime_open") return "stage-accepted";
     if (stage === "accepted_bounded_slice") return "stage-accepted";
     if (stage === "implementation_in_progress") return "stage-packet";
@@ -837,6 +863,7 @@ code:"G6.4", title:"Обучение и регламенты", goal:"Цель 6"
   }
 
   function stageLabel(stage) {
+    if (stage === "plan_ready_execution_open") return "План 100% · выполнение открыто";
     if (stage === "etalon_spec_ready_runtime_open") return "ТЗ 100% · runtime открыт";
     if (stage === "accepted_bounded_slice") return "Срез согласован";
     if (stage === "implementation_in_progress") return "Внедрение начато / proof открыт";

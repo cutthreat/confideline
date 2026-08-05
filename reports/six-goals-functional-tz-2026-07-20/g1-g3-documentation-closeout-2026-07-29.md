@@ -71,7 +71,7 @@
 
 - `/{language}/` — мультиязычная витрина;
 - `/{language}/dashboard` — expert-only каталог вместо dating-выдачи;
-- country/city применяют hard regional scope, общий dashboard — только явно выбранный geo-фильтр;
+- country/city сначала применяют hard regional scope; при нулевом regional result показывают явно обозначенный общий eligible fallback с теми же негеографическими фильтрами и фиксируют регион в `regions_without_experts`; общий dashboard — только явно выбранный geo-фильтр;
 - клиентская taxonomy: Отношения, Карьера, Будущее, Развитие, Духовность;
 - `expert_specialization_taxonomy_v1_legacy` сохраняет неизменяемый migration baseline, а первая активная `expert_specialization_taxonomy_v2` исключает deprecated `Energy Diagnostics` из specialization, добавляет `Energy Practices` в methods и «Переезд и жизненные перемены» в specializations без переиндексации остальных IDs;
 - specialization, method и consultation style являются разными осями;

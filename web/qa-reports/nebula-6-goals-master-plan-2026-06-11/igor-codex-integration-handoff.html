@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nebula — единый пакет интеграции для Игоря и Codex</title>
+  <style>
+    :root { color-scheme: light; --ink:#172033; --muted:#667085; --line:#d9e2f3; --bg:#f6f8fb; --panel:#fff; --blue:#1f4e78; --teal:#0f766e; --violet:#6d28d9; --red:#842029; --amber:#7a4e00; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--bg); font:14px/1.45 Arial,sans-serif; }
+    a { color:#175cd3; text-decoration:none; } a:hover { text-decoration:underline; }
+    header { padding:26px 30px; color:#fff; background:var(--blue); }
+    header h1 { margin:0 0 7px; font-size:29px; } header p { margin:0; max-width:1120px; }
+    main { max-width:1500px; margin:0 auto; padding:20px 26px 40px; }
+    .top-links { display:flex; flex-wrap:wrap; gap:9px; margin:0 0 16px; }
+    .top-link { display:inline-block; padding:9px 12px; border:1px solid #d8e6ff; border-radius:6px; background:#f4f8ff; font-weight:700; }
+    .top-link.primary { color:#fff; background:#175cd3; border-color:#175cd3; } .top-link.teal { color:#fff; background:var(--teal); border-color:var(--teal); }
+    .meta, .notice, .section { background:var(--panel); border:1px solid var(--line); border-radius:10px; }
+    .meta { display:flex; flex-wrap:wrap; gap:8px; padding:12px 14px; margin-bottom:16px; }
+    .badge { display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:800; white-space:nowrap; }
+    .p0 { color:var(--red); background:#f4cccc; } .ready { color:#1f5e2e; background:#d9ead3; } .open { color:var(--amber); background:#fff2cc; } .violet { color:#5b21b6; background:#f0e9ff; }
+    .notice { padding:13px 15px; margin-bottom:16px; border-left:6px solid var(--teal); }
+    .notice.warn { border-left-color:#b42318; background:#fff7f7; } .notice b { display:block; margin-bottom:3px; }
+    .section { margin:0 0 16px; overflow:hidden; }
+    .section h2 { margin:0; padding:13px 15px; font-size:20px; color:#0b3f91; background:#f8fafc; border-bottom:1px solid var(--line); }
+    .section h3 { margin:16px 0 8px; font-size:16px; }
+    .section-body { padding:0 15px 15px; }
+    .section-body > p { margin:12px 0; }
+    table { width:100%; border-collapse:collapse; }
+    th { padding:9px 10px; color:#fff; text-align:left; vertical-align:top; background:var(--blue); font-size:12px; }
+    td { padding:9px 10px; vertical-align:top; border-top:1px solid #e4e9f2; line-height:1.42; }
+    tr:nth-child(even) td { background:#fbfdff; }
+    .compact td, .compact th { padding:7px 8px; }
+    .code { display:inline-block; padding:2px 5px; border-radius:4px; color:#344054; background:#eef2f7; font:12px/1.2 Consolas,monospace; }
+    .muted { color:var(--muted); } .small { font-size:12px; } .nowrap { white-space:nowrap; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .grid .section { margin:0; }
+    details { border:1px solid var(--line); border-radius:8px; margin:10px 0; background:#fff; overflow:hidden; }
+    summary { cursor:pointer; padding:11px 13px; font-weight:800; color:#175cd3; list-style:none; }
+    summary::-webkit-details-marker { display:none; } summary::after { content:'›'; float:right; font-size:20px; line-height:1; } details[open] summary::after { transform:rotate(90deg); }
+    details > div { padding:0 13px 13px; }
+    .flow { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-top:10px; }
+    .flow div { padding:9px; border:1px solid #d8e6ff; border-radius:7px; background:#f8fbff; }
+    .flow b { display:block; margin-bottom:3px; color:#0b3f91; }
+    ul { margin:8px 0; padding-left:20px; } li { margin:4px 0; }
+    footer { padding:5px 0 0; color:var(--muted); font-size:12px; }
+    @media (max-width:900px) { .grid, .flow { grid-template-columns:1fr; } main { padding:16px 12px 30px; } header { padding:21px 17px; } header h1 { font-size:24px; } table { display:block; overflow-x:auto; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Единый пакет интеграции Nebula / Confideline</h1>
+  <p>Рабочая карта для Игоря и его Codex: что переносить из согласованных требований и HTML-прототипа в Yii2-сайт, в каком порядке, какие границы не смешивать и каким доказательством закрывать каждый этап.</p>
+</header>
+<main>
+  <nav class="top-links" aria-label="Навигация пакета">
+    <a class="top-link" href="index.html">← Назад к панели 6 целей</a>
+    <a class="top-link primary" href="task-tz.html?task=task-g1-chat&doc=igor">ТЗ G1.2 для Игоря</a>
+    <a class="top-link teal" href="../../../reports/admin-chat-stage1-20260804-analysis/CODEX-INTEGRATION-CONTEXT.md">Контекст Codex для чата</a>
+    <a class="top-link" href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-cross-goal-audit-2026-08-05.md">Аудит G1–G3</a>
+    <a class="top-link" href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-product-consistency-register.md">Реестр инвариантов</a>
+    <a class="top-link" href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-route-and-admin-ownership-matrix.md">Маршруты и владельцы</a>
+  </nav>
+
+  <div class="meta" aria-label="Статус пакета">
+    <span class="badge p0">P0 · MVP</span><span class="badge ready">Документация собрана</span><span class="badge open">Runtime сайта не принят</span><span class="badge violet">Обновлено 05.08.2026</span>
+  </div>
+
+  <div class="notice warn">
+    <b>Граница статуса</b>
+    Пакет определяет целевую логику, контракты и порядок интеграции. HTML/JS из архива — эталон поведения и UI, но демонстрационный transport не является production backend. Нельзя закрывать задачу по одному макету или commit: итог принимается только после live runtime-проверок, readback и audit.
+  </div>
+
+  <section class="section">
+    <h2>1. Как читать пакет</h2>
+    <div class="section-body">
+      <table class="compact">
+        <thead><tr><th>Приоритет</th><th>Источник</th><th>Правило для реализации</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Последние решения владельца + канонические PM-ТЗ G1.1–G3.INT + реестры согласованности</td><td>Нормативная продуктовая логика. Если прототип или архив ей противоречит — исправляется integration layer, а не бизнес-правило.</td></tr>
+          <tr><td>2</td><td><a href="../../../reports/admin-chat-stage1-20260804-analysis/ACCEPTED_FUNCTIONAL_MAP-RU.md">ACCEPTED_FUNCTIONAL_MAP-RU.md</a> и <a href="../../../reports/admin-chat-stage1-20260804-analysis/EXTENDED_PRODUCTION_SURFACES-RU.md">EXTENDED_PRODUCTION_SURFACES-RU.md</a></td><td>Принятый функциональный map архива чата и 12 production-поверхностей, которые нужно довести до API/ACL/audit.</td></tr>
+          <tr><td>3</td><td>Контракты архива <code class="code">contracts/*.md</code>, JS/CSS и HTML</td><td>UI, события, состояния, badge-коды и формы. Demo-ID, sample URLs, fixture data и demo CSRF не переносятся в production.</td></tr>
+          <tr><td>4</td><td>Yii2 runtime и свежие proof refs</td><td>Фактические routes, models, ACL, persistence и deployment mapping. Пока proof нет — статус только «runtime open».</td></tr>
+        </tbody>
+      </table>
+      <p class="small muted">Сопутствующие источники: <a href="../../../reports/admin-chat-stage1-20260804-analysis/README-RU.md">README архива</a>, <a href="../../../reports/admin-chat-stage1-20260804-analysis/VERIFICATION.md">верификация архива</a>, <a href="../../../reports/six-goals-functional-tz-2026-07-20/target-site-vision-g1-g3.md">целевое представление сайта</a>.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>2. Вертикали, которые должны сойтись в одном runtime</h2>
+    <div class="section-body">
+      <table>
+        <thead><tr><th>Контур</th><th>Что реализовать</th><th>Не дублировать</th><th>Канонический вход</th></tr></thead>
+        <tbody>
+          <tr><td><b>G1.1 · Карточка консультации</b></td><td>Одна persisted consultation session: client, public Expert profile, internal Agent, dialog, snapshots, timestamps, audit и role-bounded view в admin.</td><td>Lifecycle G1.3; money G2; support/refund G4.</td><td><a href="task-tz.html?task=task-g1-session&doc=igor">ТЗ G1.1</a></td></tr>
+          <tr><td><b>G1.2 · Role-based chat</b></td><td>Free dialogue, message delivery/versioning, actual actor vs public sender, assignment ACL, censorship, allowed attachments, monitoring and staff identity.</td><td>Session state/timers; prices; global permissions.</td><td><a href="task-tz.html?task=task-g1-chat&doc=igor">ТЗ G1.2</a> · <a href="../../../reports/six-goals-functional-tz-2026-07-20/etalon-tz-g1-2-role-chat.md">канон</a></td></tr>
+          <tr><td><b>G1.3 · Lifecycle и история</b></td><td>Request → consent → trial/paid → pause/reconnect → technical end/completed, terminal initiator/reason, one active/waiting constraint, read-only history.</td><td>Chat message semantics; money ledger.</td><td><a href="task-tz.html?task=task-g1-statuses&doc=igor">ТЗ G1.3</a></td></tr>
+          <tr><td><b>G1.4 · Уведомления</b></td><td>Email для важных событий и непрочитанных сообщений по задержкам из admin; in-site badges/indicator remain; user settings control email only.</td><td>Email templates are a separate content/operations task.</td><td><a href="task-tz.html?task=task-g1-chat-notifications&doc=igor">ТЗ G1.4</a></td></tr>
+          <tr><td><b>G2.1 · Credits и цена</b></td><td>Credits/packages for USD, global and profile price, admin-managed discounts/coupons, immutable session price snapshot, exact balance readback.</td><td>Не продавать «минуты» и не показывать внутреннюю цену в USD за минуту.</td><td><a href="task-tz.html?task=task-g2-pricing&doc=igor">ТЗ G2.1</a></td></tr>
+          <tr><td><b>G2.2 · Debit/pause</b></td><td>Charge only started minutes; stop before next minute on pause/technical end; reconnect grace without new minute; idempotent debit/refund.</td><td>Session state machine remains G1.3.</td><td><a href="task-tz.html?task=task-g2-timer&doc=igor">ТЗ G2.2</a></td></tr>
+          <tr><td><b>G2.3 · Refund/dispute</b></td><td>Separate dispute/refund process, manual super-admin decision, credits return + configured bonus, client-safe text and audit.</td><td>Не превращать dispute/refund в status consultation.</td><td><a href="task-tz.html?task=task-g2-refund&doc=igor">ТЗ G2.3</a></td></tr>
+          <tr><td><b>G2.4 · Accruals</b></td><td>Three independently configurable components, immediate accrual, correction on refund, immutable policy snapshot and reconciliation.</td><td>Payment provider integration is not replaced by chat code.</td><td><a href="task-tz.html?task=task-g2-accruals&doc=igor">ТЗ G2.4</a></td></tr>
+          <tr><td><b>G2.GEO / G3.INT.I18N</b></td><td>Operations-first CMS filling for country/city pages, SEO metadata and language keys; developer is engaged only for a proven missing hook.</td><td>Не создавать отдельную бизнес-логику в frontend.</td><td><a href="../../../reports/g2-geo-five-country-pilot-2026-07-29/review.html">GEO pilot proof</a> · <a href="task-tz.html?task=task-g3-integration&doc=igor">integration map</a></td></tr>
+          <tr><td><b>G3.1–G3.4 · Storefront → start</b></td><td>New Oracle/Nebula layout bound to existing backend: storefront, filtered expert catalog, expert profile, question/consent/start flow.</td><td>Do not move chat/session billing logic into marketing pages.</td><td><a href="task-tz.html?task=task-g3-home&doc=igor">G3.1</a> · <a href="task-tz.html?task=task-g3-catalog&doc=igor">G3.2</a> · <a href="task-tz.html?task=task-g3-profile&doc=igor">G3.3</a> · <a href="task-tz.html?task=task-g3-quiz&doc=igor">G3.4</a></td></tr>
+          <tr><td><b>G3.5–G3.7 · QA, taxonomy, rotation</b></td><td>QA gate for end-to-end path, short filter categories mapped to specializations, completeness/weights, regional scope and general fallback, fair deterministic rotation.</td><td>G3.5 is acceptance/QA; G3.6 starts with admin operations; do not hide fallback mixing.</td><td><a href="task-tz.html?task=task-g3-qa&doc=igor">G3.5</a> · <a href="task-tz.html?task=task-g3-field-weight&doc=igor">G3.6</a> · <a href="task-tz.html?task=task-g3-rotation&doc=igor">G3.7</a></td></tr>
+        </tbody>
+      </table>
+      <p class="small muted">G4–G6 в этот handoff не переписываются: support/refund, analytics/marketing и team/quality/training имеют собственные P0-пакеты. Здесь они появляются только как dependency/acceptance owners, чтобы чат не получил дублирующую бизнес-логику.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>3. Неподвижные продуктовые инварианты</h2>
+    <div class="section-body">
+      <table class="compact">
+        <thead><tr><th>Область</th><th>Каноническое правило</th><th>Проверка в runtime</th></tr></thead>
+        <tbody>
+          <tr><td>Роли</td><td>Публично только «Эксперт». «Агент» — внутренний оператор назначенных анкет. Модератор выполняет support; отдельную роль не добавлять. Super-admin видит всё и сейчас является единственным target для новых admin controls.</td><td>Server-side ACL: чужая анкета/диалог/контекст отклоняются; UI-скрытие не считается защитой.</td></tr>
+          <tr><td>Одна активная консультация</td><td>У клиента не более одной active/waiting paid consultation; у Agent не более одной active <code class="code">paid</code>/<code class="code">balance_pause</code>. Конкурирующие старты имеют одного победителя и один debit.</td><td>Два параллельных запроса: один success, второй deterministic conflict; balance unchanged by retry.</td></tr>
+          <tr><td>Оплата</td><td>Покупаются credits за USD; цена минуты показывается в credits/min. Цена session фиксируется snapshot при старте. Списывается только реально начатая минута.</td><td>Readback policy snapshot, debit ledger, exact balance and idempotency key.</td></tr>
+          <tr><td>Pause/reconnect/end</td><td>Одна управляемая pause без нового списания; reconnect grace задаётся в admin, текущая минута заканчивается, следующая не начинается после timeout/SLA/technical end.</td><td>Timer boundary, no second minute, technical end event, client-safe notification and support/quality incident.</td></tr>
+          <tr><td>Чат и приватность</td><td>Разрешены текст, system messages, emoji, images и approved documents. Audio/voice, video и arbitrary files запрещены. Contacts/payment/internal IDs скрыты из role views.</td><td>Forbidden upload returns <code class="code">422 ATTACHMENT_TYPE_FORBIDDEN</code>; no secret data in response or HTML.</td></tr>
+          <tr><td>Цензура</td><td>Отправитель видит исходное сообщение и policy warning; получатель — censored text. Incident хранит category, actor, timestamp, original/censored hashes and audit; staff monitoring доступен super-admin.</td><td>Обе стороны block policy, no bypass through edit/retry, persisted incident readback.</td></tr>
+          <tr><td>Региональная выдача</td><td>Сначала регион + остальные фильтры. Если региональный результат 0 — отдельный general eligible pool с теми же негеографическими фильтрами и заметной плашкой; не смешивать молча, уведомления о появлении нет.</td><td><code class="code">regional_result_count=0</code>, <code class="code">fallback_scope=general</code>, registry regions_without_experts.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>4. Архив admin-chat-stage1: что переносить в production</h2>
+    <div class="section-body">
+      <p>Архив <code class="code">admin-chat-stage1-20260804-handoff.rar</code> принят как UI/contract reference. SHA-256: <code class="code">1D111B27B71060174323BE17278F89BA2680DFB00262B591A52F40A193D605F3</code>. Проверки архива: JS syntax PASS, badge/message/control/paid-session contracts PASS, embedded checksums 64/64. Его demo transport, csrf, ids и fixture data не использовать.</p>
+      <table class="compact">
+        <thead><tr><th>Пакет</th><th>Брать в интеграцию</th><th>Ограничение MVP</th></tr></thead>
+        <tbody>
+          <tr><td>Queue / Chats / Pings</td><td>Очередь слева, сквозной chat center, client/pay/quality context справа; разделение Chats и Pings; фильтры независимы.</td><td>Операционный экран не становится новой ролью или отдельной billing state machine.</td></tr>
+          <tr><td>Message contract</td><td>Уникальные message IDs, delivery/read/edit states, system messages, public sender vs actual actor, duplicate-safe delivery.</td><td>Публичный sender для Agent = Expert profile; audit видит реального оператора.</td></tr>
+          <tr><td>Paid session contract</td><td>Кнопка и состояния UI связываются с G1.3/G2.2; backend остаётся источником состояния и денег.</td><td>Demo label <code class="code">10 credits/min</code> устарел; канон MVP — effective profile price, стартовый default 30 credits/started minute.</td></tr>
+          <tr><td>Attachment policy</td><td>Images и approved documents, size/type validation, incident on forbidden attempt.</td><td>Audio/voice/video/arbitrary files hidden/disabled; server returns 422.</td></tr>
+          <tr><td>Controls</td><td>Reply, edit, pin, hide with reason, support/safety intervention, pause/resume flows and audit.</td><td>Global permissions остаются в <code class="code">/ru/admin/settings/role</code>; chat settings содержат только chat-specific controls.</td></tr>
+        </tbody>
+      </table>
+      <details open>
+        <summary>Чек-лист preflight перед тем, как Codex начнёт код</summary>
+        <div><ul><li>Сделать локальную копию/хэш архива; заменить demo CSRF на runtime CSRF через Yii2, не выводить его в логах, скриншотах или handoff.</li><li>Проверить production route и auth/ACL для каждого endpoint; не переносить demo IDs, sample URLs и fixtures.</li><li>Сопоставить UI-статусы <code class="code">active</code>/<code class="code">paused</code>/<code class="code">reconnecting</code>/<code class="code">completed</code> с каноном G1.3: active = trial/paid по billing_mode, paused = balance_pause.</li><li>Пройти negative tests: чужой Agent, чужой profile, forbidden attachment, duplicate send/debit, stale reconnect token, double click.</li></ul></div>
+      </details>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>5. Badge-слой очереди и чатов</h2>
+    <div class="section-body">
+      <p>Коды и приоритеты являются частью контракта. Число меньше = более сильный приоритет. Label берётся из translation keys; новые произвольные badge-строки не добавлять.</p>
+      <table class="compact">
+        <thead><tr><th>Зона</th><th>Код</th><th>Смысл</th><th>Тип / priority</th></tr></thead>
+        <tbody>
+          <tr><td>Chats</td><td><code class="code">chats_sell</code></td><td>Можно предложить платную консультацию</td><td>action / 60</td></tr>
+          <tr><td>Chats</td><td><code class="code">chats_live</code></td><td>Live paid/trial session</td><td>state / 10</td></tr>
+          <tr><td>Chats</td><td><code class="code">chats_payment_process</code></td><td>Payment/connection in progress</td><td>state / 20</td></tr>
+          <tr><td>Chats</td><td><code class="code">chats_paid</code></td><td>Paid context</td><td>context / 30</td></tr>
+          <tr><td>Chats</td><td><code class="code">chats_trial</code></td><td>Trial context</td><td>context / 70</td></tr>
+          <tr><td>Chats</td><td><code class="code">chats_skeptic</code></td><td>Skeptic/action follow-up</td><td>action / 50</td></tr>
+          <tr><td>Chats</td><td><code class="code">chats_revive</code></td><td>Reactivation context</td><td>context / 80</td></tr>
+          <tr><td>Chats</td><td><code class="code">chats_risk</code></td><td>Risk constraint</td><td>constraint / 40</td></tr>
+          <tr><td>Chats</td><td><code class="code">chats_safe</code></td><td>Safe constraint</td><td>constraint / 35</td></tr>
+          <tr><td>Chats</td><td><code class="code">chats_coupon</code></td><td>Coupon action only when request is open</td><td>context / 90</td></tr>
+          <tr><td>Pings</td><td><code class="code">pings_fire</code></td><td>Urgent signal</td><td>signal / 10</td></tr>
+          <tr><td>Pings</td><td><code class="code">pings_hot</code></td><td>High-intent signal</td><td>signal / 20</td></tr>
+          <tr><td>Pings</td><td><code class="code">pings_new</code></td><td>New ping</td><td>signal / 40</td></tr>
+          <tr><td>Pings</td><td><code class="code">pings_paid</code></td><td>Paid context</td><td>context / 30</td></tr>
+          <tr><td>Pings</td><td><code class="code">pings_reply</code></td><td>Reply action</td><td>action / 45</td></tr>
+          <tr><td>Pings</td><td><code class="code">pings_await</code></td><td>Awaiting response</td><td>state / 50</td></tr>
+          <tr><td>Pings</td><td><code class="code">pings_revive</code></td><td>Reactivation context</td><td>context / 60</td></tr>
+          <tr><td>Pings</td><td><code class="code">pings_trial</code></td><td>Trial context</td><td>context / 70</td></tr>
+          <tr><td>Pings</td><td><code class="code">pings_risk</code></td><td>Risk constraint</td><td>constraint / 55</td></tr>
+        </tbody>
+      </table>
+      <p class="small muted">Правила: Fire &gt; Hot &gt; NEW; Reply XOR Await; Live/PP/Skeptic/Risk скрывают Sell; Paid + Revive совместимы; Safe заменяет Risk в паре Chats; Coupon только при <code class="code">coupon_request.open=true</code>; порядок отображения action → constraint → state/signal → context. Подробный контракт: <a href="../../../reports/admin-chat-stage1-20260804-analysis/BADGE-BEHAVIOR-RU.md">BADGE-BEHAVIOR-RU.md</a>.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>6. Дополнительные production-поверхности из архива</h2>
+    <div class="section-body">
+      <table class="compact">
+        <thead><tr><th>Поверхность</th><th>Минимальный production результат</th><th>Обязательные доказательства</th></tr></thead>
+        <tbody>
+          <tr><td>Attachments</td><td>Allowlist, size/type validation, object storage, download ACL, delete/retention audit.</td><td>Allowed image/document + forbidden 422 + cross-role denial.</td></tr>
+          <tr><td>Voice / audio / video</td><td>Не включать в MVP; UI hidden/disabled, backend reject.</td><td>Negative endpoint test, no upload/storage side effect.</td></tr>
+          <tr><td>AI summary/draft</td><td>Feature flag off by default; no automatic send; save provenance and model output separately.</td><td>Flag off, no client delivery, audit on manual request.</td></tr>
+          <tr><td>Notes / Follow / Assign</td><td>Internal staff-only notes, follow state and assignment action; no leakage to client/Expert.</td><td>Role matrix, persistence and audit readback.</td></tr>
+          <tr><td>Hide / Resolve</td><td>Hide requires reason and preserves audit; resolve uses canonical terminal state/initiator/reason.</td><td>Client-safe text, internal reason, idempotent repeat.</td></tr>
+          <tr><td>Package action / preferences</td><td>Package CTA calls G2.1 source; operator preferences are scoped to staff account; no duplicate price logic.</td><td>Price source readback, preference ACL, rollback.</td></tr>
+          <tr><td>Shortcuts / Copy history</td><td>Keyboard shortcuts are progressive enhancement; history copy is read-only and respects message visibility/retention.</td><td>Keyboard/accessibility smoke and no hidden content copy.</td></tr>
+        </tbody>
+      </table>
+      <p class="small muted">Полные endpoint/payload/RBAC/persistence/idempotency/rollback требования: <a href="../../../reports/admin-chat-stage1-20260804-analysis/EXTENDED_PRODUCTION_SURFACES-RU.md">EXTENDED_PRODUCTION_SURFACES-RU.md</a>.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>7. Порядок реализации через Codex</h2>
+    <div class="section-body">
+      <table>
+        <thead><tr><th>Шаг</th><th>Что делает Игорь + Codex</th><th>Стоп/выход шага</th></tr></thead>
+        <tbody>
+          <tr><td>0 · Baseline</td><td>Зафиксировать commit/preimage, routes, current Yii2 models, ACL, assets, archive hash; заменить demo CSRF/IDs в рабочем контуре.</td><td>Есть inventory и rollback; нет секретов в proof.</td></tr>
+          <tr><td>1 · Shell/assets</td><td>Подключить Oracle/Nebula layout и admin-chat HTML/CSS в существующий shell без смены product routes.</td><td>Pixel/viewport smoke и отсутствие регрессии старого chat route.</td></tr>
+          <tr><td>2 · Read-only transport</td><td>Подтянуть реальную queue/chat/client context; server-derived identity; skeleton/error/fallback.</td><td>UI не показывает фиктивные данные; 403/404/empty состояния проверены.</td></tr>
+          <tr><td>3 · Message core</td><td>Send/edit/read/delivery/system messages, duplicate-safe idempotency, public sender/actual actor, audit and message versioning.</td><td>Persisted readback; чужой actor/profile заблокирован сервером.</td></tr>
+          <tr><td>4 · Attachments/policy</td><td>Images/documents allowlist, censorship pipeline, warning/recipient rendering, incident monitoring; voice/video/arbitrary reject.</td><td>422 negative test, hashes/audit, no forbidden side effect.</td></tr>
+          <tr><td>5 · Role/context actions</td><td>Assigned profile filter, notes/follow/assign/hide/resolve, staff-only context and super-admin monitoring.</td><td>Visibility matrix and immutable audit accepted.</td></tr>
+          <tr><td>6 · Paid session</td><td>Wire G1.1/G1.3 session card and G2.1/G2.2 price/debit/pause contracts; no second billing state machine in chat.</td><td>Trial/paid/pause/reconnect/end with exact ledger proof and no duplicate debit.</td></tr>
+          <tr><td>7 · Negative/runtime QA</td><td>Run role, security, idempotency, timeout, stale-token, accessibility, responsive and error matrix on a controlled test set.</td><td>All P0 cases pass; failed cases remain explicit blockers.</td></tr>
+          <tr><td>8 · Handoff/acceptance</td><td>Return commit/build, endpoint map, migration notes, screenshots, logs/readback, verifier output and rollback recipe.</td><td>PM/super-admin accepts proof; only then status may leave runtime open.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>8. Минимальный пакет доказательств от Игоря</h2>
+    <div class="section-body">
+      <table class="compact">
+        <thead><tr><th>Evidence</th><th>Что должно быть приложено</th></tr></thead>
+        <tbody>
+          <tr><td>Build/source</td><td>Commit/hash, changed files, migration/rollback steps, exact Yii2 routes and mapped templates.</td></tr>
+          <tr><td>Role proof</td><td>Super-admin, assigned Agent, unassigned Agent, client: allowed/denied screenshots or sanitized response codes.</td></tr>
+          <tr><td>Message proof</td><td>Send/read/edit/system/duplicate delivery, public sender, actual actor and full super-admin audit readback.</td></tr>
+          <tr><td>Policy proof</td><td>Censorship sender/recipient views, incident record, allowed image/document, 422 forbidden media.</td></tr>
+          <tr><td>Money/session proof</td><td>Immutable price snapshot, started-minute debit, pause/reconnect boundary, technical end, balance/readback, idempotency.</td></tr>
+          <tr><td>Visual/QA proof</td><td>Desktop/tablet/mobile screenshots, empty/error/loading states, no visible secrets or demo CSRF; verifier report.</td></tr>
+        </tbody>
+      </table>
+      <div class="notice warn" style="margin:14px 0 0"><b>Rollback</b>Любое изменение в admin/settings, chat schema, prices, permissions или retention должно иметь preimage/hash, обратную миграцию и повторную smoke-проверку. При финансовой или ACL-ошибке release не принимается.</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>9. Что не входит в эту интеграцию</h2>
+    <div class="section-body">
+      <table class="compact">
+        <thead><tr><th>Вне MVP-пакета</th><th>Куда отложено</th></tr></thead>
+        <tbody>
+          <tr><td>Browser push, paid queue, asynchronous paid consultation, transcript export/download</td><td>Отдельный post-MVP backlog / следующий этап.</td></tr>
+          <tr><td>Автоматические refund/payout/auto-refill и predictive/AI ranking</td><td>Ручные операции и отдельные G2/G3 расширения после MVP.</td></tr>
+          <tr><td>Новые глобальные permissions/roles</td><td>Существующий <code class="code">/ru/admin/settings/role</code>; на первом этапе только super-admin.</td></tr>
+          <tr><td>Юридическая финализация retention, crisis wording and regional policy</td><td>Legal/privacy review; значения в admin должны оставаться управляемыми.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>10. Основные файлы для передачи</h2>
+    <div class="section-body">
+      <table class="compact">
+        <thead><tr><th>Файл/ссылка</th><th>Назначение</th></tr></thead>
+        <tbody>
+          <tr><td><a href="../../../reports/admin-chat-stage1-20260804-analysis/README-RU.md">Archive README</a></td><td>Состав архива и граница demo.</td></tr>
+          <tr><td><a href="../../../reports/admin-chat-stage1-20260804-analysis/CODEX-INTEGRATION-CONTEXT.md">Codex integration context</a></td><td>Preflight, source precedence and Steps 0–8.</td></tr>
+          <tr><td><a href="../../../reports/admin-chat-stage1-20260804-analysis/ACCEPTED_FUNCTIONAL_MAP-RU.md">Accepted functional map</a></td><td>Принятый UI/behavior map чата.</td></tr>
+          <tr><td><a href="../../../reports/admin-chat-stage1-20260804-analysis/BADGE-BEHAVIOR-RU.md">Badge behavior</a></td><td>19 badge-кодов, priority, фильтры, совместимость.</td></tr>
+          <tr><td><a href="../../../reports/admin-chat-stage1-20260804-analysis/EXTENDED_PRODUCTION_SURFACES-RU.md">Extended production surfaces</a></td><td>12 дополнительных endpoint/ACL/audit пакетов.</td></tr>
+          <tr><td><a href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-cross-goal-audit-2026-08-05.md">Cross-goal audit</a></td><td>Проверка отсутствия конфликтов G1–G3 и остаточные runtime gates.</td></tr>
+          <tr><td><a href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-product-consistency-register.md">Consistency register</a></td><td>Единый словарь состояний, ownership и invariants.</td></tr>
+          <tr><td><a href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-route-and-admin-ownership-matrix.md">Route/admin ownership</a></td><td>Какая настройка где живёт и кто её меняет.</td></tr>
+          <tr><td><a href="../../../reports/six-goals-functional-tz-2026-07-20/functional-tz-quality-standard.md">TZ quality standard</a></td><td>Критерии полноты ТЗ и acceptance.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>Пакет подготовлен для передачи разработчику. Product decisions принадлежат владельцу; техническую реализацию выбирает Игорь при сохранении инвариантов, server-side security, idempotency, audit и proof boundary. Статический пакет не является доказательством готовности production-сайта.</footer>
+</main>
+</body>
+</html>

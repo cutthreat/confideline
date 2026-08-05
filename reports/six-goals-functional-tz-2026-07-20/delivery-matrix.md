@@ -5,7 +5,7 @@
 
 ## Единое правило приоритета
 
-Все 30 строк G1.1-G6.7 имеют приоритет `P0` шестимесячной программы запуска MVP. Фаза показывает порядок и gate, но не понижает обязательность задачи. `G2.GEO` и `G3.INT` остаются связанными P0 implementation/content packages и не получают primary ownership. `G3.INT` не считается 31-м task code; добавление `G2.GEO` также не создаёт 31-ю или 32-ю функциональную задачу.
+Все 30 строк G1.1-G6.7 имеют приоритет `P0` шестимесячной программы запуска MVP. Фаза показывает порядок и gate, но не понижает обязательность задачи. `G2.GEO`, `G3.INT` и `G5.SEO` остаются связанными P0 implementation/content/launch packages и не получают primary ownership. Каждый из этих связанных пакетов не считается 31-м task code, не добавляется в реестр 30 задач и не меняет их primary ownership.
 
 Расширения сверх MVP удалены из обязательного acceptance scope и перечислены отдельно в `post-mvp-backlog-2026-07-29.md`.
 
@@ -23,7 +23,7 @@ existing admin capability probe
 → operator readback и PM/QA acceptance
 ```
 
-Нельзя считать колонку «Следующий шаг» безусловным поручением Игорю. `G3.5` и `G5.4` принадлежат QA/PM gate; `G2.GEO` и `G3.INT.I18N` начинаются с операционной инвентаризации; G4.3/G6.4 требуют policy/content owner, а не авторства разработчика.
+Нельзя считать колонку «Следующий шаг» безусловным поручением Игорю. `G3.5` и `G5.4` принадлежат QA/PM gate; `G2.GEO`, `G3.INT.I18N` и `G5.SEO` начинаются с операционной инвентаризации; G4.3/G6.4 требуют policy/content owner, а не авторства разработчика.
 
 | Task | Фаза | Ключевая зависимость | Обязательный proof | Owner gate | Следующий шаг |
 |---|---|---|---|---|---|
@@ -52,6 +52,7 @@ existing admin capability probe
 | G5.2 | MVP_operations | trusted G5.1 | minimum money/session/incident/SLA/QA/event-health dashboard; zero/no-data/stale/reconciliation | нет | build minimum dashboard after event truth |
 | G5.3 | MVP_operations | G5.1, G6.2-G6.3 | minimum KPI table: cold-start/reassignment/refund + admin config | O3 pilot readback закрыт; KPI influence disabled | build/admin KPI readback suite |
 | G5.4 | public gate | G3.5, G5.1, G6 | current release evidence + NO_GO case | thresholds/approver | decide after pilot baseline |
+| G5.SEO | linked P0 launch package, `OPS_FIRST + DEV`, основной месяц 4 | brand/domain/locale freeze, G2.GEO, G3.1-G3.7, G3.INT, G4.3, G5.1 | URL/redirect/semantic/metadata registry, mapped build, full crawl, locale/admin/public/search-system readback | PM/legal claims and launch scope; incomplete locale/URL fail-closed | month 1 baseline → month 3 technical integration → month 4 full-team sprint → months 5-6 monitoring |
 | G6.1 | pilot_core | foundation | assignment/reassignment/paid block/history | нет | execute issued first vertical package |
 | G6.2 | pilot_minimum/public | G1.3, G5.1 | shift/busy/pause/incident + admin config readback | O1 закрыт; values admin-managed | build/admin/runtime SLA suite |
 | G6.3 | pilot_minimum/public | G1.1, G5.1 | review/critical fail/appeal/block + admin config | O2 закрыт; config admin-managed | build/admin/runtime quality suite |
@@ -68,7 +69,7 @@ G6.1 + G6.7 -> G1.2 -> G1.1 + G1.3
 -> G3.3 + V3 minimum G3.6 + G3.1-G3.4 interface shell
 -> G4.1-G4.3 + G5.1 + minimum G6.2-G6.4
 -> V3 minimum G3.7 + G2.GEO fresh inventory/source-first restore/readback
--> G3.INT source-lock/backend binding/focused proof -> G3.5 limited paid pilot
+-> G3.INT source-lock/backend binding/focused proof + G5.SEO mapped build/month-4 crawl -> G3.5 limited paid pilot
 -> full G3/G4/G5/G6 -> G5.4 public traffic gate
 ```
 
@@ -87,4 +88,4 @@ G6.1 + G6.7 -> G1.2 -> G1.1 + G1.3
 5. `vertical-package-public-scale.md`: несмотря на историческое имя файла, для шестимесячной программы содержит только обязательные MVP-срезы G4.4, G5.3 и G6.6. Automation/KPI-scale extensions G3.6/G3.7 вынесены в `post-mvp-backlog-2026-07-29.md`.
 6. `vertical-package-analytics-launch.md`: G5.2, G5.4.
 
-Все 30 task codes имеют ровно одно primary coverage и приоритет P0. G2.GEO и G3.INT — linked P0 implementation/content packages вне primary registry; они не считаются 31-м/32-м task code. Для G3.6 и G3.7 обязательным является V3 manual minimum; automation/KPI-scale extensions находятся только в отдельном post-MVP backlog. G6.4 сохраняет primary ownership в operations package, но его minimum admission gate является обязательным ранним prerequisite V3 до G3.7/G3.INT/G3.5. G2.GEO сохраняет отдельную content boundary: `157 = 39 + 118`, `942` locale pages и `1884` files — historical source inventory. Пятистрановой text-pilot Japan, South Korea, Mexico, Vietnam и Thailand имеет статус `complete`: доказаны `5/5` controlled before/after RU, `30/30` final source↔CMS readback и `5/5` финальных RU visual checks. Full rollout всего current denominator остаётся отдельным scope; фото `0/2` — вне text-scope. Owner values отделены как enablement gates; готовность конкретного handoff определяется классом `DEV/MIXED/OPS_FIRST/CONTENT_POLICY/QA_GATE`, а не универсальной передачей программисту.
+Все 30 task codes имеют ровно одно primary coverage и приоритет P0. G2.GEO, G3.INT и G5.SEO — linked P0 packages вне primary registry; они не считаются дополнительными task codes. Для G3.6 и G3.7 обязательным является V3 manual minimum; automation/KPI-scale extensions находятся только в отдельном post-MVP backlog. G6.4 сохраняет primary ownership в operations package, но его minimum admission gate является обязательным ранним prerequisite V3 до G3.7/G3.INT/G3.5. G2.GEO сохраняет отдельную content boundary: `157 = 39 + 118`, `942` locale pages и `1884` files — historical source inventory. Пятистрановой text-pilot Japan, South Korea, Mexico, Vietnam и Thailand имеет статус `complete`: доказаны `5/5` controlled before/after RU, `30/30` final source↔CMS readback и `5/5` финальных RU visual checks. Full rollout всего current denominator остаётся отдельным scope; фото `0/2` — вне text-scope. G5.SEO имеет основной спринт в месяце 4, но начинает baseline с месяца 1 и не считается runtime/indexing-ready до mapped build, full crawl и search-system readback. Owner values отделены как enablement gates; готовность конкретного handoff определяется классом `DEV/MIXED/OPS_FIRST/CONTENT_POLICY/QA_GATE`, а не универсальной передачей программисту.

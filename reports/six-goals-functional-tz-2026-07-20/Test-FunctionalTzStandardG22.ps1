@@ -222,10 +222,12 @@ Add-Check 'panel:spec-ready' (
     $panel.Contains('tasks["task-g2-timer"].tzReady = 100')
 ) 'panel separates specification from runtime'
 
-Add-Check 'index:readiness-100' (
-    $index.Contains('"task-g2-timer":100') -and
-    $index.Contains('все задачи G1.1–G3.7 имеют автономные пары PM-ТЗ и Codex-контекста')
-) 'master list and Goal 2 status updated'
+Add-Check 'task-tz:readiness-100' (
+    $index.Contains('"task-g2-timer": { code:"G2.2"') -and
+    $index.Contains('"task-g2-timer": { code:"G2.2", title:"Таймер и остановка", priority:"P0"') -and
+    $panel.Contains('"task-g2-timer": { code:"G2.2"') -and
+    $panel.Contains('tzReady:100')
+) 'master list and task card status updated'
 
 Add-Check 'task:current-requirement' (
     $task.Contains('фиксированные бесплатные минуты') -and

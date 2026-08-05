@@ -2,7 +2,7 @@
 
 Версия: `1.0`  
 Дата: 2026-07-29  
-Статус: `canonical_execution_routing_for_30_tasks_and_2_linked_packages`
+Статус: `canonical_execution_routing_for_30_tasks_and_3_linked_packages`
 
 ## 1. Назначение
 
@@ -82,6 +82,7 @@
 |---|---|---|---|---|
 | G2.GEO Country/city content | `OPS_FIRST` + `CONTENT_POLICY` | Codex готовит source-first draft; moderator проверяет, публикует через существующие country/geoname editors и делает admin/public readback | Только missing field/binding/route/save/readback/template gap | Пятистрановой text-pilot `complete`: Japan, South Korea, Mexico, Vietnam, Thailand; доказаны `5/5` controlled before/after RU, `30/30` final source↔CMS readback и `5/5` RU visual checks. Full rollout всего denominator — отдельный scope; фото `0/2` вне text scope |
 | G3.INT Oracle/Nebula → backend | `MIXED` | Владельцы страниц дают source/config readback; moderator выполняет i18n inventory, existing-key search, translations, cache/admin/public readback и rollout-locales | Layout→route/data/action integration, auth/cache/SEO/rollback; только missing/broken i18n bindings и import-safety gaps | Integration runtime открыт; G3.5 принимает результат независимо |
+| G5.SEO SEO launch readiness | `OPS_FIRST + DEV` | SEO Lead ведёт baseline/semantics/metadata/content/locale QA/monitoring; moderator использует существующие SEO translates, country/geoname, profile и page editors | Только доказанные gaps: routes/redirects/templates/canonical/hreflang/sitemap/robots/schema/crawlability/performance/events | План и technical handoff готовы; основной спринт — месяц 4; implementation, crawl, indexing и organic baseline открыты |
 
 G2.GEO review: `H:\GPT-Codex\Confideline\reports\g2-geo-five-country-pilot-2026-07-29\review.html`.
 

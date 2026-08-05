@@ -1,6 +1,6 @@
 # Confideline / Nebula: канонический комплект функциональных ТЗ G1-G6
 
-Дата: 2026-07-29  
+Дата актуализации: 2026-08-05
 Статус комплекта: `G1_G2_G3_15_of_15_etalon_pairs_verified / G4_G6_legacy_structural_coverage_standard_audit_open`  
 Область: 30 задач G1.1-G6.7  
 Продуктовый статус: `not_runtime_verified / NO_GO`
@@ -49,6 +49,7 @@
 | `g1-g3-product-object-dictionary.md` | G1-G3 / vocabulary | Канонические роли, объекты, состояния, деньги, выдача, reviews и configuration semantics |
 | `g1-g3-route-and-admin-ownership-matrix.md` | G1-G3 / routes | Текущие и целевые client/admin routes и правило одного редактора настройки |
 | `g1-g3-documentation-closeout-2026-07-29.md` | G1-G3 / closeout | Итог ревизии, проверенные результаты, bounded DOCX repair и честные остаточные gates |
+| `g1-g3-cross-goal-audit-2026-08-05.md` | G1-G3 / cross-goal audit | Сквозная сверка границ, зависимостей, конфликтов и runtime-gates |
 | `etalon-tz-g1-1-*.md` … `etalon-tz-g3-7-*.md` | G1.1-G3.7 / основной документ | 15 функциональных, mixed, operational или QA-пакетов согласно ownership matrix |
 | `codex-context-g1-1-*.md` … `codex-context-g3-7-*.md` | G1.1-G3.7 / technical lane | Технические контексты только для обязательного development scope или evidence-backed escalation |
 | `tz-g1-1-for-igor.*` … `tz-g3-7-for-igor.*` | G1.1-G3.7 / чтение | Человекочитаемые HTML и DOCX; legacy filename не определяет исполнителя |

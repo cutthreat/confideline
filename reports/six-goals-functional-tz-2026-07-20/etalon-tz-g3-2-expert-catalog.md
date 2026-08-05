@@ -87,7 +87,9 @@ G3.2 не отвечает за:
 
 ### Каноническая граница географии
 
-Country/city используют регион как hard scope: в региональную выдачу входят только Эксперты, явно связанные с выбранной страной или городом. Общий dashboard не использует географию как hard scope; регион ограничивает общий каталог только после явно выбранного пользователем географического фильтра.
+Country/city сначала используют регион как hard scope: в первичную региональную выдачу входят только Эксперты, явно связанные с выбранной страной или городом. Если после применения остальных выбранных фильтров в этом регионе нет ни одной eligible анкеты, разрешён только явный безопасный fallback в общий eligible pool с теми же негеографическими фильтрами. В этом случае страница показывает заметную плашку «В выбранном регионе пока нет Экспертов» и не создаёт подписку/уведомление о появлении регионального Эксперта. Fallback не является скрытым смешением результатов: в readback сохраняются `regional_result_count=0`, `fallback_scope=general`, причина и версия решения. Если региональный результат непустой, общий pool не подмешивается.
+
+Общий dashboard не использует географию как hard scope; регион ограничивает общий каталог только после явно выбранного пользователем географического фильтра. Региональный fallback применяется только на country/city surface и не меняет общий dashboard.
 
 Открытие общего dashboard без выбранного региона не должно незаметно наследовать страну, город, IP-геолокацию или старый dating-фильтр. На country/city, напротив, смена или очистка регионального контекста должна либо открыть соответствующую региональную страницу, либо явно перевести пользователя в общий каталог.
 
@@ -253,7 +255,7 @@ Figma определяет layout, карточки, responsive behavior и comp
 - один Эксперт может присутствовать в нескольких городах;
 - выбор другого города переводит на соответствующий route, а не расширяет текущий результат.
 
-Нет результата — не повод показывать Экспертов, не относящихся к выбранному regional scope.
+Если региональный результат пуст, сначала фиксируется отсутствие локальных eligible Экспертов, затем по единому G3.7-контракту запрашивается общий eligible pool с сохранёнными темой, специализацией, методом, языком, availability и другими фильтрами. На странице показываются общий список и обязательная плашка о нулевом региональном результате. Общие анкеты не должны выглядеть как локальные; региональная принадлежность в карточках не заявляется. Если общий pool также пуст, показывается обычный empty state без фиктивных данных. Отдельная запись в операционном списке `regions_without_experts` создаётся/обновляется для страны или города; автоматическое уведомление клиенту о появлении регионального Эксперта не создаётся.
 
 ## 10. Доступность
 
@@ -459,7 +461,7 @@ Analytics failure не меняет результат выдачи или CTA.
 7. Concurrent state changes — no paid start from stale card.
 8. Unauthorized filter/admin mutation — denied without config change.
 9. Search dependency degraded — explicit error/limited mode, no broadened unsafe result.
-10. Country/city has zero experts — empty state, not cross-region leakage.
+10. Country/city has zero regional experts — show the explicit regional-empty banner and the same-filter general eligible pool; never imply that fallback profiles belong to the selected region.
 
 ## 21. Критерии готового результата
 
@@ -468,7 +470,7 @@ Analytics failure не меняет результат выдачи или CTA.
 1. Guest и client видят только Expert profiles.
 2. General filters работают совместно и сохраняются.
 3. Geography в общем каталоге применяется только явно.
-4. Country/city scope не пропускает чужой регион.
+4. Country/city сначала применяет региональный scope; при нулевом regional result допускается только явный general fallback с banner/readback и без утверждения локальной принадлежности.
 5. Multi-region Expert отображается по каждому назначенному региону без дубля внутри результата.
 6. Default order совпадает с G3.7 preview.
 7. User sort сохраняет eligibility и stable pagination.
@@ -481,7 +483,7 @@ Analytics failure не меняет результат выдачи или CTA.
 1. Ordinary client profile не попадает в каталог.
 2. Blocked/unpublished/ineligible Expert не появляется через filter, URL, cache или pin.
 3. Duplicate/retry/load-more не дублирует карточки.
-4. Empty result не расширяется скрыто.
+4. Empty regional result не расширяется скрыто: fallback в general pool возможен только с явным banner, reason/readback и сохранением остальных фильтров.
 5. Stale card не начинает paid flow.
 6. Unauthorized actor не меняет taxonomy/rotation/profile scope.
 7. Analytics/search failure не приводит к disclosure или fake data.
@@ -551,5 +553,5 @@ Analytics failure не меняет результат выдачи или CTA.
 - Приоритет: P0.
 - Фаза: client pilot / public directory.
 - Связанный технический контекст: `codex-context-g3-2-expert-catalog.md`.
-- Версия: 1.0.
-- Дата: 2026-07-29.
+- Версия: 1.1.
+- Дата: 2026-08-05.

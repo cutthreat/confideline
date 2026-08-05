@@ -1,6 +1,6 @@
 # Completion audit: функциональные ТЗ 30 задач
 
-Дата актуализации: 2026-07-29  
+Дата актуализации: 2026-08-05
 Статус: `G1_G2_G3_15_of_15_etalon_pairs_verified_G4_G6_historical_coverage_runtime_open`  
 Область доказательства: полнота и связность функционального ТЗ, не реализация сайта.
 
@@ -9,6 +9,8 @@
 Implementation/runtime остаётся открыт для всех задач: документальная полнота не заменяет build mapping, persisted readback, role-negative proof и PM acceptance.
 
 Актуальные owner/state refs для G1-G3: `g1-g3-product-consistency-register.md`, `g1-g3-route-and-admin-ownership-matrix.md`, `g1-g3-product-object-dictionary.md`, `owner-decisions.md`, `current-site-state-g1-g3-2026-07-29.md` и `target-site-vision-g1-g3.md`. Старые межзадачные `tz-g*-*.md` являются обзорными источниками; автономный task handoff имеет приоритет.
+
+Сквозной cross-goal audit от 2026-08-05: `g1-g3-cross-goal-audit-2026-08-05.md`. В нём отдельно зафиксировано устранение рассинхронизации по regional fallback и подтверждено, что оставшиеся пункты являются runtime/release gates, а не конфликтами требований.
 
 ## Критерии аудита
 

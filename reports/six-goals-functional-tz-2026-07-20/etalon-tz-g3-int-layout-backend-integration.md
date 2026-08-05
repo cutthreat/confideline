@@ -338,11 +338,11 @@ G3.INT не хранит параллельные копии этих данны
 |---|---|---|
 | G3I-P01 | Гость открывает home | Новая верстка получает реальные публичные данные и корректный locale |
 | G3I-P02 | Клиент открывает dashboard | Видит expert-only выдачу и свои разрешенные персональные блоки |
-| G3I-P03 | Открыта country/city page | Применен hard regional scope без показа обычных пользователей |
+| G3I-P03 | Открыта country/city page | Применен primary regional scope; при нулевом результате показан явный general fallback с banner/readback, без обычных пользователей |
 | G3I-P04 | Открыт профиль | Данные, price, availability, reviews и CTA совпадают с владельцами |
 | G3I-P05 | Гость нажимает CTA | После auth восстановлены Эксперт, тема и вопрос |
 | G3I-P06 | Клиент применяет filters | URL/readback, список и pagination согласованы |
-| G3I-P07 | Нет eligible Экспертов | Показан honest empty state без фиктивных карточек |
+| G3I-P07 | Нет eligible Экспертов в выбранном регионе | Показан regional-empty banner и same-filter general eligible fallback; если общий pool пуст — honest empty без фиктивных карточек |
 | G3I-P08 | Эксперт стал busy/offline | CTA обновлена по актуальным capabilities |
 | G3I-P09 | Цена изменилась | Видна актуальная цена; session snapshot создается только владельцем G2 |
 | G3I-P10 | Повторен auth callback/form submit | Нет второго действия, request или диалога |
@@ -437,8 +437,8 @@ Moderator/super-admin отдельно передаёт итоговый transla
 ## 24. Служебные сведения о документе
 
 - Task: `G3.INT`
-- Версия: `1.1`
-- Дата: `2026-07-29`
+- Версия: `1.2`
+- Дата: `2026-08-05`
 - Приоритет: `P0`
 - Фаза: `V3 client pilot`
 - Парный технический контекст: `codex-context-g3-int-layout-backend-integration.md`
