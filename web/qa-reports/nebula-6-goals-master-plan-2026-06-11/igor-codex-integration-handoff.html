@@ -3,277 +3,568 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Nebula — единый пакет интеграции для Игоря и Codex</title>
+  <title>Nebula — полный контракт интеграции чата</title>
   <style>
-    :root { color-scheme: light; --ink:#172033; --muted:#667085; --line:#d9e2f3; --bg:#f6f8fb; --panel:#fff; --blue:#1f4e78; --teal:#0f766e; --violet:#6d28d9; --red:#842029; --amber:#7a4e00; }
+    :root { color-scheme:light; --ink:#172033; --muted:#667085; --line:#d9e2f3; --bg:#f5f7fb; --panel:#fff; --blue:#1f4e78; --blue2:#175cd3; --teal:#0f766e; --violet:#6d28d9; --red:#842029; --amber:#7a4e00; --green:#1f5e2e; }
     * { box-sizing:border-box; }
-    body { margin:0; color:var(--ink); background:var(--bg); font:14px/1.45 Arial,sans-serif; }
-    a { color:#175cd3; text-decoration:none; } a:hover { text-decoration:underline; }
-    header { padding:26px 30px; color:#fff; background:var(--blue); }
-    header h1 { margin:0 0 7px; font-size:29px; } header p { margin:0; max-width:1120px; }
-    main { max-width:1500px; margin:0 auto; padding:20px 26px 40px; }
-    .top-links { display:flex; flex-wrap:wrap; gap:9px; margin:0 0 16px; }
-    .top-link { display:inline-block; padding:9px 12px; border:1px solid #d8e6ff; border-radius:6px; background:#f4f8ff; font-weight:700; }
-    .top-link.primary { color:#fff; background:#175cd3; border-color:#175cd3; } .top-link.teal { color:#fff; background:var(--teal); border-color:var(--teal); }
-    .meta, .notice, .section { background:var(--panel); border:1px solid var(--line); border-radius:10px; }
+    body { margin:0; color:var(--ink); background:var(--bg); font:14px/1.48 Arial,sans-serif; }
+    a { color:var(--blue2); text-decoration:none; } a:hover { text-decoration:underline; }
+    header { padding:28px 30px; color:#fff; background:linear-gradient(120deg,#1f4e78,#173b63); }
+    header h1 { margin:0 0 8px; font-size:29px; } header p { max-width:1250px; margin:0; }
+    main { max-width:1580px; margin:0 auto; padding:20px 26px 44px; }
+    .nav { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+    .nav a { display:inline-block; padding:9px 12px; border:1px solid #d8e6ff; border-radius:7px; background:#f4f8ff; font-weight:700; }
+    .nav a.primary { color:#fff; background:var(--blue2); border-color:var(--blue2); }
+    .meta,.notice,.section { border:1px solid var(--line); border-radius:10px; background:var(--panel); }
     .meta { display:flex; flex-wrap:wrap; gap:8px; padding:12px 14px; margin-bottom:16px; }
     .badge { display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:800; white-space:nowrap; }
-    .p0 { color:var(--red); background:#f4cccc; } .ready { color:#1f5e2e; background:#d9ead3; } .open { color:var(--amber); background:#fff2cc; } .violet { color:#5b21b6; background:#f0e9ff; }
+    .p0 { color:var(--red); background:#f4cccc; } .ready { color:var(--green); background:#d9ead3; } .warn { color:var(--amber); background:#fff2cc; } .violet { color:#5b21b6; background:#f0e9ff; }
     .notice { padding:13px 15px; margin-bottom:16px; border-left:6px solid var(--teal); }
-    .notice.warn { border-left-color:#b42318; background:#fff7f7; } .notice b { display:block; margin-bottom:3px; }
-    .section { margin:0 0 16px; overflow:hidden; }
-    .section h2 { margin:0; padding:13px 15px; font-size:20px; color:#0b3f91; background:#f8fafc; border-bottom:1px solid var(--line); }
-    .section h3 { margin:16px 0 8px; font-size:16px; }
-    .section-body { padding:0 15px 15px; }
-    .section-body > p { margin:12px 0; }
+    .notice.danger { border-left-color:#b42318; background:#fff7f7; }
+    .notice b { display:block; margin-bottom:3px; }
+    .section { margin-bottom:16px; overflow:hidden; }
+    .section h2 { margin:0; padding:13px 15px; color:#0b3f91; font-size:20px; background:#f8fafc; border-bottom:1px solid var(--line); }
+    .section h3 { margin:17px 0 8px; font-size:16px; color:#173b63; }
+    .body { padding:0 15px 16px; } .body > p { margin:12px 0; }
     table { width:100%; border-collapse:collapse; }
-    th { padding:9px 10px; color:#fff; text-align:left; vertical-align:top; background:var(--blue); font-size:12px; }
-    td { padding:9px 10px; vertical-align:top; border-top:1px solid #e4e9f2; line-height:1.42; }
+    th { padding:8px 9px; color:#fff; text-align:left; vertical-align:top; background:var(--blue); font-size:12px; }
+    td { padding:8px 9px; vertical-align:top; border-top:1px solid #e4e9f2; }
     tr:nth-child(even) td { background:#fbfdff; }
-    .compact td, .compact th { padding:7px 8px; }
-    .code { display:inline-block; padding:2px 5px; border-radius:4px; color:#344054; background:#eef2f7; font:12px/1.2 Consolas,monospace; }
+    .compact td,.compact th { padding:6px 7px; }
+    .code { display:inline-block; padding:2px 5px; border-radius:4px; color:#344054; background:#eef2f7; font:12px/1.25 Consolas,monospace; }
+    pre { overflow:auto; margin:10px 0; padding:12px; border-radius:7px; color:#e9eef7; background:#152238; font:12px/1.45 Consolas,monospace; }
     .muted { color:var(--muted); } .small { font-size:12px; } .nowrap { white-space:nowrap; }
-    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
-    .grid .section { margin:0; }
-    details { border:1px solid var(--line); border-radius:8px; margin:10px 0; background:#fff; overflow:hidden; }
-    summary { cursor:pointer; padding:11px 13px; font-weight:800; color:#175cd3; list-style:none; }
-    summary::-webkit-details-marker { display:none; } summary::after { content:'›'; float:right; font-size:20px; line-height:1; } details[open] summary::after { transform:rotate(90deg); }
-    details > div { padding:0 13px 13px; }
-    .flow { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-top:10px; }
-    .flow div { padding:9px; border:1px solid #d8e6ff; border-radius:7px; background:#f8fbff; }
+    .flow { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin:10px 0; }
+    .flow div { min-height:72px; padding:9px; border:1px solid #d8e6ff; border-radius:7px; background:#f8fbff; }
     .flow b { display:block; margin-bottom:3px; color:#0b3f91; }
-    ul { margin:8px 0; padding-left:20px; } li { margin:4px 0; }
-    footer { padding:5px 0 0; color:var(--muted); font-size:12px; }
-    @media (max-width:900px) { .grid, .flow { grid-template-columns:1fr; } main { padding:16px 12px 30px; } header { padding:21px 17px; } header h1 { font-size:24px; } table { display:block; overflow-x:auto; } }
+    details { margin:10px 0; border:1px solid var(--line); border-radius:8px; background:#fff; }
+    summary { cursor:pointer; padding:10px 12px; color:var(--blue2); font-weight:800; list-style:none; }
+    summary::-webkit-details-marker { display:none; } summary::after { content:'›'; float:right; font-size:20px; line-height:1; } details[open] summary::after { transform:rotate(90deg); }
+    details > div { padding:0 12px 12px; }
+    ul,ol { margin:8px 0; padding-left:22px; } li { margin:4px 0; }
+    footer { padding-top:4px; color:var(--muted); font-size:12px; }
+    @media (max-width:980px) { .flow { grid-template-columns:repeat(2,minmax(0,1fr)); } main { padding:16px 12px 30px; } header { padding:22px 17px; } header h1 { font-size:24px; } table { display:block; overflow-x:auto; } }
+    @media (max-width:560px) { .flow { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
 <header>
-  <h1>Единый пакет интеграции Nebula / Confideline</h1>
-  <p>Рабочая карта для Игоря и его Codex: что переносить из согласованных требований и HTML-прототипа в Yii2-сайт, в каком порядке, какие границы не смешивать и каким доказательством закрывать каждый этап.</p>
+  <h1>Полный контракт интеграции Nebula / Confideline: чат, консультация и сайт</h1>
+  <p>Единая русскоязычная страница для владельца проекта, Игоря и его Codex. Здесь собраны правила интерфейса, связи с Yii2, роли, сообщения, бейджи, очередь, платная консультация, деньги, модерация, аудит, программные интерфейсы, настройки админ-панели и порядок реализации.</p>
 </header>
 <main>
-  <nav class="top-links" aria-label="Навигация пакета">
-    <a class="top-link" href="index.html">← Назад к панели 6 целей</a>
-    <a class="top-link primary" href="task-tz.html?task=task-g1-chat&doc=igor">ТЗ G1.2 для Игоря</a>
-    <a class="top-link teal" href="../../../reports/admin-chat-stage1-20260804-analysis/CODEX-INTEGRATION-CONTEXT.md">Контекст Codex для чата</a>
-    <a class="top-link" href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-cross-goal-audit-2026-08-05.md">Аудит G1–G3</a>
-    <a class="top-link" href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-product-consistency-register.md">Реестр инвариантов</a>
-    <a class="top-link" href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-route-and-admin-ownership-matrix.md">Маршруты и владельцы</a>
+  <nav class="nav" aria-label="Навигация документа">
+    <a href="index.html">← Панель шести целей</a>
+    <a class="primary" href="task-tz.html?task=task-g1-chat&doc=igor">ТЗ чата для Игоря</a>
+    <a href="task-tz.html?task=task-g1-chat&doc=codex">Контекст чата для Codex</a>
+    <a href="tasks/task-g1-chat.html">Карточка чата эксперта</a>
+    <a href="tasks/task-g1-statuses.html">Карточка статусов консультации</a>
+    <a href="tasks/task-g2-timer.html">Карточка таймера и паузы</a>
   </nav>
 
-  <div class="meta" aria-label="Статус пакета">
-    <span class="badge p0">P0 · MVP</span><span class="badge ready">Документация собрана</span><span class="badge open">Runtime сайта не принят</span><span class="badge violet">Обновлено 05.08.2026</span>
+  <div class="meta">
+    <span class="badge p0">P0 · MVP</span>
+    <span class="badge ready">Контракты архива разобраны</span>
+    <span class="badge ready">Текст на русском; коды сохранены</span>
+    <span class="badge warn">Боевой контур ещё не принят</span>
+    <span class="badge violet">Обновлено 05.08.2026</span>
   </div>
 
-  <div class="notice warn">
-    <b>Граница статуса</b>
-    Пакет определяет целевую логику, контракты и порядок интеграции. HTML/JS из архива — эталон поведения и UI, но демонстрационный transport не является production backend. Нельзя закрывать задачу по одному макету или commit: итог принимается только после live runtime-проверок, readback и audit.
+  <div class="notice danger">
+    <b>Граница доказательства</b>
+    HTML/JS из архива — утверждённый эталон поведения и интерфейса, но демонстрационный транспорт не является сервером. Реализация считается готовой только после проверки боевого Yii2-контура, ответов API, базы данных, ACL, аудита, финансового журнала и повторяемого отката. Нельзя закрывать работу только макетом, коммитом или локальным обещанием JavaScript.
   </div>
 
   <section class="section">
-    <h2>1. Как читать пакет</h2>
-    <div class="section-body">
+    <h2>1. Назначение и порядок доверия к источникам</h2>
+    <div class="body">
+      <p>Чат — это операционное рабочее место для общения с клиентом и ведения поминутной консультации. Он не создаёт новую роль, отдельный кошелёк или вторую машину состояний. Источником истины для денег, прав, статусов и сохранённых данных является сервер.</p>
       <table class="compact">
-        <thead><tr><th>Приоритет</th><th>Источник</th><th>Правило для реализации</th></tr></thead>
+        <thead><tr><th>Приоритет</th><th>Источник</th><th>Как применять</th></tr></thead>
         <tbody>
-          <tr><td>1</td><td>Последние решения владельца + канонические PM-ТЗ G1.1–G3.INT + реестры согласованности</td><td>Нормативная продуктовая логика. Если прототип или архив ей противоречит — исправляется integration layer, а не бизнес-правило.</td></tr>
-          <tr><td>2</td><td><a href="../../../reports/admin-chat-stage1-20260804-analysis/ACCEPTED_FUNCTIONAL_MAP-RU.md">ACCEPTED_FUNCTIONAL_MAP-RU.md</a> и <a href="../../../reports/admin-chat-stage1-20260804-analysis/EXTENDED_PRODUCTION_SURFACES-RU.md">EXTENDED_PRODUCTION_SURFACES-RU.md</a></td><td>Принятый функциональный map архива чата и 12 production-поверхностей, которые нужно довести до API/ACL/audit.</td></tr>
-          <tr><td>3</td><td>Контракты архива <code class="code">contracts/*.md</code>, JS/CSS и HTML</td><td>UI, события, состояния, badge-коды и формы. Demo-ID, sample URLs, fixture data и demo CSRF не переносятся в production.</td></tr>
-          <tr><td>4</td><td>Yii2 runtime и свежие proof refs</td><td>Фактические routes, models, ACL, persistence и deployment mapping. Пока proof нет — статус только «runtime open».</td></tr>
+          <tr><td>1</td><td>Решения владельца и канонические ТЗ по чату, консультациям и сайту</td><td>Нормативная продуктовая логика. При конфликте с демонстрацией исправляется слой интеграции, а не бизнес-правило.</td></tr>
+          <tr><td>2</td><td>Согласованные реестры PM и карта связей</td><td>Границы ответственности, владельцы маршрутов, зависимости и критерии приёмки.</td></tr>
+          <tr><td>3</td><td>Контракты десяти MD-файлов архива, HTML, JS и CSS</td><td>Точный интерфейс, поля, события, стабильные коды, данные запросов и ответов, откат и ожидаемые результаты.</td></tr>
+          <tr><td>4</td><td>Текущий Yii2-сайт и свежая проверка чтением</td><td>Реальные маршруты, модели, права RBAC, таблицы, CSRF, пакеты ресурсов и развёртывание. Демоданные не переносить.</td></tr>
         </tbody>
       </table>
-      <p class="small muted">Сопутствующие источники: <a href="../../../reports/admin-chat-stage1-20260804-analysis/README-RU.md">README архива</a>, <a href="../../../reports/admin-chat-stage1-20260804-analysis/VERIFICATION.md">верификация архива</a>, <a href="../../../reports/six-goals-functional-tz-2026-07-20/target-site-vision-g1-g3.md">целевое представление сайта</a>.</p>
-    </div>
-  </section>
-
-  <section class="section">
-    <h2>2. Вертикали, которые должны сойтись в одном runtime</h2>
-    <div class="section-body">
-      <table>
-        <thead><tr><th>Контур</th><th>Что реализовать</th><th>Не дублировать</th><th>Канонический вход</th></tr></thead>
-        <tbody>
-          <tr><td><b>G1.1 · Карточка консультации</b></td><td>Одна persisted consultation session: client, public Expert profile, internal Agent, dialog, snapshots, timestamps, audit и role-bounded view в admin.</td><td>Lifecycle G1.3; money G2; support/refund G4.</td><td><a href="task-tz.html?task=task-g1-session&doc=igor">ТЗ G1.1</a></td></tr>
-          <tr><td><b>G1.2 · Role-based chat</b></td><td>Free dialogue, message delivery/versioning, actual actor vs public sender, assignment ACL, censorship, allowed attachments, monitoring and staff identity.</td><td>Session state/timers; prices; global permissions.</td><td><a href="task-tz.html?task=task-g1-chat&doc=igor">ТЗ G1.2</a> · <a href="../../../reports/six-goals-functional-tz-2026-07-20/etalon-tz-g1-2-role-chat.md">канон</a></td></tr>
-          <tr><td><b>G1.3 · Lifecycle и история</b></td><td>Request → consent → trial/paid → pause/reconnect → technical end/completed, terminal initiator/reason, one active/waiting constraint, read-only history.</td><td>Chat message semantics; money ledger.</td><td><a href="task-tz.html?task=task-g1-statuses&doc=igor">ТЗ G1.3</a></td></tr>
-          <tr><td><b>G1.4 · Уведомления</b></td><td>Email для важных событий и непрочитанных сообщений по задержкам из admin; in-site badges/indicator remain; user settings control email only.</td><td>Email templates are a separate content/operations task.</td><td><a href="task-tz.html?task=task-g1-chat-notifications&doc=igor">ТЗ G1.4</a></td></tr>
-          <tr><td><b>G2.1 · Credits и цена</b></td><td>Credits/packages for USD, global and profile price, admin-managed discounts/coupons, immutable session price snapshot, exact balance readback.</td><td>Не продавать «минуты» и не показывать внутреннюю цену в USD за минуту.</td><td><a href="task-tz.html?task=task-g2-pricing&doc=igor">ТЗ G2.1</a></td></tr>
-          <tr><td><b>G2.2 · Debit/pause</b></td><td>Charge only started minutes; stop before next minute on pause/technical end; reconnect grace without new minute; idempotent debit/refund.</td><td>Session state machine remains G1.3.</td><td><a href="task-tz.html?task=task-g2-timer&doc=igor">ТЗ G2.2</a></td></tr>
-          <tr><td><b>G2.3 · Refund/dispute</b></td><td>Separate dispute/refund process, manual super-admin decision, credits return + configured bonus, client-safe text and audit.</td><td>Не превращать dispute/refund в status consultation.</td><td><a href="task-tz.html?task=task-g2-refund&doc=igor">ТЗ G2.3</a></td></tr>
-          <tr><td><b>G2.4 · Accruals</b></td><td>Three independently configurable components, immediate accrual, correction on refund, immutable policy snapshot and reconciliation.</td><td>Payment provider integration is not replaced by chat code.</td><td><a href="task-tz.html?task=task-g2-accruals&doc=igor">ТЗ G2.4</a></td></tr>
-          <tr><td><b>G2.GEO / G3.INT.I18N</b></td><td>Operations-first CMS filling for country/city pages, SEO metadata and language keys; developer is engaged only for a proven missing hook.</td><td>Не создавать отдельную бизнес-логику в frontend.</td><td><a href="../../../reports/g2-geo-five-country-pilot-2026-07-29/review.html">GEO pilot proof</a> · <a href="task-tz.html?task=task-g3-integration&doc=igor">integration map</a></td></tr>
-          <tr><td><b>G3.1–G3.4 · Storefront → start</b></td><td>New Oracle/Nebula layout bound to existing backend: storefront, filtered expert catalog, expert profile, question/consent/start flow.</td><td>Do not move chat/session billing logic into marketing pages.</td><td><a href="task-tz.html?task=task-g3-home&doc=igor">G3.1</a> · <a href="task-tz.html?task=task-g3-catalog&doc=igor">G3.2</a> · <a href="task-tz.html?task=task-g3-profile&doc=igor">G3.3</a> · <a href="task-tz.html?task=task-g3-quiz&doc=igor">G3.4</a></td></tr>
-          <tr><td><b>G3.5–G3.7 · QA, taxonomy, rotation</b></td><td>QA gate for end-to-end path, short filter categories mapped to specializations, completeness/weights, regional scope and general fallback, fair deterministic rotation.</td><td>G3.5 is acceptance/QA; G3.6 starts with admin operations; do not hide fallback mixing.</td><td><a href="task-tz.html?task=task-g3-qa&doc=igor">G3.5</a> · <a href="task-tz.html?task=task-g3-field-weight&doc=igor">G3.6</a> · <a href="task-tz.html?task=task-g3-rotation&doc=igor">G3.7</a></td></tr>
-        </tbody>
-      </table>
-      <p class="small muted">G4–G6 в этот handoff не переписываются: support/refund, analytics/marketing и team/quality/training имеют собственные P0-пакеты. Здесь они появляются только как dependency/acceptance owners, чтобы чат не получил дублирующую бизнес-логику.</p>
-    </div>
-  </section>
-
-  <section class="section">
-    <h2>3. Неподвижные продуктовые инварианты</h2>
-    <div class="section-body">
+      <p class="small muted">Разобраны: <span class="code">AGENT_CHAT_JS_AUDIT.md</span>, <span class="code">API_RESPONSE_CONTRACT_AUDIT.md</span>, <span class="code">CHAT_CONTROL_BACKEND_MATRIX.md</span>, <span class="code">CHAT_MESSAGE_DATA_CONTRACT.md</span>, <span class="code">CHAT_QUEUE_CONTRACT.md</span>, <span class="code">DELIVERY_README.md</span>, <span class="code">FINAL_HANDOFF_AUDIT.md</span>, <span class="code">OPERATOR_STATUS_NETWORK_CONTRACT.md</span>, <span class="code">PAID_SESSION_CONTRACT.md</span>, <span class="code">YII2_MIGRATION_NOTES.md</span>.</p>
+      <p class="small muted">Архив: <span class="code">admin-chat-stage1-20260804-handoff.rar</span>. SHA-256: <span class="code">1D111B27B71060174323BE17278F89BA2680DFB00262B591A52F40A193D605F3</span>. Демонстрационные CSRF, идентификаторы, URL, тестовые данные и имитационный транспорт в боевой контур не переносятся.</p>
+      <h3>Что именно взято из каждого контракта</h3>
       <table class="compact">
-        <thead><tr><th>Область</th><th>Каноническое правило</th><th>Проверка в runtime</th></tr></thead>
+        <thead><tr><th>Файл архива</th><th>Обязательная часть для интеграции</th></tr></thead>
         <tbody>
-          <tr><td>Роли</td><td>Публично только «Эксперт». «Агент» — внутренний оператор назначенных анкет. Модератор выполняет support; отдельную роль не добавлять. Super-admin видит всё и сейчас является единственным target для новых admin controls.</td><td>Server-side ACL: чужая анкета/диалог/контекст отклоняются; UI-скрытие не считается защитой.</td></tr>
-          <tr><td>Одна активная консультация</td><td>У клиента не более одной active/waiting paid consultation; у Agent не более одной active <code class="code">paid</code>/<code class="code">balance_pause</code>. Конкурирующие старты имеют одного победителя и один debit.</td><td>Два параллельных запроса: один success, второй deterministic conflict; balance unchanged by retry.</td></tr>
-          <tr><td>Оплата</td><td>Покупаются credits за USD; цена минуты показывается в credits/min. Цена session фиксируется snapshot при старте. Списывается только реально начатая минута.</td><td>Readback policy snapshot, debit ledger, exact balance and idempotency key.</td></tr>
-          <tr><td>Pause/reconnect/end</td><td>Одна управляемая pause без нового списания; reconnect grace задаётся в admin, текущая минута заканчивается, следующая не начинается после timeout/SLA/technical end.</td><td>Timer boundary, no second minute, technical end event, client-safe notification and support/quality incident.</td></tr>
-          <tr><td>Чат и приватность</td><td>Разрешены текст, system messages, emoji, images и approved documents. Audio/voice, video и arbitrary files запрещены. Contacts/payment/internal IDs скрыты из role views.</td><td>Forbidden upload returns <code class="code">422 ATTACHMENT_TYPE_FORBIDDEN</code>; no secret data in response or HTML.</td></tr>
-          <tr><td>Цензура</td><td>Отправитель видит исходное сообщение и policy warning; получатель — censored text. Incident хранит category, actor, timestamp, original/censored hashes and audit; staff monitoring доступен super-admin.</td><td>Обе стороны block policy, no bypass through edit/retry, persisted incident readback.</td></tr>
-          <tr><td>Региональная выдача</td><td>Сначала регион + остальные фильтры. Если региональный результат 0 — отдельный general eligible pool с теми же негеографическими фильтрами и заметной плашкой; не смешивать молча, уведомления о появлении нет.</td><td><code class="code">regional_result_count=0</code>, <code class="code">fallback_scope=general</code>, registry regions_without_experts.</td></tr>
+          <tr><td><code class="code">AGENT_CHAT_JS_AUDIT.md</code></td><td>Поведение очереди, переключателей, поля ввода, модальных окон, локального состояния и граница между демонстрацией и боевым кодом.</td></tr>
+          <tr><td><code class="code">API_RESPONSE_CONTRACT_AUDIT.md</code></td><td>Единый конверт успеха/ошибки, серверные ID и время, HTTP-коды, отсутствие выдуманных браузером данных и правило полного снимка платной сессии.</td></tr>
+          <tr><td><code class="code">CHAT_CONTROL_BACKEND_MATRIX.md</code></td><td>Разделение готовых серверных контрактов, интерфейсных заготовок и открытых решений: вложения, AI, заметки, повторное касание, назначение, завершение, пакеты, настройки и горячие клавиши.</td></tr>
+          <tr><td><code class="code">CHAT_MESSAGE_DATA_CONTRACT.md</code></td><td>Поля сообщения, автор, перевод, доставка, правка/удаление, закрепление, черновики, ответ, диапазоны истории и безопасная отправка.</td></tr>
+          <tr><td><code class="code">CHAT_QUEUE_CONTRACT.md</code></td><td>Пять независимых зон фильтра, 19 кодов бейджей, приоритеты, места показа, взаимоисключения, совместимость и канонический ответ очереди.</td></tr>
+          <tr><td><code class="code">DELIVERY_README.md</code></td><td>Порядок передачи от утверждённой верстки к Yii2: инвентаризация, ресурсы, CSRF, адаптер AJAX, smoke-проверки и доказательства.</td></tr>
+          <tr><td><code class="code">FINAL_HANDOFF_AUDIT.md</code></td><td>Итоговый аудит комплекта, список проверок, ограничения демонстрационного транспорта и критерий «готово только с боевым readback».</td></tr>
+          <tr><td><code class="code">OPERATOR_STATUS_NETWORK_CONTRACT.md</code></td><td>Разделение состояния оператора и качества сети, переходы «В сети/Занят/Не в сети», причины, комментарии и глобальная форма проблемы.</td></tr>
+          <tr><td><code class="code">PAID_SESSION_CONTRACT.md</code></td><td>Авторитетная машина платной сессии, согласие, таймеры, пауза, восстановление связи, минута, идемпотентность, события, баланс и отсутствие двойного списания.</td></tr>
+          <tr><td><code class="code">YII2_MIGRATION_NOTES.md</code></td><td>Размещение PHP-представлений и частичных шаблонов, пакеты ресурсов, CSRF/AJAX, существующая оболочка и предпочтение серверного <code class="code">messages_html</code>.</td></tr>
         </tbody>
       </table>
     </div>
   </section>
 
   <section class="section">
-    <h2>4. Архив admin-chat-stage1: что переносить в production</h2>
-    <div class="section-body">
-      <p>Архив <code class="code">admin-chat-stage1-20260804-handoff.rar</code> принят как UI/contract reference. SHA-256: <code class="code">1D111B27B71060174323BE17278F89BA2680DFB00262B591A52F40A193D605F3</code>. Проверки архива: JS syntax PASS, badge/message/control/paid-session contracts PASS, embedded checksums 64/64. Его demo transport, csrf, ids и fixture data не использовать.</p>
+    <h2>2. Роли, идентичность и границы доступа</h2>
+    <div class="body">
       <table class="compact">
-        <thead><tr><th>Пакет</th><th>Брать в интеграцию</th><th>Ограничение MVP</th></tr></thead>
+        <thead><tr><th>Участник</th><th>Что видит и делает</th><th>Что скрыто</th></tr></thead>
         <tbody>
-          <tr><td>Queue / Chats / Pings</td><td>Очередь слева, сквозной chat center, client/pay/quality context справа; разделение Chats и Pings; фильтры независимы.</td><td>Операционный экран не становится новой ролью или отдельной billing state machine.</td></tr>
-          <tr><td>Message contract</td><td>Уникальные message IDs, delivery/read/edit states, system messages, public sender vs actual actor, duplicate-safe delivery.</td><td>Публичный sender для Agent = Expert profile; audit видит реального оператора.</td></tr>
-          <tr><td>Paid session contract</td><td>Кнопка и состояния UI связываются с G1.3/G2.2; backend остаётся источником состояния и денег.</td><td>Demo label <code class="code">10 credits/min</code> устарел; канон MVP — effective profile price, стартовый default 30 credits/started minute.</td></tr>
-          <tr><td>Attachment policy</td><td>Images и approved documents, size/type validation, incident on forbidden attempt.</td><td>Audio/voice/video/arbitrary files hidden/disabled; server returns 422.</td></tr>
-          <tr><td>Controls</td><td>Reply, edit, pin, hide with reason, support/safety intervention, pause/resume flows and audit.</td><td>Global permissions остаются в <code class="code">/ru/admin/settings/role</code>; chat settings содержат только chat-specific controls.</td></tr>
+          <tr><td><b>Клиент</b></td><td>Свои диалоги, запросы, консультации, безопасный текст, кредиты и понятные статусы.</td><td>Внутренние ID, платёжные реквизиты, служебные комментарии, аудит, внутренние причины и чужие консультации.</td></tr>
+          <tr><td><b>Эксперт</b></td><td>Публичная анкета и сообщения в пределах назначенной консультационной роли.</td><td>Внутреннее имя оператора, служебные заметки, внутренние цены/журнал операций, чужие анкеты и служебные инциденты.</td></tr>
+          <tr><td><b>Агент</b></td><td>Внутренний оператор, который ведёт назначенные анкеты и работает в админском чате.</td><td>Неназначенные анкеты и любые разделы без серверной проверки прав.</td></tr>
+          <tr><td><b>Поддержка Nebula</b></td><td>Сценарии поддержки и безопасности, модерация и аварийное вмешательство с обязательной причиной.</td><td>Не выдаёт себя за Эксперта; внутреннюю апелляцию клиент не видит.</td></tr>
+          <tr><td><b>Супер-администратор</b> (<code class="code">super-admin</code>)</td><td>На MVP — единственный получатель новых элементов управления чатом: полный мониторинг, аудит, ручные возвраты/компенсации, инциденты и все карточки.</td><td>Ограничений по проектной видимости нет, но секреты и платёжные токены не выводятся в интерфейс.</td></tr>
+          <tr><td><b>Система</b></td><td>Создаёт системные события, таймеры, уведомления, результат модерации и финансовые записи.</td><td>Не может подменить автора пользовательским текстом; автоматическое сообщение всегда имеет тип <code class="code">system</code>.</td></tr>
         </tbody>
       </table>
-      <details open>
-        <summary>Чек-лист preflight перед тем, как Codex начнёт код</summary>
-        <div><ul><li>Сделать локальную копию/хэш архива; заменить demo CSRF на runtime CSRF через Yii2, не выводить его в логах, скриншотах или handoff.</li><li>Проверить production route и auth/ACL для каждого endpoint; не переносить demo IDs, sample URLs и fixtures.</li><li>Сопоставить UI-статусы <code class="code">active</code>/<code class="code">paused</code>/<code class="code">reconnecting</code>/<code class="code">completed</code> с каноном G1.3: active = trial/paid по billing_mode, paused = balance_pause.</li><li>Пройти negative tests: чужой Agent, чужой profile, forbidden attachment, duplicate send/debit, stale reconnect token, double click.</li></ul></div>
+      <p><b>Роли не дублировать.</b> Глобальные права назначаются существующим механизмом <a href="https://confideline.com/ru/admin/settings/role"><code class="code">/ru/admin/settings/role</code></a>. На первом этапе все новые страницы и действия доступны супер-администратору (<code class="code">super-admin</code>); позднее владелец раздаёт права. Внутри страницы чата описываются только элементы управления, относящиеся к чату.</p>
+      <p><b>Публичный отправитель и реальный исполнитель разделены.</b> Клиент видит имя назначенного Эксперта; в аудите сохраняются <code class="code">actor_id</code>, роль Агент, время, причина и версия сообщения. Сообщение персонала показывается как «Поддержка Nebula», если это не продолжение консультации назначенным Агентом.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>3. Как чат встраивается в сайт</h2>
+    <div class="body">
+      <div class="flow">
+        <div><b>Страница Yii2</b>Существующие оболочка админки, шапка, меню и подвал сохраняются. Чат живёт внутри <code class="code">#admin-agent-chat</code>.</div>
+        <div><b>Данные страницы</b><code class="code">#adminAgentChatConfig</code> содержит язык/флаги; <code class="code">#paidSessionConfig</code> — снимок сессии, маршруты и runtime-CSRF.</div>
+        <div><b>Пакеты ресурсов</b>Сначала исходные Bootstrap/AdminLTE/Font Awesome/Fancybox, затем глобальные пользовательские ресурсы, затем пользовательские ресурсы чата и отдельный модуль платной сессии.</div>
+        <div><b>Единый адаптер</b>Yii2 AJAX-адаптер добавляет CSRF, единый JSON-конверт, request ID и переводит ошибки. Реальные запросы не разбрасываются по обработчикам.</div>
+      </div>
+      <table class="compact">
+        <thead><tr><th>Слой</th><th>Ответственность</th><th>Нельзя смешивать</th></tr></thead>
+        <tbody>
+          <tr><td>Глобальная оболочка админки</td><td>Состояния «В сети»/«Занят»/«Не в сети», качество сети, глобальная форма проблемы, меню пользователя.</td><td>Не помещать правила только для чата в глобальный JavaScript.</td></tr>
+          <tr><td>Левая очередь</td><td>Чаты/Сигналы/Отклонённые, поиск, выбор клиента/Эксперта, 19 утверждённых кодов бейджей.</td><td>Не превращать тип обращения в финансовый статус.</td></tr>
+          <tr><td>Центр</td><td>Сообщения, поле ввода, управление платной сессией, системная история, ответ/правка/закрепление.</td><td>Не вычислять деньги и доступ из DOM.</td></tr>
+          <tr><td>Правая панель</td><td>Профиль, сводка, личные данные, партнёр, поддержка, ограничения, оплата, повторное касание, заметки, качество, AI.</td><td>Внутренние разделы никогда не уходят клиенту или Эксперту.</td></tr>
+          <tr><td>Сервер и канал реального времени</td><td>Права доступа, модерация, состояние, журнал операций, время, идемпотентность, доставка сообщений и аудит.</td><td>Клиентский таймер, подпись или CSS не являются источником истины.</td></tr>
+        </tbody>
+      </table>
+      <h3>Сквозной обмен одного действия</h3>
+      <table class="compact">
+        <thead><tr><th>Шаг</th><th>Что происходит</th><th>Результат для сайта/чата</th></tr></thead>
+        <tbody>
+          <tr><td>1. Действие пользователя</td><td>Клиент или оператор нажимает кнопку, отправляет сообщение, меняет фильтр или открывает карточку.</td><td>Браузер отправляет только намерение и канонические ID; локальная оптимистическая модель не решает бизнес-правило.</td></tr>
+          <tr><td>2. Серверная проверка</td><td>Yii2 проверяет роль, принадлежность разговора, версию, согласие, лимиты и состояние платной сессии.</td><td>Нарушение даёт безопасную ошибку; нет частично сохранённого перехода или двойного действия.</td></tr>
+          <tr><td>3. Политика и деньги</td><td>До сохранения выполняются цензура, проверка вложений, финансовое правило и атомарная запись журнала.</td><td>Сообщение получает безопасное представление; цена/минута/баланс берутся из серверного источника.</td></tr>
+          <tr><td>4. Канонический ответ</td><td>API возвращает <code class="code">ok</code>, ID, время, готовый HTML/DTO, очередь, контекст и снимок сессии.</td><td>Интерфейс одним путём заменяет затронутые блоки и сбрасывает только разрешённое временное состояние.</td></tr>
+          <tr><td>5. Канал и аудит</td><td>Событие реального времени доставляется участникам, а операция и причина записываются в аудит.</td><td>Неактивный разговор не меняется; повтор того же события не создаёт дубль.</td></tr>
+        </tbody>
+      </table>
+      <p>Вид должен быть разбит на PHP-представления и частичные шаблоны: основная оболочка, очередь, центр, правый контекст, модальные окна. CSS/JS чата остаются в пакете ресурсов чата, верхняя панель оператора — в глобальном пакете. Существующую структуру сайта и маршрут не ломать.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>4. Очередь, карточка разговора и фильтры</h2>
+    <div class="body">
+      <p>Очередь — это операционный список, а не новая машина состояний. В карточке обязательны <code class="code">conversation_id</code>, ID и имена отправителя/получателя, аватары, тип обращения, коды бейджей, счётчик непрочитанных, доступность в сети, избранное/закрепление, время и превью последнего сообщения. Технические ID остаются в <code class="code">data-*</code>, но не показываются человеку.</p>
+      <table class="compact">
+        <thead><tr><th>Зона</th><th>Как работает</th><th>Что очищается</th></tr></thead>
+        <tbody>
+          <tr><td><b>Тип обращения</b>: Чаты / Сигналы / Отклонённые</td><td>Один активный тип. Это переключатель содержимого, не числовой статус.</td><td>Поиск, выбор клиента/Эксперта и быстрые фильтры.</td></tr>
+          <tr><td><b>Поиск</b></td><td>Задержка 1000 мс; Enter запускает сразу. Индикатор виден всю задержку и запрос минимум 420 мс; очистка возвращает фокус.</td><td>Тип обращения, выбор клиента/Эксперта, быстрые фильтры.</td></tr>
+          <tr><td><b>Клиент / Эксперт</b></td><td>Отдельный поиск-список; выбранный ID хранится в <code class="code">data-selected-*-id</code>.</td><td>Все остальные зоны.</td></tr>
+          <tr><td><b>Быстрые фильтры</b></td><td>Чекбоксы сначала меняют локальную черновую модель, запрос отправляется только по кнопке «Применить». Меню содержит только утверждённые бейджи.</td><td>Все остальные зоны.</td></tr>
+        </tbody>
+      </table>
+      <p>Всегда активна только одна из пяти зон: <code class="code">quick_preset</code>, <code class="code">search</code>, <code class="code">user_select</code>, <code class="code">expert_select</code>, <code class="code">quick_filters</code>. Для маленького списка допускается локальная фильтрация, при большом списке сервер получает <code class="code">filter_mode=ajax</code>; порог текущего прототипа — 80 карточек.</p>
+      <details>
+        <summary>Канонические данные фильтра очереди</summary>
+        <div><pre>{
+  "changed_by": "quick_filters_apply",
+  "active_filter_zone": "quick_filters",
+  "filter_mode": "local",
+  "local_filter_limit": 80,
+  "known_total": 13,
+  "query": "",
+  "selected_user_id": "",
+  "selected_expert_id": "",
+  "quick_preset": "",
+  "active_filters": [{
+    "group": "badge_chats_context",
+    "badge_code": "chats_paid",
+    "value": "chats_paid",
+    "scenario": "chats",
+    "badge": "Оплачено",
+    "zones": ["left", "center", "right"]
+  }]
+}</pre></div>
+      </details>
+      <p><b>Переключение разговора:</b> сначала принудительно сохранить черновик исходного разговора; затем запросить новый разговор; перед применением проверить, что ответ относится к всё ещё активному <code class="code">conversation_id</code>; одним путём фиксации применить карточку, заголовок, <code class="code">messages_html</code>, <code class="code">context_json</code> и записи закреплений; сбросить временные состояния ответа, правки, вложения и перевода; восстановить черновик нового разговора. Поздний ответ старого запроса игнорируется.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>5. Полный слой бейджей: словарь и алгоритм</h2>
+    <div class="body">
+      <p>Стабильный <code class="code">badge_code</code> — это идентификатор в программном интерфейсе, фильтрах, очереди, центре и правом контексте. Видимая русская подпись берётся из существующих ключей переводов; звёздочки, произвольные английские подписи и новые коды без расширения словаря запрещены. Меньшее числовое значение приоритета означает более сильную позицию внутри одной роли.</p>
+      <table class="compact">
+        <thead><tr><th>Сценарий</th><th>Код</th><th>Русская подпись</th><th>Роль / приоритет</th><th>Где показывать</th></tr></thead>
+        <tbody>
+          <tr><td>Чаты</td><td><code class="code">chats_sell</code></td><td>Предложить консультацию</td><td>действие / 60</td><td>Слева, в центре</td></tr>
+          <tr><td>Чаты</td><td><code class="code">chats_live</code></td><td>Активна</td><td>состояние / 10</td><td>Слева, в центре, справа</td></tr>
+          <tr><td>Чаты</td><td><code class="code">chats_payment_process</code></td><td>Платёж в обработке</td><td>состояние / 20</td><td>Слева, в центре, справа</td></tr>
+          <tr><td>Чаты</td><td><code class="code">chats_paid</code></td><td>Оплачено</td><td>контекст / 30</td><td>Слева, в центре, справа</td></tr>
+          <tr><td>Чаты</td><td><code class="code">chats_trial</code></td><td>Пробный период</td><td>контекст / 70</td><td>Слева, в центре, справа</td></tr>
+          <tr><td>Чаты</td><td><code class="code">chats_skeptic</code></td><td>Нужно снять сомнения</td><td>действие / 50</td><td>Слева, в центре, справа</td></tr>
+          <tr><td>Чаты</td><td><code class="code">chats_revive</code></td><td>Вернуть клиента</td><td>контекст / 80</td><td>Слева, в центре, справа</td></tr>
+          <tr><td>Чаты</td><td><code class="code">chats_risk</code></td><td>Риск</td><td>ограничение / 40</td><td>Слева, в центре, справа</td></tr>
+          <tr><td>Чаты</td><td><code class="code">chats_safe</code></td><td>Безопасно</td><td>ограничение / 35</td><td>Слева, в центре, справа</td></tr>
+          <tr><td>Чаты</td><td><code class="code">chats_coupon</code></td><td>Открыт запрос купона</td><td>контекст / 90</td><td>Слева, в центре, справа</td></tr>
+          <tr><td>Сигналы</td><td><code class="code">pings_fire</code></td><td>Срочно</td><td>сигнал / 10</td><td>Слева, в центре</td></tr>
+          <tr><td>Сигналы</td><td><code class="code">pings_hot</code></td><td>Высокий интерес</td><td>сигнал / 20</td><td>Слева, в центре</td></tr>
+          <tr><td>Сигналы</td><td><code class="code">pings_new</code></td><td>Новое</td><td>сигнал / 40</td><td>Слева, в центре</td></tr>
+          <tr><td>Сигналы</td><td><code class="code">pings_paid</code></td><td>Оплачено</td><td>контекст / 30</td><td>Слева, в центре, справа</td></tr>
+          <tr><td>Сигналы</td><td><code class="code">pings_reply</code></td><td>Нужен ответ</td><td>действие / 45</td><td>Слева, в центре</td></tr>
+          <tr><td>Сигналы</td><td><code class="code">pings_await</code></td><td>Ожидаем клиента</td><td>состояние / 50</td><td>Слева, в центре</td></tr>
+          <tr><td>Сигналы</td><td><code class="code">pings_revive</code></td><td>Возврат клиента</td><td>контекст / 60</td><td>Слева, в центре, справа</td></tr>
+          <tr><td>Сигналы</td><td><code class="code">pings_trial</code></td><td>Пробный период</td><td>контекст / 70</td><td>Слева, в центре, справа</td></tr>
+          <tr><td>Сигналы</td><td><code class="code">pings_risk</code></td><td>Риск</td><td>ограничение / 55</td><td>Слева, в центре, справа</td></tr>
+        </tbody>
+      </table>
+      <h3>Алгоритм разрешения бейджей</h3>
+      <ol>
+        <li>Сервер формирует активные факты по паре клиент + анкета Эксперта и назначенному сценарию <code class="code">chats</code> или <code class="code">pings</code>.</li>
+        <li>Для <code class="code">pings</code> оставить только один сигнал свежести: <b><code class="code">pings_fire</code> («Срочно») &gt; <code class="code">pings_hot</code> («Высокий интерес») &gt; <code class="code">pings_new</code> («Новое»)</b>.</li>
+        <li>В <code class="code">pings</code> действует взаимоисключающий выбор (XOR): <b><code class="code">pings_reply</code></b> означает «действовать должен Эксперт», <b><code class="code">pings_await</code></b> — «ждём клиента».</li>
+        <li>Если активен <code class="code">chats_live</code>, <code class="code">chats_payment_process</code>, <code class="code">chats_skeptic</code> или ограничение «Риск» (<code class="code">chats_risk</code>), удалить действие «Предложить консультацию» (<code class="code">chats_sell</code>). После перехода от «Риск» к «Безопасно» действие может вернуться, если продажа снова допустима.</li>
+        <li><code class="code">chats_payment_process</code> действует до серверного <code class="code">expires_at</code> или раньше завершается при <code class="code">paid</code>/<code class="code">cancelled</code>/<code class="code">failed</code>; таймер браузера не решает судьбу бейджа.</li>
+        <li>Контекст <code class="code">Paid</code> и сигнал <code class="code">Revive</code> совместимы. <code class="code">Revive</code> заканчивается после пополнения, новой покупки или активной платной сессии.</li>
+        <li><code class="code">Safe</code> заменяет <code class="code">Risk</code> только в сценарии <code class="code">Chats</code> и только для конкретной пары клиент + Эксперт. В <code class="code">Pings</code> остаётся <code class="code">Risk</code>; при переходе обращения в <code class="code">Chats</code> правило пересчитывается.</li>
+         <li>Бейдж «Купон» (<code class="code">Coupon</code>) появляется только при <code class="code">coupon_request.open=true</code> и исчезает после решения/исполнения сотрудником.</li>
+        <li>Отсортировать результат по ролям <b>действие → ограничение → состояние/сигнал → контекст</b>, затем по числовому приоритету. Нельзя молча выкидывать бейдж из-за ширины или ограничения «показывать максимум три».</li>
+        <li>Отрендерить один и тот же серверный набор слева, в центре и справа только там, где код разрешён. Избранное не является бейджем: это отдельные <code class="code">is_favorite</code> и звезда.</li>
+      </ol>
+      <p class="small muted">Сценарии не смешивать: коды <code class="code">Pings</code> не появляются на карточках <code class="code">Chats</code> и наоборот без явного серверного изменения сценария. Цвета — только оформление; сервер всегда работает со стабильными кодами.</p>
+      <h3>Проверочные ситуации для бейджей</h3>
+      <table class="compact">
+        <thead><tr><th>Входные факты</th><th>Что показываем</th><th>Что запрещено</th></tr></thead>
+        <tbody>
+          <tr><td><code class="code">Chats</code> + активная консультация</td><td>Только «Активна» и совместимые контекстные бейджи.</td><td>Не показывать «Предложить консультацию» при <code class="code">Live</code>, <code class="code">PP</code>, «Нужно снять сомнения» или «Риск».</td></tr>
+          <tr><td><code class="code">Chats</code> + «Риск» + подтверждённая безопасность</td><td>«Безопасно» вместо «Риск» для этой пары клиент–Эксперт.</td><td>Не переносить замену «Безопасно» в <code class="code">Pings</code> и не показывать оба ограничения одновременно.</td></tr>
+          <tr><td><code class="code">Pings</code> + несколько сигналов свежести</td><td>Только самый сильный: «Срочно» → «Высокий интерес» → «Новое».</td><td>Не показывать все три сигнала одновременно.</td></tr>
+          <tr><td><code class="code">Pings</code> + требуется действие / ожидание ответа</td><td>Только один из «Нужен ответ» и «Ожидаем клиента» по правилу XOR.</td><td>Не показывать оба одновременно и не менять их местами на клиенте.</td></tr>
+          <tr><td>«Платёж в обработке», «Оплачено», «Возврат клиента» или «Купон»</td><td>Показывать каждый контекстный бейдж по его серверному факту; «Оплачено» и «Возврат клиента» совместимы.</td><td>«Платёж в обработке» исчезает по <code class="code">expires_at</code> или при завершении платежа; «Купон» — после решения сотрудника.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>6. Сообщение, поле ввода и история</h2>
+    <div class="body">
+      <p>Сторона пузыря не определяет автора. Источник истины — <code class="code">data-message-author</code>. Реальное сообщение всегда имеет уникальный <code class="code">data-message-id</code>; сервер возвращает ID, время, состояние доставки и готовый <code class="code">message_html</code>.</p>
+      <table class="compact">
+        <thead><tr><th>Группа</th><th>Обязательные поля и правило</th></tr></thead>
+        <tbody>
+          <tr><td>Автор и текст</td><td><code class="code">message_id</code>, <code class="code">author</code> = оператор/клиент/система, <code class="code">has_text</code>, <code class="code">lang</code>, обычный текст с сохранением переносов. HTML от пользователя не доверять.</td></tr>
+          <tr><td>Перевод</td><td><code class="code">original_text</code>, <code class="code">translated_text</code>, исходный/целевой язык и провайдер; сообщение клиента переводится через API, сохранённое сообщение оператора только переключает исходный текст.</td></tr>
+          <tr><td>Доставка</td><td><code class="code">sending</code>, <code class="code">failed</code>, <code class="code">retrying</code>, <code class="code">sent</code>; повтор доступен только для состояния «ошибка доставки» (<code class="code">failed</code>), при ошибке состояние откатывается.</td></tr>
+          <tr><td>Системное событие</td><td><code class="code">author = system</code>, стабильный <code class="code">message_id</code>, <code class="code">system_kind</code>, <code class="code">event_code</code>, <code class="code">conversation_id</code>. Ответ, копирование и перевод не показывать.</td></tr>
+          <tr><td>Редактирование</td><td>Только собственное сообщение оператора, пока клиент его не прочитал. Если прочитал — при изменении показывать «изменено»; если только доставлено — допустимо незаметное исправление. Сервер проверяет право.</td></tr>
+          <tr><td>Удаление</td><td>По умолчанию мягкое удаление с «Сообщение удалено». Полное удаление — только для разрешённой карточки <code class="code">billing_offer</code> и только при серверном праве. История версий в MVP не показывается.</td></tr>
+          <tr><td>Закрепление</td><td>Закрепить/открепить через API; каноническая запись содержит <code class="code">id</code>, <code class="code">message_id</code>, заголовок, безопасное превью, метаданные, <code class="code">pinned_by</code>, <code class="code">pinned_at</code> и временную эпоху.</td></tr>
+        </tbody>
+      </table>
+      <h3>Три взаимоисключающих режима поля сообщения</h3>
+      <div class="flow">
+        <div><b>Новое сообщение (<code class="code">direct</code>)</b>Отправка нового текста.</div>
+        <div><b>Ответ (<code class="code">reply</code>)</b>Ответ с <code class="code">target_message_id</code> и одной строкой предварительного просмотра.</div>
+         <div><b>Правка (<code class="code">edit</code>)</b>Сохранение существующего сообщения через <code class="code">PATCH</code>.</div>
+        <div><b>Безопасность отправки</b>Отдельная ось <code class="code">locked</code> → <code class="code">unlocking</code> → <code class="code">ready</code>; не смешивать с режимом сообщения.</div>
+      </div>
+      <p>При включённой защите отправки первый клик запускает обратный отсчёт, второй отправляет. Любое изменение текста во время отсчёта сбрасывает блокировку. Пустой текст, устаревший перевод и запрещённый контент не отправляются.</p>
+      <h3>Черновик</h3>
+      <p>Быстрый буфер сохраняется в <code class="code">localStorage</code> примерно через 400 мс, серверный снимок — раз в 10 с только при изменении. Ключ и данные запроса изолированы по <code class="code">conversation_id</code>; смена разговора делает принудительное сохранение, пустой принудительный сброс отправляет <code class="code">draft_deleted=true</code>. Старый <code class="code">draft_revision</code> не может затереть новый.</p>
+      <h3>История и навигация</h3>
+      <p>Переход к первой/последней записи запрашивает окно сообщений, если граница не загружена; выбор диапазона дат запрашивает диапазон и умеет сброс к выбранному дню. Кнопки временно блокируются во время запроса. История консультации в MVP только читается в кабинете, скачивание/экспорт — следующий этап.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>7. Модерация, цензура и вложения</h2>
+    <div class="body">
+      <p>Политика блокирует в обе стороны передачу контактов и других запрещённых персональных/платёжных данных. Перечень категорий, включение/выключение, размеры и лимиты управляются в админ-панели. Разрешённые консультационные данные могут быть свободным текстом; это не отменяет проверку движком политики.</p>
+      <table class="compact">
+        <thead><tr><th>Участок</th><th>Алгоритм</th><th>Кому доступен результат</th></tr></thead>
+        <tbody>
+          <tr><td>Отправка</td><td>Сообщение не блокируется молча: отправителю показывается его безопасное локальное исходное отображение и предупреждение о нарушении политики.</td><td>Отправитель видит предупреждение; сервер хранит канонический результат модерации.</td></tr>
+          <tr><td>Получатель</td><td>Получает текст с заменой запрещённых фрагментов на «цензура»/утверждённый локализованный маркер.</td><td>Только безопасный вариант, без исходного фрагмента.</td></tr>
+          <tr><td>Админ-мониторинг</td><td>Каждая попытка: категория, исполнитель, разговор, время, действие, хеш исходного/цензурированного варианта, безопасное превью, причина и мера.</td><td>Супер-администратор (<code class="code">super-admin</code>); обычные роли получают только необходимый безопасный контекст.</td></tr>
+          <tr><td>Скрытие сотрудником</td><td>Сотрудник может скрыть запрещённый контент только с обязательной причиной; факт и причина попадают в аудит.</td><td>Клиенту — корректная публичная формулировка; внутренняя причина — только сотруднику.</td></tr>
+          <tr><td>Редактирование/повтор</td><td>Повторная отправка и правка снова проходят серверную политику; обход через старый черновик, HTML, перевод или повтор запрещён.</td><td>Ни одна роль не получает нецензурированный серверный ответ.</td></tr>
+        </tbody>
+      </table>
+      <p><b>Техническое правило двух представлений:</b> локальное отображение отправителя не является разрешением хранить или показывать запрещённый текст другим; сохранённое серверное сообщение, канал реального времени и история используют только безопасное/цензурированное представление. Полный инцидент не отправлять внешнему переводчику или в данные запроса клиента.</p>
+      <p><b>Разрешённые вложения MVP:</b> текст, системное сообщение, эмодзи, изображения и утверждённые документы. Аудио, голос, видео и произвольные файлы выключены и отклоняются сервером с <code class="code">422 ATTACHMENT_TYPE_FORBIDDEN</code>. Схема архива умеет описывать <code class="code">audio</code>/<code class="code">voice</code>, но флаг MVP должен быть <code class="code">false</code>.</p>
+      <p>Для разрешённого файла нужны список MIME/расширений, размер, безопасное хранилище, ACL скачивания, срок хранения и аудит. Для черновика нельзя восстанавливать локальный файл из <code class="code">localStorage</code>: разрешается только стабильный серверный или галерейный токен.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>8. Платная консультация и кнопка в чате</h2>
+    <div class="body">
+      <p>Платный режим начинается только после явного согласия клиента. Бесплатный диалог может существовать отдельно; у клиента не более одной ожидающей или активной платной консультации, у Агента — одной активной платной или приостановленной сессии (<code class="code">paid</code>/<code class="code">balance-pause</code>). Пробный период (<code class="code">trial</code>) с нулевым правом на бесплатные минуты пропускается. Кредиты покупаются за USD-пакеты, цена показывается в кредитах за минуту (<code class="code">credits/min</code>), эффективная цена и снимок баланса не меняются внутри уже начатой сессии.</p>
+      <table class="compact">
+        <thead><tr><th>Состояние</th><th>Кнопка</th><th>Поведение</th><th>Финансовое действие</th></tr></thead>
+        <tbody>
+          <tr><td><code class="code">no_consent</code></td><td>Предложить консультацию</td><td>Модальное окно с ценой и предварительным текстом для клиента; предложение ещё не списывает кредиты.</td><td>Нет списания.</td></tr>
+          <tr><td><code class="code">offer_pending</code></td><td>Ожидает клиента</td><td>Кнопка недоступна, срок предложения на сервере 15 мин; клиент может принять или отклонить.</td><td>Нет списания.</td></tr>
+          <tr><td><code class="code">ready</code></td><td>Начать платную консультацию</td><td>Клиент уже согласился; подтверждение запуска. Конкурирующий старт получает 409.</td><td>Ещё нет списания.</td></tr>
+          <tr><td><code class="code">connecting</code></td><td>Подключение…</td><td>Обе стороны готовятся, обратный отсчёт 3 мин; новая минута не начинается.</td><td>Списание ещё не началось.</td></tr>
+          <tr><td><code class="code">active</code></td><td>Пауза платной консультации</td><td>Показывает таймер активной консультации. Окно паузы требует причину; клиентский шаблон и внутренний комментарий разделены.</td><td>Текущая начатая минута может завершиться; следующая не стартует.</td></tr>
+          <tr><td><code class="code">paused</code></td><td>Продолжить</td><td>Повторная проверка условий и переход через <code class="code">connecting</code>; пополнение (<code class="code">top-up</code>) само не возобновляет.</td><td>Пауза без нового списания.</td></tr>
+          <tr><td><code class="code">reconnecting</code></td><td>Ожидание возврата</td><td>Кнопка недоступна, льготный обратный отсчёт 60 с; после тайм-аута — техническое завершение и инцидент поддержки/качества.</td><td>Следующая минута не начинается.</td></tr>
+          <tr><td><code class="code">completed</code></td><td>Завершена</td><td>Только история и маршрут поддержки; обязательны инициатор и причина.</td><td>Поздние деньги остаются на балансе, возврат — отдельное решение супер-администратора.</td></tr>
+        </tbody>
+      </table>
+      <h3>Последовательность нажатия кнопки в админском чате</h3>
+      <table class="compact">
+        <thead><tr><th>Шаг</th><th>Модальное окно/кнопка</th><th>Проверка и результат</th></tr></thead>
+        <tbody>
+          <tr><td>Предложение</td><td>«Предложить консультацию» → окно с вопросом клиента, ценой в кредитах за минуту (<code class="code">credits/min</code>) и кнопками «Отправить»/«Отмена».</td><td>После подтверждения создаётся предложение на сервере и сообщение клиенту; кредиты не списываются.</td></tr>
+          <tr><td>Согласие клиента</td><td>Кнопка показывает «Ожидает клиента» и обратный отсчёт 15 минут.</td><td>Оператор не может повторно создать предложение; истёкшее предложение возвращается в исходное состояние.</td></tr>
+          <tr><td>Запуск</td><td>После согласия клиента появляется «Начать платную консультацию» → подтверждение запуска.</td><td>Сервер проверяет единственную активную сессию, баланс и готовность обеих сторон; параллельный запуск получает 409.</td></tr>
+          <tr><td>Подключение</td><td>«Подключение…» заблокирована на время ожидания до 3 минут.</td><td>Платная минута не начинается; при тайм-ауте создаются причина, системное событие и безопасное сообщение клиенту.</td></tr>
+          <tr><td>Пауза экспертом</td><td>«Пауза» → окно с обязательной причиной, клиентским текстом и отдельным внутренним комментарием.</td><td>Используется единственная управляемая пауза до 5 минут; текущая начатая минута завершается, следующая не начинается.</td></tr>
+          <tr><td>Продолжение</td><td>«Продолжить» → повторная проверка условий и переход через «Подключение…».</td><td>Пополнение само не возобновляет сессию; новая минута начинается только после серверного подтверждения старта.</td></tr>
+          <tr><td>Потеря связи</td><td>Кнопка заблокирована, показывается «Ожидание возврата» и таймер 60 секунд.</td><td>При возврате — восстановление; после тайм-аута — техническое завершение, инцидент качества/поддержки и компенсационное сообщение по правилу.</td></tr>
+          <tr><td>Завершение</td><td>Кнопка недоступна; доступны история и маршрут поддержки.</td><td>Сохраняются обязательные инициатор и причина; позднее поступившие деньги остаются на балансе.</td></tr>
+        </tbody>
+      </table>
+      <p>Если пробный период закончился после согласия клиента, но средств на первую платную минуту нет, сессия переводится в единственную пятиминутную паузу без списания. Если пробных минут не было вовсе, этап пробного периода пропускается; это не отменяет явного согласия и проверки баланса перед платным стартом.</p>
+      <p>Стартовые управляемые значения: срок предложения 15 мин, тайм-аут подключения 3 мин, единственная ручная пауза 5 мин, льготный период восстановления связи 60 с. Все значения должны приходить из настроек админ-панели; константы в браузере — только запасной вариант демонстрации. Окончание по SLA (<code class="code">SLA</code>)/технической ошибке создаёт системное событие и клиентское сообщение с компенсируемым количеством минут по применимому правилу.</p>
+      <h3>Серверная машина состояний</h3>
+      <p><code class="code">no_consent → offer_pending → ready → connecting → active → paused → connecting → active → completed</code>. Потеря связи: <code class="code">active → reconnecting → active</code>, тайм-аут: <code class="code">reconnecting → completed</code>. Каждая операция изменения содержит <code class="code">expected_version</code> и новый <code class="code">idempotency_key</code>; ответ всегда возвращает полный канонический <code class="code">session</code>.</p>
+      <p>События <code class="code">offer_sent</code>, <code class="code">offer_accepted</code>, <code class="code">session_started</code>, <code class="code">session_paused</code>, <code class="code">session_resumed</code>, <code class="code">session_completed</code> — внутренние строки истории, не сообщения клиенту. Текст предложения/паузы для клиента — обычное исходящее сообщение и создаётся в одной транзакции с переходом. Канал реального времени и ответ операции дедуплицируются по <code class="code">message_id</code>.</p>
+      <details>
+        <summary>Канонический снимок платной сессии</summary>
+        <div><pre>{
+  "session_id": "ps-843",
+  "consent_id": "consent-843",
+  "conversation_id": "843",
+  "status": "active",
+  "billing_mode": "paid",
+  "pause_reason": null,
+  "version": 7,
+  "service_id": "paid_consultation_per_minute",
+  "service_version": "1",
+  "rate_label": "30 credits/min",
+  "balance_signal": "sufficient",
+  "trial_available": false,
+  "expert_ready": true,
+  "client_ready": true,
+  "started_at": "2026-07-30T09:30:00.000Z"
+ }</pre><p class="small muted">Точная сумма баланса клиенту не отдаётся из элементов управления; передаётся только рабочий сигнал: неизвестно/достаточно/мало/требуется. Точная сумма доступна в разрешённых финансовых разделах супер-администратору и в балансе клиента.</p></div>
       </details>
     </div>
   </section>
 
   <section class="section">
-    <h2>5. Badge-слой очереди и чатов</h2>
-    <div class="section-body">
-      <p>Коды и приоритеты являются частью контракта. Число меньше = более сильный приоритет. Label берётся из translation keys; новые произвольные badge-строки не добавлять.</p>
+    <h2>9. Канал реального времени, уведомления и операторское состояние</h2>
+    <div class="body">
+      <p>Канал реального времени доставляет новые сообщения, согласие/готовность, восстановление связи, историю платной сессии и обновление очереди. Событие должно содержать <code class="code">conversation_id</code> и стабильный ID; событие для неактивного разговора не вставляется в DOM текущего разговора, а попадёт в историю при открытии.</p>
       <table class="compact">
-        <thead><tr><th>Зона</th><th>Код</th><th>Смысл</th><th>Тип / priority</th></tr></thead>
+        <thead><tr><th>Состояние оператора</th><th>Смысл</th><th>Сетевое качество</th></tr></thead>
         <tbody>
-          <tr><td>Chats</td><td><code class="code">chats_sell</code></td><td>Можно предложить платную консультацию</td><td>action / 60</td></tr>
-          <tr><td>Chats</td><td><code class="code">chats_live</code></td><td>Live paid/trial session</td><td>state / 10</td></tr>
-          <tr><td>Chats</td><td><code class="code">chats_payment_process</code></td><td>Payment/connection in progress</td><td>state / 20</td></tr>
-          <tr><td>Chats</td><td><code class="code">chats_paid</code></td><td>Paid context</td><td>context / 30</td></tr>
-          <tr><td>Chats</td><td><code class="code">chats_trial</code></td><td>Trial context</td><td>context / 70</td></tr>
-          <tr><td>Chats</td><td><code class="code">chats_skeptic</code></td><td>Skeptic/action follow-up</td><td>action / 50</td></tr>
-          <tr><td>Chats</td><td><code class="code">chats_revive</code></td><td>Reactivation context</td><td>context / 80</td></tr>
-          <tr><td>Chats</td><td><code class="code">chats_risk</code></td><td>Risk constraint</td><td>constraint / 40</td></tr>
-          <tr><td>Chats</td><td><code class="code">chats_safe</code></td><td>Safe constraint</td><td>constraint / 35</td></tr>
-          <tr><td>Chats</td><td><code class="code">chats_coupon</code></td><td>Coupon action only when request is open</td><td>context / 90</td></tr>
-          <tr><td>Pings</td><td><code class="code">pings_fire</code></td><td>Urgent signal</td><td>signal / 10</td></tr>
-          <tr><td>Pings</td><td><code class="code">pings_hot</code></td><td>High-intent signal</td><td>signal / 20</td></tr>
-          <tr><td>Pings</td><td><code class="code">pings_new</code></td><td>New ping</td><td>signal / 40</td></tr>
-          <tr><td>Pings</td><td><code class="code">pings_paid</code></td><td>Paid context</td><td>context / 30</td></tr>
-          <tr><td>Pings</td><td><code class="code">pings_reply</code></td><td>Reply action</td><td>action / 45</td></tr>
-          <tr><td>Pings</td><td><code class="code">pings_await</code></td><td>Awaiting response</td><td>state / 50</td></tr>
-          <tr><td>Pings</td><td><code class="code">pings_revive</code></td><td>Reactivation context</td><td>context / 60</td></tr>
-          <tr><td>Pings</td><td><code class="code">pings_trial</code></td><td>Trial context</td><td>context / 70</td></tr>
-          <tr><td>Pings</td><td><code class="code">pings_risk</code></td><td>Risk constraint</td><td>constraint / 55</td></tr>
+          <tr><td><b>В сети</b> (<code class="code">Online</code>)</td><td>Смена активна, новые чаты допустимы.</td><td>Запрещено при качестве сети <code class="code">offline</code>.</td></tr>
+          <tr><td><b>Занят</b> (<code class="code">Busy</code>)</td><td>Смена активна, новые чаты не назначать. Причина и комментарий обязательны через окно подтверждения.</td><td>При потере связи «В сети» автоматически становится «Занят».</td></tr>
+          <tr><td><b>Не в сети</b> (<code class="code">Offline</code>)</td><td>Смена неактивна; новые чаты, сигналы и задачи не поступают.</td><td>Состояние «В сети» блокируется до восстановления.</td></tr>
         </tbody>
       </table>
-      <p class="small muted">Правила: Fire &gt; Hot &gt; NEW; Reply XOR Await; Live/PP/Skeptic/Risk скрывают Sell; Paid + Revive совместимы; Safe заменяет Risk в паре Chats; Coupon только при <code class="code">coupon_request.open=true</code>; порядок отображения action → constraint → state/signal → context. Подробный контракт: <a href="../../../reports/admin-chat-stage1-20260804-analysis/BADGE-BEHAVIOR-RU.md">BADGE-BEHAVIOR-RU.md</a>.</p>
+      <p>Качество сети отдельно: <code class="code">good</code> («Подключено»), <code class="code">unstable</code> («Нестабильно»), <code class="code">offline</code> («Нет соединения»). Статус оператора не меняет <code class="code">connDot</code> напрямую. Электронная почта используется для важных событий и непрочитанных сообщений по задержкам из админ-панели; браузерные уведомления — следующий этап. Внутренний индикатор и бейджи уже существуют и не дублируются.</p>
+      <p>События без внешнего действия должны быть защищены от дублей. Критические ошибки показывают клиенту безопасное сообщение, сотрудник получает инцидент; внутренние причины и заметка руководителя не входят в данные письма или клиента.</p>
     </div>
   </section>
 
   <section class="section">
-    <h2>6. Дополнительные production-поверхности из архива</h2>
-    <div class="section-body">
+    <h2>10. Правая панель контекста и правила приватности</h2>
+    <div class="body">
       <table class="compact">
-        <thead><tr><th>Поверхность</th><th>Минимальный production результат</th><th>Обязательные доказательства</th></tr></thead>
+        <thead><tr><th>Раздел</th><th>Содержимое</th><th>Доступ</th></tr></thead>
         <tbody>
-          <tr><td>Attachments</td><td>Allowlist, size/type validation, object storage, download ACL, delete/retention audit.</td><td>Allowed image/document + forbidden 422 + cross-role denial.</td></tr>
-          <tr><td>Voice / audio / video</td><td>Не включать в MVP; UI hidden/disabled, backend reject.</td><td>Negative endpoint test, no upload/storage side effect.</td></tr>
-          <tr><td>AI summary/draft</td><td>Feature flag off by default; no automatic send; save provenance and model output separately.</td><td>Flag off, no client delivery, audit on manual request.</td></tr>
-          <tr><td>Notes / Follow / Assign</td><td>Internal staff-only notes, follow state and assignment action; no leakage to client/Expert.</td><td>Role matrix, persistence and audit readback.</td></tr>
-          <tr><td>Hide / Resolve</td><td>Hide requires reason and preserves audit; resolve uses canonical terminal state/initiator/reason.</td><td>Client-safe text, internal reason, idempotent repeat.</td></tr>
-          <tr><td>Package action / preferences</td><td>Package CTA calls G2.1 source; operator preferences are scoped to staff account; no duplicate price logic.</td><td>Price source readback, preference ACL, rollback.</td></tr>
-          <tr><td>Shortcuts / Copy history</td><td>Keyboard shortcuts are progressive enhancement; history copy is read-only and respects message visibility/retention.</td><td>Keyboard/accessibility smoke and no hidden content copy.</td></tr>
+          <tr><td>Профиль / Сводка</td><td>Безопасные имя/аватар, регистрация, последняя активность, платный статус, тема, устройство и бейджи.</td><td>Нужный операторский контекст; внутренние ID — только в разрешённом служебном представлении.</td></tr>
+          <tr><td>Личные данные / Партнёр</td><td>Редактируемые консультационные данные и предыдущие значения для конкурентной проверки.</td><td>Только назначенный Агент/сотрудник; клиент видит только свои безопасные данные.</td></tr>
+          <tr><td>Поддержка / Ограничения</td><td>Статус, непрочитанное, подпись способа оплаты, метки политики и ограничений.</td><td>Поддержка/супер-администратор; внутренние причины не клиенту.</td></tr>
+          <tr><td>Оплата</td><td>Операционный сигнал баланса, платёжные события, действие пакета; точная сумма — отдельная финансовая поверхность.</td><td>Супер-администратор и разрешённый финансовый сотрудник.</td></tr>
+          <tr><td>Следующее касание</td><td>Следующий контакт, лимит, причина, канал и необязательный текст мягкого касания.</td><td>Внутренний сотрудник; перенос не отправляет сообщение сам.</td></tr>
+          <tr><td>Заметки</td><td>Приватные заметки; «Сохранить» создаёт заметку, «Очистить» чистит только поле.</td><td>Никогда не уходит клиенту/Эксперту.</td></tr>
+          <tr><td>Качество</td><td>Проверки <code class="code">ok</code>/<code class="code">warn</code>/<code class="code">risk</code>, заметка руководителя, направление перевода и <code class="code">send_guard</code> со значениями <code class="code">allow</code>/<code class="code">confirm</code>/<code class="code">block</code>.</td><td>Оператор; заметку руководителя не отправлять и не переводить.</td></tr>
+          <tr><td>AI</td><td>Краткое следующее действие, безопасный черновик, свёрнутая сводка, риск потери.</td><td>Флаг выключен по умолчанию; «Использовать черновик» только вставляет текст и не отправляет его.</td></tr>
         </tbody>
       </table>
-      <p class="small muted">Полные endpoint/payload/RBAC/persistence/idempotency/rollback требования: <a href="../../../reports/admin-chat-stage1-20260804-analysis/EXTENDED_PRODUCTION_SURFACES-RU.md">EXTENDED_PRODUCTION_SURFACES-RU.md</a>.</p>
+      <p>При сохранении личных данных или данных партнёра сервер возвращает нормализованный раздел; при ошибке интерфейс делает откат. Поздний ответ игнорируется, если разговор уже сменился. Все даты для клиента локализуются, аудит хранит единое серверное UTC-время.</p>
     </div>
   </section>
 
   <section class="section">
-    <h2>7. Порядок реализации через Codex</h2>
-    <div class="section-body">
+    <h2>11. API-каталог и обязательная семантика ответов</h2>
+    <div class="body">
+      <p>Все интерактивные ответы используют единый конверт: успех — <code class="code">ok:true</code>, канонические ID, серверное время и <code class="code">conversation_id</code>; ошибка — <code class="code">ok:false</code>, стабильный <code class="code">code</code>, безопасное <code class="code">message</code>, HTTP-статус вне диапазона 2xx. Ответ не должен заставлять браузер придумывать ID, цену, время, результат модерации или состояние сессии.</p>
+      <table class="compact">
+        <thead><tr><th>Группа</th><th>Метод и маршрут</th><th>Назначение</th></tr></thead>
+        <tbody>
+          <tr><td>Очередь</td><td><code class="code">POST /admin/messages/conversations/filter</code></td><td>Фильтры, HTML/DTO очереди и счётчики.</td></tr>
+          <tr><td>Разговор</td><td><code class="code">GET /admin/messages/conversations/{id}</code></td><td><code class="code">conversation</code>, <code class="code">messages_html</code>, <code class="code">context_json</code>, <code class="code">pinned_messages</code>.</td></tr>
+          <tr><td>Разговор</td><td><code class="code">POST /admin/messages/conversations/{id}/refresh</code></td><td>Обновление через тот же путь применения данных.</td></tr>
+          <tr><td>Состояние разговора</td><td><code class="code">POST /admin/messages/conversations/state</code></td><td>Избранное/закрепление разговора: сохранить ключ состояния и синхронизировать заголовок с карточкой очереди.</td></tr>
+          <tr><td>История</td><td><code class="code">POST /admin/messages/conversations/{id}/boundary</code>, <code class="code">/range</code></td><td>Окно первой/последней границы или дат.</td></tr>
+          <tr><td>Поиск</td><td><code class="code">GET /admin/messages/search</code></td><td>Поиск в активном разговоре.</td></tr>
+          <tr><td>Сообщения</td><td><code class="code">POST /admin/messages</code></td><td>Новое сообщение/ответ; вернуть <code class="code">message_html</code>, структурированное сообщение, <code class="code">queue_item</code>, <code class="code">draft_deleted</code>.</td></tr>
+          <tr><td>Сообщения</td><td><code class="code">PATCH/DELETE /admin/messages/{message_id}</code></td><td>Правка/мягкое или разрешённое полное удаление.</td></tr>
+          <tr><td>Доставка</td><td><code class="code">POST /admin/messages/{message_id}/retry</code></td><td>Повтор неудачной доставки с nonce клиента.</td></tr>
+          <tr><td>Черновик</td><td><code class="code">POST /admin/messages/drafts/save</code></td><td>Версионный серверный снимок, защищённый от перезаписи.</td></tr>
+          <tr><td>Перевод</td><td><code class="code">POST /admin/messages/translate</code>, <code class="code">/translate-draft</code></td><td>Только безопасный серверный текст; целевой язык по умолчанию берётся из языка анкеты.</td></tr>
+          <tr><td>Перевод</td><td><code class="code">PATCH /admin/messages/conversations/{id}/translation-direction</code></td><td>Сохранить исходный/целевой язык и очистить устаревшее превью.</td></tr>
+          <tr><td>Закрепления</td><td><code class="code">GET/POST /admin/messages/pinned</code>, <code class="code">DELETE /admin/messages/pinned/{pin_id}</code></td><td>Канонические записи закреплений и откат.</td></tr>
+          <tr><td>Контекст</td><td><code class="code">PATCH /admin/messages/conversations/{id}/context/{section}</code></td><td>Личные данные/партнёр и другие разделы.</td></tr>
+          <tr><td>Заметки</td><td><code class="code">POST /admin/messages/conversations/{id}/context/notes</code></td><td>Создать приватную заметку.</td></tr>
+          <tr><td>Повторное касание</td><td><code class="code">POST /admin/messages/conversations/{id}/follow</code></td><td>Перенос; фактическая доставка — отдельный фоновый обработчик.</td></tr>
+          <tr><td>Элементы управления</td><td><code class="code">POST /admin/messages/conversations/{id}/controls</code></td><td>Нужен ответ / назначение / заметка / завершение; политика действия должна проверяться на сервере.</td></tr>
+          <tr><td>Оплата</td><td><code class="code">POST /admin/messages/conversations/{id}/billing/action</code></td><td>Кнопка пакета/пополнения; сообщение — канонический <code class="code">message_html</code>.</td></tr>
+          <tr><td>Модерация</td><td><code class="code">POST /admin/messages/conversations/{id}/report</code></td><td>Жалоба с обязательной причиной и необязательным описанием.</td></tr>
+          <tr><td>Удаление чата</td><td><code class="code">DELETE /admin/messages/conversations/{id}</code></td><td>Проверка права и выбор следующего чата.</td></tr>
+          <tr><td>Платная сессия</td><td><code class="code">GET /admin/paid-session/state</code></td><td>Полный канонический снимок сессии.</td></tr>
+          <tr><td>Платная сессия</td><td><code class="code">POST /admin/paid-session/{offer|start|pause|resume|complete|top-up}</code></td><td>Версионные идемпотентные переходы, событие временной шкалы и сообщение клиенту при необходимости.</td></tr>
+          <tr><td>Оператор</td><td><code class="code">POST /admin/operator/status</code>, <code class="code">/busy</code>, <code class="code">/offline</code></td><td>Состояния «В сети»/«Занят»/«Не в сети» и обязательные причины.</td></tr>
+          <tr><td>Сеть</td><td><code class="code">GET /admin/operator/network-health</code></td><td><code class="code">good</code>/<code class="code">unstable</code>/<code class="code">offline</code>, задержка.</td></tr>
+          <tr><td>Проблема</td><td><code class="code">POST /admin/report/problem</code></td><td>Данные multipart: <code class="code">screenshots[]</code>, категория, приоритет, заголовок и описание.</td></tr>
+        </tbody>
+      </table>
+      <p>Рекомендуемые ошибки: <code class="code">403</code> нет права, <code class="code">409</code> устаревшая версия/дубль/параллельная сессия, <code class="code">410</code> истёкшее предложение, <code class="code">422</code> ошибка проверки или запрещённый переход, <code class="code">503</code> недоступен канал или платёжный провайдер. Для 409 по платной сессии сервер по возможности возвращает свежий снимок; интерфейс применяет его и не повторяет запрос вслепую.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>12. Что управляется в админ-панели и где</h2>
+    <div class="body">
+      <table class="compact">
+        <thead><tr><th>Поверхность</th><th>Место</th><th>Что хранить/менять</th></tr></thead>
+        <tbody>
+          <tr><td>Настройки чата</td><td><a href="https://confideline.com/ru/admin/settings/index"><code class="code">/ru/admin/settings/index</code> → «Настройки чата»</a></td><td>Таймеры предложения/подключения/паузы/восстановления связи; длины текста; список разрешённых вложений и лимиты; категории цензуры и переключатели; окно правки; срок хранения до юридической проверки; задержки уведомлений; флаги голоса/AI/горячих клавиш/звуков.</td></tr>
+          <tr><td>Цена и пакеты</td><td><a href="https://confideline.com/ru/admin/settings/prices"><code class="code">/ru/admin/settings/prices</code></a></td><td>Глобальная/профильная цена, пакеты кредитов, скидка в USD, купоны, правила баланса. Чат читает источник, не дублирует.</td></tr>
+          <tr><td>Роли</td><td><a href="https://confideline.com/ru/admin/settings/role"><code class="code">/ru/admin/settings/role</code></a></td><td>Права доступа. Страница чата не создаёт роль «Агент»/«Поддержка» заново.</td></tr>
+          <tr><td>Почта</td><td>Существующая страница шаблонов электронной почты</td><td>Тексты писем — отдельная операционная задача; чат задаёт только событие, категорию и задержку.</td></tr>
+          <tr><td>Поддержка</td><td>Существующая поверхность поддержки</td><td>Только функции поддержки. Не переносить туда всю платёжную логику, жизненный цикл или настройки чата.</td></tr>
+        </tbody>
+      </table>
+      <p>Все числовые значения имеют отдельные поля с проверкой минимума/максимума, единицами измерения, предварительным просмотром, аудитом автора/времени и откатом. Изменение настройки действует для новых операций/сессий, если каноническое ТЗ не говорит иначе; уже начатая сессия сохраняет свой снимок настроек.</p>
+      <p>Видимый текст — ключи существующей мультиязычной системы. На этой странице документация дана по-русски, но Игорь должен создавать ключи переводов RU/EN, а не встраивать русский текст напрямую в JS.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>13. Безопасность, параллельные запросы, аудит и хранение</h2>
+    <div class="body">
+      <ol>
+         <li>Каждый маршрут повторно проверяет RBAC (права доступа), принадлежность разговора, назначенную анкету, согласие, исполнителя и допустимый переход. Скрытие элемента интерфейса не считается защитой.</li>
+        <li>Каждая операция изменения имеет <code class="code">expected_version</code>, <code class="code">idempotency_key</code>, исполнителя, источник, серверное время и request_id. Повтор даёт тот же результат или детерминированный конфликт, а не двойное списание/сообщение.</li>
+        <li>Сервер возвращает только рассчитанную сервером идентичность и модерированный текст. Клиент не восстанавливает цензурированный текст, цену, время, ID сообщения или состояние из локального значения.</li>
+        <li>Переход платной сессии, изменение журнала операций, автоматическое сообщение клиенту, внутренняя история и приватный комментарий создаются атомарно в одной транзакции там, где это предусмотрено контрактом.</li>
+        <li>Аудит не редактируется обычным интерфейсом. Для скрытия, цензуры, правки/удаления, аварийной поддержки, возврата/компенсации и изменения настроек обязательны исполнитель, причина, до/после, время, request_id и источник.</li>
+        <li>Срок хранения управляется в админ-панели; стартовое рабочее значение истории — 24 месяца до юридической/приватной проверки. Экспорт/скачивание истории в MVP отключены.</li>
+        <li>При финансовой или ошибке прав доступа выпуск не принимается. Нужны исходный снимок/хеш, обратная миграция, положительная и отрицательная проверка запуска.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>14. Порядок реализации через Codex</h2>
+    <div class="body">
       <table>
-        <thead><tr><th>Шаг</th><th>Что делает Игорь + Codex</th><th>Стоп/выход шага</th></tr></thead>
+        <thead><tr><th>Этап</th><th>Работа Игоря и Codex</th><th>Критерий выхода</th></tr></thead>
         <tbody>
-          <tr><td>0 · Baseline</td><td>Зафиксировать commit/preimage, routes, current Yii2 models, ACL, assets, archive hash; заменить demo CSRF/IDs в рабочем контуре.</td><td>Есть inventory и rollback; нет секретов в proof.</td></tr>
-          <tr><td>1 · Shell/assets</td><td>Подключить Oracle/Nebula layout и admin-chat HTML/CSS в существующий shell без смены product routes.</td><td>Pixel/viewport smoke и отсутствие регрессии старого chat route.</td></tr>
-          <tr><td>2 · Read-only transport</td><td>Подтянуть реальную queue/chat/client context; server-derived identity; skeleton/error/fallback.</td><td>UI не показывает фиктивные данные; 403/404/empty состояния проверены.</td></tr>
-          <tr><td>3 · Message core</td><td>Send/edit/read/delivery/system messages, duplicate-safe idempotency, public sender/actual actor, audit and message versioning.</td><td>Persisted readback; чужой actor/profile заблокирован сервером.</td></tr>
-          <tr><td>4 · Attachments/policy</td><td>Images/documents allowlist, censorship pipeline, warning/recipient rendering, incident monitoring; voice/video/arbitrary reject.</td><td>422 negative test, hashes/audit, no forbidden side effect.</td></tr>
-          <tr><td>5 · Role/context actions</td><td>Assigned profile filter, notes/follow/assign/hide/resolve, staff-only context and super-admin monitoring.</td><td>Visibility matrix and immutable audit accepted.</td></tr>
-          <tr><td>6 · Paid session</td><td>Wire G1.1/G1.3 session card and G2.1/G2.2 price/debit/pause contracts; no second billing state machine in chat.</td><td>Trial/paid/pause/reconnect/end with exact ledger proof and no duplicate debit.</td></tr>
-          <tr><td>7 · Negative/runtime QA</td><td>Run role, security, idempotency, timeout, stale-token, accessibility, responsive and error matrix on a controlled test set.</td><td>All P0 cases pass; failed cases remain explicit blockers.</td></tr>
-          <tr><td>8 · Handoff/acceptance</td><td>Return commit/build, endpoint map, migration notes, screenshots, logs/readback, verifier output and rollback recipe.</td><td>PM/super-admin accepts proof; only then status may leave runtime open.</td></tr>
+          <tr><td>0. Подготовка</td><td>Зафиксировать коммит, хеш архива, маршруты, модели, ACL, ресурсы, источник настроек и откат. Удалить демонстрационные CSRF/ID из боевого кода.</td><td>Инвентаризация и исходный снимок сохранены; секретов в доказательствах нет.</td></tr>
+          <tr><td>1. Оболочка и ресурсы</td><td>Перенести HTML/CSS/JS в Yii2-представления и пакеты ресурсов внутри существующей оболочки админки.</td><td>Компьютер/планшет/телефон без горизонтальной прокрутки и без регрессии маршрута.</td></tr>
+          <tr><td>2. Только чтение</td><td>Подключить очередь, разговор, контекст, закрепления и серверный <code class="code">messages_html</code>.</td><td>Реальные данные, скелетон, пустое состояние, 403/404 и ошибка; фиктивные данные не видны.</td></tr>
+          <tr><td>3. Ядро сообщений</td><td>Отправка/чтение/доставка/повтор/ответ/правка/удаление/закрепление, версии черновика, перевод, системные события и защита канала реального времени от дублей.</td><td>Проверка чтением ID/времени/исполнителя; защита от дублей; отказ чужой роли.</td></tr>
+          <tr><td>4. Политика и вложения</td><td>Цензура, предупреждение отправителя, безопасный текст получателя, мониторинг инцидента, список изображений/документов, отказ запрещённых медиа.</td><td>Отрицательная проверка 422; нет небезопасного ответа и побочного файла в хранилище.</td></tr>
+          <tr><td>5. Контекстные действия</td><td>Личные данные/партнёр, заметки, повторное касание, <code class="code">send_guard</code> качества, поддержка/жалоба, скрытие/завершение, назначение.</td><td>Приватные данные не утекли; причина, аудит и сохранение подтверждены.</td></tr>
+          <tr><td>6. Платная сессия</td><td>Связать карточку консультации, чат, статусы и платёжные правила: предложение, согласие, старт, <code class="code">trial</code>/<code class="code">paid</code>, пауза, восстановление связи, технический конец, списание.</td><td>Полный журнал/снимок сессии, граница минуты, нет двойного списания.</td></tr>
+          <tr><td>7. Проверка боевого контура</td><td>Матрица ролей, политик, сети, тайм-аутов, устаревшей версии, идемпотентности, доступности, адаптивности, ошибок и восстановления.</td><td>Все P0 проверены; остатки явно записаны, не замаскированы.</td></tr>
+          <tr><td>8. Передача</td><td>Коммит, изменённые файлы, точные маршруты, миграции, скриншоты, безопасные логи/проверка чтением, результаты проверок и рецепт отката.</td><td>Менеджер проекта и супер-администратор принимают доказательства; только после этого боевой контур закрывается.</td></tr>
         </tbody>
       </table>
     </div>
   </section>
 
   <section class="section">
-    <h2>8. Минимальный пакет доказательств от Игоря</h2>
-    <div class="section-body">
+    <h2>15. Минимальный пакет доказательств</h2>
+    <div class="body">
       <table class="compact">
-        <thead><tr><th>Evidence</th><th>Что должно быть приложено</th></tr></thead>
+        <thead><tr><th>Пакет</th><th>Что предъявить</th></tr></thead>
         <tbody>
-          <tr><td>Build/source</td><td>Commit/hash, changed files, migration/rollback steps, exact Yii2 routes and mapped templates.</td></tr>
-          <tr><td>Role proof</td><td>Super-admin, assigned Agent, unassigned Agent, client: allowed/denied screenshots or sanitized response codes.</td></tr>
-          <tr><td>Message proof</td><td>Send/read/edit/system/duplicate delivery, public sender, actual actor and full super-admin audit readback.</td></tr>
-          <tr><td>Policy proof</td><td>Censorship sender/recipient views, incident record, allowed image/document, 422 forbidden media.</td></tr>
-          <tr><td>Money/session proof</td><td>Immutable price snapshot, started-minute debit, pause/reconnect boundary, technical end, balance/readback, idempotency.</td></tr>
-          <tr><td>Visual/QA proof</td><td>Desktop/tablet/mobile screenshots, empty/error/loading states, no visible secrets or demo CSRF; verifier report.</td></tr>
+          <tr><td>Исходники</td><td>Коммит/хеш, изменённые файлы, маршруты Yii2, миграции, карта ресурсов и откат.</td></tr>
+          <tr><td>Роли</td><td>Супер-администратор, назначенный Агент, неназначенный Агент, клиент: разрешённые и запрещённые действия.</td></tr>
+          <tr><td>Очередь/бейджи</td><td>19 строк кодов, сигналы «Срочно/Высокий интерес/Новое», «Нужен ответ/Ожидаем клиента», «Риск/Безопасно», «Платёж в обработке» и «Купон», независимые зоны фильтров и проверка чтением.</td></tr>
+          <tr><td>Сообщения</td><td>Новое сообщение/ответ/правка/прочтение/доставка/повтор, публичный Эксперт против реального исполнителя, системное событие, защита канала реального времени от дублей.</td></tr>
+          <tr><td>Политика</td><td>Предупреждение отправителя, цензурированный получатель, категория/время/исполнитель инцидента, разрешённое изображение/документ, запрещённое вложение 422.</td></tr>
+          <tr><td>Деньги/сессия</td><td>Согласие, пропуск <code class="code">trial</code>, снимок цены, списание начатой минуты, граница паузы/восстановления связи, технический конец, пополнение без автоматического продолжения.</td></tr>
+          <tr><td>Визуал</td><td>Скриншоты компьютера/планшета/телефона, загрузка/пусто/ошибка, окна кнопки, отсутствие секретов/демо-CSRF, консоль без ошибок.</td></tr>
         </tbody>
       </table>
-      <div class="notice warn" style="margin:14px 0 0"><b>Rollback</b>Любое изменение в admin/settings, chat schema, prices, permissions или retention должно иметь preimage/hash, обратную миграцию и повторную smoke-проверку. При финансовой или ACL-ошибке release не принимается.</div>
+       <p class="small muted">Повторяемые архивные проверки: <code class="code">node --check</code> трёх пользовательских JS-файлов, баланс CSS, уникальность ID, локальные ресурсы, проверки бейджей/сообщений/управлений/платной сессии. В боевом контуре их нужно встроить в CI и приёмку.</p>
     </div>
   </section>
 
   <section class="section">
-    <h2>9. Что не входит в эту интеграцию</h2>
-    <div class="section-body">
+    <h2>16. Что пока не входит в MVP или требует отдельного решения</h2>
+    <div class="body">
       <table class="compact">
-        <thead><tr><th>Вне MVP-пакета</th><th>Куда отложено</th></tr></thead>
+        <thead><tr><th>Поверхность</th><th>Решение для текущей интеграции</th></tr></thead>
         <tbody>
-          <tr><td>Browser push, paid queue, asynchronous paid consultation, transcript export/download</td><td>Отдельный post-MVP backlog / следующий этап.</td></tr>
-          <tr><td>Автоматические refund/payout/auto-refill и predictive/AI ranking</td><td>Ручные операции и отдельные G2/G3 расширения после MVP.</td></tr>
-          <tr><td>Новые глобальные permissions/roles</td><td>Существующий <code class="code">/ru/admin/settings/role</code>; на первом этапе только super-admin.</td></tr>
-          <tr><td>Юридическая финализация retention, crisis wording and regional policy</td><td>Legal/privacy review; значения в admin должны оставаться управляемыми.</td></tr>
+          <tr><td>Браузерные уведомления, платная очередь, асинхронная платная консультация</td><td>Следующий этап; почта и внутренние бейджи остаются.</td></tr>
+          <tr><td>Экспорт/скачивание истории</td><td>Не включать; история только читается в кабинете.</td></tr>
+          <tr><td>Голос/аудио/видео</td><td>Флаг <code class="code">false</code> и серверный отказ; схема остаётся совместимой для будущего этапа.</td></tr>
+          <tr><td>Обновление/генерация AI</td><td>Флаг выключен; ручной запрос, происхождение результата и аудит; автоматическая отправка запрещена.</td></tr>
+          <tr><td>Передача вложений</td><td>Игорь выбирает предварительную загрузку со стабильным токеном или передачу в формате multipart, но до решения интеграцию нельзя объявлять завершённой. Для черновика предпочтителен стабильный токен.</td></tr>
+          <tr><td>Назначение/завершение/выбор пакета</td><td>Заготовки интерфейса есть; точная бизнес-политика и маршрут должны быть зафиксированы до серверного изменения.</td></tr>
+          <tr><td>Новые глобальные роли/права</td><td>Не создавать; использовать существующую страницу ролей, первый получатель прав — супер-администратор.</td></tr>
+          <tr><td>Юридические тексты приватности/кризисов</td><td>Значения и тексты оставлять управляемыми; финализация — отдельная юридическая проверка.</td></tr>
+        </tbody>
+      </table>
+      <h3>Матрица готовности элементов макета</h3>
+      <table class="compact">
+        <thead><tr><th>Класс</th><th>Элементы из архива</th><th>Правило для Игоря</th></tr></thead>
+        <tbody>
+          <tr><td>Готово к серверному подключению</td><td>Фильтры очереди, карточка разговора, обновление, избранное, границы/диапазоны истории, поиск, закрепления, переводы, отправка/правка/удаление/повтор, черновики, контекст, управление, платная сессия, оператор, сеть, жалоба.</td><td>Подключать через каталог API; результат применять одним каноническим путём, ошибки откатывать.</td></tr>
+          <tr><td>Только интерфейс</td><td>Сворачивание панелей, вкладки и аккордеоны, открытие/закрытие окон, просмотр фото, копирование, размер шрифта, панель инструментов, вставка эмодзи, очистка поиска.</td><td>Не считать эти действия изменением бизнес-состояния; хранить локально, если это разрешено макетом.</td></tr>
+          <tr><td>Вложения</td><td>Кнопки выбора изображения/аудио/файла и галерея до отправки.</td><td>На MVP разрешены только изображения и документы; транспорт (стабильный токен или multipart) Игорь фиксирует отдельным контрактом.</td></tr>
+          <tr><td>Голос</td><td>Кнопка голосового сообщения и запись до остановки.</td><td>Выключено на MVP; если включается позже, отдельно утвердить момент загрузки и формат.</td></tr>
+          <tr><td>AI</td><td>Обновление сводки и вставка черновика AI.</td><td>По умолчанию выключено; определить синхронную генерацию/фоновую задачу и аудит использования. Автоматическая отправка запрещена.</td></tr>
+          <tr><td>Заметки</td><td>Сохранить и очистить заметку в правом контексте.</td><td>Сохранить создаёт приватную заметку; очистить очищает только поле. Endpoint и подтверждение хранятся отдельно.</td></tr>
+          <tr><td>Повторное касание</td><td>Отложить follow-up (<code class="code">follow</code>).</td><td>Согласовать варианты расписания и переход очереди; перенос не отправляет сообщение сам.</td></tr>
+          <tr><td>Назначение и завершение</td><td>Назначение (<code class="code">Assign</code>), заметка (<code class="code">Note</code>), завершение (<code class="code">Resolve</code>) в панели управления чатом.</td><td>До серверной реализации зафиксировать выбор оператора, семантику заметки и обратимость/финальность завершения.</td></tr>
+          <tr><td>Пакет</td><td>Действие «Пакет/пополнение».</td><td>Согласовать: отправлять настроенный пакет сразу или сначала открывать выбор; финансовый источник не дублировать.</td></tr>
+          <tr><td>Настройки оператора</td><td>Компактный режим, звуки и горячие клавиши.</td><td>Определить, где хранить предпочтения и какие пункты оставить в меню; это не меняет права и состояние консультации.</td></tr>
         </tbody>
       </table>
     </div>
   </section>
 
   <section class="section">
-    <h2>10. Основные файлы для передачи</h2>
-    <div class="section-body">
-      <table class="compact">
-        <thead><tr><th>Файл/ссылка</th><th>Назначение</th></tr></thead>
-        <tbody>
-          <tr><td><a href="../../../reports/admin-chat-stage1-20260804-analysis/README-RU.md">Archive README</a></td><td>Состав архива и граница demo.</td></tr>
-          <tr><td><a href="../../../reports/admin-chat-stage1-20260804-analysis/CODEX-INTEGRATION-CONTEXT.md">Codex integration context</a></td><td>Preflight, source precedence and Steps 0–8.</td></tr>
-          <tr><td><a href="../../../reports/admin-chat-stage1-20260804-analysis/ACCEPTED_FUNCTIONAL_MAP-RU.md">Accepted functional map</a></td><td>Принятый UI/behavior map чата.</td></tr>
-          <tr><td><a href="../../../reports/admin-chat-stage1-20260804-analysis/BADGE-BEHAVIOR-RU.md">Badge behavior</a></td><td>19 badge-кодов, priority, фильтры, совместимость.</td></tr>
-          <tr><td><a href="../../../reports/admin-chat-stage1-20260804-analysis/EXTENDED_PRODUCTION_SURFACES-RU.md">Extended production surfaces</a></td><td>12 дополнительных endpoint/ACL/audit пакетов.</td></tr>
-          <tr><td><a href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-cross-goal-audit-2026-08-05.md">Cross-goal audit</a></td><td>Проверка отсутствия конфликтов G1–G3 и остаточные runtime gates.</td></tr>
-          <tr><td><a href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-product-consistency-register.md">Consistency register</a></td><td>Единый словарь состояний, ownership и invariants.</td></tr>
-          <tr><td><a href="../../../reports/six-goals-functional-tz-2026-07-20/g1-g3-route-and-admin-ownership-matrix.md">Route/admin ownership</a></td><td>Какая настройка где живёт и кто её меняет.</td></tr>
-          <tr><td><a href="../../../reports/six-goals-functional-tz-2026-07-20/functional-tz-quality-standard.md">TZ quality standard</a></td><td>Критерии полноты ТЗ и acceptance.</td></tr>
-        </tbody>
-      </table>
+    <h2>17. Быстрый чек перед каждым коммитом</h2>
+    <div class="body">
+      <ol>
+        <li>Открыть эту страницу и соответствующее ТЗ; проверить, что новая логика не создаёт вторую цену, вторую роль или вторую машину состояний сессии.</li>
+        <li>Проверить авторитет сервера: ID, время, модерация текста, разрешение бейджей, цена, списание и состояние приходят из API.</li>
+        <li>Проверить изоляцию разговоров: поздний ответ одной карточки не меняет другую; черновик/ответ/правка/перевод не перетекают.</li>
+        <li>Проверить отрицательные сценарии: 403, 404, 409, 410, 422, 503; окно остаётся открытым при ошибке проверки; оптимистический интерфейс откатывается.</li>
+        <li>Проверить безопасную поверхность клиента: нет <code class="code">internal_comment</code>, <code class="code">supervisor_note</code>, скрытых ID, токена, исходного запрещённого фрагмента или демо-CSRF.</li>
+        <li>Приложить доказательство и откат. Если доказательства нет — статус «боевой контур открыт», а не «готово».</li>
+      </ol>
     </div>
   </section>
 
-  <footer>Пакет подготовлен для передачи разработчику. Product decisions принадлежат владельцу; техническую реализацию выбирает Игорь при сохранении инвариантов, server-side security, idempotency, audit и proof boundary. Статический пакет не является доказательством готовности production-сайта.</footer>
+  <footer>Документ предназначен для передачи Игорю и его Codex. Реализационные решения остаются за Игорем, но не могут нарушать зафиксированные инварианты, серверную безопасность, идемпотентность, аудит, переводимость и границу доказательств. Страница самодостаточна по логике интеграции и не является сама по себе доказательством готовности боевого контура.</footer>
 </main>
 </body>
 </html>
