@@ -18,13 +18,25 @@
 
 ## 3. Source truth и граница доказательств
 
-Текущий продуктовый источник решений:
+При расхождении источников применяется следующий порядок приоритета:
 
-- `H:\GPT-Codex\Confideline\reports\six-goals-functional-tz-2026-07-20\etalon-tz-g1-2-role-chat.md`
-- `H:\GPT-Codex\Confideline\reports\tz-product-g1-2-role-chat-consultation-2026-07-16.md`
-- `H:\GPT-Codex\Confideline\reports\six-goals-functional-tz-2026-07-20\etalon-tz-g1-1-service-session.md`
-- `H:\GPT-Codex\Confideline\reports\admin-chat-stage1-20260804-analysis\EXTENDED_PRODUCTION_SURFACES-RU.md` — обязательное приложение с production-поверхностями admin-макета;
-- `H:\GPT-Codex\Confideline\reports\admin-chat-stage1-20260804-analysis\PANEL-TZ-G1-2-DISCREPANCIES-RU.md` — реестр сверки и принятых границ.
+1. актуальные решения Product Owner и `H:\GPT-Codex\Confideline\reports\six-goals-functional-tz-2026-07-20\etalon-tz-g1-2-role-chat.md` — продуктовые правила G1.2;
+2. `H:\GPT-Codex\Confideline\reports\six-goals-functional-tz-2026-07-20\codex-context-badge-resolver-ru.md` вместе с `H:\GPT-Codex\Confideline\reports\six-goals-functional-tz-2026-07-20\badge-resolver-rules-ru.csv` — единственный актуальный источник семантики, области действия и совместимости бейджей;
+3. `H:\GPT-Codex\Confideline\reports\six-goals-functional-tz-2026-07-20\etalon-tz-g1-1-service-session.md` и `H:\GPT-Codex\Confideline\reports\six-goals-functional-tz-2026-07-20\etalon-tz-g1-3-status-history.md` — границы карточки и lifecycle consultation session;
+4. `H:\GPT-Codex\Confideline\reports\admin-chat-stage1-20260804-analysis\EXTENDED_PRODUCTION_SURFACES-RU.md` — приложение с ожидаемыми production-поверхностями admin-макета; названия endpoint, таблиц и сервисов разрешено адаптировать к фактически найденной архитектуре, не меняя наблюдаемого продуктового поведения;
+5. `H:\GPT-Codex\Confideline\reports\admin-chat-stage1-20260804-analysis\PANEL-TZ-G1-2-DISCREPANCIES-RU.md` — исторический реестр сверки, а не самостоятельный нормативный источник.
+
+Дополнительный канонический ответный пакет по кнопкам, шаблонам, языку, переводам, переменным и ссылкам: `codex-context-g1-2-actions-templates-answers-ru.md`. Он имеет приоритет над визуальными предположениями макета в перечисленных темах.
+
+Техническая основа HTML-чата и его контрактов передана архивом
+`admin-chat-stage1-20260804-handoff.rar`. Для области-за-областью сверки
+использовать `G1_ARCHIVE_HTML_CONTRACT_AUDIT_2026-08-14.md`. Архивные
+`CHAT_QUEUE_CONTRACT.md`, `CHAT_MESSAGE_DATA_CONTRACT.md` и
+`PAID_SESSION_CONTRACT.md` задают hooks, payload и server-authoritative
+интеграционные точки. Их demo-значения и разделы `Open Production Decisions`
+не являются доказательством runtime-ready.
+
+Файл `H:\GPT-Codex\Confideline\reports\tz-product-g1-2-role-chat-consultation-2026-07-16.md` архивный и заменён настоящим пакетом. Его нельзя использовать для разрешения текущих продуктовых или технических разногласий.
 
 Известные текущие админ-поверхности:
 
@@ -86,8 +98,11 @@ Required properties:
 - conditional edited marker: show it to the Client only when the message had been read before the Expert edit; keep every previous version for super-admin in all cases;
 - no physical deletion for consultation messages;
 - staff hide with mandatory reason and audit;
-- suggestions/templates require conscious manual send;
-- no automatic AI/template send.
+- the template picker and `Needs reply`/`Assign`/`Note`/`Resolve` controls are visual action points; button semantics are deferred by PM. The template catalog has three scopes: super-admin system templates, Expert-scoped templates, and personal Operator templates;
+- the initial system set is created and published by super-admin in the separate system-template function. Public Expert is not a separate admin user: an assigned Agent/Operator with the template-management permission for that expert profile creates/edits/archives Expert-scoped templates; super-admin has full access, while other assigned operators may use them according to permissions. Personal templates are created/edited/archived only by their operator owner. MVP does not add a template revision history or dedicated template audit. The HTML mock does not auto-approve its ten texts;
+- a template record requires a name, category/scenario, exactly one availability placement (`pings`, `active_chat`, or `paid_chat`), approved RU text, approved EN text and the allowlisted variables used by the text;
+- if these controls are rendered before the follow-up decision, they must be disabled/feature-flagged and have no server-side side effects;
+- no automatic AI/template send; this invariant remains active for any future implementation.
 
 Client-message editing remains disabled/unintroduced until a separate PM decision.
 
@@ -186,13 +201,86 @@ Chat page owns:
 - document MIME/size/count;
 - attachment inspection fallback;
 - censorship categories, allowlist, warning, replacement label, repeat threshold and detector version/rollback;
-- in-chat templates/system messages;
+- visual placeholder for in-chat templates/actions; the catalog model is canonical: a shared system list managed by super-admin, Expert-scoped templates for the corresponding Expert workspace, and personal Operator templates; action semantics remain deferred, while the approved RU/EN and MVP variable allowlist below are canonical;
 - hide-message reason dictionary;
 - chat-specific client messages for delivery, editing, censorship and attachment outcomes.
 
 It does not own RBAC, assignments, price, coupons, payments, generic image policy, premium dating messages, email templates, message monitoring, support queues, general logs, reconnect/request/session timers, balance pause, end-reason dictionaries or consultation-history retention.
 
 All visible labels, errors, aria-labels, system messages, templates and modal copy must use the existing translation-key system. Igor owns the key inventory and RU/EN integration; product/support/legal meaning is not changed during implementation.
+
+## 7.1. Языковой источник чата
+
+- При регистрации язык клиента определяется существующей browser-preference функцией и сохраняется в профиле.
+- Изменение языка в профиле клиента меняет профильный источник.
+- Для чата значение по умолчанию — `AUTO`: берётся актуальный язык профиля клиента.
+- На вкладке `Quality` назначенный Expert/Agent может задать результирующий язык для рабочего диалога. Это сохраняемый dialogue-level override, который не изменяет профиль клиента.
+- Override действует для последующих сообщений диалога до изменения или сброса; уже сохранённые сообщения не переписываются.
+- Отдельный ручной выбор языка для одного сообщения не сохраняется как язык диалога и не является обязательным MVP-путём.
+- Super-admin управляет флагом `allow_expert_language_override` на `/ru/admin/settings/chat`. При выключенном флаге запись и сброс override запрещены, чтение действующего значения разрешено.
+
+## 7.2. Перевод сообщения
+
+- При отсутствии утверждённого перевода показывать утверждённый исходник в composer с указанием языка.
+- Повторное нажатие `Перевести` открывает перевод в модальном окне; исходник в composer не заменяется.
+- Ручное редактирование текста перевода в модальном окне запрещено на текущем этапе.
+- Получение перевода никогда не отправляет сообщение автоматически. Отправка выполняется только отдельной кнопкой `Отправить` и проходит обычные message/ACL/censorship/idempotency guards.
+- Если текущий текст или доступный перевод не соответствует effective client language, показать небольшое модальное предупреждение с предложением перевести. Запуск перевода — только после явного клика оператора; это не блокировка отправки.
+- Внешний provider пока не выбран. Сделать provider-agnostic adapter boundary и не подключать конкретный сервис без отдельного решения.
+
+## 7.3. Положение доступности шаблона
+
+Каждый активный шаблон обязан иметь ровно одно значение `availability_placement`:
+
+| Code | Интерфейсное название | Когда шаблон доступен |
+| --- | --- | --- |
+| `pings` | `Пинги` | Открыта вкладка `Pings`; обращение ещё находится в ping/lead-сценарии. |
+| `active_chat` | `Активный чат` | Открыта вкладка `Chats`, но для диалога нет consultation session в контексте `connecting`, `trial_active`, `paid_active`, `balance_pause` или `reconnecting`. Это свободный/предсессионный чат. |
+| `paid_chat` | `Платный чат` | Диалог имеет consultation session в контексте `connecting`, `trial_active`, `paid_active`, `balance_pause` или `reconnecting`; завершённая session сюда не относится. `trial_active` входит сюда как часть уже созданного consultation workflow, даже если в данный момент списание ещё не идёт. |
+
+Положение доступности — это фильтр каталога, а не право доступа. Поверх него применяются ACL и scope записи: системный шаблон только читается оператором, Expert-scoped доступен в рабочем контуре соответствующего Эксперта, личный шаблон доступен только владельцу. UI показывает записи текущего положения, а сервер повторно проверяет placement при выборе и при отправке. Если шаблон устарел и был выбран из другой вкладки/состояния, операция отклоняется без отправки. Один и тот же текст в нескольких положениях оформляется отдельными записями с отдельными placement.
+
+## 7.4. Языковые поля шаблонов RU/EN
+
+- Каждый системный, Expert-scoped и личный шаблон оператора имеет два утверждённых языковых поля: `text_ru` и `text_en`. Это варианты языка, а не история ревизий.
+- Resolver выбора шаблона использует effective dialogue language: профиль клиента в `AUTO` или Quality override.
+- При `RU`/`EN` выбирается соответствующее заполненное поле.
+- При отсутствии поля для effective language выбирается `text_ru`.
+- Отсутствие нужной версии не блокирует выбор шаблона и не запускает автоматический перевод.
+- При fallback RU или другом несовпадении с effective language показать то же небольшое модальное предложение перевода. Не заменять composer автоматически и не отправлять автоматически. Это целевое правило; если в текущем runtime такого сигнала ещё нет, это implementation gap, а не основание придумывать другое поведение или автоматически блокировать отправку.
+
+## 7.5. Переменные шаблонов — канонический MVP allowlist
+
+Используется синтаксис `{{variable_name}}`. В системном, Expert-scoped или личном шаблоне оператора хранится список переменных, которые он использует; произвольные имена переменных не принимаются.
+
+| Variable | Server source / rule |
+| --- | --- |
+| `client_name` | Safe public client name; first name, otherwise approved public display name; if unavailable, template is not offered. |
+| `expert_name` | Public Expert profile only; never internal Agent name. |
+| `price_min` | Existing session: immutable session price snapshot; before session creation: current effective price of the selected Expert for the offer. Always credits/minute, never USD; once a session starts, later price changes do not apply. |
+| `trial_min` | Active trial entitlement for this client; unavailable when no entitlement exists. |
+| `consult_date` | Current consultation date, localized for the client. |
+| `consult_time` | Current consultation time, localized using the client timezone. |
+| `timezone` | Current client/profile/session timezone used for date/time display. |
+| `consult_link` | Server-generated authorized link to the current dialogue/session; never a raw template URL. |
+| `topup_link` | Server-generated authorized top-up route, only where the action is applicable. |
+| `support_link` | Server-generated current support route. |
+
+Resolver rules:
+
+- Resolve on the server for preview and again on the explicit Send action; never trust browser-supplied values.
+- If a required variable cannot be resolved, do not offer the template and never expose a literal `{{...}}` token.
+- Escape values as plain text; no HTML/JS, arbitrary URLs, internal IDs, payment identifiers, Agent identity, contact data, raw balance or audit secrets.
+- Keep normal ACL, censorship, consultation-state, delivery and idempotency checks. Template selection never sends automatically.
+- Keep the ordinary sent message history and actor/delivery rules. Do not add
+  `template_id`, `template_version`, template provenance or a dedicated
+  template audit for the general system/Expert-scoped/personal quick-template
+  catalog in MVP. **Exception:** `PAID_SESSION_CONTRACT.md` requires
+  immutable `offer_template_id + offer_template_version` and
+  `pause_template_id + pause_template_version` snapshots for a particular
+  paid-session operation; those fields support canonical server resolution and
+  idempotency and are not catalog revision history. Do not put internal source
+  data into the client payload.
 
 Fixed rules are not toggles: allowed message families, audio/video ban, delivery indicators, conditional edited-marker rule, idempotent retry and no physical deletion.
 

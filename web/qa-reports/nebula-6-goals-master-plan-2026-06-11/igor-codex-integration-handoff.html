@@ -60,6 +60,14 @@
     <a href="tasks/task-g1-chat.html">Карточка чата эксперта</a>
     <a href="tasks/task-g1-statuses.html">Карточка статусов консультации</a>
     <a href="tasks/task-g2-timer.html">Карточка таймера и паузы</a>
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/codex-context-badge-resolver-ru.md">Канонический MD бейджей</a>
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/badge-resolver-rules-ru.csv">Таблица бейджей CSV</a>
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/chat-actions-templates-deferred-2026-08-13.md">Отложенные кнопки и шаблоны</a>
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/codex-context-g1-2-actions-templates-answers-ru.md">Ответы для Codex: кнопки и шаблоны</a>
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/g1-2-actions-templates-answers-for-igor.md">Вопросы и ответы для Игоря</a>
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/G1_CONTEXT_CANONICAL_RECONCILIATION_2026-08-14.md">Каноническая сверка G1 от 14.08.2026</a>
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/G1_ARCHIVE_HTML_CONTRACT_AUDIT_2026-08-14.md">Повторная сверка HTML и контрактов архива</a>
+    <a href="../../../reports/six-goals-functional-tz-2026-07-20/badge-resolver-qa-audit-2026-08-09.md">QA-аудит актуальности</a>
   </nav>
 
   <div class="meta">
@@ -67,7 +75,7 @@
     <span class="badge ready">Контракты архива разобраны</span>
     <span class="badge ready">Текст на русском; коды сохранены</span>
     <span class="badge warn">Боевой контур ещё не принят</span>
-    <span class="badge violet">Обновлено 05.08.2026</span>
+    <span class="badge violet">Обновлено 14.08.2026</span>
   </div>
 
   <div class="notice danger">
@@ -102,7 +110,7 @@
           <tr><td><code class="code">DELIVERY_README.md</code></td><td>Порядок передачи от утверждённой верстки к Yii2: инвентаризация, ресурсы, CSRF, адаптер AJAX, smoke-проверки и доказательства.</td></tr>
           <tr><td><code class="code">FINAL_HANDOFF_AUDIT.md</code></td><td>Итоговый аудит комплекта, список проверок, ограничения демонстрационного транспорта и критерий «готово только с боевым readback».</td></tr>
           <tr><td><code class="code">OPERATOR_STATUS_NETWORK_CONTRACT.md</code></td><td>Разделение состояния оператора и качества сети, переходы «В сети/Занят/Не в сети», причины, комментарии и глобальная форма проблемы.</td></tr>
-          <tr><td><code class="code">PAID_SESSION_CONTRACT.md</code></td><td>Авторитетная машина платной сессии, согласие, таймеры, пауза, восстановление связи, минута, идемпотентность, события, баланс и отсутствие двойного списания.</td></tr>
+          <tr><td><code class="code">PAID_SESSION_CONTRACT.md</code></td><td>Авторитетная машина <em>paid-этапа консультационной session</em>: согласие, таймеры, пауза, восстановление связи, минута, идемпотентность, события, баланс и отсутствие двойного списания. Не является источником глобального badge <code>Paid</code>; для него использовать BadgeResolver MD/CSV.</td></tr>
           <tr><td><code class="code">YII2_MIGRATION_NOTES.md</code></td><td>Размещение PHP-представлений и частичных шаблонов, пакеты ресурсов, CSRF/AJAX, существующая оболочка и предпочтение серверного <code class="code">messages_html</code>.</td></tr>
         </tbody>
       </table>
@@ -205,41 +213,44 @@
   <section class="section">
     <h2>5. Полный слой бейджей: словарь и алгоритм</h2>
     <div class="body">
-      <p>Стабильный <code class="code">badge_code</code> — это идентификатор в программном интерфейсе, фильтрах, очереди, центре и правом контексте. Видимая русская подпись берётся из существующих ключей переводов; звёздочки, произвольные английские подписи и новые коды без расширения словаря запрещены. Меньшее числовое значение приоритета означает более сильную позицию внутри одной роли.</p>
+      <p>Стабильный <code class="code">badge_code</code> — это идентификатор в программном интерфейсе, фильтрах, очереди, центре и правом контексте. Видимая русская подпись берётся из существующих ключей переводов; звёздочки, произвольные английские подписи и новые коды без расширения словаря запрещены. Бизнес-правила находятся в <a href="../../../reports/six-goals-functional-tz-2026-07-20/codex-context-badge-resolver-ru.md">каноническом MD</a> и <a href="../../../reports/six-goals-functional-tz-2026-07-20/badge-resolver-rules-ru.csv">CSV-таблице</a>; эта страница должна оставаться с ними синхронной.</p>
+      <div class="notice info"><b>Область действия:</b> <code class="code">chats_*</code> разрешены только в Chats, <code class="code">pings_*</code> — только в Pings. Paid, PP и Coupon используют глобальные факты клиента, но проецируются на разрешённые карточки; Live, Sell, Skeptic, Risk, Safe, Reply, Await и Revive относятся к конкретному диалогу, паре, session или Ping. Первый message клиента сразу создаёт Chats с <code class="code">Reply</code>; не отправлять его в Pings.</div>
       <table class="compact">
         <thead><tr><th>Сценарий</th><th>Код</th><th>Русская подпись</th><th>Роль / приоритет</th><th>Где показывать</th></tr></thead>
         <tbody>
-          <tr><td>Чаты</td><td><code class="code">chats_sell</code></td><td>Предложить консультацию</td><td>действие / 60</td><td>Слева, в центре</td></tr>
-          <tr><td>Чаты</td><td><code class="code">chats_live</code></td><td>Активна</td><td>состояние / 10</td><td>Слева, в центре, справа</td></tr>
-          <tr><td>Чаты</td><td><code class="code">chats_payment_process</code></td><td>Платёж в обработке</td><td>состояние / 20</td><td>Слева, в центре, справа</td></tr>
-          <tr><td>Чаты</td><td><code class="code">chats_paid</code></td><td>Оплачено</td><td>контекст / 30</td><td>Слева, в центре, справа</td></tr>
+          <tr><td>Чаты</td><td><code class="code">chats_sell</code></td><td>Предложить консультацию</td><td>сигнал для Эксперта / 60</td><td>Слева, в центре</td></tr>
+          <tr><td>Чаты</td><td><code class="code">chats_live</code></td><td>Консультация запущена</td><td>операционное состояние / 10</td><td>Слева, в центре, справа; остаётся в pause/reconnect</td></tr>
+          <tr><td>Чаты</td><td><code class="code">chats_payment_process</code></td><td>Клиент сейчас оплачивает</td><td>глобальный payment flow / 20</td><td>Слева, в центре, справа</td></tr>
+          <tr><td>Чаты</td><td><code class="code">chats_paid</code></td><td>Клиент когда-либо пополнял кошелёк</td><td>глобальная история клиента / 30</td><td>Слева, в центре, справа</td></tr>
           <tr><td>Чаты</td><td><code class="code">chats_trial</code></td><td>Пробный период</td><td>контекст / 70</td><td>Слева, в центре, справа</td></tr>
           <tr><td>Чаты</td><td><code class="code">chats_skeptic</code></td><td>Нужно снять сомнения</td><td>действие / 50</td><td>Слева, в центре, справа</td></tr>
           <tr><td>Чаты</td><td><code class="code">chats_revive</code></td><td>Вернуть клиента</td><td>контекст / 80</td><td>Слева, в центре, справа</td></tr>
           <tr><td>Чаты</td><td><code class="code">chats_risk</code></td><td>Риск</td><td>ограничение / 40</td><td>Слева, в центре, справа</td></tr>
           <tr><td>Чаты</td><td><code class="code">chats_safe</code></td><td>Безопасно</td><td>ограничение / 35</td><td>Слева, в центре, справа</td></tr>
-          <tr><td>Чаты</td><td><code class="code">chats_coupon</code></td><td>Открыт запрос купона</td><td>контекст / 90</td><td>Слева, в центре, справа</td></tr>
+          <tr><td>Чаты</td><td><code class="code">chats_coupon</code></td><td>Выдан бонус/компенсация</td><td>глобальный grant клиента / 90</td><td>Слева, в центре, справа</td></tr>
           <tr><td>Сигналы</td><td><code class="code">pings_fire</code></td><td>Срочно</td><td>сигнал / 10</td><td>Слева, в центре</td></tr>
           <tr><td>Сигналы</td><td><code class="code">pings_hot</code></td><td>Высокий интерес</td><td>сигнал / 20</td><td>Слева, в центре</td></tr>
           <tr><td>Сигналы</td><td><code class="code">pings_new</code></td><td>Новое</td><td>сигнал / 40</td><td>Слева, в центре</td></tr>
-          <tr><td>Сигналы</td><td><code class="code">pings_paid</code></td><td>Оплачено</td><td>контекст / 30</td><td>Слева, в центре, справа</td></tr>
-          <tr><td>Сигналы</td><td><code class="code">pings_reply</code></td><td>Нужен ответ</td><td>действие / 45</td><td>Слева, в центре</td></tr>
+          <tr><td>Сигналы</td><td><code class="code">pings_paid</code></td><td>У клиента есть успешное пополнение</td><td>глобальная история клиента / 30</td><td>Слева, в центре, справа</td></tr>
+          <tr><td>Сигналы</td><td><code class="code">pings_reply</code></td><td>Нужен ответ Эксперта</td><td>очередь действия / 45</td><td>Слева, в центре</td></tr>
           <tr><td>Сигналы</td><td><code class="code">pings_await</code></td><td>Ожидаем клиента</td><td>состояние / 50</td><td>Слева, в центре</td></tr>
           <tr><td>Сигналы</td><td><code class="code">pings_revive</code></td><td>Возврат клиента</td><td>контекст / 60</td><td>Слева, в центре, справа</td></tr>
-          <tr><td>Сигналы</td><td><code class="code">pings_trial</code></td><td>Пробный период</td><td>контекст / 70</td><td>Слева, в центре, справа</td></tr>
+          <tr><td>Сигналы</td><td><code class="code">pings_trial</code></td><td>Доступны trial-минуты</td><td>глобальный entitlement / 70</td><td>Слева, в центре, справа</td></tr>
           <tr><td>Сигналы</td><td><code class="code">pings_risk</code></td><td>Риск</td><td>ограничение / 55</td><td>Слева, в центре, справа</td></tr>
         </tbody>
       </table>
       <h3>Алгоритм разрешения бейджей</h3>
       <ol>
-        <li>Сервер формирует активные факты по паре клиент + анкета Эксперта и назначенному сценарию <code class="code">chats</code> или <code class="code">pings</code>.</li>
+        <li>Сервер сначала определяет сценарий: полноценный Chat или Ping до Chat. Коды <code class="code">chats_*</code> и <code class="code">pings_*</code> между сценариями не смешиваются.</li>
+        <li>Глобальные факты клиента загружаются отдельно: успешный wallet top-up включает Paid; текущий незавершённый wallet checkout включает временный PP; фактически committed bonus/compensation grant включает Coupon.</li>
+        <li>Если клиент отправил первое сообщение Эксперту, запись сразу создаётся в Chats с операционным состоянием «Нужен ответ» — это не <code class="code">pings_reply</code> и не отдельный badge-код. Outreach Эксперта без ответа клиента оставляет запись в Pings с Await; ответ клиента создаёт conversion в Chats.</li>
         <li>Для <code class="code">pings</code> оставить только один сигнал свежести: <b><code class="code">pings_fire</code> («Срочно») &gt; <code class="code">pings_hot</code> («Высокий интерес») &gt; <code class="code">pings_new</code> («Новое»)</b>.</li>
         <li>В <code class="code">pings</code> действует взаимоисключающий выбор (XOR): <b><code class="code">pings_reply</code></b> означает «действовать должен Эксперт», <b><code class="code">pings_await</code></b> — «ждём клиента».</li>
-        <li>Если активен <code class="code">chats_live</code>, <code class="code">chats_payment_process</code>, <code class="code">chats_skeptic</code> или ограничение «Риск» (<code class="code">chats_risk</code>), удалить действие «Предложить консультацию» (<code class="code">chats_sell</code>). После перехода от «Риск» к «Безопасно» действие может вернуться, если продажа снова допустима.</li>
-        <li><code class="code">chats_payment_process</code> действует до серверного <code class="code">expires_at</code> или раньше завершается при <code class="code">paid</code>/<code class="code">cancelled</code>/<code class="code">failed</code>; таймер браузера не решает судьбу бейджа.</li>
-        <li>Контекст <code class="code">Paid</code> и сигнал <code class="code">Revive</code> совместимы. <code class="code">Revive</code> заканчивается после пополнения, новой покупки или активной платной сессии.</li>
+        <li>Если активен <code class="code">chats_live</code>, <code class="code">chats_payment_process</code>, <code class="code">chats_skeptic</code> или ограничение «Риск» (<code class="code">chats_risk</code>), удалить действие «Предложить консультацию» (<code class="code">chats_sell</code>). Live остаётся в pause/reconnect и снимается только при terminal/technical end.</li>
+        <li><code class="code">chats_payment_process</code> действует до серверного <code class="code">expires_at</code> или раньше завершается при <code class="code">succeeded</code>/<code class="code">cancelled</code>/<code class="code">failed</code>/<code class="code">expired</code>; таймер браузера не решает судьбу бейджа.</li>
+        <li>Контекст <code class="code">Paid</code> и сигнал <code class="code">Revive</code> совместимы. Revive описывает актуальный return context и не появляется только из Paid или PP.</li>
         <li><code class="code">Safe</code> заменяет <code class="code">Risk</code> только в сценарии <code class="code">Chats</code> и только для конкретной пары клиент + Эксперт. В <code class="code">Pings</code> остаётся <code class="code">Risk</code>; при переходе обращения в <code class="code">Chats</code> правило пересчитывается.</li>
-         <li>Бейдж «Купон» (<code class="code">Coupon</code>) появляется только при <code class="code">coupon_request.open=true</code> и исчезает после решения/исполнения сотрудником.</li>
+        <li>Бейдж «Купон» (<code class="code">Coupon</code>) появляется только после фактического commit bonus/compensation grant и исчезает после использования, истечения или отзыва. Открытый <code class="code">coupon_request</code> сам по себе бейдж не включает.</li>
         <li>Отсортировать результат по ролям <b>действие → ограничение → состояние/сигнал → контекст</b>, затем по числовому приоритету. Нельзя молча выкидывать бейдж из-за ширины или ограничения «показывать максимум три».</li>
         <li>Отрендерить один и тот же серверный набор слева, в центре и справа только там, где код разрешён. Избранное не является бейджем: это отдельные <code class="code">is_favorite</code> и звезда.</li>
       </ol>
@@ -397,7 +408,7 @@
           <tr><td>Оплата</td><td>Операционный сигнал баланса, платёжные события, действие пакета; точная сумма — отдельная финансовая поверхность.</td><td>Супер-администратор и разрешённый финансовый сотрудник.</td></tr>
           <tr><td>Следующее касание</td><td>Следующий контакт, лимит, причина, канал и необязательный текст мягкого касания.</td><td>Внутренний сотрудник; перенос не отправляет сообщение сам.</td></tr>
           <tr><td>Заметки</td><td>Приватные заметки; «Сохранить» создаёт заметку, «Очистить» чистит только поле.</td><td>Никогда не уходит клиенту/Эксперту.</td></tr>
-          <tr><td>Качество</td><td>Проверки <code class="code">ok</code>/<code class="code">warn</code>/<code class="code">risk</code>, заметка руководителя, направление перевода и <code class="code">send_guard</code> со значениями <code class="code">allow</code>/<code class="code">confirm</code>/<code class="code">block</code>.</td><td>Оператор; заметку руководителя не отправлять и не переводить.</td></tr>
+          <tr><td>Качество</td><td>Проверки <code class="code">ok</code>/<code class="code">warn</code>/<code class="code">risk</code>, заметка руководителя, результирующий язык клиента и <code class="code">send_guard</code> со значениями <code class="code">allow</code>/<code class="code">confirm</code>/<code class="code">block</code>. По умолчанию чат использует <code class="code">AUTO</code> из профиля клиента; Expert/Agent может сохранить override для текущего диалога.</td><td>Оператор; заметку руководителя не отправлять и не переводить. Возможность менять/reset override блокируется super-admin в Chat Settings.</td></tr>
           <tr><td>AI</td><td>Краткое следующее действие, безопасный черновик, свёрнутая сводка, риск потери.</td><td>Флаг выключен по умолчанию; «Использовать черновик» только вставляет текст и не отправляет его.</td></tr>
         </tbody>
       </table>
@@ -422,8 +433,8 @@
           <tr><td>Сообщения</td><td><code class="code">PATCH/DELETE /admin/messages/{message_id}</code></td><td>Правка/мягкое или разрешённое полное удаление.</td></tr>
           <tr><td>Доставка</td><td><code class="code">POST /admin/messages/{message_id}/retry</code></td><td>Повтор неудачной доставки с nonce клиента.</td></tr>
           <tr><td>Черновик</td><td><code class="code">POST /admin/messages/drafts/save</code></td><td>Версионный серверный снимок, защищённый от перезаписи.</td></tr>
-          <tr><td>Перевод</td><td><code class="code">POST /admin/messages/translate</code>, <code class="code">/translate-draft</code></td><td>Только безопасный серверный текст; целевой язык по умолчанию берётся из языка анкеты.</td></tr>
-          <tr><td>Перевод</td><td><code class="code">PATCH /admin/messages/conversations/{id}/translation-direction</code></td><td>Сохранить исходный/целевой язык и очистить устаревшее превью.</td></tr>
+          <tr><td>Перевод</td><td><code class="code">POST /admin/messages/translate</code>, <code class="code">/translate-draft</code></td><td>Только безопасный серверный текст; целевой язык определяется действующим языковым контекстом диалога: профиль клиента в <code class="code">AUTO</code> или сохранённый Quality override. Для каждого шаблона хранятся утверждённые языковые поля RU и EN — это варианты языка, а не история ревизий: выбирается совпадающее поле, а при его отсутствии в composer вставляется RU. Если текущий текст или перевод не соответствует effective language, целевое поведение предусматривает небольшое модальное предупреждение с предложением перевести; в текущем runtime этот сигнал ещё не считается доказанным. Внешний переводчик запускается только по явной кнопке. Ручное редактирование перевода и автоматическая отправка запрещены; отправка — только отдельной кнопкой. Поставщик перевода пока не выбран и не подключается.</td></tr>
+          <tr><td>Перевод</td><td><code class="code">PATCH /admin/messages/conversations/{id}/translation-direction</code></td><td>Для текущего PM-контракта использовать Quality override результирующего языка; сохранять его для диалога без изменения профиля клиента. Доступ к изменению проверяется флагом Chat Settings. Индикатор несовпадения языка текста и языка клиента — отдельный последующий runtime-gap; его отсутствие сейчас не отменяет целевое продуктовое правило из канонической сверки.</td></tr>
           <tr><td>Закрепления</td><td><code class="code">GET/POST /admin/messages/pinned</code>, <code class="code">DELETE /admin/messages/pinned/{pin_id}</code></td><td>Канонические записи закреплений и откат.</td></tr>
           <tr><td>Контекст</td><td><code class="code">PATCH /admin/messages/conversations/{id}/context/{section}</code></td><td>Личные данные/партнёр и другие разделы.</td></tr>
           <tr><td>Заметки</td><td><code class="code">POST /admin/messages/conversations/{id}/context/notes</code></td><td>Создать приватную заметку.</td></tr>
@@ -485,7 +496,7 @@
           <tr><td>0. Подготовка</td><td>Зафиксировать коммит, хеш архива, маршруты, модели, ACL, ресурсы, источник настроек и откат. Удалить демонстрационные CSRF/ID из боевого кода.</td><td>Инвентаризация и исходный снимок сохранены; секретов в доказательствах нет.</td></tr>
           <tr><td>1. Оболочка и ресурсы</td><td>Перенести HTML/CSS/JS в Yii2-представления и пакеты ресурсов внутри существующей оболочки админки.</td><td>Компьютер/планшет/телефон без горизонтальной прокрутки и без регрессии маршрута.</td></tr>
           <tr><td>2. Только чтение</td><td>Подключить очередь, разговор, контекст, закрепления и серверный <code class="code">messages_html</code>.</td><td>Реальные данные, скелетон, пустое состояние, 403/404 и ошибка; фиктивные данные не видны.</td></tr>
-          <tr><td>3. Ядро сообщений</td><td>Отправка/чтение/доставка/повтор/ответ/правка/удаление/закрепление, версии черновика, перевод, системные события и защита канала реального времени от дублей.</td><td>Проверка чтением ID/времени/исполнителя; защита от дублей; отказ чужой роли.</td></tr>
+          <tr><td>3. Ядро сообщений</td><td>Отправка/чтение/доставка/повтор/ответ/правка/удаление/закрепление, версии черновика, системные события и защита канала реального времени от дублей. Источник языка чата — профиль клиента в <code class="code">AUTO</code> либо Quality override. Шаблоны используют утверждённые языковые поля RU/EN и RU fallback; при языковом несовпадении целевое поведение предусматривает небольшое модальное предложение перевода, запускаемого только вручную.</td><td>Проверка чтением ID/времени/исполнителя; защита от дублей; отказ чужой роли; проверка блокировки override, RU fallback и отсутствия автоматической отправки.</td></tr>
           <tr><td>4. Политика и вложения</td><td>Цензура, предупреждение отправителя, безопасный текст получателя, мониторинг инцидента, список изображений/документов, отказ запрещённых медиа.</td><td>Отрицательная проверка 422; нет небезопасного ответа и побочного файла в хранилище.</td></tr>
           <tr><td>5. Контекстные действия</td><td>Личные данные/партнёр, заметки, повторное касание, <code class="code">send_guard</code> качества, поддержка/жалоба, скрытие/завершение, назначение.</td><td>Приватные данные не утекли; причина, аудит и сохранение подтверждены.</td></tr>
           <tr><td>6. Платная сессия</td><td>Связать карточку консультации, чат, статусы и платёжные правила: предложение, согласие, старт, <code class="code">trial</code>/<code class="code">paid</code>, пауза, восстановление связи, технический конец, списание.</td><td>Полный журнал/снимок сессии, граница минуты, нет двойного списания.</td></tr>
@@ -526,7 +537,7 @@
           <tr><td>Голос/аудио/видео</td><td>Флаг <code class="code">false</code> и серверный отказ; схема остаётся совместимой для будущего этапа.</td></tr>
           <tr><td>Обновление/генерация AI</td><td>Флаг выключен; ручной запрос, происхождение результата и аудит; автоматическая отправка запрещена.</td></tr>
           <tr><td>Передача вложений</td><td>Игорь выбирает предварительную загрузку со стабильным токеном или передачу в формате multipart, но до решения интеграцию нельзя объявлять завершённой. Для черновика предпочтителен стабильный токен.</td></tr>
-          <tr><td>Назначение/завершение/выбор пакета</td><td>Заготовки интерфейса есть; точная бизнес-политика и маршрут должны быть зафиксированы до серверного изменения.</td></tr>
+          <tr><td>Кнопки действий и шаблоны</td><td><code class="code">Needs reply</code>, <code class="code">Assign</code>, <code class="code">Note</code>, <code class="code">Resolve</code> — визуальные точки действий; их semantics, модальные окна, права, API и persistence отложены. Системный стартовый каталог создаёт и публикует super-admin в отдельном функционале; после публикации он всегда доступен разрешённым операторам как базовый каталог только для выбора. Expert-scoped шаблоны принадлежат конкретной публичной экспертной анкете и видны в её рабочем контуре назначенному Агенту/оператору с permission; публичный Эксперт не входит в админку. Личные шаблоны создаются оператором в своём кабинете и редактируются/архивируются только им. Для записи нужны название, категория/сценарий, ровно одно положение доступности — <code class="code">Пинги</code> (<code class="code">pings</code>), <code class="code">Активный чат</code> (<code class="code">active_chat</code>) или <code class="code">Платный чат</code> (<code class="code">paid_chat</code>) — утверждённые языковые поля RU/EN и список переменных. Селектор фильтрует каталог по текущему положению, а сервер повторно проверяет placement при выборе и отправке; placement не заменяет permissions. Отдельная история версий шаблонов и template-audit в MVP не создаются. Разрешённые короткие имена переменных: <code class="code">client_name</code>, <code class="code">expert_name</code>, <code class="code">price_min</code>, <code class="code">trial_min</code>, <code class="code">consult_date</code>, <code class="code">consult_time</code>, <code class="code">timezone</code>, <code class="code">consult_link</code>, <code class="code">topup_link</code>, <code class="code">support_link</code>. Цена до session — effective price выбранного Эксперта, после создания session — её immutable snapshot; всегда credits/мин, не USD. Неразрешённые внутренние данные и literal <code class="code">{{...}}</code> запрещены; обязательное значение без источника скрывает шаблон. Макет сам по себе не утверждает состав системного набора.</td></tr>
           <tr><td>Новые глобальные роли/права</td><td>Не создавать; использовать существующую страницу ролей, первый получатель прав — супер-администратор.</td></tr>
           <tr><td>Юридические тексты приватности/кризисов</td><td>Значения и тексты оставлять управляемыми; финализация — отдельная юридическая проверка.</td></tr>
         </tbody>
@@ -535,14 +546,14 @@
       <table class="compact">
         <thead><tr><th>Класс</th><th>Элементы из архива</th><th>Правило для Игоря</th></tr></thead>
         <tbody>
-          <tr><td>Готово к серверному подключению</td><td>Фильтры очереди, карточка разговора, обновление, избранное, границы/диапазоны истории, поиск, закрепления, переводы, отправка/правка/удаление/повтор, черновики, контекст, управление, платная сессия, оператор, сеть, жалоба.</td><td>Подключать через каталог API; результат применять одним каноническим путём, ошибки откатывать.</td></tr>
+          <tr><td>Готово к серверному подключению</td><td>Фильтры очереди, карточка разговора, обновление, избранное, границы/диапазоны истории, поиск, закрепления, отправка/правка/удаление/повтор, черновики, контекст, платная сессия, оператор, сеть, жалоба.</td><td>Подключать через каталог API; результат применять одним каноническим путём, ошибки откатывать. Перевод и шаблоны сюда не входят.</td></tr>
           <tr><td>Только интерфейс</td><td>Сворачивание панелей, вкладки и аккордеоны, открытие/закрытие окон, просмотр фото, копирование, размер шрифта, панель инструментов, вставка эмодзи, очистка поиска.</td><td>Не считать эти действия изменением бизнес-состояния; хранить локально, если это разрешено макетом.</td></tr>
           <tr><td>Вложения</td><td>Кнопки выбора изображения/аудио/файла и галерея до отправки.</td><td>На MVP разрешены только изображения и документы; транспорт (стабильный токен или multipart) Игорь фиксирует отдельным контрактом.</td></tr>
           <tr><td>Голос</td><td>Кнопка голосового сообщения и запись до остановки.</td><td>Выключено на MVP; если включается позже, отдельно утвердить момент загрузки и формат.</td></tr>
           <tr><td>AI</td><td>Обновление сводки и вставка черновика AI.</td><td>По умолчанию выключено; определить синхронную генерацию/фоновую задачу и аудит использования. Автоматическая отправка запрещена.</td></tr>
           <tr><td>Заметки</td><td>Сохранить и очистить заметку в правом контексте.</td><td>Сохранить создаёт приватную заметку; очистить очищает только поле. Endpoint и подтверждение хранятся отдельно.</td></tr>
           <tr><td>Повторное касание</td><td>Отложить follow-up (<code class="code">follow</code>).</td><td>Согласовать варианты расписания и переход очереди; перенос не отправляет сообщение сам.</td></tr>
-          <tr><td>Назначение и завершение</td><td>Назначение (<code class="code">Assign</code>), заметка (<code class="code">Note</code>), завершение (<code class="code">Resolve</code>) в панели управления чатом.</td><td>До серверной реализации зафиксировать выбор оператора, семантику заметки и обратимость/финальность завершения.</td></tr>
+          <tr><td>Кнопки действий</td><td><code class="code">Needs reply</code>, <code class="code">Assign</code>, <code class="code">Note</code>, <code class="code">Resolve</code> и селектор шаблона.</td><td>Кнопки — visual placeholders до отдельного PM-контракта. Селектор учитывает три scope: system (super-admin, доступен разрешённым операторам только для выбора), Expert-scoped (конкретная публичная экспертная анкета и её назначенный Agent/Operator workspace; публичный Эксперт не входит в админку) и personal Operator (создатель управляет только своими записями), а также фильтрует записи по одному из трёх placement: Пинги, Активный чат, Платный чат.</td></tr>
           <tr><td>Пакет</td><td>Действие «Пакет/пополнение».</td><td>Согласовать: отправлять настроенный пакет сразу или сначала открывать выбор; финансовый источник не дублировать.</td></tr>
           <tr><td>Настройки оператора</td><td>Компактный режим, звуки и горячие клавиши.</td><td>Определить, где хранить предпочтения и какие пункты оставить в меню; это не меняет права и состояние консультации.</td></tr>
         </tbody>
