@@ -62,18 +62,33 @@ window.sixGoalsTrafficPlan = {
   const plan = window.sixGoalsTrafficPlan;
   const facts = window.sixGoalsImplementation.tasks;
   const date = value => value.slice(8,10) + "." + value.slice(5,7);
+  const monthResults = [
+    "Основа продукта и подтверждённые ресурсы.",
+    "Полный путь клиента и вход в закрытый пилот.",
+    "14 дней пилота, исправления и фиксация версии.",
+    "Решение GO/NO-GO по готовности к трафику — 21.12."
+  ];
   const groups = [1,2,3,4,5,6].map(goal => {
     const rows = plan.tasks.filter(row => facts[row[0]].code.startsWith("G" + goal + "."));
-    return `<details class="goal-next"><summary>G${goal}: сроки ${rows.length} задач</summary><div class="goal-next-body"><table class="summary-goal-table"><thead><tr><th>Задача / стадия сейчас</th><th>Результат / приёмка</th><th>Ответственность и proof</th></tr></thead><tbody>${rows.map(row => `<tr><td><a href="task-readiness.html?task=${row[0]}">${facts[row[0]].code} ${facts[row[0]].title}</a><br>${facts[row[0]].stage}</td><td>${date(row[1])} / ${date(row[2])}</td><td>${row[3]}<br>${row[4]}</td></tr>`).join("")}</tbody></table></div></details>`;
+    return `<details class="clean-detail goal-next"><summary>G${goal}: сроки ${rows.length} задач</summary><div class="detail-body goal-next-body"><table class="summary-goal-table"><thead><tr><th>Задача / стадия сейчас</th><th>Результат / приёмка</th><th>Ответственность и proof</th></tr></thead><tbody>${rows.map(row => `<tr><td><a href="task-readiness.html?task=${row[0]}">${facts[row[0]].code} ${facts[row[0]].title}</a><br>${facts[row[0]].stage}</td><td>${date(row[1])} / ${date(row[2])}</td><td>${row[3]}<br>${row[4]}</td></tr>`).join("")}</tbody></table></div></details>`;
   }).join("");
-  root.innerHTML = `<div class="section-title"><h2>Сентябрь–декабрь 2026</h2><p>К тестовому трафику в январе 2027. Решение о готовности: 21 декабря. Резерв: 22–31 декабря.</p></div>
+  root.innerHTML = `<div class="section-title"><h2>Сентябрь–декабрь 2026</h2></div>
+    <div class="month-grid">${plan.months.map((month, index) => `<article class="month-card"><div class="month-label">${month.month}</div><p>${monthResults[index]}</p></article>`).join("")}</div>
+    <p>Даты плановые: подтвердить исполнителей/загрузку до 11.09; резерв 22–31.12.</p>
+    <details class="clean-detail"><summary>Помесячный план и условия срока</summary><div class="detail-body">
+    <p>К тестовому трафику в январе 2027. Решение о готовности: 21 декабря. Резерв: 22–31 декабря.</p>
     <div class="notice"><b>Прогноз PM: январская цель под риском; достижимость не подтверждена.</b> Даты ниже — целевые; ресурсный расчёт нужен до 11.09. Игорь участвует в 24 из 30 строк — это не 24 параллельных потока. Готовность продукта и бюджетное разрешение ещё не получены. <a href="${plan.documentHref}">Полный план и критерии</a>.</div>
     <table class="summary-goal-table"><thead><tr><th>Месяц</th><th>Результат</th><th>Работа и приёмка</th></tr></thead><tbody>${plan.months.map(month => `<tr><td>${month.month}<br>${date(month.gate)}</td><td>${month.result}</td><td>${month.work}<br><b>На выходе:</b> ${month.acceptance}</td></tr>`).join("")}</tbody></table>
     <p><b>Не переносим в декабрь:</b> основную разработку, первый сбор аналитики, набор экспертов и проверку критичных прав. Июль–август — уже затраченное время, не автоматическая приёмка двух этапов.</p>
     <p><b>Правило 14 дней:</b> последний blocking fix для GO 21.12 — 07.12; для готовности 31.12 — 17.12 при подтверждённых сменах. Fix 18.12 переносит окно до 01.01. Календарный резерв не сокращает наблюдение. Build/config/provider lineage сохраняется.</p>
     <p><b>До пилота, 30.10:</b> технически готовы events/dashboard/SLA/quality/alerts и допущена реальная когорта. Приёмка каталога 16.10 на fixtures не заменяет этот gate; ноябрьские даты метрик — проверка по данным пилота.</p>
-    <h3>Внешний коммерческий путь</h3><ul>${plan.externalMilestones.map(row => `<li><b>${date(row[0])}:</b> ${row[1]}. ${row[2]}.</li>`).join("")}</ul>
+    <p><b>Правило срока:</b> нет свежего ядра/ACL proof к 30.09 или интегрированного пути к 30.10 — январский прогноз RED, PM пересчитывает план в течение двух рабочих дней. Нет полного GO после декабрьского резерва — запуск переносится, критерии не ослабляются.</p>
+    </div></details>
+    <details class="clean-detail"><summary>Все 30 задач: сроки, ответственность и приёмка</summary><div class="detail-body">
     <h3>Все 30 задач остаются в плане</h3><p>Результат — дата завершения остатка реализации/интеграции; приёмка — дата проверки. Для уже реализованной функции это срок стабилизации, не разработка с нуля. Роли исполнителей требуют подтверждения capacity; календарь сам не меняет статус на «Принято».</p>${groups}
+    </div></details>
+    <details class="clean-detail"><summary>Внешние зависимости и восемь проверок запуска</summary><div class="detail-body">
+    <h3>Внешний коммерческий путь</h3><ul>${plan.externalMilestones.map(row => `<li><b>${date(row[0])}:</b> ${row[1]}. ${row[2]}.</li>`).join("")}</ul>
     <h3>Январский запуск допускается только после восьми проверок</h3><ol>${plan.launchGates.map(gate => `<li>${gate}</li>`).join("")}</ol>
-    <p><b>Правило срока:</b> нет свежего ядра/ACL proof к 30.09 или интегрированного пути к 30.10 — январский прогноз RED, PM пересчитывает план в течение двух рабочих дней. Нет полного GO после декабрьского резерва — запуск переносится, критерии не ослабляются.</p>`;
+    </div></details>`;
 })();
