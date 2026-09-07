@@ -1408,6 +1408,19 @@
   }
 
   const summaryRoot = document.getElementById("customer-summary-root");
+  const goalOverview = {
+    G1:["Платные сценарии, сообщения, вложения и история проверены.","Перепроверить права, уведомления и восстановление связи."],
+    G2:["Цена, баланс и тестовое пополнение подтверждены.","Сверить списания, возвраты и начисления с серверными записями."],
+    G3:["Подготовлены 52 статических превью страниц.","Связать сайт с реальными данными и проверить полный путь клиента."],
+    G4:["Обращения, очередь и заметки поддержки реализованы.","Закрыть доступ к чужим данным и внутренним сведениям."],
+    G5:["Подготовлены требования к событиям, показателям и запуску трафика.","Включить измерения до пилота и сверить их по его данным."],
+    G6:["Есть локальная школа; правки R5 приняты с ограничениями.","Проверить изоляцию, допуск и смены 3–5 участников пилота."]
+  };
+  const goalDeadline = code => {
+    const dates = window.sixGoalsTrafficPlan.tasks.filter(row => implementation.tasks[row[0]].code.startsWith(code + ".")).map(row => row[2]).sort();
+    const date = dates[dates.length - 1];
+    return date.slice(8) + "." + date.slice(5,7);
+  };
   document.getElementById("technical-context-root").innerHTML = document.getElementById("technical-context-template").innerHTML;
   summaryRoot.innerHTML = `
     <div class="overview-heading"><span class="summary-kicker">Срез на 8 сентября 2026</span><h2>Что у нас сейчас</h2><p>Платный чат работает. Поддержка проходит проверку.</p></div>
@@ -1418,7 +1431,8 @@
       <article class="verified-card"><span class="state state-done">✓ Подтверждено</span><h4>Очередь поддержки</h4><p>Обращения, заметки и закрытие у супер-админа.</p><small>Проверка 4 сентября</small></article>
     </div><p class="quiet-note">Подтверждены эти сценарии, не весь продукт. Права доступа и точность денег ещё проверяем.</p></section>
     <section class="next-step"><div><span class="summary-kicker">Ближайший шаг · до 11 сентября</span><h3>Подтвердить исполнителей и сроки</h3><p>Сверить остаток работ и доступное время команды.</p></div><button type="button" class="summary-action" data-open-tab="calendar-plan">План и 7 направлений →</button></section>
-    <details class="clean-detail"><summary>Что ещё нужно для запуска</summary><div class="detail-body"><ul class="launch-checklist"><li><b>Деньги.</b> Сверить секунды, списания, возвраты и начисления.</li><li><b>Безопасный клиентский путь.</b> Закрыть доступ к чужим данным и пройти сайт от входа до результата.</li><li><b>Рабочий пилот.</b> Подтвердить допуск команды, смены, качество и измерения.</li></ul><p>Нужны все условия; количество написанного кода или подготовленных документов не заменяет приёмку.</p></div></details>
+    <section class="summary-section open-goal-summary" aria-labelledby="summary-goals-title"><div class="summary-section-head"><h3 id="summary-goals-title">Шесть целей — результат и следующий шаг</h3></div><table class="summary-goal-table"><thead><tr><th>Цель / срок</th><th>Состояние</th><th>Уже есть</th><th>Что осталось</th></tr></thead><tbody>${monthlyReport.goals.map(goal => `<tr><td><a href="#six-goals" data-open-tab="six-goals">${goal.code}</a><small class="goal-deadline">до ${goalDeadline(goal.code)}</small></td><td><span class="report-badge ${goal.tone === "good" ? "warn" : goal.tone}">${goal.status}</span></td><td>${goalOverview[goal.code][0]}</td><td>${goalOverview[goal.code][1]}</td></tr>`).join("")}</tbody></table><p class="quiet-note summary-table-note">Срок — плановая приёмка последней задачи цели. Даты требуют подтверждения загрузки команды до 11 сентября.</p></section>
+    <details class="clean-detail launch-requirements" open><summary>Что ещё нужно для запуска</summary><div class="detail-body"><ul class="launch-checklist"><li><b>Деньги.</b> Сверить секунды, списания, возвраты и начисления.</li><li><b>Безопасный клиентский путь.</b> Закрыть доступ к чужим данным и пройти сайт от входа до результата.</li><li><b>Рабочий пилот.</b> Подтвердить допуск команды, смены, качество и измерения.</li></ul><p>Нужны все условия; количество написанного кода или подготовленных документов не заменяет приёмку.</p></div></details>
     <details id="pm-control" class="pm-control">
       <summary>Подробности для PM</summary>
       <div class="pm-control-body">
@@ -1517,7 +1531,7 @@
       </section>` : "";
 
     article.innerHTML = `
-      <details class="goal-disclosure"><summary class="goal-head"><b>${goal.title}</b><span class="state state-attention">Приёмка открыта</span></summary>
+      <details class="goal-disclosure" open><summary class="goal-head"><b>${goal.title}</b><span class="state state-attention">Приёмка открыта</span></summary>
       <div class="goal-body">
         <p>${goal.summary}</p>
         <div class="goal-status" aria-label="Статус цели">
@@ -1529,7 +1543,7 @@
           <b>Статус сейчас</b>
           <small>${goal.current}</small>
         </div>
-        <details class="goal-next">
+        <details class="goal-next" open>
           <summary>Блокер и следующий шаг</summary>
           <div class="goal-next-body">
             <p><b>Блокер:</b> ${goal.blocker}</p>
