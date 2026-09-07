@@ -1022,7 +1022,7 @@
       need:"Нужно поле/событие audit: публичная анкета, реальный оператор, conversation/message, время и действие."
     },
     {
-      code:"G2.4",
+      code:"G4.5",
       title:"ЗП/начисления продуманы как пакет, но не выполнены как результат",
       text:"Для MVP зафиксирован только consultation component: применённая процентная политика, период, ручная корректировка и refund correction. Fixed/SLA/task components отсутствуют и вынесены в post-MVP. Development scope описан, но runtime-цепочка не доказана.",
       need:"Доказать цепочку service_session -> immutable consultation policy snapshot -> eligible base -> начисление -> refund correction -> исторический Агент -> audit/reconciliation."
@@ -1185,13 +1185,13 @@
     },
     {
       color:"#0f766e",
-      title:"2) Деньги, жалобы и уведомления",
+      title:"2) Деньги и жалобы",
       month:"Сентябрь–октябрь: денежная сверка; ноябрь–декабрь: release",
-      summary:"Цена, баланс, поминутный расчёт и начисления; разбор жалоб, решение по спору и адресованные уведомления. Исполнение денежного возврата — в G4.2.",
-      current:"Цена/credits/balance, платный lifecycle, meter/stop и Pay/Transactions проверены по отдельным сценариям. Строка 95 от 26.08 подтверждает sandbox checkout +500: баланс 190 → 690 и Transactions readback. Это не production checkout, не точная session/ledger сверка и не приёмка возвратов. G2.4 начисления сотрудникам остаётся отдельным контуром. GEO pilot: только ограниченный text-scope 5/5 стран и 30/30 locale readback.",
-      blocker:"Нужен не повторный build, а release-верификация: read-only сверка transaction↔session, rounding/compensation/refund и отрицательные low-balance/reconnect сценарии. G2.4 требует отдельной формулы начислений. GEO pilot не является полным покрытием: общий denominator неизвестен, фото 0/2 вне text-scope.",
-      next:"Провести один контролируемый financial regression с billing oracle (session id, timestamps, billed seconds, debit, rounding, refund reason) и закрыть отдельную G2.4; GEO продолжать только как inventory → reconciliation → review → controlled publish → readback → rollback.",
-      tasks:["task-g2-pricing","task-g2-timer","task-g4-complaints","task-g2-accruals","task-g4-support-notifications"],
+      summary:"Цена, баланс, поминутный расчёт и разбор жалоб. Возвраты, уведомления поддержки и начисления сотрудникам — в G4.",
+      current:"Цена/credits/balance, платный lifecycle, meter/stop и Pay/Transactions проверены по отдельным сценариям. Строка 95 от 26.08 подтверждает sandbox checkout +500: баланс 190 → 690 и Transactions readback. Это не production checkout, не точная session/ledger сверка и не приёмка возвратов. G4.5 начисления сотрудникам остаётся отдельным контуром. GEO pilot: только ограниченный text-scope 5/5 стран и 30/30 locale readback.",
+      blocker:"Нужен не повторный build, а release-верификация: read-only сверка transaction↔session, rounding/compensation/refund и отрицательные low-balance/reconnect сценарии. G4.5 требует отдельной формулы начислений. GEO pilot не является полным покрытием: общий denominator неизвестен, фото 0/2 вне text-scope.",
+      next:"Провести один контролируемый financial regression с billing oracle (session id, timestamps, billed seconds, debit, rounding, refund reason) с передачей расчётов сотрудникам в G4.5; GEO продолжать только как inventory → reconciliation → review → controlled publish → readback → rollback.",
+      tasks:["task-g2-pricing","task-g2-timer","task-g4-complaints"],
       implementationPackage:{
         id:"task-g2-geo-content",
         code:"G2.GEO",
@@ -1203,7 +1203,7 @@
         acceptanceLabel:"PM + geo-content QA",
         extraHref:"../../../reports/g2-geo-five-country-pilot-2026-07-29/review.html",
         extraLabel:"Review live-пилота пяти стран",
-        boundary:"Класс OPS_FIRST + CONTENT_POLICY. Moderator/super-admin владеет review/publish/readback; Игорь подключается только по evidence-backed technical gap. Не является G2.5 и не входит в 30 канонических задач."
+        boundary:"Класс OPS_FIRST + CONTENT_POLICY. Moderator/super-admin владеет review/publish/readback; Игорь подключается только по evidence-backed technical gap. Не входит в 30 канонических задач."
       }
     },
     {
@@ -1233,11 +1233,11 @@
       color:"#b7791f",
       title:"4) Поддержка, возвраты и документы",
       month:"Сентябрь: P0; октябрь: интеграция; ноябрь: операционный пилот",
-      summary:"Работа поддержки, исполнение одобренных денежных возвратов и документы. Разбор жалоб и адресованные уведомления связаны с G2.3 / G2.5.",
+      summary:"Работа поддержки, денежные возвраты, документы, уведомления поддержки G4.4 и начисления / ЗП сотрудников G4.5. Решение по жалобе связано с G2.3.",
       current:"Реализовано. Тестируем: серверный Support V2 проверен 04.09 по клиенту, Chat V2 агенту и супер-админу. Работают очередь, клиентские обращения, история/заметки, контекст consultation/payment, Resolved → Closed, запрет ответа после Closed и изоляция двух клиентов. Это уже не только frontend-прототип.",
       blocker:"Трёхролевая приёмка 04.09 FAIL: агенту открыт полный Support V2, клиенту раскрывается внутренний тикет и неверный статус ожидания. В Chat V2 нет адресованной агенту support-карточки; есть дефекты адресата эксперта и передачи owner. Отдельная роль support-moder и новый internal-only Report N0 не протестированы; денежные действия не выполнялись.",
       next:"Исправить server ACL и internal/client projection, затем agent question delivery, адресата и escalation ownership. Повторить точные P0/P1 и NOT TESTED; не создавать backend заново по старому prototype-статусу.",
-      tasks:["task-g4-support","task-g2-refund","task-g4-docs"]
+      tasks:["task-g4-support","task-g2-refund","task-g4-docs","task-g4-support-notifications","task-g2-accruals"]
     },
     {
       color:"#be185d",
@@ -1283,12 +1283,14 @@
     goal.tasks = current.tasks;
     goal.title = `${index + 1}) ${current.title}`;
   });
-  goals[1].current += " Жалобы и адресованные уведомления из Support V2 теперь входят в G2.3 / G2.5: серверный контур есть, приёмка разделения проекций и доставки открыта.";
-  goals[1].next += " В G2.3 / G2.5 исправить ownership, безопасную клиентскую проекцию и доставку вопроса агенту; одобренный cash refund исполняется и принимается отдельно в G4.2.";
+  goals[1].current += " Разбор жалоб остаётся в G2.3; уведомления поддержки перенесены в G4.4, начисления сотрудникам — в G4.5.";
+  goals[1].next += " В G2.3 исправить ownership и безопасную клиентскую проекцию. Возврат, уведомления и начисления принимаются в G4.2 / G4.4 / G4.5.";
   goals[2].current += " G3.8: R5 product source принят и доставлен, есть локальный Moodle и учебный корпус; production admission не принят.";
   goals[2].blocker += " Для G3.8 открыты disposable-DB build, независимый review, роли и практика, server deny paid до допуска и после его отзыва.";
   goals[2].next += " Отдельно довести обучение до проверенного допуска / re-admission и 3–5 подготовленных участников пилота.";
   goals[3].next += " G4.2: сверить session → debit → разрешённый refund, права, причину, идемпотентность и audit trail; компенсационные минуты не считать денежным возвратом.";
+  goals[3].current += " G4.4: клиентские уведомления частично работают, agent delivery не принят. G4.5: пакет начислений есть, фактический расчёт сотруднику не подтверждён.";
+  goals[3].next += " Проверить адресованную доставку G4.4; для G4.5 принять формулу, получателя, basis, округление, reversal и один расчёт.";
 
   const monthlyReport = {
     month:"К январю 2027 · четыре месяца до трафика",
@@ -1306,9 +1308,9 @@
     ],
     goals:[
       {code:"G1", status:"Реализовано. Тестируем", tone:"good", result:"Три paid lifecycle, chat/media, reload и duplicate-send прошли. Non-BMP transport PASS; active-paid forged/oversize validation PASS. Последняя runtime-проверка чата: 25–26.08.", next:"Перепроверить CL-UI-005/006 и CL-RT-001; закрыть zero-byte, reconnect timeout, notifications и серверный RBAC."},
-      {code:"G2", status:"Работает частично; приёмка открыта", tone:"neutral", result:"Цена, баланс, Pay/Transactions и sandbox +500 подтверждены. Жалобы и уведомления существуют на сервере; точный debit, начисления, проекции и доставка ещё не приняты.", next:"Billing oracle, G2.4 начисления, безопасная обработка жалобы G2.3 и адресованные уведомления G2.5; cash execution связан с G4.2."},
+      {code:"G2", status:"Работает частично; приёмка открыта", tone:"neutral", result:"Цена, баланс, Pay/Transactions и sandbox +500 подтверждены. Жалобы существуют на сервере; точный debit и безопасные проекции ещё не приняты.", next:"Billing oracle и безопасная обработка жалобы G2.3; возврат, уведомления и начисления связаны с G4."},
       {code:"G3", status:"Вёрстка и школа есть; приёмка открыта", tone:"risk", result:"52 static preview-ready; R5 product source принят с ограничениями, локальный Moodle есть. Public binding, полный клиентский путь и production admission не приняты.", next:"Интегрировать сайт; проверить роли, практику и server admission / re-admission в G3.8."},
-      {code:"G4", status:"Support работает; денежная приёмка открыта", tone:"risk", result:"Live Support V2 проверен 04.09; есть очередь, история и закрытие. Точный возврат с идемпотентностью не доказан; документы требуют live readback.", next:"Закрыть P0 ACL и ticket workflow; принять одобренный возврат G4.2 и опубликованные документы G4.3."},
+      {code:"G4", status:"Support работает; расчёты и доставка открыты", tone:"risk", result:"Support V2 проверен 04.09; уведомления частично работают. Точный возврат, начисление сотруднику, agent delivery и публикация документов ещё не приняты.", next:"Закрыть P0 ACL, принять возврат G4.2, документы G4.3, уведомления G4.4 и начисления G4.5."},
       {code:"G5", status:"Подготовка", tone:"neutral", result:"Требования к events, KPI, SEO и gate собраны; runtime-измерения не приняты.", next:"Dictionary в сентябре; events/dashboard/SLA/quality/alerts технически готовы ДО пилота; в ноябре сверка по его данным."},
       {code:"G6", status:"Частичная реализация; критичный доступ открыт", tone:"risk", result:"Назначение проверялось; полная изоляция, SLA, контроль качества и командная доставка не приняты.", next:"P0 server isolation, SLA/quality/alerts и рабочие смены; допуск участников приходит из G3.8."}
     ],
@@ -1424,9 +1426,9 @@
   const summaryRoot = document.getElementById("customer-summary-root");
   const goalOverview = {
     G1:["Платные сценарии, сообщения, вложения и история проверены.","Перепроверить права, уведомления и восстановление связи."],
-    G2:["Цена, баланс и тестовое пополнение (sandbox) подтверждены; жалобы и уведомления реализованы частично.","Сверить списания и начисления, решение по жалобе и адресованную доставку."],
+    G2:["Цена, баланс и тестовое пополнение (sandbox) подтверждены; жалобы реализованы частично.","Сверить списания и безопасное решение по жалобе."],
     G3:["52 статических превью, локальная школа и R5 source с ограничениями.","Связать сайт с данными; проверить обучение, практику, допуск и его отзыв."],
-    G4:["Поддержка работает; контур возврата описан, документы подготовлены.","Закрыть P0 доступа, принять денежный возврат и опубликованные документы."],
+    G4:["Поддержка и часть уведомлений работают; пакеты возврата, документов и начислений подготовлены.","Закрыть P0 доступа, принять возврат, документы, доставку и начисление сотруднику."],
     G5:["Подготовлены требования к событиям, показателям и запуску трафика.","Включить измерения до пилота и сверить их по его данным."],
     G6:["Назначение проверялось; правила SLA и контроля качества подготовлены.","Проверить изоляцию, SLA, качество, уведомления и смены; допуск — из G3.8."]
   };
@@ -1447,7 +1449,7 @@
     <section class="next-step"><div><span class="summary-kicker">Ближайший шаг · до 11 сентября</span><h3>Подтвердить исполнителей и сроки</h3><p>Сверить остаток работ и доступное время команды.</p></div><button type="button" class="summary-action" data-open-tab="calendar-plan">План и 7 направлений →</button></section>
     <section class="summary-section open-goal-summary" aria-labelledby="summary-goals-title"><div class="summary-section-head"><h3 id="summary-goals-title">Шесть целей — результат и следующий шаг</h3></div><table class="summary-goal-table"><thead><tr><th>Цель / срок</th><th>Состояние</th><th>Уже есть</th><th>Что осталось</th></tr></thead><tbody>${monthlyReport.goals.map(goal => `<tr><td><a href="#six-goals" data-open-tab="six-goals">${goal.code}</a><small class="goal-deadline">до ${goalDeadline(goal.code)}</small></td><td><span class="report-badge ${goal.tone === "good" ? "warn" : goal.tone}">${goal.status}</span></td><td>${goalOverview[goal.code][0]}</td><td>${goalOverview[goal.code][1]}</td></tr>`).join("")}</tbody></table><p class="quiet-note summary-table-note">Срок — плановая приёмка последней задачи цели. Даты требуют подтверждения загрузки команды до 11 сентября.</p></section>
     <details class="clean-detail launch-requirements" open><summary>Что ещё нужно для запуска</summary><div class="detail-body"><ul class="launch-checklist"><li><b>Деньги.</b> Сверить секунды, списания, возвраты и начисления.</li><li><b>Безопасный клиентский путь.</b> Закрыть доступ к чужим данным и пройти сайт от входа до результата.</li><li><b>Рабочий пилот.</b> Подтвердить допуск команды, смены, качество и измерения.</li></ul><p>Нужны все условия; количество написанного кода или подготовленных документов не заменяет приёмку.</p></div></details>
-    <details id="goal-grouping" class="clean-detail"><summary>Перегруппировка 08.09: прежние и текущие коды задач</summary><div class="detail-body"><p>Все 30 задач, ссылки, стадии и даты сохранены. Изменён только состав целей. Коды внутри исторических ТЗ и отчётов остаются прежними; текущий код определяйте по этой таблице.</p><table class="summary-goal-table"><thead><tr><th>Прежний код</th><th>Текущий код</th><th>Задача</th></tr></thead><tbody>${Object.entries(implementation.tasks).filter(([, task]) => task.sourceCode !== task.code).map(([id, task]) => `<tr><td>${task.sourceCode}</td><td>${task.code}</td><td><a href="task-readiness.html?task=${id}">${task.title}</a></td></tr>`).join("")}</tbody></table><p>Остальные коды не изменены. Обучение и допуск G3.8 связаны с назначением, SLA и качеством G6; одобренный денежный возврат G4.2 связан с решением по жалобе G2.3.</p></div></details>
+    <details id="goal-grouping" class="clean-detail"><summary>Перегруппировка 08.09: прежние и текущие коды задач</summary><div class="detail-body"><p><b>Последняя корректировка 08.09:</b> G2.5 → G4.4 (уведомления поддержки); G2.4 → G4.5 (начисления / ЗП сотрудников). Обе задачи теперь относятся к G4.</p><p>Все 30 задач, ссылки, стадии и даты сохранены. Изменён только состав целей. Коды внутри исторических ТЗ и отчётов остаются прежними; текущий код определяйте по этой таблице.</p><table class="summary-goal-table"><thead><tr><th>Прежний код</th><th>Текущий код</th><th>Задача</th></tr></thead><tbody>${Object.entries(implementation.tasks).filter(([, task]) => task.sourceCode !== task.code).map(([id, task]) => `<tr><td>${task.sourceCode}</td><td>${task.code}</td><td><a href="task-readiness.html?task=${id}">${task.title}</a></td></tr>`).join("")}</tbody></table><p>Остальные коды не изменены. Обучение и допуск G3.8 связаны с назначением, SLA и качеством G6; одобренный денежный возврат G4.2 связан с решением по жалобе G2.3.</p></div></details>
     <details id="pm-control" class="pm-control">
       <summary>Подробности для PM</summary>
       <div class="pm-control-body">

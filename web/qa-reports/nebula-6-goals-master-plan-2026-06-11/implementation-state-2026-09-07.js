@@ -62,13 +62,14 @@ window.sixGoalsImplementation = {
 (function (state) {
   const goals = [
     {code:"G1", title:"Глобальный чат", tasks:["task-g1-session","task-g1-chat","task-g1-statuses","task-g1-chat-notifications"]},
-    {code:"G2", title:"Деньги, жалобы и уведомления", tasks:["task-g2-pricing","task-g2-timer","task-g4-complaints","task-g2-accruals","task-g4-support-notifications"]},
+    {code:"G2", title:"Деньги и жалобы", tasks:["task-g2-pricing","task-g2-timer","task-g4-complaints"]},
     {code:"G3", title:"Вёрстка и обучающий контур экспертов / агентов", tasks:["task-g3-home","task-g3-catalog","task-g3-profile","task-g3-quiz","task-g3-qa","task-g3-field-weight","task-g3-rotation","task-g6-training"]},
-    {code:"G4", title:"Поддержка, возвраты и документы", tasks:["task-g4-support","task-g2-refund","task-g4-docs"]},
+    {code:"G4", title:"Поддержка, возвраты и документы", tasks:["task-g4-support","task-g2-refund","task-g4-docs","task-g4-support-notifications","task-g2-accruals"]},
     {code:"G5", title:"Маркетинг, аналитика и дашборды", tasks:["task-g5-events","task-g5-dashboard","task-g5-kpi","task-g5-marketing-gate"]},
     {code:"G6", title:"Рабочий контур команды", tasks:["task-g6-assignment","task-g6-sla","task-g6-quality","task-g6-team-notifications","task-g6-admin-url","task-g6-isolated-admin-access"]}
   ];
   const codeAliases = {};
+  const previousCodes = {"task-g4-support-notifications":"G2.5", "task-g2-accruals":"G2.4"};
   goals.forEach(goal => goal.tasks.forEach((id, index) => {
     const task = state.tasks[id];
     task.sourceCode = task.code;
@@ -77,7 +78,7 @@ window.sixGoalsImplementation = {
     codeAliases[task.sourceCode] = task.code;
   }));
   state.grouping = {
-    updatedAt:"2026-09-08", goals, codeAliases,
+    updatedAt:"2026-09-08", goals, codeAliases, previousCodes,
     applyMetadata(tasks) {
       Object.entries(tasks).forEach(([id, task]) => {
         const fact = state.tasks[id];
@@ -90,6 +91,7 @@ window.sixGoalsImplementation = {
     },
     sourceNote(id) {
       const task = state.tasks[id];
+      if (task && previousCodes[id]) return `Текущий код: ${task.code}. В предыдущем выпуске 08.09: ${previousCodes[id]}; в исходных документах: ${task.sourceCode}. Ссылка и история задачи сохранены.`;
       return task && task.code !== task.sourceCode
         ? `Текущий код: ${task.code}. В источниках до перегруппировки 08.09: ${task.sourceCode}. Ссылка и история задачи сохранены.`
         : "";
