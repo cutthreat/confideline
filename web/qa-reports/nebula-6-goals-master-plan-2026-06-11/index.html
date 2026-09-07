@@ -264,6 +264,7 @@
     <button type="button" class="nav-utility" data-tab-target="sources">Источники</button>
   </nav>
   <template id="technical-context-template">
+    <p class="notice">Ниже сохранены датированные источники и история решений с прежними кодами задач. Для текущего распределения целей используйте <a href="index.html#goal-grouping">соответствие кодов после 08.09</a>.</p>
   <div class="notice">
     <b>Обновление BadgeResolver v2.0</b>
     <span>Канонические правила бейджей теперь разделяют Chats и Pings: <code>chats_*</code> только для Chats, <code>pings_*</code> только для Pings; Paid означает успешное историческое пополнение кошелька клиента, PP - текущий checkout/top-up, Coupon - фактический bonus/compensation grant, а первое сообщение клиента сразу создаёт Chats с Reply. Полный <a href="../../../reports/six-goals-functional-tz-2026-07-20/codex-context-badge-resolver-ru.md">MD-контекст</a>, <a href="../../../reports/six-goals-functional-tz-2026-07-20/badge-resolver-rules-ru.csv">таблица для Codex</a> и <a href="../../../reports/six-goals-functional-tz-2026-07-20/badge-resolver-qa-audit-2026-08-09.md">QA-аудит актуальности</a> доступны в панели.</span>
@@ -1184,13 +1185,13 @@
     },
     {
       color:"#0f766e",
-      title:"2) Деньги и поминутная логика",
+      title:"2) Деньги, жалобы и уведомления",
       month:"Сентябрь–октябрь: денежная сверка; ноябрь–декабрь: release",
-      summary:"Сделать продуктовую денежную механику: цена, баланс, лимиты, стоп, возвраты, начисления.",
+      summary:"Цена, баланс, поминутный расчёт и начисления; разбор жалоб, решение по спору и адресованные уведомления. Исполнение денежного возврата — в G4.2.",
       current:"Цена/credits/balance, платный lifecycle, meter/stop и Pay/Transactions проверены по отдельным сценариям. Строка 95 от 26.08 подтверждает sandbox checkout +500: баланс 190 → 690 и Transactions readback. Это не production checkout, не точная session/ledger сверка и не приёмка возвратов. G2.4 начисления сотрудникам остаётся отдельным контуром. GEO pilot: только ограниченный text-scope 5/5 стран и 30/30 locale readback.",
       blocker:"Нужен не повторный build, а release-верификация: read-only сверка transaction↔session, rounding/compensation/refund и отрицательные low-balance/reconnect сценарии. G2.4 требует отдельной формулы начислений. GEO pilot не является полным покрытием: общий denominator неизвестен, фото 0/2 вне text-scope.",
       next:"Провести один контролируемый financial regression с billing oracle (session id, timestamps, billed seconds, debit, rounding, refund reason) и закрыть отдельную G2.4; GEO продолжать только как inventory → reconciliation → review → controlled publish → readback → rollback.",
-      tasks:["task-g2-pricing","task-g2-timer","task-g2-refund","task-g2-accruals"],
+      tasks:["task-g2-pricing","task-g2-timer","task-g4-complaints","task-g2-accruals","task-g4-support-notifications"],
       implementationPackage:{
         id:"task-g2-geo-content",
         code:"G2.GEO",
@@ -1207,13 +1208,13 @@
     },
     {
       color:"#7c3aed",
-      title:"3) Связать дизайн сайта с рабочей логикой",
+      title:"3) Вёрстка и обучающий контур экспертов / агентов",
       month:"Сентябрь–октябрь: интеграция; ноябрь: клиентский пилот",
-      summary:"Перенести дизайн сайта на рабочую логику и связать с реальными данными.",
+      summary:"Связать вёрстку сайта с реальными данными и подготовить обучающий контур экспертов / агентов: обучение, практика, допуск и его отзыв.",
       current:"G3.1–G3.7 имеют дизайн/пакеты интеграции Oracle/Nebula с backend и I18N. Layout audit 07.09: 52 static preview-ready. Public HTTP readback 07.09 UTC: YouDate root и /en/page/how-it-works 404. Это не авторизованный E2E; весь публичный путь ещё не принят.",
       blocker:"Нет принятого route/view/data binding, expert-only query, profile/review data, полного i18n key registry, safe cutover/rollback и сквозного клиентского пути. Визуальные макеты и UI-E2E чата не заменяют public integration.",
       next:"Сначала зафиксировать бренд/runtime route для public surface; затем закрыть I18N inventory/readback и backend-интеграцию восьми поверхностей. G3.5 принимает только оба initiation path, paid/history/support/refund, пять ширин и rollback; любой P0 FAIL сохраняет NO_GO.",
-      tasks:["task-g3-home","task-g3-catalog","task-g3-profile","task-g3-quiz","task-g3-qa","task-g3-field-weight","task-g3-rotation"],
+      tasks:["task-g3-home","task-g3-catalog","task-g3-profile","task-g3-quiz","task-g3-qa","task-g3-field-weight","task-g3-rotation","task-g6-training"],
       implementationPackage:{
         id:"task-g3-integration",
         code:"G3.INT",
@@ -1230,13 +1231,13 @@
     },
     {
       color:"#b7791f",
-      title:"4) Поддержка, документы и правила",
+      title:"4) Поддержка, возвраты и документы",
       month:"Сентябрь: P0; октябрь: интеграция; ноябрь: операционный пилот",
-      summary:"Собрать безопасный контур поддержки, жалоб, спорных ситуаций и правил консультации.",
+      summary:"Работа поддержки, исполнение одобренных денежных возвратов и документы. Разбор жалоб и адресованные уведомления связаны с G2.3 / G2.5.",
       current:"Реализовано. Тестируем: серверный Support V2 проверен 04.09 по клиенту, Chat V2 агенту и супер-админу. Работают очередь, клиентские обращения, история/заметки, контекст consultation/payment, Resolved → Closed, запрет ответа после Closed и изоляция двух клиентов. Это уже не только frontend-прототип.",
       blocker:"Трёхролевая приёмка 04.09 FAIL: агенту открыт полный Support V2, клиенту раскрывается внутренний тикет и неверный статус ожидания. В Chat V2 нет адресованной агенту support-карточки; есть дефекты адресата эксперта и передачи owner. Отдельная роль support-moder и новый internal-only Report N0 не протестированы; денежные действия не выполнялись.",
       next:"Исправить server ACL и internal/client projection, затем agent question delivery, адресата и escalation ownership. Повторить точные P0/P1 и NOT TESTED; не создавать backend заново по старому prototype-статусу.",
-      tasks:["task-g4-support","task-g4-complaints","task-g4-docs","task-g4-support-notifications"]
+      tasks:["task-g4-support","task-g2-refund","task-g4-docs"]
     },
     {
       color:"#be185d",
@@ -1269,12 +1270,25 @@
       title:"6) Рабочий контур команды",
       month:"Сентябрь: доступ и набор; октябрь: допуск; ноябрь–декабрь: работа команды",
       summary:"Сделать операционный контур для модератора, агентов, экспертов и контроля качества.",
-      current:"Календарный риск остаётся P0. Есть локальный Moodle stage с известными ограничениями для обучения/допуска, но production admission не принят. Назначение тестовой анкеты доказано, однако scoped-доступ агента не защищён; G6.7 требует отдельный admin/staff-контур без клиентского фронта.",
-      blocker:"Последний сохранённый access baseline: под агентом открывались чужой профиль и страница назначений. Нужен текущий retest исправления, а не утверждение, что дефект всё ещё существует 07.09. G6.1/G6.7 не приняты до доказательства scoped server access и staff/client isolation.",
+      current:"Назначение тестовой анкеты проверено; server-side изоляция агента ещё не принята. G6.6 отвечает за staff/client isolation. Обучение и допуск перенесены в G3.8; G6 использует их результат для назначения, смен, SLA и контроля качества.",
+      blocker:"Последний сохранённый access baseline: под агентом открывались чужой профиль и страница назначений. Нужен текущий retest исправления, а не утверждение, что дефект всё ещё существует 07.09. G6.1/G6.6 не приняты до доказательства scoped server access и staff/client isolation; для paid-работы требуется допуск G3.8.",
       next:"Закрыть server-side access gate: assigned доступен; foreign profile/dialog/send заблокированы. Проверить atomic reassignment, запрет в paid/balance_pause и неизменяемое actual-agent authorship после передачи анкеты.",
-      tasks:["task-g6-assignment","task-g6-sla","task-g6-quality","task-g6-training","task-g6-admin-url","task-g6-isolated-admin-access","task-g6-team-notifications"]
+      tasks:["task-g6-assignment","task-g6-sla","task-g6-quality","task-g6-team-notifications","task-g6-admin-url","task-g6-isolated-admin-access"]
     }
   ];
+
+  implementation.grouping.applyMetadata(taskMeta);
+  goals.forEach((goal, index) => {
+    const current = implementation.grouping.goals[index];
+    goal.tasks = current.tasks;
+    goal.title = `${index + 1}) ${current.title}`;
+  });
+  goals[1].current += " Жалобы и адресованные уведомления из Support V2 теперь входят в G2.3 / G2.5: серверный контур есть, приёмка разделения проекций и доставки открыта.";
+  goals[1].next += " В G2.3 / G2.5 исправить ownership, безопасную клиентскую проекцию и доставку вопроса агенту; одобренный cash refund исполняется и принимается отдельно в G4.2.";
+  goals[2].current += " G3.8: R5 product source принят и доставлен, есть локальный Moodle и учебный корпус; production admission не принят.";
+  goals[2].blocker += " Для G3.8 открыты disposable-DB build, независимый review, роли и практика, server deny paid до допуска и после его отзыва.";
+  goals[2].next += " Отдельно довести обучение до проверенного допуска / re-admission и 3–5 подготовленных участников пилота.";
+  goals[3].next += " G4.2: сверить session → debit → разрешённый refund, права, причину, идемпотентность и audit trail; компенсационные минуты не считать денежным возвратом.";
 
   const monthlyReport = {
     month:"К январю 2027 · четыре месяца до трафика",
@@ -1292,11 +1306,11 @@
     ],
     goals:[
       {code:"G1", status:"Реализовано. Тестируем", tone:"good", result:"Три paid lifecycle, chat/media, reload и duplicate-send прошли. Non-BMP transport PASS; active-paid forged/oversize validation PASS. Последняя runtime-проверка чата: 25–26.08.", next:"Перепроверить CL-UI-005/006 и CL-RT-001; закрыть zero-byte, reconnect timeout, notifications и серверный RBAC."},
-      {code:"G2", status:"Работает; денежная сверка открыта", tone:"neutral", result:"Цена, баланс, rate, Pay/Transactions и sandbox +500 подтверждены. Точный session debit/refund, low-balance и начисления сотрудников ещё не приняты.", next:"Read-only billing oracle и controlled financial regression; G2.4 отдельно."},
-      {code:"G3", status:"Public binding не принят", tone:"risk", result:"52 static preview-ready по layout audit 07.09. Public HTTP 07.09 UTC: YouDate root, How it works 404. Это не готовый боевой путь.", next:"Принять public host/data binding и полный клиентский QA на текущей сборке."},
-      {code:"G4", status:"Реализовано. Тестируем", tone:"risk", result:"Live Support V2 проверен 04.09. Есть клиентские обращения, очередь, history/notes, consultation/payment и закрытие. Приёмка FAIL по ACL и internal/client projection.", next:"Исправить P0/P1, проверить support-moder и N0 Report, отдельно денежные действия."},
+      {code:"G2", status:"Работает частично; приёмка открыта", tone:"neutral", result:"Цена, баланс, Pay/Transactions и sandbox +500 подтверждены. Жалобы и уведомления существуют на сервере; точный debit, начисления, проекции и доставка ещё не приняты.", next:"Billing oracle, G2.4 начисления, безопасная обработка жалобы G2.3 и адресованные уведомления G2.5; cash execution связан с G4.2."},
+      {code:"G3", status:"Вёрстка и школа есть; приёмка открыта", tone:"risk", result:"52 static preview-ready; R5 product source принят с ограничениями, локальный Moodle есть. Public binding, полный клиентский путь и production admission не приняты.", next:"Интегрировать сайт; проверить роли, практику и server admission / re-admission в G3.8."},
+      {code:"G4", status:"Support работает; денежная приёмка открыта", tone:"risk", result:"Live Support V2 проверен 04.09; есть очередь, история и закрытие. Точный возврат с идемпотентностью не доказан; документы требуют live readback.", next:"Закрыть P0 ACL и ticket workflow; принять одобренный возврат G4.2 и опубликованные документы G4.3."},
       {code:"G5", status:"Подготовка", tone:"neutral", result:"Требования к events, KPI, SEO и gate собраны; runtime-измерения не приняты.", next:"Dictionary в сентябре; events/dashboard/SLA/quality/alerts технически готовы ДО пилота; в ноябре сверка по его данным."},
-      {code:"G6", status:"Частичная реализация; критичный доступ открыт", tone:"risk", result:"R5 product source принят, локальный Moodle есть; production admission и полная изоляция не приняты.", next:"Сначала P0 server isolation; затем SLA/QA/admission и 3–5 допущенных участников со сменами."}
+      {code:"G6", status:"Частичная реализация; критичный доступ открыт", tone:"risk", result:"Назначение проверялось; полная изоляция, SLA, контроль качества и командная доставка не приняты.", next:"P0 server isolation, SLA/quality/alerts и рабочие смены; допуск участников приходит из G3.8."}
     ],
     weeks:[
       {week:"07–11.09", plan:"Подтвердить остаток, владельцев и capacity", result:"Стадии сверены; оценки исполнителей, launch inventory и текущая build/source привязка ещё требуют подтверждения", status:"В работе"},
@@ -1410,11 +1424,11 @@
   const summaryRoot = document.getElementById("customer-summary-root");
   const goalOverview = {
     G1:["Платные сценарии, сообщения, вложения и история проверены.","Перепроверить права, уведомления и восстановление связи."],
-    G2:["Цена, баланс и тестовое пополнение подтверждены.","Сверить списания, возвраты и начисления с серверными записями."],
-    G3:["Подготовлены 52 статических превью страниц.","Связать сайт с реальными данными и проверить полный путь клиента."],
-    G4:["Обращения, очередь и заметки поддержки реализованы.","Закрыть доступ к чужим данным и внутренним сведениям."],
+    G2:["Цена, баланс и тестовое пополнение (sandbox) подтверждены; жалобы и уведомления реализованы частично.","Сверить списания и начисления, решение по жалобе и адресованную доставку."],
+    G3:["52 статических превью, локальная школа и R5 source с ограничениями.","Связать сайт с данными; проверить обучение, практику, допуск и его отзыв."],
+    G4:["Поддержка работает; контур возврата описан, документы подготовлены.","Закрыть P0 доступа, принять денежный возврат и опубликованные документы."],
     G5:["Подготовлены требования к событиям, показателям и запуску трафика.","Включить измерения до пилота и сверить их по его данным."],
-    G6:["Есть локальная школа; правки R5 приняты с ограничениями.","Проверить изоляцию, допуск и смены 3–5 участников пилота."]
+    G6:["Назначение проверялось; правила SLA и контроля качества подготовлены.","Проверить изоляцию, SLA, качество, уведомления и смены; допуск — из G3.8."]
   };
   const goalDeadline = code => {
     const dates = window.sixGoalsTrafficPlan.tasks.filter(row => implementation.tasks[row[0]].code.startsWith(code + ".")).map(row => row[2]).sort();
@@ -1433,6 +1447,7 @@
     <section class="next-step"><div><span class="summary-kicker">Ближайший шаг · до 11 сентября</span><h3>Подтвердить исполнителей и сроки</h3><p>Сверить остаток работ и доступное время команды.</p></div><button type="button" class="summary-action" data-open-tab="calendar-plan">План и 7 направлений →</button></section>
     <section class="summary-section open-goal-summary" aria-labelledby="summary-goals-title"><div class="summary-section-head"><h3 id="summary-goals-title">Шесть целей — результат и следующий шаг</h3></div><table class="summary-goal-table"><thead><tr><th>Цель / срок</th><th>Состояние</th><th>Уже есть</th><th>Что осталось</th></tr></thead><tbody>${monthlyReport.goals.map(goal => `<tr><td><a href="#six-goals" data-open-tab="six-goals">${goal.code}</a><small class="goal-deadline">до ${goalDeadline(goal.code)}</small></td><td><span class="report-badge ${goal.tone === "good" ? "warn" : goal.tone}">${goal.status}</span></td><td>${goalOverview[goal.code][0]}</td><td>${goalOverview[goal.code][1]}</td></tr>`).join("")}</tbody></table><p class="quiet-note summary-table-note">Срок — плановая приёмка последней задачи цели. Даты требуют подтверждения загрузки команды до 11 сентября.</p></section>
     <details class="clean-detail launch-requirements" open><summary>Что ещё нужно для запуска</summary><div class="detail-body"><ul class="launch-checklist"><li><b>Деньги.</b> Сверить секунды, списания, возвраты и начисления.</li><li><b>Безопасный клиентский путь.</b> Закрыть доступ к чужим данным и пройти сайт от входа до результата.</li><li><b>Рабочий пилот.</b> Подтвердить допуск команды, смены, качество и измерения.</li></ul><p>Нужны все условия; количество написанного кода или подготовленных документов не заменяет приёмку.</p></div></details>
+    <details id="goal-grouping" class="clean-detail"><summary>Перегруппировка 08.09: прежние и текущие коды задач</summary><div class="detail-body"><p>Все 30 задач, ссылки, стадии и даты сохранены. Изменён только состав целей. Коды внутри исторических ТЗ и отчётов остаются прежними; текущий код определяйте по этой таблице.</p><table class="summary-goal-table"><thead><tr><th>Прежний код</th><th>Текущий код</th><th>Задача</th></tr></thead><tbody>${Object.entries(implementation.tasks).filter(([, task]) => task.sourceCode !== task.code).map(([id, task]) => `<tr><td>${task.sourceCode}</td><td>${task.code}</td><td><a href="task-readiness.html?task=${id}">${task.title}</a></td></tr>`).join("")}</tbody></table><p>Остальные коды не изменены. Обучение и допуск G3.8 связаны с назначением, SLA и качеством G6; одобренный денежный возврат G4.2 связан с решением по жалобе G2.3.</p></div></details>
     <details id="pm-control" class="pm-control">
       <summary>Подробности для PM</summary>
       <div class="pm-control-body">
@@ -1646,7 +1661,12 @@
   function showFragment() {
     const fragment = (window.location.hash || "").slice(1);
     const layer = window.sixGoalsReadinessLayers.layers.find(item => "layer-" + item.id === fragment);
-    if (layer) {
+    if (fragment === "goal-grouping") {
+      showTab("customer-summary");
+      const details = document.getElementById(fragment);
+      details.open = true;
+      details.scrollIntoView?.({ block:"start" });
+    } else if (layer) {
       showTab("calendar-plan");
       const details = document.getElementById(fragment);
       details.open = true;

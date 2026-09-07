@@ -719,6 +719,7 @@
     return "Только план";
   }
 
+  window.sixGoalsImplementation.grouping.applyMetadata(tasks);
   const params = new URLSearchParams(window.location.search);
   const id = params.get("task");
   const task = id ? tasks[id] : null;
@@ -728,7 +729,7 @@
   if (!task) {
     const fact = window.sixGoalsImplementation.tasks[id];
     if (fact) {
-      content.innerHTML = `<section class="hero"><span class="badge">${fact.stage}</span><h2>${fact.code} ${fact.title}</h2><p>${fact.done}</p><p><b>Следующая проверка:</b> ${fact.next}</p><p>Полная приёмка открыта. Сверка 07.09; chat evidence 25–26.08, support evidence 04.09.</p><p><a href="implementation-audit-2026-09-07.md">Факты и источники</a></p></section>`;
+      content.innerHTML = `<section class="hero"><span class="badge">${fact.stage}</span><span class="badge">Цель ${fact.goalCode.slice(1)}</span><h2>${fact.code} ${fact.title}</h2><p>${window.sixGoalsImplementation.grouping.sourceNote(id)} <a href="index.html#goal-grouping">Соответствие прежних и текущих кодов</a>. Коды внутри исторических источников сохранены.</p><p>${fact.done}</p><p><b>Следующая проверка:</b> ${fact.next}</p><p>Полная приёмка открыта. Сверка 07.09; chat evidence 25–26.08, support evidence 04.09.</p><p><a href="implementation-audit-2026-09-07.md">Факты и источники</a></p></section>`;
       detailLink.href = "index.html";
       return;
     }
@@ -789,6 +790,7 @@
         <span class="badge">${task.goal}</span>
       </div>
       <h2>${task.code} ${task.title}<span class="term-en">${taskTermEn[id] || ""}</span></h2>
+      <p>${implementation.grouping.sourceNote(id)} <a href="index.html#goal-grouping">Соответствие прежних и текущих кодов</a>. Коды внутри исторических источников сохранены.</p>
       <p>Сверка 07.09.2026. <a href="implementation-audit-2026-09-07.md">Факты и источники</a>; chat evidence 25–26.08, Support V2 04.09.</p>
       <div class="meta-grid">
         <div class="meta-box"><span>Реализация и проверка</span><b>${factual ? factual.stage : stageLabel(task.stage)}</b></div>

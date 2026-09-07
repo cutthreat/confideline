@@ -38,7 +38,7 @@ window.sixGoalsTrafficPlan = {
     ["task-g3-field-weight","2026-09-25","2026-10-09","Superadmin + PM → Игорь по gap","Обязательные поля, таксономия, eligibility/publish gate"],
     ["task-g3-rotation","2026-10-16","2026-10-23","Игорь + PM → QA","Предсказуемая выдача, доступность и ротация без auto-substitution"],
     ["task-g4-support","2026-09-25","2026-10-16","Игорь + support → QA/PM","P0 ACL до 30.09; полный ticket workflow и правильный owner"],
-    ["task-g4-complaints","2026-10-09","2026-10-23","Support + Игорь → QA/PM","Internal/client projection, вопросы, appeal и решение → G2"],
+    ["task-g4-complaints","2026-10-09","2026-10-23","Support + Игорь → QA/PM","Internal/client projection, вопросы, appeal и решение в G2.3 → исполнение возврата G4.2"],
     ["task-g4-docs","2026-10-09","2026-10-30","PM + legal/owner → content/QA","Согласованные тексты, контакты, языки, consent и published readback"],
     ["task-g4-support-notifications","2026-10-16","2026-10-30","Игорь + support → QA","Client notifications и внутренние agent cards в Chat V2"],
     ["task-g5-events","2026-10-16","2026-10-30","Data/PM + Игорь → QA","Сентябрьский dictionary; события, identity/dedupe, privacy, readback"],
@@ -69,7 +69,7 @@ window.sixGoalsTrafficPlan = {
     "Решение GO/NO-GO по готовности к трафику — 21.12."
   ];
   const groups = [1,2,3,4,5,6].map(goal => {
-    const rows = plan.tasks.filter(row => facts[row[0]].code.startsWith("G" + goal + "."));
+    const rows = plan.tasks.filter(row => facts[row[0]].code.startsWith("G" + goal + ".")).sort((a,b) => Number(facts[a[0]].code.split(".")[1]) - Number(facts[b[0]].code.split(".")[1]));
     return `<details class="clean-detail goal-next"><summary>G${goal}: сроки ${rows.length} задач</summary><div class="detail-body goal-next-body"><table class="summary-goal-table"><thead><tr><th>Задача / стадия сейчас</th><th>Результат / приёмка</th><th>Ответственность и proof</th></tr></thead><tbody>${rows.map(row => `<tr><td><a href="task-readiness.html?task=${row[0]}">${facts[row[0]].code} ${facts[row[0]].title}</a><br>${facts[row[0]].stage}</td><td>${date(row[1])} / ${date(row[2])}</td><td>${row[3]}<br>${row[4]}</td></tr>`).join("")}</tbody></table></div></details>`;
   }).join("");
   root.innerHTML = `<div class="section-title"><h2>Сентябрь–декабрь 2026</h2></div>

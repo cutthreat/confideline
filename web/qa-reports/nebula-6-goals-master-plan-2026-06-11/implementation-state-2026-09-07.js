@@ -57,3 +57,42 @@ window.sixGoalsImplementation = {
     "task-g6-isolated-admin-access": { code:"G6.7", title:"Изолированный доступ в админку", stage:"Реализовано частично. Есть P0", basis:"team", done:"Live 04.09: клиенту закрыт admin Support (403), изоляция двух клиентов PASS. Но Chat V2 агент открывает полную support-очередь/внутренние инструменты, что даёт P0. На 07.09 исправление ещё не перепроверено.", next:"Запретить агенту Support V2 server-side, оставив безопасный Report и внутренние вопросы в Chat V2; отдельно проверить support-moder против super-admin." }
   }
 };
+
+/* Current grouping, approved 08.09. Stable task IDs and historical source codes stay intact. */
+(function (state) {
+  const goals = [
+    {code:"G1", title:"Глобальный чат", tasks:["task-g1-session","task-g1-chat","task-g1-statuses","task-g1-chat-notifications"]},
+    {code:"G2", title:"Деньги, жалобы и уведомления", tasks:["task-g2-pricing","task-g2-timer","task-g4-complaints","task-g2-accruals","task-g4-support-notifications"]},
+    {code:"G3", title:"Вёрстка и обучающий контур экспертов / агентов", tasks:["task-g3-home","task-g3-catalog","task-g3-profile","task-g3-quiz","task-g3-qa","task-g3-field-weight","task-g3-rotation","task-g6-training"]},
+    {code:"G4", title:"Поддержка, возвраты и документы", tasks:["task-g4-support","task-g2-refund","task-g4-docs"]},
+    {code:"G5", title:"Маркетинг, аналитика и дашборды", tasks:["task-g5-events","task-g5-dashboard","task-g5-kpi","task-g5-marketing-gate"]},
+    {code:"G6", title:"Рабочий контур команды", tasks:["task-g6-assignment","task-g6-sla","task-g6-quality","task-g6-team-notifications","task-g6-admin-url","task-g6-isolated-admin-access"]}
+  ];
+  const codeAliases = {};
+  goals.forEach(goal => goal.tasks.forEach((id, index) => {
+    const task = state.tasks[id];
+    task.sourceCode = task.code;
+    task.code = goal.code + "." + (index + 1);
+    task.goalCode = goal.code;
+    codeAliases[task.sourceCode] = task.code;
+  }));
+  state.grouping = {
+    updatedAt:"2026-09-08", goals, codeAliases,
+    applyMetadata(tasks) {
+      Object.entries(tasks).forEach(([id, task]) => {
+        const fact = state.tasks[id];
+        if (!fact) return;
+        task.code = fact.code;
+        task.sourceCode = fact.sourceCode;
+        task.goal = "Цель " + fact.goalCode.slice(1);
+        task.goalCode = fact.goalCode;
+      });
+    },
+    sourceNote(id) {
+      const task = state.tasks[id];
+      return task && task.code !== task.sourceCode
+        ? `Текущий код: ${task.code}. В источниках до перегруппировки 08.09: ${task.sourceCode}. Ссылка и история задачи сохранены.`
+        : "";
+    }
+  };
+})(window.sixGoalsImplementation);
