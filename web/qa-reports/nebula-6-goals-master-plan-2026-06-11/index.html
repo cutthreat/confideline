@@ -236,6 +236,7 @@
 <main>
   <nav class="top-nav" aria-label="Главная навигация">
     <button type="button" class="is-active" data-tab-target="customer-summary">Сводка месяца</button>
+    <button type="button" data-tab-target="calendar-plan">План до января</button>
     <button type="button" data-tab-target="six-goals">6 целей</button>
     <button type="button" data-tab-target="role-plan">По ролям</button>
     <button type="button" data-tab-target="sources">Источники</button>
@@ -258,6 +259,9 @@
     <div id="customer-summary-root"></div>
   </section>
 
+  <section id="calendar-plan" class="tab-panel" data-tab-panel="calendar-plan">
+    <div id="traffic-readiness-root"></div>
+  </section>
   <section id="six-goals" class="tab-panel" data-tab-panel="six-goals">
     <div class="section-title">
       <h2>Список задач по 6 глобальным целям</h2>
@@ -817,6 +821,7 @@
 </main>
 
 <script src="implementation-state-2026-09-07.js"></script>
+<script src="traffic-readiness-plan-2026-09-07.js"></script>
 <script>
 (function () {
   const implementation = window.sixGoalsImplementation;
@@ -1131,7 +1136,7 @@
     {
       color:"#2563eb",
       title:"1) Глобальный чат",
-      month:"Месяц 1",
+      month:"Сентябрь–октябрь: стабилизация; ноябрь–декабрь: приёмка",
       summary:"Сделать рабочий чат для всех ролей и карточку одной конкретной консультации.",
       current:"Продвинутый Chat V2 уже реализован. Runtime 25–26.08 подтверждает три paid lifecycle, переписку по ролям, media/reply, очередь, поиск/историю, Partner context, reload и guards. Архитектура дополнительно описывает gallery/voice/favorite/pin/Report/soft-hide/typing/heartbeat; эти расширения не подменяются общим PASS и перечислены выше по уровню доказательства.",
       blocker:"Это не блокирует факт реализации paid chat. Отдельно остаются release-проверки: точная связка session↔ledger/rounding, reconnect/low-balance/RBAC-negatives и notifications; открыты CL-UI-005 (clear поиска), CL-UI-006 (non-BMP emoji в queue preview) и CL-RT-001 (client не проецирует lifecycle Resume/Complete в открытый диалог). CL-UI-003 закрыт PASS, CL-UI-004 сужен до active-paid zero-byte RETEST.",
@@ -1154,7 +1159,7 @@
     {
       color:"#0f766e",
       title:"2) Деньги и поминутная логика",
-      month:"Месяц 2",
+      month:"Сентябрь–октябрь: денежная сверка; ноябрь–декабрь: release",
       summary:"Сделать продуктовую денежную механику: цена, баланс, лимиты, стоп, возвраты, начисления.",
       current:"Цена/credits/balance, платный lifecycle, meter/stop и Pay/Transactions проверены по отдельным сценариям. Строка 95 от 26.08 подтверждает sandbox checkout +500: баланс 190 → 690 и Transactions readback. Это не production checkout, не точная session/ledger сверка и не приёмка возвратов. G2.4 начисления сотрудникам остаётся отдельным контуром. GEO pilot: только ограниченный text-scope 5/5 стран и 30/30 locale readback.",
       blocker:"Нужен не повторный build, а release-верификация: read-only сверка transaction↔session, rounding/compensation/refund и отрицательные low-balance/reconnect сценарии. G2.4 требует отдельной формулы начислений. GEO pilot не является полным покрытием: общий denominator неизвестен, фото 0/2 вне text-scope.",
@@ -1177,7 +1182,7 @@
     {
       color:"#7c3aed",
       title:"3) Связать дизайн сайта с рабочей логикой",
-      month:"Месяц 3",
+      month:"Сентябрь–октябрь: интеграция; ноябрь: клиентский пилот",
       summary:"Перенести дизайн сайта на рабочую логику и связать с реальными данными.",
       current:"G3.1–G3.7 имеют дизайн/пакеты интеграции Oracle/Nebula с backend и I18N. Последний рассмотренный public audit от 26.08: YouDate/dating signup на root и 404 How it works. На 07.09 это исторический baseline, а не новый результат. Работающий chat E2E не доказывает весь публичный путь.",
       blocker:"Нет принятого route/view/data binding, expert-only query, profile/review data, полного i18n key registry, safe cutover/rollback и сквозного клиентского пути. Визуальные макеты и UI-E2E чата не заменяют public integration.",
@@ -1200,7 +1205,7 @@
     {
       color:"#b7791f",
       title:"4) Поддержка, документы и правила",
-      month:"Месяц 4",
+      month:"Сентябрь: P0; октябрь: интеграция; ноябрь: операционный пилот",
       summary:"Собрать безопасный контур поддержки, жалоб, спорных ситуаций и правил консультации.",
       current:"Реализовано. Тестируем: серверный Support V2 проверен 04.09 по клиенту, Chat V2 агенту и супер-админу. Работают очередь, клиентские обращения, история/заметки, контекст consultation/payment, Resolved → Closed, запрет ответа после Closed и изоляция двух клиентов. Это уже не только frontend-прототип.",
       blocker:"Трёхролевая приёмка 04.09 FAIL: агенту открыт полный Support V2, клиенту раскрывается внутренний тикет и неверный статус ожидания. В Chat V2 нет адресованной агенту support-карточки; есть дефекты адресата эксперта и передачи owner. Отдельная роль support-moder и новый internal-only Report N0 не протестированы; денежные действия не выполнялись.",
@@ -1210,7 +1215,7 @@
     {
       color:"#be185d",
       title:"5) Маркетинг, аналитика и дашборды",
-      month:"Месяц 5",
+      month:"Сентябрь–октябрь: измеримость; ноябрь: данные; декабрь: traffic gate",
       summary:"Сделать измеримый контур: статусы консультаций, деньги, проблемные сессии, качество, показатели и воронка.",
       current:"Рекламный контур не готов. G5.SEO оформлен как P0-пакет; события, dashboard, marketing gate и фактическое SEO-внедрение не имеют свежего runtime evidence. UI-E2E чата пока не даёт воронку/аналитику, пригодную для запуска рекламы.",
       blocker:"Рекламу нельзя включать без качества, поддержки, E2E proof, событий воронки и dashboard. SEO нельзя считать готовым по плану: нужны mapped build, full crawl, metadata/public readback, migration proof и search-system evidence.",
@@ -1236,7 +1241,7 @@
     {
       color:"#475569",
       title:"6) Рабочий контур команды",
-      month:"Месяц 6",
+      month:"Сентябрь: доступ и набор; октябрь: допуск; ноябрь–декабрь: работа команды",
       summary:"Сделать операционный контур для модератора, агентов, экспертов и контроля качества.",
       current:"Календарный риск остаётся P0. Есть локальный Moodle stage с известными ограничениями для обучения/допуска, но production admission не принят. Назначение тестовой анкеты доказано, однако scoped-доступ агента не защищён; G6.7 требует отдельный admin/staff-контур без клиентского фронта.",
       blocker:"Последний сохранённый access baseline: под агентом открывались чужой профиль и страница назначений. Нужен текущий retest исправления, а не утверждение, что дефект всё ещё существует 07.09. G6.1/G6.7 не приняты до доказательства scoped server access и staff/client isolation.",
@@ -1246,18 +1251,18 @@
   ];
 
   const monthlyReport = {
-    month:"Сентябрь 2026 · фактическая реализация",
+    month:"К январю 2027 · четыре месяца до трафика",
     updated:"7 сентября 2026 · chat evidence 25–26 августа, support 4 сентября; live recheck открыт",
     overall:{
-      label:"Продвинутый чат реализован · приёмка открыта",
-      text:"Зафиксированы реализованные функции, runtime-проверки и остатки всех 30 задач. Продвинутый paid chat уже работает; подтверждены три lifecycle, media/history/queue/reload и sandbox +500. Весь продукт пока не принят. Три P2 относятся к последнему прогону, а не к сегодняшней перепроверке.",
+      label:"Срок под риском · план условный",
+      text:"Цель: готовность к тестовому трафику к 21 декабря, резерв 22–31 декабря. Продвинутый Chat V2 и Support V2 уже реализованы и тестируются. Сентябрь — ядро и доступ; октябрь — интегрированный продукт; ноябрь — закрытый пилот; декабрь — release-проверки. Все 30 задач сохранены. До 11 сентября нужны подтверждённые оценки и загрузка владельцев. <a href=\"#calendar-plan\" data-open-tab=\"calendar-plan\">Открыть календарь до января</a>.",
       className:"risk"
     },
     metrics:[
-      {value:"6", label:"P0-целей в контроле", tone:"neutral"},
-      {value:"95", label:"записей QA; не уникальные тесты", tone:"good"},
-      {value:"3", label:"открытых P2 UI/runtime-дефекта", tone:"risk"},
-      {value:"NO-GO", label:"публичный трафик и launch", tone:"risk"}
+      {value:"4", label:"месяца: сентябрь–декабрь", tone:"neutral"},
+      {value:"30", label:"задач со сроками результата и приёмки", tone:"neutral"},
+      {value:"21.12", label:"целевое решение о готовности", tone:"neutral"},
+      {value:"NO-GO", label:"трафик до закрытия всех launch gates", tone:"risk"}
     ],
     goals:[
       {code:"G1", status:"Реализовано. Тестируем", tone:"good", result:"Три paid lifecycle, chat/media, reload и duplicate-send прошли. Non-BMP transport PASS; active-paid forged/oversize validation PASS. Последняя runtime-проверка чата: 25–26.08.", next:"Перепроверить CL-UI-005/006 и CL-RT-001; закрыть zero-byte, reconnect timeout, notifications и серверный RBAC."},
@@ -1268,10 +1273,10 @@
       {code:"G6", status:"Критический риск", tone:"risk", result:"Есть локальный learning stage и role packages; scoped-access и production admission не доказаны.", next:"Закрыть server-side isolation, assignment, SLA/QA и безопасный pilot admission."}
     ],
     weeks:[
-      {week:"Неделя 1", plan:"Зафиксировать source of truth и public baseline", result:"Public root/404 read-only подтверждены; public launch остаётся NO-GO", status:"Основа собрана"},
-      {week:"Неделя 2", plan:"Проверить paid chat по ролям", result:"Три lifecycle, text/media, reload, duplicate-send и active-paid invalid-file regressions получили runtime evidence", status:"Выполнено"},
-      {week:"Неделя 3", plan:"Закрыть release-регрессию G1/G2", result:"CL-UI-003 закрыт PASS; CL-UI-004 narrowed до zero-byte RETEST; CL-UI-005/006 и CL-RT-001 OPEN; billing/RBAC/reconnect/low-balance pending", status:"В работе"},
-      {week:"Неделя 4", plan:"Решение месяца и подготовка Month 2", result:"Принять только закрытые evidence; составить fixtures и серверные oracles для G1/G2/G3", status:"Запланировано"}
+      {week:"07–11.09", plan:"Подтвердить остаток, владельцев и capacity", result:"Стадии сверены; оценки исполнителей, launch inventory и текущая build/source привязка ещё требуют подтверждения", status:"В работе"},
+      {week:"14–18.09", plan:"Критичный доступ и денежный oracle", result:"Цель: свежий P0 retest Support и session→seconds→ledger; не новый build продвинутого чата", status:"Запланировано"},
+      {week:"21–25.09", plan:"Stabilization и параллельные зависимости", result:"Цель: закрыть fixes ядра/ACL, продвинуть public binding, event dictionary и набор/школу", status:"Запланировано"},
+      {week:"28–30.09", plan:"Сентябрьский gate и перепрогноз", result:"Нет свежего proof или перегрузка владельца — январский прогноз RED; план пересчитывается, а не автоматически сдвигается в декабрь", status:"Запланировано"}
     ],
     decisions:[
       "Все шесть целей остаются P0; порядок задают зависимости и готовность доказательств.",
@@ -1287,6 +1292,7 @@
       "Нет доказанного notification delivery/readback, controlled reconnect timeout и полного pilot admission/quality gate."
     ],
     history:[
+      "07.09.2026 — календарь пересобран на сентябрь–декабрь: цели идут параллельно, все 30 задач остаются обязательными. До 30.10 интеграция; ноябрь пилот; 30.11 freeze; 21.12 GO/NO-GO. Даты условны до подтверждения capacity, запуск рекламы не разрешён.",
       "07.09.2026 — учтён серверный Support V2 QA от 04.09: prototype-only статус отменён. Реализация сохранена, приёмка открыта по точным P0/P1/NOT TESTED.",
       "07.09.2026 — 30 задач сверены с накопленными источниками; сводка и детали используют единый реестр реализации. Убрана подмена реализованного Chat V2 статусом только ТЗ. Старые проценты вынесены в архивную оценку; новый live-прогон не заявлен.",
       "26.08.2026 — строка 95: sandbox +500 подтверждён балансом и Transactions. Всего 95 попыток: 59 PASS, 20 WARN, 10 RETEST, 6 FAIL; это не уникальные сценарии. Числовые поля строк 94–95 требуют нормализации перед billing-расчётом.",
