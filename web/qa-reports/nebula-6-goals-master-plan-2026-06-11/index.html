@@ -61,6 +61,17 @@
     #calendar-plan .summary-goal-table { table-layout:fixed; }
     #calendar-plan .summary-goal-table th, #calendar-plan .summary-goal-table td { width:auto; white-space:normal; overflow-wrap:anywhere; }
     #launch-audit-root .audit-field-label { display:none; }
+    #readiness-layers-root .layer-index { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0; }
+    #readiness-layers-root .layer-index a { padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:#f8fafc; overflow-wrap:anywhere; }
+    #readiness-layers-root .layer-field-label { display:none; }
+    #readiness-layers-root .goal-next { scroll-margin-top:16px; }
+    @media (max-width:576px) {
+      #readiness-layers-root .layer-table, #readiness-layers-root .layer-table tbody, #readiness-layers-root .layer-table tr, #readiness-layers-root .layer-table td { display:block; width:100%; }
+      #readiness-layers-root .layer-table thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+      #readiness-layers-root .layer-table tr { margin-block:12px; border:1px solid var(--line); background:#fff; }
+      #readiness-layers-root .layer-table td { border-top:0; }
+      #readiness-layers-root .layer-field-label { display:block; font-weight:700; color:var(--ink); margin-bottom:4px; }
+    }
     @media (max-width:576px) {
       #launch-audit-root .summary-goal-table, #launch-audit-root tbody, #launch-audit-root tr, #launch-audit-root td { display:block; width:100%; }
       #launch-audit-root thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
@@ -270,6 +281,7 @@
   </section>
 
   <section id="calendar-plan" class="tab-panel" data-tab-panel="calendar-plan">
+    <div id="readiness-layers-root"></div>
     <div id="launch-audit-root"></div>
     <div id="traffic-readiness-root"></div>
   </section>
@@ -834,6 +846,7 @@
 <script src="implementation-state-2026-09-07.js"></script>
 <script src="traffic-readiness-plan-2026-09-07.js"></script>
 <script src="launch-audit-2026-09-07.js"></script>
+<script src="readiness-layers-2026-09-08.js"></script>
 <script>
 (function () {
   const implementation = window.sixGoalsImplementation;
@@ -1264,14 +1277,14 @@
 
   const monthlyReport = {
     month:"К январю 2027 · четыре месяца до трафика",
-    updated:"Выпуск 8 сентября · срез 07.09: Chat 25–26.08, Support 04.09, public HTTP 07.09 UTC; authenticated E2E открыт",
+    updated:"Выпуск 8 сентября · 7 слоёв готовности; source review PM/Антон/Caster. Runtime evidence: Chat 25–26.08, Support 04.09, public HTTP 07.09 UTC",
     overall:{
       label:"Срок под риском · план условный",
-      text:"Цель: готовность к тестовому трафику к 21 декабря, резерв 22–31 декабря. Chat V2 и Support V2 реализованы и тестируются; G1–G2 целиком не приняты. Сентябрь — ядро и доступ; октябрь — интеграция; ноябрь — закрытый пилот; декабрь — release-проверки. Все 30 задач сохранены, добавлены условия приёмки 15 задач G4–G6. До 11 сентября нужны оценки и загрузка владельцев. <a href=\"#calendar-plan\" data-open-tab=\"calendar-plan\">Аудит PM / Антон / Caster и план до января</a>.",
+      text:"Цель: готовность к тестовому трафику к 21 декабря, резерв 22–31 декабря. Семь отдельных слоёв: backend, клиентский frontend, рабочее место агента, остальные админки, школа/допуск, маркетинг, каналы/контент. Все 30 G-задач сохранены; работающие G1–G2 целиком не приняты. Подготовка сети до 20 экспертных пакетов начинается параллельно разработке; публикации, реальный допуск и paid GO принимаются отдельно. До 11 сентября нужны оценки и загрузка всех владельцев. <a href=\"#calendar-plan\" data-open-tab=\"calendar-plan\">Семь слоёв, PM / Антон / Caster и единый план до января</a>.",
       className:"risk"
     },
     metrics:[
-      {value:"4", label:"месяца: сентябрь–декабрь", tone:"neutral"},
+      {value:"7", label:"слоёв готовности за сентябрь–декабрь", tone:"neutral"},
       {value:"30", label:"задач со сроками результата и приёмки", tone:"neutral"},
       {value:"21.12", label:"целевое решение о готовности", tone:"neutral"},
       {value:"NO-GO", label:"трафик до закрытия всех launch gates", tone:"risk"}
@@ -1617,7 +1630,20 @@
     button.addEventListener("click", () => showTab(button.dataset.tabTarget));
   });
 
-  showTab("customer-summary");
+  function showFragment() {
+    const fragment = (window.location.hash || "").slice(1);
+    const layer = window.sixGoalsReadinessLayers.layers.find(item => "layer-" + item.id === fragment);
+    if (layer) {
+      showTab("calendar-plan");
+      const details = document.getElementById(fragment);
+      details.open = true;
+      details.scrollIntoView?.({ block:"start" });
+    } else {
+      showTab(tabPanels.some(panel => panel.dataset.tabPanel === fragment) ? fragment : "customer-summary");
+    }
+  }
+  showFragment();
+  window.addEventListener?.("hashchange", showFragment);
 })();
 </script>
 </body>
