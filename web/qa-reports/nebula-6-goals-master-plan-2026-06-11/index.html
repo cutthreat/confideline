@@ -263,6 +263,8 @@
       <h2>Список задач по 6 глобальным целям</h2>
       <p>Все 30 задач — P0 шестимесячной программы запуска MVP. Очерёдность задают зависимости и vertical-пакеты, а не пониженный приоритет.</p>
     </div>
+    <div class="notice"><b>Стадии реализации сверены 07.09.2026.</b> <span>Chat evidence: 25–26.08; Support V2: 04.09. <a href="implementation-audit-2026-09-07.md">Факты и границы приёмки</a>. Реализованная функция: «Реализовано. Тестируем»; готовность ТЗ учитывается отдельно.</span></div>
+    <details class="goal-next" open><summary>Продвинутый Chat V2: что реализовано и проверено</summary><div id="implemented-chat-features" class="goal-next-body"></div></details>
     <div id="goals-grid" class="goals-grid"></div>
     <details id="post-mvp-backlog" class="post-mvp-panel">
       <summary>Вне шести целей — отдельный список «После MVP»</summary>
@@ -814,8 +816,10 @@
   </footer>
 </main>
 
+<script src="implementation-state-2026-09-07.js"></script>
 <script>
 (function () {
+  const implementation = window.sixGoalsImplementation;
   const taskMeta = {
     "task-g1-session": { code:"G1.1", title:"Карточка консультации", priority:"P0", stage:"runtime_verified_with_known_limits", progress:90, tz:true, tzReady:100 },
     "task-g1-chat": { code:"G1.2", title:"Чат по ролям", priority:"P0", stage:"runtime_verified_with_known_limits", progress:90, tz:true, tzReady:100 },
@@ -1003,7 +1007,7 @@
     {
       step:"2",
       title:"G1.1 - связь с диалогом и сообщениями",
-      question:"Пока отдельной сессии нет, связь должна быть будущим контрактом: одна service session должна ссылаться на конкретный диалог и набор сообщений, чтобы админ видел консультацию не как общий чат, а как кейс.",
+      question:"Service_session уже реализована и прошла lifecycle QA. Осталось проверить read-only связь конкретного session id с диалогом, событиями и ledger, не создавая сущность заново.",
       proof:"Нужен контракт полей: session id, conversation id, message range/events, client, public expert profile, real operator."
     },
     {
@@ -1129,9 +1133,9 @@
       title:"1) Глобальный чат",
       month:"Месяц 1",
       summary:"Сделать рабочий чат для всех ролей и карточку одной конкретной консультации.",
-      current:"Платный чат реализован технически и runtime-проверен 25.08 на demo-диалоге: три paid lifecycle (offer/accept/start/pause/resume/complete), text/media, reload persistence и duplicate-send получили межролевой readback. Реализация включает service_session state machine, pricing gate, runtime meter, ledger/refund-контур и admin readback.",
-      blocker:"Это не блокирует факт реализации paid chat. Отдельно остаются release-проверки: точная связка session↔ledger/rounding, reconnect/low-balance/RBAC-negatives и уведомления; также открыты UX-дефекты CL-UI-003 (emoji) и CL-UI-004/005 (ошибка invalid-file и clear поиска).",
-      next:"Закрыть UX-дефекты и провести точечный regression/release run: session↔ledger oracle, ACL negatives, reconnect и low-balance. Эти работы подтверждают крайние случаи, а не создают платный чат заново.",
+      current:"Продвинутый Chat V2 уже реализован. Runtime 25–26.08 подтверждает три paid lifecycle, переписку по ролям, media/reply, очередь, поиск/историю, Partner context, reload и guards. Архитектура дополнительно описывает gallery/voice/favorite/pin/Report/soft-hide/typing/heartbeat; эти расширения не подменяются общим PASS и перечислены выше по уровню доказательства.",
+      blocker:"Это не блокирует факт реализации paid chat. Отдельно остаются release-проверки: точная связка session↔ledger/rounding, reconnect/low-balance/RBAC-negatives и notifications; открыты CL-UI-005 (clear поиска), CL-UI-006 (non-BMP emoji в queue preview) и CL-RT-001 (client не проецирует lifecycle Resume/Complete в открытый диалог). CL-UI-003 закрыт PASS, CL-UI-004 сужен до active-paid zero-byte RETEST.",
+      next:"Закрыть CL-UI-005/006/RT-001 и провести точечный regression/release run: session↔ledger oracle, ACL negatives, reconnect, low-balance, notifications и active-paid zero-byte. Эти работы подтверждают крайние случаи, а не создают paid chat заново.",
       tasks:["task-g1-session","task-g1-chat","task-g1-statuses","task-g1-chat-notifications"],
       implementationPackage:{
         id:"task-g1-chat",
@@ -1152,7 +1156,7 @@
       title:"2) Деньги и поминутная логика",
       month:"Месяц 2",
       summary:"Сделать продуктовую денежную механику: цена, баланс, лимиты, стоп, возвраты, начисления.",
-      current:"Платная механика G2.1–G2.3 реализована: price/credits/balance, старт, runtime meter, stop, ledger/refund-контур и admin readback. В E2E видны client balance/Transactions и Kristy Pay-panel со ставкой, состоянием Paid и суммой по чату; Stripe/PayPal в preview disabled, поэтому внешний checkout не входил в этот прогон. G2.4 (начисления сотрудникам) — отдельный незавершённый контур. GEO pilot остаётся complete только в своём scope: 5/5 стран, 30/30 locale readback, 5/5 visual checks.",
+      current:"Цена/credits/balance, платный lifecycle, meter/stop и Pay/Transactions проверены по отдельным сценариям. Строка 95 от 26.08 подтверждает sandbox checkout +500: баланс 190 → 690 и Transactions readback. Это не production checkout, не точная session/ledger сверка и не приёмка возвратов. G2.4 начисления сотрудникам остаётся отдельным контуром. GEO pilot: только ограниченный text-scope 5/5 стран и 30/30 locale readback.",
       blocker:"Нужен не повторный build, а release-верификация: read-only сверка transaction↔session, rounding/compensation/refund и отрицательные low-balance/reconnect сценарии. G2.4 требует отдельной формулы начислений. GEO pilot не является полным покрытием: общий denominator неизвестен, фото 0/2 вне text-scope.",
       next:"Провести один контролируемый financial regression с billing oracle (session id, timestamps, billed seconds, debit, rounding, refund reason) и закрыть отдельную G2.4; GEO продолжать только как inventory → reconciliation → review → controlled publish → readback → rollback.",
       tasks:["task-g2-pricing","task-g2-timer","task-g2-refund","task-g2-accruals"],
@@ -1175,7 +1179,7 @@
       title:"3) Связать дизайн сайта с рабочей логикой",
       month:"Месяц 3",
       summary:"Перенести дизайн сайта на рабочую логику и связать с реальными данными.",
-      current:"G3.1–G3.7 разведены по владельцам и классам исполнения; G3.INT связывает Oracle/Nebula с backend и I18N идёт moderator-first. Свежий read-only audit 26.08 подтверждает: public root всё ещё показывает YouDate/dating signup, а /ru/page/how-it-works отдаёт 404.",
+      current:"G3.1–G3.7 имеют дизайн/пакеты интеграции Oracle/Nebula с backend и I18N. Последний рассмотренный public audit от 26.08: YouDate/dating signup на root и 404 How it works. На 07.09 это исторический baseline, а не новый результат. Работающий chat E2E не доказывает весь публичный путь.",
       blocker:"Нет принятого route/view/data binding, expert-only query, profile/review data, полного i18n key registry, safe cutover/rollback и сквозного клиентского пути. Визуальные макеты и UI-E2E чата не заменяют public integration.",
       next:"Сначала зафиксировать бренд/runtime route для public surface; затем закрыть I18N inventory/readback и backend-интеграцию восьми поверхностей. G3.5 принимает только оба initiation path, paid/history/support/refund, пять ширин и rollback; любой P0 FAIL сохраняет NO_GO.",
       tasks:["task-g3-home","task-g3-catalog","task-g3-profile","task-g3-quiz","task-g3-qa","task-g3-field-weight","task-g3-rotation"],
@@ -1198,9 +1202,9 @@
       title:"4) Поддержка, документы и правила",
       month:"Месяц 4",
       summary:"Собрать безопасный контур поддержки, жалоб, спорных ситуаций и правил консультации.",
-      current:"Проверенный frontend-прототип рабочего места поддержки покрывает очередь, фильтры, SLA, назначение, приоритет, чат тикета, поиск, шаблоны, перевод, заметки, платежный контекст, эскалацию, решение и закрытие. Это подтверждённый prototype, не готовая серверная функция.",
-      blocker:"Нет Yii2/backend-интеграции, RBAC, клиентского экрана обращения, audit trail, реальных уведомлений и связи ticket -> клиент -> платеж/refund -> будущая service_session. Закрытие прототипа ведет на live URL очереди и не доказывает backend-операцию.",
-      next:"Использовать проверенный прототип как frontend handoff и реализовать P0 backend-контур: ticket/message/attachment/internal_note, статусы, ownership, роли, revision/idempotency, аудит, уведомления и сквозной QA.",
+      current:"Реализовано. Тестируем: серверный Support V2 проверен 04.09 по клиенту, Chat V2 агенту и супер-админу. Работают очередь, клиентские обращения, история/заметки, контекст consultation/payment, Resolved → Closed, запрет ответа после Closed и изоляция двух клиентов. Это уже не только frontend-прототип.",
+      blocker:"Трёхролевая приёмка 04.09 FAIL: агенту открыт полный Support V2, клиенту раскрывается внутренний тикет и неверный статус ожидания. В Chat V2 нет адресованной агенту support-карточки; есть дефекты адресата эксперта и передачи owner. Отдельная роль support-moder и новый internal-only Report N0 не протестированы; денежные действия не выполнялись.",
+      next:"Исправить server ACL и internal/client projection, затем agent question delivery, адресата и escalation ownership. Повторить точные P0/P1 и NOT TESTED; не создавать backend заново по старому prototype-статусу.",
       tasks:["task-g4-support","task-g4-complaints","task-g4-docs","task-g4-support-notifications"]
     },
     {
@@ -1235,54 +1239,60 @@
       month:"Месяц 6",
       summary:"Сделать операционный контур для модератора, агентов, экспертов и контроля качества.",
       current:"Календарный риск остаётся P0. Есть локальный Moodle stage с известными ограничениями для обучения/допуска, но production admission не принят. Назначение тестовой анкеты доказано, однако scoped-доступ агента не защищён; G6.7 требует отдельный admin/staff-контур без клиентского фронта.",
-      blocker:"P0: под Kristy открываются чужой профиль id=25 и чужая страница назначений userId=3. G6.1 нельзя принимать, пока агент не ограничен только своими анкетами. Дополнительный blocker: эксперт/агент не должен иметь доступ к клиентскому фронту, поиску клиентов и прямому клиентскому пути.",
+      blocker:"Последний сохранённый access baseline: под агентом открывались чужой профиль и страница назначений. Нужен текущий retest исправления, а не утверждение, что дефект всё ещё существует 07.09. G6.1/G6.7 не приняты до доказательства scoped server access и staff/client isolation.",
       next:"Закрыть server-side access gate: assigned доступен; foreign profile/dialog/send заблокированы. Проверить atomic reassignment, запрет в paid/balance_pause и неизменяемое actual-agent authorship после передачи анкеты.",
       tasks:["task-g6-assignment","task-g6-sla","task-g6-quality","task-g6-training","task-g6-admin-url","task-g6-isolated-admin-access","task-g6-team-notifications"]
     }
   ];
 
   const monthlyReport = {
-    month:"Август 2026 · актуальный срез",
-    updated:"26 августа 2026 · evidence по 25 августа",
+    month:"Сентябрь 2026 · фактическая реализация",
+    updated:"7 сентября 2026 · chat evidence 25–26 августа, support 4 сентября; live recheck открыт",
     overall:{
-      label:"Тестируется · NO-GO",
-      text:"Платный чат реализован и runtime-проверен с межролевым readback. Публичный запуск по-прежнему не разрешён: root остаётся YouDate, а для launch нужны public binding, release-регрессия денег/RBAC и полный MVP-пилот.",
+      label:"Продвинутый чат реализован · приёмка открыта",
+      text:"Зафиксированы реализованные функции, runtime-проверки и остатки всех 30 задач. Продвинутый paid chat уже работает; подтверждены три lifecycle, media/history/queue/reload и sandbox +500. Весь продукт пока не принят. Три P2 относятся к последнему прогону, а не к сегодняшней перепроверке.",
       className:"risk"
     },
     metrics:[
       {value:"6", label:"P0-целей в контроле", tone:"neutral"},
-      {value:"3", label:"проверенных paid lifecycle в UI-E2E", tone:"good"},
+      {value:"95", label:"записей QA; не уникальные тесты", tone:"good"},
+      {value:"3", label:"открытых P2 UI/runtime-дефекта", tone:"risk"},
       {value:"NO-GO", label:"публичный трафик и launch", tone:"risk"}
     ],
     goals:[
-      {code:"G1", status:"Реализован и runtime-проверен", tone:"good", result:"Три paid lifecycle, межролевой chat/media readback, reload persistence и duplicate-send проверены; в коде есть service_session state machine и runtime-контур.", next:"Закрыть UX-дефекты и выполнить release-регрессию RBAC, reconnect и audit."},
-      {code:"G2", status:"Реализован; release-проверки", tone:"good", result:"Price/credits/balance, timer/stop, ledger/refund-контур и admin readback реализованы; G2.4 начисления остаётся отдельной задачей.", next:"Проверить transaction↔session, rounding/refund и low-balance fixture; закрыть G2.4 отдельно."},
-      {code:"G3", status:"Public binding отсутствует", tone:"risk", result:"Контуры витрины и Oracle/Nebula описаны, но root показывает YouDate, а How it works — 404.", next:"Выбрать public brand/runtime path и пройти integration + клиентский QA."},
-      {code:"G4", status:"Frontend prototype", tone:"neutral", result:"Очередь и чат тикета подтверждены как UI-прототип без backend/RBAC.", next:"Закрыть серверные сущности, права, аудит, delivery и связь с consultation."},
+      {code:"G1", status:"Реализовано. Тестируем", tone:"good", result:"Три paid lifecycle, chat/media, reload и duplicate-send прошли. Non-BMP transport PASS; active-paid forged/oversize validation PASS. Последняя runtime-проверка чата: 25–26.08.", next:"Перепроверить CL-UI-005/006 и CL-RT-001; закрыть zero-byte, reconnect timeout, notifications и серверный RBAC."},
+      {code:"G2", status:"Работает; денежная сверка открыта", tone:"neutral", result:"Цена, баланс, rate, Pay/Transactions и sandbox +500 подтверждены. Точный session debit/refund, low-balance и начисления сотрудников ещё не приняты.", next:"Read-only billing oracle и controlled financial regression; G2.4 отдельно."},
+      {code:"G3", status:"Public binding не принят", tone:"risk", result:"Дизайн и integration packages есть. Последняя проверка 26.08: YouDate root и How it works 404; текущая версия требует readback.", next:"Перепроверить public brand/runtime path и пройти integration + клиентский QA."},
+      {code:"G4", status:"Реализовано. Тестируем", tone:"risk", result:"Live Support V2 проверен 04.09. Есть клиентские обращения, очередь, history/notes, consultation/payment и закрытие. Приёмка FAIL по ACL и internal/client projection.", next:"Исправить P0/P1, проверить support-moder и N0 Report, отдельно денежные действия."},
       {code:"G5", status:"Подготовка", tone:"neutral", result:"Требования к events, KPI, SEO и gate собраны; proof измерений нет.", next:"Включить event dictionary/readback на пилоте; рекламу не открывать."},
       {code:"G6", status:"Критический риск", tone:"risk", result:"Есть локальный learning stage и role packages; scoped-access и production admission не доказаны.", next:"Закрыть server-side isolation, assignment, SLA/QA и безопасный pilot admission."}
     ],
     weeks:[
-      {week:"Неделя 1", plan:"Зафиксировать source of truth и месяц", result:"Сверка документов, ownership и blockers; public root/404 перепроверены read-only", status:"Основа собрана"},
-      {week:"Неделя 2", plan:"Проверить paid chat по ролям", result:"Три paid lifecycle, text/media, reload и duplicate-send прошли runtime E2E; реализация service_session и платёжного контура подтверждена", status:"Выполнено"},
-      {week:"Неделя 3", plan:"Закрыть release-регрессию платного чата", result:"CL-UI-003/004/005, session↔ledger oracle, reconnect и low-balance fixture", status:"В работе"},
-      {week:"Неделя 4", plan:"Закрыть месяц честным gate", result:"Принять только подтверждённое; public launch остаётся NO-GO до G1–G6 gates", status:"Запланировано"}
+      {week:"Неделя 1", plan:"Зафиксировать source of truth и public baseline", result:"Public root/404 read-only подтверждены; public launch остаётся NO-GO", status:"Основа собрана"},
+      {week:"Неделя 2", plan:"Проверить paid chat по ролям", result:"Три lifecycle, text/media, reload, duplicate-send и active-paid invalid-file regressions получили runtime evidence", status:"Выполнено"},
+      {week:"Неделя 3", plan:"Закрыть release-регрессию G1/G2", result:"CL-UI-003 закрыт PASS; CL-UI-004 narrowed до zero-byte RETEST; CL-UI-005/006 и CL-RT-001 OPEN; billing/RBAC/reconnect/low-balance pending", status:"В работе"},
+      {week:"Неделя 4", plan:"Решение месяца и подготовка Month 2", result:"Принять только закрытые evidence; составить fixtures и серверные oracles для G1/G2/G3", status:"Запланировано"}
     ],
     decisions:[
       "Все шесть целей остаются P0; порядок задают зависимости и готовность доказательств.",
       "Операционная работа в админке отделяется от разработки; Игорь подключается только по техническому gap.",
-      "Готово = есть подтверждённый результат и evidence; для paid chat базовая реализация и runtime E2E подтверждены, а отдельные release-регрессии не обнуляют этот факт.",
+      "Реализация, проверка и приёмка учитываются отдельно. Продвинутый paid chat не становится будущей разработкой из-за незакрытых release edges.",
       "Реклама и публичный масштаб запускаются только после quality, payment, role-access, public identity и E2E GO-gates."
     ],
     blockers:[
-      "Public root показывает YouDate, а How it works возвращает 404; Nebula public binding/cutover не доказан.",
-      "Runtime service_session и session-to-ledger переходы trial/paid/pause/reconnect/end не приняты: UI readback не доказывает server arithmetic.",
-      "Не закрыты server-side границы агента: чужие анкеты, страницы назначений и отправка от чужой анкеты.",
-      "Открыты CL-UI-003 (emoji), CL-UI-004 (silent invalid-file) и CL-UI-005 (inert search clear).",
-      "Нет доказанного пула допущенных экспертов и тестовой сквозной консультации, принятой по backend/RBAC/quality gates."
+      "Public audit 26.08: YouDate root и How it works 404. Текущий binding/cutover требует повторной проверки.",
+      "Session-to-ledger, seconds/rounding/refund и low-balance не приняты: текущий UI не даёт server oracle.",
+      "Не закрыта server-side RBAC-матрица lifecycle, ledger, operator fields и foreign identities.",
+      "Открыты CL-UI-005 (inert search clear), CL-UI-006 (emoji в queue preview) и CL-RT-001 (active client dialogue не обновляет Resume/Complete); CL-UI-003 закрыт PASS, CL-UI-004 оставлен в zero-byte RETEST.",
+      "Нет доказанного notification delivery/readback, controlled reconnect timeout и полного pilot admission/quality gate."
     ],
     history:[
-      "26.08.2026 — обновлён срез: UI-only paid-chat E2E, public YouDate/404 audit и отделение UI evidence от backend acceptance.",
+      "07.09.2026 — учтён серверный Support V2 QA от 04.09: prototype-only статус отменён. Реализация сохранена, приёмка открыта по точным P0/P1/NOT TESTED.",
+      "07.09.2026 — 30 задач сверены с накопленными источниками; сводка и детали используют единый реестр реализации. Убрана подмена реализованного Chat V2 статусом только ТЗ. Старые проценты вынесены в архивную оценку; новый live-прогон не заявлен.",
+      "26.08.2026 — строка 95: sandbox +500 подтверждён балансом и Transactions. Всего 95 попыток: 59 PASS, 20 WARN, 10 RETEST, 6 FAIL; это не уникальные сценарии. Числовые поля строк 94–95 требуют нормализации перед billing-расчётом.",
+      "26.08.2026 — строки RUN-LOG 93–94: controlled Resume→Technical completion подтверждён у Kristy; текущие aggregate Pay/balance не дают session↔ledger/rounding oracle; в открытом client dialogue не пришли lifecycle Resume/Complete (CL-RT-001 OPEN).",
+      "26.08.2026 — строки RUN-LOG 90–92: date-range и «Показать весь чат» PASS; reconnect RETEST_ENV, так как браузер не выполнил навигацию до продукта; диалог #57 оставлен в technical pause.",
+      "26.08.2026 — добавлен шестимесячный QA-план с критериями evidence и стоп-условиями для G1–G6.",
       "13.08.2026 — добавлена двухуровневая модель месячного контроля: сводка Заказчика + подробный PM ledger.",
       "29.07.2026 — зафиксирован текущий сайт и целевая модель G1–G3; GEO-пилот восстановлен с readback.",
       "Август 2026 — source hierarchy и ownership разделяют ТЗ, операционные инструкции, QA и content/policy пакеты."
@@ -1420,17 +1430,21 @@
     });
   });
 
+  document.getElementById("implemented-chat-features").innerHTML = implementation.features.map((feature) =>
+    `<p><b>${feature[0]} · ${feature[1]}.</b> ${feature[2]}<br><small>${feature[3]}</small></p>`
+  ).join("");
   const goalsGrid = document.getElementById("goals-grid");
   goals.forEach((goal) => {
     const article = document.createElement("article");
     article.className = "goal-card";
     article.style.setProperty("--goal-color", goal.color);
-    const siteReady = goalAverage(goal.tasks, "progress");
+    const classifiedTasks = goal.tasks.filter((id) => implementation.tasks[id]).length;
     const verifiedDocs = goal.tasks.filter((id) => taskMeta[id].docAuditStatus === "verified").length;
 
     const rows = sortByExecutionQueue(goal.tasks).map((id) => {
       const item = taskMeta[id];
       const tz = tzStatus(item);
+      const factual = implementation.tasks[id];
       return `
         <tr>
           <td>
@@ -1445,8 +1459,8 @@
           </td>
           <td class="progress-wrap">
             <a class="readiness-link" href="${readinessHref(id)}" title="Открыть оценку готовности сайта">
-              <b>${item.progress}%</b>
-              <div class="progress-line"><div class="progress-bar" style="width:${item.progress}%"></div></div>
+              <b>${factual.stage}</b>
+              <small>Сверка 07.09; дата proof указана в деталях</small>
             </a>
           </td>
           <td class="tz-wrap">
@@ -1478,7 +1492,7 @@
         <p>${implementationPackage.description}</p>
         <div class="implementation-package-meta">
           <span class="badge done">Документационный пакет ${implementationPackage.specReady}%</span>
-          <span class="badge partial">контур ${implementationPackage.siteReady}%</span>
+          <span class="badge partial">приёмка контура открыта</span>
           <span class="badge">${implementationPackage.acceptanceLabel || "focused acceptance"}</span>
           <span class="badge">${implementationPackage.workClass || (implementationPackage.id === "task-g2-geo-content" ? "OPS_FIRST + CONTENT_POLICY" : "MIXED")}</span>
         </div>
@@ -1495,7 +1509,7 @@
       <div class="goal-body">
         <p>${goal.summary}</p>
         <div class="goal-status" aria-label="Статус цели">
-          <div class="goal-status-item"><span>сайт</span><b>${siteReady}%</b></div>
+          <div class="goal-status-item"><span>стадия сверена</span><b>${classifiedTasks}/${goal.tasks.length}</b></div>
           <div class="goal-status-item"><span>документы проверены</span><b>${verifiedDocs}/${goal.tasks.length}</b></div>
           <div class="goal-status-item"><span>задач</span><b>${goal.tasks.length}</b></div>
         </div>
@@ -1514,7 +1528,7 @@
           <thead>
             <tr>
               <th>Задача<span class="th-sub">task</span></th>
-              <th>% контура<span class="th-sub">evidence-weighted readiness</span></th>
+              <th>Реализация и проверка<span class="th-sub">не процент готовности ТЗ</span></th>
               <th>Документы<span class="th-sub">тип / статус</span></th>
             </tr>
           </thead>

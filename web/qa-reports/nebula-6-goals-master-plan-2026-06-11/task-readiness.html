@@ -93,6 +93,7 @@
   <section id="content"></section>
 </main>
 
+<script src="implementation-state-2026-09-07.js"></script>
 <script>
 (function () {
   const siteCriteria = [
@@ -725,6 +726,12 @@
   const detailLink = document.getElementById("detail-link");
 
   if (!task) {
+    const fact = window.sixGoalsImplementation.tasks[id];
+    if (fact) {
+      content.innerHTML = `<section class="hero"><span class="badge">${fact.stage}</span><h2>${fact.code} ${fact.title}</h2><p>${fact.done}</p><p><b>Следующая проверка:</b> ${fact.next}</p><p>Полная приёмка открыта. Сверка 07.09; chat evidence 25–26.08, support evidence 04.09.</p><p><a href="implementation-audit-2026-09-07.md">Факты и источники</a></p></section>`;
+      detailLink.href = "index.html";
+      return;
+    }
     content.innerHTML = '<div class="empty"><b>Задача не найдена.</b><br>Вернитесь к списку и откройте оценку заново.</div>';
     detailLink.href = "index.html";
     return;
@@ -768,28 +775,35 @@
     }).join("");
   }
 
+  const implementation = window.sixGoalsImplementation;
+  const factual = implementation.tasks[id];
+  if (factual) {
+    task.ready = [factual.done, "Источник: " + implementation.evidence[factual.basis]];
+    task.needed = [factual.next, "Новый live-прогон 07.09 не выполнен; chat proof 25–26.08, support proof 04.09."];
+    task.accept = ["Обязательные positive/negative сценарии подтверждены на текущей сборке.", "Реализация, проверка и приёмка учитываются отдельно. После доказанной приёмки статус: Принято."];
+  }
   content.innerHTML = `
     <section class="hero">
       <div class="hero-head">
-        <span class="badge ${stageClass(task.stage)}">${stageLabel(task.stage)}</span>
+        <span class="badge ${stageClass(task.stage)}">${factual ? factual.stage : stageLabel(task.stage)}</span>
         <span class="badge">${task.goal}</span>
       </div>
       <h2>${task.code} ${task.title}<span class="term-en">${taskTermEn[id] || ""}</span></h2>
-      <p>Короткая оценка без шума: что уже реально собрано, что еще обязательно нужно довести и как понять, что задача готова не на словах, а на сайте.</p>
+      <p>Сверка 07.09.2026. <a href="implementation-audit-2026-09-07.md">Факты и источники</a>; chat evidence 25–26.08, Support V2 04.09.</p>
       <div class="meta-grid">
-        <div class="meta-box"><span>% сайта</span><b>${totalScore}%</b></div>
+        <div class="meta-box"><span>Реализация и проверка</span><b>${factual ? factual.stage : stageLabel(task.stage)}</b></div>
         <div class="meta-box"><span>ТЗ</span><b>${tzReady}%</b></div>
-        <div class="meta-box"><span>Статус</span><b>${stageLabel(task.stage)}</b></div>
+        <div class="meta-box"><span>Приёмка</span><b>Открыта</b></div>
         <div class="meta-box"><span>Полные детали</span><b><a href="${task.detailHref}">Открыть</a></b></div>
       </div>
     </section>
 
     <details class="disclosure">
-      <summary>Из чего собран % сайта</summary>
+      <summary>Архивная оценка: ${totalScore}% (не текущая готовность)</summary>
       <div class="disclosure-body">
         <div class="score-card">
           <h3>Критерии оценки</h3>
-          <p>Оценка складывается из 5 критериев по 20 баллов.</p>
+          <p>Историческая оценка из 5 критериев по 20 баллов. Не пересчитана по текущей реализации и исключена из сводного прогресса. Формулировки ниже архивные.</p>
           <div class="score-list">${renderScoreRows()}</div>
           <div class="score-note">Шаг оценки: 0 / 5 / 10 / 15 / 20. Итог = сумма критериев.</div>
         </div>

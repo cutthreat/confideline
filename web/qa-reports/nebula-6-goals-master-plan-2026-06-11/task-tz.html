@@ -134,6 +134,7 @@
   </section>
 </main>
 
+<script src="implementation-state-2026-09-07.js"></script>
 <script>
 (function () {
   const tzCriteria = [
@@ -749,6 +750,11 @@
   const pageTitle = document.getElementById("page-title");
 
   if (!task) {
+    const fact = window.sixGoalsImplementation.tasks[id];
+    if (fact) {
+      content.innerHTML = `<section class="hero"><span class="badge">${fact.stage}</span><h2>${fact.code} ${fact.title}</h2><p>${fact.done}</p><p><b>Следующая проверка:</b> ${fact.next}</p><p>Полный документационный пакет этой задачи не опубликован в текущей версии. Его отсутствие не изменяет стадию реализации.</p><p><a href="task-readiness.html?task=${encodeURIComponent(id)}">Фактическая готовность</a> · <a href="implementation-audit-2026-09-07.md">Источники</a></p></section>`;
+      return;
+    }
     content.innerHTML = '<div class="empty"><b>Задача не найдена.</b><br>Вернитесь к списку и откройте ТЗ заново.</div>';
     return;
   }
@@ -927,22 +933,24 @@
       </section>`;
   }
 
+  const factual = window.sixGoalsImplementation.tasks[id];
   content.innerHTML = `
     ${renderDocumentContract()}
     <section class="hero">
       <div class="hero-head">
-        <span class="badge ${stageClass(task.stage)}">${stageLabel(task.stage)}</span>
+        <span class="badge ${stageClass(task.stage)}">${factual ? factual.stage : stageLabel(task.stage)}</span>
         <span class="badge">${task.goal}</span>
       </div>
       <h2>${task.code} ${task.title}<span class="term-en">${taskTermEn[id] || ""}</span></h2>
       <div class="meta-grid">
         <div class="meta-box"><span>Готовность ТЗ</span><b>${totalScore}%</b></div>
-        <div class="meta-box"><span>Статус</span><b>${stageLabel(task.stage)}</b></div>
+        <div class="meta-box"><span>Стадия задачи</span><b>${factual ? factual.stage : stageLabel(task.stage)}</b></div>
         <div class="meta-box"><span>Задача</span><b>${task.code}</b></div>
         <div class="meta-box"><span>Исходная карточка</span><b><a href="${taskSourceHref}">Открыть</a></b></div>
       </div>
     </section>
 
+    ${factual ? `<section class="score-card"><h3>${factual.stage}</h3><p>${factual.done}</p><p><b>Следующая проверка:</b> ${factual.next}</p><p><a href="task-readiness.html?task=${encodeURIComponent(id)}">Фактическая готовность и evidence</a> · сверка 07.09; chat evidence 25–26.08, support evidence 04.09. Документация ниже не заменяет текущую стадию реализации.</p></section>` : ""}
     <section class="score-card">
       <h3>${totalScore}% ТЗ</h3>
       ${renderScoreSummary()}
