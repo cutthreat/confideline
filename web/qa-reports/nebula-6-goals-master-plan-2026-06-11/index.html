@@ -58,6 +58,16 @@
     .summary-goal-table td:first-child { width:90px; font-weight:800; color:#175cd3; white-space:nowrap; }
     .summary-goal-table td:nth-child(2) { width:180px; }
     .summary-goal-table td:last-child { width:32%; color:var(--muted); }
+    #calendar-plan .summary-goal-table { table-layout:fixed; }
+    #calendar-plan .summary-goal-table th, #calendar-plan .summary-goal-table td { width:auto; white-space:normal; overflow-wrap:anywhere; }
+    #launch-audit-root .audit-field-label { display:none; }
+    @media (max-width:576px) {
+      #launch-audit-root .summary-goal-table, #launch-audit-root tbody, #launch-audit-root tr, #launch-audit-root td { display:block; width:100%; }
+      #launch-audit-root thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+      #launch-audit-root tr { margin-block:12px; border:1px solid var(--line); background:#fff; }
+      #launch-audit-root td { border-top:0; }
+      #launch-audit-root .audit-field-label { display:block; font-weight:700; color:var(--ink); margin-bottom:4px; }
+    }
     .report-badge { display:inline-block; padding:4px 8px; border-radius:999px; font-size:11px; font-weight:800; white-space:nowrap; }
     .report-badge.good { background:#d9ead3; color:#1f5e2e; }
     .report-badge.warn { background:#fff2cc; color:#7a4e00; }
@@ -260,6 +270,7 @@
   </section>
 
   <section id="calendar-plan" class="tab-panel" data-tab-panel="calendar-plan">
+    <div id="launch-audit-root"></div>
     <div id="traffic-readiness-root"></div>
   </section>
   <section id="six-goals" class="tab-panel" data-tab-panel="six-goals">
@@ -822,6 +833,7 @@
 
 <script src="implementation-state-2026-09-07.js"></script>
 <script src="traffic-readiness-plan-2026-09-07.js"></script>
+<script src="launch-audit-2026-09-07.js"></script>
 <script>
 (function () {
   const implementation = window.sixGoalsImplementation;
@@ -1184,7 +1196,7 @@
       title:"3) Связать дизайн сайта с рабочей логикой",
       month:"Сентябрь–октябрь: интеграция; ноябрь: клиентский пилот",
       summary:"Перенести дизайн сайта на рабочую логику и связать с реальными данными.",
-      current:"G3.1–G3.7 имеют дизайн/пакеты интеграции Oracle/Nebula с backend и I18N. Последний рассмотренный public audit от 26.08: YouDate/dating signup на root и 404 How it works. На 07.09 это исторический baseline, а не новый результат. Работающий chat E2E не доказывает весь публичный путь.",
+      current:"G3.1–G3.7 имеют дизайн/пакеты интеграции Oracle/Nebula с backend и I18N. Layout audit 07.09: 52 static preview-ready. Public HTTP readback 07.09 UTC: YouDate root и /en/page/how-it-works 404. Это не авторизованный E2E; весь публичный путь ещё не принят.",
       blocker:"Нет принятого route/view/data binding, expert-only query, profile/review data, полного i18n key registry, safe cutover/rollback и сквозного клиентского пути. Визуальные макеты и UI-E2E чата не заменяют public integration.",
       next:"Сначала зафиксировать бренд/runtime route для public surface; затем закрыть I18N inventory/readback и backend-интеграцию восьми поверхностей. G3.5 принимает только оба initiation path, paid/history/support/refund, пять ширин и rollback; любой P0 FAIL сохраняет NO_GO.",
       tasks:["task-g3-home","task-g3-catalog","task-g3-profile","task-g3-quiz","task-g3-qa","task-g3-field-weight","task-g3-rotation"],
@@ -1252,10 +1264,10 @@
 
   const monthlyReport = {
     month:"К январю 2027 · четыре месяца до трафика",
-    updated:"7 сентября 2026 · chat evidence 25–26 августа, support 4 сентября; live recheck открыт",
+    updated:"Выпуск 8 сентября · срез 07.09: Chat 25–26.08, Support 04.09, public HTTP 07.09 UTC; authenticated E2E открыт",
     overall:{
       label:"Срок под риском · план условный",
-      text:"Цель: готовность к тестовому трафику к 21 декабря, резерв 22–31 декабря. Продвинутый Chat V2 и Support V2 уже реализованы и тестируются. Сентябрь — ядро и доступ; октябрь — интегрированный продукт; ноябрь — закрытый пилот; декабрь — release-проверки. Все 30 задач сохранены. До 11 сентября нужны подтверждённые оценки и загрузка владельцев. <a href=\"#calendar-plan\" data-open-tab=\"calendar-plan\">Открыть календарь до января</a>.",
+      text:"Цель: готовность к тестовому трафику к 21 декабря, резерв 22–31 декабря. Chat V2 и Support V2 реализованы и тестируются; G1–G2 целиком не приняты. Сентябрь — ядро и доступ; октябрь — интеграция; ноябрь — закрытый пилот; декабрь — release-проверки. Все 30 задач сохранены, добавлены условия приёмки 15 задач G4–G6. До 11 сентября нужны оценки и загрузка владельцев. <a href=\"#calendar-plan\" data-open-tab=\"calendar-plan\">Аудит PM / Антон / Caster и план до января</a>.",
       className:"risk"
     },
     metrics:[
@@ -1267,10 +1279,10 @@
     goals:[
       {code:"G1", status:"Реализовано. Тестируем", tone:"good", result:"Три paid lifecycle, chat/media, reload и duplicate-send прошли. Non-BMP transport PASS; active-paid forged/oversize validation PASS. Последняя runtime-проверка чата: 25–26.08.", next:"Перепроверить CL-UI-005/006 и CL-RT-001; закрыть zero-byte, reconnect timeout, notifications и серверный RBAC."},
       {code:"G2", status:"Работает; денежная сверка открыта", tone:"neutral", result:"Цена, баланс, rate, Pay/Transactions и sandbox +500 подтверждены. Точный session debit/refund, low-balance и начисления сотрудников ещё не приняты.", next:"Read-only billing oracle и controlled financial regression; G2.4 отдельно."},
-      {code:"G3", status:"Public binding не принят", tone:"risk", result:"Дизайн и integration packages есть. Последняя проверка 26.08: YouDate root и How it works 404; текущая версия требует readback.", next:"Перепроверить public brand/runtime path и пройти integration + клиентский QA."},
+      {code:"G3", status:"Public binding не принят", tone:"risk", result:"52 static preview-ready по layout audit 07.09. Public HTTP 07.09 UTC: YouDate root, How it works 404. Это не готовый боевой путь.", next:"Принять public host/data binding и полный клиентский QA на текущей сборке."},
       {code:"G4", status:"Реализовано. Тестируем", tone:"risk", result:"Live Support V2 проверен 04.09. Есть клиентские обращения, очередь, history/notes, consultation/payment и закрытие. Приёмка FAIL по ACL и internal/client projection.", next:"Исправить P0/P1, проверить support-moder и N0 Report, отдельно денежные действия."},
-      {code:"G5", status:"Подготовка", tone:"neutral", result:"Требования к events, KPI, SEO и gate собраны; proof измерений нет.", next:"Включить event dictionary/readback на пилоте; рекламу не открывать."},
-      {code:"G6", status:"Критический риск", tone:"risk", result:"Есть локальный learning stage и role packages; scoped-access и production admission не доказаны.", next:"Закрыть server-side isolation, assignment, SLA/QA и безопасный pilot admission."}
+      {code:"G5", status:"Подготовка", tone:"neutral", result:"Требования к events, KPI, SEO и gate собраны; runtime-измерения не приняты.", next:"Dictionary в сентябре; events/dashboard/SLA/quality/alerts технически готовы ДО пилота; в ноябре сверка по его данным."},
+      {code:"G6", status:"Частичная реализация; критичный доступ открыт", tone:"risk", result:"R5 product source принят, локальный Moodle есть; production admission и полная изоляция не приняты.", next:"Сначала P0 server isolation; затем SLA/QA/admission и 3–5 допущенных участников со сменами."}
     ],
     weeks:[
       {week:"07–11.09", plan:"Подтвердить остаток, владельцев и capacity", result:"Стадии сверены; оценки исполнителей, launch inventory и текущая build/source привязка ещё требуют подтверждения", status:"В работе"},
@@ -1285,7 +1297,7 @@
       "Реклама и публичный масштаб запускаются только после quality, payment, role-access, public identity и E2E GO-gates."
     ],
     blockers:[
-      "Public audit 26.08: YouDate root и How it works 404. Текущий binding/cutover требует повторной проверки.",
+      "Public HTTP 07.09 UTC: YouDate root, How it works 404 и legacy Terms; launch binding/policy не приняты. Это не browser E2E.",
       "Session-to-ledger, seconds/rounding/refund и low-balance не приняты: текущий UI не даёт server oracle.",
       "Не закрыта server-side RBAC-матрица lifecycle, ledger, operator fields и foreign identities.",
       "Открыты CL-UI-005 (inert search clear), CL-UI-006 (emoji в queue preview) и CL-RT-001 (active client dialogue не обновляет Resume/Complete); CL-UI-003 закрыт PASS, CL-UI-004 оставлен в zero-byte RETEST.",
