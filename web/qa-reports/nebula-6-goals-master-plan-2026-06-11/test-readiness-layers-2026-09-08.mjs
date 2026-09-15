@@ -18,7 +18,8 @@ for (const file of ['implementation-state-2026-09-07.js','traffic-readiness-plan
 }
 const p = c.window.sixGoalsReadinessLayers, plan = c.window.sixGoalsTrafficPlan, tasks = c.window.sixGoalsImplementation.tasks;
 const rendered = nodes.get('readiness-layers-root').innerHTML;
-const html = fs.readFileSync(path.join(root,'index.html'),'utf8');
+// Read the preserved deep panel: index.html is now the compact public entrypoint.
+const html = fs.readFileSync(path.join(root,'index-legacy-deep.html'),'utf8');
 const report = fs.readFileSync(path.join(root,p.reportHref),'utf8');
 check('exact seven unique layers', p.layers.length === 7 && new Set(p.layers.map(x=>x.id)).size === 7);
 check('known ordered seven layers', p.layers.map(x=>x.id).join() === 'backend,client,agent,other_admin,learning,marketing,channels');

@@ -33,7 +33,9 @@ function runPage(file, search = '') {
   return { nodes, state:context.window.sixGoalsImplementation, plan:context.window.sixGoalsTrafficPlan, audit:context.window.sixGoalsLaunchAudit };
 }
 
-const main = runPage('index.html');
+// The compact index.html is the public entrypoint. The historical implementation
+// state and calendar are intentionally tested against the preserved deep archive.
+const main = runPage('index-legacy-deep.html');
 const state = main.state;
 check('canonical task count 33', Object.keys(state.tasks).length === 33);
 check('95 execution rows', state.runLog.rows === 95);
@@ -59,7 +61,7 @@ for (const [id, factual] of Object.entries(state.tasks)) {
 for (const id of realized) check(id + ' realized status', state.tasks[id].stage === 'Реализовано. Тестируем');
 check('unverified refund not auto-promoted', state.tasks['task-g2-refund'].stage !== 'Реализовано. Тестируем');
 check('live support promoted from prototype with source', state.tasks['task-g4-support'].basis === 'support' && state.evidence.support.includes('2026-09-04'));
-for (const file of ['index.html','task-readiness.html','task-tz.html']) {
+for (const file of ['index-legacy-deep.html','task-readiness.html','task-tz.html']) {
   const source = fs.readFileSync(path.join(root, file), 'utf8');
   check(file + ' shared script before inline', source.indexOf('src="' + stateFile + '"') < source.indexOf('<script>'));
 }
@@ -119,7 +121,7 @@ if (main.audit) {
   check('audit field labels survive mobile', rendered.includes('audit-field-label') && rendered.includes('role="columnheader"'));
   check('audit report exists', fs.existsSync(path.join(root, audit.reportHref)));
   check('three reviews exist', audit.reviewers.length === 3 && audit.reviewers.every(row => fs.existsSync(path.join(root,row[1]))));
-  const html = fs.readFileSync(path.join(root,'index.html'),'utf8');
+  const html = fs.readFileSync(path.join(root,'index-legacy-deep.html'),'utf8');
   check('audit scope has wrapping fix', html.includes('#calendar-plan .summary-goal-table th, #calendar-plan .summary-goal-table td { width:auto; white-space:normal; overflow-wrap:anywhere; }'));
   check('audit has narrow record layout', html.includes('#launch-audit-root .audit-field-label { display:block;'));
 }
