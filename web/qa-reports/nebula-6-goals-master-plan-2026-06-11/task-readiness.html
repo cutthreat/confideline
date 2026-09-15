@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Nebula - оценка готовности задачи</title>
+  <title>Nebula — текущий статус задачи</title>
   <style>
     :root {
       color-scheme: light;
@@ -31,10 +31,28 @@
     .hero-head { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0 0 8px; }
     .hero h2 { margin:0; font-size:26px; }
     .hero p { margin:0; line-height:1.45; }
-    .meta-grid { display:grid; grid-template-columns:repeat(4, minmax(150px,1fr)); gap:10px; margin-top:14px; }
+    .meta-grid { display:grid; grid-template-columns:repeat(3, minmax(180px,1fr)); gap:10px; margin-top:14px; }
     .meta-box { background:#fbfdff; border:1px solid #e4e9f2; border-radius:8px; padding:10px; }
     .meta-box span { display:block; color:var(--muted); font-size:12px; margin-bottom:4px; }
     .meta-box b { display:block; font-size:16px; }
+    .meta-box small { display:block; margin-top:5px; color:var(--muted); line-height:1.35; }
+    .decision-banner { margin-top:14px; padding:12px 14px; border-left:5px solid #175cd3; border-radius:7px; background:#eef5ff; }
+    .decision-kicker { display:block; margin-bottom:4px; color:#0b3f91; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+    .decision-banner strong { display:block; font-size:17px; line-height:1.4; }
+    .plain-note { margin:0; line-height:1.5; }
+    .technical-panel { background:#fff; border:1px solid #b9c8dc; border-radius:10px; margin:0 0 16px; overflow:hidden; }
+    .technical-panel summary { cursor:pointer; padding:14px 16px; font-weight:700; background:#eef2f7; }
+    .technical-panel summary:focus-visible { outline:3px solid #b7d4ff; outline-offset:-3px; }
+    .technical-body { padding:14px 16px 16px; }
+    .technical-lead { margin:0 0 14px; color:var(--muted); line-height:1.45; }
+    .technical-grid { display:grid; grid-template-columns:repeat(3, minmax(220px,1fr)); gap:12px; }
+    .technical-card { min-width:0; padding:12px; border:1px solid #e4e9f2; border-radius:8px; background:#fbfdff; line-height:1.45; }
+    .technical-card h3 { margin:0 0 8px; font-size:17px; }
+    .technical-card ul, .technical-card ol { margin:0; padding-left:18px; }
+    .technical-card li { margin:5px 0; }
+    .technical-label { margin:12px 0 4px; color:var(--muted); font-size:12px; font-weight:700; }
+    .technical-code { display:block; padding:8px; border-radius:6px; background:#f0f3f8; color:#344054; font:12px/1.45 Consolas, monospace; overflow-wrap:anywhere; }
+    .result-template { margin-top:12px; padding:9px; border:1px dashed #b9c8dc; border-radius:6px; color:#475467; font:12px/1.55 Consolas, monospace; white-space:pre-line; }
     .term-en { display:block; margin-top:3px; color:var(--muted); font-size:12px; font-weight:600; line-height:1.25; letter-spacing:.01em; }
     .badge { display:inline-block; padding:4px 8px; border-radius:999px; font-weight:700; font-size:12px; white-space:nowrap; }
     .stage-accepted { background:#d9ead3; color:#1f5e2e; }
@@ -74,20 +92,20 @@
     .card-body li { margin:5px 0; }
     .empty { background:#fff; border:1px solid var(--line); border-radius:10px; padding:18px; line-height:1.5; }
     @media (max-width:980px) {
-      .meta-grid, .section-grid { grid-template-columns:1fr; }
+      .meta-grid, .section-grid, .technical-grid { grid-template-columns:1fr; }
     }
   </style>
 </head>
 <body>
 <header>
-  <h1>Оценка готовности задачи</h1>
-  <p>Здесь только оценочная часть: что уже готово на текущий момент, что еще нужно добить и по какому критерию задача считается реально готовой на сайте.</p>
+  <h1>Текущий статус задачи</h1>
+  <p>Здесь видно только текущую картину: что уже есть в продукте, что ещё проверяем и когда задачу можно считать принятой на сайте.</p>
 </header>
 
 <main>
   <div class="top-links">
     <a class="top-link" href="index.html">← Назад к списку</a>
-    <a class="top-link" id="detail-link" href="index.html">Открыть полные детали задачи</a>
+    <a class="top-link" id="detail-link" href="index.html">Открыть проверку логики по ТЗ</a>
   </div>
 
   <section id="content"></section>
@@ -96,103 +114,19 @@
 <script src="implementation-state-2026-09-07.js"></script>
 <script>
 (function () {
-  const siteCriteria = [
-    { key:"surface", label:"Экран на месте", max:20 },
-    { key:"data", label:"Реальные данные", max:20 },
-    { key:"action", label:"Основное действие", max:20 },
-    { key:"flow", label:"Путь пользователя", max:20 },
-    { key:"proof", label:"Проверка и приемка", max:20 }
-  ];
-
-  const siteScoreByTask = {
-    "task-g1-session": [10,10,0,5,5],
-    "task-g1-chat": [10,10,5,5,10],
-    "task-g1-statuses": [10,15,5,5,10],
-    "task-g1-chat-notifications": [5,10,5,5,10],
-    "task-g2-pricing": [10,15,5,5,10],
-    "task-g2-timer": [10,10,5,5,10],
-    "task-g2-refund": [10,10,5,5,10],
-    "task-g2-accruals": [10,5,0,0,5],
-    "task-g3-home": [5,5,0,0,5],
-    "task-g3-catalog": [5,5,0,0,5],
-    "task-g3-profile": [5,5,5,0,5],
-    "task-g3-quiz": [5,0,0,0,5],
-    "task-g3-qa": [5,0,0,0,5],
-    "task-g4-support": [5,0,0,0,0],
-    "task-g4-complaints": [5,0,0,0,0],
-    "task-g4-docs": [5,0,0,0,0],
-    "task-g4-support-notifications": [0,0,0,0,0],
-    "task-g5-events": [5,0,0,0,0],
-    "task-g5-dashboard": [5,0,0,0,0],
-    "task-g5-kpi": [0,0,0,0,0],
-    "task-g5-marketing-gate": [0,0,0,0,0],
-    "task-g6-assignment": [10,10,5,0,10],
-    "task-g6-sla": [5,0,0,0,0],
-    "task-g6-quality": [5,0,0,0,0],
-    "task-g6-training": [0,0,0,0,0],
-    "task-g6-team-notifications": [0,0,0,0,0],
-    "task-g6-admin-url": [0,0,0,0,0]
-  };
-
-  const criterionDetailsByTask = {
-    "task-g1-session": [
-      "10/20: на live-сайте есть базовый чат, но отдельной consultation session пока нет.",
-      "10/20: будущая session должна связываться с чатом и сообщениями, но сейчас это еще не отдельная live-сущность.",
-      "0/20: основное действие карточки на live-сайте пока не реализовано: открыть одну консультационную сессию как отдельный кейс нельзя.",
-      "5/20: роли описаны частично, но не доказано, что супер-админ, агент и клиент видят одну консультацию каждый в своей логике.",
-      "5/20: есть внутренний proof/foundation, но нет live-приемки карточки на рабочем сайте."
-    ],
-    "task-g1-chat": [
-      "10/20: чат работает, и live proof 29 июня 2026 подтвердил agent chat shell под Kristy, но финальная безопасная модель агент/анкета еще не принята.",
-      "10/20: отдельные диалоги по назначенным анкетам доказаны для Solara, Stella и Talia; но Kristy все еще открывает неназначенный профиль id=25.",
-      "5/20: ответ от назначенной анкеты доказан как публичный send-as через userOfAgentId, но backend-проверка чужого userOfAgentId не доказана.",
-      "5/20: клиентская видимость частично подтверждена: на фронте Kristy видит Talia, Stella и Solara как публичные анкеты; но full role path и снятие доступа еще не проверены.",
-      "10/20: proof есть по UI/AJAX/JS, но приемка заблокирована до запрета чужих анкет, запрета чужих диалогов и внутреннего operator audit."
-    ]
-  };
-
-  const tzReadyByTask = {
-    "task-g1-session": 70,
-    "task-g1-chat": 75,
-    "task-g1-statuses": 65,
-    "task-g1-chat-notifications": 55,
-    "task-g2-pricing": 70,
-    "task-g2-timer": 70,
-    "task-g2-refund": 75,
-    "task-g2-accruals": 85,
-    "task-g3-home": 25,
-    "task-g3-catalog": 25,
-    "task-g3-profile": 50,
-    "task-g3-quiz": 25,
-    "task-g3-qa": 35,
-    "task-g4-support": 75,
-    "task-g4-complaints": 75,
-    "task-g4-docs": 55,
-    "task-g4-support-notifications": 20,
-    "task-g5-events": 70,
-    "task-g5-dashboard": 30,
-    "task-g5-kpi": 25,
-    "task-g5-marketing-gate": 65,
-    "task-g6-assignment": 70,
-    "task-g6-sla": 75,
-    "task-g6-quality": 65,
-    "task-g6-training": 65,
-    "task-g6-team-notifications": 20,
-    "task-g6-admin-url": 35
-  };
 
   const tasks = {
     "task-g1-session": {
-      code:"G1.1", title:"Карточка консультации", goal:"Цель 1", stage:"proof_gap", progress:30, tzReady:70, detailHref:"tasks/task-g1-session.html",
+      code:"G1.1", title:"Карточка консультации", goal:"Цель 1", stage:"implementation_in_progress", progress:30, detailHref:"tasks/task-g1-session.html",
       ready:[
         "Подтверждено владельцем: на live-сайте сейчас реализован только базовый чат /ru/admin/message/chat.",
         "Зафиксирована продуктовая граница: чат не равен консультационной сессии.",
         "Есть service_session foundation/proof как внутренний слой.",
-        "Понятно, что service session нужно предусмотреть заранее до обновления чата программистом."
+        "Функциональная модель service_session согласована, ТЗ передано программисту, внедрение начато."
       ],
       needed:[
-        "Получить от Алексея финальный чат и описание будущего обновления.",
-        "Спроектировать live-карточку одной консультации в админке как отдельную сущность.",
+        "Получить от программиста scope текущей итерации и build/runtime refs.",
+        "Реализовать live-карточку одной консультации в админке как отдельную сущность.",
         "Связать service session с конкретным conversation/message, обычным языком: с каким диалогом и какими сообщениями связана консультация.",
         "Предусмотреть связь с ценой, таймером, списанием, остановкой, поддержкой и качеством.",
         "Разделить видимость: что видит супер-админ, что видит агент, что видит клиент.",
@@ -206,29 +140,33 @@
       ]
     },
     "task-g1-chat": {
-      code:"G1.2", title:"Чат по ролям", goal:"Цель 1", stage:"proof_gap", progress:40, tzReady:75, detailHref:"tasks/task-g1-chat.html",
+      code:"G1.2", title:"Чат по ролям", goal:"Цель 1", stage:"product_tz_ready_runtime_proof_open", progress:40, detailHref:"tasks/task-g1-chat.html",
       ready:[
+        "Product-only TZ создан: reports/tz-product-g1-2-role-chat-consultation-2026-07-16.md.",
         "Owner-модель ролей уточнена: клиент видит только эксперта/анкету, агент клиенту не раскрывается.",
         "Назначение анкет агенту Kristy и вход через Login as user доказаны частично.",
         "Live proof 29 июня 2026 подтвердил: Kristy видит несколько диалогов от назначенных анкет Solara, Stella и Talia.",
         "Live payload подтвердил: ответы в диалоге Talia идут от публичной анкеты Talia Munkrest через userOfAgentId=105.",
-        "Фронт клиента частично подтвержден: Kristy видит отдельные диалоги с Talia, Stella и Solara."
+        "Фронт клиента частично подтвержден: Kristy видит отдельные диалоги с Talia, Stella и Solara.",
+        "Training corpus добавил продуктовый слой поведения консультации: presence, first useful value, relevance, empathy, instrument/source clarity, transparent trial/paid state and no pressure."
       ],
       needed:[
         "Закрыть P0-разрыв доступа: агент не должен открывать чужие анкеты по прямому URL.",
         "Доказать, что agent chat API фильтрует диалоги только по назначенным анкетам.",
         "Доказать, что backend отклоняет чужой userOfAgentId при отправке сообщения.",
         "Добавить или доказать operator audit: публичная анкета, реальный оператор, время и действие.",
-        "Доказать, что после снятия анкеты агент сразу теряет доступ к ее диалогам."
+        "Доказать, что после снятия анкеты агент сразу теряет доступ к ее диалогам.",
+        "Owner/legal gate: утвердить prohibited engagement tactics и границу helpful continuation vs pressure."
       ],
       accept:[
         "Клиент видит только эксперта/анкету и поддержку.",
         "Агент видит только назначенные анкеты и не может использовать чужую анкету.",
-        "Внутренний след показывает реального оператора, публичную анкету, назначение и вмешательство админа/супер-админа."
+        "Внутренний след показывает реального оператора, публичную анкету, назначение и вмешательство админа/супер-админа.",
+        "Positive/negative examples prove transparent trial/paid behavior, useful first answer and no-pressure consultation behavior."
       ]
     },
     "task-g1-statuses": {
-      code:"G1.3", title:"Статусы и история", goal:"Цель 1", stage:"accepted_bounded_slice", progress:45, tzReady:65, detailHref:"tasks/task-g1-statuses.html",
+      code:"G1.3", title:"Статусы и история", goal:"Цель 1", stage:"accepted_bounded_slice", progress:45, detailHref:"tasks/task-g1-statuses.html",
       ready:[
         "Статусы консультации и история событий уже доказаны.",
         "Есть защита от недопустимых переходов.",
@@ -246,7 +184,7 @@
       ]
     },
     "task-g1-chat-notifications": {
-      code:"G1.4", title:"Уведомления чата", goal:"Цель 1", stage:"accepted_bounded_slice", progress:35, tzReady:55, detailHref:"tasks/task-g1-chat-notifications.html",
+      code:"G1.4", title:"Уведомления чата", goal:"Цель 1", stage:"accepted_bounded_slice", progress:35, detailHref:"tasks/task-g1-chat-notifications.html",
       ready:[
         "Граница уведомлений как отдельной части задачи уже понятна.",
         "Есть привязка к консультации и чату."
@@ -263,16 +201,16 @@
       ]
     },
     "task-g2-pricing": {
-      code:"G2.1", title:"Цена и баланс", goal:"Цель 2", stage:"accepted_bounded_slice", progress:45, tzReady:70, detailHref:"tasks/task-g2-pricing.html",
+      code:"G2.1", title:"Цена и баланс", goal:"Цель 2", stage:"product_tz_ready_owner_runtime_policy_open", progress:45, detailHref:"tasks/task-g2-pricing.html",
       ready:[
         "Правило цены привязано к конкретной консультации.",
         "Старт блокируется, если цена и условия не зафиксированы.",
-        "Проверены успешный старт и блокировка ошибочного старта."
+        "Есть единый product-only billing truth pack: reports/tz-product-g2-billing-truth-2026-07-16.md."
       ],
       needed:[
-        "Вывести эту механику в прозрачный клиентский интерфейс на сайте.",
-        "Показать понятную цену, условия старта и последствия до начала консультации.",
-        "Проверить путь витрина сайта -> старт консультации без ручных костылей."
+        "Утвердить таблицу пакетов, объём бесплатного/пробного лимита, правило стоимости минуты, политику пополнения и автопополнения, а также тексты оплаты.",
+        "Привязать все состояния оплаты к экранам Figma/Oracle.",
+        "Доказать путь на текущем сайте и в админке Confideline без предположений о работе системы."
       ],
       accept:[
         "Клиент до старта видит цену и правило допуска.",
@@ -281,16 +219,16 @@
       ]
     },
     "task-g2-timer": {
-      code:"G2.2", title:"Таймер и остановка", goal:"Цель 2", stage:"accepted_bounded_slice", progress:40, tzReady:70, detailHref:"tasks/task-g2-timer.html",
+      code:"G2.2", title:"Таймер и остановка", goal:"Цель 2", stage:"product_tz_ready_owner_runtime_policy_open", progress:40, detailHref:"tasks/task-g2-timer.html",
       ready:[
         "Есть учет времени и списаний, привязанный к конкретной консультации.",
         "Предупреждение, остановка и итог списаний уже доказаны.",
-        "Продолжение без доступного баланса уже блокируется."
+        "Product TZ запрещает скрывать окончание free/trial и требует прозрачного paid transition."
       ],
       needed:[
-        "Сделать живой понятный таймер для клиентского и операторского интерфейса.",
-        "Довести поведение предупреждений перед остановкой.",
-        "Проверить продолжение/остановку консультации в реальном пользовательском потоке."
+        "Утвердить точные правила billable minute/unit, low/no balance pause, late top-up и reconnect behavior.",
+        "Привязать timer/free/trial/paid states к Figma/Oracle screens.",
+        "Доказать текущий живой пользовательский поток на Confideline/Yii2."
       ],
       accept:[
         "На сайте видно, сколько консультация уже идет и что произойдет дальше.",
@@ -299,16 +237,16 @@
       ]
     },
     "task-g2-refund": {
-      code:"G2.3", title:"Возвраты", goal:"Цель 2", stage:"accepted_bounded_slice", progress:40, tzReady:75, detailHref:"tasks/task-g2-refund.html",
+      code:"G2.3", title:"Возвраты", goal:"Цель 2", stage:"product_tz_ready_support_refund_runtime_open", progress:40, detailHref:"tasks/task-g2-refund.html",
       ready:[
         "Принят проверенный внутренний срез: спор, возврат и журнал решения привязаны к конкретной консультации.",
         "Внутренний журнал хранит списание, возврат и итог решения по консультации, а не как общий финансовый шум.",
-        "Операторская поверхность уже показывает дело возврата, журнал консультации и историю статусов на данных приложения."
+        "Product TZ требует consultation/support-case linkage, duplicate prevention and cumulative refund limit."
       ],
       needed:[
-        "Довести клиентский/support E2E: как клиент подает спор, видит статус и получает объяснение решения.",
-        "Связать G2.3 с G4 поддержкой и жалобами, чтобы возврат не решался только внутренним журналом.",
-        "Описать owner-approved правила: когда возвращаем, когда отказываем, кто принимает решение и какой текст видит клиент."
+        "Утвердить owner/legal refund eligibility policy.",
+        "Доказать current клиентский/support route на Confideline/Yii2.",
+        "Связать финальное wording с G4 legal/support pack."
       ],
       accept:[
         "Любой возврат или отказ объясняется через конкретную консультацию и ее доказательства.",
@@ -317,25 +255,29 @@
       ]
     },
     "task-g2-accruals": {
-      code:"G2.4", title:"Начисления", goal:"Цель 2", stage:"packet_ready", progress:20, tzReady:85, detailHref:"tasks/task-g2-accruals.html",
+      code:"G2.4", title:"Начисления", goal:"Цель 2", stage:"product_tz_ready_compensation_runtime_open", progress:100, detailHref:"task-tz.html?task=task-g2-accruals&doc=igor",
       ready:[
         "Контракт начислений подготовлен: начисление должно объясняться конкретной консультацией.",
         "Понятны статусы: ожидает, заработано, удержано, уменьшено, отменено, отклонено.",
         "Понятна связь с возвратами и спорами: спор удерживает начисление, возврат уменьшает или отменяет.",
         "Live-срез 29 июня 2026 подтвердил общий финансовый фундамент сайта: заказы, баланс, транзакции, начисления, удержания, выплаты, реквизиты, платежные настройки и цены.",
-        "Зафиксирована новая вводная: модель начислений еще не проверена, значит нужна гибкая админская настройка правил, а не одна жесткая формула.",
-        "Собран implementation packet: настройки, registry/detail, data contract, статусы, integration rules, verifier cases и stop conditions."
+        "Начисления реализованы и управляются в админке: общий процент задаётся в настройках оплаты, а для конкретного агента можно задать индивидуальный процент.",
+        "Product TZ отделяет public expert statistics от internal agent compensation and refund correction.",
+        "Индивидуальный процент заменяет общий и не складывается с ним; текущий список балансовых операций нужно разделить по ролям."
       ],
       needed:[
-        "Реализовать в админке настройки начислений: режим, база расчета, получатель, процент/ставка, hold, возврат, QA/SLA-влияние, ручной override.",
-        "Реализовать registry/detail начислений по консультациям.",
-        "Реализовать policy version snapshot у каждого начисления, чтобы было понятно, по каким правилам оно рассчитано.",
+        "Оставить тот же журнал балансовых операций, но включить для агента режим «Мои начисления»: только его строки, период, консультация, основа расчёта, процент и статус.",
+        "Оставить супер-админу общий список начислений и фильтр по агенту, консультации и периоду.",
+        "Проверить, что агент не видит начисления других агентов и не может открыть чужую запись прямой ссылкой.",
+        "Доказать, что по каждому начислению понятно, какие правила действовали на момент консультации.",
         "Связать начисление с конкретной консультацией, а не только с общей балансовой операцией.",
-        "Уточнить частичный возврат и правила влияния качества/сроков ответа на деньги.",
+        "Доказать proportional partial refund и super-admin override базы/процента с полной историей.",
         "Доказать живой сценарий: завершенная консультация -> начисление -> спор или возврат -> операторская проверка.",
         "Найти или получить актуальный source-код live partner finance pages, потому что в текущем локальном extracted source эти страницы не найдены."
       ],
       accept:[
+        "Общий и индивидуальный процент настраиваются раздельно; при индивидуальном значении общий процент не прибавляется.",
+        "Агент видит только свои начисления, а супер-админ — общий список и фильтры.",
         "Каждое начисление связано с одной консультацией.",
         "Каждое начисление показывает версию правил, по которой оно рассчитано.",
         "Оператор и эксперт понимают, откуда взялась сумма и почему она удержана/уменьшена/отменена.",
@@ -344,7 +286,7 @@
       ]
     },
     "task-g3-home": {
-      code:"G3.1", title:"Витрина", goal:"Цель 3", stage:"inventoried", progress:15, tzReady:25, detailHref:"tasks/task-g3-home.html",
+      code:"G3.1", title:"Витрина", goal:"Цель 3", stage:"inventoried", progress:15, detailHref:"tasks/task-g3-home.html",
       ready:[
         "Понимание, что витрина не должна обгонять рабочую основу продукта, уже есть.",
         "Есть эталонный материал askNebula для сравнения."
@@ -361,7 +303,7 @@
       ]
     },
     "task-g3-catalog": {
-      code:"G3.2", title:"Каталог", goal:"Цель 3", stage:"inventoried", progress:15, tzReady:25, detailHref:"tasks/task-g3-catalog.html",
+      code:"G3.2", title:"Каталог", goal:"Цель 3", stage:"inventoried", progress:15, detailHref:"tasks/task-g3-catalog.html",
       ready:[
         "Каталог осмыслен как отдельный обязательный слой витрины сайта.",
         "Понимание зависимости от экспертных данных уже есть."
@@ -378,7 +320,7 @@
       ]
     },
     "task-g3-profile": {
-      code:"G3.3", title:"Карточка эксперта", goal:"Цель 3", stage:"packet_ready", progress:20, tzReady:50, detailHref:"tasks/task-g3-profile.html",
+      code:"G3.3", title:"Карточка эксперта", goal:"Цель 3", stage:"packet_ready", progress:20, detailHref:"tasks/task-g3-profile.html",
       ready:[
         "Понимание состава профиля эксперта уже есть.",
         "Есть опора на уже согласованную основу консультации и денег.",
@@ -396,7 +338,7 @@
       ]
     },
     "task-g3-quiz": {
-      code:"G3.4", title:"Подбор и старт", goal:"Цель 3", stage:"inventoried", progress:10, tzReady:25, detailHref:"tasks/task-g3-quiz.html",
+      code:"G3.4", title:"Подбор и старт", goal:"Цель 3", stage:"inventoried", progress:10, detailHref:"tasks/task-g3-quiz.html",
       ready:[
         "Понимание, что подбор должен вести в честный старт консультации, уже зафиксировано."
       ],
@@ -412,7 +354,7 @@
       ]
     },
     "task-g3-qa": {
-      code:"G3.5", title:"Проверка клиентского пути", goal:"Цель 3", stage:"packet_ready", progress:10, tzReady:35, detailHref:"tasks/task-g3-qa.html",
+      code:"G3.5", title:"Проверка клиентского пути", goal:"Цель 3", stage:"packet_ready", progress:10, detailHref:"tasks/task-g3-qa.html",
       ready:[
         "Понимание критичных клиентских путей уже есть.",
         "Есть черновая основа для проверки витрины сайта против реальной логики продукта."
@@ -428,56 +370,108 @@
         "Есть финальный вывод о готовности, а не общий оптимизм."
       ]
     },
-    "task-g4-support": {
-      code:"G4.1", title:"Поддержка", goal:"Цель 4", stage:"packet_ready", progress:5, tzReady:75, detailHref:"tasks/task-g4-support.html",
+    "task-g3-field-weight": {
+      code:"G3.6", title:"Вес полей анкеты", goal:"Цель 3", stage:"inventoried", progress:10, detailHref:"tasks/task-g3-field-weight.html",
       ready:[
-        "Понимание, что поддержка должна быть частью контура консультации, уже есть."
+        "Найден текущий admin-контур: /ru/admin/profile-field/index управляет полями анкеты.",
+        "По локальному YouDate-коду подтверждены visible, searchable, searchable premium и sort order для profile fields.",
+        "Понятно, что текущая сортировка полей не равна Nebula-score анкеты."
       ],
       needed:[
-        "Определить роли, входы в поддержку, очереди и типы обращений.",
-        "Связать поддержку с консультацией, возвратами и качеством.",
-        "Собрать операторский и клиентский контур."
+        "Определить обязательные поля анкеты эксперта для допуска в каталог.",
+        "Разделить поля на блокирующие, весовые и информационные.",
+        "Собрать формулу completeness/quality score: заполненность, качество, модерация, фото, язык, город/страна, специализация, цена, availability.",
+        "Решить, где админ видит score и какие ошибки блокируют публикацию или понижают выдачу.",
+        "Доказать на тестовых анкетах: заполнение поля меняет score и влияет на downstream-ротацию."
+      ],
+      accept:[
+        "У каждой анкеты есть понятный score и расшифровка, из чего он собран.",
+        "Админ видит, что нужно дозаполнить, чтобы анкета была допущена или поднялась в выдаче.",
+        "Нет скрытого магического ранжирования: каждая весовая причина объяснима.",
+        "Score не заменяет модерацию и не принимает эксперта автоматически."
+      ]
+    },
+    "task-g3-rotation": {
+      code:"G3.7", title:"Выдача и ротация анкет", goal:"Цель 3", stage:"implementation_in_progress", progress:5, detailHref:"tasks/task-g3-rotation.html",
+      ready:[
+        "Понятно, что каталог нельзя принимать без правил выдачи: клиент должен видеть не случайный набор анкет.",
+        "Есть текущий общий механизм выдачи в YouDate: boost и порядок пользователей, но он не описывает Nebula-ротацию экспертов.",
+        "Зафиксирована зависимость от G3.6: ротация должна использовать score анкеты, но не сводиться только к нему."
+      ],
+      needed:[
+        "Проверить стартовую формулу: eligibility, score анкеты, online/busy/off/admin-blocked, язык, город, тема, цена, SLA и KPI-порог.",
+        "Разделить режимы: обычный каталог, подбор, рекомендуемые, новые эксперты, paid traffic landing.",
+        "До KPI-порога показывать insufficient_data; мониторить долю top-N по агентам без автоматического лимита анкет.",
+        "Определить админскую страницу правил ротации и журнал изменений.",
+        "Проверить на 3-5 пилотных анкетах, что порядок объясним и не ломает бизнес-цель."
+      ],
+      accept:[
+        "Есть понятная rotation policy для клиента, админа и разработчика.",
+        "Анкета попадает в выдачу только если прошла минимальные gates.",
+        "Порядок выдачи можно объяснить по факторам, а не только по ID/дате/ручному мнению.",
+        "Реклама и SEO не запускаются на каталог без принятой политики ротации."
+      ]
+    },
+    "task-g4-support": {
+      code:"G4.1", title:"Поддержка", goal:"Цель 4", stage:"product_tz_ready_runtime_billing_policy_open", progress:5, detailHref:"tasks/task-g4-support.html",
+      ready:[
+        "Product-only TZ создан: reports/tz-product-g4-1-g4-2-support-refund-2026-07-16.md.",
+        "Понимание, что поддержка должна быть частью контура консультации, уже есть.",
+        "Support route связан с consultation, billing/payment, quality review, policy escalation and client-visible outcome."
+      ],
+      needed:[
+        "Current Yii2/front/admin runtime proof for case creation, role access, consultation linkage and decision/outcome.",
+        "Утверждённые правила оплаты, поддержки, кредитов, минут, бесплатного лимита, пополнения и возврата.",
+        "Client-facing Figma/Oracle entry points for support/report/refund states."
       ],
       accept:[
         "Любое обращение привязывается к реальной консультации или продуктовой проблеме.",
-        "Оператор понимает, что делать дальше.",
-        "Клиент видит понятный способ получить помощь."
+        "Support восстанавливает контекст и понимает, что делать дальше.",
+        "Клиент видит понятный способ получить помощь, статус и результат."
       ]
     },
     "task-g4-complaints": {
-      code:"G4.2", title:"Жалобы и возвраты", goal:"Цель 4", stage:"packet_ready", progress:5, tzReady:75, detailHref:"tasks/task-g4-complaints.html",
+      code:"G4.2", title:"Жалобы и поддержка", goal:"Цель 4", stage:"product_tz_ready_runtime_billing_policy_open", progress:5, detailHref:"tasks/task-g4-complaints.html",
       ready:[
-        "Есть понимание связи жалоб с возвратами и спорными ситуациями."
+        "Product-only TZ создан: reports/tz-product-g4-1-g4-2-support-refund-2026-07-16.md.",
+        "Есть понимание связи жалоб с возвратами и спорными ситуациями.",
+        "Жалоба/возврат описаны как evidence-based decision with no/partial/full refund, correction, quality review or owner/legal review."
       ],
       needed:[
-        "Описать прием обращения, разбор, решение, эскалации и исходы.",
-        "Привязать это к доказательствам по консультации и операторским действиям.",
-        "Сделать понятную поверхность для владельца процесса."
+        "G2 billing truth for refund eligibility, paid units and cumulative refund limits.",
+        "Runtime proof that duplicate refund/correction actions are blocked or merged.",
+        "Owner/legal-approved wording for refund/support route."
       ],
       accept:[
         "Жалоба проходит полный путь до решения.",
         "Каждое решение имеет след и объяснение.",
-        "Нет жалоб, которые висят вне контекста консультации."
+        "Нет жалоб, которые висят вне контекста консультации.",
+        "Refund/no-refund/correction is consistent with client-visible and internal financial outcome."
       ]
     },
     "task-g4-docs": {
-      code:"G4.3", title:"Документы", goal:"Цель 4", stage:"packet_ready", progress:5, tzReady:55, detailHref:"tasks/task-g4-docs.html",
+      code:"G4.3", title:"Документы", goal:"Цель 4", stage:"product_tz_ready_owner_legal_policy_open", progress:5, detailHref:"tasks/task-g4-docs.html",
       ready:[
-        "Понято, что документы и правила являются обязательной частью контура доверия."
+        "Понято, что документы и правила являются обязательной частью контура доверия.",
+        "Training corpus exposed required policy zones: billing/trial boundary, refund/support, prohibited claims, Trust & Safety, privacy and consultant behavior.",
+        "Product-only TZ создан: reports/tz-product-g4-3-rules-trust-safety-2026-07-16.md."
       ],
       needed:[
-        "Определить список документов и где они должны появляться.",
-        "Связать документы с ключевыми действиями пользователя.",
-        "Сделать приемочный список обязательных текстов и мест."
+        "Owner/legal-approved US-English Trust & Safety route.",
+        "Prohibited claims and engagement policy wording.",
+        "Утверждённые правила оплаты, поддержки, кредитов, минут, бесплатного лимита, пополнения и возврата.",
+        "Display proof before payment, trial/paid transition, chat, refund/support and admission/course.",
+        "Remove YouDate/dating leakage and avoid raw competitor scripts as policy.",
+        "Runtime/front/admin proof after Igor implementation."
       ],
       accept:[
-        "Пользователь видит нужные правила в нужный момент.",
-        "Оператор и админ понимают, на что можно ссылаться.",
-        "Нет критичных юридических и продуктовых дыр."
+        "User sees the relevant rule before the risky action.",
+        "Agent/moderator/support know what may be said, what is forbidden and when to escalate.",
+        "Approved policy version is linked to exam/QA hard-fail cases."
       ]
     },
     "task-g4-support-notifications": {
-      code:"G4.4", title:"Уведомления поддержки", goal:"Цель 4", stage:"master_plan_only", progress:0, tzReady:20, detailHref:"tasks/task-g4-support-notifications.html",
+      code:"G4.4", title:"Уведомления поддержки", goal:"Цель 4", stage:"master_plan_only", progress:0, detailHref:"tasks/task-g4-support-notifications.html",
       ready:[
         "Есть только понимание, что понадобится слой событий поддержки."
       ],
@@ -492,8 +486,44 @@
         "Сигнал ведет в нужный контекст."
       ]
     },
+    "task-g4-expert-sourcing": {
+      code:"G4.5", title:"Поиск кандидатов-экспертов", goal:"Цель 4", stage:"role_aware_packet_verified_runtime_open", progress:10, detailHref:"task-readiness.html?task=task-g4-expert-sourcing",
+      ready:[
+        "Есть пакет поиска: каналы, текст объявления, анкета, первичный отбор и собеседование.",
+        "Ответственный за запуск — Ксения; список кандидатов ведём в одном месте.",
+        "Поиск кандидатов не означает, что человек уже принят или допущен к платным консультациям."
+      ],
+      needed:[
+        "Утвердить каналы и язык поиска, затем запустить первую волну.",
+        "Для каждого отклика сохранить контакт, источник, специализацию, доступность и этап проверки.",
+        "Передавать выбранных кандидатов в обучение и отдельную проверку допуска."
+      ],
+      accept:[
+        "Ксения провела первую волну поиска и внесла отклики в единый список.",
+        "У каждого кандидата видны следующий шаг и ответственный.",
+        "Ни один кандидат не получает доступ к платной работе до обучения и допуска."
+      ]
+    },
+    "task-g4-social-profiles": {
+      code:"G4.6", title:"20 профилей для будущих экспертов", goal:"Цель 4", stage:"role_aware_packet_verified_runtime_open", progress:5, detailHref:"task-readiness.html?task=task-g4-social-profiles",
+      ready:[
+        "Подготовительный объём зафиксирован: 20 экспертных профилей в Instagram и TikTok, до 40 аккаунтов.",
+        "Профили нужны для ранней подготовки материалов, а не для выдачи себя за реальных людей.",
+        "Ксения ведёт список аккаунтов, а права на фотографии и тексты проверяются до публикации."
+      ],
+      needed:[
+        "Составить таблицу: имя/псевдоним, язык, тема, страна, ссылка, владелец доступа и статус.",
+        "Подготовить 1–2 права-разрешённых фотографии, короткое описание и несколько безопасных материалов для каждого профиля.",
+        "Публиковать спокойно и органически: без выдуманных отзывов, ложной биографии, массового спама и обещаний результата."
+      ],
+      accept:[
+        "Созданы и проверены 20 пар профиль/тема в согласованных соцсетях.",
+        "Для каждого аккаунта есть базовое наполнение, права на материалы и резервный доступ.",
+        "Профили не используются для рекламы или платных консультаций до общего GO проекта."
+      ]
+    },
     "task-g5-events": {
-      code:"G5.1", title:"События воронки", goal:"Цель 5", stage:"packet_ready", progress:5, tzReady:70, detailHref:"tasks/task-g5-events.html",
+      code:"G5.1", title:"События воронки", goal:"Цель 5", stage:"packet_ready", progress:5, detailHref:"tasks/task-g5-events.html",
       ready:[
         "Понимание, что измеримый продуктовый контур нужен, уже есть."
       ],
@@ -509,7 +539,7 @@
       ]
     },
     "task-g5-dashboard": {
-      code:"G5.2", title:"Дашборд", goal:"Цель 5", stage:"master_plan_only", progress:5, tzReady:30, detailHref:"tasks/task-g5-dashboard.html",
+      code:"G5.2", title:"Дашборд", goal:"Цель 5", stage:"master_plan_only", progress:5, detailHref:"tasks/task-g5-dashboard.html",
       ready:[
         "Цель дашборда как операторской поверхности понятна."
       ],
@@ -525,23 +555,28 @@
       ]
     },
     "task-g5-kpi": {
-      code:"G5.3", title:"Таблица показателей", goal:"Цель 5", stage:"master_plan_only", progress:0, tzReady:25, detailHref:"tasks/task-g5-kpi.html",
+      code:"G5.3", title:"Таблица показателей", goal:"Цель 5", stage:"product_tz_ready_thresholds_runtime_open", progress:0, detailHref:"tasks/task-g5-kpi.html",
       ready:[
-        "Есть только базовое понимание, что показатели нужны."
+        "Product-only TZ создан: reports/tz-product-g5-3-kpi-scorecard-measurement-2026-07-16.md.",
+        "Training corpus identified quality/operations metrics for pilot consultations.",
+        "Reference timings are measurement candidates, not approved hard thresholds.",
+        "Quality must be reported separately from profit/conversion."
       ],
       needed:[
-        "Определить список показателей, владельцев и периодичность.",
-        "Зафиксировать формулы и источники.",
-        "Отвязаться от общих слов и перейти к измеримым метрикам."
+        "Owner-approved numeric thresholds and hard-fail vs coaching-only split.",
+        "Runtime/event proof before treating dashboard numbers as true.",
+        "Decision link: coaching, re-check, paid-access block, refund review, launch/marketing gate.",
+        "Approved billing/legal/support truth for refund and paid-unit definitions.",
+        "Preserve public expert metrics vs internal agent KPI separation."
       ],
       accept:[
-        "Каждый показатель имеет владельца, формулу и действие.",
-        "Таблица не спорит с дашбордом и событиями.",
-        "По показателям можно понять, что улучшать дальше."
+        "Each metric has product definition, owner, decision use, source proof and status.",
+        "The table supports pilot readiness, quality, admission, support/refund and marketing-gate decisions.",
+        "Approved thresholds are clearly separated from pilot measurement candidates."
       ]
     },
     "task-g5-marketing-gate": {
-      code:"G5.4", title:"Допуск рекламы", goal:"Цель 5", stage:"packet_ready", progress:0, tzReady:65, detailHref:"tasks/task-g5-marketing-gate.html",
+      code:"G5.4", title:"Допуск рекламы", goal:"Цель 5", stage:"packet_ready", progress:0, detailHref:"tasks/task-g5-marketing-gate.html",
       ready:[
         "Понимание, что рекламу нельзя включать без проверки готовности, уже есть."
       ],
@@ -556,8 +591,49 @@
         "При провале проверки видно, что именно блокирует запуск."
       ]
     },
+    "task-g5-notifications": {
+      code:"G5.5", title:"Почта и уведомления через колокольчик", goal:"Цель 5", stage:"documentation_repair_required_runtime_open", progress:10, detailHref:"task-readiness.html?task=task-g5-notifications",
+      ready:[
+        "В админке есть старые почтовые шаблоны: /ru/admin/email-template/index.",
+        "Шаблоны создавались до платного чата и саппорта, поэтому полного покрытия новых событий нет.",
+        "G1.4 отвечает за события консультации, G4.4 — за поддержку, G6.5 — за внутреннюю команду; G5.5 собирает общую карту каналов и границы."
+      ],
+      needed:[
+        "Составить список событий, получателей, языка, канала и важности.",
+        "Обновить письма для платного чата, саппорта, оплаты, возвратов и системных ошибок.",
+        "Спроектировать колокольчик: список, прочитано/непрочитано, переход в нужный объект, повторная доставка и отсутствие дублей.",
+        "Проверить настройки администратора, журнал доставки и понятный экран для пользователя."
+      ],
+      accept:[
+        "Для каждого события понятно, кто получает письмо, кто видит колокольчик и куда ведёт переход.",
+        "Пользователь может открыть уведомление, отметить его прочитанным и вернуться к нужной консультации или обращению.",
+        "Положительные, отрицательные, повторные и недоставленные уведомления проверены на одной сборке."
+      ]
+    },
+    "task-g5-seo": {
+      code:"G5.SEO", title:"SEO-оптимизация и органический поиск", goal:"Цель 5 · связанный P0-пакет · основной месяц 4", stage:"plan_ready_execution_open", progress:10, detailHref:"../../../reports/six-goals-functional-tz-2026-07-20/tz-g5-seo-team-plan.html",
+      ready:[
+        "Подготовлен полный план SEO-команды и отдельный технический контекст.",
+        "Основной спринт назначен на месяц 4; подготовка начинается в месяце 1, technical integration — в месяце 3.",
+        "Определены metadata contract, migration, multilingual/GEO, structured data, organic funnel, роли и acceptance.",
+        "Операционная работа и разработка разведены; новая SEO-админка не создаётся до аудита существующих возможностей."
+      ],
+      needed:[
+        "Fresh crawl текущего public и mapped backend build.",
+        "Фактический URL/redirect/semantic/metadata registry.",
+        "Инвентаризация Language, SEO translates, country/geoname, profile и page settings.",
+        "Реализация technical gaps и admin/public readback.",
+        "Production crawl без P0, sitemap/search-system evidence и фактический organic baseline."
+      ],
+      accept:[
+        "100% публичных URL классифицированы и имеют owner, locale, intent и index status.",
+        "100% index-ready URL имеют полный metadata contract; sitemap/hreflang/schema/private boundaries проходят проверку.",
+        "Нет dating leakage, fake local/review/rating/price claims и P0 crawl defects.",
+        "SEO runtime/indexing/baseline не объявляются готовыми по одному документу или submit sitemap."
+      ]
+    },
     "task-g6-assignment": {
-      code:"G6.1", title:"Назначение", goal:"Цель 6", stage:"proof_gap", progress:35, tzReady:70, detailHref:"tasks/task-g6-assignment.html",
+      code:"G6.1", title:"Назначение", goal:"Цель 6", stage:"proof_gap", progress:35, detailHref:"tasks/task-g6-assignment.html",
       ready:[
         "В текущей админке подтвержден список агентов и роль Kristy как агента.",
         "Подтверждено назначение анкет Kristy: Solara, Stella, Talia.",
@@ -584,7 +660,7 @@
       ]
     },
     "task-g6-sla": {
-      code:"G6.2", title:"Сроки реакции", goal:"Цель 6", stage:"packet_ready", progress:5, tzReady:75, detailHref:"tasks/task-g6-sla.html",
+      code:"G6.2", title:"Сроки реакции", goal:"Цель 6", stage:"packet_ready", progress:5, detailHref:"tasks/task-g6-sla.html",
       ready:[
         "Понимание критичности сроков реакции уже есть."
       ],
@@ -600,45 +676,50 @@
       ]
     },
     "task-g6-quality": {
-      code:"G6.3", title:"Контроль качества", goal:"Цель 6", stage:"packet_ready", progress:5, tzReady:65, detailHref:"tasks/task-g6-quality.html",
+      code:"G6.3", title:"Контроль качества", goal:"Цель 6", stage:"scorecard_requirements_ready_thresholds_open", progress:5, detailHref:"tasks/task-g6-quality.html",
       ready:[
-        "Есть понимание, что слой качества нужен поверх всей консультации."
+        "Training corpus дал P0 scorecard dimensions for pilot consultation review.",
+        "Hard-fail classes identified: hidden billing, prohibited guarantee, unsafe crisis response, manipulation/fear pressure, privacy breach, invented context and refusal to correct material error.",
+        "Manual review of every pilot consultation is acceptable for MVP scale."
       ],
       needed:[
-        "Описать критерии хорошей/плохой консультации.",
-        "Связать качество с жалобами, возвратами, сроками реакции и обучением.",
-        "Собрать операторскую форму оценки."
+        "Owner/legal approval for exact engagement and Trust & Safety wording.",
+        "Numeric thresholds and severity mapping.",
+        "Operator surface: review record, source excerpt, correction, appeal/re-check and paid-access block.",
+        "Anonymized good/bad example library."
       ],
       accept:[
-        "Каждая проблемная консультация может быть оценена по правилам.",
-        "Есть понятные триггеры для разбора и исправления.",
-        "Оценка качества влияет на действия, а не просто хранится."
+        "Every pilot consultation can be reviewed against the scorecard.",
+        "Every score or hard fail leads to a clear action.",
+        "Positive and negative walkthroughs cover manipulation, hidden billing, unsafe claim and correction/re-check cases."
       ]
     },
     "task-g6-training": {
-      code:"G6.4", title:"Обучение и регламенты", goal:"Цель 6", stage:"packet_ready", progress:0, tzReady:65, detailHref:"tasks/task-g6-training.html",
+code:"G6.4", title:"Обучение и регламенты", goal:"Цель 6", stage:"product_tz_ready_owner_policy_runtime_open", progress:5, detailHref:"tasks/task-g6-training.html",
       ready:[
-        "Пока только базовый замысел слоя обучения.",
-        "Подтверждено: подготовку запуска нельзя откладывать на последний месяц.",
-        "Собраны первичные элементы найма: ЦА кандидата, текст вакансии, площадки поиска, анкета, тест и онлайн-собеседование."
+        "Product-only TZ создан: reports/tz-product-g6-4-expert-training-admission-2026-07-16.md.",
+        "Корпус обучения закрыт как доказательная база: локальные оригиналы, transcript, frame/OCR, 102 ten-minute packets, proof catalog и closeout.",
+        "Подтверждено: G6.4 является P0 для MVP 5 агентов / 25 экспертов / 1 модератор / 1 супер-админ.",
+        "Зафиксирована admission sequence: course, lesson tests, final exam, trial consultation, Ksenia review, owner approval, controlled first shifts and re-check.",
+        "Подготовку запуска нельзя откладывать на последний месяц."
       ],
       needed:[
-        "Определить набор регламентов по ролям.",
-        "Описать путь поиска: реальные эксперты или кандидаты на обучение.",
-        "Утвердить текст вакансии и бриф онлайн-собеседования владельцем.",
-        "Подготовить утвержденные ответы на вопросы кандидатов про деньги, график, выплаты, юридический формат, поток клиентов и правила работы.",
-        "Связать обучение с проблемами качества, сроков реакции и поддержки.",
-        "Сделать понятный операторский пакет, а не набор заметок."
+        "Owner должен утвердить финальные названия ролей и границу expert profile vs internal agent.",
+        "Owner/legal должны утвердить US-English Trust & Safety route и prohibited claims.",
+        "Нужен domain-owner review для пилотных Astrology/Tarot материалов и глоссария.",
+        "Нужны числовые thresholds для QA/SLA/admission.",
+        "Нужна approved rewritten/anonymized example library.",
+        "Нужно runtime/admin proof после реализации: paid access остается закрыт до полного admission gate."
       ],
       accept:[
-        "3-5 человек прошли допуск или обучение.",
-        "Новая роль может начать работу без устной расшифровки.",
-        "Регламенты покрывают типовые ошибки, эскалации и правило: не обещаем исход клиенту.",
-        "Обучение опирается на реальный продуктовый контур."
+        "Positive admission walkthrough проходит все gates до paid access.",
+        "Failed test, failed final exam, failed trial consultation, missing Ksenia review and stale policy cases block paid access.",
+        "Курс/тесты/экзамен/пробная консультация используют approved rules and anonymized examples.",
+        "Runtime proof подтверждает блокировку paid access до допуска и controlled first shifts после допуска."
       ]
     },
     "task-g6-admin-url": {
-      code:"G6.6", title:"Админка на отдельном URL", goal:"Цель 6", stage:"master_plan_only", progress:0, tzReady:35, detailHref:"tasks/task-g6-admin-url.html",
+      code:"G6.6", title:"Админка на отдельном URL", goal:"Цель 6", stage:"master_plan_only", progress:0, detailHref:"tasks/task-g6-admin-url.html",
       ready:[
         "Потребность подтверждена: команда должна работать через админку напрямую, без клиентского фронта."
       ],
@@ -655,8 +736,29 @@
         "Супер-админ видит контрольный контур пилота."
       ]
     },
+    "task-g6-isolated-admin-access": {
+      code:"G6.7", title:"Изолированный доступ в админку", goal:"Цель 6", stage:"implementation_in_progress", progress:5, detailHref:"tasks/task-g6-isolated-admin-access.html",
+      ready:[
+        "Понятна бизнес-причина: агент как staff-роль работает в изолированном workspace и не получает чужие клиентские данные.",
+        "В плане уже есть G6.6: отдельный URL админки как инфраструктурная основа.",
+        "Понятна цепочка допуска: регистрация кандидата -> проверка -> обучение/допуск -> staff-доступ -> назначение анкеты."
+      ],
+      needed:[
+        "Реализовать отдельный staff/admin-only вход для агента; direct expert login не считать штатным workflow.",
+        "Запретить staff-ролям клиентский фронт, поиск клиентов, клиентские профили и обычные пользовательские действия.",
+        "Определить, как эксперт появляется на сайте только после верификации, модерации анкеты и назначения.",
+        "Добавить server-side frontend deny policy, не только скрытие ссылок в интерфейсе.",
+        "Фиксировать audit попыток входа на фронт и запрещенные страницы."
+      ],
+      accept:[
+        "Агент входит только в разрешенную админскую рабочую область; direct/impersonation action сохраняет actual actor.",
+        "Попытка открыть фронт как клиент блокируется сервером.",
+        "До верификации эксперт не опубликован и не может работать с реальными клиентами.",
+        "Супер-админ видит статус допуска, назначение и историю изменений доступа."
+      ]
+    },
     "task-g6-team-notifications": {
-      code:"G6.5", title:"Командные уведомления", goal:"Цель 6", stage:"master_plan_only", progress:0, tzReady:20, detailHref:"tasks/task-g6-team-notifications.html",
+      code:"G6.5", title:"Командные уведомления", goal:"Цель 6", stage:"master_plan_only", progress:0, detailHref:"tasks/task-g6-team-notifications.html",
       ready:[
         "Есть понимание, что команде понадобится собственный event layer."
       ],
@@ -673,6 +775,81 @@
     }
   };
 
+  const canonicalG1G3SpecIds = [
+    "task-g1-session", "task-g1-chat", "task-g1-statuses", "task-g1-chat-notifications",
+    "task-g2-pricing", "task-g2-timer", "task-g2-refund", "task-g2-accruals",
+    "task-g3-home", "task-g3-catalog", "task-g3-profile", "task-g3-quiz",
+    "task-g3-qa", "task-g3-field-weight", "task-g3-rotation"
+  ];
+  canonicalG1G3SpecIds.forEach((taskId) => {
+    const item = tasks[taskId];
+    if (!item) return;
+    item.tzReady = 100;
+    item.detailHref = `task-tz.html?task=${taskId}&doc=igor`;
+  });
+  tasks["task-g3-field-weight"].title = "Полнота и таксономия анкеты";
+
+  const implementation = window.sixGoalsImplementation;
+  Object.entries(implementation.tasks).forEach(([taskId, factual]) => {
+    const item = tasks[taskId];
+    if (!item) throw new Error("Unknown factual task: " + taskId);
+    item.planningStage = item.planningStage || item.stage;
+    item.stage = "implementation_fact_review";
+    item.factual = factual;
+    item.ready = [factual.done, "Источник: " + implementation.evidence[factual.basis]];
+    item.needed = [factual.next, "Нужен свежий проход по текущей версии сайта; прошлый отрицательный результат сам по себе не означает, что исправления нет."];
+    item.accept = [
+      "Проверить обязательные положительные и отрицательные сценарии на текущей версии сайта.",
+      "Реализация, функциональная проверка и полная приёмка учитываются отдельно; старые расчёты не влияют на текущий статус."
+    ];
+  });
+
+  const requirementCompleteStages = new Set([
+    "implementation_in_progress",
+    "product_tz_ready_runtime_proof_open",
+    "product_tz_ready_owner_runtime_policy_open",
+    "product_tz_ready_support_refund_runtime_open",
+    "product_tz_ready_compensation_runtime_open",
+    "product_tz_ready_runtime_billing_policy_open",
+    "product_tz_ready_owner_legal_policy_open",
+    "product_tz_ready_thresholds_runtime_open",
+    "product_tz_ready_owner_policy_runtime_open",
+    "accepted_bounded_slice",
+    "proof_gap",
+    "packet_ready",
+    "plan_ready_execution_open",
+    "etalon_spec_ready_runtime_open",
+    "role_aware_packet_verified_runtime_open",
+    "frontend_prototype_verified_backend_open",
+    "documentation_repair_required_runtime_open",
+    "local_moodle_stage_ready_production_open",
+    "scorecard_requirements_ready_thresholds_open"
+  ]);
+
+  function currentRequirementStatus(item) {
+    const planningStage = item.planningStage || item.stage;
+    const factualStage = item.factual && item.factual.stage ? item.factual.stage : "";
+    const implementationStarted = requirementCompleteStages.has(planningStage)
+      || item.tzReady === 100
+      || /^Реализовано|^Частичная доставка/.test(factualStage);
+    if (implementationStarted) {
+      return {
+        label: "Готово · 100%",
+        note: "Требования приняты. Дальше отдельно проверяем сайт и приёмку."
+      };
+    }
+    if (planningStage === "master_plan_only" || planningStage === "inventoried") {
+      return {
+        label: "Ещё не оформлено",
+        note: "Пока это идея или инвентаризация; ТЗ ещё не передано в работу."
+      };
+    }
+    return {
+      label: "В подготовке",
+      note: "Требования уточняются; процент реализации здесь не показываем."
+    };
+  }
+
   const taskTermEn = {
     "task-g1-session": "service session",
     "task-g1-chat": "role-based chat",
@@ -681,30 +858,41 @@
     "task-g2-pricing": "pricing gate",
     "task-g2-timer": "timer / debit / hard stop",
     "task-g2-refund": "refund ledger",
-    "task-g2-accruals": "accruals / incentives",
+    "task-g2-accruals": "начисления / вознаграждение агента",
     "task-g3-home": "storefront",
     "task-g3-catalog": "expert catalog",
     "task-g3-profile": "expert profile",
     "task-g3-quiz": "quiz / matching / start",
     "task-g3-qa": "end-to-end path proof",
+    "task-g3-field-weight": "profile field weight / completeness score",
+    "task-g3-rotation": "expert ranking / rotation",
     "task-g4-support": "support",
     "task-g4-complaints": "complaints / disputes",
     "task-g4-docs": "terms / documents",
     "task-g4-support-notifications": "support notifications",
+    "task-g4-expert-sourcing": "expert candidate intake",
+    "task-g4-social-profiles": "social profile preparation",
     "task-g5-events": "funnel events",
     "task-g5-dashboard": "dashboard",
     "task-g5-kpi": "KPI table",
     "task-g5-marketing-gate": "marketing gate",
+    "task-g5-notifications": "email and in-app notifications",
+    "task-g5-seo": "SEO launch readiness / organic search",
     "task-g6-assignment": "assignment queue",
     "task-g6-sla": "SLA / response time",
     "task-g6-quality": "QA / quality control",
     "task-g6-training": "training / playbook",
     "task-g6-team-notifications": "team notifications",
-    "task-g6-admin-url": "separate admin URL"
+    "task-g6-admin-url": "separate admin URL",
+    "task-g6-isolated-admin-access": "isolated admin access / no frontend access"
   };
 
   function stageClass(stage) {
+    if (stage === "implementation_fact_review") return "stage-packet";
+    if (stage === "plan_ready_execution_open") return "stage-accepted";
+    if (stage === "etalon_spec_ready_runtime_open") return "stage-accepted";
     if (stage === "accepted_bounded_slice") return "stage-accepted";
+    if (stage === "implementation_in_progress") return "stage-packet";
     if (stage === "proof_gap") return "stage-packet";
     if (stage === "packet_ready") return "stage-packet";
     if (stage === "inventoried") return "stage-inventory";
@@ -712,14 +900,143 @@
   }
 
   function stageLabel(stage) {
+    if (stage === "implementation_fact_review") return "Фактический срез · пользовательское обновление 15.09";
+    if (stage === "plan_ready_execution_open") return "План 100% · выполнение открыто";
+    if (stage === "etalon_spec_ready_runtime_open") return "ТЗ 100% · runtime открыт";
     if (stage === "accepted_bounded_slice") return "Срез согласован";
+    if (stage === "implementation_in_progress") return "Внедрение начато / proof открыт";
     if (stage === "proof_gap") return "Нужна проверка";
     if (stage === "packet_ready") return "Пакет готов";
     if (stage === "inventoried") return "Оценка собрана";
     return "Только план";
   }
 
-  window.sixGoalsImplementation.grouping.applyMetadata(tasks);
+  const readerOverrides = {
+    "task-g1-session": {
+      summary: "G1 уже работает и прошёл базовую проверку PM и Игоря. Теперь Ксения независимо проходит пользовательские сценарии.",
+      decision: "Передать задачу на ручную проверку Ксении; код и базу данных в этом проходе не проверяем.",
+      ready: "Основной платный цикл и связь карточки с чатом уже проверены на базовых сценариях.",
+      next: "Ксении открыть одну тестовую консультацию и проверить карточку, связанный чат, статус и понятный итог операции.",
+      done: "Принимаем после самостоятельного сценария Ксении с записью экрана и голосовым сопровождением; новые ошибки фиксируем по ходу прогона.",
+      instruction: "1. Взять одну тестовую консультацию.\n2. Пройти её от старта до завершения как пользователь и сотрудник.\n3. Записать экран и голосом проговорить ожидание и итог.\n4. Сохранить отдельный результат PASS/FAIL/NOT TESTED."
+    },
+    "task-g1-chat": {
+      next: "Ксении проверить роли клиента, назначенного сотрудника и администратора по положительному и отрицательному сценарию.",
+      done: "Принимаем после самостоятельной проверки Ксении с записью экрана и голосом; доступ к коду и базе данных не требуется."
+    },
+    "task-g1-statuses": {
+      next: "Ксении показать историю одной консультации после перезагрузки и убедиться, что каждое изменение понятно.",
+      done: "Принимаем после отдельного пользовательского сценария с записью экрана и голосовым пояснением."
+    },
+    "task-g1-chat-notifications": {
+      next: "Ксении проверить адресата, доставку и повторную отправку уведомлений консультации.",
+      done: "Принимаем после самостоятельного сценария Ксении с записью экрана и голосом."
+    },
+    "task-g2-pricing": {
+      next: "Передать G2.1 Ксении: проверить цену, баланс и видимый итог операции по отдельному сценарию.",
+      done: "Принимаем после ручной проверки Ксении с записью экрана и голосовым сопровождением."
+    },
+    "task-g2-timer": {
+      next: "Передать G2.2 Ксении: проверить таймер, паузу, остановку и сохранение результата по отдельному сценарию.",
+      done: "Принимаем после ручной проверки Ксении с записью экрана и голосовым сопровождением."
+    }
+    ,"task-g2-refund": {
+      summary: "Возвраты уже реализованы, но пока только в локальной версии. На сервере их ещё нет, поэтому ручная проверка ещё не начиналась.",
+      decision: "Ждём выкладку Игоря на сервер; до неё задачу не принимаем.",
+      ready: "Логика возврата реализована локально и подготовлена к проверке.",
+      next: "После выкладки Игоря открыть текущую версию сайта и проверить полный, частичный и отклонённый возврат, повторную операцию и запись в журнале.",
+      done: "Принимаем после выкладки на сервер и успешной ручной проверки положительных и отрицательных сценариев возврата.",
+      instruction: "1. Дождаться сообщения Игоря о выкладке.\n2. Открыть текущую серверную версию и создать тестовую консультацию.\n3. Проверить полный, частичный и отклонённый возврат.\n4. Повторить действие и убедиться, что двойного возврата нет.\n5. Сверить сумму, причину и запись в журнале с этой консультацией."
+    }
+    ,"task-g2-accruals": {
+      summary: "Начисления уже реализованы и управляются в админке. Открытый вопрос — как безопасно показывать агенту только его начисления.",
+      decision: "Согласовать режим «Мои начисления» в том же журнале и после этого проверить запрет доступа к чужим операциям.",
+      ready: "В настройках оплаты задаётся Default agent remuneration (%). Для конкретного агента в карточке партнёра задаётся Individual consultation remuneration (%); индивидуальное значение заменяет общий процент и не суммируется с ним.",
+      next: "Оставить супер-админу общий список и фильтры, а агенту показывать на той же странице только свои начисления с периодом, консультацией, процентом, суммой и статусом.",
+      done: "Принимаем, когда начисление считается по выбранному правилу, агент видит только свои записи, а супер-админ видит полный список и может проверить расчёт.",
+      instruction: "1. Открыть настройки оплаты и проверить Default agent remuneration (%).\n2. Открыть карточку агента и проверить Individual consultation remuneration (%).\n3. Убедиться, что индивидуальный процент заменяет общий, а не прибавляется к нему.\n4. В роли агента открыть тот же журнал и проверить режим «Мои начисления» без чужих записей.\n5. В роли супер-админа проверить общий список и фильтры по агенту, консультации и периоду."
+    },
+    "task-g4-support": {
+      summary: "Саппорт уже работает в основных сценариях. PM и Игорь заканчивают проверку прав и адресации, после чего Ксения проходит самостоятельные пользовательские сценарии.",
+      decision: "Не считать саппорт закрытым до ручной проверки Ксении; код и базу данных в её сценариях не проверяем.",
+      ready: "Можно создать обращение, связать его с консультацией, вести историю и закрыть обращение.",
+      next: "PM и Игорю закрыть вопросы прав и адресата, затем передать Ксении отдельные сценарии обращения, ответа, эскалации и закрытия.",
+      done: "Принимаем после самостоятельного прогона Ксении с записью экрана и голосом, без утечки внутренних заметок клиенту.",
+      instruction: "1. Создать тестовое обращение от клиента.\n2. Проверить его появление у нужной роли поддержки.\n3. Ответить, добавить внутреннюю заметку и связать обращение с консультацией.\n4. Закрыть обращение и снова открыть историю.\n5. Сохранить запись экрана и голосом назвать ожидание и итог."
+    },
+    "task-g4-complaints": {
+      summary: "Жалобы и поддержка связаны с консультацией, но адресат, права и русский язык ещё требуют отдельной проверки.",
+      decision: "PM и Игорь завершают текущую проверку; денежный возврат остаётся в G2.3 и не смешивается с G4.2.",
+      ready: "Жалобу можно создать и довести до решения с сохранением контекста консультации.",
+      next: "Проверить положительный и отрицательный путь жалобы, затем перевести пользовательский саппорт на русский язык.",
+      done: "Принимаем, когда жалоба приходит нужной роли, внутренние данные не видны клиенту, решение понятно, а интерфейс саппорта доступен на русском.",
+      instruction: "1. Создать жалобу по тестовой консультации.\n2. Проверить адресата и видимость данных для клиента и сотрудника.\n3. Зафиксировать решение без запуска возврата из этой задачи.\n4. Проверить русские подписи, кнопки и сообщения саппорта.\n5. Сохранить отдельный результат PASS/FAIL/NOT TESTED."
+    },
+    "task-g4-expert-sourcing": {
+      summary: "Пакет поиска кандидатов подготовлен. Ксения запускает первую волну и ведёт единый список откликов; это ещё не допуск к платным консультациям.",
+      decision: "Запустить поиск по согласованным каналам и не смешивать отбор кандидата с его обучением и допуском.",
+      ready: "Есть текст объявления, анкета, первичный отбор и материалы собеседования.",
+      next: "Ксении опубликовать первую волну, заносить каждый отклик в единый список и назначать следующий шаг.",
+      done: "Принимаем, когда первая волна проведена, у каждого кандидата есть статус и ответственный, а платный доступ закрыт до обучения и допуска.",
+      instruction: "1. Открыть согласованный список каналов.\n2. Опубликовать объявление и сохранить ссылку/дату.\n3. Занести отклик в список кандидатов.\n4. Зафиксировать специализацию, доступность и следующий шаг.\n5. Отдельно отметить, что допуск к платной работе не выдан."
+    },
+    "task-g4-social-profiles": {
+      summary: "Нужно подготовить 20 будущих экспертных профилей в Instagram и TikTok, до 40 аккаунтов. Профили предназначены для ранней подготовки материалов, не для выдуманной личности.",
+      decision: "Согласовать таблицу профилей и материалы до регистрации; не публиковать неподтверждённые биографии, отзывы и обещания результата.",
+      ready: "Зафиксированы две соцсети, объём 20 профилей и требования к правам на фотографии и тексты.",
+      next: "Ксении создать таблицу, зарегистрировать аккаунты по согласованным правилам, загрузить права-разрешённые фото и базовые материалы, затем вести спокойное органическое наполнение.",
+      done: "Принимаем, когда у 20 профилей есть владелец доступа, резерв, права на материалы, базовое описание и план безопасного наполнения.",
+      instruction: "1. Составить таблицу 20 профилей: имя/псевдоним, тема, язык, страна, ссылка и доступ.\n2. Проверить права на 1–2 фотографии и тексты.\n3. Создать аккаунты в Instagram и TikTok без массовой рассылки и фиктивной активности.\n4. Заполнить описание и несколько нейтральных материалов.\n5. Сохранить ссылку и статус каждого аккаунта; рекламу и платные консультации не запускать."
+    },
+    "task-g5-notifications": {
+      summary: "Почтовые шаблоны уже есть в админке, но их делали до платного чата и саппорта. Теперь нужен единый контур писем и уведомлений через колокольчик.",
+      decision: "Сначала согласовать карту событий и получателей, затем обновлять шаблоны и собирать колокольчик; не смешивать каналы разных ролей.",
+      ready: "Есть маршрут /ru/admin/email-template/index и отдельные существующие задачи уведомлений консультации, поддержки и команды.",
+      next: "Описать событие → адресат → канал → переход → статус прочтения; обновить письма и проверить колокольчик на платном чате и обращении в саппорт.",
+      done: "Принимаем, когда письмо и колокольчик показывают нужной роли одно понятное событие, переходят в правильный объект и не создают дублей.",
+      instruction: "1. Открыть /ru/admin/email-template/index и составить список шаблонов.\n2. Добавить события платного чата, оплаты, возврата и саппорта.\n3. Для каждого события указать роль, канал, язык и ссылку перехода.\n4. Проверить колокольчик: новое, прочитано, непрочитано, переход и повтор.\n5. Зафиксировать доставку и недоставку отдельными сценариями."
+    }
+  };
+
+  function readerStatus(task) {
+    const factualStage = task.factual && task.factual.stage ? task.factual.stage : stageLabel(task.stage);
+    if (/ждём|ожидает|ожидаем/i.test(factualStage)) return "Реализовано локально; ждём выкладку на сервер.";
+    if (/Реализовано/.test(factualStage)) return "Функция уже есть; проверяем оставшиеся случаи.";
+    if (/Частичная доставка/.test(factualStage)) return "Часть функции уже доставлена; проверяем недостающее.";
+    if (/План|Требования|Контракт/.test(factualStage)) return "Пока готовим требования; работу сайта ещё не принимаем.";
+    return "Рабочий контур описан; подтверждаем его на текущей версии сайта.";
+  }
+
+  function readerSummary(task) {
+    const override = readerOverrides[id] || {};
+    return override.summary || `${readerStatus(task)} Подробные материалы для исполнителя вынесены ниже.`;
+  }
+
+  function readerDecision(task) {
+    const override = readerOverrides[id] || {};
+    return override.decision || "Оставить задачу в работе до выполнения следующего шага и сохранения подтверждения.";
+  }
+
+  function readerReady(task) {
+    const override = readerOverrides[id] || {};
+    return override.ready || `${readerStatus(task)} Ожидаемый результат описан в карточке; его проверяем на сайте.`;
+  }
+
+  function readerNext(task) {
+    const override = readerOverrides[id] || {};
+    return override.next || "Пройти основной сценарий на текущем сайте, проверить результат и зафиксировать расхождение, если оно есть.";
+  }
+
+  function readerDone(task) {
+    const override = readerOverrides[id] || {};
+    return override.done || "Принимаем после положительного и отрицательного сценария на текущей версии сайта и сохранённого подтверждения.";
+  }
+
+  function readerInstruction(task) {
+    const override = readerOverrides[id] || {};
+    return override.instruction || "1. Открыть текущую сборку.\n2. Выполнить следующий шаг из карточки.\n3. Записать идентификатор, время и результат.\n4. Приложить ссылку на подтверждение.";
+  }
+
   const params = new URLSearchParams(window.location.search);
   const id = params.get("task");
   const task = id ? tasks[id] : null;
@@ -727,105 +1044,78 @@
   const detailLink = document.getElementById("detail-link");
 
   if (!task) {
-    const fact = window.sixGoalsImplementation.tasks[id];
-    if (fact) {
-      content.innerHTML = `<section class="hero"><span class="badge">${fact.stage}</span><span class="badge">Цель ${fact.goalCode.slice(1)}</span><h2>${fact.code} ${fact.title}</h2><p>${window.sixGoalsImplementation.grouping.sourceNote(id)} <a href="index.html#goal-grouping">Соответствие прежних и текущих кодов</a>. Коды внутри исторических источников сохранены.</p><p>${fact.done}</p><p><b>Следующая проверка:</b> ${fact.next}</p><p>Полная приёмка открыта. Сверка 07.09; chat evidence 25–26.08, support evidence 04.09.</p><p><a href="implementation-audit-2026-09-07.md">Факты и источники</a></p></section>`;
-      detailLink.href = "index.html";
-      return;
-    }
     content.innerHTML = '<div class="empty"><b>Задача не найдена.</b><br>Вернитесь к списку и откройте оценку заново.</div>';
     detailLink.href = "index.html";
     return;
   }
 
   detailLink.href = task.detailHref;
-  const scoreVector = siteScoreByTask[id] || [0,0,0,0,0];
-  const totalScore = scoreVector.reduce((sum, value) => sum + value, 0);
-  const tzReady = tzReadyByTask[id] || 0;
+  const requirement = currentRequirementStatus(task);
 
   function renderList(items) {
     return "<ul>" + items.map((item) => "<li>" + item + "</li>").join("") + "</ul>";
   }
 
-  function scoreState(value, max) {
-    if (value <= 0) return "нет";
-    if (value >= max) return "готово";
-    return "частично";
-  }
-
-  function renderScoreRows() {
-    const details = criterionDetailsByTask[id] || [];
-    return siteCriteria.map((criterion, index) => {
-      const value = scoreVector[index] || 0;
-      const percent = Math.round((value / criterion.max) * 100);
-      const detail = details[index] || "Расшифровка для этой задачи еще не собрана.";
-      return `
-        <details class="criterion-detail">
-          <summary>
-            <div class="score-row">
-              <div>
-                <b>${criterion.label}</b>
-                <div class="score-state">${scoreState(value, criterion.max)}</div>
-              </div>
-              <div class="score-points">${value}/${criterion.max}</div>
-              <div class="score-line"><div class="score-fill" style="width:${percent}%"></div></div>
-            </div>
-          </summary>
-          <div class="criterion-body"><p>${detail}</p></div>
-        </details>`;
-    }).join("");
-  }
-
-  const implementation = window.sixGoalsImplementation;
-  const factual = implementation.tasks[id];
-  if (factual) {
-    task.ready = [factual.done, "Источник: " + implementation.evidence[factual.basis]];
-    task.needed = [factual.next, "Новый live-прогон 07.09 не выполнен; chat proof 25–26.08, support proof 04.09."];
-    task.accept = ["Обязательные positive/negative сценарии подтверждены на текущей сборке.", "Реализация, проверка и приёмка учитываются отдельно. После доказанной приёмки статус: Принято."];
-  }
   content.innerHTML = `
     <section class="hero">
       <div class="hero-head">
-        <span class="badge ${stageClass(task.stage)}">${factual ? factual.stage : stageLabel(task.stage)}</span>
+        <span class="badge ${stageClass(task.stage)}">${task.factual ? task.factual.stage : stageLabel(task.stage)}</span>
         <span class="badge">${task.goal}</span>
       </div>
-      <h2>${task.code} ${task.title}<span class="term-en">${taskTermEn[id] || ""}</span></h2>
-      <p>${implementation.grouping.sourceNote(id)} <a href="index.html#goal-grouping">Соответствие прежних и текущих кодов</a>. Коды внутри исторических источников сохранены.</p>
-      <p>Сверка 07.09.2026. <a href="implementation-audit-2026-09-07.md">Факты и источники</a>; chat evidence 25–26.08, Support V2 04.09.</p>
+      <h2>${task.code} ${task.title}</h2>
+      <p class="plain-note">${readerSummary(task)}</p>
+      <div class="decision-banner">
+        <span class="decision-kicker">Решение сейчас</span>
+        <strong>${readerDecision(task)}</strong>
+      </div>
       <div class="meta-grid">
-        <div class="meta-box"><span>Реализация и проверка</span><b>${factual ? factual.stage : stageLabel(task.stage)}</b></div>
-        <div class="meta-box"><span>ТЗ</span><b>${tzReady}%</b></div>
-        <div class="meta-box"><span>Приёмка</span><b>Открыта</b></div>
-        <div class="meta-box"><span>Полные детали</span><b><a href="${task.detailHref}">Открыть</a></b></div>
+        <div class="meta-box"><span>Состояние продукта</span><b>${readerStatus(task)}</b><small>Подробные материалы для исполнителя вынесены ниже.</small></div>
+        <div class="meta-box"><span>Техническое задание</span><b>${requirement.label}</b><small>${requirement.note}</small></div>
+        <div class="meta-box"><span>Приёмка</span><b>Открыта</b><small>Закрываем после следующего шага и подтверждения.</small></div>
       </div>
     </section>
-
-    <details class="disclosure">
-      <summary>Архивная оценка: ${totalScore}% (не текущая готовность)</summary>
-      <div class="disclosure-body">
-        <div class="score-card">
-          <h3>Критерии оценки</h3>
-          <p>Историческая оценка из 5 критериев по 20 баллов. Не пересчитана по текущей реализации и исключена из сводного прогресса. Формулировки ниже архивные.</p>
-          <div class="score-list">${renderScoreRows()}</div>
-          <div class="score-note">Шаг оценки: 0 / 5 / 10 / 15 / 20. Итог = сумма критериев.</div>
-        </div>
-      </div>
-    </details>
 
     <section class="section-grid">
       <article class="card good">
-        <h3>Что уже готово</h3>
-        <div class="card-body">${renderList(task.ready)}</div>
+        <h3>Уже есть</h3>
+        <div class="card-body"><p class="plain-note">${readerReady(task)}</p></div>
       </article>
       <article class="card todo">
-        <h3>Что нужно добить</h3>
-        <div class="card-body">${renderList(task.needed)}</div>
+        <h3>Сделать сейчас</h3>
+        <div class="card-body"><p class="plain-note"><b>${readerNext(task)}</b></p></div>
       </article>
       <article class="card accept">
-        <h3>Когда считаем готовым</h3>
-        <div class="card-body">${renderList(task.accept)}</div>
+        <h3>Закрываем, когда</h3>
+        <div class="card-body"><p class="plain-note">${readerDone(task)}</p></div>
       </article>
     </section>
+
+    <details class="technical-panel">
+      <summary>Технические данные и инструкция для исполнителя</summary>
+      <div class="technical-body">
+        <p class="technical-lead">Этот блок нужен разработчику и проверяющему. Здесь исходные данные, точная техническая формулировка и порядок действий; он не меняет решение руководителя выше.</p>
+        <div class="technical-grid">
+          <article class="technical-card">
+            <h3>Что уже подтверждено</h3>
+            ${renderList(task.ready)}
+            <p class="technical-label">Внутреннее имя</p>
+            <code class="technical-code">${taskTermEn[id] || "не задано"}</code>
+          </article>
+          <article class="technical-card">
+            <h3>Как действовать</h3>
+            <p class="plain-note">${readerNext(task)}</p>
+            <pre class="result-template">${readerInstruction(task)}</pre>
+            <p class="technical-label">Точная запись из реестра</p>
+            <code class="technical-code">${task.factual ? task.factual.next : "Следующий шаг ещё не записан."}</code>
+          </article>
+          <article class="technical-card">
+            <h3>Какой результат сохранить</h3>
+            ${renderList(task.accept)}
+            <p><a href="${implementation.reportHref}">Открыть источники и границы приёмки</a></p>
+          </article>
+        </div>
+      </div>
+    </details>
   `;
 })();
 </script>

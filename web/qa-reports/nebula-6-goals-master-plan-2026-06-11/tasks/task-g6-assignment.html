@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
+  <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Nebula - G6.1 Назначение анкет агенту и консультаций</title>
   <style>
@@ -134,7 +135,7 @@
     .footer { color:var(--muted); font-size:13px; margin-top:26px; line-height:1.5; }
     .footer a { color:#175cd3; }
     @media (max-width:1050px) { .goals-grid, .tasks-grid, .flow-list, .session-layout, .session-kpis, .mock-grid, .mock-grid.two, .status-grid { grid-template-columns:1fr; } .session-mock-head { flex-direction:column; } }
-  
+
 body { margin:0; }
 header.page-head { background:#1f4e78; color:#fff; padding:22px 28px; }
 header.page-head h1 { margin:0 0 8px; font-size:28px; }
@@ -144,6 +145,7 @@ main.page-main { padding:22px 28px 42px; }
   </style>
 </head>
 <body>
+  <div style="margin:0;padding:12px 16px;background:#fff7ed;border-bottom:2px solid #f59e0b;color:#7c2d12;font:14px/1.45 Arial,sans-serif"><b>АРХИВНАЯ КАРТОЧКА.</b> Она сохранена только как источник истории и может содержать отменённые статусы или гипотезы. Не используйте её как текущее ТЗ. <a href="../task-tz.html?task=task-g6-assignment&amp;doc=igor" style="color:#9a3412;font-weight:700">Открыть актуальный документационный пакет</a>.</div>
   <header class="page-head">
     <h1>G6.1 Назначение анкет агенту и консультаций</h1>
     <p>Отдельная страница задачи Nebula. Главный список остается на главной странице.</p>
@@ -151,8 +153,10 @@ main.page-main { padding:22px 28px 42px; }
   <main class="page-main">
     <a class="back-link" href="../index.html">← Назад к списку задач</a>
     <article class="task-card" id="task-g6-assignment" style="--goal-color:#475569">
-        <header><h3>G6.1 Назначение анкет агенту и консультаций</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 6: Команда</span></div></header>
+        <header><h3>G6.1 Назначение анкет агенту и консультаций</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 6: Команда</span><span class="badge status-yellow">P0 proof gap</span></div></header>
         <div class="body"><p><b>Что сделать:</b> очередь назначений: кто клиент, какая тема, какой эксперт/анкета, какой внутренний агент, какой статус и срок реакции.</p><div class="flow-list"><div class="flow-box"><b>Что уже есть на сайте</b><ul><li>в админке есть агент Kristy;</li><li>Kristy назначены анкеты Solara, Stella и Talia;</li><li>есть вход в контекст агента через Login as user;</li><li>проверено: чат открылся как Kristy с agent id 12;</li><li>проверено: возврат в admin работает через профиль Kristy -> Выйти.</li></ul></div><div class="flow-box"><b>Что сломано для Nebula</b><ul><li>Kristy может открыть чужие назначения userId=15;</li><li>это показывает Orion Esposito, хотя анкета не закреплена за Kristy;</li><li>значит текущая админка не дает нужную изоляцию доступа сама по себе.</li></ul></div><div class="flow-box"><b>Что надо доказать</b><ul><li>агент видит только свои анкеты;</li><li>чужие анкеты недоступны для чтения и ответа;</li><li>клиент видит только эксперта/анкету;</li><li>супер-админ видит внутреннего исполнителя.</li></ul></div><div class="flow-box"><b>Данные и правила</b><ul><li>агент;</li><li>публичная анкета эксперта;</li><li>клиент;</li><li>отдельный диалог пары клиент + анкета;</li><li>журнал: кто реально писал и от чьего имени.</li></ul></div><div class="flow-box"><b>Проверка</b><ul><li>открыть Kristy через Login as user;</li><li>проверить список анкет в чате;</li><li>проверить попытку чужой анкеты;</li><li>вернуться в admin через профиль -> Выйти;</li><li>проверить audit в карточке консультации.</li></ul></div></div><div class="mock-card"><h4>Макет: очередь назначений</h4><div class="mock-body"><table class="mock-table"><thead><tr><th>Консультация</th><th>Тема</th><th>Кого назначить</th><th>срок реакции</th><th>Действие</th></tr></thead><tbody><tr><td>SS-184</td><td>Отношения</td><td>Kristy -> Solara Ortiz</td><td><span class="mock-pill yellow">12 мин осталось</span></td><td>Назначить</td></tr><tr><td>SS-185</td><td>Карьера</td><td>Нужен агент</td><td><span class="mock-pill red">просрочка</span></td><td>Эскалировать</td></tr></tbody></table></div></div></div>
+        <div class="status-proof"><b>Владелец операции:</b> назначение и переназначение выполняет только super-admin. Модератор и другие staff-роли видят только необходимое операционное состояние без права менять assignment.</div>
+        <div class="status-proof"><b>Уточнённая модель:</b> один экспертный аккаунт назначается одному агенту; агент может вести много аккаунтов в едином workspace. Переназначение передаёт историю, но не меняет прежнее авторство и начисления. Операция запрещена во время paid и balance_pause. Acceptance: assigned read/send проходит; foreign profile/dialog/send блокируются server-side и пишутся в security audit.</div>
       </article>
   </main>
   <script>
