@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
+  <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Nebula - G2.1 Цена за минуту и баланс клиента</title>
   <style>
@@ -144,27 +145,28 @@ main.page-main { padding:22px 28px 42px; }
   </style>
 </head>
 <body>
+  <div style="margin:0;padding:12px 16px;background:#fff7ed;border-bottom:2px solid #f59e0b;color:#7c2d12;font:14px/1.45 Arial,sans-serif"><b>АРХИВНАЯ КАРТОЧКА.</b> Она сохранена только как источник истории и может содержать отменённые статусы или гипотезы. Не используйте её как текущее ТЗ. <a href="../task-tz.html?task=task-g2-pricing&amp;doc=igor" style="color:#9a3412;font-weight:700">Открыть актуальный документационный пакет</a>.</div>
   <header class="page-head">
-    <h1>G2.1 Цена, credits и баланс клиента</h1>
-    <p>Эталонная постановка: price resolution, credit packages, discounts, coupons, checkout, balance buckets и административное управление.</p>
+    <h1>G2.1 Цена, кредиты и баланс клиента</h1>
+    <p>Эталонная постановка: определение цены, пакеты кредитов, скидки, купоны, оплата, виды баланса и административное управление.</p>
   </header>
   <main class="page-main">
     <a class="back-link" href="../index.html">← Назад к списку задач</a>
-<div class="status-proof"><b>Текущий статус:</b> полное продуктовое ТЗ G2.1 и двухфайловый handoff готовы. Клиент покупает credits, а не минуты; пакет не обещает фиксированную длительность. Implementation и runtime остаются открыты.</div>
+<div class="status-proof"><b>Текущий статус:</b> полное продуктовое ТЗ G2.1 и двухфайловый handoff готовы. Клиент покупает кредиты, а не минуты; пакет не обещает фиксированную длительность. Реализация и проверка сайта остаются открыты.</div>
     <article class="task-card" id="task-g2-pricing" style="--goal-color:#0f766e">
-        <header><h3>G2.1 Цена, credits и баланс клиента</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 2: Деньги</span><span class="badge status-green">ТЗ 100% / runtime открыт</span></div></header>
+        <header><h3>G2.1 Цена, кредиты и баланс клиента</h3><div class="meta"><span class="badge p0">P0</span><span>Цель 2: Деньги</span><span class="badge status-green">ТЗ 100% / проверка сайта открыта</span></div></header>
         <div class="body">
-          <p><b>Результат:</b> клиент видит цену выбранного Эксперта в credits/мин, покупает прозрачный пакет credits в USD, понимает скидку и доступное время, а повторный payment callback не может начислить credits дважды.</p>
+          <p><b>Результат:</b> клиент видит цену выбранного Эксперта в кредитах за минуту, покупает прозрачный пакет кредитов за USD, понимает скидку и доступное время, а повторное подтверждение платежа не может начислить кредиты дважды.</p>
           <div class="flow-list">
-            <div class="flow-box"><b>Цена консультации</b><ul><li>global default — 30 credits/мин;</li><li>profile override;</li><li>immutable session snapshot;</li><li>изменение только для новых sessions.</li></ul></div>
-            <div class="flow-box"><b>Стартовые пакеты</b><ul><li>60 credits — 9.99 USD;</li><li>150 — 22.99 USD;</li><li>300 — 42.99 USD;</li><li>600 — 79.99 USD.</li></ul></div>
-            <div class="flow-box"><b>Баланс</b><ul><li>купленные credits бессрочны;</li><li>bonus expiry управляется отдельно;</li><li>ближайший expiry расходуется первым;</li><li>Эксперт видит только операционные бейджи.</li></ul></div>
-            <div class="flow-box"><b>Checkout</b><ul><li>credits, base USD и discount;</li><li>coupon, tax и final USD;</li><li>способы из Payment systems;</li><li>confirmed grant exactly once.</li></ul></div>
+            <div class="flow-box"><b>Цена консультации</b><ul><li>общая цена по умолчанию — 30 кредитов/мин;</li><li>индивидуальная цена в карточке Эксперта;</li><li>цена фиксируется в карточке консультации;</li><li>изменение действует только для новых консультаций.</li></ul></div>
+            <div class="flow-box"><b>Стартовые пакеты</b><ul><li>60 кредитов — 9.99 USD;</li><li>150 кредитов — 22.99 USD;</li><li>300 кредитов — 42.99 USD;</li><li>600 кредитов — 79.99 USD.</li></ul></div>
+            <div class="flow-box"><b>Баланс</b><ul><li>купленные кредиты не сгорают;</li><li>срок бонусов управляется отдельно;</li><li>сначала расходуется ближайший срок окончания;</li><li>Эксперт видит только рабочие уведомления.</li></ul></div>
+            <div class="flow-box"><b>Оплата</b><ul><li>кредиты, базовая сумма и скидка;</li><li>купон, налог и итоговая сумма в USD;</li><li>способы оплаты из раздела платёжных систем;</li><li>начисление подтверждается ровно один раз.</li></ul></div>
           </div>
           <div class="mock-card"><h4>Размещение в существующей админке</h4><div class="mock-body"><div class="mock-grid">
             <div class="mock-box"><strong>/admin/settings/prices</strong><ul><li>global consultation price;</li><li>существующие dynamic package rows;</li><li>starter, discounts, limits и versions;</li><li>legacy prices отделены.</li></ul></div>
             <div class="mock-box"><strong>/admin/settings/coupons</strong><ul><li>welcome;</li><li>purchase discount;</li><li>promo и compensation;</li><li>audience, expiry, stacking и audit.</li></ul></div>
-            <div class="mock-box"><strong>Существующие владельцы</strong><ul><li>карточка Эксперта — override;</li><li>карточка клиента — manual grant;</li><li>Orders — payment status;</li><li>Transactions — credit ledger.</li></ul></div>
+            <div class="mock-box"><strong>Существующие владельцы</strong><ul><li>карточка Эксперта — индивидуальная цена;</li><li>карточка клиента — ручное начисление;</li><li>Orders — статус платежа;</li><li>Transactions — журнал кредитов.</li></ul></div>
           </div></div></div>
           <div class="status-proof"><b>Граница доказательства:</b> живая страница цен и Yii2 financial contour изучены. Полная G2.1 реализация должна быть привязана к mapped build/commit и пройти payment, idempotency, concurrency, role и admin-readback QA.</div>
         </div>
