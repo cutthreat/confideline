@@ -3,8 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>План запуска Confideline — 55 задач</title>
-  <script src="current-plan-2026-09-21.js"></script>
+  <title>План сервиса — компактная панель</title>
   <style>
     :root {
       --ink: #172033;
@@ -237,20 +236,17 @@
     <h1>План сервиса консультаций</h1>
     <nav class="top-nav" aria-label="Основные вкладки панели" role="tablist">
       <button type="button" class="is-active" data-tab-target="summary" role="tab" aria-selected="true">Сводка</button>
-      <button type="button" data-tab-target="goals" role="tab" aria-selected="false">План: 55 задач</button>
-      <button type="button" data-tab-target="goals-detailed" role="tab" aria-selected="false">Пакеты ТЗ и материалов</button>
-      <button type="button" data-tab-target="roles" role="tab" aria-selected="false">Архив: по ролям</button>
-      <button type="button" data-tab-target="plan" role="tab" aria-selected="false">Архив: прежний план</button>
+      <button type="button" data-tab-target="goals" role="tab" aria-selected="false">6 целей</button>
+      <button type="button" data-tab-target="goals-detailed" role="tab" aria-selected="false">6 целей подробно</button>
+      <button type="button" data-tab-target="roles" role="tab" aria-selected="false">По ролям</button>
+      <button type="button" data-tab-target="plan" role="tab" aria-selected="false">План и готовность</button>
     </nav>
   </header>
 
   <main>
     <section id="summary" class="tab-panel is-active" data-tab-panel="summary" role="tabpanel">
-      <div class="decision-grid">
-        <article class="card decision-card"><div class="label">Текущий план · 21 сентября 2026</div><h2>55 задач на 6 календарных блоков</h2><p>G1–G2 содержат уже сделанный контур, но не являются подтверждением готовности к коммерческому запуску. G3 — текущая работа; G4–G6 — подготовка запуска, команды и управляемого привлечения.</p><p class="decision-line"><b>Правило передачи в разработку:</b> новая функция начинается только после отдельного ТЗ для Игоря и Codex.</p></article>
-        <article class="card next-card"><div class="label">Следующий безопасный шаг</div><h3>Закрыть решения сентября</h3><p>Согласовать с Заказчиком спорные правила каталога, профиля, подбора, денег и границ запуска. Затем передавать только завершённые ТЗ на конкретные функции.</p><p class="decision-line">Операционные задачи получают не техническое ТЗ, а понятный рабочий документ: инструкцию, регламент, сценарий, таблицу или пакет материалов.</p></article>
-      </div>
-      <div class="summary-band"><article class="open"><strong>Коммерческий запуск</strong><span>Не подтверждён: требуется приемка клиентского пути, денег, поддержки, прав, команды и первой волны клиентов.</span></article><article><strong>Новая верстка</strong><span>Готова как отдельный пакет. Ее подключение к существующему сайту и backend выделено в G3.1.</span></article><article class="source"><strong>Источник управления</strong><span>Trello — рабочие карточки. Эта панель показывает полный план, тип задачи и необходимый пакет перед началом работы.</span></article></div>
+      <div class="panel-intro"><b>Сводка для руководителя.</b> Здесь понятный обзор: что сейчас происходит, почему запуск пока не открываем и что нужно решить дальше. <a href="index.html#summary">Открыть сводку</a></div>
+      <iframe class="legacy-frame" title="Сводка основной панели" src="index-legacy-deep.html?embed=customer-summary&v=2e9fd91d#customer-summary" loading="lazy"></iframe>
     </section>
 
     <section id="goals" class="tab-panel goals-section" aria-labelledby="goals-title" data-tab-panel="goals" role="tabpanel">
@@ -265,8 +261,7 @@
     </section>
 
     <section id="goals-detailed" class="tab-panel" data-tab-panel="goals-detailed" role="tabpanel">
-      <div class="panel-intro"><b>Стандарт пакета перед работой.</b> Для новой функции на сайте нужен отдельный документ для Игоря и Codex. В нем простым языком описываются цель, разделы или экраны, действия человека, механика, отображение или ссылка, ожидаемый результат и способ приемки. Если решение еще не принято, сначала готовятся вопросы и варианты для Заказчика.</div>
-      <div id="current-tz-list" class="deep-section"></div>
+      <iframe class="legacy-frame tall" title="Подробный список шести целей" src="index-legacy-deep.html?embed=six-goals&v=2e9fd91d#six-goals" loading="lazy"></iframe>
     </section>
 
     <section id="roles" class="tab-panel" data-tab-panel="roles" role="tabpanel">
@@ -404,13 +399,6 @@
       }
     ];
 
-    const currentPlan = window.confidelineCurrentPlan;
-    const taskInfo = Object.fromEntries(currentPlan.groups.flatMap(group => group.tasks.map(item => [item.code, item])));
-    goals.splice(0, goals.length, ...currentPlan.groups.map(group => ({
-      ...group,
-      tasks: group.tasks.map(item => [item.code, item.title, item.state, item.code])
-    })));
-
     function escapeHtml(value) {
       return String(value).replace(/[&<>"']/g, character => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", "\"":"&quot;", "'":"&#39;"}[character]));
     }
@@ -418,7 +406,6 @@
     function taskHref(id) {
       if (id === "task-g2-pricing") return "tasks/task-g2-pricing.html";
       if (id === "task-g2-accruals") return "task-readiness.html?task=task-g2-accruals";
-      if (taskInfo[id]?.card) return taskInfo[id].card;
       if (id === "task-g3-integration") return "task-tz.html?task=task-g3-integration&doc=igor#oracle-nebula-pages";
       return `https://cutthreat.github.io/confideline/web/qa-reports/nebula-6-goals-master-plan-2026-06-11/task-readiness.html?task=${encodeURIComponent(id)}`;
     }
@@ -480,7 +467,7 @@
     };
 
     function renderGoal(goal) {
-      const taskItems = goal.tasks.map(([code, title, state, id]) => ({ code, title, state, id, info: taskInfo[id] || {}, tone: taskStatusTone(state) }));
+      const taskItems = goal.tasks.map(([code, title, state, id]) => ({ code, title, state, id, tone: taskStatusTone(state) }));
       const totalTasks = taskItems.length;
       const checkedTasks = taskItems.filter(task => task.tone === "good").length;
       const nextTasks = totalTasks - checkedTasks;
@@ -494,18 +481,18 @@
           <tr>
             <td>
               <span class="task-title"><a href="${taskHref(task.id)}">${escapeHtml(task.code)} · ${escapeHtml(task.title)}</a></span>
-              <span class="task-meta"><b>Тип работы:</b> ${escapeHtml({existing:"проверка реализованного контура",site:"новая функция на сайте",decision:"решение до разработки",operational:"операционная подготовка"}[task.info.kind] || "уточняется")}</span>
+              <span class="task-meta"><b>Кто ведёт:</b> ${escapeHtml(taskOwners[task.id] || "Команда проекта")}</span>
             </td>
             <td>
               <span class="task-state ${task.tone}">${escapeHtml(task.state)}</span>
               <span class="task-meta">${escapeHtml(note)}</span>
-              <span class="task-next"><b>Следом:</b> ${escapeHtml(task.info.next || taskNextSteps[task.id] || "Открыть карточку задачи и записать результат проверки.")}</span>
+              <span class="task-next"><b>Следом:</b> ${escapeHtml(taskNextSteps[task.id] || "Открыть карточку задачи и записать результат проверки.")}</span>
+              ${taskAdditionalSteps[task.id] ? `<span class="task-next"><b>Отдельная задача:</b> ${escapeHtml(taskAdditionalSteps[task.id])}</span>` : ""}
             </td>
             <td>
-              <span class="task-doc-status">Карточка Trello</span>
-              <a class="task-doc-link" href="${taskHref(task.id)}">Открыть задачу</a>
-              ${(task.info.docs || []).map(doc => `<a class="task-doc-link" href="${escapeHtml(doc.href)}">${escapeHtml(doc.label)}</a>`).join("")}
-              <span class="task-doc-note">${escapeHtml(currentPlan.packageByKind[task.info.kind] || "Материал уточняется.")}</span>
+              <span class="task-doc-status">Карточка задачи</span>
+              <a class="task-doc-link" href="${taskHref(task.id)}">Открыть детали</a>
+              <span class="task-doc-note">Технические пояснения остаются внутри карточки и не перегружают список.</span>
             </td>
           </tr>`;
       }).join("");
@@ -547,17 +534,6 @@
     }
 
     document.getElementById("goal-list").innerHTML = goals.map(renderGoal).join("");
-
-    function renderDetailedPackage(group) {
-      const rows = group.tasks.map(item => `
-        <tr>
-          <td><span class="task-title"><a href="${escapeHtml(item.card)}">${escapeHtml(item.code)} · ${escapeHtml(item.title)}</a></span><span class="task-meta">${escapeHtml(item.state)}</span></td>
-          <td>${escapeHtml({existing:"Проверка реализованного контура",site:"Новая функция на сайте",decision:"Решение до разработки",operational:"Операционная подготовка"}[item.kind])}<span class="task-next">${escapeHtml(currentPlan.packageByKind[item.kind])}</span></td>
-          <td><a class="task-doc-link" href="${escapeHtml(item.card)}">Карточка Trello</a>${(item.docs || []).map(doc => `<a class="task-doc-link" href="${escapeHtml(doc.href)}">${escapeHtml(doc.label)}</a>`).join("")}</td>
-        </tr>`).join("");
-      return `<details><summary>${escapeHtml(group.code)} — ${escapeHtml(group.title)} · ${group.tasks.length} ${taskWord(group.tasks.length)}</summary><div class="deep-body"><p>${escapeHtml(group.result)}</p><table class="task-table"><thead><tr><th>Задача</th><th>Какой пакет нужен</th><th>Ссылки</th></tr></thead><tbody>${rows}</tbody></table></div></details>`;
-    }
-    document.getElementById("current-tz-list").innerHTML = currentPlan.groups.map(renderDetailedPackage).join("");
 
     const tabButtons = Array.from(document.querySelectorAll("[data-tab-target]"));
     const tabPanels = Array.from(document.querySelectorAll("[data-tab-panel]"));
