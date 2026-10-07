@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
+  <link rel="icon" href="data:,">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Кабинет эксперта - активность анкеты</title>
   <link rel="stylesheet" href="assets/partner-interactions.css">
@@ -10,20 +11,16 @@
 <body data-audience="expert" data-expert-id="184">
 <div class="app-shell">
   <header class="topbar">
-    <a class="brand" href="#"><strong>Confi</strong>deline</a>
-    <button class="nav-toggle" type="button" aria-label="Переключить навигацию"></button>
-    <div class="admin-user"><span>OE</span><strong>OrionEsposito</strong></div>
+    <a class="brand" href="#reportOverview"><strong>Confi</strong>deline</a>
+    <button class="nav-toggle" type="button" aria-label="Переключить навигацию" aria-controls="reportNavigation"></button>
+    <div class="admin-user"><span>EA</span><strong>Эксперт A</strong></div>
   </header>
 
-  <aside class="sidebar partner-sidebar">
-    <nav>
+  <aside id="reportNavigation" class="sidebar partner-sidebar">
+    <nav aria-label="Навигация отчёта">
       <div class="menu-section">Кабинет эксперта</div>
-      <a class="active" href="#"><span>A</span>Активность</a>
-      <a href="#"><span>M</span>Сообщения<b>new</b></a>
-      <a href="#"><span>C</span>Консультации</a>
-      <a href="#"><span>R</span>Отзывы</a>
-      <div class="menu-section">Аккаунт</div>
-      <a href="#"><span>S</span>Настройки</a>
+      <a href="#table" data-report-nav="table" class="active" aria-current="page"><span aria-hidden="true">Т</span>Таблица взаимодействий</a>
+      <a href="#charts" data-report-nav="charts"><span aria-hidden="true">Г</span>Графики</a>
     </nav>
   </aside>
 
@@ -31,7 +28,7 @@
     <section class="page-head">
       <div>
         <h1>Активность моей анкеты</h1>
-        <p>Контроль действий клиентов и ответов по текущей экспертной анкете.</p>
+        <p>Действия клиентов, мои сообщения и результаты консультаций.</p>
       </div>
       <ol>
         <li>Кабинет эксперта</li>
@@ -42,21 +39,22 @@
     <section class="summary-overview" id="reportOverview" aria-labelledby="summaryTitle">
       <div class="report-heading"><h2 id="summaryTitle">Сводка по выборке</h2><p id="appliedScope">Выборка ещё не загружена</p></div>
       <div class="summary-grid">
-      <div class="panel metric metric-blue" title="Моя анкета при наличии событий активности в выборке"><i>Анк.</i><div><span>Активные эксперты</span><strong id="metricExperts">0</strong></div></div>
+      <div class="panel metric metric-blue" title="Моя анкета при наличии событий активности в выборке"><i>Анк.</i><div><span>Активность анкеты</span><strong id="metricExperts">0</strong></div></div>
       <div class="panel metric metric-green" title="Количество направленных пар клиент - эксперт"><i>Пары</i><div><span>Клиентские пары</span><strong id="metricPairs">0</strong></div></div>
       <div class="panel metric metric-yellow" title="Все сообщения в выбранной выборке"><i>Сооб.</i><div><span>Сообщения</span><strong id="metricMessages">0</strong></div></div>
       <div class="panel metric metric-red" title="Сумма всех активных действий"><i>Дейст.</i><div><span>Всего действий</span><strong id="metricActions">0</strong></div></div>
       <div class="panel quality-card" title="Уникальные клиенты по текущей анкете"><span>Клиенты в выборке</span><strong id="qualityClients">0</strong></div>
-      <div class="panel quality-card" title="Диалоги, начатые клиентами"><span>Диалоги клиентов</span><strong id="qualityClientDialogs">0</strong></div>
+      <div class="panel quality-card" title="Пары с сообщениями клиента в периоде, включая существующие диалоги"><span>Диалоги с клиентом</span><strong id="qualityClientDialogs">0</strong></div>
       <div class="panel quality-card" title="Диалоги клиентов, где эксперт ответил"><span>С ответом</span><strong id="qualityAnswered">0</strong></div>
       <div class="panel quality-card" title="Диалоги клиентов без ответа эксперта"><span>Без ответа</span><strong id="qualityNoAnswer">0</strong></div>
       <div class="panel quality-card" title="Доля клиентских диалогов с ответом эксперта"><span>Доля ответа</span><strong id="qualityResponseRate">Нет</strong></div>
-      <div class="panel quality-card" title="Мои сообщения клиенту без входящего сообщения клиента"><span>Мои исходящие без клиента</span><strong id="qualityOutboundOnly">0</strong></div>
+      <div class="panel quality-card" title="Пары с моими сообщениями и без сообщений клиента в периоде"><span>Пары без входящих</span><strong id="qualityOutboundOnly">0</strong></div>
       <div class="panel risk-card" title="Жалобы клиентов или экспертов"><span>Жалобы</span><strong id="riskReports">0</strong></div>
       <div class="panel risk-card" title="Блокировки между клиентом и экспертом"><span>Блокировки</span><strong id="riskBlocks">0</strong></div>
       <div class="panel risk-card" title="Оплаченные консультации по моей анкете"><span>Оплаты консультаций</span><strong id="riskPaidConsultations">0</strong></div>
       <div class="panel risk-card" title="Пары с десятью и более действиями за период"><span>Активные пары 10+</span><strong id="riskHighActivity">0</strong></div>
     </div>
+      <p class="quality-scope">Качество диалогов учитывает обе стороны выбранных пар за период, независимо от направления. «Без ответа» — клиент писал, но более позднего сообщения эксперта в этом периоде нет.</p>
     </section>
 
     <section class="panel filters expert-filters" id="reportFilters" aria-labelledby="filterTitle" aria-describedby="filterHelp">
@@ -85,18 +83,18 @@
       </label>
       <label>
         <span>Мин. действий</span>
-        <input id="minActions" type="number" min="0" value="0">
+        <input id="minActions" type="number" min="0" step="1" value="0">
       </label>
 
       <div class="filter-actions"><button type="button" id="apply">Применить фильтры</button><button type="button" id="restoreFilters" class="secondary" hidden>Отменить изменения</button><p id="filterDraftStatus" role="status" aria-live="polite" aria-atomic="true" hidden></p></div>
     </section>
 
-    <section class="view-tabs" aria-label="Виды отчета">
-      <button type="button" class="active" data-tab="table">Таблица</button>
-      <button type="button" data-tab="charts">Графики</button>
+    <section class="view-tabs" role="tablist" aria-label="Виды отчёта">
+      <button type="button" class="active" data-tab="table" role="tab" id="tab-table" aria-controls="panel-table">Таблица</button>
+      <button type="button" data-tab="charts" role="tab" id="tab-charts" aria-controls="panel-charts">Графики</button>
     </section>
 
-    <section class="panel chart-panel tab-panel" data-panel="charts" hidden>
+    <section class="panel chart-panel tab-panel" data-panel="charts" role="tabpanel" id="panel-charts" aria-labelledby="tab-charts" tabindex="0" hidden>
       <header>
         <h2 id="chartTitle">Сравнение активности</h2>
         <span id="chartScope">-</span>
@@ -114,7 +112,7 @@
       <footer id="chartInsight">-</footer>
     </section>
 
-    <section class="panel table-panel tab-panel" data-panel="table">
+    <section class="panel table-panel tab-panel" data-panel="table" role="tabpanel" id="panel-table" aria-labelledby="tab-table" tabindex="0">
       <header>
         <h2>Действия клиентов и моей экспертной анкеты</h2>
         <div><span id="partnerBadge">Orion Esposito</span><span id="periodBadge">7 дней</span><span id="rowCount">0 строк</span></div>

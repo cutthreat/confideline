@@ -21,6 +21,7 @@
   let chartDataOpen = false;
   const permitted = [...A.allowedMetrics(access), 'activity', 'messages'];
   const columns = window.PartnerInteractionColumns.create(A.allowedMetrics(access), window.PartnerInteractionColumns.coreMetrics);
+  state.sort = columns.sort(state.sort);
   let headerPreference = 'labels';
   const labelRequired = window.matchMedia('(max-width: 767px), (any-pointer: coarse), (hover: none)');
   const tipState = H.tooltipState();
@@ -29,11 +30,23 @@
   document.body.append(headerTip);
   let tipTimer, tipAnchor, lastPointerType = '';
   if (access.role === 'expert') { document.querySelector('.admin-user strong').textContent = 'Эксперт A'; document.querySelector('.admin-user span').textContent = 'EA'; }
-  document.querySelector('.nav-toggle').addEventListener('click', () => {
-    const sidebar = document.querySelector('.sidebar');
-    const visible = getComputedStyle(sidebar).display !== 'none';
-    sidebar.style.display = visible ? 'none' : 'block';
-    if (innerWidth >= 768) document.querySelector('main').style.marginLeft = visible ? '0' : '';
+  const sidebar = document.querySelector('.sidebar');
+  const navToggle = document.querySelector('.nav-toggle');
+  const mobileNav = window.matchMedia('(max-width: 767px)');
+  function setNavigation(open) {
+    document.body.classList.toggle('navigation-open', open);
+    document.body.classList.toggle('navigation-closed', !open);
+    navToggle.setAttribute('aria-expanded', String(open));
+    sidebar.inert = !open;
+    document.querySelector('main').inert = mobileNav.matches && open;
+  }
+  setNavigation(!mobileNav.matches);
+  mobileNav.addEventListener('change', () => setNavigation(!mobileNav.matches));
+  navToggle.addEventListener('click', () => setNavigation(navToggle.getAttribute('aria-expanded') !== 'true'));
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && mobileNav.matches && navToggle.getAttribute('aria-expanded') === 'true') {
+      setNavigation(false); navToggle.focus();
+    }
   });
   function icon(name) { return '<i data-lucide="' + esc(name) + '" aria-hidden="true"></i>'; }
   function text(id, value) { if ($(id)) $(id).textContent = value; }
@@ -51,6 +64,8 @@
   dates.innerHTML = '<label><span>С · Europe/Minsk</span><input id="fromDate" type="date" aria-describedby="dateError"></label><label><span>По · включительно</span><input id="toDate" type="date" aria-describedby="dateError"></label><p id="dateError" role="alert"></p>';
   $('period').closest('label').after(dates);
   $('minActions').previousElementSibling.textContent = 'Мин. событий активности';
+  $('minActions').insertAdjacentHTML('afterend', '<small id="minimumError" role="alert"></small>');
+  $('minActions').setAttribute('aria-describedby', 'minimumError');
   $('minActions').title = 'Просмотры + избранное + сообщения клиентов и экспертов + блокировки + жалобы';
   $('metricActions').previousElementSibling.textContent = 'События активности';
   $('metricActions').closest('.metric').title = $('minActions').title;
@@ -210,7 +225,7 @@
       const first = result.allRows.find(r => r.canonical && r.client.id === row.client.id);
       if (first?.id !== row.id) reference = first?.id;
     }
-    if (reference) return '<td><a class="pair-ref" href="#' + esc(reference) + '" data-reference="' + esc(reference) + '" title="Значение учитывается один раз; перейти к строке ' + esc(reference) + '">↗ ' + (key === 'platformLTV' ? 'клиент #' + row.client.id : 'пара ' + row.pairId) + '</a></td>';
+    if (reference) return '<td><a class="pair-ref" href="#' + esc(reference) + '" data-reference="' + esc(reference) + '" data-reference-key="' + key + '" title="Значение учитывается один раз; перейти к строке ' + esc(reference) + '">↗ ' + (key === 'platformLTV' ? 'клиент #' + row.client.id : 'пара ' + row.pairId) + '</a></td>';
     return '<td class="' + (row[key] === 0 ? 'zero' : 'num') + '" data-metric="' + key + '">' + metricFmt(key, row[key]) + '</td>';
   }
   function render() {
@@ -218,9 +233,10 @@
     renderAppliedContext();
     const ids = { metricExperts: result.summary.experts, metricPairs: result.summary.pairs, metricMessages: result.summary.messages, metricActions: result.summary.actions, qualityClients: result.summary.clients, qualityClientDialogs: result.quality.dialogs, qualityAnswered: result.quality.answered, qualityNoAnswer: result.quality.noAnswer, qualityOutboundOnly: result.quality.outboundOnly, riskReports: result.metrics.reports, riskBlocks: result.metrics.blocks, riskPaidConsultations: result.metrics.paidConsultations, riskHighActivity: result.highActivity, riskRepeatExpert: result.metrics.repeatExpert, riskRepeatPlatform: result.metrics.repeatPlatform };
     Object.entries(ids).forEach(([id, value]) => text(id, fmt(value)));
+    if (access.role === 'expert') text('metricExperts', result.summary.experts === null ? 'Нет данных' : result.summary.experts ? 'Есть' : 'Нет');
     text('qualityResponseRate', result.quality.responseRate === null ? 'Нет данных' : fmt(result.quality.responseRate) + '%');
     text('periodBadge', result.range.label);
-    text('rowCount', result.pagination.totalRows + ' строк · ' + (result.summary.pairs === null ? 'Нет данных о парах' : result.summary.pairs + ' пар'));
+    text('rowCount', 'Строк: ' + result.pagination.totalRows + ' · ' + (result.summary.pairs === null ? 'Нет данных о парах' : 'Пар: ' + result.summary.pairs));
     text('partnerBadge', access.role === 'admin' ? Number(state.partnerId) ? data.users.find(u => u.id === Number(state.partnerId)).name : 'Все партнёры' : access.role === 'partner' ? 'Gin001 · назначенные анкеты' : 'Моя анкета · A');
     text('pageInfo', result.pagination.from + '–' + result.pagination.to + ' из ' + result.pagination.totalRows);
     $('prevPage').disabled = result.pagination.page <= 1; $('nextPage').disabled = result.pagination.page >= result.pagination.totalPages;
@@ -247,7 +263,7 @@
     $('touchHeaderNote').hidden = !labelRequired.matches;
     $('iconModeNote').hidden = headerMode !== 'icons';
     updateTableSort();
-    const scopeNote = 'LTV — credits, накоплено на ' + A.dateLabel(result.range.to) + ' · ' + (access.role === 'admin' ? 'LTV клиента — вся платформа, даже при фильтре эксперта. ' : 'Только разрешённые экспертные пары. ') + 'Диалоги, консультации, повторы и LTV не зависят от направления.';
+    const scopeNote = (metrics.some(key => ['pairLTV', 'platformLTV'].includes(key)) ? 'LTV — credits, накоплено на ' + A.dateLabel(result.range.to) + ' · ' + (metrics.includes('platformLTV') ? 'LTV клиента — вся платформа, даже при фильтре эксперта. ' : 'Только разрешённые экспертные пары. ') : '') + 'Диалоги, консультации, повторы и LTV не зависят от направления.';
     let scopeNode = $('tableScope');
     if (!scopeNode) { document.querySelector('.metric-picker-head').insertAdjacentHTML('beforebegin', '<div class="filter-scope" id="tableScope"></div>'); scopeNode = $('tableScope'); }
     scopeNode.textContent = scopeNote;
@@ -316,7 +332,7 @@
     text('chartTitle', A.labels[chartState.metric]);
     text('chartScope', result.range.label + ' · Europe/Minsk');
     const previousLabel = chart.previousRange ? A.dateLabel(chart.previousRange.from) + ' — ' + A.dateLabel(chart.previousRange.to) : '';
-    const note = (cumulative ? 'Накоплено к ' + A.dateLabel(result.range.to) + ' · credits · значение на конец каждого интервала' : 'Количество · выбранные участники') + (chart.previousRange ? ' · Сравнение тех же пар из текущей выборки · Предыдущий период: ' + previousLabel + (chartState.type === 'bar' ? ' · Заливка — текущий, контур — предыдущий' : chartState.type === 'line' ? ' · Сплошная линия — текущий, пунктир — предыдущий' : '') : '');
+    const note = (cumulative ? 'Накоплено к ' + A.dateLabel(result.range.to) + ' · credits · значение на конец каждого интервала' : 'Количество · выбранные участники') + (chart.previousRange ? (chartState.metric === 'platformLTV' ? ' · Сравнение тех же клиентов на всей платформе · Предыдущий период: ' : ' · Сравнение тех же пар из текущей выборки · Предыдущий период: ') + previousLabel + (chartState.type === 'bar' ? ' · Заливка — текущий, контур — предыдущий' : chartState.type === 'line' ? ' · Сплошная линия — текущий, пунктир — предыдущий' : '') : '');
     const comparison = value => value.previous === null ? 'Нет данных' : value.previous === 0 ? 'Нет базы сравнения' : fmt((value.value - value.previous) / value.previous * 100) + '%';
     const compareTable = '<div class="analytics-table"><table><caption>По участникам · ' + esc(result.range.label) + '</caption><thead><tr><th scope="col">Участник</th><th scope="col">' + (cumulative ? 'Накоплено, credits' : 'За период') + '</th>' + (chart.previousRange ? '<th scope="col">Предыдущий · ' + esc(previousLabel) + '</th><th scope="col">Изменение</th>' : '') + '</tr></thead><tbody>' + chart.series.map(g => '<tr><th scope="row">' + esc(g.label) + '</th><td>' + exact(g.value) + '</td>' + (chart.previousRange ? '<td>' + exact(g.previous) + '</td><td>' + (g.value === null ? 'Нет данных' : comparison(g)) + '</td>' : '') + '</tr>').join('') + '</tbody></table></div>';
     const intervalTable = '<div class="analytics-table"><table><caption>По интервалам' + (cumulative ? ' · credits' : ' · количество') + '</caption><thead><tr><th scope="col">Конец интервала' + (chart.previousRange ? ' · текущий / предыдущий' : '') + '</th>' + chart.series.map(g => '<th scope="col">' + esc(g.label) + (chart.previousRange ? ' · текущий</th><th scope="col">' + esc(g.label) + ' · предыдущий' : '') + '</th>').join('') + '</tr></thead><tbody>' + chart.intervals.map((bucket, index) => '<tr><th scope="row">' + A.dateLabel(bucket.to) + (chart.previousRange ? ' / ' + A.dateLabel(bucket.to - (result.range.to - result.range.from + 1)) : '') + '</th>' + chart.series.map(g => '<td>' + exact(g.points[index].value) + '</td>' + (chart.previousRange ? '<td>' + exact(g.previousPoints[index].value) + '</td>' : '')).join('') + '</tr>').join('') + '</tbody></table></div>';
@@ -386,8 +402,9 @@
   function activateTab(tab, update = true) {
     closeHeaderTip();
     if (update) history.replaceState(null, '', tab === 'charts' ? '#charts' : '#table');
-    document.querySelectorAll('[data-tab]').forEach(button => { button.classList.toggle('active', button.dataset.tab === tab); button.setAttribute('aria-selected', button.dataset.tab === tab); });
+    document.querySelectorAll('[data-tab]').forEach(button => { button.classList.toggle('active', button.dataset.tab === tab); button.setAttribute('aria-selected', button.dataset.tab === tab); button.tabIndex = button.dataset.tab === tab ? 0 : -1; });
     document.querySelectorAll('.tab-panel').forEach(panel => { panel.hidden = !canView() || panel.dataset.panel !== tab; });
+    document.querySelectorAll('[data-report-nav]').forEach(link => { link.classList.toggle('active', link.dataset.reportNav === tab); if (link.dataset.reportNav === tab) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); });
   }
   $('period').addEventListener('change', () => { $('customRange').hidden = $('period').value !== 'custom'; });
   $('partnerId')?.addEventListener('change', expertsForDraft);
@@ -395,7 +412,7 @@
   $('reportFilters').addEventListener('change', updateDraftStatus);
   $('restoreFilters').addEventListener('click', () => {
     if (requestPending || !canView()) return;
-    writeFilters(); expertsForDraft(); writeFilters(); text('dateError', '');
+    writeFilters(); expertsForDraft(); writeFilters(); text('dateError', ''); text('minimumError', ''); $('minActions').removeAttribute('aria-invalid');
     $('fromDate').setAttribute('aria-invalid', 'false'); $('toDate').setAttribute('aria-invalid', 'false');
     updateDraftStatus(); $('apply').focus({ preventScroll: true });
   });
@@ -404,11 +421,27 @@
      state.sort = columns.sort($('sort').value); state.page = 1;
     result = A.build(displayedData, state, access); render();
   });
-  $('apply').addEventListener('click', () => {
+  function applyFilters() {
     const next = readFilters();
-    try { A.range(data.meta.now, next); text('dateError', ''); $('fromDate').setAttribute('aria-invalid', 'false'); $('toDate').setAttribute('aria-invalid', 'false'); }
-    catch (error) { text('dateError', error.message); $('fromDate').setAttribute('aria-invalid', 'true'); $('toDate').setAttribute('aria-invalid', 'true'); return; }
+    text('dateError', ''); text('minimumError', '');
+    ['fromDate', 'toDate', 'minActions'].forEach(id => $(id).removeAttribute('aria-invalid'));
+    try { A.range(data.meta.now, next); }
+    catch (error) {
+      text('dateError', error.message);
+      const field = !$('fromDate').value || $('fromDate').value > $('toDate').value ? $('fromDate') : $('toDate');
+      field.setAttribute('aria-invalid', 'true'); field.focus(); return;
+    }
+    try {
+      if ($('minActions').validity.badInput) throw new Error('Укажите целое неотрицательное число');
+      next.minActions = A.minimum(next.minActions);
+    } catch (error) {
+      text('minimumError', error.message); $('minActions').setAttribute('aria-invalid', 'true'); $('minActions').focus(); return;
+    }
     refresh(next);
+  }
+  $('apply').addEventListener('click', applyFilters);
+  $('reportFilters').addEventListener('keydown', event => {
+    if (event.key === 'Enter' && event.target.tagName === 'INPUT') { event.preventDefault(); applyFilters(); }
   });
   $('prevPage').addEventListener('click', () => { state.page--; result = A.build(displayedData, state, access); render(); });
   $('nextPage').addEventListener('click', () => { state.page++; result = A.build(displayedData, state, access); render(); });
@@ -429,10 +462,34 @@
     const sort = event.target.closest('[data-sort-key]');
     const reference = event.target.closest('[data-reference]');
     if (sort) {  state.sort = sort.dataset.sortKey + (state.sort === sort.dataset.sortKey + '_desc' ? '_asc' : '_desc'); state.page = 1; result = A.build(displayedData, state, access); render(); $('sort').value = state.sort; }
-    if (reference) { event.preventDefault(); const index = result.allRows.findIndex(row => row.id === reference.dataset.reference); state.page = Math.floor(index / Number(state.pageSize)) + 1; result = A.build(displayedData, state, access); render(); $(reference.dataset.reference)?.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
+    if (reference) {
+      event.preventDefault();
+      const rowId = reference.dataset.reference, key = reference.dataset.referenceKey;
+      const index = result.allRows.findIndex(row => row.id === rowId);
+      if (index < 0) return;
+      state.page = Math.floor(index / Number(state.pageSize)) + 1;
+      result = A.build(displayedData, state, access); render();
+      const cell = $(rowId)?.querySelector('[data-metric="' + key + '"]') || $(rowId);
+      if (cell) { cell.tabIndex = -1; cell.classList.add('reference-target'); cell.focus({ preventScroll: true }); cell.scrollIntoView({ block: 'nearest', inline: 'nearest' }); cell.addEventListener('blur', () => cell.classList.remove('reference-target'), { once: true }); }
+    }
   });
   document.querySelectorAll('[data-tab]').forEach(button => button.addEventListener('click', () => activateTab(button.dataset.tab)));
-  ['Metric', 'Dimension', 'Type', 'Compare', 'Granularity'].forEach(name => $('chart' + name).addEventListener('change', () => { chartState[name.toLowerCase()] = $('chart' + name).value; if (name === 'Dimension') chartState.entities = null; renderCharts(); }));
+  document.querySelector('.view-tabs').addEventListener('keydown', event => {
+    const buttons = [...document.querySelectorAll('[data-tab]')];
+    if (!buttons.includes(event.target) || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const index = buttons.indexOf(event.target);
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + buttons.length) % buttons.length;
+    activateTab(buttons[next].dataset.tab); buttons[next].focus();
+  });
+  document.querySelectorAll('[data-report-nav]').forEach(link => link.addEventListener('click', event => {
+    event.preventDefault(); activateTab(link.dataset.reportNav);
+    if (mobileNav.matches) setNavigation(false);
+    const button = document.querySelector('[data-tab="' + link.dataset.reportNav + '"]');
+    button.focus(); button.scrollIntoView({ block: 'start' });
+  }));
+  window.addEventListener('hashchange', () => activateTab(location.hash === '#charts' ? 'charts' : 'table', false));
+  ['Metric', 'Dimension' , 'Type', 'Compare', 'Granularity'].forEach(name => $('chart' + name).addEventListener('change', () => { chartState[name.toLowerCase()] = $('chart' + name).value; if (name === 'Dimension') chartState.entities = null; renderCharts(); }));
   $('chartEntities').addEventListener('change', () => { chartState.entities = [...$('chartEntities').querySelectorAll('input:checked')].map(input => input.value); renderCharts(); });
   $('selectAllChart').addEventListener('click', () => { chartState.entities = null; renderCharts(); $('chartEntities').querySelector('input')?.focus({ preventScroll: true }); });
   $('clearChart').addEventListener('click', () => { chartState.entities = []; renderCharts(); $('selectAllChart').focus({ preventScroll: true }); });

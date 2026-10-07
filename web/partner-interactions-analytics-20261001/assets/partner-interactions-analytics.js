@@ -25,7 +25,7 @@
   const day = value => new Date(time(value) + OFFSET).toISOString().slice(0, 10);
   const dateLabel = value => day(value).split('-').reverse().join('.');
   const emptyMetrics = () => Object.fromEntries([...metricKeys, 'activity', 'messages'].map(key => [key, 0]));
-  const sum = (items, key) => items.some(item => item[key] === null) ? null : items.reduce((n, item) => n + (item[key] || 0), 0);
+  const sum = (items, key) => items.some(item => item[key] === null) ? null : items.reduce((n, item) => addAmount(n, item[key] || 0), 0);
   const dedupe = (items, key) => Array.from(new Map(items.map(item => [item[key], item])).values());
 
   function range(nowValue, filters) {
@@ -58,8 +58,27 @@
     return metricKeys.filter(key => !globalKeys.includes(key) || (access.role === 'admin' && access.globalPermission !== false));
   }
 
-  function build(data, rawFilters = {}, access = { role: 'none' }, forcedRange) {
+  // Sum decimal source amounts without introducing binary floating-point tails.
+  function addAmount(a, b) {
+    const decimal = value => {
+      const [mantissa, exponent = '0'] = String(value).toLowerCase().split('e');
+      const [whole, fraction = ''] = mantissa.split('.');
+      return { units: BigInt(whole + fraction), scale: fraction.length - Number(exponent) };
+    };
+    const x = decimal(a), y = decimal(b), scale = Math.max(0, x.scale, y.scale);
+    const units = x.units * 10n ** BigInt(scale - x.scale) + y.units * 10n ** BigInt(scale - y.scale);
+    return Number(String(units) + 'e-' + scale);
+  }
+
+  function minimum(value) {
+    const number = Number(value ?? 0);
+    if (!Number.isSafeInteger(number) || number < 0) throw new Error('Укажите целое неотрицательное число');
+    return number;
+  }
+
+  function build(data, rawFilters = {}, access = { role: 'none' }, forcedRange, referencePairs = []) {
     const filters = { period: 'custom', fromDate: '2026-09-07', toDate: '2026-09-15', direction: 'all', partnerId: 0, expertId: 0, query: '', minActions: 0, sort: 'activity_desc', page: 1, pageSize: 50, ...rawFilters };
+    filters.minActions = minimum(filters.minActions);
     const window = forcedRange || range(data.meta.now, filters);
     const available = allowedMetrics(access);
     let expertIds = scope(data, access);
@@ -134,19 +153,25 @@
     const globalLTV = new Map();
     const refunded = new Map();
     transactions.filter(t => t.type === 'charge' && time(t.createdAt) <= window.to).forEach(t => {
-      globalLTV.set(t.clientId, (globalLTV.get(t.clientId) || 0) + t.amount);
+      globalLTV.set(t.clientId, addAmount(globalLTV.get(t.clientId) || 0, t.amount));
       const pair = getPair(t.clientId, t.expertId);
-      if (pair) pair.pairLTV += t.amount;
+      if (pair) pair.pairLTV = addAmount(pair.pairLTV, t.amount);
     });
     transactions.filter(t => t.type === 'refund' && time(t.createdAt) <= window.to).forEach(t => {
       const charge = transactions.find(c => c.transactionId === t.chargeId && c.type === 'charge' && c.consultationId === t.consultationId && time(c.createdAt) <= time(t.createdAt));
       if (!charge) return;
       // A refund is tied to a real charge; duplicate confirmations do not add another refund.
-      const amount = Math.min(t.amount, Math.max(0, charge.amount - (refunded.get(charge.transactionId) || 0)));
-      refunded.set(charge.transactionId, (refunded.get(charge.transactionId) || 0) + amount);
-      globalLTV.set(t.clientId, (globalLTV.get(t.clientId) || 0) - amount);
+      const amount = Math.min(t.amount, Math.max(0, addAmount(charge.amount, -(refunded.get(charge.transactionId) || 0))));
+      refunded.set(charge.transactionId, addAmount(refunded.get(charge.transactionId) || 0, amount));
+      globalLTV.set(t.clientId, addAmount(globalLTV.get(t.clientId) || 0, -amount));
       const pair = getPair(t.clientId, t.expertId);
-      if (pair) { pair.pairLTV -= amount; if (inPeriod(t.createdAt)) pair.hasPeriod = true; }
+      if (pair) { pair.pairLTV = addAmount(pair.pairLTV, -amount); if (inPeriod(t.createdAt)) pair.hasPeriod = true; }
+    });
+    // Platform LTV follows the current client cohort even before their first
+    // interaction with the filtered expert. Keep those authorized pairs addressable.
+    referencePairs.forEach(original => {
+      const pair = getPair(original.client.id, original.expert.id);
+      if (pair) pair.hasPeriod = true;
     });
     let selected = Array.from(pairs.values()).filter(pair => pair.hasPeriod || pair.pairLTV !== 0);
     selected.forEach(pair => {
@@ -154,8 +179,8 @@
       pair.activity = activityKeys.reduce((n, key) => n + pair[key], 0);
       pair.messages = pair.clientMessages + pair.expertMessages;
       pair.platformLTV = globalLTV.get(pair.client.id) || 0;
-      const visibleClientTimes = filters.direction === 'expert_to_client' ? [] : pair.clientTimes;
-      const visibleExpertTimes = filters.direction === 'client_to_expert' ? [] : pair.expertTimes;
+      const visibleClientTimes = pair.clientTimes;
+      const visibleExpertTimes = pair.expertTimes;
       pair.clientDialog = visibleClientTimes.length > 0;
       pair.answered = pair.clientDialog && visibleExpertTimes.some(e => visibleClientTimes.some(c => e > c));
       pair.outboundOnly = !visibleClientTimes.length && visibleExpertTimes.length > 0;
@@ -166,7 +191,7 @@
     });
     selected = selected.filter(pair => !Number(filters.minActions) || (pair.activity !== null && pair.activity >= Number(filters.minActions)));
     const clients = dedupe(selected.map(pair => pair.client), 'id');
-    const metrics = Object.fromEntries([...available, 'activity', 'messages'].map(key => [key, key === 'platformLTV' ? (financeKnown ? clients.reduce((n, c) => n + (globalLTV.get(c.id) || 0), 0) : null) : sum(selected, key)]));
+    const metrics = Object.fromEntries([...available, 'activity', 'messages'].map(key => [key, key === 'platformLTV' ? (sourceKnown(data, 'platformLTV') ? clients.reduce((n, c) => addAmount(n, globalLTV.get(c.id) || 0), 0) : null) : sum(selected, key)]));
     // Unknown sources remain unknown even when the selected set is empty.
     available.filter(key => !sourceKnown(data, key)).forEach(key => { metrics[key] = null; });
     if (!activityKnown) metrics.activity = null;
@@ -216,7 +241,7 @@
       if (!map.has(id)) map.set(id, { id, label, pairIds: [], value: 0, clientIds: new Set() });
       const group = map.get(id);
       group.pairIds.push(pair.id);
-      if (metric !== 'platformLTV' || !group.clientIds.has(pair.client.id)) group.value = group.value === null || pair[metric] === null ? null : group.value + (pair[metric] || 0);
+      if (metric !== 'platformLTV' || !group.clientIds.has(pair.client.id)) group.value = group.value === null || pair[metric] === null ? null : addAmount(group.value, pair[metric] || 0);
       group.clientIds.add(pair.client.id);
     });
     return Array.from(map.values());
@@ -248,7 +273,7 @@
     const cumulative = ['pairLTV', 'platformLTV'].includes(metric);
     const known = result.metrics[metric] !== null && result.metrics[metric] !== undefined;
     const valuesFor = window => {
-      const snapshot = build(data, { ...result.filters, query: '', minActions: 0, page: 1 }, result.access, window);
+      const snapshot = build(data, { ...result.filters, query: '', minActions: 0, page: 1 }, result.access, window, metric === 'platformLTV' ? result.pairs : []);
       snapshot.pairs = snapshot.pairs.filter(p => result.pairs.some(original => original.id === p.id));
       return groups(data, snapshot, metric, dimension);
     };
@@ -263,7 +288,7 @@
       }) : [],
       previous: previousRange && known ? previousValues.find(g => g.id === group.id)?.value ?? 0 : null
     }));
-    return { metric, dimension, cumulative, intervals, series, previousRange, total: !known || series.some(g => g.value === null) ? null : series.reduce((n, g) => n + g.value, 0) };
+    return { metric, dimension, cumulative, intervals, series, previousRange, total: !known || series.some(g => g.value === null) ? null : series.reduce((n, g) => addAmount(n, g.value), 0) };
   }
-  return { activityKeys, metricKeys, pairKeys, globalKeys, labels, periodLabels, range, scope, allowedMetrics, build, dimensions, groups, chart, day, dateLabel };
+  return { activityKeys, metricKeys, pairKeys, globalKeys, labels, periodLabels, range, minimum, scope, allowedMetrics, build, dimensions, groups, chart, day, dateLabel };
 });
