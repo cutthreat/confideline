@@ -21,6 +21,14 @@
   let chartDataOpen = false;
   const permitted = [...A.allowedMetrics(access), 'activity', 'messages'];
   const columns = window.PartnerInteractionColumns.create(A.allowedMetrics(access), window.PartnerInteractionColumns.coreMetrics);
+  const presets = {
+    overview: { label: 'Обзор', metrics: window.PartnerInteractionColumns.coreMetrics, cards: null, chart: 'activity', note: 'Общая сводка и основные показатели взаимодействий.' },
+    workload: { label: 'Нагрузка', metrics: ['profileViews', 'favorites', 'newDialogs', 'clientMessages'], cards: ['metricExperts', 'qualityClients', 'metricPairs', 'qualityClientDialogs', 'presetClientMessages', 'presetNewDialogs'], chart: 'clientMessages', note: 'Клиенты, диалоги и входящие сообщения по выбранной выборке.' },
+    handling: { label: 'Работа с обращениями', metrics: ['newDialogs', 'clientMessages', 'expertMessages'], cards: ['qualityClientDialogs', 'qualityAnswered', 'qualityNoAnswer', 'qualityResponseRate', 'presetClientMessages', 'presetExpertMessages', 'qualityOutboundOnly'], chart: 'expertMessages', note: 'Ответ — более позднее сообщение эксперта после клиента в выбранном периоде. Доля ответа относится к диалогам, а не к каждому сообщению.' },
+    results: { label: 'Результат', metrics: ['paidConsultations', 'repeatExpert', 'repeatPlatform', 'pairLTV', 'platformLTV'], cards: ['qualityClients', 'riskPaidConsultations', 'riskRepeatExpert', 'riskRepeatPlatform', 'presetPairLTV', 'presetPlatformLTV'], chart: 'paidConsultations', note: 'Консультации и повторы — за период; LTV — накопленно на его конец. Платформенные показатели доступны только администратору.' },
+    quality: { label: 'Качество', metrics: ['reports', 'blocks', 'repeatExpert'], cards: ['riskReports', 'riskBlocks', 'qualityNoAnswer', 'qualityResponseRate', 'riskRepeatExpert'], chart: 'reports', note: 'Жалобы и блокировки помогают выбрать случаи для проверки. Жалоба сама по себе не означает подтверждённое нарушение.' }
+  };
+  let activePreset = 'overview', presetCustom = false;
   state.sort = columns.sort(state.sort);
   let headerPreference = 'labels';
   const labelRequired = window.matchMedia('(max-width: 767px), (any-pointer: coarse), (hover: none)');
@@ -72,6 +80,35 @@
   $('metricPairs').closest('.metric').title = 'Уникальные пары клиент–эксперт; направление не удваивает пару';
   $('qualityAnswered').closest('.quality-card').title = 'Эксперт написал после сообщения клиента в выбранном периоде';
   document.querySelector('.summary-grid').insertAdjacentHTML('beforeend', '<div class="panel risk-card" title="Не зависит от направления"><span>Повторные с экспертом</span><strong id="riskRepeatExpert">0</strong></div>' + (access.role === 'admin' ? '<div class="panel risk-card" title="Не зависит от направления"><span>Повторные на платформе</span><strong id="riskRepeatPlatform">0</strong></div>' : ''));
+  const presetCards = [
+    ['presetClientMessages', 'Сообщения клиентов', 'clientMessages'],
+    ['presetExpertMessages', 'Сообщения экспертов', 'expertMessages'],
+    ['presetNewDialogs', 'Новые диалоги', 'newDialogs'],
+    ['presetPairLTV', 'LTV пар, credits', 'pairLTV'],
+    ['presetPlatformLTV', 'LTV клиентов на платформе, credits', 'platformLTV']
+  ].filter(([, , metric]) => permitted.includes(metric));
+  document.querySelector('.summary-grid').insertAdjacentHTML('beforeend', presetCards.map(([id, label]) => '<div class="panel quality-card preset-extra" hidden><span>' + label + '</span><strong id="' + id + '"></strong></div>').join(''));
+  function renderPreset() {
+    const preset = presets[activePreset];
+    document.querySelectorAll('[data-preset]').forEach(button => button.setAttribute('aria-pressed', String(!presetCustom && button.dataset.preset === activePreset)));
+    text('presetStatus', presetCustom ? 'Свои показатели · на основе «' + preset.label + '»' : preset.label);
+    text('presetNote', preset.note);
+    document.querySelectorAll('.summary-grid > .panel').forEach(card => {
+      const id = card.querySelector('strong[id]')?.id;
+      card.hidden = preset.cards ? !preset.cards.includes(id) : card.classList.contains('preset-extra');
+    });
+    document.querySelector('.quality-scope').hidden = !['overview', 'handling', 'quality'].includes(activePreset);
+  }
+  function applyPreset(key) {
+    if (!result || !canView() || !presets[key]) return;
+    activePreset = key; presetCustom = false;
+    columns.set(presets[key].metrics);
+    state.sort = columns.sort(state.sort); state.page = 1;
+    chartState.metric = presets[key].chart;
+    result = A.build(displayedData, state, access);
+    render();
+  }
+  document.querySelectorAll('[data-preset]').forEach(button => button.addEventListener('click', () => applyPreset(button.dataset.preset)));
   $('sort').previousElementSibling.textContent = 'Сортировка таблицы';
   updateTableSort();
   if ($('partnerId')?.tagName === 'SELECT') select('partnerId', [['0', 'Все партнёры'], ...data.users.filter(u => u.role === 'partner').map(u => [String(u.id), u.name + ' #' + u.id])], '0');
@@ -109,7 +146,7 @@
   }
   function renderAppliedContext() {
     const user = id => displayedData.users.find(item => item.id === Number(id));
-    text('summaryTitle', result.summary.actions === null ? 'Сводка по доступным источникам' : 'Сводка по выборке');
+    text('summaryTitle', (activePreset === 'overview' ? 'Сводка' : presets[activePreset].label) + (result.summary.actions === null ? ' по доступным источникам' : ' по выборке'));
     text('appliedScope', R.context(state, {
       role: access.role,
       partner: user(access.role === 'partner' ? access.partnerId : state.partnerId)?.name,
@@ -124,6 +161,7 @@
     closeHeaderTip();
     if (!canView()) {
       message('Недоступно для вашей роли', 'denied');
+      $('reportPresets').hidden = true;
       $('reportOverview').hidden = true;
       document.querySelector('.view-tabs').hidden = true;
       document.querySelectorAll('.tab-panel').forEach(panel => { panel.hidden = true; });
@@ -149,6 +187,7 @@
     lastUpdated = new Date(data.meta.updatedAt || data.meta.now).toLocaleString('ru-RU', { timeZone: 'Europe/Minsk' });
     requestPending = false;
     main.setAttribute('aria-busy', 'false');
+    $('reportPresets').hidden = false;
     $('reportOverview').hidden = false;
     document.querySelector('.view-tabs').hidden = false;
     const missing = result.metrics.activity === null;
@@ -234,6 +273,8 @@
     const ids = { metricExperts: result.summary.experts, metricPairs: result.summary.pairs, metricMessages: result.summary.messages, metricActions: result.summary.actions, qualityClients: result.summary.clients, qualityClientDialogs: result.quality.dialogs, qualityAnswered: result.quality.answered, qualityNoAnswer: result.quality.noAnswer, qualityOutboundOnly: result.quality.outboundOnly, riskReports: result.metrics.reports, riskBlocks: result.metrics.blocks, riskPaidConsultations: result.metrics.paidConsultations, riskHighActivity: result.highActivity, riskRepeatExpert: result.metrics.repeatExpert, riskRepeatPlatform: result.metrics.repeatPlatform };
     Object.entries(ids).forEach(([id, value]) => text(id, fmt(value)));
     if (access.role === 'expert') text('metricExperts', result.summary.experts === null ? 'Нет данных' : result.summary.experts ? 'Есть' : 'Нет');
+    presetCards.forEach(([id, , metric]) => text(id, metricFmt(metric, result.metrics[metric])));
+    renderPreset();
     text('qualityResponseRate', result.quality.responseRate === null ? 'Нет данных' : fmt(result.quality.responseRate) + '%');
     text('periodBadge', result.range.label);
     text('rowCount', 'Строк: ' + result.pagination.totalRows + ' · ' + (result.summary.pairs === null ? 'Нет данных о парах' : 'Пар: ' + result.summary.pairs));
@@ -285,6 +326,7 @@
   }
   function chooseMetrics(action, key) {
     if (!result || !canView()) return;
+    presetCustom = true;
     
     if (action === 'toggle') columns.toggle(key);
     else if (action === 'all') columns.all();
@@ -489,7 +531,7 @@
     button.focus(); button.scrollIntoView({ block: 'start' });
   }));
   window.addEventListener('hashchange', () => activateTab(location.hash === '#charts' ? 'charts' : 'table', false));
-  ['Metric', 'Dimension' , 'Type', 'Compare', 'Granularity'].forEach(name => $('chart' + name).addEventListener('change', () => { chartState[name.toLowerCase()] = $('chart' + name).value; if (name === 'Dimension') chartState.entities = null; renderCharts(); }));
+  ['Metric', 'Dimension' , 'Type', 'Compare', 'Granularity'].forEach(name => $('chart' + name).addEventListener('change', () => { chartState[name.toLowerCase()] = $('chart' + name).value; if (name === 'Metric') { presetCustom = true; renderPreset(); } if (name === 'Dimension') chartState.entities = null; renderCharts(); }));
   $('chartEntities').addEventListener('change', () => { chartState.entities = [...$('chartEntities').querySelectorAll('input:checked')].map(input => input.value); renderCharts(); });
   $('selectAllChart').addEventListener('click', () => { chartState.entities = null; renderCharts(); $('chartEntities').querySelector('input')?.focus({ preventScroll: true }); });
   $('clearChart').addEventListener('click', () => { chartState.entities = []; renderCharts(); $('selectAllChart').focus({ preventScroll: true }); });

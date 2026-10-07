@@ -16,6 +16,7 @@
         if (selected.has(key)) selected.delete(key); else selected.add(key);
         return true;
       },
+      set(metrics) { selected.clear(); metrics.forEach(key => { if (keys.includes(key)) selected.add(key); }); },
       all() { keys.forEach(key => selected.add(key)); },
       core() { selected.clear(); coreMetrics.forEach(key => { if (keys.includes(key)) selected.add(key); }); },
       clear() { selected.clear(); },
