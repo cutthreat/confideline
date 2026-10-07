@@ -22,7 +22,7 @@
   const permitted = [...A.allowedMetrics(access), 'activity', 'messages'];
   const columns = window.PartnerInteractionColumns.create(A.allowedMetrics(access), window.PartnerInteractionColumns.coreMetrics);
   const presets = {
-    overview: { label: 'Обзор', metrics: window.PartnerInteractionColumns.coreMetrics, cards: ['metricExperts', 'qualityClients', 'metricPairs', 'metricMessages', 'metricActions', 'riskPaidConsultations'], chart: 'activity', note: 'Общая сводка и основные показатели взаимодействий.' },
+    overview: { label: 'Обзор', metrics: window.PartnerInteractionColumns.coreMetrics, cards: null, chart: 'activity', note: 'Общая сводка и основные показатели взаимодействий.' },
     workload: { label: 'Нагрузка', metrics: ['profileViews', 'favorites', 'newDialogs', 'clientMessages'], cards: ['metricExperts', 'qualityClients', 'metricPairs', 'qualityClientDialogs', 'presetClientMessages', 'presetNewDialogs'], chart: 'clientMessages', note: 'Клиенты, диалоги и входящие сообщения по выбранной выборке.' },
     handling: { label: 'Работа с обращениями', metrics: ['newDialogs', 'clientMessages', 'expertMessages'], cards: ['qualityClientDialogs', 'qualityAnswered', 'qualityNoAnswer', 'qualityResponseRate', 'presetClientMessages', 'presetExpertMessages', 'qualityOutboundOnly'], chart: 'expertMessages', note: 'Ответ — более позднее сообщение эксперта после клиента в выбранном периоде. Доля ответа относится к диалогам, а не к каждому сообщению.' },
     results: { label: 'Результат', metrics: ['paidConsultations', 'repeatExpert', 'repeatPlatform', 'pairLTV', 'platformLTV'], cards: ['qualityClients', 'riskPaidConsultations', 'riskRepeatExpert', 'riskRepeatPlatform', 'presetPairLTV', 'presetPlatformLTV'], chart: 'paidConsultations', note: 'Консультации и повторы — за период; LTV — накопленно на его конец. Платформенные показатели доступны только администратору.' },
@@ -65,7 +65,7 @@
   const main = document.querySelector('main');
   const status = document.createElement('p');
   status.id = 'loadStatus'; status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
-  document.querySelector('.report-heading').append(status);
+  $('reportOverview').after(status);
   $('period').innerHTML = Object.entries(A.periodLabels).map(([key, label]) => '<option value="' + key + '">' + label + '</option>').join('');
   const dates = document.createElement('div');
   dates.className = 'custom-range'; dates.id = 'customRange';
@@ -139,8 +139,6 @@
     const denied = !canView();
     const draft = R.draftStatus(readFilters(), state, { pending: requestPending, hasResult: !!result, denied });
     text('filterDraftStatus', draft.text);
-    $('filterDraftBadge').hidden = !draft.changed || denied;
-    $('filterDraftBadge').textContent = draft.kind === 'pending' ? 'Обновление…' : 'Есть изменения';
     $('filterDraftStatus').hidden = !draft.text;
     $('filterDraftStatus').className = draft.kind;
     $('restoreFilters').hidden = !draft.changed || denied || requestPending;
@@ -156,7 +154,6 @@
       expert: user(access.role === 'expert' ? access.expertId : state.expertId)?.name,
       range: result.range.label
     }));
-    text('filterSelection', $('appliedScope').textContent);
     updateDraftStatus();
   }
   function message(value, kind = '') { status.textContent = value; status.className = kind; }
@@ -453,7 +450,6 @@
     document.querySelectorAll('.tab-panel').forEach(panel => { panel.hidden = !canView() || panel.dataset.panel !== tab; });
     document.querySelectorAll('[data-report-nav]').forEach(link => { link.classList.toggle('active', link.dataset.reportNav === tab); if (link.dataset.reportNav === tab) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); });
   }
-  $('filterDisclosure').addEventListener('toggle', () => { document.querySelector('.filter-edit').textContent = $('filterDisclosure').open ? 'Свернуть' : 'Изменить'; });
   $('period').addEventListener('change', () => { $('customRange').hidden = $('period').value !== 'custom'; });
   $('partnerId')?.addEventListener('change', expertsForDraft);
   $('reportFilters').addEventListener('input', updateDraftStatus);
@@ -485,10 +481,7 @@
     } catch (error) {
       text('minimumError', error.message); $('minActions').setAttribute('aria-invalid', 'true'); $('minActions').focus(); return;
     }
-    if (refresh(next)) {
-      $('filterDisclosure').open = false;
-      $('filterToggle').focus({ preventScroll: true });
-    }
+    refresh(next);
   }
   $('apply').addEventListener('click', applyFilters);
   $('reportFilters').addEventListener('keydown', event => {

@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Кабинет партнера - активность анкет</title>
   <link rel="stylesheet" href="assets/partner-interactions.css">
-  <link rel="stylesheet" href="assets/card59.css?v=20261008-r9">
+  <link rel="stylesheet" href="assets/card59.css?v=20261008-r10b">
 </head>
 <body data-audience="partner" data-partner-id="15">
 <div class="app-shell">
@@ -36,10 +36,44 @@
       </ol>
     </section>
 
-    <details class="panel filter-shell" id="filterDisclosure">
-      <summary id="filterToggle"><strong>Выборка</strong><span id="filterSelection">Выборка ещё не загружена</span><span id="filterDraftBadge" hidden>Есть изменения</span><span class="filter-edit">Изменить</span></summary>
-    <section class="filters partner-filters" id="reportFilters" aria-labelledby="filterTitle" aria-describedby="filterHelp">
+    <section class="summary-overview" id="reportOverview" aria-labelledby="summaryTitle">
+      <div class="report-heading"><h2 id="summaryTitle">Сводка по выборке</h2><p id="appliedScope">Выборка ещё не загружена</p></div>
+      <div class="summary-grid">
+      <div class="panel metric metric-blue" title="Закреплённые эксперты с событиями активности в выборке"><i>Анк.</i><div><span>Активные эксперты</span><strong id="metricExperts">0</strong></div></div>
+      <div class="panel metric metric-green" title="Количество направленных пар клиент - эксперт"><i>Пары</i><div><span>Пары взаимодействий</span><strong id="metricPairs">0</strong></div></div>
+      <div class="panel metric metric-yellow" title="Все сообщения в выбранной выборке"><i>Сооб.</i><div><span>Сообщения</span><strong id="metricMessages">0</strong></div></div>
+      <div class="panel metric metric-red" title="Сумма всех активных действий"><i>Дейст.</i><div><span>Всего действий</span><strong id="metricActions">0</strong></div></div>
+      <div class="panel quality-card" title="Уникальные клиенты по закрепленным анкетам"><span>Клиенты в выборке</span><strong id="qualityClients">0</strong></div>
+      <div class="panel quality-card" title="Пары с сообщениями клиента в периоде, включая существующие диалоги"><span>Диалоги с клиентом</span><strong id="qualityClientDialogs">0</strong></div>
+      <div class="panel quality-card" title="Диалоги клиентов, где эксперт ответил"><span>С ответом</span><strong id="qualityAnswered">0</strong></div>
+      <div class="panel quality-card" title="Диалоги клиентов без ответа эксперта"><span>Без ответа</span><strong id="qualityNoAnswer">0</strong></div>
+      <div class="panel quality-card" title="Доля клиентских диалогов с ответом эксперта"><span>Доля ответа</span><strong id="qualityResponseRate">Нет</strong></div>
+      <div class="panel quality-card" title="Пары с сообщениями эксперта и без сообщений клиента в периоде"><span>Пары без входящих</span><strong id="qualityOutboundOnly">0</strong></div>
+      <div class="panel risk-card" title="Жалобы клиентов или экспертов"><span>Жалобы</span><strong id="riskReports">0</strong></div>
+      <div class="panel risk-card" title="Блокировки между клиентом и экспертом"><span>Блокировки</span><strong id="riskBlocks">0</strong></div>
+      <div class="panel risk-card" title="Оплаченные консультации по закрепленным анкетам"><span>Оплаты консультаций</span><strong id="riskPaidConsultations">0</strong></div>
+      <div class="panel risk-card" title="Пары с десятью и более действиями за период"><span>Активные пары 10+</span><strong id="riskHighActivity">0</strong></div>
+    </div>
+
+      <details class="metric-notes"><summary>О показателях</summary>
+      <p id="presetNote">Общая сводка и основные показатели взаимодействий.</p>
+      <p class="quality-scope">Счётчики ответов учитывают обе стороны выбранных пар за период, независимо от направления. «Без ответа» — клиент писал, но более позднего сообщения эксперта в этом периоде нет.</p>
+      </details>
+    </section>
+
+    <section class="panel filters partner-filters" id="reportFilters" aria-labelledby="filterTitle" aria-describedby="filterHelp">
       <div class="filter-heading"><h2 id="filterTitle">Фильтры отчёта</h2><p id="filterHelp">Обновляют сводку, таблицу и графики после применения.</p></div>
+    <section class="report-presets" id="reportPresets" aria-labelledby="presetTitle">
+      <div class="preset-heading"><h3 id="presetTitle">Быстрые фильтры</h3><span id="presetStatus" role="status" aria-live="polite" aria-atomic="true">Обзор</span></div>
+      <div class="preset-buttons" role="group" aria-labelledby="presetTitle" aria-describedby="presetHelp">
+        <button type="button" data-preset="overview" aria-pressed="true" aria-controls="reportOverview panel-table panel-charts">Обзор</button>
+        <button type="button" data-preset="workload" aria-pressed="false" aria-controls="reportOverview panel-table panel-charts">Нагрузка</button>
+        <button type="button" data-preset="handling" aria-label="Работа с обращениями" aria-pressed="false" aria-controls="reportOverview panel-table panel-charts"><span class="preset-full">Работа с обращениями</span><span class="preset-short" aria-hidden="true">Обращения</span></button>
+        <button type="button" data-preset="results" aria-pressed="false" aria-controls="reportOverview panel-table panel-charts">Результат</button>
+        <button type="button" data-preset="quality" aria-pressed="false" aria-controls="reportOverview panel-table panel-charts">Качество</button>
+      </div>
+      <p id="presetHelp">Готовый набор меняет показатели. Все поля ниже остаются доступны для свободной настройки.</p>
+    </section>
       <input type="hidden" id="partnerId" value="15">
       <label>
         <span>Эксперт</span>
@@ -75,51 +109,10 @@
 
       <div class="filter-actions"><button type="button" id="apply">Применить фильтры</button><button type="button" id="restoreFilters" class="secondary" hidden>Отменить изменения</button><p id="filterDraftStatus" role="status" aria-live="polite" aria-atomic="true" hidden></p></div>
     </section>
-    </details>
 
-    <div class="report-toolbar" id="reportToolbar">
-    <section class="view-tabs" role="tablist" aria-label="Виды отчёта">
+    <section class="view-tabs" id="reportTabs" role="tablist" aria-label="Виды отчёта">
       <button type="button" class="active" data-tab="table" role="tab" id="tab-table" aria-controls="panel-table">Таблица</button>
       <button type="button" data-tab="charts" role="tab" id="tab-charts" aria-controls="panel-charts">Графики</button>
-    </section>
-    <section class="report-presets" id="reportPresets" aria-labelledby="presetTitle">
-      <div class="preset-heading"><h2 id="presetTitle">Показатели</h2><span id="presetStatus" role="status" aria-live="polite" aria-atomic="true">Обзор</span></div>
-      <div class="preset-buttons" role="group" aria-labelledby="presetTitle">
-        <button type="button" data-preset="overview" aria-pressed="true" aria-controls="reportOverview panel-table panel-charts">Обзор</button>
-        <button type="button" data-preset="workload" aria-pressed="false" aria-controls="reportOverview panel-table panel-charts">Нагрузка</button>
-        <button type="button" data-preset="handling" aria-label="Работа с обращениями" aria-pressed="false" aria-controls="reportOverview panel-table panel-charts"><span class="preset-full">Работа с обращениями</span><span class="preset-short" aria-hidden="true">Обращения</span></button>
-        <button type="button" data-preset="results" aria-pressed="false" aria-controls="reportOverview panel-table panel-charts">Результат</button>
-        <button type="button" data-preset="quality" aria-pressed="false" aria-controls="reportOverview panel-table panel-charts">Качество</button>
-      </div>
-
-
-    </section>
-    </div>
-
-    <section class="summary-overview" id="reportOverview" aria-labelledby="summaryTitle">
-      <div class="report-heading"><h2 id="summaryTitle">Сводка по выборке</h2><p id="appliedScope">Выборка ещё не загружена</p></div>
-      <div class="summary-grid">
-      <div class="panel metric metric-blue" title="Закреплённые эксперты с событиями активности в выборке"><i>Анк.</i><div><span>Активные эксперты</span><strong id="metricExperts">0</strong></div></div>
-      <div class="panel metric metric-green" title="Количество направленных пар клиент - эксперт"><i>Пары</i><div><span>Пары взаимодействий</span><strong id="metricPairs">0</strong></div></div>
-      <div class="panel metric metric-yellow" title="Все сообщения в выбранной выборке"><i>Сооб.</i><div><span>Сообщения</span><strong id="metricMessages">0</strong></div></div>
-      <div class="panel metric metric-red" title="Сумма всех активных действий"><i>Дейст.</i><div><span>Всего действий</span><strong id="metricActions">0</strong></div></div>
-      <div class="panel quality-card" title="Уникальные клиенты по закрепленным анкетам"><span>Клиенты в выборке</span><strong id="qualityClients">0</strong></div>
-      <div class="panel quality-card" title="Пары с сообщениями клиента в периоде, включая существующие диалоги"><span>Диалоги с клиентом</span><strong id="qualityClientDialogs">0</strong></div>
-      <div class="panel quality-card" title="Диалоги клиентов, где эксперт ответил"><span>С ответом</span><strong id="qualityAnswered">0</strong></div>
-      <div class="panel quality-card" title="Диалоги клиентов без ответа эксперта"><span>Без ответа</span><strong id="qualityNoAnswer">0</strong></div>
-      <div class="panel quality-card" title="Доля клиентских диалогов с ответом эксперта"><span>Доля ответа</span><strong id="qualityResponseRate">Нет</strong></div>
-      <div class="panel quality-card" title="Пары с сообщениями эксперта и без сообщений клиента в периоде"><span>Пары без входящих</span><strong id="qualityOutboundOnly">0</strong></div>
-      <div class="panel risk-card" title="Жалобы клиентов или экспертов"><span>Жалобы</span><strong id="riskReports">0</strong></div>
-      <div class="panel risk-card" title="Блокировки между клиентом и экспертом"><span>Блокировки</span><strong id="riskBlocks">0</strong></div>
-      <div class="panel risk-card" title="Оплаченные консультации по закрепленным анкетам"><span>Оплаты консультаций</span><strong id="riskPaidConsultations">0</strong></div>
-      <div class="panel risk-card" title="Пары с десятью и более действиями за период"><span>Активные пары 10+</span><strong id="riskHighActivity">0</strong></div>
-    </div>
-
-      <details class="metric-notes"><summary>О показателях</summary>
-      <p id="presetHelp">Один клик меняет карточки, столбцы и показатель графика. Период, участники и направление сохраняются.</p>
-      <p id="presetNote">Общая сводка и основные показатели взаимодействий.</p>
-      <p class="quality-scope">Счётчики ответов учитывают обе стороны выбранных пар за период, независимо от направления. «Без ответа» — клиент писал, но более позднего сообщения эксперта в этом периоде нет.</p>
-      </details>
     </section>
 
     <section class="panel chart-panel tab-panel" data-panel="charts" role="tabpanel" id="panel-charts" aria-labelledby="tab-charts" tabindex="0" hidden>
@@ -153,7 +146,7 @@
         <div class="metric-picker-title"><h3 id="metricPickerTitle">Показатели таблицы</h3></div>
         <div class="metric-picker-actions"><button type="button" id="selectCoreMetrics" aria-controls="interactionTable" disabled>Основные</button><button type="button" id="selectAllMetrics" aria-controls="interactionTable">Все показатели</button><button type="button" id="clearMetrics" aria-controls="interactionTable">Снять выбор</button></div>
       </div>
-      <p class="metric-picker-help" id="metricPickerHelp">Выберите столбцы вручную. Быстрый набор можно восстановить кнопками «Показатели» над сводкой.</p>
+      <p class="metric-picker-help" id="metricPickerHelp">Выберите столбцы вручную. Готовый набор можно восстановить в блоке «Фильтры отчёта».</p>
       <div class="action-legend" id="actionLegend" role="group" aria-labelledby="metricPickerTitle" aria-describedby="metricPickerHelp"></div>
       <div class="header-density">
       <label class="table-sort">
@@ -202,6 +195,6 @@
 <script src="assets/partner-interactions-headers.js"></script>
 <script src="assets/partner-interactions-report.js"></script>
 <script src="assets/partner-interactions-charts.js"></script>
-<script src="assets/partner-interactions.js?v=20261008-r9"></script>
+<script src="assets/partner-interactions.js?v=20261008-r10b"></script>
 </body>
 </html>
