@@ -1,28 +1,22 @@
 "use strict";
-
-const byId = (id) => document.getElementById(id);
-const openDialog = (id) => byId(id).showModal();
-
-byId("favorite").addEventListener("click", (event) => {
-  const button = event.currentTarget;
-  const selected = button.getAttribute("aria-pressed") !== "true";
-  const label = selected ? "Убрать из избранного" : "Добавить в избранное";
-  button.setAttribute("aria-pressed", String(selected));
-  button.setAttribute("aria-label", label);
-  button.title = label;
+const byId=id=>document.getElementById(id);
+const openDialog=id=>byId(id).showModal();
+byId("favorite").addEventListener("click",event=>{
+ const button=event.currentTarget, selected=button.getAttribute("aria-pressed")!=="true";
+ const label=selected?"Убрать из избранного":"Добавить в избранное";
+ button.setAttribute("aria-pressed",String(selected));button.setAttribute("aria-label",label);button.title=label;
+ button.querySelector("i").className=selected?"fa fa-heart":"fa fa-heart-o";
+ const menuFavorite=document.querySelector('.card-main-info .dropdown-menu .profile-favorite-button');
+ if(menuFavorite)menuFavorite.textContent=label;
 });
-
-byId("consultation-message").addEventListener("click", () => openDialog("chat-dialog"));
-byId("gift-button").addEventListener("click", () => openDialog("gifts-dialog"));
-byId("all-gifts").addEventListener("click", () => openDialog("gifts-dialog"));
-
-document.querySelectorAll("[data-photo]").forEach((button) => {
-  button.addEventListener("click", () => {
-    byId("gallery-photo").src = button.querySelector("img").src;
-    openDialog("photo-dialog");
-  });
-});
-
-document.querySelectorAll("[data-close]").forEach((button) => {
-  button.addEventListener("click", () => byId(button.dataset.close).close());
-});
+byId("consultation-message").addEventListener("click",()=>openDialog("chat-dialog"));
+byId("gift-button").addEventListener("click",()=>openDialog("gifts-dialog"));
+byId("all-gifts")?.addEventListener("click",event=>{event.preventDefault();openDialog("gifts-dialog");});
+document.querySelectorAll("[data-photo]").forEach(anchor=>anchor.addEventListener("click",event=>{event.preventDefault();byId("gallery-photo").src=anchor.href;openDialog("photo-dialog");}));
+document.querySelectorAll("[data-close]").forEach(button=>button.addEventListener("click",()=>byId(button.dataset.close).close()));
+const menuButton=document.querySelector(".card-main-info .dropdown-toggle"), menu=document.querySelector(".card-main-info .dropdown-menu");
+menuButton.addEventListener("click",()=>{const opened=menu.classList.toggle("show");menuButton.setAttribute("aria-expanded",String(opened));});
+document.addEventListener("click",event=>{if(!event.target.closest(".card-main-info .dropdown")){menu.classList.remove("show");menuButton.setAttribute("aria-expanded","false");}});
+document.addEventListener("keydown",event=>{if(event.key==="Escape"){menu.classList.remove("show");menuButton.setAttribute("aria-expanded","false");}});
+menu.querySelectorAll("button").forEach(button=>button.addEventListener("click",()=>{menu.classList.remove("show");menuButton.setAttribute("aria-expanded","false");if(button.classList.contains("profile-favorite-button")){byId("favorite").click();return;}byId("action-title").textContent=button.textContent.trim();openDialog("action-dialog");}));
+document.querySelector("#profile-column-right .close-ads-btn")?.addEventListener("click",event=>event.currentTarget.closest(".ad-block").remove());
