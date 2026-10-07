@@ -22,7 +22,7 @@
   const permitted = [...A.allowedMetrics(access), 'activity', 'messages'];
   const columns = window.PartnerInteractionColumns.create(A.allowedMetrics(access), window.PartnerInteractionColumns.coreMetrics);
   const presets = {
-    overview: { label: 'Обзор', metrics: window.PartnerInteractionColumns.coreMetrics, cards: null, chart: 'activity', note: 'Общая сводка и основные показатели взаимодействий.' },
+    overview: { label: 'Обзор', metrics: window.PartnerInteractionColumns.coreMetrics, cards: ['metricExperts', 'qualityClients', 'metricPairs', 'metricMessages', 'metricActions', 'riskPaidConsultations'], chart: 'activity', note: 'Общая сводка и основные показатели взаимодействий.' },
     workload: { label: 'Нагрузка', metrics: ['profileViews', 'favorites', 'newDialogs', 'clientMessages'], cards: ['metricExperts', 'qualityClients', 'metricPairs', 'qualityClientDialogs', 'presetClientMessages', 'presetNewDialogs'], chart: 'clientMessages', note: 'Клиенты, диалоги и входящие сообщения по выбранной выборке.' },
     handling: { label: 'Работа с обращениями', metrics: ['newDialogs', 'clientMessages', 'expertMessages'], cards: ['qualityClientDialogs', 'qualityAnswered', 'qualityNoAnswer', 'qualityResponseRate', 'presetClientMessages', 'presetExpertMessages', 'qualityOutboundOnly'], chart: 'expertMessages', note: 'Ответ — более позднее сообщение эксперта после клиента в выбранном периоде. Доля ответа относится к диалогам, а не к каждому сообщению.' },
     results: { label: 'Результат', metrics: ['paidConsultations', 'repeatExpert', 'repeatPlatform', 'pairLTV', 'platformLTV'], cards: ['qualityClients', 'riskPaidConsultations', 'riskRepeatExpert', 'riskRepeatPlatform', 'presetPairLTV', 'presetPlatformLTV'], chart: 'paidConsultations', note: 'Консультации и повторы — за период; LTV — накопленно на его конец. Платформенные показатели доступны только администратору.' },
@@ -65,7 +65,7 @@
   const main = document.querySelector('main');
   const status = document.createElement('p');
   status.id = 'loadStatus'; status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
-  $('reportOverview').after(status);
+  document.querySelector('.report-heading').append(status);
   $('period').innerHTML = Object.entries(A.periodLabels).map(([key, label]) => '<option value="' + key + '">' + label + '</option>').join('');
   const dates = document.createElement('div');
   dates.className = 'custom-range'; dates.id = 'customRange';
@@ -91,7 +91,8 @@
   function renderPreset() {
     const preset = presets[activePreset];
     document.querySelectorAll('[data-preset]').forEach(button => button.setAttribute('aria-pressed', String(!presetCustom && button.dataset.preset === activePreset)));
-    text('presetStatus', presetCustom ? 'Свои показатели · на основе «' + preset.label + '»' : preset.label);
+    text('presetStatus', presetCustom ? 'Свой набор' : '');
+    $('presetStatus').hidden = !presetCustom;
     text('presetNote', preset.note);
     document.querySelectorAll('.summary-grid > .panel').forEach(card => {
       const id = card.querySelector('strong[id]')?.id;
@@ -138,6 +139,8 @@
     const denied = !canView();
     const draft = R.draftStatus(readFilters(), state, { pending: requestPending, hasResult: !!result, denied });
     text('filterDraftStatus', draft.text);
+    $('filterDraftBadge').hidden = !draft.changed || denied;
+    $('filterDraftBadge').textContent = draft.kind === 'pending' ? 'Обновление…' : 'Есть изменения';
     $('filterDraftStatus').hidden = !draft.text;
     $('filterDraftStatus').className = draft.kind;
     $('restoreFilters').hidden = !draft.changed || denied || requestPending;
@@ -153,6 +156,7 @@
       expert: user(access.role === 'expert' ? access.expertId : state.expertId)?.name,
       range: result.range.label
     }));
+    text('filterSelection', $('appliedScope').textContent);
     updateDraftStatus();
   }
   function message(value, kind = '') { status.textContent = value; status.className = kind; }
@@ -194,6 +198,7 @@
     message((missing ? 'Часть показателей недоступна: нет достоверных данных. ' : 'Данные на: ') + lastUpdated + ' · Europe/Minsk');
     render();
     document.body.dataset.ready = 'true';
+    return true;
   }
   function sortButton(key, label) {
     const hint = A.pairKeys.includes(key) ? ' · Не зависит от направления' : '';
@@ -306,7 +311,7 @@
     updateTableSort();
     const scopeNote = (metrics.some(key => ['pairLTV', 'platformLTV'].includes(key)) ? 'LTV — credits, накоплено на ' + A.dateLabel(result.range.to) + ' · ' + (metrics.includes('platformLTV') ? 'LTV клиента — вся платформа, даже при фильтре эксперта. ' : 'Только разрешённые экспертные пары. ') : '') + 'Диалоги, консультации, повторы и LTV не зависят от направления.';
     let scopeNode = $('tableScope');
-    if (!scopeNode) { document.querySelector('.metric-picker-head').insertAdjacentHTML('beforebegin', '<div class="filter-scope" id="tableScope"></div>'); scopeNode = $('tableScope'); }
+    if (!scopeNode) { $('tableOptions').insertAdjacentHTML('afterend', '<div class="filter-scope" id="tableScope"></div>'); scopeNode = $('tableScope'); }
     scopeNode.textContent = scopeNote;
     $('interactionTable').querySelector('thead').innerHTML = metrics.length ? '<tr><th scope="col" class="col-user">Кто</th><th scope="col" class="col-user">Кому</th><th scope="col" class="col-direction">Направление</th>' + metrics.map(key => '<th scope="col" class="col-action" style="width:' + H.width(key, headerMode, cellTexts[key]) + 'px" aria-sort="' + ariaSort(key) + '">' + sortButton(key, A.labels[key]) + '</th>').join('') + '</tr>' : '';
     $('interactionTable').querySelector('tbody').innerHTML = !metrics.length ? '' : result.rows.length ? result.rows.map(row => '<tr id="' + esc(row.id) + '" data-pair="' + row.pairId + '"><td class="col-user">' + userCell(row.actor) + '</td><td class="col-user">' + userCell(row.target) + '</td><td class="col-direction"><span class="direction ' + (row.directionKey === 'client_to_expert' ? 'client' : 'expert') + '">' + (row.directionKey === 'client_to_expert' ? 'Клиент → эксперт' : 'Эксперт → клиент') + '</span></td>' + metrics.map(key => metricCell(row, key)).join('') + '</tr>').join('') : '<tr><td colspan="' + (metrics.length + 3) + '" class="empty">' + (result.summary.pairs === null ? 'Нет достоверных данных' : 'Нет событий по выбранным фильтрам') + '</td></tr>';
@@ -448,6 +453,7 @@
     document.querySelectorAll('.tab-panel').forEach(panel => { panel.hidden = !canView() || panel.dataset.panel !== tab; });
     document.querySelectorAll('[data-report-nav]').forEach(link => { link.classList.toggle('active', link.dataset.reportNav === tab); if (link.dataset.reportNav === tab) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); });
   }
+  $('filterDisclosure').addEventListener('toggle', () => { document.querySelector('.filter-edit').textContent = $('filterDisclosure').open ? 'Свернуть' : 'Изменить'; });
   $('period').addEventListener('change', () => { $('customRange').hidden = $('period').value !== 'custom'; });
   $('partnerId')?.addEventListener('change', expertsForDraft);
   $('reportFilters').addEventListener('input', updateDraftStatus);
@@ -479,7 +485,10 @@
     } catch (error) {
       text('minimumError', error.message); $('minActions').setAttribute('aria-invalid', 'true'); $('minActions').focus(); return;
     }
-    refresh(next);
+    if (refresh(next)) {
+      $('filterDisclosure').open = false;
+      $('filterToggle').focus({ preventScroll: true });
+    }
   }
   $('apply').addEventListener('click', applyFilters);
   $('reportFilters').addEventListener('keydown', event => {
@@ -492,7 +501,7 @@
     const button = event.target.closest('[data-metric-toggle]');
     if (button) chooseMetrics('toggle', button.dataset.metricToggle);
   });
-  function focusMetric() { $('actionLegend').querySelector('button')?.focus({ preventScroll: true }); }
+  function focusMetric() { $('tableOptions').open = true; $('actionLegend').querySelector('button')?.focus({ preventScroll: true }); }
   $('selectAllMetrics').addEventListener('click', () => { chooseMetrics('all'); focusMetric(); });
   $('selectCoreMetrics').addEventListener('click', () => { chooseMetrics('core'); focusMetric(); });
   $('clearMetrics').addEventListener('click', () => { chooseMetrics('clear'); focusMetric(); });
