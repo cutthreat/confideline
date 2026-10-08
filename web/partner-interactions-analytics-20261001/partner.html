@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Кабинет партнера - активность анкет</title>
   <link rel="stylesheet" href="assets/partner-interactions.css">
-  <link rel="stylesheet" href="assets/card59.css?v=20261008-r12">
+  <link rel="stylesheet" href="assets/card59.css?v=20261008-r13">
 </head>
 <body data-audience="partner" data-partner-id="15">
 <div class="app-shell">
@@ -32,7 +32,6 @@
     <section class="page-head">
       <div>
         <h1>Активность закрепленных анкет</h1>
-        <p>Контроль действий между клиентами и закрепленными экспертными анкетами.</p>
       </div>
       <ol>
         <li>Кабинет партнера</li>
@@ -41,7 +40,7 @@
     </section>
 
     <section class="summary-overview" id="reportOverview" aria-labelledby="summaryTitle">
-      <div class="report-heading"><h2 id="summaryTitle">Сводка по выборке</h2><p id="appliedScope">Выборка ещё не загружена</p></div>
+      <div class="report-heading"><h2 id="summaryTitle">Сводка по выборке</h2><p id="appliedScope">Загрузка…</p></div>
       <div class="summary-grid">
       <div class="panel metric metric-blue" title="Закреплённые эксперты с событиями активности в выборке"><i>Анк.</i><div><span>Активные эксперты</span><strong id="metricExperts">0</strong></div></div>
       <div class="panel metric metric-green" title="Количество направленных пар клиент - эксперт"><i>Пары</i><div><span>Пары взаимодействий</span><strong id="metricPairs">0</strong></div></div>
@@ -61,8 +60,8 @@
 
 </section>
 
-    <section class="panel filters partner-filters" id="reportFilters" aria-labelledby="filterTitle" aria-describedby="filterHelp">
-      <div class="filter-heading"><h2 id="filterTitle">Фильтры отчёта</h2><p id="filterHelp">Обновляют сводку, таблицу и графики после применения.</p></div>
+    <section class="panel filters partner-filters" id="reportFilters" aria-labelledby="filterTitle">
+      <div class="filter-heading"><h2 id="filterTitle">Фильтры отчёта</h2></div>
       <input type="hidden" id="partnerId" value="15">
       <label>
         <span>Эксперт</span>
@@ -115,7 +114,7 @@
         <label><span>Тип графика</span><select id="chartType"></select></label>
         <label><span>Сравнение периодов</span><select id="chartCompare"></select></label>
         <label><span>Группировка</span><select id="chartGranularity"></select></label>
-        <div class="chart-participants"><div class="chart-participant-head"><h3 id="chartParticipantsTitle">Участники</h3><span id="chartSelectionCount" role="status" aria-live="polite"></span><button id="selectAllChart" type="button">Все</button><button id="clearChart" type="button">Снять выбор</button></div><p id="chartParticipantsHelp">Итог графика относится только к выбранным участникам.</p><div id="chartEntities" class="checkbox-list" role="group" aria-labelledby="chartParticipantsTitle" aria-describedby="chartParticipantsHelp"></div></div>
+        <div class="chart-participants"><div class="chart-participant-head"><h3 id="chartParticipantsTitle">Участники</h3><span id="chartSelectionCount" role="status" aria-live="polite"></span><button id="selectAllChart" type="button">Все</button><button id="clearChart" type="button">Снять выбор</button></div><div id="chartEntities" class="checkbox-list" role="group" aria-labelledby="chartParticipantsTitle"></div></div>
       </div>
       <p id="chartSettingsNote" class="chart-settings-note" role="status" aria-live="polite" hidden></p>
       <div class="chart-workspace" id="chartGrid"></div>
@@ -133,7 +132,7 @@
       </div>
     <section class="report-presets" id="reportPresets" aria-labelledby="presetTitle">
       <div class="preset-heading"><h3 id="presetTitle">Готовые наборы</h3><span id="presetStatus" role="status" aria-live="polite" aria-atomic="true">Обзор</span></div>
-      <div class="preset-buttons" role="group" aria-labelledby="presetTitle" aria-describedby="metricPickerHelp">
+      <div class="preset-buttons" role="group" aria-labelledby="presetTitle">
         <button type="button" data-preset="overview" aria-pressed="true" aria-controls="interactionTable">Обзор</button>
         <button type="button" data-preset="workload" aria-pressed="false" aria-controls="interactionTable">Нагрузка</button>
         <button type="button" data-preset="handling" aria-pressed="false" aria-controls="interactionTable">Обращения</button>
@@ -141,9 +140,8 @@
         <button type="button" data-preset="quality" aria-pressed="false" aria-controls="interactionTable">Качество</button>
       </div>
     </section>
-      <p class="metric-picker-help" id="metricPickerHelp">Выберите готовый набор или нажмите на показатели ниже, чтобы добавить или убрать столбцы.</p>
-      <div class="action-legend" id="actionLegend" role="group" aria-labelledby="metricPickerTitle" aria-describedby="metricPickerHelp"></div>
-      <div class="metric-empty" id="metricEmpty" hidden><strong>Показатели не выбраны</strong><p>Нажмите на нужные показатели выше или покажите все.</p><button type="button" id="showAllMetrics" aria-controls="interactionTable">Показать все</button></div>
+      <div class="action-legend" id="actionLegend" role="group" aria-labelledby="metricPickerTitle"></div>
+      <div class="metric-empty" id="metricEmpty" hidden><strong>Показатели не выбраны</strong><button type="button" id="showAllMetrics" aria-controls="interactionTable">Показать все</button></div>
       <div class="header-density">
       <label class="table-sort">
         <span>Сортировка таблицы</span>
@@ -161,9 +159,7 @@
           <option value="reports_desc">Жалобы ↓</option>
         </select>
       </label>
-        <label><input id="iconOnlyHeaders" type="checkbox" aria-controls="interactionTable" aria-describedby="headerModeHelp">Только значки</label>
-        <p id="headerModeHelp">Полное название — при наведении или фокусе. На телефоне подписи всегда видны.</p>
-        <p id="touchHeaderNote" hidden>Для узкого или сенсорного экрана включены короткие подписи.</p>
+        <label><input id="iconOnlyHeaders" type="checkbox" aria-controls="interactionTable">Только значки</label>
         <p id="iconModeNote" hidden>К — клиент · Э — эксперт · П — платформа.</p>
       </div>
       <div class="table-scroll">
@@ -173,7 +169,6 @@
         </table>
       </div>
       <footer class="table-footer">
-        <span>Выборка: только назначенные вам эксперты.</span>
         <div class="pager">
           <label><span>Показывать</span><select id="pageSize"><option value="50" selected>50</option><option value="100">100</option><option value="250">250</option><option value="500">500</option></select></label>
           <button type="button" id="prevPage">Назад</button><strong id="pageInfo">0-0 из 0</strong><button type="button" id="nextPage">Вперед</button>
@@ -187,8 +182,8 @@
 <script src="assets/lucide.min.js"></script>
 <script src="assets/partner-interactions-columns.js"></script>
 <script src="assets/partner-interactions-headers.js"></script>
-<script src="assets/partner-interactions-report.js"></script>
+<script src="assets/partner-interactions-report.js?v=20261008-r13"></script>
 <script src="assets/partner-interactions-charts.js"></script>
-<script src="assets/partner-interactions.js?v=20261008-r12"></script>
+<script src="assets/partner-interactions.js?v=20261008-r13"></script>
 </body>
 </html>

@@ -244,7 +244,7 @@
   $('iconOnlyHeaders').addEventListener('change', () => { headerPreference = $('iconOnlyHeaders').checked ? 'icons' : 'labels'; if (result) render(); });
   function userCell(user) { return '<span class="user-cell"><span class="avatar-cell">' + esc(user.name.split(' ').slice(-1)[0].slice(0, 2)) + '</span><span><span class="user-name">' + esc(user.name) + '</span><span class="user-sub">#' + user.id + ' · ' + esc(user.username) + '</span></span></span>'; }
   function metricCell(row, key) {
-    if (row[key] === null) return '<td class="state-value">Нет источника</td>';
+    if (row[key] === null) return '<td class="state-value">Нет данных</td>';
     let reference;
     if (A.pairKeys.includes(key) && !row.canonical) reference = row.referenceId;
     if (key === 'platformLTV') {
@@ -272,7 +272,7 @@
     const metrics = columns.visible();
     const focusedMetric = document.activeElement?.dataset.metricToggle;
     const focusedSort = document.activeElement?.dataset.sortKey;
-    $('actionLegend').innerHTML = result.allowedMetrics.map(key => '<button type="button" class="legend-chip' + (metrics.includes(key) ? ' selected' : '') + '" data-metric-toggle="' + key + '" aria-pressed="' + metrics.includes(key) + '" aria-controls="interactionTable" title="' + esc(A.labels[key] + (A.pairKeys.includes(key) ? ' · Не зависит от направления' : '')) + '"><span class="action-icon">' + icon(metricIcons[key]) + '</span><span class="metric-label">' + esc(A.labels[key]) + (result.metrics[key] === null ? '<small>Нет источника</small>' : '') + '</span><span class="metric-check" aria-hidden="true">' + icon('check') + '</span></button>').join('');
+    $('actionLegend').innerHTML = result.allowedMetrics.map(key => '<button type="button" class="legend-chip' + (metrics.includes(key) ? ' selected' : '') + '" data-metric-toggle="' + key + '" aria-pressed="' + metrics.includes(key) + '" aria-controls="interactionTable" title="' + esc(A.labels[key] + (A.pairKeys.includes(key) ? ' · Не зависит от направления' : '')) + '"><span class="action-icon">' + icon(metricIcons[key]) + '</span><span class="metric-label">' + esc(A.labels[key]) + (result.metrics[key] === null ? '<small>Нет данных</small>' : '') + '</span><span class="metric-check" aria-hidden="true">' + icon('check') + '</span></button>').join('');
     text('metricSelectionCount', 'Выбрано ' + metrics.length + ' из ' + result.allowedMetrics.length);
     $('selectAllMetrics').disabled = metrics.length === result.allowedMetrics.length;
     $('clearMetrics').disabled = metrics.length === 0;
@@ -288,18 +288,17 @@
     $('interactionTable').classList.toggle('header-icons', headerMode === 'icons');
     $('iconOnlyHeaders').checked = headerMode === 'icons';
     $('iconOnlyHeaders').disabled = labelRequired.matches;
-    $('touchHeaderNote').hidden = !labelRequired.matches;
     $('iconModeNote').hidden = headerMode !== 'icons';
     updateTableSort();
-    const scopeNote = (metrics.some(key => ['pairLTV', 'platformLTV'].includes(key)) ? 'LTV — credits, накоплено на ' + A.dateLabel(result.range.to) + ' · ' + (metrics.includes('platformLTV') ? 'LTV клиента — вся платформа, даже при фильтре эксперта. ' : 'Только разрешённые экспертные пары. ') : '') + 'Диалоги, консультации, повторы и LTV не зависят от направления.';
+    const scopeNote = metrics.some(key => ['pairLTV', 'platformLTV'].includes(key)) ? 'LTV, credits · накоплено на ' + A.dateLabel(result.range.to) + (metrics.includes('platformLTV') ? ' · LTV клиента: вся платформа' : '') : '';
     let scopeNode = $('tableScope');
     if (!scopeNode) { document.querySelector('.metric-picker-head').insertAdjacentHTML('beforebegin', '<div class="filter-scope" id="tableScope"></div>'); scopeNode = $('tableScope'); }
-    scopeNode.textContent = scopeNote;
+    scopeNode.textContent = scopeNote; scopeNode.hidden = !scopeNote;
     $('interactionTable').querySelector('thead').innerHTML = metrics.length ? '<tr><th scope="col" class="col-user">Кто</th><th scope="col" class="col-user">Кому</th><th scope="col" class="col-direction">Направление</th>' + metrics.map(key => '<th scope="col" class="col-action" style="width:' + H.width(key, headerMode, cellTexts[key]) + 'px" aria-sort="' + ariaSort(key) + '">' + sortButton(key, A.labels[key]) + '</th>').join('') + '</tr>' : '';
     $('interactionTable').querySelector('tbody').innerHTML = !metrics.length ? '' : result.rows.length ? result.rows.map(row => '<tr id="' + esc(row.id) + '" data-pair="' + row.pairId + '"><td class="col-user">' + userCell(row.actor) + '</td><td class="col-user">' + userCell(row.target) + '</td><td class="col-direction"><span class="direction ' + (row.directionKey === 'client_to_expert' ? 'client' : 'expert') + '">' + (row.directionKey === 'client_to_expert' ? 'Клиент → эксперт' : 'Эксперт → клиент') + '</span></td>' + metrics.map(key => metricCell(row, key)).join('') + '</tr>').join('') : '<tr><td colspan="' + (metrics.length + 3) + '" class="empty">' + (result.summary.pairs === null ? 'Нет достоверных данных' : 'Нет событий по выбранным фильтрам') + '</td></tr>';
     let foot = $('interactionTable').querySelector('tfoot');
     if (!foot) { foot = document.createElement('tfoot'); $('interactionTable').append(foot); }
-    foot.innerHTML = metrics.length ? '<tr><td colspan="3">Итого по всей выборке · без двойного счёта</td>' + metrics.map(key => '<td data-summary="' + key + '">' + (result.metrics[key] === null ? 'Нет источника' : metricFmt(key, result.metrics[key])) + '</td>').join('') + '</tr>' : '';
+    foot.innerHTML = metrics.length ? '<tr><td colspan="3">Итого по выборке</td>' + metrics.map(key => '<td data-summary="' + key + '">' + (result.metrics[key] === null ? 'Нет данных' : metricFmt(key, result.metrics[key])) + '</td>').join('') + '</tr>' : '';
     if (!tableOnly) renderCharts();
     activateTab(location.hash === '#charts' ? 'charts' : 'table', false);
     window.lucide.createIcons({ attrs: { width: 16, height: 16, 'stroke-width': 1.7 } });
@@ -360,7 +359,7 @@
     text('chartTitle', A.labels[chartState.metric]);
     text('chartScope', result.range.label + ' · Europe/Minsk');
     const previousLabel = chart.previousRange ? A.dateLabel(chart.previousRange.from) + ' — ' + A.dateLabel(chart.previousRange.to) : '';
-    const note = (cumulative ? 'Накоплено к ' + A.dateLabel(result.range.to) + ' · credits · значение на конец каждого интервала' : 'Количество · выбранные участники') + (chart.previousRange ? (chartState.metric === 'platformLTV' ? ' · Сравнение тех же клиентов на всей платформе · Предыдущий период: ' : ' · Сравнение тех же пар из текущей выборки · Предыдущий период: ') + previousLabel + (chartState.type === 'bar' ? ' · Заливка — текущий, контур — предыдущий' : chartState.type === 'line' ? ' · Сплошная линия — текущий, пунктир — предыдущий' : '') : '');
+    const note = (cumulative ? 'Накоплено на ' + A.dateLabel(result.range.to) + ' · credits' : 'Количество') + (chart.previousRange ? ' · Предыдущий период: ' + previousLabel + (chartState.type === 'bar' ? ' · Заливка — текущий, контур — предыдущий' : chartState.type === 'line' ? ' · Сплошная линия — текущий, пунктир — предыдущий' : '') : '');
     const comparison = value => value.previous === null ? 'Нет данных' : value.previous === 0 ? 'Нет базы сравнения' : fmt((value.value - value.previous) / value.previous * 100) + '%';
     const compareTable = '<div class="analytics-table"><table><caption>По участникам · ' + esc(result.range.label) + '</caption><thead><tr><th scope="col">Участник</th><th scope="col">' + (cumulative ? 'Накоплено, credits' : 'За период') + '</th>' + (chart.previousRange ? '<th scope="col">Предыдущий · ' + esc(previousLabel) + '</th><th scope="col">Изменение</th>' : '') + '</tr></thead><tbody>' + chart.series.map(g => '<tr><th scope="row">' + esc(g.label) + '</th><td>' + exact(g.value) + '</td>' + (chart.previousRange ? '<td>' + exact(g.previous) + '</td><td>' + (g.value === null ? 'Нет данных' : comparison(g)) + '</td>' : '') + '</tr>').join('') + '</tbody></table></div>';
     const intervalTable = '<div class="analytics-table"><table><caption>По интервалам' + (cumulative ? ' · credits' : ' · количество') + '</caption><thead><tr><th scope="col">Конец интервала' + (chart.previousRange ? ' · текущий / предыдущий' : '') + '</th>' + chart.series.map(g => '<th scope="col">' + esc(g.label) + (chart.previousRange ? ' · текущий</th><th scope="col">' + esc(g.label) + ' · предыдущий' : '') + '</th>').join('') + '</tr></thead><tbody>' + chart.intervals.map((bucket, index) => '<tr><th scope="row">' + A.dateLabel(bucket.to) + (chart.previousRange ? ' / ' + A.dateLabel(bucket.to - (result.range.to - result.range.from + 1)) : '') + '</th>' + chart.series.map(g => '<td>' + exact(g.points[index].value) + '</td>' + (chart.previousRange ? '<td>' + exact(g.previousPoints[index].value) + '</td>' : '')).join('') + '</tr>').join('') + '</tbody></table></div>';
@@ -381,13 +380,13 @@
       visual = '<div class="share-chart"><div class="share-track">' + chart.series.map((g, i) => '<i style="background:' + seriesColors[i] + ';width:' + (total ? g.value / total * 100 : 0) + '%" title="' + esc(g.label) + ': ' + fmt(total ? g.value / total * 100 : 0) + '%"></i>').join('') + '</div></div>';
       if (total <= 0) visual = '<div class="state-empty">Нет положительных значений для расчёта долей</div>';
     } else if (chartState.type !== 'table') visual = graphSVG(chart, seriesColors);
-    if (chart.total === null) visual = '<div class="state-empty">Нет достоверного источника для этого показателя</div>';
+    if (chart.total === null) visual = '<div class="state-empty">Нет данных для этого показателя</div>';
     const known = result.metrics[chartState.metric] !== null && result.metrics[chartState.metric] !== undefined;
     const output = G.outputState(known, groups.length, selectedIds.length, chart.total);
-    const empty = { 'no-source': 'Нет достоверного источника для этого показателя', 'no-events': 'Нет событий в доступном источнике', 'none-selected': 'Участники не выбраны. Нажмите «Все» или выберите нужных.' }[output] || '';
-    const dataTables = chartState.type === 'table' ? compareTable + intervalTable : '<details class="chart-data"' + (dataOpen ? ' open' : '') + '><summary>Данные графика · точные значения</summary>' + compareTable + intervalTable + '</details>';
+    const empty = { 'no-source': 'Нет данных для этого показателя', 'no-events': 'Нет событий за период', 'none-selected': 'Участники не выбраны' }[output] || '';
+    const dataTables = chartState.type === 'table' ? compareTable + intervalTable : '<details class="chart-data"' + (dataOpen ? ' open' : '') + '><summary>Данные графика</summary>' + compareTable + intervalTable + '</details>';
     $('chartGrid').innerHTML = empty ? '<div class="state-empty">' + empty + '</div>' : '<p class="chart-note">' + esc(note) + '</p>' + visual + (chartState.type === 'table' ? '' : legend) + dataTables;
-    text('chartInsight', !known ? 'Итог недоступен: нет достоверного источника.' : groups.length && !selectedIds.length ? 'Выберите хотя бы одного участника.' : 'Итого по выбранным участникам: ' + exact(chart.total) + (cumulative ? ' credits. ' : '. ') + (chartState.metric === 'platformLTV' ? 'Вся платформа; каждый клиент учтён один раз. ' : '') + (A.pairKeys.includes(chartState.metric) ? 'Не зависит от направления. ' : ''));
+    text('chartInsight', !known ? 'Итог недоступен' : groups.length && !selectedIds.length ? 'Участники не выбраны' : 'Итого по выбранным участникам: ' + exact(chart.total) + (cumulative ? ' credits. ' : '. '));
   }
   function graphSVG(chart, colors) {
     const width = 900, height = 260, left = 50, top = 18, bottom = 222;

@@ -27,8 +27,8 @@
   function draftStatus(draft, applied, options = {}) {
     if (options.denied) return { changed: false, text: 'Нет доступа к отчёту', kind: 'denied' };
     const changed = dirty(draft, applied);
-    if (options.pending) return { changed, text: options.hasResult ? 'Обновляем отчёт. Пока показана предыдущая выборка.' : 'Загружаем отчёт.', kind: 'pending' };
-    return { changed, text: changed ? 'Изменения не применены. Сводка, таблица и графики показывают прежнюю выборку.' : '', kind: changed ? 'dirty' : 'applied' };
+    if (options.pending) return { changed, text: options.hasResult ? 'Обновление отчёта…' : 'Загрузка отчёта…', kind: 'pending' };
+    return { changed, text: changed ? 'Изменения не применены' : '', kind: changed ? 'dirty' : 'applied' };
   }
   return { queryKeys, signature, dirty, context, draftStatus };
 });
