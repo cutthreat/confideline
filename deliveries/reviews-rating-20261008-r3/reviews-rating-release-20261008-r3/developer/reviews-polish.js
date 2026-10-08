@@ -1,0 +1,72 @@
+'use strict';
+const profileRating=document.createElement('a');
+profileRating.className='profile-rating-link';profileRating.href='#reviews';
+document.querySelector('.review-location').after(profileRating);
+const moderation=$('moderation');
+const main=document.createElement('div');main.className='admin-main';
+while(moderation.firstChild)main.append(moderation.firstChild);
+const workspace=document.createElement('div');workspace.className='admin-workspace';
+workspace.innerHTML='<aside class="admin-sidebar"><strong>ConfideLine</strong><span><i class="fa fa-users"></i> Пользователи</span><span><i class="fa fa-comment-o"></i> Консультации</span><span class="selected"><i class="fa fa-star-o"></i> Отзывы</span><span><i class="fa fa-life-ring"></i> Поддержка</span></aside>';
+workspace.append(main);moderation.append(workspace);
+const heading=document.createElement('header');heading.className='admin-heading';
+heading.innerHTML='<h1>Отзывы экспертов</h1><small>Администратор · Модерация</small>';
+main.querySelector('h1').replaceWith(heading);
+const metrics=document.createElement('div');metrics.className='admin-metrics';heading.after(metrics);
+const search=document.createElement('div');search.className='admin-search';
+search.innerHTML='<i class="fa fa-search" aria-hidden="true"></i><input class="form-control" id="admin-search" type="search" aria-label="Поиск отзывов" placeholder="Клиент, отзыв или консультация">';
+main.querySelector('.review-admin-toolbar').before(search);
+main.querySelector('thead tr').innerHTML='<th>Отзыв / дата</th><th>Клиент / эксперт</th><th>Консультация</th><th>Оценка</th><th>Текст отзыва</th><th>Статус</th><th>Действия</th>';
+const originalRender=render;
+if(mockState.get('adminReview')==='1')reviews.unshift({id:'RV-204',consultation:null,author:'Анна',stars:5,text:'Спасибо за внимательную консультацию и подробные ответы.',status:'published',source:'admin'});
+let publicOverride=null;
+if(mockState.get('ratingMode')==='manual'){
+ try{publicOverride=ReviewRatingModel.validateRating({mode:'manual',rating:mockState.get('rating'),votes:mockState.get('votes')})}catch(error){publicOverride=null}
+}
+render=function(){
+ originalRender();
+ const published=reviews.filter(r=>r.status==='published');
+ document.querySelectorAll('#review-list .review-entry').forEach((el,index)=>{if(published[index].source==='admin')el.querySelector('.review-verified').textContent='Добавлен администратором'});
+ const average=publicOverride?publicOverride.rating:published.length?published.reduce((sum,r)=>sum+r.stars,0)/published.length:null;
+ if(publicOverride){
+  $('rating').textContent=average===null?'—':average.toFixed(1);
+  $('rating-stars').innerHTML=average===null?'':stars(Math.round(average));
+  const votes=publicOverride.votes,last=votes%10,lastTwo=votes%100;
+  $('review-count').textContent=votes+' '+(last===1&&lastTwo!==11?'голос':last>=2&&last<=4&&(lastTwo<12||lastTwo>14)?'голоса':'голосов');
+ }
+ profileRating.hidden=average===null;
+ profileRating.innerHTML=average===null?'':'<span class="review-stars" aria-hidden="true">'+stars(Math.round(average))+'</span><strong>'+average.toFixed(1)+'</strong><small>'+escapeHtml($('review-count').textContent)+'</small>';
+ $('rating-summary').hidden=average===null;
+ $('review-empty').hidden=published.length!==0;
+ $('write-review').hidden=!reviewEligible;
+ $('write-review').textContent=reviews.some(r=>r.consultation==='CT-1024')?'Отзыв опубликован':published.length===0?'Оставить первый отзыв':'Оставить отзыв';
+ if(average===null)profileRating.removeAttribute('aria-label');
+ else profileRating.setAttribute('aria-label','Рейтинг '+average.toFixed(1)+' из 5. Перейти к отзывам');
+ metrics.innerHTML=[['Опубликованы','published'],['Скрыты','hidden'],['Удалены','deleted']].map(([title,status])=>'<div><strong>'+reviews.filter(r=>r.status===status).length+'</strong>'+title+'</div>').join('')+'<div><strong>'+(average===null?'—':average.toFixed(1))+'</strong>Рейтинг эксперта</div>';
+ const query=$('admin-search').value.trim().toLowerCase();
+ const visible=reviews.filter(r=>(filter==='all'||r.status===filter)&&[r.id,r.consultation,r.author,r.text,'Marcus Antoniu'].join(' ').toLowerCase().includes(query));
+ $('admin-rows').innerHTML=visible.map(r=>'<tr><td><b>'+r.id+'</b><small>30.09.2026</small></td><td>'+escapeHtml(r.author)+'<small>Marcus Antoniu</small></td><td>'+r.consultation+'<small>Завершена</small></td><td><span class="review-stars" aria-label="'+r.stars+' из 5">'+stars(r.stars)+'</span></td><td style="min-width:190px;max-width:300px;overflow-wrap:anywhere">'+escapeHtml(r.text||'Без комментария')+'</td><td><span class="review-status '+r.status+'">'+({published:'Опубликован',hidden:'Скрыт',deleted:'Удалён'}[r.status])+'</span></td><td><div class="review-admin-actions">'+(r.status==='published'?'<button data-action="hide" data-id="'+r.id+'" title="Скрыть отзыв" aria-label="Скрыть отзыв"><i class="fa fa-eye-slash"></i></button>':r.status==='hidden'?'<button data-action="restore" data-id="'+r.id+'" title="Восстановить отзыв" aria-label="Восстановить отзыв"><i class="fa fa-undo"></i></button>':'')+(r.status!=='deleted'?'<button class="danger" data-action="delete" data-id="'+r.id+'" title="Удалить отзыв" aria-label="Удалить отзыв"><i class="fa fa-trash-o"></i></button>':'')+'</div></td></tr>').join('')||'<tr><td colspan="7" class="admin-empty">Отзывы не найдены.</td></tr>';
+ if(!log.length)$('audit-list').textContent='Действий пока нет.';
+};
+$('admin-search').addEventListener('input',render);
+$('moderation-toggle').textContent='Админка';
+const originalToggle=$('moderation-toggle').onclick;
+$('moderation-toggle').onclick=()=>{location.href='reviews-admin-panel-20260930.html'};
+function closeMenus(){['account','more'].forEach(name=>{$(name+'-menu').hidden=true;$(name+'-toggle').setAttribute('aria-expanded','false')})}
+['account','more'].forEach(name=>{$(name+'-toggle').onclick=()=>{const open=$(name+'-menu').hidden;closeMenus();$(name+'-menu').hidden=!open;$(name+'-toggle').setAttribute('aria-expanded',String(open))}});
+document.addEventListener('click',e=>{if(!e.target.closest('.review-account,.review-more'))closeMenus()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const active=document.querySelector('[aria-controls][aria-expanded="true"]');closeMenus();if(active)active.focus()}});
+document.querySelectorAll('[data-demo]').forEach(a=>a.onclick=e=>{e.preventDefault();notify(a.dataset.demo)});
+$('notifications').onclick=()=>notify('Новых уведомлений нет');
+$('wallet').onclick=()=>notify('Баланс: 4074.00');
+$('give-gift').onclick=()=>notify('Выбор подарка для Marcus Antoniu');
+$('all-gifts').onclick=()=>notify('Подарков пока нет');
+$('report-profile').onclick=()=>{closeMenus();openDialog('support-dialog')};
+$('dismiss-ad').onclick=()=>{$('sidebar-ad').hidden=true};
+document.querySelectorAll('[data-photo]').forEach(b=>b.onclick=()=>{$('gallery-photo').src='reviews-site-assets/'+b.dataset.photo;openDialog('photo-dialog')});
+render();
+if(mockState.get('view')==='admin'){
+ document.body.classList.add('admin-only');
+ document.title='Отзывы экспертов · Админ-панель';
+ $('profile').hidden=true;
+ moderation.hidden=false;
+}

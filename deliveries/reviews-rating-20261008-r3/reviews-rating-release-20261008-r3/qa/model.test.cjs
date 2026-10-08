@@ -1,0 +1,17 @@
+'use strict';
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const model=require('../developer/reviews-rating-model.js');
+const reviews=[{expertId:'a',stars:5,status:'published'},{expertId:'a',stars:3,status:'published'},{expertId:'b',stars:1,status:'published'},{expertId:'a',stars:1,status:'hidden'}];
+test('automatic aggregate is expert-scoped and published-only',()=>{assert.deepEqual(model.aggregate(reviews,'a'),{mode:'auto',rating:4,votes:2,publishedCount:2,autoRating:4});assert.equal(model.aggregate(reviews,'empty').rating,null)});
+test('manual replaces aggregate without synthesizing reviews',()=>{const before=JSON.stringify(reviews);assert.deepEqual(model.aggregate(reviews,'a',model.validateRating({mode:'manual',rating:'4,8',votes:'125'})),{mode:'manual',rating:4.8,votes:125,publishedCount:2,autoRating:4});assert.equal(JSON.stringify(reviews),before)});
+test('zero votes hides effective rating even if rating is stale',()=>{assert.deepEqual(model.validateRating({mode:'manual',rating:'4.9',votes:'0'}),{mode:'manual',rating:null,votes:0})});
+test('automatic reset ignores unused manual fields',()=>{assert.deepEqual(model.validateRating({mode:'auto',rating:'bad',votes:'-3'}),{mode:'auto',rating:null,votes:null})});
+for(const rating of ['','0','0.9','5.1','6','4.55','NaN','Infinity','1e0','<script>'])test('reject rating '+rating,()=>assert.throws(()=>model.validateRating({mode:'manual',rating,votes:'1'}),/rating/));
+for(const votes of ['','-1','1.5','1e3','NaN','Infinity','9007199254740992','<img>'])test('reject votes '+votes,()=>assert.throws(()=>model.validateRating({mode:'manual',rating:'4.8',votes}),/votes/));
+for(const rating of ['1','1.0','4.9','5','5.0'])test('accept rating boundary '+rating,()=>assert.equal(model.validateRating({mode:'manual',rating,votes:'1'}).rating,Number(rating)));
+test('admin author validation preserves source and has no fabricated consultation',()=>{const r=model.validateReview({authorProfileId:'p',stars:'5',text:' <img src=x onerror=alert(1)> '},[{id:'p',name:'Chosen author'}]);assert.equal(r.authorProfileId,'p');assert.equal(r.source,'admin');assert.equal(r.consultation,null);assert.equal(r.text,'<img src=x onerror=alert(1)>')});
+test('unknown or disabled authors are rejected',()=>{for(const profiles of [[],[{id:'p',name:'Author',active:false}]])assert.throws(()=>model.validateReview({authorProfileId:'p',stars:'5',text:'text'},profiles),/author/)});
+test('text and reason length boundaries',()=>{const profiles=[{id:'p',name:'Author'}];for(const text of ['', ' ', 'a'.repeat(1001)])assert.throws(()=>model.validateReview({authorProfileId:'p',stars:'5',text},profiles),/text/);assert.equal(model.validateReview({authorProfileId:'p',stars:'1',text:'a'.repeat(1000)},profiles).text.length,1000);for(const reason of ['',' ','a'.repeat(501)])assert.throws(()=>model.validateReason(reason),/reason/);assert.equal(model.validateReason('a'.repeat(500)).length,500)});
+test('no invalid star values',()=>{for(const stars of ['0','6','1.5',undefined,''])assert.throws(()=>model.validateReview({authorProfileId:'p',stars,text:'text'},[{id:'p',name:'Author'}]),/stars/)});
+test('hiding all reviews changes automatic only',()=>{const hidden=reviews.map(r=>({...r,status:'hidden'}));assert.equal(model.aggregate(hidden,'a').votes,0);assert.equal(model.aggregate(hidden,'a',{mode:'manual',rating:4.8,votes:125}).votes,125)});
