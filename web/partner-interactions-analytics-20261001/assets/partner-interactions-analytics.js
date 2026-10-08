@@ -8,7 +8,7 @@
   const activityKeys = ['profileViews', 'favorites', 'clientMessages', 'expertMessages', 'blocks', 'reports'];
   const labels = {
     profileViews: 'Просмотры профиля', favorites: 'Добавления в избранное',
-    newDialogs: 'Новые диалоги', clientMessages: 'Сообщения клиентов', expertMessages: 'Сообщения экспертов',
+    newDialogs: 'Новые Chats', newPings: 'Новые Pings', clientMessages: 'Сообщения клиентов', expertMessages: 'Сообщения экспертов',
     paidConsultations: 'Оплаченные консультации', repeatExpert: 'Повторные консультации с экспертом',
     repeatPlatform: 'Повторные консультации на платформе', pairLTV: 'LTV клиент–эксперт, credits',
     platformLTV: 'LTV клиента на платформе, credits', blocks: 'Блокировки', reports: 'Жалобы на пользователя',
@@ -16,17 +16,47 @@
   };
   const metricKeys = Object.keys(labels).filter(key => !['activity', 'messages'].includes(key));
   const globalKeys = ['repeatPlatform', 'platformLTV'];
-  const pairKeys = ['newDialogs', 'paidConsultations', 'repeatExpert', 'repeatPlatform', 'pairLTV', 'platformLTV'];
+  const pairKeys = ['newDialogs', 'newPings', 'paidConsultations', 'repeatExpert', 'repeatPlatform', 'pairLTV', 'platformLTV'];
   const periodLabels = { today: 'Сегодня', '7d': 'Последние 7×24 часа', '30d': 'Последние 30×24 часа', all: 'Весь период', custom: 'Произвольный диапазон' };
   const roles = ['admin', 'partner', 'expert'];
-  const metricSource = key => ['paidConsultations', 'pairLTV', 'platformLTV'].includes(key) ? 'finance' : ['newDialogs', 'repeatExpert', 'repeatPlatform'].includes(key) ? 'history' : 'activity';
-  const sourceKnown = (data, key) => Object.hasOwn(data.sources || {}, key) ? data.sources[key] === true : data.sources?.[metricSource(key)] === true;
+  const metricSource = key => ['paidConsultations', 'pairLTV', 'platformLTV'].includes(key) ? 'finance' : key === 'newDialogs' ? 'chats' : key === 'newPings' ? 'pings' : ['repeatExpert', 'repeatPlatform'].includes(key) ? 'history' : 'activity';
+  const sourceKnown = (data, key) => (Object.hasOwn(data.sources || {}, key) ? data.sources[key] === true : data.sources?.[metricSource(key)] === true) && (!['newDialogs', 'newPings'].includes(key) || Array.isArray(data.conversations));
   const time = value => new Date(value).getTime();
   const day = value => new Date(time(value) + OFFSET).toISOString().slice(0, 10);
   const dateLabel = value => day(value).split('-').reverse().join('.');
   const emptyMetrics = () => Object.fromEntries([...metricKeys, 'activity', 'messages'].map(key => [key, 0]));
   const sum = (items, key) => items.some(item => item[key] === null) ? null : items.reduce((n, item) => addAmount(n, item[key] || 0), 0);
   const dedupe = (items, key) => Array.from(new Map(items.map(item => [item[key], item])).values());
+
+  // Authoritative lifecycle snapshot: timestamps are facts, never inferred from messages/views.
+  function conversationFacts(data) {
+    const records = [], issues = {}, seen = new Map();
+    const fields = { newDialogs: 'chatCreatedAt', newPings: 'pingCreatedAt' };
+    const invalid = key => { issues[key] = 'Неполные или противоречивые сведения о создании ' + (key === 'newDialogs' ? 'Chats' : 'Pings'); };
+    for (const key of Object.keys(fields)) if (!sourceKnown(data, key)) issues[key] = 'Нет полного источника создания ' + (key === 'newDialogs' ? 'Chats' : 'Pings');
+    const timestamp = value => {
+      if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/.test(value) || !Number.isFinite(time(value))) return false;
+      const [year, month, date, hour, minute, second] = value.slice(0,19).split(/[-T:]/).map(Number);
+      return new Date(Date.UTC(year,month-1,date)).toISOString().slice(0,10) === value.slice(0,10) && hour < 24 && minute < 60 && second < 60;
+    };
+    for (const record of Array.isArray(data.conversations) ? data.conversations : []) {
+      if (!record || !(typeof record.id === 'string' && record.id.trim() || Number.isSafeInteger(record.id) && record.id > 0) || !data.users.some(u => u.id === record.clientId && u.role === 'client') || !data.users.some(u => u.id === record.expertId && u.role === 'expert')) {
+        Object.keys(fields).forEach(invalid); continue;
+      }
+      for (const [key,field] of Object.entries(fields)) if (!Object.hasOwn(record,field) || record[field] !== null && !timestamp(record[field])) invalid(key);
+      if (timestamp(record.pingCreatedAt) && timestamp(record.chatCreatedAt) && time(record.pingCreatedAt) > time(record.chatCreatedAt)) Object.keys(fields).forEach(invalid);
+      const identity = JSON.stringify([record.clientId,record.expertId,record.pingCreatedAt,record.chatCreatedAt]);
+      const id = String(record.id);
+      if (seen.has(id)) { if (seen.get(id) !== identity) Object.keys(fields).forEach(invalid); continue; }
+      seen.set(id,identity); records.push(record);
+    }
+    return { records, issues };
+  }
+
+  function assignmentOwner(data, expertId) {
+    const owners = [...new Set((data.assignments || []).filter(a => a.expertId === expertId).map(a => a.partnerId))];
+    return owners.length === 1 && data.users.some(u => u.id === owners[0] && u.role === 'partner') ? owners[0] : 0;
+  }
 
   function range(nowValue, filters) {
     const now = time(nowValue);
@@ -49,13 +79,13 @@
     const all = data.users.filter(user => user.role === 'expert').map(user => user.id);
     if (access.authorized === false || !roles.includes(access.role)) return [];
     if (access.role === 'expert') return all.filter(id => id === access.expertId);
-    if (access.role === 'partner') return data.assignments.filter(item => item.partnerId === access.partnerId).map(item => item.expertId);
+    if (access.role === 'partner') return all.filter(id => assignmentOwner(data, id) === access.partnerId);
     return access.expertIds ? all.filter(id => access.expertIds.includes(id)) : all;
   }
 
   function selectedExpertIds(data, filters, access) {
     let ids = scope(data, access);
-    if (access.role === 'admin' && Number(filters.partnerId)) ids = ids.filter(id => data.assignments.some(a => a.expertId === id && a.partnerId === Number(filters.partnerId)));
+    if (access.role === 'admin' && Number(filters.partnerId)) ids = ids.filter(id => assignmentOwner(data, id) === Number(filters.partnerId));
     if (Number(filters.expertId)) ids = ids.filter(id => id === Number(filters.expertId));
     if (filters.expertIds !== null && filters.expertIds !== undefined) {
       if (!Array.isArray(filters.expertIds)) throw new Error('Некорректный выбор профилей');
@@ -96,9 +126,12 @@
     const expertIds = selectedExpertIds(data, filters, access);
     const experts = new Set(expertIds);
     const users = new Map(data.users.map(user => [user.id, user]));
-    const activityKnown = activityKeys.every(key => sourceKnown(data, key));
-    const messagesKnown = ['clientMessages', 'expertMessages'].every(key => sourceKnown(data, key));
-    const historyKnown = data.sources?.history === true;
+    const facts = conversationFacts(data);
+    const known = key => sourceKnown(data, key) && !facts.issues[key];
+    if (expertIds.some(id => new Set((data.assignments || []).filter(a => a.expertId === id).map(a => a.partnerId)).size > 1)) throw new Error('Профиль имеет несколько текущих агентов. Исправьте назначения и обновите отчёт.');
+    const activityKnown = activityKeys.every(known);
+    const messagesKnown = ['clientMessages', 'expertMessages'].every(key => known(key));
+    const historyKnown = data.sources?.history === true || known('newDialogs') || known('newPings');
     const financeKnown = data.sources?.finance === true;
     if (Number(filters.minActions) > 0 && !activityKnown) throw new Error('Фильтр минимума недоступен: нет источника всех событий активности');
     const inPeriod = value => time(value) <= window.to && (window.from === null || time(value) >= window.from);
@@ -137,16 +170,12 @@
       if (event.key === 'expertMessages') pair.expertTimes.push(time(event.createdAt));
       if (filters.direction === 'all' || filters.direction === event.direction) pair.directions[event.direction][event.key] += event.count ?? 1;
     });
-    // Dialogue creation is derived from the first client message in the complete history.
-    const firstMessages = new Map();
-    events.filter(e => e.key === 'clientMessages').forEach(event => {
-      const key = event.clientId + ':' + event.expertId;
-      if (!firstMessages.has(key) || time(event.createdAt) < time(firstMessages.get(key).createdAt)) firstMessages.set(key, event);
-    });
-    firstMessages.forEach(event => {
-      if (!inPeriod(event.createdAt)) return;
-      const pair = getPair(event.clientId, event.expertId);
-      if (pair) { pair.newDialogs = 1; pair.hasPeriod = true; }
+    facts.records.forEach(record => {
+      for (const [key,field] of [['newDialogs','chatCreatedAt'],['newPings','pingCreatedAt']]) {
+        if (!known(key) || record[field] === null || !inPeriod(record[field])) continue;
+        const pair = getPair(record.clientId,record.expertId);
+        if (pair) { pair[key]++; pair.hasPeriod = true; }
+      }
     });
     consultations.forEach(c => {
       const pair = getPair(c.clientId, c.expertId);
@@ -194,16 +223,16 @@
       pair.clientDialog = visibleClientTimes.length > 0;
       pair.answered = pair.clientDialog && visibleExpertTimes.some(e => visibleClientTimes.some(c => e > c));
       pair.outboundOnly = !visibleClientTimes.length && visibleExpertTimes.length > 0;
-      metricKeys.filter(key => !sourceKnown(data, key)).forEach(key => { pair[key] = null; });
+      metricKeys.filter(key => !known(key)).forEach(key => { pair[key] = null; });
       if (!activityKnown) pair.activity = null;
       if (!messagesKnown) pair.messages = null;
       globalKeys.filter(key => !available.includes(key)).forEach(key => { delete pair[key]; });
     });
     selected = selected.filter(pair => !Number(filters.minActions) || (pair.activity !== null && pair.activity >= Number(filters.minActions)));
     const clients = dedupe(selected.map(pair => pair.client), 'id');
-    const metrics = Object.fromEntries([...available, 'activity', 'messages'].map(key => [key, key === 'platformLTV' ? (sourceKnown(data, 'platformLTV') ? clients.reduce((n, c) => addAmount(n, globalLTV.get(c.id) || 0), 0) : null) : sum(selected, key)]));
+    const metrics = Object.fromEntries([...available, 'activity', 'messages'].map(key => [key, key === 'platformLTV' ? (known('platformLTV') ? clients.reduce((n, c) => addAmount(n, globalLTV.get(c.id) || 0), 0) : null) : sum(selected, key)]));
     // Unknown sources remain unknown even when the selected set is empty.
-    available.filter(key => !sourceKnown(data, key)).forEach(key => { metrics[key] = null; });
+    available.filter(key => !known(key)).forEach(key => { metrics[key] = null; });
     if (!activityKnown) metrics.activity = null;
     if (!messagesKnown) metrics.messages = null;
     const dialogs = messagesKnown ? selected.filter(p => p.clientDialog).length : null;
@@ -211,7 +240,7 @@
     const directionKeys = filters.direction === 'all' ? ['client_to_expert', 'expert_to_client'] : [filters.direction];
     const rows = selected.flatMap(pair => directionKeys.map((direction, index) => {
       const row = { id: pair.id + '-' + direction, pairId: pair.id, client: pair.client, expert: pair.expert, actor: direction === 'client_to_expert' ? pair.client : pair.expert, target: direction === 'client_to_expert' ? pair.expert : pair.client, directionKey: direction, canonical: index === 0, referenceId: pair.id + '-' + directionKeys[0] };
-      available.forEach(key => { row[key] = pairKeys.includes(key) ? pair[key] : (sourceKnown(data, key) ? pair.directions[direction][key] : null); });
+      available.forEach(key => { row[key] = pairKeys.includes(key) ? pair[key] : (known(key) ? pair.directions[direction][key] : null); });
       row.activity = activityKnown ? activityKeys.reduce((n, key) => n + (row[key] || 0), 0) : null;
       return row;
     }));
@@ -223,7 +252,7 @@
     const page = Math.min(totalPages, Math.max(1, Number(filters.page) || 1));
     const start = (page - 1) * pageSize;
     return {
-      filters, access, range: window, allowedMetrics: available, metrics, pairs: selected, allRows: rows, rows: rows.slice(start, start + pageSize),
+      filters, access, sourceIssues: facts.issues, range: window, allowedMetrics: available, metrics, pairs: selected, allRows: rows, rows: rows.slice(start, start + pageSize),
       experts: data.users.filter(u => experts.has(u.id)), clients,
       summary: { experts: activityKnown ? new Set(selected.filter(p => p.activity > 0).map(p => p.expert.id)).size : null, pairs: activityKnown || historyKnown || financeKnown ? selected.length : null, clients: activityKnown || historyKnown || financeKnown ? clients.length : null, actions: metrics.activity, messages: metrics.messages },
       quality: { dialogs, answered, noAnswer: dialogs === null ? null : dialogs - answered, responseRate: dialogs ? answered / dialogs * 100 : null, outboundOnly: messagesKnown ? selected.filter(p => p.outboundOnly).length : null },
@@ -236,7 +265,7 @@
     if (access.authorized === false || !roles.includes(access.role)) return [];
     if (!allowedMetrics(access).includes(metric) && !['activity', 'messages'].includes(metric)) return [];
     if (metric === 'platformLTV') return ['client'];
-    if (metric === 'pairLTV') return ['pair', 'expert'];
+    if (metric === 'pairLTV') return access.role === 'admin' ? ['partner', 'expert', 'pair'] : access.role === 'partner' ? ['expert', 'pair'] : ['pair'];
     return access.role === 'admin' ? ['partner', 'expert', 'client', 'pair'] : access.role === 'partner' ? ['expert', 'client', 'pair'] : ['client', 'pair'];
   }
 
@@ -246,7 +275,7 @@
     // Selected profiles remain comparable when their measured value is zero.
     if (dimension === 'expert' || dimension === 'partner') {
       result.experts.forEach(expert => {
-        const partnerId = data.assignments.find(a => a.expertId === expert.id)?.partnerId || 0;
+        const partnerId = assignmentOwner(data, expert.id);
         const owner = data.users.find(u => u.id === partnerId);
         const id = String(dimension === 'expert' ? expert.id : partnerId);
         if (!map.has(id)) map.set(id, { id, label: dimension === 'expert' ? expert.name : owner?.name || 'Без агента', pairIds: [], expertIds: [], value: result.metrics[metric] === null ? null : 0, clientIds: new Set() });
@@ -254,7 +283,7 @@
       });
     }
     result.pairs.forEach(pair => {
-      const partnerId = data.assignments.find(a => a.expertId === pair.expert.id)?.partnerId;
+      const partnerId = assignmentOwner(data, pair.expert.id);
       const user = dimension === 'client' ? pair.client : dimension === 'expert' ? pair.expert : data.users.find(u => u.id === partnerId);
       const id = dimension === 'pair' ? pair.id : String(user?.id || 0);
       const label = dimension === 'pair' ? pair.client.name + ' / ' + pair.expert.name : user?.name || 'Без агента';
@@ -270,7 +299,7 @@
   }
 
   function buckets(data, window, granularity) {
-    const knownTimes = [...data.events.map(e => time(e.createdAt)), ...data.consultations.filter(c => c.serviceStartedAt).map(c => time(c.serviceStartedAt))];
+    const knownTimes = [...(data.events || []).map(e => time(e.createdAt)), ...(data.consultations || []).filter(c => c.serviceStartedAt).map(c => time(c.serviceStartedAt)), ...(data.transactions || []).map(t => time(t.createdAt)), ...(Array.isArray(data.conversations) ? data.conversations : []).flatMap(c => [c?.pingCreatedAt,c?.chatCreatedAt].filter(Boolean).map(time))].filter(Number.isFinite);
     const earliest = knownTimes.length ? Math.min(...knownTimes) : window.to;
     const from = window.from === null ? Math.min(earliest, window.to) : window.from;
     const shifted = new Date(from + OFFSET);
@@ -312,5 +341,5 @@
     }));
     return { metric, dimension, cumulative, intervals, series, previousRange, total: !known || series.some(g => g.value === null) ? null : series.reduce((n, g) => addAmount(n, g.value), 0) };
   }
-  return { activityKeys, metricKeys, pairKeys, globalKeys, labels, periodLabels, range, minimum, scope, selectedExpertIds, allowedMetrics, build, dimensions, groups, chart, day, dateLabel };
+  return { activityKeys, metricKeys, pairKeys, globalKeys, labels, periodLabels, range, minimum, scope, assignmentOwner, selectedExpertIds, allowedMetrics, build, dimensions, groups, chart, day, dateLabel };
 });

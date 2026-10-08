@@ -8,7 +8,9 @@ window.PartnerInteractionExampleData = {
   "sources": {
     "activity": true,
     "history": true,
-    "finance": true
+    "finance": true,
+    "chats": true,
+    "pings": true
   },
   "users": [
     {
@@ -280,6 +282,22 @@ window.PartnerInteractionExampleData = {
       "targetId": 184,
       "type": "continuation",
       "createdAt": "2026-09-10T10:16:00+03:00"
+    }
+  ],
+  "conversations": [
+    {
+      "id": "conversation-a",
+      "clientId": 1001,
+      "expertId": 184,
+      "pingCreatedAt": "2026-08-31T10:00:00+03:00",
+      "chatCreatedAt": "2026-09-01T10:00:00+03:00"
+    },
+    {
+      "id": "conversation-b",
+      "clientId": 1001,
+      "expertId": 185,
+      "pingCreatedAt": "2026-09-11T10:00:00+03:00",
+      "chatCreatedAt": "2026-09-12T10:01:00+03:00"
     }
   ]
 };

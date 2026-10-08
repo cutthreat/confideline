@@ -6,7 +6,8 @@
   const definitions = {
     profileViews: { lines: ['Просмотры'], width: 80, compact: 72 },
     favorites: { lines: ['Избранное'], width: 80, compact: 72 },
-    newDialogs: { lines: ['Новые', 'диалоги'], width: 96, compact: 96 },
+    newDialogs: { lines: ['Новые', 'Chats'], width: 96, compact: 96 },
+    newPings: { lines: ['Новые', 'Pings'], width: 96, compact: 96 },
     clientMessages: { lines: ['Сообщ.', 'клиента'], mark: 'К', width: 88, compact: 72 },
     expertMessages: { lines: ['Сообщ.', 'эксперта'], mark: 'Э', width: 88, compact: 72 },
     paidConsultations: { lines: ['Оплач.', 'консультации'], width: 104, compact: 104 },

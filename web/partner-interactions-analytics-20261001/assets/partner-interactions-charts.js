@@ -69,5 +69,22 @@
     if (value === null || value === undefined || !Number.isFinite(Number(value))) return 'Нет данных';
     return Number(value).toLocaleString('ru-RU', { maximumFractionDigits: 20 });
   }
-  return { lineSegments, presentation, selection, outputState, exactValue };
+  // Entity identity owns its colour across metrics, roles, filters and visibility.
+  // Labels and exact values remain the means of identification for large cohorts.
+  function entityColor(dimension, id) {
+    let hash = 2166136261;
+    for (const character of dimension + ':' + String(id)) hash = Math.imul(hash ^ character.charCodeAt(0), 16777619) >>> 0;
+    // Avalanche adjacent IDs before selecting a hue: plain FNV makes IDs two
+    // apart almost the same colour after modulo 360.
+    hash = Math.imul(hash ^ hash >>> 16, 0x7feb352d);
+    hash = Math.imul(hash ^ hash >>> 15, 0x846ca68b);
+    hash = (hash ^ hash >>> 16) >>> 0;
+    let typeHash = 0;
+    for (const character of dimension) typeHash = (Math.imul(typeHash,31) + character.charCodeAt(0)) >>> 0;
+    const numericId = Number(id);
+    const hue = Number.isSafeInteger(numericId) && numericId > 0
+      ? Math.round((numericId % 360) * 137.50776405003785 + typeHash % 360) % 360 : hash % 360;
+    return 'hsl(' + hue + ', 58%, ' + (35 + (hash >>> 16) % 8) + '%)';
+  }
+  return { entityColor, lineSegments, presentation, selection, outputState, exactValue };
 });

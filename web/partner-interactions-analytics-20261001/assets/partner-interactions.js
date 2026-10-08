@@ -12,7 +12,7 @@
   const access = { role: document.body.dataset.audience || 'admin', partnerId: Number(document.body.dataset.partnerId || 15), expertId: Number(document.body.dataset.expertId || 184), globalPermission: true };
   const state = { partnerId: access.role === 'partner' ? access.partnerId : 0, expertId: access.role === 'expert' ? access.expertId : 0, expertIds: null, period: 'custom', fromDate: '2026-09-07', toDate: '2026-09-15', direction: 'all', query: '', minActions: 0, sort: 'activity_desc', page: 1, pageSize: 50 };
   const chartState = { metric: 'activity', dimension: access.role === 'admin' ? 'partner' : access.role === 'partner' ? 'expert' : 'client', type: 'line', compare: 'none', granularity: 'day', entities: null };
-  const metricIcons = { profileViews: 'eye', favorites: 'star', newDialogs: 'message-circle-plus', clientMessages: 'message-circle', expertMessages: 'message-circle-reply', paidConsultations: 'credit-card', repeatExpert: 'repeat', repeatPlatform: 'repeat-2', pairLTV: 'coins', platformLTV: 'wallet', blocks: 'ban', reports: 'flag', activity: 'activity' };
+  const metricIcons = { profileViews: 'eye', favorites: 'star', newDialogs: 'message-circle-plus', newPings: 'bell', clientMessages: 'message-circle', expertMessages: 'message-circle-reply', paidConsultations: 'credit-card', repeatExpert: 'repeat', repeatPlatform: 'repeat-2', pairLTV: 'coins', platformLTV: 'wallet', blocks: 'ban', reports: 'flag', activity: 'activity' };
   const data = window.PartnerInteractionExampleData;
   let displayedData;
   let result;
@@ -23,8 +23,8 @@
   const columns = window.PartnerInteractionColumns.create(A.allowedMetrics(access), window.PartnerInteractionColumns.coreMetrics);
   const presets = {
     overview: { metrics: window.PartnerInteractionColumns.coreMetrics },
-    workload: { metrics: ['profileViews', 'favorites', 'newDialogs', 'clientMessages'] },
-    handling: { metrics: ['newDialogs', 'clientMessages', 'expertMessages'] },
+    workload: { metrics: ['profileViews', 'favorites', 'newDialogs', 'newPings', 'clientMessages'] },
+    handling: { metrics: ['newDialogs', 'newPings', 'clientMessages', 'expertMessages'] },
     results: { metrics: ['paidConsultations', 'repeatExpert', 'repeatPlatform', 'pairLTV', 'platformLTV'] },
     quality: { metrics: ['reports', 'blocks', 'repeatExpert'] }
   };
@@ -100,7 +100,7 @@
   const availableProfileIds = A.scope(data, access);
   let draftExpertIds = null;
   const selectedDraftIds = () => draftExpertIds === null ? availableProfileIds : draftExpertIds;
-  function profileOwner(expertId) { return data.assignments.find(item => item.expertId === expertId)?.partnerId || 0; }
+  function profileOwner(expertId) { return A.assignmentOwner(data, expertId); }
   function updateProfilePicker() {
     if (!$('profilePicker')) return;
     const selected = new Set(selectedDraftIds());
@@ -228,7 +228,7 @@
     $('reportPresets').hidden = false;
     $('reportOverview').hidden = false;
     document.querySelector('.view-tabs').hidden = false;
-    const missing = result.metrics.activity === null;
+    const missing = Object.values(result.metrics).some(value => value === null);
     message((missing ? 'Часть показателей недоступна: нет достоверных данных. ' : 'Данные на: ') + lastUpdated + ' · Europe/Minsk');
     render();
     document.body.dataset.ready = 'true';
@@ -296,7 +296,7 @@
   $('iconOnlyHeaders').addEventListener('change', () => { headerPreference = $('iconOnlyHeaders').checked ? 'icons' : 'labels'; if (result) render(); });
   function userCell(user) { return '<span class="user-cell"><span class="avatar-cell">' + esc(user.name.split(' ').slice(-1)[0].slice(0, 2)) + '</span><span><span class="user-name">' + esc(user.name) + '</span><span class="user-sub">#' + user.id + ' · ' + esc(user.username) + '</span></span></span>'; }
   function metricCell(row, key) {
-    if (row[key] === null) return '<td class="state-value">Нет данных</td>';
+    if (row[key] === null) return '<td class="state-value" title="' + esc(result.sourceIssues[key] || 'Нет полного источника показателя') + '">Нет данных</td>';
     let reference;
     if (A.pairKeys.includes(key) && !row.canonical) reference = row.referenceId;
     if (key === 'platformLTV') {
@@ -310,8 +310,13 @@
     closeHeaderTip();
     if (!tableOnly) {
       renderAppliedContext();
-      const ids = { metricExperts: result.summary.experts, metricPairs: result.summary.pairs, metricMessages: result.summary.messages, metricActions: result.summary.actions, qualityClients: result.summary.clients, qualityClientDialogs: result.quality.dialogs, qualityAnswered: result.quality.answered, qualityNoAnswer: result.quality.noAnswer, qualityOutboundOnly: result.quality.outboundOnly, riskReports: result.metrics.reports, riskBlocks: result.metrics.blocks, riskPaidConsultations: result.metrics.paidConsultations, riskHighActivity: result.highActivity, riskRepeatExpert: result.metrics.repeatExpert, riskRepeatPlatform: result.metrics.repeatPlatform };
+      const ids = { metricNewChats: result.metrics.newDialogs, metricNewPings: result.metrics.newPings, metricExperts: result.summary.experts, metricPairs: result.summary.pairs, metricMessages: result.summary.messages, metricActions: result.summary.actions, qualityClients: result.summary.clients, qualityClientDialogs: result.quality.dialogs, qualityAnswered: result.quality.answered, qualityNoAnswer: result.quality.noAnswer, qualityOutboundOnly: result.quality.outboundOnly, riskReports: result.metrics.reports, riskBlocks: result.metrics.blocks, riskPaidConsultations: result.metrics.paidConsultations, riskHighActivity: result.highActivity, riskRepeatExpert: result.metrics.repeatExpert, riskRepeatPlatform: result.metrics.repeatPlatform };
       Object.entries(ids).forEach(([id, value]) => text(id, fmt(value)));
+      for (const [id,key] of [['metricNewChats','newDialogs'],['metricNewPings','newPings']]) {
+        const card = $(id).closest('.quality-card');
+        card.dataset.factTitle ||= card.title;
+        card.title = result.sourceIssues[key] || card.dataset.factTitle;
+      }
       if (access.role === 'expert') text('metricExperts', result.summary.experts === null ? 'Нет данных' : result.summary.experts ? 'Есть' : 'Нет');
       text('qualityResponseRate', result.quality.responseRate === null ? 'Нет данных' : fmt(result.quality.responseRate) + '%');
     }
@@ -414,16 +419,15 @@
     text('chartSelectionCount', 'Выбрано ' + selectedIds.length + ' из ' + groups.length);
     $('selectAllChart').disabled = selectedIds.length === groups.length;
     $('clearChart').disabled = selectedIds.length === 0;
-    text('chartTitle', A.labels[chartState.metric]);
+    text('chartTitle', chartState.metric === 'pairLTV' && ['partner','expert'].includes(chartState.dimension) ? (chartState.dimension === 'partner' ? 'LTV выбранных профилей агента, credits' : 'LTV профиля эксперта, credits') : A.labels[chartState.metric]);
     text('chartScope', result.range.label + ' · Europe/Minsk');
     const previousLabel = chart.previousRange ? A.dateLabel(chart.previousRange.from) + ' — ' + A.dateLabel(chart.previousRange.to) : '';
-    const note = (cumulative ? 'Накоплено на ' + A.dateLabel(result.range.to) + ' · credits' : 'Количество') + (chart.previousRange ? ' · Предыдущий период: ' + previousLabel + (chartState.type === 'bar' ? ' · Заливка — текущий, контур — предыдущий' : chartState.type === 'line' ? ' · Сплошная линия — текущий, пунктир — предыдущий' : '') : '');
+    const note = (chartState.metric === 'pairLTV' && chartState.dimension === 'partner' ? 'Сумма LTV пар по выбранным профилям · ' : chartState.metric === 'platformLTV' ? 'Вся платформа · один раз на клиента · ' : '') + (cumulative ? 'Накоплено на ' + A.dateLabel(result.range.to) + ' · credits' : 'Количество') + (chart.previousRange ? ' · Предыдущий период: ' + previousLabel + (chartState.type === 'bar' ? ' · Заливка — текущий, контур — предыдущий' : chartState.type === 'line' ? ' · Сплошная линия — текущий, пунктир — предыдущий' : '') : '');
     const comparison = value => value.previous === null ? 'Нет данных' : value.previous === 0 ? 'Нет базы сравнения' : fmt((value.value - value.previous) / value.previous * 100) + '%';
     const compareTable = '<div class="analytics-table"><table><caption>По участникам · ' + esc(result.range.label) + '</caption><thead><tr><th scope="col">Участник</th><th scope="col">' + (cumulative ? 'Накоплено, credits' : 'За период') + '</th>' + (chart.previousRange ? '<th scope="col">Предыдущий · ' + esc(previousLabel) + '</th><th scope="col">Изменение</th>' : '') + '</tr></thead><tbody>' + chart.series.map(g => '<tr><th scope="row">' + esc(g.label) + '</th><td>' + exact(g.value) + '</td>' + (chart.previousRange ? '<td>' + exact(g.previous) + '</td><td>' + (g.value === null ? 'Нет данных' : comparison(g)) + '</td>' : '') + '</tr>').join('') + '</tbody></table></div>';
     const intervalTable = '<div class="analytics-table"><table><caption>По интервалам' + (cumulative ? ' · credits' : ' · количество') + '</caption><thead><tr><th scope="col">Конец интервала' + (chart.previousRange ? ' · текущий / предыдущий' : '') + '</th>' + chart.series.map(g => '<th scope="col">' + esc(g.label) + (chart.previousRange ? ' · текущий</th><th scope="col">' + esc(g.label) + ' · предыдущий' : '') + '</th>').join('') + '</tr></thead><tbody>' + chart.intervals.map((bucket, index) => '<tr><th scope="row">' + A.dateLabel(bucket.to) + (chart.previousRange ? ' / ' + A.dateLabel(bucket.to - (result.range.to - result.range.from + 1)) : '') + '</th>' + chart.series.map(g => '<td>' + exact(g.points[index].value) + '</td>' + (chart.previousRange ? '<td>' + exact(g.previousPoints[index].value) + '</td>' : '')).join('') + '</tr>').join('') + '</tbody></table></div>';
     const colors = ['#245b9e', '#237a52', '#946409', '#b03546', '#197a89', '#725294', '#725d44', '#44625b'];
-    const colorOrder = groups.map(group => group.id).sort();
-    const seriesColors = chart.series.map(group => colors[colorOrder.indexOf(group.id) % colors.length]);
+    const seriesColors = chart.series.map(group => G.entityColor(chartState.dimension, group.id));
     const legend = '<div class="legend-list">' + (chartState.type === 'stacked' ? A.activityKeys.map((key, i) => '<div class="legend-item"><i style="background:' + colors[i % colors.length] + '"></i><b>' + esc(A.labels[key]) + '</b></div>') : chart.series.map((g, i) => '<div class="legend-item"><i style="background:' + seriesColors[i] + '"></i><b title="' + esc(g.label) + '">' + esc(g.label) + '</b><strong>' + exact(g.value) + (chartState.type === 'pie' && chart.total > 0 ? ' · ' + fmt(g.value / chart.total * 100) + '%' : '') + '</strong></div>')).join('') + '</div>';
     let visual = '';
     if (chartState.type === 'stacked') {
@@ -441,7 +445,7 @@
     if (chart.total === null) visual = '<div class="state-empty">Нет данных для этого показателя</div>';
     const known = result.metrics[chartState.metric] !== null && result.metrics[chartState.metric] !== undefined;
     const output = G.outputState(known, groups.length, selectedIds.length, chart.total);
-    const empty = { 'no-source': 'Нет данных для этого показателя', 'no-events': 'Нет событий за период', 'none-selected': 'Участники не выбраны' }[output] || '';
+    const empty = { 'no-source': result.sourceIssues[chartState.metric] || 'Нет данных для этого показателя', 'no-events': 'Нет событий за период', 'none-selected': 'Участники не выбраны' }[output] || '';
     const dataTables = chartState.type === 'table' ? compareTable + intervalTable : '<details class="chart-data"' + (dataOpen ? ' open' : '') + '><summary>Данные графика</summary>' + compareTable + intervalTable + '</details>';
     $('chartGrid').innerHTML = empty ? '<div class="state-empty">' + empty + '</div>' : '<p class="chart-note">' + esc(note) + '</p>' + visual + (chartState.type === 'table' ? '' : legend) + dataTables;
     text('chartInsight', !known ? 'Итог недоступен' : groups.length && !selectedIds.length ? 'Участники не выбраны' : 'Итого по выбранным участникам: ' + exact(chart.total) + (cumulative ? ' credits. ' : '. '));
