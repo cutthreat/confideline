@@ -98,7 +98,6 @@
       const id = card.querySelector('strong[id]')?.id;
       card.hidden = preset.cards ? !preset.cards.includes(id) : card.classList.contains('preset-extra');
     });
-    document.querySelector('.quality-scope').hidden = !['overview', 'handling', 'quality'].includes(activePreset);
   }
   function applyPreset(key) {
     if (!result || !canView() || !presets[key]) return;
@@ -308,7 +307,7 @@
     updateTableSort();
     const scopeNote = (metrics.some(key => ['pairLTV', 'platformLTV'].includes(key)) ? 'LTV — credits, накоплено на ' + A.dateLabel(result.range.to) + ' · ' + (metrics.includes('platformLTV') ? 'LTV клиента — вся платформа, даже при фильтре эксперта. ' : 'Только разрешённые экспертные пары. ') : '') + 'Диалоги, консультации, повторы и LTV не зависят от направления.';
     let scopeNode = $('tableScope');
-    if (!scopeNode) { $('tableOptions').insertAdjacentHTML('afterend', '<div class="filter-scope" id="tableScope"></div>'); scopeNode = $('tableScope'); }
+    if (!scopeNode) { document.querySelector('.metric-picker-head').insertAdjacentHTML('beforebegin', '<div class="filter-scope" id="tableScope"></div>'); scopeNode = $('tableScope'); }
     scopeNode.textContent = scopeNote;
     $('interactionTable').querySelector('thead').innerHTML = metrics.length ? '<tr><th scope="col" class="col-user">Кто</th><th scope="col" class="col-user">Кому</th><th scope="col" class="col-direction">Направление</th>' + metrics.map(key => '<th scope="col" class="col-action" style="width:' + H.width(key, headerMode, cellTexts[key]) + 'px" aria-sort="' + ariaSort(key) + '">' + sortButton(key, A.labels[key]) + '</th>').join('') + '</tr>' : '';
     $('interactionTable').querySelector('tbody').innerHTML = !metrics.length ? '' : result.rows.length ? result.rows.map(row => '<tr id="' + esc(row.id) + '" data-pair="' + row.pairId + '"><td class="col-user">' + userCell(row.actor) + '</td><td class="col-user">' + userCell(row.target) + '</td><td class="col-direction"><span class="direction ' + (row.directionKey === 'client_to_expert' ? 'client' : 'expert') + '">' + (row.directionKey === 'client_to_expert' ? 'Клиент → эксперт' : 'Эксперт → клиент') + '</span></td>' + metrics.map(key => metricCell(row, key)).join('') + '</tr>').join('') : '<tr><td colspan="' + (metrics.length + 3) + '" class="empty">' + (result.summary.pairs === null ? 'Нет достоверных данных' : 'Нет событий по выбранным фильтрам') + '</td></tr>';
@@ -494,7 +493,7 @@
     const button = event.target.closest('[data-metric-toggle]');
     if (button) chooseMetrics('toggle', button.dataset.metricToggle);
   });
-  function focusMetric() { $('tableOptions').open = true; $('actionLegend').querySelector('button')?.focus({ preventScroll: true }); }
+  function focusMetric() { $('actionLegend').querySelector('button')?.focus({ preventScroll: true }); }
   $('selectAllMetrics').addEventListener('click', () => { chooseMetrics('all'); focusMetric(); });
   $('selectCoreMetrics').addEventListener('click', () => { chooseMetrics('core'); focusMetric(); });
   $('clearMetrics').addEventListener('click', () => { chooseMetrics('clear'); focusMetric(); });
@@ -526,6 +525,7 @@
     const next = event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + buttons.length) % buttons.length;
     activateTab(buttons[next].dataset.tab); buttons[next].focus();
   });
+  document.querySelectorAll('.sidebar a[aria-disabled="true"]').forEach(link => link.addEventListener('click', event => event.preventDefault()));
   document.querySelectorAll('[data-report-nav]').forEach(link => link.addEventListener('click', event => {
     event.preventDefault(); activateTab(link.dataset.reportNav);
     if (mobileNav.matches) setNavigation(false);

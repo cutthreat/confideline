@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Админ-панель - взаимодействия пользователей</title>
   <link rel="stylesheet" href="assets/partner-interactions.css">
-  <link rel="stylesheet" href="assets/card59.css?v=20261008-r10b">
+  <link rel="stylesheet" href="assets/card59.css?v=20261008-r11">
 </head>
 <body data-partner-id="0">
 <div class="app-shell">
@@ -17,10 +17,22 @@
   </header>
 
   <aside id="reportNavigation" class="sidebar">
-    <nav aria-label="Навигация отчёта">
+    <nav aria-label="Навигация кабинета">
       <div class="menu-section">Администрирование</div>
-      <a href="#table" data-report-nav="table" class="active" aria-current="page"><span aria-hidden="true">Т</span>Таблица взаимодействий</a>
-      <a href="#charts" data-report-nav="charts"><span aria-hidden="true">Г</span>Графики</a>
+      <a href="#reportOverview" aria-disabled="true" tabindex="-1"><span>U</span>Пользователи</a>
+      <a class="active" href="#reportOverview" aria-disabled="true" tabindex="-1"><span>M</span>Сообщения<b>new</b></a>
+      <div class="submenu">
+        <a href="#reportOverview" aria-disabled="true" tabindex="-1">Чаты</a>
+        <a href="#reportOverview" aria-disabled="true" tabindex="-1">Рабочее место эксперта</a>
+        <a class="active" href="#table" data-report-nav="table" aria-current="page">Взаимодействия</a>
+      </div>
+      <a href="#reportOverview" aria-disabled="true" tabindex="-1"><span>E</span>Анкеты экспертов</a>
+      <a href="#reportOverview" aria-disabled="true" tabindex="-1"><span>$</span>Оплаты</a>
+      <a href="#reportOverview" aria-disabled="true" tabindex="-1"><span>C</span>Консультации</a>
+      <a href="#reportOverview" aria-disabled="true" tabindex="-1"><span>B</span>Блокировки</a>
+      <a href="#reportOverview" aria-disabled="true" tabindex="-1"><span>R</span>Жалобы</a>
+      <div class="menu-section">Система</div>
+      <a href="#reportOverview" aria-disabled="true" tabindex="-1"><span>S</span>Настройки</a>
     </nav>
   </aside>
 
@@ -55,11 +67,7 @@
       <div class="panel risk-card" title="Пары с десятью и более действиями за период"><span>Активные пары 10+</span><strong id="riskHighActivity">0</strong></div>
     </div>
 
-      <details class="metric-notes"><summary>О показателях</summary>
-      <p id="presetNote">Общая сводка и основные показатели взаимодействий.</p>
-      <p class="quality-scope">Счётчики ответов учитывают обе стороны выбранных пар за период, независимо от направления. «Без ответа» — клиент писал, но более позднего сообщения эксперта в этом периоде нет.</p>
-      </details>
-    </section>
+</section>
 
     <section class="panel filters" id="reportFilters" aria-labelledby="filterTitle" aria-describedby="filterHelp">
       <div class="filter-heading"><h2 id="filterTitle">Фильтры отчёта</h2><p id="filterHelp">Обновляют сводку, таблицу и графики после применения.</p></div>
@@ -72,6 +80,7 @@
         <button type="button" data-preset="results" aria-pressed="false" aria-controls="reportOverview panel-table panel-charts">Результат</button>
         <button type="button" data-preset="quality" aria-pressed="false" aria-controls="reportOverview panel-table panel-charts">Качество</button>
       </div>
+      <p id="presetNote" hidden></p>
       <p id="presetHelp">Готовый набор меняет показатели. Все поля ниже остаются доступны для свободной настройки.</p>
     </section>
       <label>
@@ -129,12 +138,10 @@
         <label><span>Показатель графика</span><select id="chartMetric"></select></label>
         <label><span>Разрез</span><select id="chartDimension"></select></label>
         <label><span>Тип графика</span><select id="chartType"></select></label>
-        <div class="chart-participants"><div class="chart-participant-head"><h3 id="chartParticipantsTitle">Участники</h3><span id="chartSelectionCount" role="status" aria-live="polite"></span><button id="selectAllChart" type="button">Все</button><button id="clearChart" type="button">Снять выбор</button></div><p id="chartParticipantsHelp">Итог графика относится только к выбранным участникам.</p><div id="chartEntities" class="checkbox-list" role="group" aria-labelledby="chartParticipantsTitle" aria-describedby="chartParticipantsHelp"></div></div>
-      </div>
-      <details class="chart-options" id="chartOptions"><summary>Дополнительные настройки графика</summary><div class="chart-secondary-controls">
         <label><span>Сравнение периодов</span><select id="chartCompare"></select></label>
         <label><span>Группировка</span><select id="chartGranularity"></select></label>
-      </div></details>
+        <div class="chart-participants"><div class="chart-participant-head"><h3 id="chartParticipantsTitle">Участники</h3><span id="chartSelectionCount" role="status" aria-live="polite"></span><button id="selectAllChart" type="button">Все</button><button id="clearChart" type="button">Снять выбор</button></div><p id="chartParticipantsHelp">Итог графика относится только к выбранным участникам.</p><div id="chartEntities" class="checkbox-list" role="group" aria-labelledby="chartParticipantsTitle" aria-describedby="chartParticipantsHelp"></div></div>
+      </div>
       <p id="chartSettingsNote" class="chart-settings-note" role="status" aria-live="polite" hidden></p>
       <div class="chart-workspace" id="chartGrid"></div>
       <footer id="chartInsight">-</footer>
@@ -145,14 +152,13 @@
         <h2>Действия клиентов и экспертов по закрепленным анкетам</h2>
         <div><span id="partnerBadge">Партнер #15</span><span id="periodBadge">7 дней</span><span id="rowCount">0 строк</span></div>
       </header>
-      <details class="table-options" id="tableOptions">
-        <summary><span>Настроить столбцы</span><span id="metricSelectionCount" role="status" aria-live="polite" aria-atomic="true">Выбрано 6</span></summary>
-      <div class="metric-picker-head">
-        <div class="metric-picker-title"><h3 id="metricPickerTitle">Показатели таблицы</h3></div>
+<div class="metric-picker-head">
+        <div class="metric-picker-title"><h3 id="metricPickerTitle">Показатели таблицы</h3><span id="metricSelectionCount" role="status" aria-live="polite" aria-atomic="true">Выбрано 6</span></div>
         <div class="metric-picker-actions"><button type="button" id="selectCoreMetrics" aria-controls="interactionTable" disabled>Основные</button><button type="button" id="selectAllMetrics" aria-controls="interactionTable">Все показатели</button><button type="button" id="clearMetrics" aria-controls="interactionTable">Снять выбор</button></div>
       </div>
-      <p class="metric-picker-help" id="metricPickerHelp">Выберите столбцы вручную. Готовый набор можно восстановить в блоке «Фильтры отчёта».</p>
+      <p class="metric-picker-help" id="metricPickerHelp">Выберите показатели, чтобы показать их в таблице. Повторный клик убирает столбец. Фильтры выше задают выборку; у графиков свой выбор показателя.</p>
       <div class="action-legend" id="actionLegend" role="group" aria-labelledby="metricPickerTitle" aria-describedby="metricPickerHelp"></div>
+      <div class="metric-empty" id="metricEmpty" hidden><strong>Показатели не выбраны</strong><p>Нажмите на нужные показатели выше или покажите все.</p><button type="button" id="showAllMetrics" aria-controls="interactionTable">Показать все</button></div>
       <div class="header-density">
       <label class="table-sort">
         <span>Сортировка таблицы</span>
@@ -175,8 +181,6 @@
         <p id="touchHeaderNote" hidden>Для узкого или сенсорного экрана включены короткие подписи.</p>
         <p id="iconModeNote" hidden>К — клиент · Э — эксперт · П — платформа.</p>
       </div>
-      </details>
-      <div class="metric-empty" id="metricEmpty" hidden><strong>Показатели не выбраны</strong><p>Раскройте «Настроить столбцы» или покажите все показатели.</p><button type="button" id="showAllMetrics" aria-controls="interactionTable">Показать все</button></div>
       <div class="table-scroll">
         <table id="interactionTable">
           <thead></thead>
@@ -200,6 +204,6 @@
 <script src="assets/partner-interactions-headers.js"></script>
 <script src="assets/partner-interactions-report.js"></script>
 <script src="assets/partner-interactions-charts.js"></script>
-<script src="assets/partner-interactions.js?v=20261008-r10b"></script>
+<script src="assets/partner-interactions.js?v=20261008-r11"></script>
 </body>
 </html>
