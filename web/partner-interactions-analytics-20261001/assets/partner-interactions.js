@@ -22,11 +22,11 @@
   const permitted = [...A.allowedMetrics(access), 'activity', 'messages'];
   const columns = window.PartnerInteractionColumns.create(A.allowedMetrics(access), window.PartnerInteractionColumns.coreMetrics);
   const presets = {
-    overview: { label: 'Обзор', metrics: window.PartnerInteractionColumns.coreMetrics, cards: null, chart: 'activity', note: 'Общая сводка и основные показатели взаимодействий.' },
-    workload: { label: 'Нагрузка', metrics: ['profileViews', 'favorites', 'newDialogs', 'clientMessages'], cards: ['metricExperts', 'qualityClients', 'metricPairs', 'qualityClientDialogs', 'presetClientMessages', 'presetNewDialogs'], chart: 'clientMessages', note: 'Клиенты, диалоги и входящие сообщения по выбранной выборке.' },
-    handling: { label: 'Работа с обращениями', metrics: ['newDialogs', 'clientMessages', 'expertMessages'], cards: ['qualityClientDialogs', 'qualityAnswered', 'qualityNoAnswer', 'qualityResponseRate', 'presetClientMessages', 'presetExpertMessages', 'qualityOutboundOnly'], chart: 'expertMessages', note: 'Ответ — более позднее сообщение эксперта после клиента в выбранном периоде. Доля ответа относится к диалогам, а не к каждому сообщению.' },
-    results: { label: 'Результат', metrics: ['paidConsultations', 'repeatExpert', 'repeatPlatform', 'pairLTV', 'platformLTV'], cards: ['qualityClients', 'riskPaidConsultations', 'riskRepeatExpert', 'riskRepeatPlatform', 'presetPairLTV', 'presetPlatformLTV'], chart: 'paidConsultations', note: 'Консультации и повторы — за период; LTV — накопленно на его конец. Платформенные показатели доступны только администратору.' },
-    quality: { label: 'Качество', metrics: ['reports', 'blocks', 'repeatExpert'], cards: ['riskReports', 'riskBlocks', 'qualityNoAnswer', 'qualityResponseRate', 'riskRepeatExpert'], chart: 'reports', note: 'Жалобы и блокировки помогают выбрать случаи для проверки. Жалоба сама по себе не означает подтверждённое нарушение.' }
+    overview: { metrics: window.PartnerInteractionColumns.coreMetrics },
+    workload: { metrics: ['profileViews', 'favorites', 'newDialogs', 'clientMessages'] },
+    handling: { metrics: ['newDialogs', 'clientMessages', 'expertMessages'] },
+    results: { metrics: ['paidConsultations', 'repeatExpert', 'repeatPlatform', 'pairLTV', 'platformLTV'] },
+    quality: { metrics: ['reports', 'blocks', 'repeatExpert'] }
   };
   let activePreset = 'overview', presetCustom = false;
   state.sort = columns.sort(state.sort);
@@ -80,33 +80,19 @@
   $('metricPairs').closest('.metric').title = 'Уникальные пары клиент–эксперт; направление не удваивает пару';
   $('qualityAnswered').closest('.quality-card').title = 'Эксперт написал после сообщения клиента в выбранном периоде';
   document.querySelector('.summary-grid').insertAdjacentHTML('beforeend', '<div class="panel risk-card" title="Не зависит от направления"><span>Повторные с экспертом</span><strong id="riskRepeatExpert">0</strong></div>' + (access.role === 'admin' ? '<div class="panel risk-card" title="Не зависит от направления"><span>Повторные на платформе</span><strong id="riskRepeatPlatform">0</strong></div>' : ''));
-  const presetCards = [
-    ['presetClientMessages', 'Сообщения клиентов', 'clientMessages'],
-    ['presetExpertMessages', 'Сообщения экспертов', 'expertMessages'],
-    ['presetNewDialogs', 'Новые диалоги', 'newDialogs'],
-    ['presetPairLTV', 'LTV пар, credits', 'pairLTV'],
-    ['presetPlatformLTV', 'LTV клиентов на платформе, credits', 'platformLTV']
-  ].filter(([, , metric]) => permitted.includes(metric));
-  document.querySelector('.summary-grid').insertAdjacentHTML('beforeend', presetCards.map(([id, label]) => '<div class="panel quality-card preset-extra" hidden><span>' + label + '</span><strong id="' + id + '"></strong></div>').join(''));
   function renderPreset() {
-    const preset = presets[activePreset];
     document.querySelectorAll('[data-preset]').forEach(button => button.setAttribute('aria-pressed', String(!presetCustom && button.dataset.preset === activePreset)));
     text('presetStatus', presetCustom ? 'Свой набор' : '');
     $('presetStatus').hidden = !presetCustom;
-    text('presetNote', preset.note);
-    document.querySelectorAll('.summary-grid > .panel').forEach(card => {
-      const id = card.querySelector('strong[id]')?.id;
-      card.hidden = preset.cards ? !preset.cards.includes(id) : card.classList.contains('preset-extra');
-    });
+
   }
   function applyPreset(key) {
     if (!result || !canView() || !presets[key]) return;
     activePreset = key; presetCustom = false;
     columns.set(presets[key].metrics);
     state.sort = columns.sort(state.sort); state.page = 1;
-    chartState.metric = presets[key].chart;
     result = A.build(displayedData, state, access);
-    render();
+    render(true);
   }
   document.querySelectorAll('[data-preset]').forEach(button => button.addEventListener('click', () => applyPreset(button.dataset.preset)));
   $('sort').previousElementSibling.textContent = 'Сортировка таблицы';
@@ -146,7 +132,7 @@
   }
   function renderAppliedContext() {
     const user = id => displayedData.users.find(item => item.id === Number(id));
-    text('summaryTitle', (activePreset === 'overview' ? 'Сводка' : presets[activePreset].label) + (result.summary.actions === null ? ' по доступным источникам' : ' по выборке'));
+    text('summaryTitle', 'Сводка' + (result.summary.actions === null ? ' по доступным источникам' : ' по выборке'));
     text('appliedScope', R.context(state, {
       role: access.role,
       partner: user(access.role === 'partner' ? access.partnerId : state.partnerId)?.name,
@@ -268,15 +254,16 @@
     if (reference) return '<td><a class="pair-ref" href="#' + esc(reference) + '" data-reference="' + esc(reference) + '" data-reference-key="' + key + '" title="Значение учитывается один раз; перейти к строке ' + esc(reference) + '">↗ ' + (key === 'platformLTV' ? 'клиент #' + row.client.id : 'пара ' + row.pairId) + '</a></td>';
     return '<td class="' + (row[key] === 0 ? 'zero' : 'num') + '" data-metric="' + key + '">' + metricFmt(key, row[key]) + '</td>';
   }
-  function render() {
+  function render(tableOnly = false) {
     closeHeaderTip();
-    renderAppliedContext();
-    const ids = { metricExperts: result.summary.experts, metricPairs: result.summary.pairs, metricMessages: result.summary.messages, metricActions: result.summary.actions, qualityClients: result.summary.clients, qualityClientDialogs: result.quality.dialogs, qualityAnswered: result.quality.answered, qualityNoAnswer: result.quality.noAnswer, qualityOutboundOnly: result.quality.outboundOnly, riskReports: result.metrics.reports, riskBlocks: result.metrics.blocks, riskPaidConsultations: result.metrics.paidConsultations, riskHighActivity: result.highActivity, riskRepeatExpert: result.metrics.repeatExpert, riskRepeatPlatform: result.metrics.repeatPlatform };
-    Object.entries(ids).forEach(([id, value]) => text(id, fmt(value)));
-    if (access.role === 'expert') text('metricExperts', result.summary.experts === null ? 'Нет данных' : result.summary.experts ? 'Есть' : 'Нет');
-    presetCards.forEach(([id, , metric]) => text(id, metricFmt(metric, result.metrics[metric])));
+    if (!tableOnly) {
+      renderAppliedContext();
+      const ids = { metricExperts: result.summary.experts, metricPairs: result.summary.pairs, metricMessages: result.summary.messages, metricActions: result.summary.actions, qualityClients: result.summary.clients, qualityClientDialogs: result.quality.dialogs, qualityAnswered: result.quality.answered, qualityNoAnswer: result.quality.noAnswer, qualityOutboundOnly: result.quality.outboundOnly, riskReports: result.metrics.reports, riskBlocks: result.metrics.blocks, riskPaidConsultations: result.metrics.paidConsultations, riskHighActivity: result.highActivity, riskRepeatExpert: result.metrics.repeatExpert, riskRepeatPlatform: result.metrics.repeatPlatform };
+      Object.entries(ids).forEach(([id, value]) => text(id, fmt(value)));
+      if (access.role === 'expert') text('metricExperts', result.summary.experts === null ? 'Нет данных' : result.summary.experts ? 'Есть' : 'Нет');
+      text('qualityResponseRate', result.quality.responseRate === null ? 'Нет данных' : fmt(result.quality.responseRate) + '%');
+    }
     renderPreset();
-    text('qualityResponseRate', result.quality.responseRate === null ? 'Нет данных' : fmt(result.quality.responseRate) + '%');
     text('periodBadge', result.range.label);
     text('rowCount', 'Строк: ' + result.pagination.totalRows + ' · ' + (result.summary.pairs === null ? 'Нет данных о парах' : 'Пар: ' + result.summary.pairs));
     text('partnerBadge', access.role === 'admin' ? Number(state.partnerId) ? data.users.find(u => u.id === Number(state.partnerId)).name : 'Все партнёры' : access.role === 'partner' ? 'Gin001 · назначенные анкеты' : 'Моя анкета · A');
@@ -288,7 +275,6 @@
     $('actionLegend').innerHTML = result.allowedMetrics.map(key => '<button type="button" class="legend-chip' + (metrics.includes(key) ? ' selected' : '') + '" data-metric-toggle="' + key + '" aria-pressed="' + metrics.includes(key) + '" aria-controls="interactionTable" title="' + esc(A.labels[key] + (A.pairKeys.includes(key) ? ' · Не зависит от направления' : '')) + '"><span class="action-icon">' + icon(metricIcons[key]) + '</span><span class="metric-label">' + esc(A.labels[key]) + (result.metrics[key] === null ? '<small>Нет источника</small>' : '') + '</span><span class="metric-check" aria-hidden="true">' + icon('check') + '</span></button>').join('');
     text('metricSelectionCount', 'Выбрано ' + metrics.length + ' из ' + result.allowedMetrics.length);
     $('selectAllMetrics').disabled = metrics.length === result.allowedMetrics.length;
-    $('selectCoreMetrics').disabled = JSON.stringify(metrics) === JSON.stringify(result.allowedMetrics.filter(key => window.PartnerInteractionColumns.coreMetrics.includes(key)));
     $('clearMetrics').disabled = metrics.length === 0;
     $('metricEmpty').hidden = metrics.length > 0;
     $('interactionTable').closest('.table-scroll').hidden = metrics.length === 0;
@@ -314,7 +300,7 @@
     let foot = $('interactionTable').querySelector('tfoot');
     if (!foot) { foot = document.createElement('tfoot'); $('interactionTable').append(foot); }
     foot.innerHTML = metrics.length ? '<tr><td colspan="3">Итого по всей выборке · без двойного счёта</td>' + metrics.map(key => '<td data-summary="' + key + '">' + (result.metrics[key] === null ? 'Нет источника' : metricFmt(key, result.metrics[key])) + '</td>').join('') + '</tr>' : '';
-    renderCharts();
+    if (!tableOnly) renderCharts();
     activateTab(location.hash === '#charts' ? 'charts' : 'table', false);
     window.lucide.createIcons({ attrs: { width: 16, height: 16, 'stroke-width': 1.7 } });
     if (focusedMetric) $('actionLegend').querySelector('[data-metric-toggle="' + focusedMetric + '"]')?.focus({ preventScroll: true });
@@ -331,12 +317,11 @@
     
     if (action === 'toggle') columns.toggle(key);
     else if (action === 'all') columns.all();
-    else if (action === 'core') columns.core();
     else columns.clear();
     state.sort = columns.sort(state.sort);
     state.page = 1;
     result = A.build(displayedData, state, access);
-    render();
+    render(true);
   }
   function renderCharts() {
     const entityFocus = document.activeElement?.closest('#chartEntities input')?.value;
@@ -495,7 +480,6 @@
   });
   function focusMetric() { $('actionLegend').querySelector('button')?.focus({ preventScroll: true }); }
   $('selectAllMetrics').addEventListener('click', () => { chooseMetrics('all'); focusMetric(); });
-  $('selectCoreMetrics').addEventListener('click', () => { chooseMetrics('core'); focusMetric(); });
   $('clearMetrics').addEventListener('click', () => { chooseMetrics('clear'); focusMetric(); });
   $('showAllMetrics').addEventListener('click', () => {
     chooseMetrics('all');
@@ -533,7 +517,7 @@
     button.focus(); button.scrollIntoView({ block: 'start' });
   }));
   window.addEventListener('hashchange', () => activateTab(location.hash === '#charts' ? 'charts' : 'table', false));
-  ['Metric', 'Dimension' , 'Type', 'Compare', 'Granularity'].forEach(name => $('chart' + name).addEventListener('change', () => { chartState[name.toLowerCase()] = $('chart' + name).value; if (name === 'Metric') { presetCustom = true; renderPreset(); } if (name === 'Dimension') chartState.entities = null; renderCharts(); }));
+  ['Metric', 'Dimension' , 'Type', 'Compare', 'Granularity'].forEach(name => $('chart' + name).addEventListener('change', () => { chartState[name.toLowerCase()] = $('chart' + name).value; if (name === 'Dimension') chartState.entities = null; renderCharts(); }));
   $('chartEntities').addEventListener('change', () => { chartState.entities = [...$('chartEntities').querySelectorAll('input:checked')].map(input => input.value); renderCharts(); });
   $('selectAllChart').addEventListener('click', () => { chartState.entities = null; renderCharts(); $('chartEntities').querySelector('input')?.focus({ preventScroll: true }); });
   $('clearChart').addEventListener('click', () => { chartState.entities = []; renderCharts(); $('selectAllChart').focus({ preventScroll: true }); });
