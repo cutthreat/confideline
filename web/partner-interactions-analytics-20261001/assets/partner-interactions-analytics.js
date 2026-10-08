@@ -53,6 +53,18 @@
     return access.expertIds ? all.filter(id => access.expertIds.includes(id)) : all;
   }
 
+  function selectedExpertIds(data, filters, access) {
+    let ids = scope(data, access);
+    if (access.role === 'admin' && Number(filters.partnerId)) ids = ids.filter(id => data.assignments.some(a => a.expertId === id && a.partnerId === Number(filters.partnerId)));
+    if (Number(filters.expertId)) ids = ids.filter(id => id === Number(filters.expertId));
+    if (filters.expertIds !== null && filters.expertIds !== undefined) {
+      if (!Array.isArray(filters.expertIds)) throw new Error('Некорректный выбор профилей');
+      const requested = new Set(filters.expertIds.map(Number).filter(Number.isSafeInteger));
+      ids = ids.filter(id => requested.has(id));
+    }
+    return [...new Set(ids)];
+  }
+
   function allowedMetrics(access) {
     if (access.authorized === false || !roles.includes(access.role)) return [];
     return metricKeys.filter(key => !globalKeys.includes(key) || (access.role === 'admin' && access.globalPermission !== false));
@@ -81,9 +93,7 @@
     filters.minActions = minimum(filters.minActions);
     const window = forcedRange || range(data.meta.now, filters);
     const available = allowedMetrics(access);
-    let expertIds = scope(data, access);
-    if (access.role === 'admin' && Number(filters.partnerId)) expertIds = expertIds.filter(id => data.assignments.some(a => a.expertId === id && a.partnerId === Number(filters.partnerId)));
-    if (Number(filters.expertId)) expertIds = expertIds.filter(id => id === Number(filters.expertId));
+    const expertIds = selectedExpertIds(data, filters, access);
     const experts = new Set(expertIds);
     const users = new Map(data.users.map(user => [user.id, user]));
     const activityKnown = activityKeys.every(key => sourceKnown(data, key));
@@ -233,18 +243,30 @@
   function groups(data, result, metric, dimension) {
     if (!dimensions(metric, result.access).includes(dimension)) return [];
     const map = new Map();
+    // Selected profiles remain comparable when their measured value is zero.
+    if (dimension === 'expert' || dimension === 'partner') {
+      result.experts.forEach(expert => {
+        const partnerId = data.assignments.find(a => a.expertId === expert.id)?.partnerId || 0;
+        const owner = data.users.find(u => u.id === partnerId);
+        const id = String(dimension === 'expert' ? expert.id : partnerId);
+        if (!map.has(id)) map.set(id, { id, label: dimension === 'expert' ? expert.name : owner?.name || 'Без агента', pairIds: [], expertIds: [], value: result.metrics[metric] === null ? null : 0, clientIds: new Set() });
+        map.get(id).expertIds.push(expert.id);
+      });
+    }
     result.pairs.forEach(pair => {
       const partnerId = data.assignments.find(a => a.expertId === pair.expert.id)?.partnerId;
       const user = dimension === 'client' ? pair.client : dimension === 'expert' ? pair.expert : data.users.find(u => u.id === partnerId);
       const id = dimension === 'pair' ? pair.id : String(user?.id || 0);
-      const label = dimension === 'pair' ? pair.client.name + ' / ' + pair.expert.name : user?.name || 'Без партнёра';
+      const label = dimension === 'pair' ? pair.client.name + ' / ' + pair.expert.name : user?.name || 'Без агента';
       if (!map.has(id)) map.set(id, { id, label, pairIds: [], value: 0, clientIds: new Set() });
       const group = map.get(id);
       group.pairIds.push(pair.id);
       if (metric !== 'platformLTV' || !group.clientIds.has(pair.client.id)) group.value = group.value === null || pair[metric] === null ? null : addAmount(group.value, pair[metric] || 0);
       group.clientIds.add(pair.client.id);
     });
-    return Array.from(map.values());
+    const output = Array.from(map.values());
+    if (dimension === 'expert' || dimension === 'partner') output.sort((a, b) => data.users.findIndex(u => String(u.id) === a.id) - data.users.findIndex(u => String(u.id) === b.id));
+    return output;
   }
 
   function buckets(data, window, granularity) {
@@ -290,5 +312,5 @@
     }));
     return { metric, dimension, cumulative, intervals, series, previousRange, total: !known || series.some(g => g.value === null) ? null : series.reduce((n, g) => addAmount(n, g.value), 0) };
   }
-  return { activityKeys, metricKeys, pairKeys, globalKeys, labels, periodLabels, range, minimum, scope, allowedMetrics, build, dimensions, groups, chart, day, dateLabel };
+  return { activityKeys, metricKeys, pairKeys, globalKeys, labels, periodLabels, range, minimum, scope, selectedExpertIds, allowedMetrics, build, dimensions, groups, chart, day, dateLabel };
 });

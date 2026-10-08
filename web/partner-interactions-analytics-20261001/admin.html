@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Админ-панель - взаимодействия пользователей</title>
   <link rel="stylesheet" href="assets/partner-interactions.css">
-  <link rel="stylesheet" href="assets/card59.css?v=20261008-r13">
+  <link rel="stylesheet" href="assets/card59.css?v=20261008-r14">
 </head>
 <body data-partner-id="0">
 <div class="app-shell">
@@ -70,18 +70,21 @@
 
     <section class="panel filters" id="reportFilters" aria-labelledby="filterTitle">
       <div class="filter-heading"><h2 id="filterTitle">Фильтры отчёта</h2></div>
-      <label>
-        <span>Партнер</span>
-        <select id="partnerId">
-          <option value="15" selected>Gin001 #15</option>
-        </select>
-      </label>
-      <label>
-        <span>Эксперт</span>
-        <select id="expertId">
-          <option value="0" selected>Все анкеты</option>
-        </select>
-      </label>
+      <input type="hidden" id="expertId" value="0">
+      <input type="hidden" id="partnerId" value="0">
+      <details class="profile-picker" id="profilePicker">
+        <summary><span>Профили экспертов</span><strong id="profileSelectionCount"></strong><span class="profile-picker-action">Выбрать</span></summary>
+        <div class="profile-picker-body">
+          <div class="profile-picker-toolbar">
+            <label><span>Поиск профиля или агента</span><input id="profileSearch" type="search" autocomplete="off" placeholder="Имя или ID"></label>
+            <button type="button" id="selectAllProfiles">Все профили</button>
+            <button type="button" id="clearProfiles">Снять выбор</button>
+          </div>
+          <div id="profileGroups" role="group" aria-label="Доступные профили экспертов"></div>
+          <p id="profileSearchEmpty" hidden>Ничего не найдено</p>
+        </div>
+      </details>
+      <p id="profileSelectionError" class="profile-selection-error" role="alert" hidden></p>
       <label>
         <span>Период</span>
         <select id="period">
@@ -137,7 +140,7 @@
     <section class="panel table-panel tab-panel" data-panel="table" role="tabpanel" id="panel-table" aria-labelledby="tab-table" tabindex="0">
       <header>
         <h2>Действия клиентов и экспертов по закрепленным анкетам</h2>
-        <div><span id="partnerBadge">Партнер #15</span><span id="periodBadge">7 дней</span><span id="rowCount">0 строк</span></div>
+        <div><span id="partnerBadge">Все агенты</span><span id="periodBadge">7 дней</span><span id="rowCount">0 строк</span></div>
       </header>
 <div class="metric-picker-head">
         <div class="metric-picker-title"><h3 id="metricPickerTitle">Показатели таблицы</h3><span id="metricSelectionCount" role="status" aria-live="polite" aria-atomic="true">Выбрано 6</span></div>
@@ -190,13 +193,13 @@
     </section>
   </main>
 </div>
-<script src="assets/partner-interactions-analytics.js"></script>
+<script src="assets/partner-interactions-analytics.js?v=20261008-r14"></script>
 <script src="assets/partner-interactions-data.js"></script>
 <script src="assets/lucide.min.js"></script>
 <script src="assets/partner-interactions-columns.js"></script>
 <script src="assets/partner-interactions-headers.js"></script>
-<script src="assets/partner-interactions-report.js?v=20261008-r13"></script>
+<script src="assets/partner-interactions-report.js?v=20261008-r14"></script>
 <script src="assets/partner-interactions-charts.js"></script>
-<script src="assets/partner-interactions.js?v=20261008-r13"></script>
+<script src="assets/partner-interactions.js?v=20261008-r14"></script>
 </body>
 </html>

@@ -180,3 +180,36 @@ body.navigation-open .sidebar { display: block; }
 }
 .interactions-page .table-panel .report-presets { padding: 0 14px; background: #fbfcfe; }
 .interactions-page .table-panel .preset-buttons { flex: 1 1 auto; }
+
+/* One report selection, grouped by the current agent assignments. */
+.interactions-page .profile-picker { grid-column: 1 / -1; min-width: 0; border: 1px solid #c8d2df; border-radius: 4px; background: #fff; }
+.interactions-page .profile-picker > summary { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; padding: 12px 14px; min-height: 44px; cursor: pointer; color: #354052; }
+.interactions-page .profile-picker > summary::before { content: '▸'; color: #526175; }
+.interactions-page .profile-picker[open] > summary::before { content: '▾'; }
+.interactions-page .profile-picker summary strong { font-size: 12px; font-weight: 500; color: #526175; }
+.interactions-page .profile-picker-action { margin-left: auto; font-size: 12px; color: #245b9e; }
+.interactions-page .profile-picker-body { padding: 0 14px 14px; }
+.interactions-page .profile-picker-toolbar { display: flex; flex-wrap: wrap; align-items: end; gap: 8px; margin-bottom: 10px; }
+.interactions-page .profile-picker-toolbar label { flex: 1 1 220px; min-width: 0; }
+.interactions-page .profile-picker-toolbar button { width: auto; min-height: 44px; padding: 8px 12px; font: inherit; border: 1px solid #c8d2df; border-radius: 4px; color: #245b9e; background: #fff; cursor: pointer; }
+.interactions-page .profile-picker-toolbar button:disabled { opacity: .55; cursor: default; }
+.interactions-page #profileGroups { max-height: 320px; overflow: auto; overscroll-behavior: contain; }
+.interactions-page .profile-agent-group { min-width: 0; margin: 0 0 10px; padding: 5px 12px 10px; border: 1px solid #dde4ed; border-radius: 4px; }
+.interactions-page .profile-agent-group legend { padding: 0 4px; max-width: 100%; }
+.interactions-page .profile-agent-group label { display: flex; align-items: center; gap: 9px; min-height: 44px; cursor: pointer; }
+.interactions-page .profile-agent-group legend label { flex-wrap: wrap; font-weight: 600; }
+.interactions-page .profile-agent-group input[type=checkbox] { flex: 0 0 16px; width: 16px; height: 16px; accent-color: #2866a6; margin: 0; padding: 0; }
+.interactions-page .profile-agent-options { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 0 16px; }
+.interactions-page .profile-option span { overflow-wrap: anywhere; }
+.interactions-page .profile-agent-group small, .interactions-page #chartEntities small { color: #526175; font-size: 11px; font-weight: 400; }
+.interactions-page .profile-option small { margin-left: 7px; }
+.interactions-page #chartEntities small { display: block; margin-top: 3px; }
+.interactions-page .profile-selection-error { grid-column: 1 / -1; color: #a32c38; margin: 0; font-size: 12px; }
+.interactions-page .profile-picker input:focus-visible, .interactions-page .profile-picker button:focus-visible, .interactions-page .profile-picker summary:focus-visible { outline: 2px solid #245b9e; outline-offset: 2px; }
+.interactions-page .profile-picker [hidden], .interactions-page .profile-selection-error[hidden] { display: none; }
+@media (max-width: 767px) {
+  .interactions-page .profile-picker-body { padding: 0 10px 10px; }
+  .interactions-page .profile-agent-options { grid-template-columns: 1fr; }
+  .interactions-page .profile-picker-toolbar label { flex-basis: 100%; }
+  .interactions-page .profile-picker-toolbar button { flex: 1 1 auto; }
+}

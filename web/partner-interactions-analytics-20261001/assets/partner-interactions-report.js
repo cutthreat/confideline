@@ -7,6 +7,7 @@
   function signature(filters) {
     return JSON.stringify({
       partnerId: Number(filters.partnerId || 0), expertId: Number(filters.expertId || 0),
+      expertIds: filters.expertIds == null ? null : [...new Set(filters.expertIds.map(Number))].sort((a, b) => a - b),
       period: filters.period || 'custom',
       fromDate: filters.period === 'custom' ? filters.fromDate || '' : '',
       toDate: filters.period === 'custom' ? filters.toDate || '' : '',
@@ -16,9 +17,9 @@
   }
   function dirty(draft, applied) { return signature(draft) !== signature(applied); }
   function context(filters, labels) {
-    const parts = labels.role === 'expert' ? ['Моя анкета', labels.expert] : labels.role === 'partner'
+    const parts = labels.selection ? [labels.selection] : labels.role === 'expert' ? ['Моя анкета', labels.expert] : labels.role === 'partner'
       ? [labels.partner, Number(filters.expertId) ? labels.expert : 'Назначенные анкеты']
-      : [Number(filters.partnerId) ? labels.partner : 'Все доступные партнёры', Number(filters.expertId) ? labels.expert : 'Все доступные анкеты'];
+      : [Number(filters.partnerId) ? labels.partner : 'Все доступные агенты', Number(filters.expertId) ? labels.expert : 'Все доступные анкеты'];
     parts.push(labels.range + ' · Europe/Minsk', { all: 'Все направления', client_to_expert: 'Клиент → эксперт', expert_to_client: 'Эксперт → клиент' }[filters.direction || 'all']);
     if (String(filters.query || '').trim()) parts.push('Поиск клиента: «' + String(filters.query).trim() + '»');
     if (Number(filters.minActions) > 0) parts.push('Мин. событий: ' + Number(filters.minActions));

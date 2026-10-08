@@ -10,7 +10,7 @@
   const exact = G.exactValue;
   const metricFmt = (key, value) => ['pairLTV', 'platformLTV'].includes(key) ? exact(value) : fmt(value);
   const access = { role: document.body.dataset.audience || 'admin', partnerId: Number(document.body.dataset.partnerId || 15), expertId: Number(document.body.dataset.expertId || 184), globalPermission: true };
-  const state = { partnerId: access.role === 'partner' ? access.partnerId : 0, expertId: access.role === 'expert' ? access.expertId : 0, period: 'custom', fromDate: '2026-09-07', toDate: '2026-09-15', direction: 'all', query: '', minActions: 0, sort: 'activity_desc', page: 1, pageSize: 50 };
+  const state = { partnerId: access.role === 'partner' ? access.partnerId : 0, expertId: access.role === 'expert' ? access.expertId : 0, expertIds: null, period: 'custom', fromDate: '2026-09-07', toDate: '2026-09-15', direction: 'all', query: '', minActions: 0, sort: 'activity_desc', page: 1, pageSize: 50 };
   const chartState = { metric: 'activity', dimension: access.role === 'admin' ? 'partner' : access.role === 'partner' ? 'expert' : 'client', type: 'line', compare: 'none', granularity: 'day', entities: null };
   const metricIcons = { profileViews: 'eye', favorites: 'star', newDialogs: 'message-circle-plus', clientMessages: 'message-circle', expertMessages: 'message-circle-reply', paidConsultations: 'credit-card', repeatExpert: 'repeat', repeatPlatform: 'repeat-2', pairLTV: 'coins', platformLTV: 'wallet', blocks: 'ban', reports: 'flag', activity: 'activity' };
   const data = window.PartnerInteractionExampleData;
@@ -97,18 +97,68 @@
   document.querySelectorAll('[data-preset]').forEach(button => button.addEventListener('click', () => applyPreset(button.dataset.preset)));
   $('sort').previousElementSibling.textContent = 'Сортировка таблицы';
   updateTableSort();
-  if ($('partnerId')?.tagName === 'SELECT') select('partnerId', [['0', 'Все партнёры'], ...data.users.filter(u => u.role === 'partner').map(u => [String(u.id), u.name + ' #' + u.id])], '0');
-  function expertsForDraft() {
-    let ids = A.scope(data, access);
-    if (access.role === 'admin' && Number($('partnerId')?.value)) ids = ids.filter(id => data.assignments.some(a => a.expertId === id && a.partnerId === Number($('partnerId').value)));
-    if ($('expertId').tagName !== 'SELECT') return;
-    const previous = $('expertId').value;
-    select('expertId', [['0', 'Все анкеты'], ...data.users.filter(u => ids.includes(u.id)).map(u => [String(u.id), u.name + ' #' + u.id])], previous);
-    if (!$('expertId').value) $('expertId').value = '0';
+  const availableProfileIds = A.scope(data, access);
+  let draftExpertIds = null;
+  const selectedDraftIds = () => draftExpertIds === null ? availableProfileIds : draftExpertIds;
+  function profileOwner(expertId) { return data.assignments.find(item => item.expertId === expertId)?.partnerId || 0; }
+  function updateProfilePicker() {
+    if (!$('profilePicker')) return;
+    const selected = new Set(selectedDraftIds());
+    $('profileGroups').querySelectorAll('[data-profile-id]').forEach(input => { input.checked = selected.has(Number(input.value)); });
+    $('profileGroups').querySelectorAll('[data-agent-id]').forEach(input => {
+      const ids = availableProfileIds.filter(id => profileOwner(id) === Number(input.dataset.agentId));
+      const count = ids.filter(id => selected.has(id)).length;
+      input.checked = count === ids.length; input.indeterminate = count > 0 && count < ids.length;
+      text('agentCount-' + input.dataset.agentId, count + ' из ' + ids.length);
+    });
+    text('profileSelectionCount', selected.size === availableProfileIds.length ? 'Все · ' + selected.size : 'Выбрано ' + selected.size + ' из ' + availableProfileIds.length);
+    $('selectAllProfiles').disabled = selected.size === availableProfileIds.length;
+    $('clearProfiles').disabled = selected.size === 0;
   }
-  expertsForDraft();
+  function setProfileDraft(ids) {
+    const selected = [...new Set(ids.map(Number))].filter(id => availableProfileIds.includes(id)).sort((a,b) => a-b);
+    draftExpertIds = selected.length === availableProfileIds.length ? null : selected;
+    text('profileSelectionError', ''); if ($('profileSelectionError')) $('profileSelectionError').hidden = true;
+    updateProfilePicker();
+  }
+  function searchProfiles() {
+    if (!$('profilePicker')) return;
+    const query = $('profileSearch').value.trim().toLocaleLowerCase('ru');
+    let visible = 0;
+    $('profileGroups').querySelectorAll('.profile-agent-group').forEach(group => {
+      let matches = 0;
+      group.querySelectorAll('.profile-option').forEach(option => {
+        option.hidden = !!query && !(option.dataset.search + ' ' + group.dataset.search).includes(query);
+        if (!option.hidden) matches++;
+      });
+      group.hidden = matches === 0; visible += matches;
+    });
+    $('profileSearchEmpty').hidden = visible > 0;
+  }
+  if ($('profilePicker')) {
+    const owners = [...new Set(availableProfileIds.map(profileOwner))];
+    $('profileGroups').innerHTML = owners.map(ownerId => {
+      const owner = data.users.find(u => u.id === ownerId);
+      const name = owner?.name || 'Без агента';
+      const profiles = data.users.filter(u => availableProfileIds.includes(u.id) && profileOwner(u.id) === ownerId);
+      return '<fieldset class="profile-agent-group" data-search="' + esc((name + ' ' + ownerId).toLocaleLowerCase('ru')) + '"><legend><label><input type="checkbox" data-agent-id="' + ownerId + '" aria-label="' + esc('Все профили: ' + name) + '"><span>' + esc(access.role === 'partner' ? 'Все мои профили' : name) + '</span><small id="agentCount-' + ownerId + '"></small></label></legend><div class="profile-agent-options">' + profiles.map(u => '<label class="profile-option" data-search="' + esc((u.name + ' ' + u.username + ' ' + u.id).toLocaleLowerCase('ru')) + '"><input type="checkbox" data-profile-id value="' + u.id + '"><span>' + esc(u.name) + '<small>#' + u.id + '</small></span></label>').join('') + '</div></fieldset>';
+    }).join('');
+    $('profileGroups').addEventListener('change', event => {
+      const input = event.target;
+      let ids = selectedDraftIds().slice();
+      if (input.matches('[data-agent-id]')) {
+        const groupIds = availableProfileIds.filter(id => profileOwner(id) === Number(input.dataset.agentId));
+        ids = input.checked ? ids.concat(groupIds) : ids.filter(id => !groupIds.includes(id));
+      } else if (input.matches('[data-profile-id]')) ids = input.checked ? ids.concat(Number(input.value)) : ids.filter(id => id !== Number(input.value));
+      setProfileDraft(ids); updateDraftStatus();
+    });
+    $('selectAllProfiles').addEventListener('click', () => { setProfileDraft(availableProfileIds); updateDraftStatus(); });
+    $('clearProfiles').addEventListener('click', () => { setProfileDraft([]); updateDraftStatus(); });
+    $('profileSearch').addEventListener('input', searchProfiles);
+  }
   function writeFilters() {
     Object.entries(state).forEach(([key, value]) => { if ($(key)) $(key).value = value; });
+    setProfileDraft(state.expertIds === null ? availableProfileIds : state.expertIds);
     $('customRange').hidden = state.period !== 'custom';
   }
   writeFilters();
@@ -117,6 +167,7 @@
     R.queryKeys.forEach(key => { if ($(key)) draft[key] = $(key).value; });
     if (access.role === 'partner') draft.partnerId = access.partnerId;
     if (access.role === 'expert') draft.expertId = access.expertId;
+    draft.expertIds = access.role === 'expert' ? null : draftExpertIds === null ? null : draftExpertIds.slice();
     draft.page = 1;
     return draft;
   }
@@ -135,6 +186,7 @@
     text('summaryTitle', 'Сводка' + (result.summary.actions === null ? ' по доступным источникам' : ' по выборке'));
     text('appliedScope', R.context(state, {
       role: access.role,
+      selection: access.role === 'expert' ? '' : (state.expertIds === null ? (access.role === 'partner' ? 'Все мои профили' : 'Все доступные профили') : 'Профили: ' + (result.experts.length <= 2 ? result.experts.map(u => u.name).join(', ') : result.experts.length)) + ' · ' + result.experts.length + ' проф.',
       partner: user(access.role === 'partner' ? access.partnerId : state.partnerId)?.name,
       expert: user(access.role === 'expert' ? access.expertId : state.expertId)?.name,
       range: result.range.label
@@ -266,7 +318,7 @@
     renderPreset();
     text('periodBadge', result.range.label);
     text('rowCount', 'Строк: ' + result.pagination.totalRows + ' · ' + (result.summary.pairs === null ? 'Нет данных о парах' : 'Пар: ' + result.summary.pairs));
-    text('partnerBadge', access.role === 'admin' ? Number(state.partnerId) ? data.users.find(u => u.id === Number(state.partnerId)).name : 'Все партнёры' : access.role === 'partner' ? 'Gin001 · назначенные анкеты' : 'Моя анкета · A');
+    text('partnerBadge', access.role === 'expert' ? 'Мой профиль' : 'Профили: ' + result.experts.length + (access.role === 'admin' ? ' · Агенты: ' + new Set(result.experts.map(u => profileOwner(u.id))).size : ''));
     text('pageInfo', result.pagination.from + '–' + result.pagination.to + ' из ' + result.pagination.totalRows);
     $('prevPage').disabled = result.pagination.page <= 1; $('nextPage').disabled = result.pagination.page >= result.pagination.totalPages;
     const metrics = columns.visible();
@@ -335,7 +387,7 @@
     const presentation = G.presentation(chartState.metric, chartState.type, chartState.compare === 'segments' ? 'none' : chartState.compare, state.period);
     chartState.type = presentation.type; chartState.compare = presentation.compare;
     select('chartMetric', permitted.map(key => [key, A.labels[key]]), chartState.metric);
-    const dimLabels = { partner: 'Партнёры', expert: 'Эксперты', client: 'Клиенты', pair: 'Пары клиент–эксперт' };
+    const dimLabels = { partner: 'Агенты', expert: 'Профили экспертов', client: 'Клиенты', pair: 'Пары клиент–эксперт' };
     select('chartDimension', dimensions.map(key => [key, dimLabels[key]]), chartState.dimension);
     const typeLabels = { line: 'Динамика', bar: 'Столбцы', table: 'Таблица', stacked: 'Структура активности', pie: 'Доли участников' };
     select('chartType', presentation.types.map(type => [type, typeLabels[type]]), chartState.type);
@@ -349,7 +401,13 @@
     const groups = A.groups(displayedData, result, chartState.metric, chartState.dimension);
     const selectedIds = G.selection(groups.map(group => group.id), chartState.entities);
     if (chartState.entities !== null) chartState.entities = selectedIds;
-    $('chartEntities').innerHTML = groups.map(group => '<label class="checkbox-item"><input type="checkbox" value="' + esc(group.id) + '"' + (chartState.entities === null || chartState.entities.includes(group.id) ? ' checked' : '') + '><span title="' + esc(group.label) + '">' + esc(group.label) + '</span><b>' + exact(group.value) + '</b></label>').join('');
+    $('chartEntities').innerHTML = groups.map(group => {
+      const profiles = chartState.dimension === 'partner' ? displayedData.users.filter(u => group.expertIds?.includes(u.id)) : [];
+      const total = chartState.dimension === 'partner' ? availableProfileIds.filter(id => profileOwner(id) === Number(group.id)).length : 0;
+      const composition = profiles.length ? '<small>' + profiles.length + ' из ' + total + ' проф.</small>' : '';
+      const title = group.label + (profiles.length ? ': ' + profiles.map(u => u.name + ' #' + u.id).join(', ') : '');
+      return '<label class="checkbox-item"><input type="checkbox" value="' + esc(group.id) + '"' + (chartState.entities === null || chartState.entities.includes(group.id) ? ' checked' : '') + '><span title="' + esc(title) + '">' + esc(group.label) + composition + '</span><b>' + exact(group.value) + '</b></label>';
+    }).join('');
     const chart = A.chart(displayedData, result, chartState);
     $('chartEntities').scrollTop = entityScroll;
     if (entityFocus) [...$('chartEntities').querySelectorAll('input')].find(input => input.value === entityFocus)?.focus({ preventScroll: true });
@@ -434,12 +492,11 @@
     document.querySelectorAll('[data-report-nav]').forEach(link => { link.classList.toggle('active', link.dataset.reportNav === tab); if (link.dataset.reportNav === tab) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); });
   }
   $('period').addEventListener('change', () => { $('customRange').hidden = $('period').value !== 'custom'; });
-  $('partnerId')?.addEventListener('change', expertsForDraft);
   $('reportFilters').addEventListener('input', updateDraftStatus);
   $('reportFilters').addEventListener('change', updateDraftStatus);
   $('restoreFilters').addEventListener('click', () => {
     if (requestPending || !canView()) return;
-    writeFilters(); expertsForDraft(); writeFilters(); text('dateError', ''); text('minimumError', ''); $('minActions').removeAttribute('aria-invalid');
+    writeFilters(); text('dateError', ''); text('minimumError', ''); $('minActions').removeAttribute('aria-invalid');
     $('fromDate').setAttribute('aria-invalid', 'false'); $('toDate').setAttribute('aria-invalid', 'false');
     updateDraftStatus(); $('apply').focus({ preventScroll: true });
   });
@@ -450,6 +507,10 @@
   });
   function applyFilters() {
     const next = readFilters();
+    if ($('profilePicker') && selectedDraftIds().length === 0) {
+      text('profileSelectionError', 'Выберите хотя бы один профиль'); $('profileSelectionError').hidden = false;
+      $('profilePicker').open = true; $('profileSearch').value = ''; searchProfiles(); $('profileGroups').querySelector('input')?.focus(); return;
+    }
     text('dateError', ''); text('minimumError', '');
     ['fromDate', 'toDate', 'minActions'].forEach(id => $(id).removeAttribute('aria-invalid'));
     try { A.range(data.meta.now, next); }
@@ -468,7 +529,7 @@
   }
   $('apply').addEventListener('click', applyFilters);
   $('reportFilters').addEventListener('keydown', event => {
-    if (event.key === 'Enter' && event.target.tagName === 'INPUT') { event.preventDefault(); applyFilters(); }
+    if (event.key === 'Enter' && event.target.tagName === 'INPUT' && !event.target.matches('[type=checkbox], #profileSearch')) { event.preventDefault(); applyFilters(); }
   });
   $('prevPage').addEventListener('click', () => { state.page--; result = A.build(displayedData, state, access); render(); });
   $('nextPage').addEventListener('click', () => { state.page++; result = A.build(displayedData, state, access); render(); });
