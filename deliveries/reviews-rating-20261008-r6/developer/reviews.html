@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ru">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta http-equiv="Content-Security-Policy" content="connect-src 'none'; form-action 'none'; object-src 'none'">
+ <title>Отзывы экспертов · Модерация</title>
+ <link rel="stylesheet" href="reviews-site-assets/vendor/css/bootstrap.css">
+ <link rel="stylesheet" href="reviews-site-assets/vendor/css/font-awesome.min.css">
+ <link rel="stylesheet" href="reviews-site-assets/vendor/css/admin.min.css">
+ <link rel="stylesheet" href="reviews-site-assets/admin-custom.css">
+ <link rel="stylesheet" href="reviews-admin-panel.css">
+</head>
+<body class="skin-youdate fixed sidebar-mini">
+<div class="wrapper">
+ <header class="main-header">
+  <a href="profile.html" class="logo"><span class="logo-mini">YouDate</span><span class="logo-lg">YouDate</span></a>
+  <nav class="navbar navbar-static-top" aria-label="Панель администратора">
+   <button class="sidebar-toggle" id="sidebar-toggle" type="button" title="Меню" aria-label="Свернуть или раскрыть меню" aria-controls="admin-sidebar" aria-expanded="true"></button>
+   <div class="navbar-custom-menu position-relative">
+    <form class="navbar-form navbar-search pull-left hidden-xs header-search" id="header-search-form">
+     <div class="form-group"><div class="input-group"><input type="search" class="form-control header-search-query" id="header-search" autocomplete="off" placeholder="Search" aria-label="Поиск отзывов"><span class="input-group-btn"><button type="submit" class="btn btn-primary header-search-btn" title="Найти отзыв" aria-label="Найти отзыв"><i class="fa fa-search" aria-hidden="true"></i></button></span></div></div>
+    </form>
+    <ul class="nav navbar-nav"><li class="dropdown user user-menu"><button class="review-account-toggle" id="admin-account-toggle" type="button" aria-expanded="false" aria-controls="admin-account-menu"><i class="glyphicon glyphicon-user" aria-hidden="true"></i> admin <i class="caret" aria-hidden="true"></i></button><ul class="dropdown-menu" id="admin-account-menu" hidden><li><a href="profile.html">Анкета эксперта</a></li></ul></li></ul>
+   </div>
+  </nav>
+ </header>
+ <aside class="main-sidebar" id="admin-sidebar" aria-label="Разделы админки">
+  <section class="sidebar"><ul class="sidebar-menu">
+   <li><a href="#" aria-disabled="true"><i class="fa fa-dashboard" aria-hidden="true"></i> <span>Dashboard</span></a></li>
+   <li class="header"><span>Content</span></li>
+   <li><a href="#" aria-disabled="true"><i class="fa fa-user" aria-hidden="true"></i> <span>Users</span></a></li>
+   <li><a href="#" aria-disabled="true"><i class="fa fa-life-ring" aria-hidden="true"></i> <span>Support</span></a></li>
+   <li class="active"><a href="#moderation" aria-current="page"><i class="fa fa-star-o" aria-hidden="true"></i> <span>Reviews</span><span class="pull-right label label-primary" id="sidebar-review-count">2</span></a></li>
+   <li><a href="#" aria-disabled="true"><i class="fa fa-users" aria-hidden="true"></i> <span>Groups</span></a></li>
+   <li><a href="#" aria-disabled="true"><i class="fa fa-picture-o" aria-hidden="true"></i> <span>Photos</span></a></li>
+   <li><a href="#" aria-disabled="true"><i class="fa fa-flag" aria-hidden="true"></i> <span>Reports</span></a></li>
+   <li class="header"><span>System</span></li>
+   <li><a href="#" aria-disabled="true"><i class="fa fa-cog" aria-hidden="true"></i> <span>Common_settings</span></a></li>
+  </ul></section>
+ </aside>
+ <button id="sidebar-backdrop" class="sidebar-backdrop" type="button" aria-label="Закрыть меню" hidden></button>
+ <div class="content-wrapper">
+  <section class="content-header"><h1 data-i18n="moderation">Модерация отзывов</h1><ol class="breadcrumb"><li>Administration</li><li class="active" data-i18n="reviews">Отзывы</li></ol></section>
+  <main class="content" id="moderation">
+   <div class="box box-solid box-nav"><div class="box-body no-padding clearfix"><ul class="nav-pills nav" aria-label="Статус отзывов">
+    <li class="active"><a href="#moderation" data-filter="all" aria-pressed="true"><span data-i18n="all">Все</span> <span class="label label-default" data-count="all">3</span></a></li>
+    <li><a href="#moderation" data-filter="pending" aria-pressed="false"><span data-i18n="pending">На проверке</span> <span class="label label-warning" data-count="pending">1</span></a></li>
+    <li><a href="#moderation" data-filter="published" aria-pressed="false"><span data-i18n="published">Опубликован</span> <span class="label label-success" data-count="published">2</span></a></li>
+    <li><a href="#moderation" data-filter="hidden" aria-pressed="false"><span data-i18n="hidden">Скрыт</span> <span class="label label-warning" data-count="hidden">0</span></a></li>
+    <li><a href="#moderation" data-filter="rejected" aria-pressed="false"><span data-i18n="rejected">Отклонён</span> <span class="label label-default" data-count="rejected">0</span></a></li>
+    <li><a href="#moderation" data-filter="deleted" aria-pressed="false"><span data-i18n="deleted">Удалён</span> <span class="label label-default" data-count="deleted">0</span></a></li>
+   </ul></div></div>
+   <section class="box no-border">
+    <header class="box-header with-border review-admin-toolbar"><div class="review-admin-summary"><h2 class="box-title">Отзывы экспертов</h2><label class="sr-only" for="expert-select">Эксперт</label><select id="expert-select" class="form-control input-sm"><option value="EX-101">Marcus Antoniu · EX-101</option><option value="EX-102">Elena Petrova · EX-102</option></select></div><div class="review-admin-search"><i class="fa fa-search" aria-hidden="true"></i><input class="form-control input-sm" id="admin-search" type="search" placeholder="Клиент, отзыв или консультация" aria-label="Поиск отзывов"><button class="btn btn-default btn-sm" id="reset-filters" type="button" title="Сбросить фильтры" aria-label="Сбросить фильтры" hidden><i class="fa fa-times" aria-hidden="true"></i></button></div></header>
+    <div class="review-rating-controls"><div class="review-rating-values"><span><span data-i18n="rating">Рейтинг</span>: <strong id="admin-average">4.0</strong></span><span><span data-i18n="votes">Голосов</span>: <strong id="admin-votes">2</strong></span><span><span data-i18n="texts">Текстовых отзывов</span>: <strong id="admin-texts">2</strong></span><span id="admin-rating-mode" class="label label-default"></span><small id="admin-auto-summary"></small></div><div class="review-rating-actions"><button class="btn btn-default btn-sm" id="edit-rating" type="button"><i class="fa fa-pencil" aria-hidden="true"></i> <span data-i18n="editRatingBase">Изменить базу</span></button><a class="btn btn-default btn-sm" id="public-preview" href="profile.html?shared=1" title="Анкета эксперта" aria-label="Анкета эксперта"><i class="fa fa-external-link" aria-hidden="true"></i></a></div></div>
+    <div class="table-responsive review-admin-table-wrap"><table class="table table-striped table-bordered table-vcenter review-admin-table">
+     <colgroup><col class="col-review"><col class="col-user"><col class="col-consultation"><col class="col-rating"><col><col class="col-status"><col class="col-actions"></colgroup>
+     <thead><tr><th scope="col">Отзыв / дата</th><th scope="col">Клиент / эксперт</th><th scope="col">Консультация</th><th scope="col">Оценка</th><th scope="col">Текст отзыва</th><th scope="col">Статус</th><th scope="col">Действия</th></tr>
+      <tr class="filters"><td><input class="form-control input-sm" data-column="id" aria-label="Фильтр по номеру отзыва"></td><td><input class="form-control input-sm" data-column="person" aria-label="Фильтр по клиенту или эксперту"></td><td><input class="form-control input-sm" data-column="consultation" aria-label="Фильтр по консультации"></td><td><select class="form-control input-sm" data-column="stars" aria-label="Фильтр по оценке"><option value="">Все</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></td><td><input class="form-control input-sm" data-column="text" aria-label="Фильтр по тексту отзыва"></td><td colspan="2"></td></tr>
+     </thead><tbody id="admin-rows"></tbody>
+    </table></div>
+    <footer class="box-footer text-muted" id="admin-result-count" role="status"></footer>
+   </section>
+   <section class="box box-solid" id="restricted-audit" hidden><header class="box-header with-border"><h2 class="box-title" data-i18n="audit">Закрытый журнал действий</h2></header><div class="box-body" id="audit-list"></div></section>
+  </main>
+ </div>
+ <footer class="main-footer">Powered by <strong>YouDate</strong></footer>
+</div>
+<dialog id="reason-dialog" class="review-admin-dialog" aria-labelledby="reason-title">
+ <form id="reason-form" novalidate><header class="modal-header"><button class="close" type="button" id="reason-close" title="Отмена" aria-label="Отмена"><i class="fa fa-times" aria-hidden="true"></i></button><h2 class="modal-title" id="reason-title">Причина решения</h2></header><div class="modal-body"><p class="text-muted" id="reason-context"></p><label for="moderation-reason">Причина</label><textarea class="form-control" id="moderation-reason" rows="5" maxlength="500" required placeholder="Укажите основание решения"></textarea><p class="text-danger" id="reason-error" role="alert" hidden></p></div><footer class="modal-footer"><button class="btn btn-default" type="button" id="reason-cancel">Отмена</button><button class="btn btn-primary" type="submit">Подтвердить</button></footer></form>
+</dialog>
+<dialog id="rating-dialog" class="review-admin-dialog" aria-labelledby="rating-title">
+<form id="rating-form" novalidate><header class="modal-header"><button class="close" type="button" data-close="rating-dialog" data-i18n-title="cancel" aria-label="Отмена"><i class="fa fa-times" aria-hidden="true"></i></button><h2 class="modal-title" id="rating-title" data-i18n="ratingBase">Ручная база</h2></header><div class="modal-body">
+<p id="rating-expert-name" class="text-muted"></p>
+<div id="rating-summary" role="status"><dl class="review-rating-breakdown">
+<dt data-i18n="publishedRatings">Опубликованные оценки</dt><dd id="rating-published-summary"></dd>
+<dt data-i18n="ratingBase">Ручная база</dt><dd id="rating-base-summary"></dd>
+<dt class="review-rating-total" data-i18n="totalRating">Итог</dt><dd class="review-rating-total" id="rating-total-summary"></dd>
+</dl></div>
+<fieldset class="review-mode-picker"><legend data-i18n="ratingSource">Расчёт рейтинга</legend><label><input type="radio" name="rating-mode" value="auto" checked> <span data-i18n="autoSource">Только опубликованные оценки</span></label><label><input type="radio" name="rating-mode" value="manual"> <span data-i18n="manualSource">С учётом ручной базы</span></label></fieldset>
+<div class="review-rating-fields" id="manual-rating-fields" hidden><div class="form-group"><label for="manual-rating" data-i18n="manualRating">Рейтинг базы</label><input class="form-control" id="manual-rating" inputmode="decimal" maxlength="3" placeholder="1.0–5.0"></div><div class="form-group"><label for="manual-votes" data-i18n="manualVotes">Голосов в базе</label><input class="form-control" id="manual-votes" inputmode="numeric" maxlength="16" placeholder="0"></div></div>
+<div class="form-group"><label for="rating-reason" data-i18n="ratingReason">Причина изменения</label><textarea class="form-control" id="rating-reason" rows="2" maxlength="500" required></textarea></div><p class="text-danger" id="rating-error" role="alert" hidden></p>
+</div><footer class="modal-footer"><button class="btn btn-default" type="button" data-close="rating-dialog" data-i18n="cancel">Отмена</button><button class="btn btn-primary" type="submit"><i class="fa fa-save" aria-hidden="true"></i> <span data-i18n="save">Сохранить</span></button></footer></form></dialog>
+<div class="review-admin-feedback" id="admin-feedback" role="status" hidden></div>
+<script src="reviews-rating-model.js"></script>
+<script src="reviews-admin-workflow.js"></script>
+<script src="reviews-admin-shell.js"></script>
+<script src="reviews-admin-panel.js"></script>
+</body>
+</html>
