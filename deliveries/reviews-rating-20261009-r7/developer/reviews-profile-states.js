@@ -25,7 +25,7 @@
     {id:'submitting',group:'Отправка',name:'Отправка выполняется',expected:'Кнопка «Отправка…» недоступна. Повторная отправка невозможна.'},
     {id:'pending-text',group:'Результат',name:'Отзыв на проверке',expected:'Подтверждение ожидания. Новый текст и оценка ещё не публичны; повтор запрещён.'},
     {id:'pending-rating',group:'Результат',name:'Оценка на проверке',expected:'Подтверждение для оценки без текста. Итог не изменился; повтор запрещён.'},
-    {id:'published-text',group:'Результат',name:'Отзыв опубликован сразу',expected:'Сообщение успеха, новый текст и голос учтены. Нет ложной отметки проверки.'},
+    {id:'published-text',group:'Результат',name:'Отзыв опубликован сразу',expected:'Сообщение успеха, новый текст и голос учтены. Связь с консультацией подтверждена; ручная проверка не заявлена.'},
     {id:'published-rating',group:'Результат',name:'Оценка учтена сразу',expected:'Сообщение для оценки без текста. Голосов стало 3, текстов осталось 2.'},
     {id:'rejected',group:'Повтор',name:'Отзыв отклонён',expected:'Нет публичного вклада. Статус у клиента виден; повтор по консультации недоступен.'},
     {id:'hidden',group:'Повтор',name:'Отзыв скрыт',expected:'Нет публичного вклада. Статус у клиента виден; повтор недоступен.'},
@@ -51,8 +51,8 @@
     {id:'restricted-form',name:'Форма: обязательный текст и лимит 120',action:'Заполнить комментарий; закрыть форму и прочитать старый отзыв.',expected:['Обязательный текст пуст: отправка показывает конкретную ошибку.','Счётчик и maxlength равны 120, правило применяется к новой отправке.','Новой анонимной отправки нет, но старый анонимный автор не раскрывается.','Рейтинг скрыт настройкой; тексты опубликованных отзывов остаются.']},
     {id:'save-error',name:'Ошибка сохранения',action:'Повторить отправку или отменить.',expected:['Форма, выбранная оценка и черновик сохранены.','Есть ошибка, но нет ложного успеха.','Повторная попытка доступна; во время отправки повтор блокируется.']},
     {id:'pending-text',name:'Отзыв на проверке',action:'Проверить сообщение, список и повторную отправку.',expected:['Клиент видит ожидание модерации.','Новая оценка и текст ещё не входят в публичные данные: остаются 4.0 / 2 и 2 текста.','Повтор по той же консультации недоступен. Для оценки без текста меняется только сообщение, см. ТЗ.']},
-    {id:'published-text',name:'Отзыв опубликован',action:'Прочитать новый отзыв и результат.',expected:['Сообщение соответствует опубликованному статусу, а не ожиданию проверки.','Три оценки дают 4.3, 3 голоса и 3 текста; новый автор анонимный.','Нет ложной отметки проверки; повтор недоступен. Оценка без текста увеличивает только голоса, см. ТЗ.']},
-    {id:'hidden',name:'Отзыв снят с публикации',action:'Проверить собственный статус и публичный список.',expected:['Скрытый отзыв не участвует в рейтинге и списке.','Клиент видит свой статус, но повторная отправка не открывается.','Отклонение и мягкое удаление используют ту же компоновку, с отдельными сообщениями и правилами в ТЗ.']},
+    {id:'published-text',name:'Отзыв опубликован',action:'Прочитать новый отзыв и результат.',expected:['Сообщение соответствует опубликованному статусу, а не ожиданию проверки.','Три оценки дают 4.3, 3 голоса и 3 текста; новый автор анонимный.','Связь с завершённой консультацией подтверждена; ручная проверка не заявлена. Повтор недоступен. Оценка без текста увеличивает только голоса, см. ТЗ.']},
+    {id:'rejected',name:'Отклонение: исправление или пересмотр',action:'Прочитать причину; исправить текст либо запросить пересмотр.',expected:['Отклонённая запись не участвует в публичном списке и рейтинге.','В приватном статусе показана клиентская причина, без внутренних заметок.','Исправление сохраняет оценку и консультацию; возвращает ту же запись на проверку.','Пересмотр фиксируется отдельно и не создаёт второй голос. Скрытие и мягкое удаление используют тот же приватный статус, см. ТЗ.']},
     {id:'loading',name:'Загрузка',action:'Дождаться чтения.',expected:['Показан статус загрузки.','До ответа нет старого рейтинга, ложного пустого списка или формы.']},
     {id:'load-error',name:'Ошибка загрузки',action:'Повторить чтение.',expected:['Нет ложного рейтинга и пустого списка.','Кнопка повторного чтения восстанавливает блок.']},
     {id:'feature-off',name:'Отзывы полностью выключены',action:'Просмотреть анкету.',expected:['Нет блока отзывов, рейтинга, голосов и формы.','Данные сохранены: повторное включение возвращает их без изменения статусов.']},
@@ -78,16 +78,17 @@
     if (id==='form-rating-only') ui.stars=4;
     if (id==='form-anonymous') {ui.stars=5;ui.text='Спасибо за подробные ответы.';ui.anonymous=true;}
     if (id==='form-limit') {ui.stars=5;ui.text='А'.repeat(1000);}
-    if (id==='form-immediate') state.moderationRequired=false;
+    if (id==='form-immediate') state.moderationMode='none';
     if (id==='invalid-rating') {ui.text='Этот текст не должен пропасть.';ui.error='stars';}
     if (id==='save-error') {ui.stars=5;ui.text='Этот текст сохранится для повторной попытки.';ui.error='save';}
     if (id==='submitting') {ui.stars=5;ui.text='Спасибо за консультацию.';ui.sending=true;}
     if (['pending-text','pending-rating','published-text','published-rating','rejected','hidden','deleted'].includes(id)) {
       const status=id.startsWith('pending')?'pending':id.startsWith('published-')?'published':id;
       const ratingOnly=id.endsWith('-rating');
-      state.reviews.unshift({id:'RV-204',expertId:'EX-101',authorProfileId:'USR-303',author:'Анна',stars:ratingOnly?1:5,text:ratingOnly?'':'Спасибо за подробные ответы.',anonymous:true,status,consultation:'CT-1024',source:'client',verified:false,createdAt:'2026-10-08T12:00:00Z'});
+      state.reviews.unshift({id:'RV-204',expertId:'EX-101',authorProfileId:'USR-303',author:'Анна',stars:ratingOnly?1:5,text:ratingOnly?'':'Спасибо за подробные ответы.',anonymous:true,status,consultation:'CT-1024',source:'client',consultationVerified:true,verified:false,createdAt:'2026-10-08T12:00:00Z'});
       state.nextId=205;
-      if (status==='published') state.moderationRequired=false;
+      if(['rejected','hidden','deleted'].includes(status)){state.reviews[0].version=1;state.reviews[0].decisionId=1;state.reviews[0].clientDecision={code:status==='rejected'?'personal_data':'not_related',message:''};}
+      if (status==='published') state.moderationMode='none';
       if (status==='pending' || status==='published') ui.notice=id;
     }
     if (id==='loading') ui.phase='loading';
@@ -106,7 +107,7 @@
     if(composite==='overview'){state.reviews[0].anonymous=true;state.reviews[0].text=('Спасибо за консультацию. '.repeat(30)+'Длинноеслово'.repeat(30)).slice(0,1000);}
     if(composite==='empty-guest')ui.eligible=false;
     if(composite==='rating-closed'){state.textReviewsVisible=false;state.clientSubmissionEnabled=false;}
-    if(composite==='form-combined'){ui.text='Длинноеслово'.repeat(100).slice(0,1000);ui.anonymous=true;state.moderationRequired=false;}
+    if(composite==='form-combined'){ui.text='Длинноеслово'.repeat(100).slice(0,1000);ui.anonymous=true;state.moderationMode='none';}
     if(composite==='restricted-form'){state.anonymousAllowed=false;state.maxTextLength=120;state.ratingVisible=false;state.reviews[0].anonymous=true;ui.error='text_required';}
     return {state,ui};
   }

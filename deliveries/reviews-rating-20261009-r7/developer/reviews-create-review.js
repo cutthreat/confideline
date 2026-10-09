@@ -2,13 +2,14 @@
   'use strict';
   const {role,t,url,can,store,error} = ReviewAdminUI,$ = id => document.getElementById(id);
   document.title = t('write');
-  if (!can('create')) { $('create-forbidden').hidden = false; $('create-surface').remove(); $('create-success').remove(); return; }
+  if (!can('create')) { $('create-forbidden').hidden = false; $('management-expert').remove(); $('create-surface').remove(); $('create-success').remove(); return; }
+  $('management-expert').hidden=false;
   $('create-surface').hidden = false;
   $('create-cancel').href = $('create-queue').href = url('reviews.html');
   let operationId = crypto.randomUUID(),busy = false;
   function policy() { try {
     const p=store.settings();
-    $('create-submit-label').textContent=t(p.moderationRequired?'submit':'publish');
+    $('create-submit-label').textContent=t(p.moderationMode==='premoderation'?'submit':'publish');
     $('admin-review-text').maxLength=p.maxTextLength;$('admin-review-text').required=!p.ratingOnlyAllowed;
     document.querySelector('label[for="admin-review-text"]').textContent=t(p.ratingOnlyAllowed?'text':'textRequiredLabel');
     $('create-text-count').textContent=$('admin-review-text').value.length+' / '+p.maxTextLength;
