@@ -7,18 +7,18 @@
   let timer;
   function feedback(message){$('admin-feedback').textContent=message;$('admin-feedback').hidden=false;clearTimeout(timer);timer=setTimeout(()=>{$('admin-feedback').hidden=true;},5000);}
   function showError(id,e){$(id).textContent=error(e);$(id).hidden=false;}
-  const fields={reviewsEnabled:'reviews-enabled',ratingVisible:'rating-visible',textReviewsVisible:'text-reviews-visible',clientSubmissionEnabled:'client-submission-enabled',moderationRequired:'moderation-required',anonymousAllowed:'anonymous-allowed',ratingOnlyAllowed:'rating-only-allowed'};
+  const fields={reviewsEnabled:'reviews-enabled',ratingVisible:'rating-visible',textReviewsVisible:'text-reviews-visible',clientSubmissionEnabled:'client-submission-enabled',anonymousAllowed:'anonymous-allowed',ratingOnlyAllowed:'rating-only-allowed'};
   let version,baseline,dirty=false;
-  function values(){const result={};for(const[key,id]of Object.entries(fields))result[key]=$(id).checked;result.maxTextLength=$('max-text-length').value;return result;}
+  function values(){const result={};for(const[key,id]of Object.entries(fields))result[key]=$(id).checked;result.moderationMode=$('moderation-mode').value;result.maxTextLength=$('max-text-length').value;return result;}
   function dependencies(){
     const enabled=$('reviews-enabled').checked;
     for(const id of ['rating-visible','text-reviews-visible','client-submission-enabled'])$(id).disabled=!enabled;
-    $('moderation-state').textContent=t($('moderation-required').checked?'on':'off');
   }
   function changed(){dirty=JSON.stringify(values())!==baseline||!!$('settings-reason').value;dependencies();$('settings-dirty').hidden=!dirty;}
   function state(){
     const policy=store.settings();version=policy.version;
     for(const[key,id]of Object.entries(fields))$(id).checked=policy[key];
+    $('moderation-mode').value=policy.moderationMode;
     $('max-text-length').value=policy.maxTextLength;$('settings-reason').value='';
     baseline=JSON.stringify(values());dirty=false;$('settings-dirty').hidden=true;$('settings-stale').hidden=true;$('settings-error').hidden=true;
     $('settings-save').disabled=false;dependencies();
