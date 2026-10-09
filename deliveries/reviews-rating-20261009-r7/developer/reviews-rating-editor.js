@@ -12,6 +12,7 @@
     $('admin-votes').textContent=summary.votes;$('admin-texts').textContent=summary.textCount;
     $('admin-rating-mode').textContent=t(summary.mode);
     $('public-preview').href='profile.html?shared=1&lang='+lang;
+    $('public-preview').title=t('expertProfile');$('public-preview').setAttribute('aria-label',t('expertProfile'));
     $('public-preview').hidden=$('create-expert').value!=='EX-101';
   }
   function safeRender(){try{render();$('rating-management-error').hidden=true;}catch(e){$('rating-management-error').textContent=error(e);$('rating-management-error').hidden=false;}}
