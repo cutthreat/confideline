@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  const KEY='confideline-support-internal-integrated-20261013-v1',$=s=>document.querySelector(s),params=new URLSearchParams(location.search);
+  const KEY='confideline-support-internal-integrated-20261013-v2',LEGACY_KEY='confideline-support-internal-integrated-20261013-v1',$=s=>document.querySelector(s),params=new URLSearchParams(location.search);
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const fa=n=>`<i class="fa fa-${n}" aria-hidden="true"></i>`,id=()=>crypto.randomUUID();
   const role=params.get('view')==='client'?'client':document.documentElement.dataset.internalView==='agent'?'agent':'moderator';
@@ -84,11 +84,11 @@
     }
     s.ticketSchema=2;s.workSchema=2;return s;
   }
-  let state;try{state=hydrate(JSON.parse(localStorage.getItem(KEY)))}catch{state=hydrate(seed())}
+  let state;try{const saved=localStorage.getItem(KEY);state=hydrate(JSON.parse(saved===null?localStorage.getItem(LEGACY_KEY):saved))}catch{state=hydrate(seed())}
   const ui={open:false,section:'cases',selected:null,work:null,pendingPeer:null,directory:false,contactQuery:'',contactRole:'all',workQuery:'',details:false,answer:null,filters:{cases:'all',work:'all'},channels:{},resizing:false};
   const LAYOUT_KEY=`${KEY}:width:${actor.id}`;
   let preferredWidth=null;
-  try{const value=Number(localStorage.getItem(LAYOUT_KEY));if(Number.isFinite(value)&&value>=360&&value<=10000)preferredWidth=value;}catch{}
+  try{const saved=localStorage.getItem(LAYOUT_KEY),legacy=localStorage.getItem(`${LEGACY_KEY}:width:${actor.id}`),value=Number(saved??legacy);if(Number.isFinite(value)&&value>=360&&value<=10000){preferredWidth=value;if(saved===null)localStorage.setItem(LAYOUT_KEY,String(value));}}catch{}
   let timer,modalAction=null,modalCaseId=null,returnFocus=null,committingAction=false;
   const current=()=>ui.work?(state.workChats.find(w=>w.id===ui.work&&canReadWork(w))||(ui.pendingPeer&&canContact(actor.id,ui.pendingPeer)?newWork(user(ui.pendingPeer)):null)):state.cases.find(t=>t.id===ui.selected);
   const visibleWork=()=>state.workChats.filter(w=>canReadWork(w)&&w.messages.length).sort((a,b)=>(b.lastActivity||0)-(a.lastActivity||0));
