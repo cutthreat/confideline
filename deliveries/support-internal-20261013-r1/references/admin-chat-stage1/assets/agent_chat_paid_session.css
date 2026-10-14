@@ -1,0 +1,766 @@
+/* Paid-session state machine UI. Loaded only with the agent chat workspace. */
+
+#admin-agent-chat .paid-session-float {
+  position: fixed;
+  right: 14px;
+  bottom: 104px;
+  z-index: var(--agent-z-floating, 220) !important;
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  padding: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  border: 1px solid #b9c8d6 !important;
+  border-radius: 999px !important;
+  background: #fff !important;
+  color: #617387 !important;
+  box-shadow:
+    0 12px 28px rgba(15, 23, 42, 0.14),
+    0 3px 8px rgba(15, 23, 42, 0.08);
+  outline: none !important;
+  transform: translateZ(0);
+  transition:
+    transform 110ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+#admin-agent-chat .paid-session-float.is-pressed {
+  transform: translateY(1px) scale(0.92);
+  box-shadow:
+    0 6px 14px rgba(15, 23, 42, 0.12),
+    0 2px 5px rgba(15, 23, 42, 0.08);
+}
+
+#admin-agent-chat .paid-session-svg-icon {
+  width: 16px;
+  height: 16px;
+  display: block;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  overflow: visible;
+}
+
+#admin-agent-chat .paid-session-svg-icon .paid-session-icon-fill {
+  fill: currentColor;
+  stroke: none;
+}
+
+#admin-agent-chat .paid-session-svg-icon .paid-session-icon-track {
+  opacity: 0.28;
+}
+
+#admin-agent-chat .paid-session-svg-icon.is-spinning {
+  animation: agentPaidSessionSpin 0.9s linear infinite;
+}
+
+#admin-agent-chat .paid-session-float .paid-session-control-icon {
+  position: relative;
+  z-index: 1;
+  width: 18px;
+  height: 18px;
+}
+
+#admin-agent-chat .paid-session-float:focus-visible {
+  box-shadow:
+    0 0 0 3px rgba(64, 137, 211, 0.2),
+    0 12px 28px rgba(15, 23, 42, 0.14);
+}
+
+#admin-agent-chat .paid-session-float:disabled,
+#admin-agent-chat .paid-session-float[aria-disabled="true"] {
+  cursor: default;
+  opacity: 1;
+}
+
+#admin-agent-chat .paid-session-float.is-state-completed {
+  border-color: #cbd5df !important;
+  background: #f4f6f8 !important;
+  color: #8190a0 !important;
+  box-shadow: 0 5px 14px rgba(15, 23, 42, 0.08);
+}
+
+#admin-agent-chat .paid-session-float.is-state-offer_pending {
+  border-color: #90b8d5 !important;
+  background: #f3f9fd !important;
+  color: #3b739b !important;
+  animation: agentPaidSessionWaitingGlow 1.8s ease-in-out infinite;
+}
+
+#admin-agent-chat .paid-session-float.is-state-offer_pending::before,
+#admin-agent-chat .paid-session-float[aria-busy="true"]::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border: 1px dashed rgba(63, 126, 169, 0.62);
+  border-radius: inherit;
+  pointer-events: none;
+  animation: agentPaidSessionWaitingOrbit 2.4s linear infinite;
+}
+
+#admin-agent-chat .paid-session-float[aria-busy="true"]::after {
+  content: none;
+}
+
+#admin-agent-chat .paid-session-float.is-state-ready {
+  border-color: #63c995 !important;
+  background: #e8fbf1 !important;
+  color: #07834f !important;
+  box-shadow:
+    0 12px 28px rgba(16, 122, 75, 0.18),
+    0 3px 8px rgba(15, 23, 42, 0.08);
+}
+
+#admin-agent-chat .paid-session-float.is-state-ready::before,
+#admin-agent-chat .paid-session-float.is-state-ready::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border: 1px solid rgba(35, 178, 107, 0.52);
+  border-radius: inherit;
+  pointer-events: none;
+  animation: agentPaidSessionPulse 1.65s ease-out infinite;
+}
+
+#admin-agent-chat .paid-session-float.is-state-ready::after {
+  inset: -10px;
+  border-color: rgba(35, 178, 107, 0.26);
+  animation-delay: 0.42s;
+}
+
+#admin-agent-chat .paid-session-float.is-state-connecting {
+  border-color: #8cbbe9 !important;
+  background: #edf6ff !important;
+  color: #2f78b8 !important;
+}
+
+#admin-agent-chat .paid-session-float.is-state-active {
+  border-color: #d96969 !important;
+  background: #fff7f7 !important;
+  color: #b52c2c !important;
+  box-shadow:
+    0 12px 28px rgba(160, 47, 47, 0.15),
+    0 3px 8px rgba(15, 23, 42, 0.08);
+}
+
+#admin-agent-chat .paid-session-float.is-state-paused {
+  border-color: #65b8a2 !important;
+  background: #f1fbf8 !important;
+  color: #187a65 !important;
+  box-shadow:
+    0 12px 28px rgba(31, 132, 107, 0.14),
+    0 3px 8px rgba(15, 23, 42, 0.08);
+}
+
+#admin-agent-chat .paid-session-float.is-state-paused:hover,
+#admin-agent-chat .paid-session-float.is-state-paused:focus {
+  border-color: #3d9d84 !important;
+  background: #e8f8f3 !important;
+  color: #0e6956 !important;
+}
+
+#admin-agent-chat .paid-session-float.is-state-reconnecting {
+  border-color: #e0ad4d !important;
+  background: #fffaf0 !important;
+  color: #a96809 !important;
+}
+
+@keyframes agentPaidSessionPulse {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.9);
+  }
+  72%,
+  100% {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes agentPaidSessionSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes agentPaidSessionWaitingOrbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes agentPaidSessionWaitingGlow {
+  0%,
+  100% {
+    box-shadow:
+      0 8px 20px rgba(46, 104, 145, 0.1),
+      0 0 0 0 rgba(84, 151, 196, 0.06);
+  }
+  50% {
+    box-shadow:
+      0 10px 24px rgba(46, 104, 145, 0.16),
+      0 0 0 4px rgba(84, 151, 196, 0.08);
+  }
+}
+
+#admin-agent-chat .billing-panel[hidden] {
+  display: none !important;
+}
+
+#admin-agent-chat .billing-panel [hidden] {
+  display: none !important;
+}
+
+#admin-agent-chat .billing-panel {
+  position: relative;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin: 0;
+  padding: 6px 10px;
+  border: 0;
+  border-bottom: 1px solid #d8e2eb;
+  border-radius: 0;
+  background: linear-gradient(180deg, #f8fbfe 0%, #f2f7fb 100%);
+  box-shadow: none;
+  color: #334155;
+}
+
+#admin-agent-chat .billing-panel.is-open {
+  display: flex;
+  animation: agentPaidSessionPanelEnter 220ms cubic-bezier(0.2, 0.72, 0.24, 1) both;
+}
+
+@keyframes agentPaidSessionPanelEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#admin-agent-chat .billing-panel-main,
+#admin-agent-chat .billing-panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+#admin-agent-chat .billing-panel-main {
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+}
+
+#admin-agent-chat .billing-panel-actions {
+  flex: 0 0 auto;
+}
+
+#admin-agent-chat .billing-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 23px;
+  padding: 3px 8px;
+  border: 1px solid #d7e0e8;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #41566d;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+#admin-agent-chat .billing-panel[data-session-status="active"] .paid-session-status-pill {
+  border-color: #9bdcbb;
+  background: #ecfaf3;
+  color: #08784d;
+}
+
+#admin-agent-chat .billing-panel[data-session-status="paused"] .paid-session-status-pill,
+#admin-agent-chat .billing-panel[data-session-status="reconnecting"] .paid-session-status-pill {
+  border-color: #eed08d;
+  background: #fff9ea;
+  color: #92600d;
+}
+
+#admin-agent-chat .billing-panel[data-session-status="connecting"] .paid-session-status-pill {
+  border-color: #b8d5ef;
+  background: #eef7ff;
+  color: #2f6f9f;
+}
+
+#admin-agent-chat .billing-panel .paid-session-balance-pill {
+  border-color: #d7e0e8;
+  background: #f7f9fb;
+  color: #687787;
+}
+
+#admin-agent-chat .billing-panel .paid-session-balance-pill[data-balance-signal="sufficient"] {
+  border-color: #b9dfcf;
+  background: #f0faf5;
+  color: #287257;
+}
+
+#admin-agent-chat .billing-panel .paid-session-balance-pill[data-balance-signal="low"] {
+  border-color: #ecd18e;
+  background: #fff9e9;
+  color: #8b620f;
+}
+
+#admin-agent-chat .billing-panel .paid-session-balance-pill[data-balance-signal="required"] {
+  border-color: #e9b9b9;
+  background: #fff3f3;
+  color: #a13a3a;
+}
+
+#admin-agent-chat .billing-panel-actions .btn {
+  min-width: 0;
+  min-height: 23px;
+  height: 23px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  border-color: #d5e0ea;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #41566d;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 21px;
+  box-shadow: none;
+  white-space: nowrap;
+}
+
+#admin-agent-chat .billing-panel-actions .btn:hover,
+#admin-agent-chat .billing-panel-actions .btn:focus {
+  border-color: #b9cfdf;
+  background: #fff;
+  color: #2f5f85;
+  outline: none;
+}
+
+#admin-agent-chat .billing-panel-actions .paid-session-panel-collapse {
+  width: 24px;
+  padding: 0;
+}
+
+#admin-agent-chat .billing-panel-actions .paid-session-panel-collapse .paid-session-collapse-icon {
+  width: 13px;
+  height: 13px;
+  margin: auto;
+  stroke-width: 2;
+}
+
+#admin-agent-chat .paid-session-panel-icon {
+  width: 13px;
+  height: 13px;
+}
+
+#admin-agent-chat .paid-session-inline-error {
+  flex: 1 0 100%;
+  padding: 4px 7px;
+  border-left: 2px solid #d9534f;
+  background: rgba(255, 245, 245, 0.86);
+  color: #a8322f;
+  font-size: 10.5px;
+  line-height: 1.3;
+}
+
+.paid-session-modal {
+  z-index: var(--agent-z-modal, 5000) !important;
+}
+
+.paid-session-modal .global-modal-body {
+  display: grid;
+  gap: 7px;
+}
+
+.paid-session-modal .form-control {
+  margin: 0;
+}
+
+.paid-session-modal-summary {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 7px;
+  min-height: 20px;
+  padding: 0 1px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #617387;
+  font-size: 11.5px;
+}
+
+.paid-session-modal-summary > * + *::before {
+  content: "·";
+  margin-right: 7px;
+  color: #a2b0bd;
+}
+
+.paid-session-modal-summary strong {
+  color: #263b50;
+  font-weight: 600;
+  text-align: left;
+}
+
+.paid-session-service-field {
+  display: grid;
+  gap: 3px;
+}
+
+.paid-session-service-select {
+  min-height: 34px;
+  border-color: #d5e0e8;
+  border-radius: 8px;
+  color: #30465a;
+  font-size: 12px;
+}
+
+.paid-session-service-select:disabled {
+  opacity: 1;
+  border-color: #d9e2e9;
+  background: #f6f8fa;
+  color: #52677a;
+  cursor: not-allowed;
+  -webkit-text-fill-color: #52677a;
+}
+
+.paid-session-service-hint {
+  padding-left: 2px;
+  color: #7a8c9d;
+  font-size: 10.5px;
+  line-height: 1.25;
+}
+
+.paid-session-modal-summary-confirmed span {
+  color: #16805a;
+  font-weight: 600;
+}
+
+.paid-session-modal-note {
+  margin: 0;
+  color: #64778b;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.paid-session-offer-template {
+  display: grid;
+  gap: 6px;
+}
+
+.paid-session-modal-section {
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid #dce5ec;
+  border-radius: 9px;
+}
+
+.paid-session-modal-section.is-client-facing {
+  border-color: #cfe0ec;
+  background: #f7fbfe;
+}
+
+.paid-session-modal-section.is-service-facing {
+  border-color: #e0e5ea;
+  background: #fafbfc;
+}
+
+.paid-session-modal-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  min-width: 0;
+}
+
+.paid-session-modal-section-head strong {
+  color: #2e465b;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.paid-session-modal-section-head span {
+  color: #7a8c9d;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.paid-session-modal-section.is-client-facing .paid-session-offer-preview {
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.paid-session-modal-section.is-service-facing .paid-session-modal-note {
+  padding-left: 1px;
+}
+
+.paid-session-template-field {
+  position: relative;
+  display: grid;
+  gap: 3px;
+}
+
+.paid-session-field-group {
+  display: grid;
+  gap: 3px;
+}
+
+.paid-session-field-group.is-invalid .form-control,
+.paid-session-template-field.is-invalid .paid-session-template-select {
+  border-color: #d9827d !important;
+  background: #fffafa;
+  box-shadow: 0 0 0 2px rgba(190, 65, 58, 0.09);
+}
+
+.paid-session-template-select {
+  height: 32px;
+  padding-right: 31px;
+  border-color: #cfdae4;
+  border-radius: 8px;
+  background: #fff;
+  color: #2f4357;
+  font-size: 12px;
+}
+
+.paid-session-template-select:focus {
+  border-color: #79a9cc;
+  box-shadow: 0 0 0 2px rgba(60, 141, 188, 0.09);
+}
+
+.paid-session-template-toggle {
+  position: absolute;
+  z-index: 2;
+  top: 1px;
+  right: 1px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 0 7px 7px 0;
+  background: transparent;
+  color: #77899a;
+}
+
+.paid-session-template-toggle:hover,
+.paid-session-template-toggle:focus {
+  background: #f3f7fa;
+  color: #3f6988;
+  outline: 0;
+}
+
+.paid-session-template-toggle .paid-session-svg-icon {
+  width: 13px;
+  height: 13px;
+}
+
+.paid-session-template-menu {
+  position: absolute;
+  z-index: 6;
+  top: calc(100% + 3px);
+  left: 0;
+  right: 0;
+  max-height: 144px;
+  overflow-y: auto;
+  border: 1px solid #ccd9e4;
+  border-radius: 7px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(32, 54, 75, 0.14);
+}
+
+.paid-session-template-menu[hidden] {
+  display: none !important;
+}
+
+.paid-session-template-option {
+  width: 100%;
+  min-height: 29px;
+  padding: 6px 9px;
+  display: block;
+  border: 0;
+  border-bottom: 1px solid #edf2f6;
+  background: #fff;
+  color: #34495d;
+  font-size: 11.5px;
+  line-height: 1.25;
+  text-align: left;
+}
+
+.paid-session-template-option:last-of-type {
+  border-bottom: 0;
+}
+
+.paid-session-template-option:hover,
+.paid-session-template-option:focus,
+.paid-session-template-option.is-selected {
+  background: #eef6fb;
+  color: #245f83;
+  outline: 0;
+}
+
+.paid-session-template-option[hidden],
+.paid-session-template-empty[hidden] {
+  display: none !important;
+}
+
+.paid-session-template-empty {
+  padding: 8px 9px;
+  background: #fff7f8;
+  color: #9b6670;
+  font-size: 11px;
+}
+
+.paid-session-offer-preview {
+  min-width: 0;
+  margin: 0;
+  padding: 6px 8px 7px;
+  border: 1px solid #d7e2eb;
+  border-radius: 8px;
+  background: #f8fbfd;
+}
+
+.paid-session-offer-preview legend {
+  width: auto;
+  margin: 0 0 0 -2px;
+  padding: 0 5px;
+  border: 0;
+  background: #fff;
+  color: #687c90;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.paid-session-offer-preview p {
+  margin: 0;
+  color: #31465a;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.paid-session-form-error {
+  margin: 0;
+  padding: 0 2px;
+  color: #b33b36;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.paid-session-modal-footer-split {
+  justify-content: space-between !important;
+}
+
+.paid-session-modal-footer-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 767px) {
+  #admin-agent-chat .paid-session-float {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+  }
+
+  #admin-agent-chat .billing-panel {
+    align-items: flex-start;
+    padding: 5px 7px;
+  }
+
+  #admin-agent-chat .billing-panel-main {
+    gap: 4px;
+  }
+
+  #admin-agent-chat .billing-pill {
+    min-height: 21px;
+    padding: 2px 6px;
+    font-size: 9.5px;
+  }
+
+  .paid-session-modal.global-modal-backdrop {
+    align-items: center;
+    padding: 12px;
+  }
+
+  .paid-session-modal .global-modal-body {
+    gap: 6px;
+  }
+
+  .paid-session-modal-section {
+    gap: 5px;
+    padding: 7px;
+  }
+
+  .paid-session-modal-section-head {
+    gap: 5px;
+  }
+
+  .paid-session-modal-section-head strong {
+    font-size: 11px;
+  }
+
+  .paid-session-modal-section-head span,
+  .paid-session-modal-note {
+    font-size: 10px;
+  }
+
+  .paid-session-modal-footer-split {
+    align-items: stretch;
+    justify-content: flex-start !important;
+  }
+
+  .paid-session-modal-footer-split > .btn {
+    flex: 0 1 auto;
+    padding-right: 7px;
+    padding-left: 7px;
+    font-size: 11px;
+  }
+
+  .paid-session-modal-footer-main {
+    min-width: 0;
+    flex: 1 1 auto;
+    gap: 5px;
+  }
+
+  .paid-session-modal-footer-main .btn {
+    min-width: 0;
+    flex: 1 1 0;
+    padding-right: 5px;
+    padding-left: 5px;
+    font-size: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #admin-agent-chat .paid-session-float,
+  #admin-agent-chat .paid-session-float::before,
+  #admin-agent-chat .paid-session-float::after,
+  #admin-agent-chat .paid-session-svg-icon,
+  #admin-agent-chat .billing-panel.is-open {
+    animation: none !important;
+    transition: none !important;
+  }
+}

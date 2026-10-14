@@ -1,15 +1,30 @@
-# Support Internal: пакет для Игоря
+# Внутренний чат: пакет для Игоря
 
-Откройте `index.html`. Обновление communications-v2: общая кнопка «Сообщения», вкладки «Тикеты» и «Внутренний чат», два прямых Support info-примера, выбор никнейма/роли и изменение ширины. Основные входы: агент и сотрудник; все состояния используют те же HTML. Внутренний чат — личные диалоги с выбранным сотрудником/агентом, без прежней team queue/claim-гипотезы.
+Редакция R4, 14.10.2026. Открыть index.html. Полный комплект: пять HTML-макетов, CSS/JS, локальные vendor/fonts/images, исходный internal-messenger.css, ТЗ в Markdown и HTML, notices и MANIFEST.json с SHA-256.
 
-- `developer/TZ.md` — единственное исходное ТЗ; `developer/tz.html` — автоматически полученная читаемая версия.
-- `developer/support-work-chat-agent.html` и `support-work-chat-moderator.html` — ролевые входы.
-- `developer/support-ticket-chat-final.html` и `support-ticket-queue-final.html` — сохраненные исходные оболочки с виджетом.
-- `developer/css`, `js`, `vendor`, `assets` — автономные локальные ресурсы.
-- `MANIFEST.json` — состав и SHA-256; `THIRD-PARTY-NOTICES.md` — зависимости.
+## Названия и сценарии
 
-Виджет — интерактивный demo на синтетических данных. Не переносить URL-персоны, localStorage fixtures, CSP preview или demo transport в production. Серверный план и границы текущего Support описаны в ТЗ. Backend/RBAC/платежи/реальные участники этой версткой не реализованы и не приняты.
+Виджет — «Внутренний чат». Вкладки: «Тикеты» и «Рабочие чаты».
+Агент/эксперт создает обращение в «Тикетах» либо выбирает сотрудника по никнейму и общается без тикета в «Рабочих чатах». Сотрудник может первым написать доступному агенту. Клиент в админку не входит.
 
-Одна страница работает при открытии файла. Для синхронного двухролевого просмотра используйте обе страницы на одном HTTPS-origin опубликованного пакета; браузер может изолировать localStorage отдельных file-страниц. Сброс демо на странице входа затрагивает только ключ этого прототипа, не данные других макетов.
+## Входы
 
-Исходный `custom.css` сохранен. Добавления сосредоточены в `internal-widget.css/js`, ссылки на них имеют новый cache key. Layout preference хранится отдельно по demo actor на устройстве. Старые личные сообщения/черновики сохраняются при переходе к pair-модели; это demo migration, не production backfill. Внутренняя общая память, исторические MD, QA-скриншоты и рабочие отчеты не входят в архив.
+- developer/support-work-chat-agent.html?section=work&recipient=502 — агент, рабочий чат.
+- developer/support-work-chat-agent.html?section=cases — агент, обращения и создание тикета.
+- developer/support-work-chat-moderator.html?section=work&recipient=104 — Support, рабочий чат.
+- developer/support-work-chat-moderator.html?actor=moderator&section=work — Moderator.
+- developer/support-work-chat-moderator.html?actor=admin&section=work — Super Admin.
+- developer/support-ticket-queue-final.html — исходная очередь с виджетом.
+- developer/support-ticket-chat-final.html — исходная карточка с виджетом.
+- developer/chat-v2-internal.html — кнопка в шапке с инструментами оператора.
+- developer/tz.html / developer/TZ.md — актуальное ТЗ, включая карту приемки и интеграцию.
+
+## Внедрение
+
+Переиспользовать принятый YouDate/AdminLTE layout и готовые компоненты Support/Agent Chat. Не менять фоновые страницы; убрать только прежнюю вкладку Internal из карточки и подключить сквозную панель. Сохранить серверные audience/membership, вопросы, lifecycle/SLA и защищенные запросы. Рабочие личные пары и actor-scoped summary — новый серверный объем с отдельным правом, не копия Support DTO.
+
+internal-widget.js использует синтетические роли, ID и localStorage. Это демонстрационный controller, не production auth/API. CSP/custom.js ограничивают demo-операции, не задают production security. Реальные права, transport, retries, upload/scan, платежи и service_session этим пакетом не проверены.
+
+Для совместного просмотра двух ролей нужен один HTTP origin. Отдельный file://-просмотр возможен, но браузер может ограничивать storage; запускать обычный локальный static server. Пакет самодостаточен и не требует CDN. Production AssetBundle/шрифты не менять из-за offline адаптации.
+
+ZIP содержит тот же developer-комплект, README/notices/index и manifest; не содержит сам себя, старую память, приватные реестры и QA-скриншоты. Проверки/receipt этой публикации хранятся отдельно локально.
