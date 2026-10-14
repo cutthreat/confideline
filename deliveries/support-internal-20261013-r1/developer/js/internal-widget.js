@@ -1,11 +1,24 @@
 (function () {
   'use strict';
-  const P=window.ConfidelineTicketPolicy,volatileDrafts=new Map(),volatileForms=new Map();
+  const P=window.ConfidelineTicketPolicy,volatileDrafts=new Map(),volatileForms=new Map(),volatileAnswers=new Map();
   const clock=(source=state)=>Date.now()+Number(source?.demoClockOffsetHours||0)*P.HOUR;
   const stamp=value=>new Intl.DateTimeFormat('ru',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Minsk'}).format(new Date(value));
   const draftText=key=>volatileDrafts.has(key)?volatileDrafts.get(key):state.drafts[key]||'';
   function captureDraft(){const input=$('#cl-i-input');if(input?.dataset.clDraft)volatileDrafts.set(input.dataset.clDraft,input.value);}
-  function clearDraft(key){volatileDrafts.delete(key);const input=$('#cl-i-input');if(input?.dataset.clDraft===key)input.value='';}
+  function clearDraft(key){volatileDrafts.delete(key);volatileAnswers.delete(key);const input=$('#cl-i-input');if(input?.dataset.clDraft===key)input.value='';}
+  const answerIntent=key=>volatileAnswers.has(key)?volatileAnswers.get(key):state.composerMeta[key]?.answerIntent||null;
+  function selectAnswer(qid) {
+    const t=current(),dk=draftKey(t);let intent;
+    try{intent=P.bindAnswer(t,qid,actor.id);}catch(error){ui.sendError=error.message;refreshPreservingView();return;}
+    captureDraft();volatileAnswers.set(dk,intent);
+    const saved=commit(s=>{const meta=s.composerMeta[dk]||={};meta.answerIntent=intent;});
+    if(saved)ui.sendError='';refreshPreservingView();$('#cl-i-input')?.focus();
+  }
+  function makeOrdinaryMessage() {
+    const dk=draftKey(current());captureDraft();volatileAnswers.set(dk,null);
+    const saved=commit(s=>{const meta=s.composerMeta[dk]||={};delete meta.answerIntent;});
+    ui.answer=null;if(saved)ui.sendError='';refreshPreservingView();$('#cl-i-input')?.focus();
+  }
   const widgetName='Внутренний чат';
   const KEY='confideline-support-internal-integrated-20261013-v3-local',LEGACY_KEY='confideline-support-internal-integrated-20261013-v2',$=s=>document.querySelector(s),params=new URLSearchParams(location.search);
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -141,12 +154,14 @@ const ui={open:false,section:'cases',selected:null,work:null,pendingPeer:null,di
   function prepareThread(){ui.creating=false;ui.searchOpen=false;ui.searchQuery='';ui.menu=null;ui.sendError='';const t=current();if(!t)return;const dk=draftKey(t),c=stream();ui.restoreScroll=ui.scrolls[dk]??null;ui.markers[dk]=c.messages.find(m=>m.userId!==actor.id&&m.seq>(c.readCursors?.[actor.id]||0))?.id||null;ui.scrollTarget=ui.restoreScroll===null?ui.markers[dk]||'bottom':null;}
   function feedback(text) {const box=$('#cl-internal-feedback'),a=$('#cl-i-composer');box.style.bottom=ui.open&&a?`${innerHeight-a.getBoundingClientRect().top+10}px`:'18px';box.textContent=text;clearTimeout(timer);timer=setTimeout(()=>box.textContent='',3000);}
   function commit(change,operation='business') {
+    let next;
     try {
       if(ui.demoSaveFailure&&operation!=='mark_read')throw Error('Демо: ошибка сохранения');
-      const next=hydrate(JSON.parse(localStorage.getItem(KEY))||JSON.parse(JSON.stringify(state)));
+      next=hydrate(JSON.parse(localStorage.getItem(KEY))||JSON.parse(JSON.stringify(state)));
       if(committingAction&&modalCaseId!==null){const t=next.cases.find(t=>t.id===modalCaseId);if(!t||!canSee(t)||!P.mayMutate(t,operation))throw Error('Обращение закрыто или недоступно.');}
       change(next);hydrate(next);localStorage.setItem(KEY,JSON.stringify(next));state=next;return true;
     } catch(error) {
+      if(error.code==='question_draft_conflict'&&next)state=next;
       ui.sendError=(error.message==='Демо: ошибка сохранения'?'Демо: ошибка сохранения. ':error.message+' ')+'Текст остаётся в поле.';
       const box=$('#cl-i-composer-error')||$('#cl-i-create-error')||$('#cl-i-modal-error');
       if(box){box.hidden=false;box.textContent=ui.sendError;}else feedback(ui.sendError);return false;
@@ -225,14 +240,15 @@ const ui={open:false,section:'cases',selected:null,work:null,pendingPeer:null,di
   function attachmentMarkup(files=[]){return files.map(f=>{if(f.localMetadataOnly)return '<div class="cl-i-attachment ticket-file-card">'+fa('file-o')+'<span>'+esc(f.name)+'<small>'+Math.ceil(f.size/1024)+' КБ · Не загружено</small></span></div>';return '<button type="button" class="cl-i-attachment ticket-file-card" data-cl-file="'+f.id+'" title="Открыть '+esc(f.name)+'">'+(f.type.startsWith('image/')?'<img src="'+esc(f.data)+'" alt="'+esc(f.name)+'">':fa('file-o'))+'<span>'+esc(f.name)+'<small>'+Math.ceil(f.size/1024)+' КБ</small></span></button>';}).join('');}
   function composer(t,text,enabled=true) {
     if(!ui.work&&closed(t))return '<div class="cl-i-required">Обращение закрыто · доступна история</div>';
+    const intent=ui.work?null:answerIntent(draftKey(t)),answerState=P.answerIntentState(t,intent,actor.id);if(!ui.work)ui.answer=intent?.questionId||null;const canSend=enabled&&!answerState.conflict;
     const d=draftText(draftKey(t)),meta=state.composerMeta[draftKey(t)]||{},quoted=stream().messages.find(m=>m.id===meta.replyToMessageId),files=meta.attachments||[];
-    return `<form class="cl-i-composer cl-i-source-composer" id="cl-i-composer">${!ui.work?`<div class="cl-i-composer-label"><label for="cl-i-input">${esc(ui.answer?'Ответ на вопрос':staff?label(t,key(t)):'Сообщение Support')}</label>${ui.answer?'<button type="button" class="cl-i-link" id="cl-i-clear-answer">Отменить ответ</button>':''}</div>`:'<label class="sr-only" for="cl-i-input">Сообщение</label>'}${quoted?`<div class="cl-i-reply-preview">${quoteMarkup(quoted)}<button class="cl-i-icon" id="cl-i-clear-quote" type="button" title="Отменить цитирование" aria-label="Отменить цитирование">${fa('times')}</button></div>`:''}${files.length?`<div class="cl-i-attachment-preview">${files.map(f=>`<div>${fa(f.type.startsWith('image/')?'picture-o':'file-o')}<span>${esc(f.name)}</span><button type="button" class="cl-i-icon" data-cl-remove-file="${f.id}" title="Убрать вложение" aria-label="Убрать ${esc(f.name)}">${fa('times')}</button></div>`).join('')}</div>`:''}<div class="ticket-composer-input-row"><div class="ticket-composer-input-shell"><textarea id="cl-i-input" data-cl-draft="${esc(draftKey(t))}" class="form-control ticket-composer-textarea" rows="1" maxlength="3000" ${enabled?'':'disabled'} placeholder="${enabled?'Сообщение…':'Собеседник недоступен'}">${esc(d)}</textarea><div class="ticket-composer-input-actions"><button type="button" class="cl-i-icon" id="cl-i-attach" title="Прикрепить файл" aria-label="Прикрепить файл" ${enabled?'':'disabled'}>${fa('paperclip')}</button><span class="cl-i-draft-status" id="cl-i-draft-status" role="status"></span><button class="cl-i-icon cl-i-send cl-i-source-send" id="cl-i-send" type="submit" aria-label="Отправить сообщение" title="Отправить сообщение" data-cl-blocked="${!enabled}" ${enabled&&(d.trim()||files.length)?'':'disabled'}>${fa('paper-plane')}</button></div></div></div><input id="cl-i-file-input" type="file" accept="image/png,image/jpeg,image/webp,application/pdf,text/plain" hidden><div id="cl-i-composer-error" class="cl-i-validation" role="alert" ${ui.sendError?'':'hidden'}>${esc(ui.sendError)}</div></form>`;
+    return `<form class="cl-i-composer cl-i-source-composer" id="cl-i-composer">${answerState.conflict?`<div class="cl-i-answer-conflict" role="alert"><strong>${esc(answerState.message)}</strong><span>Текст сохранён для исходного вопроса.</span></div>`:''}${!ui.work?`<div class="cl-i-composer-label"><label for="cl-i-input">${esc(ui.answer?'Ответ на вопрос':staff?label(t,key(t)):'Сообщение Support')}</label>${ui.answer?'<button type="button" class="cl-i-link" id="cl-i-clear-answer">Сделать обычным сообщением</button>':''}</div>`:'<label class="sr-only" for="cl-i-input">Сообщение</label>'}${quoted?`<div class="cl-i-reply-preview">${quoteMarkup(quoted)}<button class="cl-i-icon" id="cl-i-clear-quote" type="button" title="Отменить цитирование" aria-label="Отменить цитирование">${fa('times')}</button></div>`:''}${files.length?`<div class="cl-i-attachment-preview">${files.map(f=>`<div>${fa(f.type.startsWith('image/')?'picture-o':'file-o')}<span>${esc(f.name)}</span><button type="button" class="cl-i-icon" data-cl-remove-file="${f.id}" title="Убрать вложение" aria-label="Убрать ${esc(f.name)}">${fa('times')}</button></div>`).join('')}</div>`:''}<div class="ticket-composer-input-row"><div class="ticket-composer-input-shell"><textarea id="cl-i-input" data-cl-draft="${esc(draftKey(t))}" class="form-control ticket-composer-textarea" rows="1" maxlength="3000" ${enabled?'':'disabled'} placeholder="${enabled?'Сообщение…':'Собеседник недоступен'}">${esc(d)}</textarea><div class="ticket-composer-input-actions"><button type="button" class="cl-i-icon" id="cl-i-attach" title="Прикрепить файл" aria-label="Прикрепить файл" ${enabled?'':'disabled'}>${fa('paperclip')}</button><span class="cl-i-draft-status" id="cl-i-draft-status" role="status"></span><button class="cl-i-icon cl-i-send cl-i-source-send" id="cl-i-send" type="submit" aria-label="Отправить сообщение" title="Отправить сообщение" data-cl-blocked="${!canSend}" ${canSend&&(d.trim()||files.length)?'':'disabled'}>${fa('paper-plane')}</button></div></div></div><input id="cl-i-file-input" type="file" accept="image/png,image/jpeg,image/webp,application/pdf,text/plain" hidden><div id="cl-i-composer-error" class="cl-i-validation" role="alert" ${ui.sendError&&!answerState.conflict?'':'hidden'}>${esc(ui.sendError)}</div></form>`;
   }
   const resultLabels={requested:'Запрошено',completed:'Выполнено',rejected:'Отклонено',failed:'Ошибка исполнения'};
   function requests(t) {return `<div class="cl-i-requests"><strong>Защищённые запросы</strong>${t.requests.map(r=>`<div class="cl-i-request-log"><strong>${esc(r.kind)}</strong> · <span class="cl-i-tag">${resultLabels[r.status]}</span><div>${esc(r.reason)}</div>${r.amount?`<div>${esc(r.amount)} USD</div>`:''}<small>${esc(r.by)} · ${esc(r.time)}</small>${r.result?`<div>Результат: ${esc(r.result.note)}<br><small>${esc(r.result.by)} · ${esc(r.result.time)}</small></div>`:''}${superAdmin&&r.status==='requested'?`<button class="cl-i-link" data-cl-resolve="${r.id}">Результат исполнителя</button>`:''}</div>`).join('')||'<div>Запросов нет</div>'}</div>`;}
   function ticketThread() {
     const t=current(),k=key(t),open=closed(t)?[]:questions(t),update=ownUpdate(t);
-    if(ui.answer&&!open.some(q=>q.id===ui.answer))ui.answer=null;
+    ui.answer=answerIntent(draftKey(t))?.questionId||null;
     const actions=[['participant','Подключить участника'],['question','Задать вопрос'],['note','Внутренняя заметка'],...(t.kind==='internal_report'&&t.participants.some(p=>p.userId===t.reporterId)?[['update','Статус заявителю']]:[]),...(t.clientVerified||t.consultationVerified?[['protected','Запросить действие']]:[]),...(!t.clientConnected&&t.clientVerified?[['connect','Подключить клиента']]:[]),...(!closed(t)&&t.workflow!=='resolved'?[['resolve','Завершить тикет']]:[]),['close','Закрыть тикет']];
     return '<div class="cl-i-body"><div class="cl-i-thread-head"><button class="cl-i-icon" id="cl-i-back" title="К списку тикетов" aria-label="К списку тикетов">'+fa('angle-left')+'</button><div class="cl-i-person"><strong>#'+t.id+' · '+esc(t.title)+'</strong><small>'+esc(t.context)+'</small></div></div>'+
     '<section class="cl-i-context"><div class="cl-i-context-meta">'+(staff?'<span class="cl-i-tag">Статус тикета: '+workflow(t)+'</span><span class="cl-i-tag">'+esc(t.owner)+' · SLA '+esc(slaLabel(t))+'</span><button class="cl-i-link" id="cl-i-history">История</button><button class="cl-i-link" id="cl-i-context" aria-expanded="'+ui.details+'">'+fa(ui.details?'angle-up':'angle-down')+' Контекст</button>':ticketStatusMarkup(t,update))+'</div>'+
@@ -244,7 +260,7 @@ const ui={open:false,section:'cases',selected:null,work:null,pendingPeer:null,di
   }
   function questionMarkup(t) {
     const list=staff?t.questions:t.questions.filter(q=>q.recipientId===actor.id),open=list.filter(q=>q.status==='open'),overdue=open.filter(q=>P.timing(q,clock()).overdue).length;
-    if(!list.length)return '';
+    if(!list.length||!staff&&!open.length&&P.answerIntentState(t,answerIntent(draftKey(t)),actor.id).conflict)return '';
     const expanded=ui.questionsExpanded;
     return '<section class="cl-i-questions"><div class="cl-i-question-bar"><button class="cl-i-question-summary" id="cl-i-questions-toggle" aria-expanded="'+expanded+'">'+fa('question-circle')+' Вопросы: '+open.length+' ожидают'+(overdue?' · '+overdue+' просрочено':'')+fa(expanded?'angle-up':'angle-down')+'</button>'+(!expanded&&!staff&&open.length&&!closed(t)?'<button class="cl-i-link cl-i-quick-answer" data-cl-answer="'+open[0].id+'">Ответить на вопрос</button>':'')+'</div>'+
       (expanded?'<div class="cl-i-question-list">'+list.map(q=>{
@@ -378,7 +394,7 @@ const ui={open:false,section:'cases',selected:null,work:null,pendingPeer:null,di
     });
     if(!client)$('#cl-i-close-reason').onchange=()=>{const duplicate=$('#cl-i-close-reason').value==='duplicate';$('#cl-i-duplicate-wrap').hidden=!duplicate;$('#cl-i-duplicate-id').required=duplicate;};
   }
-  function growInput(){const input=$('#cl-i-input');if(!input)return;const style=getComputedStyle(input),line=parseFloat(style.lineHeight)||21,padding=parseFloat(style.paddingTop)+parseFloat(style.paddingBottom),base=line+padding,max=line*5+padding;input.style.height='0px';input.style.height=`${Math.min(max,Math.max(base,input.scrollHeight))}px`;input.style.overflowY=input.scrollHeight>max?'auto':'hidden';}
+  function growInput(){const input=$('#cl-i-input');if(!input)return;const style=getComputedStyle(input),line=parseFloat(style.lineHeight)||21,padding=parseFloat(style.paddingTop)+parseFloat(style.paddingBottom),base=line+padding,max=line*(innerHeight<=600&&input.closest('form').querySelector('.cl-i-answer-conflict')?2:5)+padding;input.style.height='0px';input.style.height=`${Math.min(max,Math.max(base,input.scrollHeight))}px`;input.style.overflowY=input.scrollHeight>max?'auto':'hidden';}
   function bindComposer(send) {
     const input=$('#cl-i-input');input.oninput=e=>{const d=draftKey(current()),v=e.target.value;volatileDrafts.set(d,v);ui.sendError='';$('#cl-i-composer-error').hidden=true;const saved=commit(s=>s.drafts[d]=v),files=state.composerMeta[d]?.attachments||[];$('#cl-i-send').disabled=(!v.trim()&&!files.length)||$('#cl-i-send').dataset.clBlocked==='true';$('#cl-i-draft-status').textContent=saved?'':'Не сохранено';growInput();};
     $('#cl-i-composer').onsubmit=e=>{e.preventDefault();if(!$('#cl-i-send').disabled)send();};input.onkeydown=e=>{if(!e.isComposing&&(e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();if(!$('#cl-i-send').disabled)send();}};
@@ -389,21 +405,22 @@ const ui={open:false,section:'cases',selected:null,work:null,pendingPeer:null,di
   function stageAttachment(file){if(!file)return;const dk=draftKey(current()),allowed=['image/png','image/jpeg','image/webp','application/pdf','text/plain'];if(!allowed.includes(file.type)||file.size>1024*1024){ui.sendError='Выберите PNG, JPG, WebP, PDF или TXT до 1 МБ.';$('#cl-i-composer-error').hidden=false;$('#cl-i-composer-error').textContent=ui.sendError;return;}if((state.composerMeta[dk]?.attachments||[]).length>=2){ui.sendError='Можно прикрепить не больше двух файлов.';$('#cl-i-composer-error').hidden=false;$('#cl-i-composer-error').textContent=ui.sendError;return;}const reader=new FileReader();reader.onload=()=>{const added=commit(s=>{const meta=s.composerMeta[dk]||={};meta.attachments??=[];if(meta.attachments.length<2)meta.attachments.push({id:id(),name:file.name,type:file.type,size:file.size,data:String(reader.result)});});if(added&&current()&&draftKey(current())===dk){ui.sendError='';refreshPreservingView();$('#cl-i-input').focus();}};reader.onerror=()=>{ui.sendError='Не удалось прочитать файл.';refreshPreservingView();};reader.readAsDataURL(file);}
   function sendTicket() {
     if(closed(current())||!$('#cl-i-input'))return;
-    const n=current().id,k=key(current()),text=$('#cl-i-input').value.trim(),answer=ui.answer,dk=draftKey(current()),meta=state.composerMeta[dk]||{};
+    const n=current().id,k=key(current()),text=$('#cl-i-input').value.trim(),dk=draftKey(current()),intent=answerIntent(dk),answer=intent?.questionId||null,meta=state.composerMeta[dk]||{};
     if(!text&&!meta.attachments?.length||answer&&!text)return;let sent=false;
     const saved=commit(s=>{
       const t=s.cases.find(t=>t.id===n);if(!P.mayMutate(t,'message')||!canSee(t)||!keys(t).includes(k)||!t.channels[k])return;
+      if(intent)P.assertAnswerIntent(t,intent,actor.id);
       const q=answer?t.questions.find(q=>q.id===answer&&q.status==='open'&&q.channelKey===k&&q.recipientId===actor.id):null;
       if(answer&&!q)throw Error('Вопрос уже завершён или переназначен.');
       const original=t.channels[k].messages.find(m=>m.id===meta.replyToMessageId),questionMessage=q?t.channels[k].messages.find(m=>m.questionId===q.id):null;
-      if(q)P.answer(t,q.id,actor.id,text,clock(s));
+      if(q)P.answer(t,q.id,actor.id,text,clock(s),intent);
       else if(P.canReview(t,actor.id,clock(s)))P.returnForRework(t,actor.id,text,clock(s));
       t.channels[k].messages.push(msg(actor.name,actor.id,text,{...(q?{answerTo:q.id}:{}),replyToMessageId:original?.id||questionMessage?.id,attachments:meta.attachments||[]}));
       if(staff){const p=k==='client'?t.clientId:t.participants.find(p=>'participant:'+p.userId===k)?.userId;if(p)t.channels[k].unread[p]=true;t.channels[k].needsReplyBy=null;}
       else{for(const p of [501,502,503])t.channels[k].unread[p]=true;t.channels[k].needsReplyBy=501;}
       s.drafts[dk]='';s.composerMeta[dk]={};sent=true;
     });
-    if(!saved||!sent){if(saved){ui.sendError='Тикет недоступен. Текст остаётся в поле.';refreshPreservingView();}return;}
+    if(!saved||!sent){if(saved)ui.sendError='Тикет недоступен. Текст остаётся в поле.';refreshPreservingView();return;}
     clearDraft(dk);ui.answer=null;ui.sendError='';ui.scrollTarget='bottom';render();$('#cl-i-input')?.focus();
   }
   function returnForRework() {
@@ -520,7 +537,17 @@ const ui={open:false,section:'cases',selected:null,work:null,pendingPeer:null,di
     });
   }
   function resolveRequest(rid) {if(!superAdmin)return;const n=current().id;dialog('Результат исполнителя',`<div class="cl-i-field"><label for="cl-i-result-status">Результат</label><select id="cl-i-result-status"><option value="completed">Completed · Выполнено</option><option value="rejected">Rejected · Отклонено</option><option value="failed">Failed · Ошибка исполнения</option></select></div>${field('cl-i-result-note','Подтверждение или причина')}`,'Зафиксировать результат',()=>{const status=$('#cl-i-result-status').value,note=$('#cl-i-result-note').value.trim();if(!note||!['completed','rejected','failed'].includes(status))return false;let done=false;if(!commit(s=>{const t=s.cases.find(t=>t.id===n),r=t.requests.find(r=>r.id===rid&&r.status==='requested');if(!r)return;r.status=status;r.result={by:'Super Admin',time:time(),note};audit(t,'protected_result',`${r.kind}: ${resultLabels[status]}`,{requestId:rid,result:status});done=true;}))return false;if(!done)return false;render();return true;});}
-  function historyMarkup(t) {return `<div class="ticket-history-list cl-i-audit-list">${t.history.map(e=>`<div class="ticket-history-item" data-cl-audit-id="${e.id}"><strong>${esc(e.summary)}</strong><small>${esc(e.by)} · ${esc(e.time)}</small></div>`).join('')||'<p>Событий пока нет</p>'}</div>`;}
+  function historyMarkup(t) {
+    if(!staff)return '';
+    return '<div class="ticket-history-list cl-i-audit-list">'+t.history.map(e=>{
+      const reassigned=e.type==='question_reassigned',q=t.questions.find(q=>q.id===e.questionId);
+      const personName=(snapshot,n)=>snapshot||t.participants.find(p=>p.userId===n)?.name||user(n)?.name||'#'+n;
+      const at=e.createdAt||e.time,when=Number.isFinite(Date.parse(at))?stamp(at)+' · '+at:at;
+      return '<div class="ticket-history-item" data-cl-audit-id="'+esc(e.id)+'"><strong>'+esc(e.summary)+'</strong>'+
+        (reassigned?'<dl class="cl-i-reassignment-facts"><dt>Вопрос</dt><dd>'+esc(e.questionText||q?.text||'Недоступен')+'<small>ID: '+esc(e.questionId)+'</small></dd><dt>Прежний адресат</dt><dd>'+esc(personName(e.fromRecipientName,e.fromRecipientId))+'</dd><dt>Новый адресат</dt><dd>'+esc(personName(e.toRecipientName,e.toRecipientId))+'</dd><dt>Причина</dt><dd>'+esc(e.reason||'Не записана')+'</dd></dl>':'')+
+        '<small>'+esc(user(e.actorId)?.name||e.by)+' · '+esc(when)+'</small></div>';
+    }).join('')+'</div>';
+  }
   function showHistory() {if(!staff)return;const t=current();dialog(`История · #${t.id}`,historyMarkup(t),'Закрыть',()=>true);$('#cl-internal-modal-cancel').textContent='Закрыть';}
   const canImport=t=>staff&&canSee(t)&&!['closed','resolved'].includes(t.workflow)&&t.demoCanUpdate!==false&&Boolean(t.channels.staff);
   function importedIds(s,wid) {return new Set(s.cases.flatMap(t=>[...(t.sourceWorkId===wid?t.sourceMessageIds||[]:[]),...(t.imports||[]).filter(x=>x.conversationId===wid).map(x=>x.messageId)]));}
@@ -611,8 +638,8 @@ const ui={open:false,section:'cases',selected:null,work:null,pendingPeer:null,di
       if($('#cl-i-dispute-resolution'))$('#cl-i-dispute-resolution').onclick=returnForRework;
       if($('#cl-i-history'))$('#cl-i-history').textContent='История';
       if($('#cl-i-actions'))$('#cl-i-actions').onclick=()=>{const m=$('#cl-i-action-menu');m.hidden=!m.hidden;$('#cl-i-actions').setAttribute('aria-expanded',String(!m.hidden));};d.querySelectorAll('[data-cl-action]').forEach(b=>b.onclick=()=>{$('#cl-i-action-menu').hidden=true;caseAction(b.dataset.clAction);});
-      d.querySelectorAll('[data-cl-answer]').forEach(b=>b.onclick=()=>{ui.answer=b.dataset.clAnswer;render();$('#cl-i-input').focus();});d.querySelectorAll('[data-cl-cancel-question]').forEach(b=>b.onclick=()=>cancelQuestion(b.dataset.clCancelQuestion));d.querySelectorAll('[data-cl-resolve]').forEach(b=>b.onclick=()=>resolveRequest(b.dataset.clResolve));
-      d.querySelectorAll('[data-cl-pin]').forEach(b=>b.onclick=()=>{commit(s=>{const c=s.cases.find(c=>c.id===t.id);if(closed(c))return;const n=c.notes[Number(b.dataset.clPin)];n.pinned=!n.pinned;audit(c,'note_pinned',n.pinned?'Заметка закреплена':'Заметка откреплена');});render();});if($('#cl-i-clear-answer'))$('#cl-i-clear-answer').onclick=()=>{ui.answer=null;render();$('#cl-i-input').focus();};if($('#cl-i-composer'))bindComposer(sendTicket);
+      d.querySelectorAll('[data-cl-answer]').forEach(b=>b.onclick=()=>selectAnswer(b.dataset.clAnswer));d.querySelectorAll('[data-cl-cancel-question]').forEach(b=>b.onclick=()=>cancelQuestion(b.dataset.clCancelQuestion));d.querySelectorAll('[data-cl-resolve]').forEach(b=>b.onclick=()=>resolveRequest(b.dataset.clResolve));
+      d.querySelectorAll('[data-cl-pin]').forEach(b=>b.onclick=()=>{commit(s=>{const c=s.cases.find(c=>c.id===t.id);if(closed(c))return;const n=c.notes[Number(b.dataset.clPin)];n.pinned=!n.pinned;audit(c,'note_pinned',n.pinned?'Заметка закреплена':'Заметка откреплена');});render();});if($('#cl-i-clear-answer'))$('#cl-i-clear-answer').onclick=makeOrdinaryMessage;if($('#cl-i-composer'))bindComposer(sendTicket);
     }
     bindMessageActions();const messages=$('#cl-i-messages');if(messages){messages.scrollTop=ui.restoreScroll??messages.scrollHeight;ui.restoreScroll=null;if(ui.scrollTarget==='bottom')messages.scrollTop=messages.scrollHeight;else if(ui.scrollTarget)jumpMessage(ui.scrollTarget);ui.scrollTarget=null;messages.addEventListener('scroll',()=>{updateJump();read();},{passive:true});$('#cl-i-jump-bottom').onclick=()=>{messages.scrollTop=messages.scrollHeight;updateJump();read();};updateJump();}read();
   }

@@ -11,7 +11,7 @@
   function normalize(q,config={},now=Date.now(),sourceTime) {
     const cfg=settings(config),sent=validDate(q.sentAt)?q.sentAt:validDate(q.createdAt)?q.createdAt:validDate(sourceTime)?sourceTime:iso(now);
     if(!validDate(q.sentAt)){q.legacyTiming=!validDate(q.createdAt)&&!validDate(sourceTime);q.sentAt=sent;}
-    q.createdAt??=sent;q.originalRecipientId??=q.recipientId;q.internal??=q.channelKey!=='client';
+    q.createdAt??=sent;q.originalRecipientId??=q.recipientId;q.assignmentRevision??=0;q.internal??=q.channelKey!=='client';
     if(q.status==='answered'&&!validDate(q.answeredAt)){q.answeredAt=sent;q.legacyTiming=true;}
     if(q.status==='cancelled'&&!validDate(q.cancelledAt)){q.cancelledAt=sent;q.legacyTiming=true;}
     if(!q.internal){q.timeline??=[];return q;}
@@ -47,7 +47,28 @@
     const q=normalize({id,recipientId,target:p.name,channelKey:p.channelKey,text:text.trim(),status:'open',sentAt:iso(now),createdAt:iso(now)},config,now);
     t.questions.push(q);t.workflow='waiting_participant';t.waitingQuestionId=q.id;event(t,q,'created',now,actorId);return q;
   }
-  function answer(t,qid,actorId,text,now=Date.now()) {
+  function bindAnswer(t,qid,actorId) {
+    const q=t?.questions.find(q=>q.id===qid);
+    const intent={questionId:qid,recipientId:actorId,channelKey:q?.channelKey,assignmentRevision:q?.assignmentRevision||0,questionText:q?.text||''};
+    assertAnswerIntent(t,intent,actorId);return intent;
+  }
+  function answerIntentState(t,intent,actorId) {
+    if(!intent)return {bound:false,conflict:false,message:''};
+    const q=t?.questions.find(q=>q.id===intent.questionId);
+    let message='';
+    if(!t||t.workflow==='closed')message='Тикет закрыт. Ответ не отправлен.';
+    else if(!q)message='Вопрос недоступен. Ответ не отправлен.';
+    else if(q.status==='cancelled')message='Вопрос отменён. Ответ не отправлен.';
+    else if(q.status==='answered')message='На вопрос уже получен ответ. Ваш текст не отправлен.';
+    else if(q.status!=='open'||intent.recipientId!==actorId||q.recipientId!==actorId||q.channelKey!==intent.channelKey||(q.assignmentRevision||0)!==intent.assignmentRevision||!t.participants.some(p=>p.verified&&p.userId===actorId)&&!(t.clientConnected&&t.clientVerified&&t.clientId===actorId))message='Вопрос переназначен или доступ изменился. Ответ не отправлен.';
+    return {bound:true,conflict:Boolean(message),message};
+  }
+  function assertAnswerIntent(t,intent,actorId) {
+    const result=answerIntentState(t,intent,actorId);
+    if(!result.bound||result.conflict){const error=Error(result.message||'Ответ не привязан к вопросу.');error.code='question_draft_conflict';throw error;}
+  }
+  function answer(t,qid,actorId,text,now=Date.now(),intent=null) {
+    if(intent){if(intent.questionId!==qid){const error=Error('Изменился вопрос черновика.');error.code='question_draft_conflict';throw error;}assertAnswerIntent(t,intent,actorId);}
     writable(t);const q=t.questions.find(q=>q.id===qid&&q.status==='open'&&q.recipientId===actorId);
     if(!q||!text?.trim())throw Error('Вопрос изменён или ответ не указан.');
     const p=target(t,actorId);if(q.channelKey!==p.channelKey)throw Error('Адресат вопроса изменён.');
@@ -70,8 +91,8 @@
     if(!q||q.recipientId===recipientId||!reason?.trim())throw Error('Выберите другого подключённого участника и укажите причину.');
     if(t.questions.some(x=>x!==q&&x.status==='open'&&x.channelKey===p.channelKey))throw Error('У нового адресата уже есть открытый вопрос.');
     const old={recipientId:q.recipientId,channelKey:q.channelKey,target:q.target};
-    q.recipientId=recipientId;q.channelKey=p.channelKey;q.target=p.name;
-    event(t,q,'reassigned',now,actorId,{fromRecipientId:old.recipientId,toRecipientId:recipientId,reason:reason.trim(),deadlineAt:q.deadlineAt});return {q,old};
+    q.recipientId=recipientId;q.channelKey=p.channelKey;q.target=p.name;q.assignmentRevision=(q.assignmentRevision||0)+1;
+    event(t,q,'reassigned',now,actorId,{fromRecipientId:old.recipientId,fromRecipientName:old.target,toRecipientId:recipientId,toRecipientName:p.name,questionText:q.text,reason:reason.trim(),deadlineAt:q.deadlineAt,assignmentRevision:q.assignmentRevision});return {q,old};
   }
   function milestones(t,now=Date.now()) {
     if(t.workflow==='closed')return false;
@@ -89,5 +110,5 @@
     t.workflow='waiting_support';t.resolutionReturnedAt=iso(now);t.history.push({id:'rework:'+now,type:'resolution_reopened',actorId,by:'Автор обращения',time:iso(now),summary:'Автор вернул тикет на доработку'});
   }
   function mayMutate(t,operation){return operation==='mark_read'?Boolean(t):Boolean(t&&t.workflow!=='closed');}
-  return {HOUR,priorities,settings,normalize,timing,addParticipant,ask,answer,cancel,resume,reassign,milestones,canReview,returnForRework,mayMutate};
+  return {HOUR,priorities,settings,normalize,timing,addParticipant,ask,bindAnswer,answerIntentState,assertAnswerIntent,answer,cancel,resume,reassign,milestones,canReview,returnForRework,mayMutate};
 });
