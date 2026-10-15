@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html style="height: auto;"><head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'none'; form-action 'none'; object-src 'none'; base-uri 'none'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data:; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'none'; form-action 'none'; object-src 'none'; base-uri 'none'"><meta charset="UTF-8">
+    
+
+    <title>Мой баланс</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta name="baseUrl" content="https://confideline.com/">
+    <link rel="stylesheet" href="assets/vendor/8c18d5d81776-inter.css">
+    <link href="assets/vendor/df2313182d14-select2.min.css" rel="stylesheet">
+<link href="assets/vendor/a80573fdc49a-bootstrap.css" rel="stylesheet">
+<link href="assets/vendor/b871e8d6e97f-select2-bootstrap.min.css" rel="stylesheet">
+<link href="assets/vendor/31bd6878c50c-field-range-bs3.min.css" rel="stylesheet">
+<link href="assets/vendor/b48450cfedc2-daterangepicker.min.css" rel="stylesheet">
+<link href="assets/vendor/afcc0ecc742d-daterangepicker-kv.min.css" rel="stylesheet">
+<link href="assets/vendor/cbab5cb0082f-kv-widgets.min.css" rel="stylesheet">
+<link href="assets/vendor/c5388d684244-select2.min.css" rel="stylesheet">
+<link href="assets/vendor/b85cf2cf7cb7-select2-addl.min.css" rel="stylesheet">
+<link href="assets/vendor/1a06eb638fcc-select2-bootstrap.min.css" rel="stylesheet">
+<link href="assets/vendor/acf1d81c818e-font-awesome.min.css" rel="stylesheet">
+<link href="assets/vendor/b6a85a72fbb5-messenger.css" rel="stylesheet">
+<link href="assets/vendor/8de9ef57bfc0-messenger-theme-flat.css" rel="stylesheet">
+<link href="assets/vendor/2c03244da0f7-jquery.fancybox.min.css" rel="stylesheet">
+<link href="assets/vendor/7d816b0bbe57-admin.min.css" rel="stylesheet">
+<link href="assets/vendor/527b3738270c-admin-header-v2.css" rel="stylesheet">
+<link href="assets/vendor/d25b96651e96-admin-sidebar-v1.css" rel="stylesheet">
+<style>
+.select2-container .select2-selection--multiple { height: 34px; }
+.transactions-grid-view .col-transaction-type {
+    max-width: 64px
+}
+
+.transactions-grid-view .transaction-add {
+    color: #5eba00
+}
+
+.transactions-grid-view .transaction-remove {
+    color: #cd201f
+}
+
+.transactions-grid-view .transaction-free {
+    color: #abb
+}
+
+.transactions-grid-view .transaction-type {
+    width: 32px;
+    height: 32px;
+    background: rgba(155,155,155,.7);
+    display: inline-block;
+    color: rgba(44,44,44,.7);
+    text-align: center;
+    line-height: 32px;
+    font-size: 18px;
+    border-radius: 32px;
+}
+
+.transactions-grid-view .transaction-type .fa {
+    color: #fff
+}</style>
+
+
+<link rel="stylesheet" href="global_custom.css?v=20261002-balance-header"><link rel="stylesheet" href="balance_custom.css"><link rel="stylesheet" href="balance_preview.css"><script src="assets/preview-only.js"></script></head>
+
+<body class="skin-youdate fixed sidebar-mini has-admin-header" style="height: auto;">
+
+<div class="wrapper" style="height: auto;">
+
+    <header class="main-header" data-approved-header="20261002-balance-header">
+        <!-- Logo -->
+        <a href="#" class="logo" data-preview-original-href="https://confideline.com/" data-preview-blocked="true">
+            <span class="logo-mini">YouDate</span>
+            <span class="logo-lg">YouDate</span>
+        </a>
+        <!-- Header Navbar: style can be found in header.less -->
+        <nav class="navbar navbar-static-top" role="navigation">
+            <!-- Sidebar toggle button-->
+            <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button" aria-label="Переключить навигацию">
+                <span class="sr-only">Переключить навигацию</span>
+            </a>
+            <div class="navbar-custom-menu position-relative">
+                <form class="navbar-form navbar-search pull-left hidden-xs header-search" action="#" method="get" data-preview-original-action="/ru/admin/search/index">
+    <div class="form-group">
+        <div class="input-group">
+            <input type="text" autocomplete="off" name="q" value="" class="form-control header-search-query" data-load-results-url="/ru/admin/search/get-results" placeholder="Поиск">
+            <span class="input-group-btn">
+                <button type="submit" class="btn btn-primary header-search-btn">
+                    <i class="icon fa fa-search"></i>
+                </button>
+            </span>
+        </div>
+    </div>
+    <div class="header-search-results hidden">
+        <div class="results"></div>
+        <div class="loader">
+            <i class="fa fa-refresh fa-spin" aria-hidden="true"></i>
+        </div>
+    </div>
+</form>
+                <div class="header-tools"><div class="conn-badge"><span class="conn-dot conn-green" id="connDot"></span><span id="connLabel">Подкл.</span><button class="btn btn-default btn-sm conn-refresh-btn" type="button" id="btnRefreshChat" data-toggle="tooltip" title="Обновить" aria-label="Обновить" data-original-title="Обновить"><i class="fa fa-refresh"></i></button></div>
+                    <button class="btn btn-default btn-sm" type="button" data-mock-open="#modalReportProblem" data-toggle="tooltip" title="Сообщить о проблеме" aria-label="Сообщить о проблеме" data-original-title="Сообщить о проблеме"><i class="fa fa-flag"></i> Проблема</button>
+                    <div class="btn-group" id="statusDropdown">
+                        <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="tooltip" title="Изменить статус оператора" aria-label="Изменить статус оператора" data-original-title="Изменить статус оператора"><i class="fa fa-circle operator-status-dot operator-status-offline"></i> <span id="operatorStatusLabel">Офлайн</span> <span class="caret"></span></button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li><a href="#" data-mock-open="#modalMakeOffline" data-preview-original-href="https://confideline.com/ru/admin/message/chat#" data-preview-blocked="true">Офлайн</a></li>
+                            <li><a href="#" class="js-set-status" data-status="Online" data-preview-original-href="https://confideline.com/ru/admin/message/chat#" data-preview-blocked="true">Онлайн</a></li>
+                            <li><a href="#" data-mock-open="#modalMakeBusy" data-preview-original-href="https://confideline.com/ru/admin/message/chat#" data-preview-blocked="true">Занят</a></li>
+                        </ul>
+                    </div>
+                </div><ul class="nav navbar-nav">
+                    <li class="dropdown user user-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Меню пользователя Chapajev Wasil">
+                            <span class="admin-user-trigger-avatar" aria-hidden="true">C</span>
+                            <span class="admin-user-trigger-text" title="Chapajev Wasil">Chapajev Wasil</span>
+                            <i class="caret"></i>
+                        </a>
+                        <ul class="dropdown-menu admin-user-menu">
+                            <li class="admin-user-card">
+                                                                    <img class="admin-user-avatar" src="assets/vendor/adba65f3b7ef-thumb_jxSPNscGV5BEjL1BLbBQJNhj29uiYVMv.webp" alt="Chapajev Wasil">                                                                <div class="admin-user-meta">
+                                    <strong>Chapajev Wasil</strong>
+                                    <span>Administrator</span>
+                                    <small>admin@youdate.test</small>
+                                </div>
+                            </li>
+                            <li class="admin-menu-section">
+                                <div class="admin-menu-label">Статус</div>
+                                <div class="admin-status-pills">
+                                    <button class="admin-status-pill js-set-status" type="button" data-status="Online">Онлайн</button>
+                                    <button class="admin-status-pill js-set-status active" type="button" data-status="Busy" data-mock-open="#modalMakeBusy">Занят</button>
+                                    <button class="admin-status-pill js-set-status" type="button" data-status="Offline" data-mock-open="#modalMakeOffline">Офлайн</button>
+                                </div>
+                            </li>
+                            <li class="admin-menu-section">
+                                <div class="admin-menu-label">Рабочая область</div>
+                                <a href="#" class="admin-menu-link" data-preview-original-href="https://confideline.com/ru/profile" data-preview-blocked="true"><i class="fa fa-user"></i><span>Настройки профиля</span></a>
+                                <a href="#" class="admin-menu-link" data-preview-original-href="https://confideline.com/ru/settings/profile" data-preview-blocked="true"><i class="fa fa-bell"></i><span>Уведомления</span></a>
+                                <a href="#" class="admin-menu-link" data-preview-original-href="https://confideline.com/ru/admin/message/chat" data-preview-blocked="true"><i class="fa fa-inbox"></i><span>Моя очередь</span></a>
+                                <a href="#" class="admin-menu-link" data-preview-original-href="https://confideline.com/ru/admin/activity" data-preview-blocked="true"><i class="fa fa-history"></i><span>Журнал активности</span></a>
+                            </li>
+                            <li class="admin-menu-section">
+                                <div class="admin-menu-label">Настройки и поддержка</div>
+                                <button class="admin-menu-link admin-menu-toggle js-admin-menu-toggle" type="button" data-setting="compact_mode"><i class="fa fa-compress"></i><span>Компактный режим</span><b>Выкл.</b></button>
+                                <button class="admin-menu-link admin-menu-toggle js-admin-menu-toggle active" type="button" data-setting="sound"><i class="fa fa-volume-up"></i><span>Звуковые уведомления</span><b>Вкл.</b></button>
+                                <button class="admin-menu-link" type="button" data-mock-open="#modalReportProblem"><i class="fa fa-flag"></i><span>Сообщить о проблеме</span></button>
+                                <button class="admin-menu-link is-unavailable" type="button" disabled aria-disabled="true" title="Горячие клавиши чата доступны на странице чата"><i class="fa fa-keyboard-o"></i><span>Горячие клавиши</span></button>
+                            </li>
+                            <li class="admin-menu-logout">
+                                <a href="#" data-preview-original-href="https://confideline.com/ru/security/logout" data-preview-blocked="true"><i class="fa fa-sign-out"></i><span>Выйти</span></a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Left side column. contains the logo and sidebar -->
+    <aside class="main-sidebar admin-sidebar-modern" aria-label="Администрация">
+        <!-- sidebar: style can be found in sidebar.less -->
+        <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 589px;"><section class="sidebar" aria-label="Администрация" style="height: 589px; overflow: hidden; width: auto;">
+            <ul class="sidebar-menu" data-sidebar-state-bound="1"><li><a href="#" title="Главное" data-preview-original-href="/ru/admin" data-preview-blocked="true"><i class="fa fa-cog"></i>  <span>Главное</span> </a></li>
+<li class="header"><span>Содержимое</span></li>
+<li><a href="user.html" title="Пользователи"><i class="fa fa-user"></i>  <span>Пользователи</span> </a></li>
+<li><a href="partner.html" title="Партнеры"><i class="fa fa-user-circle-o"></i>  <span>Партнеры</span> </a></li>
+<li class="active"><a href="transactions.html" title="Финансы" role="button" aria-expanded="true"><i class="fa fa-credit-card"></i>  <span>Финансы</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class="treeview-menu" style="display: block">
+<li><a href="order.html" title="Заказы"><i class="fa fa-money"></i>  <span>Заказы</span> </a></li>
+<li><a href="transactions.html" title="Транзакции"><i class="fa fa-gavel"></i>  <span>Транзакции</span> </a></li>
+<li class="active"><a role="link" data-sidebar-route="balance" title="Баланс" href="balance.html" aria-current="page"><i class="fa fa-balance-scale"></i>  <span>Баланс</span></a></li>
+</ul>
+</li>
+<li><a href="transactions.html" title="Поддержка" role="button" aria-expanded="false"><i class="fa fa-hand-paper-o"></i>  <span>Поддержка</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class="treeview-menu">
+<li><a href="#" title="Баны" data-preview-original-href="/ru/admin/ban/index" data-preview-blocked="true"><i class="fa fa-ban"></i>  <span>Баны</span> </a></li>
+<li><a href="#" title="Жалобы" data-preview-original-href="/ru/admin/report/index" data-preview-blocked="true"><i class="fa fa-flag"></i>  <span>Жалобы</span> <span class="pull-right label label-success">3</span></a></li>
+<li><a href="#" title="Поддержка" data-preview-original-href="/ru/admin/support-v2/index" data-preview-blocked="true"><i class="fa fa-hand-paper-o"></i>  <span>Поддержка</span> <span class="pull-right label label-success">11</span></a></li>
+</ul>
+</li>
+<li><a href="#" title="Группы" data-preview-original-href="/ru/admin/group/index" data-preview-blocked="true"><i class="fa fa-users"></i>  <span>Группы</span> </a></li>
+<li><a href="transactions.html" title="Диалоги" role="button" aria-expanded="false"><i class="fa fa-envelope"></i>  <span>Диалоги</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class="treeview-menu">
+<li><a href="#" title="Чат" data-preview-original-href="/ru/admin/chat/v2" data-preview-blocked="true"><i class="fa fa-comments"></i>  <span>Чат</span> </a></li>
+<li><a href="#" title="My templates" data-preview-original-href="/ru/admin/chat-personal-message-template/index" data-preview-blocked="true"><i class="fa fa-file-text-o"></i>  <span>My templates</span> </a></li>
+<li><a href="#" title="Шаблоны чата эксперта" data-preview-original-href="/ru/admin/chat-expert-message-template/index" data-preview-blocked="true"><i class="fa fa-files-o"></i>  <span>Шаблоны чата эксперта</span> </a></li>
+</ul>
+</li>
+<li><a href="transactions.html" title="Содержимое" role="button" aria-expanded="false"><i class="fa fa-database"></i>  <span>Содержимое</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class="treeview-menu">
+<li><a href="#" title="Новости" data-preview-original-href="/ru/admin/news/index" data-preview-blocked="true"><i class="fa fa-newspaper-o"></i>  <span>Новости</span> </a></li>
+<li><a href="#" title="Справка" data-preview-original-href="/ru/admin/help/index" data-preview-blocked="true"><i class="fa fa-question-circle"></i>  <span>Справка</span> </a></li>
+<li><a href="#" title="Info blocks" data-preview-original-href="/ru/admin/info-block/index" data-preview-blocked="true"><i class="fa fa-folder-open-o"></i>  <span>Info blocks</span> </a></li>
+<li><a href="transactions.html" title="Страны и города" role="button" aria-expanded="false"><i class="fa fa-map"></i>  <span>Страны и города</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class="treeview-menu">
+<li><a href="#" title="Страны" data-preview-original-href="/ru/admin/country/index" data-preview-blocked="true"><i class="fa fa-flag-o"></i>  <span>Страны</span> </a></li>
+<li><a href="#" title="Города" data-preview-original-href="/ru/admin/geoname/index" data-preview-blocked="true"><i class="fa fa-map-marker"></i>  <span>Города</span> </a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="header"><span>Moderations</span></li>
+<li><a href="#" title="Фотографии" data-preview-original-href="/ru/admin/photo/index" data-preview-blocked="true"><i class="fa fa-photo"></i>  <span>Фотографии</span> <span class="pull-right label label-success">21</span></a></li>
+<li><a href="#" title="Сообщения" data-preview-original-href="/ru/admin/message/index" data-preview-blocked="true"><i class="fa fa-envelope"></i>  <span>Сообщения</span> </a></li>
+<li><a href="#" title="Верификации" data-preview-original-href="/ru/admin/verification/index" data-preview-blocked="true"><i class="fa fa-check-circle"></i>  <span>Верификации</span> </a></li>
+<li class="header"><span>Система</span></li>
+<li><a href="transactions.html" title="Настройки" role="button" aria-expanded="false"><i class="fa fa-cog"></i>  <span>Настройки</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class="treeview-menu">
+<li><a href="#" title="Common settings" data-preview-original-href="/ru/admin/settings/index" data-preview-blocked="true"><i class="fa fa-cog"></i>  <span>Common settings</span> </a></li>
+<li><a href="#" title="Настройки чата" data-preview-original-href="/ru/admin/settings/chat" data-preview-blocked="true"><i class="fa fa-comments-o"></i>  <span>Настройки чата</span> </a></li>
+<li><a href="#" title="Настройка платежей" data-preview-original-href="/ru/admin/settings/payment" data-preview-blocked="true"><i class="fa fa-credit-card"></i>  <span>Настройка платежей</span> </a></li>
+<li><a href="#" title="Шаблоны писем" data-preview-original-href="/ru/admin/email-template/index" data-preview-blocked="true"><i class="fa fa-envelope-o"></i>  <span>Шаблоны писем</span> </a></li>
+<li><a href="#" title="Страницы" data-preview-original-href="/ru/admin/page/index" data-preview-blocked="true"><i class="fa fa-file"></i>  <span>Страницы</span> </a></li>
+<li><a href="#" title="Языки" data-preview-original-href="/ru/admin/language/list" data-preview-blocked="true"><i class="fa fa-globe"></i>  <span>Языки</span> </a></li>
+<li><a href="#" title="Настройка темы" data-preview-original-href="/ru/admin/theme/settings" data-preview-blocked="true"><i class="fa fa-cog"></i>  <span>Настройка темы</span> </a></li>
+<li><a href="#" title="Темы" data-preview-original-href="/ru/admin/theme/index" data-preview-blocked="true"><i class="fa fa-file-code-o"></i>  <span>Темы</span> </a></li>
+<li><a href="#" title="SEO (переводы)" data-preview-original-href="/ru/admin/language/seo-translate?language_id=en-US" data-preview-blocked="true"><i class="fa fa-globe"></i>  <span>SEO (переводы)</span> </a></li>
+<li><a href="transactions.html" title="Поля профиля" role="button" aria-expanded="false"><i class="fa fa-vcard"></i>  <span>Поля профиля</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class="treeview-menu">
+<li><a href="#" title="Поля профиля" data-preview-original-href="/ru/admin/profile-field/index" data-preview-blocked="true"><i class="fa fa-circle-o"></i>  <span>Поля профиля</span> </a></li>
+<li><a href="#" title="Категории полей" data-preview-original-href="/ru/admin/profile-field-category/index" data-preview-blocked="true"><i class="fa fa-circle-o"></i>  <span>Категории полей</span> </a></li>
+</ul>
+</li>
+<li><a href="#" title="Плагины" data-preview-original-href="/ru/admin/plugin/index" data-preview-blocked="true"><i class="fa fa-code"></i>  <span>Плагины</span> </a></li>
+<li><a href="#" title="Подарки" data-preview-original-href="/ru/admin/gift/categories" data-preview-blocked="true"><i class="fa fa-gift"></i>  <span>Подарки</span> </a></li>
+</ul>
+</li>
+<li><a href="transactions.html" title="Обслуживание" role="button" aria-expanded="false"><i class="fa fa-wrench"></i>  <span>Обслуживание</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class="treeview-menu">
+<li><a href="transactions.html" title="Логи" role="button" aria-expanded="false"><i class="fa fa-file-text-o"></i>  <span>Логи</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class="treeview-menu">
+<li><a href="#" title="Системный журнал" data-preview-original-href="/ru/admin/log/index" data-preview-blocked="true"><i class="fa fa-file-text-o"></i>  <span>Системный журнал</span> <span class="pull-right label label-danger">1</span></a></li>
+<li><a href="#" title="Журнал действий" data-preview-original-href="/ru/admin/users-log/index" data-preview-blocked="true"><i class="fa fa-list-alt"></i>  <span>Журнал действий</span> </a></li>
+</ul>
+</li>
+<li><a href="#" title="Queue monitor" data-preview-original-href="/ru/admin/queue-monitor/index" data-preview-blocked="true"><i class="fa fa-feed"></i>  <span>Queue monitor</span> </a></li>
+<li><a href="#" title="Redis cache" data-preview-original-href="/ru/admin/user-data-cache/index" data-preview-blocked="true"><i class="fa fa-shopping-basket"></i>  <span>Redis cache</span> </a></li>
+<li><a href="#" title="WebSocket monitor" data-preview-original-href="/ru/admin/web-socket/index" data-preview-blocked="true"><i class="fa fa-podcast"></i>  <span>WebSocket monitor</span> </a></li>
+<li id="place-admin-php-info"><a href="#" title="PHP information" data-preview-original-href="/ru/admin/settings/env-php" data-preview-blocked="true"><i class="caret-right"></i>  <span>PHP information</span> </a></li>
+</ul>
+</li></ul>        </section><div class="slimScrollBar" style="background: rgba(0, 0, 0, 0.2); width: 3px; position: absolute; top: 0px; opacity: 0.4; display: block; border-radius: 7px; z-index: 99; right: 1px; height: 447.64px;"></div><div class="slimScrollRail" style="width: 3px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;"></div></div>
+        <!-- /.sidebar -->
+    </aside>
+
+    <!-- Right side column. Contains the navbar and content of the page -->
+    <div class="content-wrapper" style="min-height: 588.2px;">
+        <!-- Content Header (Page header) -->
+                    <section class="content-header" data-current-balance="2450.00" data-balance-demo="true">
+                <h1>Мой баланс</h1>
+                            </section>
+        
+        <!-- Main content -->
+        <section class="content">
+                        <!--<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js" crossorigin="anonymous"></script>-->
+<div class="payments-index">
+    <div class="box no-border">
+        <div class="table-responsive">
+            <div class="summary pull-right"><a href="balance.html" style="padding-right: 5px">Сбросить фильтр</a></div>
+            <div id="w2" style="table-layout:fixed;"><div class="summary">Показаны записи <b>1-20</b> из <b>222</b>.</div>
+<table class="table table-outline table-vcenter text-nowrap card-table balance-grid-view"><thead>
+<tr><th><a href="#" data-sort="id" data-preview-original-href="/ru/admin/balance-transaction/index?sort=id" data-preview-blocked="true">ID</a></th><th><a href="#" data-sort="user_id" data-preview-original-href="/ru/admin/balance-transaction/index?sort=user_id" data-preview-blocked="true">Пользователь</a></th><th>Код</th><th style="width: 170px;"><a href="#" data-sort="amount" data-preview-original-href="/ru/admin/balance-transaction/index?sort=amount" data-preview-blocked="true">Сумма</a></th><th style="max-width: 100px;">До</th><th>Сервис</th><th style="width: 210px;"><a href="#" data-sort="created_at" data-preview-original-href="/ru/admin/balance-transaction/index?sort=created_at" data-preview-blocked="true">Создано</a></th><th style="width: 115px;"><a href="#" data-sort="search_type" data-preview-original-href="/ru/admin/balance-transaction/index?sort=search_type" data-preview-blocked="true">Тип</a></th><th></th></tr><tr id="w2-filters" class="filters"><td></td><td><select id="balancetransactionsearch-user_id" class="form-control select2-hidden-accessible" name="BalanceTransactionSearch[user_id]" data-ajax--url="/ru/admin/user/ajax" data-ajax--cache="true" data-theme="bootstrap" data-select2-id="balancetransactionsearch-user_id" tabindex="-1" aria-hidden="true">
+
+</select><span class="select2 select2-container select2-container--bootstrap" dir="ltr" data-select2-id="1" style="width: 100%;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-balancetransactionsearch-user_id-container"><span class="select2-selection__rendered" id="select2-balancetransactionsearch-user_id-container" role="textbox" aria-readonly="true"></span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span></td><td> </td><td><div id="w0-container" class="kv-field-range-container form-group"><div width="100px" style="margin-bottom: -15px"><div id="w0" class="kv-field-range input-group" data-krajee-kvfieldrange="kvFieldRange_140de60e"><input type="text" id="balancetransactionsearch-amount_min" class="form-control" name="BalanceTransactionSearch[amount_min]"><span class="input-group-addon kv-field-separator">-</span><input type="text" id="balancetransactionsearch-amount_max" class="form-control" name="BalanceTransactionSearch[amount_max]"></div></div><div id="balancetransactionsearch-amount_min-error"><div class="help-block"></div></div></div></td><td> </td><td> </td><td><div class="drp-container input-group"><input type="text" id="w1" class="form-control" name="created_at" autocomplete="off" data-krajee-daterangepicker="daterangepicker_fac29114"><input type="hidden" id="w1-start" name="BalanceTransactionSearch[created_at_min]"><input type="hidden" id="w1-end" name="BalanceTransactionSearch[created_at_max]"></div></td><td><span id="parent-s2-togall-balancetransactionsearch-searchtypes" style="display:none"><span id="s2-togall-balancetransactionsearch-searchtypes" class="s2-togall-button s2-togall-select"><span class="s2-select-label"><i class="glyphicon glyphicon-unchecked"></i>Выбрать все</span><span class="s2-unselect-label"><i class="glyphicon glyphicon-check"></i>Отменить выбор</span></span></span><input type="hidden" name="BalanceTransactionSearch[searchTypes]"><select id="balancetransactionsearch-searchtypes" class="form-control select2-hidden-accessible" name="BalanceTransactionSearch[searchTypes][]" multiple size="4" data-s2-options="s2options_9653c55f" data-krajee-select2="select2_9f615fb5" style="width: 100%; height: 1px; visibility: hidden;" data-select2-id="balancetransactionsearch-searchtypes" tabindex="-1" aria-hidden="true">
+<option value="bonus">bonus</option>
+<option value="gift">gift</option>
+<option value="premium">premium</option>
+<option value="boost">boost</option>
+<option value="spotlight">spotlight</option>
+<option value="payout">payout</option>
+<option value="paypal">paypal</option>
+<option value="stripe">stripe</option>
+<option value="robokassa">robokassa</option>
+</select><span class="select2 select2-container select2-container--bootstrap" dir="ltr" data-select2-id="2" style="width: 100%;"><span class="selection"><span class="select2-selection select2-selection--multiple" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="-1" aria-disabled="false"><ul class="select2-selection__rendered"><li class="select2-search select2-search--inline"><input class="select2-search__field" type="search" tabindex="0" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" role="searchbox" aria-autocomplete="list" placeholder="Типы" style="width: 97.4px;"></li></ul></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span></td><td> </td></tr>
+</thead>
+<tbody>
+<tr data-key="1"><td>1</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=2" data-preview-blocked="true">
+                                    <img src="assets/vendor/1e20ffacb3fb-81bfa2d6a6305b74ad1123b4443c8495" alt="This">
+                        <div class="user-info">
+                <div class="name">Після</div>
+                <div class="username">This</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-add">+100.00 кредитов</span></td><td class="text-right"></td><td class="text-right"></td><td class="text-muted text-center shrink">4 дек. 2024 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-green mr-2"><i class="fa fa-money" title=""></i></div></div></td><td class="expand">Кредиты зачислены администрацией</td></tr>
+<tr data-key="2"><td>2</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=1" data-preview-blocked="true">
+                                    <img src="assets/vendor/adba65f3b7ef-thumb_jxSPNscGV5BEjL1BLbBQJNhj29uiYVMv.webp" alt="admin">
+                        <div class="user-info">
+                <div class="name">Chapajev Wasil</div>
+                <div class="username">admin</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-add">+100.00 кредитов</span></td><td class="text-right"></td><td class="text-right"></td><td class="text-muted text-center shrink">9 дек. 2024 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-green mr-2"><i class="fa fa-money" title=""></i></div></div></td><td class="expand">Кредиты зачислены администрацией</td></tr>
+<tr data-key="3"><td>3</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=1" data-preview-blocked="true">
+                                    <img src="assets/vendor/adba65f3b7ef-thumb_jxSPNscGV5BEjL1BLbBQJNhj29uiYVMv.webp" alt="admin">
+                        <div class="user-info">
+                <div class="name">Chapajev Wasil</div>
+                <div class="username">admin</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-remove">-50.00 кредитов</span></td><td class="text-right"></td><td class="text-right"></td><td class="text-muted text-center shrink">9 дек. 2024 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-indigo mr-2"><i class="fa fa-bolt" title=""></i></div></div></td><td class="expand">В центре внимания</td></tr>
+<tr data-key="4"><td>4</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=1" data-preview-blocked="true">
+                                    <img src="assets/vendor/adba65f3b7ef-thumb_jxSPNscGV5BEjL1BLbBQJNhj29uiYVMv.webp" alt="admin">
+                        <div class="user-info">
+                <div class="name">Chapajev Wasil</div>
+                <div class="username">admin</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-remove">-20.00 кредитов</span></td><td class="text-right"></td><td class="text-right"></td><td class="text-muted text-center shrink">11 февр. 2025 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-azure mr-2"><i class="fa fa-arrow-up" title=""></i></div></div></td><td class="expand">Поднятие в поиске</td></tr>
+<tr data-key="5"><td>5</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=1" data-preview-blocked="true">
+                                    <img src="assets/vendor/adba65f3b7ef-thumb_jxSPNscGV5BEjL1BLbBQJNhj29uiYVMv.webp" alt="admin">
+                        <div class="user-info">
+                <div class="name">Chapajev Wasil</div>
+                <div class="username">admin</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-remove">-30.00 кредитов</span></td><td class="text-right">30</td><td class="text-right"></td><td class="text-muted text-center shrink">2 мар. 2025 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-light-blue mr-2"><i class="fa fa-send" title="payout"></i></div></div></td><td class="expand">Partner payout</td></tr>
+<tr data-key="6"><td>6</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=1" data-preview-blocked="true">
+                                    <img src="assets/vendor/adba65f3b7ef-thumb_jxSPNscGV5BEjL1BLbBQJNhj29uiYVMv.webp" alt="admin">
+                        <div class="user-info">
+                <div class="name">Chapajev Wasil</div>
+                <div class="username">admin</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-add">+100.00 кредитов</span></td><td class="text-right"></td><td class="text-right"></td><td class="text-muted text-center shrink">2 мар. 2025 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-green mr-2"><i class="fa fa-money" title=""></i></div></div></td><td class="expand">На пифо</td></tr>
+<tr data-key="7"><td>7</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=3" data-preview-blocked="true">
+                                    <img src="assets/vendor/dbcd44ebf30a-thumb_Af8UsyvEWUoP3HwDdIBf94pVrsVc_FOe.webp" alt="cutthreat">
+                        <div class="user-info">
+                <div class="name">Алекс</div>
+                <div class="username">cutthreat</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-add">+1000.00 кредитов</span></td><td class="text-right"></td><td class="text-right"></td><td class="text-muted text-center shrink">9 апр. 2025 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-green mr-2"><i class="fa fa-money" title=""></i></div></div></td><td class="expand">Кредиты зачислены администрацией</td></tr>
+<tr data-key="8"><td>8</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=1" data-preview-blocked="true">
+                                    <img src="assets/vendor/adba65f3b7ef-thumb_jxSPNscGV5BEjL1BLbBQJNhj29uiYVMv.webp" alt="admin">
+                        <div class="user-info">
+                <div class="name">Chapajev Wasil</div>
+                <div class="username">admin</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-remove">-50.00 кредитов</span></td><td class="text-right">100</td><td class="text-right"></td><td class="text-muted text-center shrink">9 апр. 2025 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-indigo mr-2"><i class="fa fa-bolt" title=""></i></div></div></td><td class="expand">В центре внимания</td></tr>
+<tr data-key="9"><td>9</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=1" data-preview-blocked="true">
+                                    <img src="assets/vendor/adba65f3b7ef-thumb_jxSPNscGV5BEjL1BLbBQJNhj29uiYVMv.webp" alt="admin">
+                        <div class="user-info">
+                <div class="name">Chapajev Wasil</div>
+                <div class="username">admin</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-remove">-20.00 кредитов</span></td><td class="text-right">50</td><td class="text-right"></td><td class="text-muted text-center shrink">9 мая 2025 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-azure mr-2"><i class="fa fa-arrow-up" title=""></i></div></div></td><td class="expand">Поднятие в поиске</td></tr>
+<tr data-key="10"><td>10</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=15" data-preview-blocked="true">
+                                    <img src="assets/vendor/9103b08871b8-thumb_nz__rxNWgq5V5pvOeEQZvQYRWJvtwkJG.webp" alt="Gin001">
+                        <div class="user-info">
+                <div class="name">Gin</div>
+                <div class="username">Gin001</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-add">+100.00 кредитов</span></td><td class="text-right"></td><td class="text-right"></td><td class="text-muted text-center shrink">9 мая 2025 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-green mr-2"><i class="fa fa-money" title=""></i></div></div></td><td class="expand">Кредиты зачислены администрацией</td></tr>
+<tr data-key="11"><td>11</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=15" data-preview-blocked="true">
+                                    <img src="assets/vendor/9103b08871b8-thumb_nz__rxNWgq5V5pvOeEQZvQYRWJvtwkJG.webp" alt="Gin001">
+                        <div class="user-info">
+                <div class="name">Gin</div>
+                <div class="username">Gin001</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-add">+500.00 кредитов</span></td><td class="text-right">100</td><td class="text-right"></td><td class="text-muted text-center shrink">9 мая 2025 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-green mr-2"><i class="fa fa-money" title=""></i></div></div></td><td class="expand">Кредиты зачислены администрацией</td></tr>
+<tr data-key="12"><td>12</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=15" data-preview-blocked="true">
+                                    <img src="assets/vendor/9103b08871b8-thumb_nz__rxNWgq5V5pvOeEQZvQYRWJvtwkJG.webp" alt="Gin001">
+                        <div class="user-info">
+                <div class="name">Gin</div>
+                <div class="username">Gin001</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-remove">-200.00 кредитов</span></td><td class="text-right">600</td><td class="text-right"></td><td class="text-muted text-center shrink">9 мая 2025 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-orange mr-2"><i class="fa fa-star" title=""></i></div></div></td><td class="expand">Премиум аккаунт</td></tr>
+<tr data-key="13"><td>13</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=15" data-preview-blocked="true">
+                                    <img src="assets/vendor/9103b08871b8-thumb_nz__rxNWgq5V5pvOeEQZvQYRWJvtwkJG.webp" alt="Gin001">
+                        <div class="user-info">
+                <div class="name">Gin</div>
+                <div class="username">Gin001</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-remove">-20.00 кредитов</span></td><td class="text-right">400</td><td class="text-right"></td><td class="text-muted text-center shrink">9 мая 2025 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-azure mr-2"><i class="fa fa-arrow-up" title=""></i></div></div></td><td class="expand">Поднятие в поиске</td></tr>
+<tr data-key="14"><td>14</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=7" data-preview-blocked="true">
+                                    <img src="assets/vendor/c755f85ecf16-000364ef015743edb018ffd434333e01" alt="alla2">
+                        <div class="user-info">
+                <div class="name">Алла</div>
+                <div class="username">alla2</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-add">+1000.00 кредитов</span></td><td class="text-right"></td><td class="text-right"></td><td class="text-muted text-center shrink">12 мая 2025 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-green mr-2"><i class="fa fa-money" title=""></i></div></div></td><td class="expand">Кредиты зачислены администрацией</td></tr>
+<tr data-key="15"><td>15</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=7" data-preview-blocked="true">
+                                    <img src="assets/vendor/c755f85ecf16-000364ef015743edb018ffd434333e01" alt="alla2">
+                        <div class="user-info">
+                <div class="name">Алла</div>
+                <div class="username">alla2</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-remove">-200.00 кредитов</span></td><td class="text-right">1000</td><td class="text-right"></td><td class="text-muted text-center shrink">12 мая 2025 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-orange mr-2"><i class="fa fa-star" title=""></i></div></div></td><td class="expand">Премиум аккаунт</td></tr>
+<tr data-key="16"><td>16</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=15" data-preview-blocked="true">
+                                    <img src="assets/vendor/9103b08871b8-thumb_nz__rxNWgq5V5pvOeEQZvQYRWJvtwkJG.webp" alt="Gin001">
+                        <div class="user-info">
+                <div class="name">Gin</div>
+                <div class="username">Gin001</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-remove">-50.00 кредитов</span></td><td class="text-right">380</td><td class="text-right"></td><td class="text-muted text-center shrink">13 мая 2025 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-indigo mr-2"><i class="fa fa-bolt" title=""></i></div></div></td><td class="expand">В центре внимания</td></tr>
+<tr data-key="17"><td>17</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=12" data-preview-blocked="true">
+                                    <img src="assets/vendor/0ee74e9aa5ac-thumb_YYmlxxf_GAfbo-HgrA8OIR0u-yte-vOq.webp" alt="Kristy">
+                        <div class="user-info">
+                <div class="name">Kristy</div>
+                <div class="username">Kristy</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-add">+1000.00 кредитов</span></td><td class="text-right"></td><td class="text-right"></td><td class="text-muted text-center shrink">13 мая 2025 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-green mr-2"><i class="fa fa-money" title=""></i></div></div></td><td class="expand">Кредиты зачислены администрацией</td></tr>
+<tr data-key="18"><td>18</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=12" data-preview-blocked="true">
+                                    <img src="assets/vendor/0ee74e9aa5ac-thumb_YYmlxxf_GAfbo-HgrA8OIR0u-yte-vOq.webp" alt="Kristy">
+                        <div class="user-info">
+                <div class="name">Kristy</div>
+                <div class="username">Kristy</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-remove">-20.00 кредитов</span></td><td class="text-right">1000</td><td class="text-right"></td><td class="text-muted text-center shrink">13 мая 2025 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-azure mr-2"><i class="fa fa-arrow-up" title=""></i></div></div></td><td class="expand">Поднятие в поиске</td></tr>
+<tr data-key="19"><td>19</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=1" data-preview-blocked="true">
+                                    <img src="assets/vendor/adba65f3b7ef-thumb_jxSPNscGV5BEjL1BLbBQJNhj29uiYVMv.webp" alt="admin">
+                        <div class="user-info">
+                <div class="name">Chapajev Wasil</div>
+                <div class="username">admin</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-remove">-30.00 кредитов</span></td><td class="text-right">30</td><td class="text-right"></td><td class="text-muted text-center shrink">13 мая 2025 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-blue mr-2"><i class="fa fa-gift" title=""></i></div></div></td><td class="expand">Подарок для <a href="#" data-preview-original-href="/ru/profile/Kristy" data-preview-blocked="true">Kristy</a></td></tr>
+<tr data-key="20"><td>20</td><td>    <div class="user-column">
+                        <a href="#" data-pjax="0" data-preview-original-href="/ru/admin/partner/info?id=1" data-preview-blocked="true">
+                                    <img src="assets/vendor/adba65f3b7ef-thumb_jxSPNscGV5BEjL1BLbBQJNhj29uiYVMv.webp" alt="admin">
+                        <div class="user-info">
+                <div class="name">Chapajev Wasil</div>
+                <div class="username">admin</div>
+            </div>
+                </a>
+            </div>
+</td><td class="text-right"></td><td class="text-right"><span class="transaction-add">+1000.00 кредитов</span></td><td class="text-right"></td><td class="text-right"></td><td class="text-muted text-center shrink">13 мая 2025 г.</td><td class="text-center col-transaction-type" width="115px"><div class="text-center"><div class="transaction-type bg-green mr-2"><i class="fa fa-money" title=""></i></div></div></td><td class="expand">Кредиты зачислены администрацией</td></tr>
+</tbody></table>
+<ul class="pagination m-auto pt-4 pb-4 clearfix"><li class="page-item disabled"><a class="page-link" disabled href="balance.html">«</a></li>
+<li class="page-item active"><a class="page-link" href="#" data-page="0" data-preview-original-href="/ru/admin/balance-transaction/index?page=1" data-preview-blocked="true">1</a></li>
+<li class="page-item"><a class="page-link" href="#" data-page="1" data-preview-original-href="/ru/admin/balance-transaction/index?page=2" data-preview-blocked="true">2</a></li>
+<li class="page-item"><a class="page-link" href="#" data-page="2" data-preview-original-href="/ru/admin/balance-transaction/index?page=3" data-preview-blocked="true">3</a></li>
+<li class="page-item"><a class="page-link" href="#" data-page="3" data-preview-original-href="/ru/admin/balance-transaction/index?page=4" data-preview-blocked="true">4</a></li>
+<li class="page-item"><a class="page-link" href="#" data-page="4" data-preview-original-href="/ru/admin/balance-transaction/index?page=5" data-preview-blocked="true">5</a></li>
+<li class="page-item"><a class="page-link" href="#" data-page="5" data-preview-original-href="/ru/admin/balance-transaction/index?page=6" data-preview-blocked="true">6</a></li>
+<li class="page-item"><a class="page-link" href="#" data-page="6" data-preview-original-href="/ru/admin/balance-transaction/index?page=7" data-preview-blocked="true">7</a></li>
+<li class="page-item"><a class="page-link" href="#" data-page="7" data-preview-original-href="/ru/admin/balance-transaction/index?page=8" data-preview-blocked="true">8</a></li>
+<li class="page-item"><a class="page-link" href="#" data-page="8" data-preview-original-href="/ru/admin/balance-transaction/index?page=9" data-preview-blocked="true">9</a></li>
+<li class="page-item"><a class="page-link" href="#" data-page="9" data-preview-original-href="/ru/admin/balance-transaction/index?page=10" data-preview-blocked="true">10</a></li>
+<li class="page-item"><a class="page-link" href="#" data-page="1" data-preview-original-href="/ru/admin/balance-transaction/index?page=2" data-preview-blocked="true">»</a></li></ul></div>        </div>
+    </div>
+</div>
+        </section>
+        <!-- /.content -->
+
+        <div class="content-fade"></div>
+    </div>
+    <!-- /.content-wrapper -->
+    <footer class="main-footer">
+        Powered by <strong><a href="#" data-preview-original-href="https://youdate.website" data-preview-blocked="true">YouDate</a></strong>
+    </footer>
+</div>
+<!-- ./wrapper -->
+
+
+<div class="global-modal-backdrop" id="modalReportProblem" hidden>
+    <div class="global-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalReportProblemTitle">
+        <div class="global-modal-header">
+            <h4 class="global-modal-title" id="modalReportProblemTitle">Сообщить о проблеме</h4>
+            <button class="global-modal-close" type="button" data-dismiss="modal" aria-label="Закрыть">×</button>
+        </div>
+        <div class="global-modal-body">
+            <div class="form-group">
+                <select class="form-control" id="problemCategory" aria-label="Категория проблемы">
+                    <option value="" disabled selected hidden>Категория</option>
+                    <option>Диалог</option>
+                    <option>Оплата</option>
+                    <option>Интерфейс</option>
+                    <option>Система</option>
+                    <option>Другое</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <select class="form-control" id="problemPriority" aria-label="Приоритет проблемы">
+                    <option value="" disabled selected hidden>Приоритет</option>
+                    <option>Низкий</option>
+                    <option>Средний</option>
+                    <option>Высокий</option>
+                    <option>Критический</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input class="form-control" id="problemTitle" placeholder="Тема *: коротко, что случилось" aria-label="Тема проблемы">
+            </div>
+            <div class="form-group">
+                <textarea class="form-control" id="problemDesc" placeholder="Описание *: подробности, шаги, ожидание/факт" aria-label="Описание проблемы" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <input class="form-control" id="problemFile" type="file" accept="image/*" multiple aria-label="Скриншоты" title="Скриншоты (опционально)">
+            </div>
+        </div>
+        <div class="global-modal-footer">
+            <button class="btn btn-default" type="button" data-dismiss="modal">Отмена</button>
+            <button class="btn btn-primary" id="btnSendProblem" type="button">Отправить</button>
+        </div>
+    </div>
+</div>
+
+<div class="global-modal-backdrop" id="modalMakeBusy" hidden>
+    <div class="global-modal-dialog global-modal-dialog-sm" role="dialog" aria-modal="true" aria-labelledby="modalMakeBusyTitle">
+        <div class="global-modal-header">
+            <h4 class="global-modal-title" id="modalMakeBusyTitle">Перейти в статус «Занят»</h4>
+            <button class="global-modal-close" type="button" data-dismiss="modal" aria-label="Закрыть">×</button>
+        </div>
+        <div class="global-modal-body">
+            <div class="radio">
+                <label><input checked name="busyReason" type="radio" value="time_for_pings"> Время для пингов</label>
+            </div>
+            <div class="radio">
+                <label><input name="busyReason" type="radio" value="time_for_messenger"> Время для мессенджера</label>
+            </div>
+            <div class="radio">
+                <label><input name="busyReason" type="radio" value="break"> Перерыв</label>
+            </div>
+            <div class="radio">
+                <label><input name="busyReason" type="radio" value="one_on_one"> Встреча 1-на-1</label>
+            </div>
+            <div class="radio">
+                <label><input name="busyReason" type="radio" value="shift_lead"> Я руководитель смены</label>
+            </div>
+            <div class="form-group" style="margin-top:10px;">
+                <input class="form-control" id="busyComment" placeholder="Комментарий (опционально): например, вернусь через 10 минут" aria-label="Комментарий к статусу занят" type="text">
+            </div>
+        </div>
+        <div class="global-modal-footer">
+            <button class="btn btn-default" type="button" data-dismiss="modal">Отмена</button>
+            <button class="btn btn-primary" id="btnApplyBusy" type="button">Применить</button>
+        </div>
+    </div>
+</div>
+
+<div class="global-modal-backdrop" id="modalMakeOffline" hidden>
+    <div class="global-modal-dialog global-modal-dialog-sm" role="dialog" aria-modal="true" aria-labelledby="modalMakeOfflineTitle">
+        <div class="global-modal-header">
+            <h4 class="global-modal-title" id="modalMakeOfflineTitle">Перейти в офлайн</h4>
+            <button class="global-modal-close" type="button" data-dismiss="modal" aria-label="Закрыть">×</button>
+        </div>
+        <div class="global-modal-body">
+            <div class="radio">
+                <label><input checked name="offlineReason" type="radio" value="shift_finished"> Закончил смену</label>
+                <div class="global-radio-hint">Эксперт завершил рабочую смену и больше не должен получать новые чаты, пинги или задачи.</div>
+            </div>
+            <div class="radio">
+                <label><input name="offlineReason" type="radio" value="training"> Обучение</label>
+                <div class="global-radio-hint">Эксперт находится на обучении, тренинге или внутренней встрече и временно не участвует в обработке чатов.</div>
+            </div>
+            <div class="form-group" style="margin-top:10px;">
+                <input class="form-control" id="offlineComment" placeholder="Комментарий (опционально): например, вернусь после обучения" aria-label="Комментарий к офлайн-статусу" type="text">
+            </div>
+        </div>
+        <div class="global-modal-footer">
+            <button class="btn btn-default" type="button" data-dismiss="modal">Отмена</button>
+            <button class="btn btn-primary" id="btnApplyOffline" type="button">Применить</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-for-action" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title" id="modal-header-content"></h4>
+            </div>
+            <div class="modal-body" id="ajax-modal-content"></div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="daterangepicker ltr show-calendar opensright"><div class="ranges"></div><div class="drp-calendar left"><div class="calendar-table"></div><div class="calendar-time" style="display: none;"></div></div><div class="drp-calendar right"><div class="calendar-table"></div><div class="calendar-time" style="display: none;"></div></div><div class="drp-buttons"><span class="drp-selected"></span><button class="cancelBtn btn btn-sm btn-default" type="button">Отменить</button><button class="applyBtn btn btn-sm btn-primary" disabled type="button">Применить</button> </div></div><script src="assets/vendor/cd5a496a805f-jquery.js"></script><script src="assets/vendor/d382ea563e56-bootstrap.js"></script><script src="assets/vendor/f2ffdfd60f17-jquery.slimscroll.min.js"></script><script src="assets/vendor/8c14357092f7-adminlte.min.js"></script><script src="balance_fixtures.js"></script><script src="balance_preview.js"></script><script src="balance_custom.js"></script><script src="global_custom.js?v=20261002-balance-header"></script></body></html>

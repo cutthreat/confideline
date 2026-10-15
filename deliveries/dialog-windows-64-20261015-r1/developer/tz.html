@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>#64 — ТЗ</title><link rel="stylesheet" href="inherited-doc-style.css"></head><body><header><a href="../index.html">Комплект #64</a><a href="index.html">Макеты и реестр</a></header><main><h1>#64: диалоговые окна MakTaro — инвентарь, единый контракт и ТЗ</h1>
+<p><strong>Передача 15.10.2026:</strong> документ сохранён как исходный контракт с переносимыми ссылками. Адресный объём работ и формат результата — в <a href="../index.html">задании Игорю</a>. Исторические статусы и ограничения не являются новым аудитом.</p>
+<p><strong>Статус:</strong> <code>WORKING_SOURCE_INVENTORY_WITH_LIMITS</code>, уточнение 05.10.2026. Клиентский контракт сохранён; добавлены известные админские исходники и настоящие локальные HTML-примеры. Полнота всех окон, согласованный стиль и подключение к backend не подтверждены.</p>
+<p><strong>Граница задачи.</strong> Актуальный сценарий карточки <code>EFQ9AXJM</code> требует перечень всех диалоговых окон: клиентские и админские области входят в объём. Прежнее исключение админки ошибочно сужало задачу. Немодальные боковые панели, меню и браузерные подтверждения нужно учитывать отдельно по типу, не выдавать их за HTML-модальные окна. Вёрстка не переделывается: сохраняются существующие стили каждой поверхности.</p>
+<p><strong>Исходники.</strong> Прежняя визуальная карта (историческое основание, не входит в эту выдачу) содержит клиентские паспорта со снимками и остаётся историческим основанием, не интерактивным примером. Новая <a href="../index.html">рабочая редакция #64</a> связывает <a href="inventory.json">реестр исходных экземпляров</a> и <a href="index.html">HTML-примеры</a>. Прочитаны 78 клиентских HTML final-r2 с проверкой capture-хэшей, девять текущих локальных страниц баланса #23 и отдельная админка отзывов #62. Это известный статический объём, не полный перечень live-окон и серверных AJAX-шаблонов.</p>
+<h2>1. Единый контракт окна</h2>
+<table>
+<thead>
+<tr>
+<th>Элемент</th>
+<th>Обязательное правило</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Открытие</td>
+<td>Только от конкретного пользовательского действия либо подтверждённого серверного события. Одно событие не должно открыть два одинаковых окна.</td>
+</tr>
+<tr>
+<td>Контекст</td>
+<td>Передавать идентификаторы исходного объекта: <code>expertId</code>, <code>conversationId</code>, <code>consultationId</code>, <code>orderId</code> или <code>reviewId</code>, если они есть. Не строить действие на отображаемом имени, цене или тексте.</td>
+</tr>
+<tr>
+<td>Фокус и доступность</td>
+<td>При открытии фокус получает заголовок либо первое поле; <code>Escape</code>, крестик и Back возвращают фокус инициатору, если окно не относится к незавершённому необратимому действию. Фон недоступен клавиатуре, пока окно активно.</td>
+</tr>
+<tr>
+<td>Закрытие</td>
+<td>Закрытие скрывает интерфейс, но не отменяет уже отправленный платёж, <code>Start</code>, <code>Complete</code> или запрос в поддержку. После обновления страницы показывать только подтверждённое сервером состояние.</td>
+</tr>
+<tr>
+<td>Основная кнопка</td>
+<td>До ответа сервера блокируется повторное нажатие. У каждого запроса есть idempotency key/nonce; ошибка или timeout сначала сверяются с исходной операцией, затем разрешается повтор.</td>
+</tr>
+<tr>
+<td>Ошибка</td>
+<td>Понятное нейтральное сообщение рядом с действием; не раскрывать платёжные реквизиты, внутренние причины, чужие данные и текст консультации. Для платёжной ошибки — безопасный переход к другому способу или Support.</td>
+</tr>
+<tr>
+<td>Мобильный вид</td>
+<td>Ширина не превышает viewport; длинное содержимое прокручивается внутри окна; фиксированный footer не перекрывает обязательную кнопку. Проверить 360, 480, 768, 992 и 1280 px.</td>
+</tr>
+<tr>
+<td>Аналитика</td>
+<td>Писать только тип окна, инициировавшее событие, результат и технический идентификатор объекта. Текст чата, карта, e-mail, номер телефона и реквизиты платежа в событие не включать.</td>
+</tr>
+</tbody></table>
+<h2>2. Классы риска</h2>
+<table>
+<thead>
+<tr>
+<th>Класс</th>
+<th>Окна</th>
+<th>Правило</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>informational</code></td>
+<td>offline, no matching, notification destination, picker details</td>
+<td>Закрытие безопасно; не меняет состояние.</td>
+</tr>
+<tr>
+<td><code>form</code></td>
+<td>astrological details, question before start, notify email/telegram, review, support</td>
+<td>Проверить обязательные поля и серверную валидацию; черновик не равен отправке.</td>
+</tr>
+<tr>
+<td><code>paid_or_consent</code></td>
+<td>top-up/start/continue, checkout, card details, discounted offer, auto-refill, one-click top-up</td>
+<td>Перед запросом видны цена/credits/условия; нужна явная команда пользователя. Close/Back не покупает и не запускает счёт.</td>
+</tr>
+<tr>
+<td><code>session_state</code></td>
+<td>connecting, end or stay, completed, reconnect grace, expert wants to continue</td>
+<td>Источник состояния — сервер. Интерфейс не считает таймер или списание локально как окончательный факт.</td>
+</tr>
+<tr>
+<td><code>error_recovery</code></td>
+<td>payment/order/card error, consultation support</td>
+<td>Сначала readback исходной операции, затем один допустимый путь восстановления.</td>
+</tr>
+</tbody></table>
+<h2>3. Клиентский Инвентарь И Контракт Подключения</h2>
+<p>Таблица ниже описывает клиентскую часть, не весь объём #64. Админские источники и остатки находятся в разделе 8.</p>
+<table>
+<thead>
+<tr>
+<th>ID окна в вёрстке</th>
+<th>Класс</th>
+<th>Когда открыть</th>
+<th>Действие пользователя</th>
+<th>Серверный результат и безопасный выход</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>account--astrological-details</code></td>
+<td>form</td>
+<td>onboarding или редактирование сведений</td>
+<td>Continue, Back, Close</td>
+<td>Continue валидирует и сохраняет данные; Back/Close возвращают к инициатору без сохранения.</td>
+</tr>
+<tr>
+<td><code>account--expert-picker-generic</code></td>
+<td>informational</td>
+<td>выбор темы или другого эксперта</td>
+<td>выбрать карточку, Start chat, открыть details</td>
+<td>Выбор хранит <code>expertId</code>; Start chat открывает диалог/проверку средств, но не запускает тариф.</td>
+</tr>
+<tr>
+<td><code>account--expert-picker-trial</code></td>
+<td>informational</td>
+<td>сервер подтвердил право на welcome-сценарий</td>
+<td>выбрать эксперта, Start chat</td>
+<td>Продолжает в вопрос/согласие/отдельный Start; право не выводится только из вида карточки.</td>
+</tr>
+<tr>
+<td><code>account--expert-picker-details</code></td>
+<td>informational</td>
+<td>открыты details из подбора</td>
+<td>Back, отзывы, Proceed to payment</td>
+<td>Проверить сохранение выбранного <code>expertId</code>; переход к оплате сначала проверяет средства/предложение.</td>
+</tr>
+<tr>
+<td><code>account--no-matching-experts</code></td>
+<td>informational</td>
+<td>подбор вернул пустую выдачу</td>
+<td>Expand selection, Wait</td>
+<td>Менять только явно показанные ограничения; Wait создаёт запрос ожидания только по принятому правилу.</td>
+</tr>
+<tr>
+<td><code>account--expert-offline</code></td>
+<td>informational</td>
+<td>попытка начать с offline экспертом</td>
+<td>Select another, Notify, Send in advance</td>
+<td>Не подменять выбранного эксперта молча. Уведомление и предварительный вопрос — разные действия.</td>
+</tr>
+<tr>
+<td><code>account--notification-destination</code></td>
+<td>form</td>
+<td>клиент выбрал Notify</td>
+<td>выбрать канал, Next, Close</td>
+<td>Close ничего не подключает; Next ведёт в форму выбранного канала.</td>
+</tr>
+<tr>
+<td><code>account--notify-email</code></td>
+<td>form</td>
+<td>выбран e-mail</td>
+<td>Done, Close</td>
+<td>Валидировать e-mail и сохранять подписку; сохранение не доказывает будущую доставку.</td>
+</tr>
+<tr>
+<td><code>account--notify-telegram</code></td>
+<td>form</td>
+<td>выбран Telegram</td>
+<td>Confirm, Close</td>
+<td>Начать подтверждаемую привязку; статус после возврата читать с сервера. Не показывать чат/контакт без явного подтверждения.</td>
+</tr>
+<tr>
+<td><code>account--question-before-start</code></td>
+<td>form</td>
+<td>клиент пишет до консультации или входит в Start-flow</td>
+<td>Start chat, Close</td>
+<td>Вопрос отправляется в постоянный диалог выбранному эксперту; оплата и согласие остаются отдельными действиями.</td>
+</tr>
+<tr>
+<td><code>account--expert-wants-to-continue</code></td>
+<td>session_state</td>
+<td>есть новое предложение от выбранного эксперта</td>
+<td>Start chat, Close</td>
+<td>Принять предложение только после явного согласия; Close не списывает credits.</td>
+</tr>
+<tr>
+<td><code>account--top-up-to-start</code></td>
+<td>paid_or_consent</td>
+<td>средств недостаточно до консультации</td>
+<td>выбрать пакет, Pay and continue, Close</td>
+<td>Передать package/order context в checkout; оплата не равна платному Start.</td>
+</tr>
+<tr>
+<td><code>account--top-up-to-continue</code></td>
+<td>paid_or_consent</td>
+<td>активная консультация приостановлена из-за баланса</td>
+<td>выбрать пакет, Pay and continue</td>
+<td>После успешной оплаты восстановить прежнюю сессию только по серверному правилу.</td>
+</tr>
+<tr>
+<td><code>account--insufficient-credits</code></td>
+<td>paid_or_consent</td>
+<td>баланс не покрывает следующую платную часть</td>
+<td>Activate auto-refill, Skip</td>
+<td>Activate требует отдельного согласия на условия; Skip ведёт к обычному выбору пакета.</td>
+</tr>
+<tr>
+<td><code>account--discounted-refill-offer</code></td>
+<td>paid_or_consent</td>
+<td>сервер подтвердил доступную акцию</td>
+<td>Continue, Close</td>
+<td>Continue фиксирует показанные условия в заказе; Close не резервирует и не покупает credits.</td>
+</tr>
+<tr>
+<td><code>account--checkout-order-review</code></td>
+<td>paid_or_consent</td>
+<td>выбран package или продолжение после top-up</td>
+<td>выбрать способ, Buy, Close</td>
+<td>Создать/прочитать заказ; Buy запускает одну подтверждаемую попытку PSP. Сохранять известный статус заказа при закрытии.</td>
+</tr>
+<tr>
+<td><code>account--checkout-card-details</code></td>
+<td>paid_or_consent</td>
+<td>выбран Credit Card</td>
+<td>Buy, Back, Close</td>
+<td>Платёжный ввод обслуживает PSP; реквизиты карты не попадают в логи MakTaro. Проверить pending/success/fail.</td>
+</tr>
+<tr>
+<td><code>account--one-click-top-up</code></td>
+<td>paid_or_consent</td>
+<td>пауза и подтверждённый сохранённый метод</td>
+<td>Buy, Close</td>
+<td>Одна попытка платежа с возможным PSP challenge; отказ не завершает сессию тайно.</td>
+</tr>
+<tr>
+<td><code>account--card-payment-error</code></td>
+<td>error_recovery</td>
+<td>PSP подтвердил отказ/ошибку попытки</td>
+<td>другой метод, Support, Close</td>
+<td>Не повторять неизвестный платёж. Support связывается с заказом, но не получает реквизиты карты.</td>
+</tr>
+<tr>
+<td><code>account--payment-order-error</code></td>
+<td>error_recovery</td>
+<td>серверная ошибка заказа</td>
+<td>другой способ, Support, Close</td>
+<td>Прежде чем создать новый заказ, сверить исходный статус.</td>
+</tr>
+<tr>
+<td><code>account--connecting-expert</code></td>
+<td>session_state</td>
+<td>после согласия и серверной команды Start</td>
+<td>Wait, Close, Support</td>
+<td>Только готовность обеих сторон переводит консультацию в active. Close не создаёт Complete.</td>
+</tr>
+<tr>
+<td><code>account--end-or-stay</code></td>
+<td>session_state</td>
+<td>клиент нажал End chat</td>
+<td>Stay/Close, End</td>
+<td>Stay/Close возвращают active chat. End создаёт один запрос завершения и ждёт серверного подтверждения.</td>
+</tr>
+<tr>
+<td><code>account--reconnect-grace</code></td>
+<td>session_state</td>
+<td>сервер подтвердил разрыв связи</td>
+<td>Wait, Support</td>
+<td>Восстановление использует прежнюю сессию и серверное время; не создавать новую консультацию.</td>
+</tr>
+<tr>
+<td><code>account--consultation-completed</code></td>
+<td>session_state</td>
+<td>сервер подтвердил Complete</td>
+<td>оценка, Write review, Ask next, Close</td>
+<td>Показать итог только после Complete. Следующий вопрос создаёт новую консультацию, не возобновляет завершённую.</td>
+</tr>
+<tr>
+<td><code>account--consultation-review</code></td>
+<td>form</td>
+<td>завершена собственная консультация без уже отправленного отзыва</td>
+<td>Send, Complain, Close</td>
+<td>Одна оценка/отзыв на <code>consultationId</code>; Close не публикует черновик. Жалоба создаёт Support case, не автоматический refund.</td>
+</tr>
+<tr>
+<td><code>account--consultation-support</code></td>
+<td>error_recovery</td>
+<td>ошибка, жалоба или итог консультации</td>
+<td>Send, Close</td>
+<td>Создать один связанный Support ticket с клиентской видимостью; подтверждение не означает одобренный refund.</td>
+</tr>
+</tbody></table>
+<h2>4. Что Игорь должен подтвердить до подключения</h2>
+<ol>
+<li>Реестр <code>window ID -&gt; route -&gt; trigger -&gt; backend event -&gt; state source -&gt; API -&gt; permission</code>. Если окна нет в текущей реализации, явно указать <code>new</code>.</li>
+<li>Кто вправе вызывать <code>Start</code>, <code>pause</code>, <code>resume</code>, <code>Complete</code>, auto-refill и возврат к активной сессии. Покупка credits, согласие и вход в чат не являются ими автоматически.</li>
+<li>Источник прав на trial, скидку, saved payment method, статус эксперта, баланс и право на отзыв.</li>
+<li>Идемпотентность <code>Buy</code>, one-click top-up, Start, End и Send Support; поведение timeout/повторного открытия.</li>
+<li>Какие окна сохраняют серверный черновик, а какие не должны сохранять никаких введённых данных.</li>
+</ol>
+<h2>5. Минимальная приёмка</h2>
+<table>
+<thead>
+<tr>
+<th>Проверка</th>
+<th>Ожидаемый результат</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Обычное окно</td>
+<td>открытие, Escape/Close/Back и возврат фокуса работают; фоновая страница не активна клавиатурой.</td>
+</tr>
+<tr>
+<td>Формы</td>
+<td>пустые/невалидные данные не отправляются; успешный результат прочитан с сервера.</td>
+</tr>
+<tr>
+<td>Платёж</td>
+<td>двойной клик, refresh и timeout не дают двойного заказа/списания; неизвестный результат не ретраится автоматически.</td>
+</tr>
+<tr>
+<td>Start и End</td>
+<td>баланс/покупка/согласие не запускают платное время сами; один Start/End даёт одно подтверждённое серверное изменение.</td>
+</tr>
+<tr>
+<td>Сессия</td>
+<td>reconnect не теряет контекст и не удваивает списание; Complete не возобновляется через UI.</td>
+</tr>
+<tr>
+<td>Безопасность</td>
+<td>сторонний пользователь не открывает чужой review/order/consultation/support context подменой ID.</td>
+</tr>
+<tr>
+<td>Адаптивность</td>
+<td>все классы проверены на 360, 480, 768, 992 и 1280 px; обязательные кнопки и ошибки доступны.</td>
+</tr>
+</tbody></table>
+<h2>6. Решения и границы</h2>
+<ul>
+<li><strong>Принято:</strong> сохраняем утверждённую вёрстку и не делаем общий редизайн окон.</li>
+<li><strong>Принято Заказчиком 05.10:</strong> агент и эксперт — один человек; агент является внутренней ролью этого же человека при работе с несколькими экспертными профилями, не отдельным переписчиком.</li>
+<li><strong>Нужна сверка Игоря:</strong> фактическое наличие каждого триггера, API и серверной модели состояния. Это не вопрос к Заказчику до технической проверки.</li>
+<li><strong>Отдельные карточки:</strong> отзывы/рейтинг — <code>#62</code>; Support V2 — <code>#25</code>; credits/баланс — <code>#23</code>; права — <code>#49</code>; чат и денежные расчёты принимаются пакетно в <code>#67</code>. Настоящий документ не заменяет их QA.</li>
+</ul>
+<h2>7. Готовность результата #64</h2>
+<p>Полный результат карточки <strong>ещё не установлен</strong>. Есть клиентский контракт, расширенный инвентарь известных исходников и настоящие локальные HTML-примеры. Открыты полнота live/dynamic-областей, подтверждение Игорем триггеров/API/прав, согласование правил внутри клиентского и админского стиля и нативная проверка поведения/ширин. После технической сверки Игорь отмечает существующие и новые окна в реестре из раздела 4; затем QA выполняет раздел 5 на известной сборке. Исходный DOM, fixture-намерение и локальный файл не доказывают серверный переход или приёмку платежей/сессий.</p>
+<h2>8. Админские Источники И Остатки</h2>
+<table>
+<thead>
+<tr>
+<th>Компонент в исходнике</th>
+<th>Известные экземпляры</th>
+<th>Что необходимо подтвердить</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>modal-for-action</code></td>
+<td>Девять страниц #23</td>
+<td>Общий пустой AJAX-контейнер, не девять самостоятельных бизнес-окон. Нужны тела, инициаторы, endpoint, объект и permission.</td>
+</tr>
+<tr>
+<td><code>modalMakeBusy</code></td>
+<td>Balance, Payouts</td>
+<td>Серверный статус, новые назначения и поведение текущей консультации; визуальное закрытие не меняет их.</td>
+</tr>
+<tr>
+<td><code>modalMakeOffline</code></td>
+<td>Balance, Payouts</td>
+<td>Кто меняет статус и что происходит с активной консультацией; окно не завершает платную услугу само.</td>
+</tr>
+<tr>
+<td><code>modalReportProblem</code></td>
+<td>Balance, Payouts</td>
+<td>Support #25 на паузе: только исходный учёт, без отправки и live-проверки.</td>
+</tr>
+<tr>
+<td><code>partnerRewardModal</code></td>
+<td>Partner</td>
+<td>Наследованное название «Оштрафовать или поощрить» не утверждает штрафы. Сверить с #23: корректировка credits, причина и отложенное право записи.</td>
+</tr>
+<tr>
+<td><code>reason-dialog</code></td>
+<td>Админка отзывов #62</td>
+<td>08.10 добавлен производный пример с локальными ресурсами, без изменения оригинала: неиспользуемый boxed-фон исключён, два перехода к неупакованной анкете отключены. Исходный JS проверен offline на синтетических отзывах; native/visual, права, сохранение и backend принимаются отдельно в #62.</td>
+</tr>
+</tbody></table>
+<p>Всего в известном статическом объёме найдено 54 экземпляра и 43 предварительные группы компонентов; это не число самостоятельных бизнес-окон всего сайта. Для 39 страниц с окнами есть локальные примеры. Клиентский fixture-инспектор фиксирует намерения без сохранения/платежей; админские примеры сохраняют текущие fixtures #23 и локальную синтетическую модерацию #62. Support-компоненты отключены в навигаторе. Проверки источников и объявленных ресурсов не заменяют нативную проверку iframe, фокуса, открытия и закрытия каждого окна.</p>
+</main></body></html>
