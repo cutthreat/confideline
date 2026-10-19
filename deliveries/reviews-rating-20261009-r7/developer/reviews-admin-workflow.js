@@ -23,7 +23,7 @@
   };
   const negative = status => ['rejected','hidden','deleted'].includes(status);
   const moderationModes = ['premoderation','postmoderation','none'];
-  const consultationFixtures = [{id:'CT-1024',expertId:'EX-101',authorProfileId:'USR-303',started:true,completed:true,settled:true,charged:20,date:'2026-10-18T12:00:00Z'}];
+  const consultationFixtures = [{id:'CT-1024',expertId:'EX-101',authorProfileId:'USR-303',started:true,completed:true,settled:true,charged:20,date:'2026-09-30T12:00:00Z'}];
   function reviewEligibility(session) {
     return !!session && session.started === true && session.completed === true && session.settled === true && Number.isFinite(session.charged) && session.charged > 0;
   }
