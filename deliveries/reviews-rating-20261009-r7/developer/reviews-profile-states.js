@@ -44,6 +44,7 @@
     {id:'submissions-closed-form',group:'Настройки',name:'Приём закрыли при открытой форме',expected:'Черновик сохранён; отправка заблокирована, показана причина.'}
   ];
   const catalog = [
+    {id:'multiple-consultations',name:'Несколько консультаций и мои отзывы',action:'Выбрать консультацию; переключить черновики; открыть свой отзыв.',expected:['Оценки привязаны к отдельным консультациям, черновики не смешиваются.','Опубликованный и отклонённый отзывы доступны приватно с актуальными действиями.','Отправка по одному сеансу не закрывает оценку другого.','Бесплатный сеанс и незавершённый расчёт не дают права новой оценки.']},
     {id:'overview',name:'Отзывы, анонимность и ручная база',action:'Прочитать список и рейтинг; открыть форму.',expected:['Оценки 5 и 3 плюс база 5.0 / 2 дают 4.5, 4 голоса и 2 текста.','Один автор анонимный, второй отображается по имени. Идентификаторы публично не раскрыты.','Отзыв на 1000 символов и длинное слово переносятся без расширения страницы.','Форма открывается пустой; оценка обязательна, комментарий необязателен.']},
     {id:'empty-guest',name:'Пустая анкета без допуска к оценке',action:'Просмотреть блок и шапку.',expected:['Нет рейтинга, звёзд и зазора под отсутствующий агрегат.','Нулевая база не создаёт фиктивные голоса.','Пустой список показан; без допуска к консультации отправки нет.']},
     {id:'rating-closed',name:'Только рейтинг; новый приём закрыт',action:'Просмотреть блок.',expected:['Оценки без комментариев дают 4.0 и 2 голоса.','Настройка показа текстов выключена: нет ни списка, ни ложного пустого состояния.','Закрытый приём не скрывает рейтинг; вместо формы показан статус.']},
@@ -61,6 +62,13 @@
     {id:'submissions-closed-form',name:'Приём закрыли в открытой форме',action:'Прочитать причину; отменить.',expected:['Черновик сохранён, показана причина отказа.','Новая отправка заблокирована; старые опубликованные данные не пропали.']}
   ];
   function createCase(id) {
+    if(id==='multiple-consultations'){
+      const state=workflow.initialState(),session=(id,date,extra={})=>({id,date,expertId:'EX-101',authorProfileId:'USR-303',started:true,completed:true,settled:true,charged:20,...extra});
+      state.consultations=[session('CT-1024','2026-10-18T12:00:00Z'),session('CT-1025','2026-10-17T12:00:00Z',{balance:-10}),session('CT-1026','2026-10-16T12:00:00Z'),session('CT-1027','2026-10-15T12:00:00Z'),session('CT-1028','2026-10-14T12:00:00Z',{charged:0}),session('CT-1029','2026-10-13T12:00:00Z',{settled:false})];
+      state.reviews.push({id:'RV-204',expertId:'EX-101',authorProfileId:'USR-303',author:'Анна',stars:2,text:'Впечатление от консультации. Личные данные нужно убрать.',anonymous:true,status:'rejected',consultation:'CT-1026',source:'client',consultationVerified:true,verified:false,version:1,decisionId:1,clientDecision:{code:'personal_data',message:''},createdAt:'2026-10-16T13:00:00Z'}, {id:'RV-205',expertId:'EX-101',authorProfileId:'USR-303',author:'Анна',stars:5,text:'',anonymous:false,status:'published',consultation:'CT-1027',source:'client',consultationVerified:true,verified:true,createdAt:'2026-10-15T13:00:00Z'});
+      state.nextId=206;
+      return {state,ui:{eligible:true,form:false,stars:null,text:'',anonymous:false,error:null,notice:null,phase:null,sending:false}};
+    }
     const composite=id;
     const base={overview:'mixed-base','empty-guest':'empty-zero-base','rating-closed':'scores-only','form-combined':'invalid-rating','restricted-form':'text-required'};
     id=base[id]||id;

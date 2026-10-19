@@ -10,6 +10,22 @@
   function feedback(message) { $('admin-feedback').textContent=message; $('admin-feedback').hidden=false; clearTimeout(timer); timer=setTimeout(()=>{$('admin-feedback').hidden=true;},4000); }
   function showError(id,e) { $(id).textContent=error(e); $(id).hidden=false; }
   function open(id) { focusReturn=document.activeElement; $(id).showModal(); }
+  let historyId=null;
+  function renderHistory(id) {
+    const row=store.list(role).find(r=>r.id===id);
+    if(!row)throw new Error('forbidden');
+    const events=store.moderationHistory(role,id);
+    $('history-title').textContent=t('historyTitle');
+    $('history-context').textContent=row.id+' · '+row.author+' · '+(row.consultation||t('noConsultation'));
+    $('history-events').innerHTML=events.map(a=>{
+      const decision=ReviewAdminWorkflow.decisionReasons[a.decision?.code],message=a.decision?.message||(decision?decision.message[lang==='en'?1:0]:'');
+      return '<article class="review-history-event"><strong>'+esc(t(a.action==='appeal'?'appealEvent':a.action==='revise'?'revise':'event_'+a.action))+'</strong><p class="review-history-transition">'+esc(t(a.from))+' → '+esc(t(a.to))+'</p>'+(message?'<p>'+esc(message)+'</p>':'')+(a.reply?'<p><b>'+esc(t('appealReply'))+':</b> '+esc(a.reply)+'</p>':'')+'<footer>'+esc(a.actorRole==='client'?t('client'):a.actorName+' · '+t(a.actorRole))+'<time datetime="'+esc(a.at)+'">'+esc(new Intl.DateTimeFormat(lang==='en'?'en-GB':'ru-RU',{dateStyle:'medium',timeStyle:'short',timeZone:'UTC'}).format(new Date(a.at)))+' UTC</time></footer></article>';
+    }).join('')||'<p class="text-muted">'+esc(t('noHistory'))+'</p>';
+  }
+  function showHistory(id,trigger) {
+    historyId=id;renderHistory(id);open('history-dialog');if(trigger)focusReturn=trigger;
+    $('history-title').focus({preventScroll:true});$('history-events').scrollTop=0;$('history-dialog').scrollTop=0;
+  }
   document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
   ['reason-close','reason-cancel'].forEach(id=>$(id).onclick=()=>$('reason-dialog').close());
   document.querySelectorAll('dialog').forEach(d=>d.addEventListener('close',()=>{if(focusReturn?.isConnected&&!focusReturn.disabled)focusReturn.focus({preventScroll:true});}));
@@ -47,7 +63,9 @@
       return '<tr data-review-id="'+r.id+'"><td><b>'+r.id+'</b><small>'+esc(r.createdAt.slice(0,10))+'</small></td><td>'+esc(r.author)+'<small>'+esc(r.authorProfileId)+' · '+esc(ReviewAdminWorkflow.experts.find(e=>e.id===r.expertId)?.name||'')+'</small>'+(r.anonymous?'<small>'+t('anonymous')+'</small>':'')+'</td><td>'+esc(r.consultation||t('noConsultation'))+'</td><td><span class="review-admin-stars" aria-label="'+r.stars+' / 5">'+'<i class="fa fa-star" aria-hidden="true"></i>'.repeat(r.stars)+'<i class="fa fa-star-o" aria-hidden="true"></i>'.repeat(5-r.stars)+'</span></td><td>'+esc(r.text||t('noText'))+'</td><td><span class="label '+({pending:'label-warning',published:'label-success',hidden:'label-warning',rejected:'label-danger',deleted:'label-default'})[r.status]+'">'+t(r.status)+'</span><small>'+t(r.verified?'checked':'notChecked')+'</small></td><td><div class="review-admin-actions">'+actions.map(action=>'<button class="btn btn-default btn-sm review-action-'+action+'" type="button" data-action="'+action+'" data-id="'+r.id+'" title="'+t(action)+'" aria-label="'+t(action)+'"><i class="fa fa-'+actionIcons[action]+'" aria-hidden="true"></i></button>').join('')+'</div></td></tr>';
     }).join('')||'<tr><td colspan="7" class="review-admin-empty">'+t('empty')+'</td></tr>';
     for(const row of visible.filter(r=>r.appeal?.status==='pending'||r.status==='published'&&r.moderationPending)){const cell=document.querySelector('[data-review-id="'+row.id+'"] td:nth-child(6)'),badge=document.createElement('small');badge.textContent=t(row.appeal?.status==='pending'?'appeal':'awaitingPostmoderation');badge.className='text-info';cell.append(badge);}
+    if(can('history'))for(const r of visible){const button=document.createElement('button');button.type='button';button.className='btn btn-default btn-sm';button.dataset.history=r.id;button.title=t('history');button.setAttribute('aria-label',t('history')+' '+r.id);button.innerHTML='<i class="fa fa-history" aria-hidden="true"></i>';document.querySelector('[data-review-id="'+r.id+'"] .review-admin-actions').append(button);}
     $('admin-result-count').textContent=visible.length+' / '+rows.length;
+    if(historyId&&$('history-dialog').open)renderHistory(historyId);
     if (can('audit')) {
       const audit=store.audit(role).filter(a=>['approve','reject','hide','restore','delete','appeal_publish','appeal_decline'].includes(a.action));
       $('audit-list').innerHTML=audit.map(a=>'<div class="review-audit-entry"><strong>'+esc(a.id)+' · '+esc(a.action)+' · '+esc(a.actor)+'</strong><small>'+esc(a.at)+'</small><div>'+esc(a.reason)+'</div><details><summary>Before / After</summary><pre>'+esc(JSON.stringify({before:a.before,after:a.after},null,2))+'</pre></details></div>').join('')||t('noActions');
@@ -60,6 +78,10 @@
   $('reset-filters').onclick=()=>{filter='all';$('expert-select').value='EX-101';$('admin-search').value='';document.querySelectorAll('[data-column]').forEach(el=>{el.value='';});document.querySelectorAll('[data-filter]').forEach(el=>{el.parentElement.classList.toggle('active',el.dataset.filter==='all');el.setAttribute('aria-pressed',String(el.dataset.filter==='all'));});safeRender();};
   $('admin-rows').onclick=e=>{const button=e.target.closest('[data-action]');if(!button)return;const review=store.list(role).find(r=>r.id===button.dataset.id);pending={id:review.id,version:review.version,action:button.dataset.action};const appeal=pending.action.startsWith('appeal_');$('reason-title').textContent=t(pending.action);$('reason-context').textContent=pending.id+' · '+t(review.status);$('moderation-reason').value='';$('client-message').value='';$('appeal-reply').value='';$('client-decision-code').value='personal_data';clientPreview();$('client-feedback').hidden=appeal||!['reject','hide','delete'].includes(pending.action);$('appeal-response').hidden=!appeal;$('appeal-message').hidden=!appeal;$('appeal-message').textContent=review.appeal?.message||'';$('reason-error').hidden=true;open('reason-dialog');};
   $('reason-form').onsubmit=e=>{e.preventDefault();if(!pending)return;try{if(pending.action.startsWith('appeal_'))store.resolveAppeal(role,pending.id,pending.action.slice(7),$('moderation-reason').value,$('appeal-reply').value,pending.version);else store.moderate(role,pending.id,pending.action,$('moderation-reason').value,pending.version,{code:$('client-decision-code').value,message:$('client-message').value});pending=null;$('reason-dialog').close();safeRender();feedback(t('decisionSaved'));}catch(e){showError('reason-error',e);}};
+  $('admin-rows').addEventListener('click',e=>{const trigger=e.target.closest('[data-history]');if(!trigger)return;try{showHistory(trigger.dataset.history,trigger);}catch(errorValue){feedback(error(errorValue));}});
+  $('history-dialog').addEventListener('close',()=>{if(!focusReturn?.isConnected){const trigger=[...document.querySelectorAll('[data-history]')].find(b=>b.dataset.history===historyId);trigger?.focus({preventScroll:true});}historyId=null;});
   addEventListener('storage',safeRender);
   safeRender();
+  const historyQuery=new URLSearchParams(location.search).get('history');
+  if(historyQuery&&can('history')){const trigger=[...document.querySelectorAll('[data-history]')].find(b=>b.dataset.history===historyQuery);if(trigger)showHistory(historyQuery,trigger);}
 })();

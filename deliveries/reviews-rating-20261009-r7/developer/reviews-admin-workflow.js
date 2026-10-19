@@ -9,8 +9,8 @@
   const experts = [{id:'EX-101',name:'Marcus Antoniu'},{id:'EX-102',name:'Elena Petrova'}];
   const copy = value => JSON.parse(JSON.stringify(value));
   const capabilities = {
-    moderator:['view','moderate'],
-    superadmin:['view','moderate','create','rating','audit','settings'],
+    moderator:['view','moderate','history'],
+    superadmin:['view','moderate','history','create','rating','audit','settings'],
     client:['submit']
   };
   const permissions = role => (capabilities[role] || []).slice();
@@ -23,6 +23,10 @@
   };
   const negative = status => ['rejected','hidden','deleted'].includes(status);
   const moderationModes = ['premoderation','postmoderation','none'];
+  const consultationFixtures = [{id:'CT-1024',expertId:'EX-101',authorProfileId:'USR-303',started:true,completed:true,settled:true,charged:20,date:'2026-10-18T12:00:00Z'}];
+  function reviewEligibility(session) {
+    return !!session && session.started === true && session.completed === true && session.settled === true && Number.isFinite(session.charged) && session.charged > 0;
+  }
   const policyBooleans = ['reviewsEnabled','ratingVisible','textReviewsVisible','clientSubmissionEnabled','anonymousAllowed','ratingOnlyAllowed'];
   function validateSettings(input) {
     const result = {};
@@ -71,15 +75,17 @@
       return copy(result);
     }
     function audit(data, role, action, id, reason, before, after) {
-      data.audit.unshift({at:clock(),actor:role === 'client' ? 'DEMO-CLIENT-USR-303' : 'DEMO-' + role.toUpperCase(),action,id,reason,before:copy(before),after:copy(after)});
+      data.audit.unshift({at:clock(),actor:role === 'client' ? 'DEMO-CLIENT-USR-303' : 'DEMO-' + role.toUpperCase(),actorName:role==='client'?'Анна':role==='moderator'?'Alexey Saava':'Admin Admin',action,id,reason,before:copy(before),after:copy(after)});
     }
+    function sessions(data) { return (data.consultations || consultationFixtures).filter(s=>s.authorProfileId==='USR-303'); }
     function submit(role, input, client) {
       return transact(role, client ? 'submit' : 'create', data => {
         const value = model.validateReview(client ? {...input,authorProfileId:'USR-303'} : input, profiles, 5000);
         if (!experts.some(e => e.id === input.expertId)) throw new Error('expert');
         const reason = client ? '' : model.validateReason(input.reason);
         if (!/^[a-zA-Z0-9-]{8,100}$/.test(String(input.operationId || ''))) throw new Error('operation');
-        const fingerprint = JSON.stringify({role,value,expertId:input.expertId,reason});
+        const consultationId = client ? (input.consultationId || 'CT-1024') : null;
+        const fingerprint = JSON.stringify({role,value,expertId:input.expertId,reason,...(client&&consultationId!=='CT-1024'?{consultationId}:{})});
         const previous = data.submissions[input.operationId];
         if (previous) {
           if (previous.fingerprint !== fingerprint) throw new Error('operation_conflict');
@@ -90,9 +96,12 @@
         if (value.anonymous && !data.anonymousAllowed) throw new Error('anonymous_disabled');
         if (!value.text && !data.ratingOnlyAllowed) throw new Error('text_required');
         if (value.text.length > data.maxTextLength) throw new Error('text');
-        // This static fixture has one owned, completed consultation; the server must derive it.
-        if (client && (input.expertId !== 'EX-101' || data.reviews.some(r => r.consultation === 'CT-1024'))) throw new Error('duplicate_consultation');
-        const review = {...value,id:'RV-' + data.nextId++,expertId:input.expertId,source:client ? 'client' : 'admin',consultation:client ? 'CT-1024' : null,consultationVerified:client,status:data.moderationMode === 'premoderation' ? 'pending' : 'published',moderationPending:data.moderationMode !== 'none',verified:false,version:0,decisionId:0,publicationPolicy:data.moderationMode,createdAt:clock(),createdBy:client ? 'DEMO-CLIENT-USR-303' : 'DEMO-SUPERADMIN'};
+        if (client) {
+          const session=sessions(data).find(s=>s.id===consultationId&&s.expertId===input.expertId);
+          if(!session||!reviewEligibility(session))throw new Error('consultation_ineligible');
+          if(data.reviews.some(r=>r.source==='client'&&r.consultation===consultationId))throw new Error('duplicate_consultation');
+        }
+        const review = {...value,id:'RV-' + data.nextId++,expertId:input.expertId,source:client ? 'client' : 'admin',consultation:consultationId,consultationVerified:client,status:data.moderationMode === 'premoderation' ? 'pending' : 'published',moderationPending:data.moderationMode !== 'none',verified:false,version:0,decisionId:0,publicationPolicy:data.moderationMode,createdAt:clock(),createdBy:client ? 'DEMO-CLIENT-USR-303' : 'DEMO-SUPERADMIN'};
         data.reviews.unshift(review);
         data.submissions[input.operationId] = {fingerprint,id:review.id};
         audit(data,role,'create',review.id,reason,null,review);
@@ -114,7 +123,7 @@
       return {code:input.code,message};
     }
     function owned(data, id) {
-      const review=data.reviews.find(r=>r.id===id&&r.consultation==='CT-1024'&&r.authorProfileId==='USR-303'&&r.source==='client');
+      const review=data.reviews.find(r=>r.id===id&&sessions(data).some(s=>s.id===r.consultation&&s.expertId===r.expertId)&&r.authorProfileId==='USR-303'&&r.source==='client');
       if(!review)throw new Error('forbidden');
       return review;
     }
@@ -250,21 +259,42 @@
       const before = settings();
       return setSettings(role,{...before,moderationMode:enabled?'premoderation':'none'},reason,before.version);
     }
+    function clientStatus(consultationId='CT-1024') {
+        const data=read(),r=data.reviews.find(r=>r.consultation===consultationId&&r.authorProfileId==='USR-303'&&r.source==='client'&&sessions(data).some(s=>s.id===r.consultation&&s.expertId===r.expertId));
+        if(!r)return null;
+        const currentAppeal=r.status!=='pending'&&r.appeal?.decisionId===(r.decisionId||0)?r.appeal:null;
+        return {id:r.id,consultationId:r.consultation,status:r.status,hasText:!!r.text.trim(),text:r.text,stars:r.stars,anonymous:r.anonymous,version:versionOf(r),decision:r.clientDecision||null,appeal:currentAppeal?{status:currentAppeal.status,message:currentAppeal.message,reply:currentAppeal.reply||''}:null,canRevise:r.status==='rejected'&&!!decisionReasons[r.clientDecision?.code]?.editable&&r.appeal?.status!=='pending',canAppeal:negative(r.status)&&r.appeal?.decisionId!==(r.decisionId||0)};
+    }
+    function consultations(expertId) {
+      const data=read();
+      return sessions(data).filter(s=>s.expertId===expertId).sort((a,b)=>b.date.localeCompare(a.date)).map(s=>({id:s.id,date:s.date,eligible:reviewEligibility(s),own:clientStatus(s.id)}));
+    }
+    function moderationHistory(role,id) {
+      requirePermission(role,'history');
+      const data=read();
+      if(!data.reviews.some(r=>r.id===id))throw new Error('not_found');
+      const actions=['approve','reject','hide','restore','delete','revise','appeal','appeal_publish','appeal_decline'];
+      // Explicit projection: never expose private reasons or raw snapshots to the moderator.
+      return data.audit.filter(a=>a.id===id&&actions.includes(a.action)).map(a=>({at:a.at,action:a.action,actorName:a.actorName||(a.actor==='DEMO-MODERATOR'?'Alexey Saava':a.actor==='DEMO-SUPERADMIN'?'Admin Admin':'Клиент'),actorRole:a.actor==='DEMO-SUPERADMIN'?'superadmin':a.actor==='DEMO-MODERATOR'?'moderator':'client',from:a.before?.status||null,to:a.after?.status||null,decision:['reject','hide','delete'].includes(a.action)&&a.after?.clientDecision?{code:a.after.clientDecision.code,message:a.after.clientDecision.message}:null,reply:a.action.startsWith('appeal_')?a.after?.appeal?.reply||'':'',outcome:a.action.startsWith('appeal_')?a.after?.appeal?.status||null:null}));
+    }
     return {
-      list,publicReviews,moderate,reviseClient,appealClient,resolveAppeal,setRating,setModeration,setSettings,settings,
+      list,publicReviews,moderate,reviseClient,appealClient,resolveAppeal,setRating,setModeration,setSettings,settings,clientStatus,consultations,moderationHistory,
       createReview:(role,input) => submit(role,input,false),
       submitClient:input => submit('client',input,true),
       summary:expertId => { const data = read(); return model.aggregate(data.reviews,expertId,data.overrides[expertId]); },
       publicSummary:expertId => { const data=read(); return data.reviewsEnabled && data.ratingVisible ? model.aggregate(data.reviews,expertId,data.overrides[expertId]) : null; },
       rating:expertId => copy(ratingValue(read(),expertId)),
-      clientStatus:() => {
-        const r=read().reviews.find(r=>r.consultation==='CT-1024'&&r.authorProfileId==='USR-303'&&r.source==='client');
-        if(!r)return null;
-        const currentAppeal=r.status!=='pending'&&r.appeal?.decisionId===(r.decisionId||0)?r.appeal:null;
-        return {id:r.id,status:r.status,hasText:!!r.text.trim(),text:r.text,stars:r.stars,anonymous:r.anonymous,version:versionOf(r),decision:r.clientDecision||null,appeal:currentAppeal?{status:currentAppeal.status,message:currentAppeal.message,reply:currentAppeal.reply||''}:null,canRevise:r.status==='rejected'&&!!decisionReasons[r.clientDecision?.code]?.editable&&r.appeal?.status!=='pending',canAppeal:negative(r.status)&&r.appeal?.decisionId!==(r.decisionId||0)};
-      },
       audit:role => { requirePermission(role,'audit'); return copy(read().audit); }
     };
   }
-  return {create,permissions,profiles,experts,storageKey,decisionReasons,moderationModes,initialState:initial};
+  function historyExample() {
+    const state=initial();state.reviews.find(r=>r.id==='RV-203').consultation='CT-1024';
+    let raw=JSON.stringify(state),day=15;
+    const store=create({getItem:()=>raw,setItem:(_,value)=>{raw=value;}},()=>`2026-10-${++day}T10:00:00Z`);
+    store.moderate('moderator','RV-203','reject','PRIVATE: contact investigation',0,{code:'personal_data',message:'Уберите номер телефона из текста.'});
+    store.reviseClient({id:'RV-203',version:1,operationId:'history-revision-001',text:'Спасибо за подробные ответы без личных данных.'});
+    store.moderate('superadmin','RV-203','approve','PRIVATE: checked account source',2);
+    return JSON.parse(raw);
+  }
+  return {create,permissions,profiles,experts,storageKey,decisionReasons,moderationModes,reviewEligibility,historyExample,initialState:initial};
 });

@@ -2,6 +2,8 @@
   'use strict';
   const query = new URLSearchParams(location.search),role = query.get('role') || 'moderator',lang = query.get('lang') === 'en' ? 'en' : 'ru';
   const labels = {
+    event_approve:['Отзыв одобрен','Review Approved'],event_reject:['Отзыв отклонён','Review Rejected'],event_hide:['Отзыв скрыт','Review Hidden'],event_restore:['Отзыв восстановлен','Review Restored'],event_delete:['Отзыв удалён','Review Deleted'],event_appeal_publish:['Опубликован после пересмотра','Published After Reconsideration'],event_appeal_decline:['Решение оставлено в силе','Decision Upheld'],
+    history:['История','History'],historyTitle:['История модерации','Moderation History'],close:['Закрыть','Close'],revise:['Текст исправлен клиентом','Text Revised by Client'],appealEvent:['Запрошен пересмотр','Reconsideration Requested'],noHistory:['Решений модерации пока нет.','No Moderation Decisions Yet.'],
     reviews:['Отзывы','Reviews'],write:['Написать отзыв','Write a Review'],moderation:['Модерация отзывов','Review Moderation'],create:['Новый отзыв','New Review'],reviewSettings:['Настройки отзывов','Review Settings'],textColumn:['Текст отзыва','Review Text'],
     superadmin:['Супер-администратор','Super Administrator'],moderator:['Модератор','Moderator'],client:['Клиент','Client'],forbidden:['Доступ запрещён','Access Denied'],
     all:['Все','All'],pending:['На проверке','Pending'],published:['Опубликован','Published'],hidden:['Скрыт','Hidden'],rejected:['Отклонён','Rejected'],deleted:['Удалён','Deleted'],
@@ -55,7 +57,10 @@
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
   let store;
-  try { store = ReviewAdminWorkflow.create(window.localStorage); } catch (_) { store = ReviewAdminWorkflow.create({getItem:()=>{throw new Error('storage');}}); }
+  try {
+    if(query.has('history')){let raw=JSON.stringify(ReviewAdminWorkflow.historyExample());store=ReviewAdminWorkflow.create({getItem:()=>raw,setItem:(_,value)=>{raw=value;}});}
+    else store = ReviewAdminWorkflow.create(window.localStorage);
+  } catch (_) { store = ReviewAdminWorkflow.create({getItem:()=>{throw new Error('storage');}}); }
   function error(error) {
     if(error.message==='text'){try{const limit=store.settings().maxTextLength;return lang==='en'?'Text Must Not Exceed '+limit+' Characters.':'Текст не должен превышать '+limit+' символов.';}catch(_){return t('storage');}}
     return t(({author:'authorError',stars:'starsError',moderation:'moderationError',text_required:'textRequired',anonymous_disabled:'anonymousDisabled',submissions_closed:'submissionsClosed',text_limit:'textLimitError',visibility:'visibilityError',settings_conflict:'settingsConflict',rating_conflict:'ratingConflict',review_conflict:'reviewConflict',client_reason:'clientReasonError',appeal_pending:'appealPending',appeal_reply:'appealReplyError',reason:'reasonError',rating:'ratingError',votes:'votesError',storage:'storage',transition:'conflict',forbidden:'forbidden'})[error.message] || 'error');

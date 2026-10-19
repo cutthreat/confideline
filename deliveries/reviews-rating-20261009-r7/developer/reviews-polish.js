@@ -6,7 +6,9 @@
   const scenario=ReviewProfileStates.createCase(mockState.get('case'));
   const canReview=reviewEligible&&(scenario?scenario.ui.eligible:true);
   let phaseRecovered=false;
-  let revisionDraft=null,appealDraft=null,appealOperation=null;
+  let revisionDraft=null,appealDraft=null,appealOperation=null,formOrigin=null;
+  let selectedConsultation=mockState.get('consultation')||'CT-1024';
+  const drafts=new Map();
   const ownPanel=document.createElement('section');ownPanel.id='own-review-panel';ownPanel.className='review-block review-own';ownPanel.hidden=true;ownPanel.setAttribute('aria-labelledby','own-review-title');
   ownPanel.innerHTML='<h2 id="own-review-title">'+text('Мой отзыв','My Review')+'</h2><div id="own-status"></div><p id="own-reason"></p><p id="own-appeal-state" role="status"></p><p id="own-appeal-reply"></p><div class="review-own-actions"><button class="btn btn-outline-primary btn-sm" id="revise-review" type="button"><i class="fa fa-pencil" aria-hidden="true"></i> '+text('Исправить текст','Edit Text')+'</button><button class="btn btn-outline-secondary btn-sm" id="appeal-review" type="button"><i class="fa fa-comment-o" aria-hidden="true"></i> '+text('Запросить пересмотр','Request Reconsideration')+'</button></div>';
   $('reviews').after(ownPanel);$('own-status').append($('published-notice'));
@@ -29,17 +31,66 @@
   }else{
     try{store=ReviewAdminWorkflow.create(window.localStorage);}catch(_){store=ReviewAdminWorkflow.create({getItem:()=>{throw new Error('storage');}});}
   }
+  const ownStatus=()=>store.clientStatus(selectedConsultation);
+  const sessionRows=()=>store.consultations('EX-101');
+  const dateLabel=value=>new Intl.DateTimeFormat(en?'en-GB':'ru-RU',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(value));
+  const sessionLabel=s=>s.id+' · '+dateLabel(s.date);
+  const selector=document.createElement('div');selector.className='review-consultation-selector';selector.hidden=true;
+  selector.innerHTML='<label class="form-label" for="review-consultation">'+text('Консультация','Consultation')+'</label><select class="form-control" id="review-consultation"></select>';
+  document.querySelector('.review-star-picker').before(selector);
+  const sessionPanel=document.createElement('section');sessionPanel.id='consultations-panel';sessionPanel.className='review-block review-consultations';sessionPanel.hidden=true;sessionPanel.setAttribute('aria-labelledby','consultations-title');
+  sessionPanel.innerHTML='<h2 id="consultations-title">'+text('Мои консультации','My Consultations')+'</h2><div id="consultation-rows"></div>';
+  ownPanel.before(sessionPanel);
+  function captureDraft(){return {text:$('review-text').value,stars:document.querySelector('[name="stars"]:checked')?.value||null,anonymous:$('review-anonymous').checked,operationId,review:revisionDraft};}
+  function keepDraft(){drafts.set(revisionDraft?'revise:'+revisionDraft.id:selectedConsultation,captureDraft());}
+  function restoreDraft(draft){
+    $('review-text').value=draft?.text||'';$('review-anonymous').checked=!!draft?.anonymous;
+    document.querySelectorAll('[name="stars"]').forEach(el=>{el.checked=el.value===String(draft?.stars);el.nextElementSibling.classList.toggle('chosen',Number(el.value)<=Number(draft?.stars));});
+    operationId=draft?.operationId||crypto.randomUUID();busy=false;
+  }
+  function updateSessions(){
+    const rows=sessionRows(),available=rows.filter(s=>s.eligible&&!s.own);
+    const p=store.settings(),intakeOpen=p.reviewsEnabled&&p.clientSubmissionEnabled;
+    selector.hidden=!!revisionDraft||available.length<2;
+    const options=available.map(s=>'<option value="'+escapeHtml(s.id)+'">'+escapeHtml(sessionLabel(s))+'</option>').join('');
+    if($('review-consultation').innerHTML!==options)$('review-consultation').innerHTML=options;
+    $('review-consultation').querySelectorAll('option').forEach(o=>{const chosen=o.value===selectedConsultation;o.selected=chosen;o.toggleAttribute('selected',chosen);});
+    const session=rows.find(s=>s.id===selectedConsultation);
+    document.querySelector('.review-dialog-expert small').textContent=session?text('Консультация ','Consultation ')+sessionLabel(session):text('Консультация недоступна','Consultation Unavailable');
+    document.querySelector('.review-dialog-expert small').hidden=!selector.hidden;
+    sessionPanel.hidden=!canReview||rows.length<2;
+    if(!sessionPanel.hidden)$('consultation-rows').innerHTML=rows.map(s=>{
+      const draft=drafts.get(s.id),state=s.own?({pending:text('На проверке','Pending Review'),published:text('Опубликован','Published'),rejected:text('Отклонён','Rejected'),hidden:text('Скрыт','Hidden'),deleted:text('Удалён','Deleted')})[s.own.status]:!s.eligible?text('Недоступна для оценки','Not Eligible for a Review'):draft&&(draft.text||draft.stars)?text('Черновик','Draft'):text('Можно оценить','Ready to Rate');
+      const action=s.own?text('Мой отзыв','My Review'):text('Оценить','Rate');
+      return '<div class="review-consultation-row"><div><b>'+escapeHtml(s.id)+'</b><span>'+escapeHtml(dateLabel(s.date))+'</span><small>'+escapeHtml(!s.own&&s.eligible&&!intakeOpen?text('Приём отзывов сейчас закрыт','Review Submissions Are Closed'):state)+'</small></div>'+(s.own||s.eligible&&intakeOpen?'<button class="btn btn-outline-primary btn-sm" type="button" data-consultation="'+escapeHtml(s.id)+'">'+action+'</button>':'')+'</div>';
+    }).join('');
+  }
+  function openNew(id){
+    const s=sessionRows().find(s=>s.id===id),p=store.settings();
+    if(!s||!s.eligible||s.own||!canReview||!p.reviewsEnabled||!p.clientSubmissionEnabled)return;
+    formOrigin=document.activeElement;selectedConsultation=id;revisionDraft=null;restoreDraft(drafts.get(id));
+    $('review-title').textContent=text('Оценить консультацию','Rate Your Consultation');$('client-state').hidden=true;policy();openDialog('review-dialog');
+  }
+  $('review-consultation').onchange=()=>{const id=$('review-consultation').value;keepDraft();selectedConsultation=id;revisionDraft=null;restoreDraft(drafts.get(id));$('client-state').hidden=true;policy();};
+  $('consultation-rows').onclick=e=>{const button=e.target.closest('[data-consultation]');if(!button)return;selectedConsultation=button.dataset.consultation;const own=ownStatus();if(own){safeRender();ownPanel.scrollIntoView({block:'center'});$('own-review-title').tabIndex=-1;$('own-review-title').focus({preventScroll:true});}else openNew(selectedConsultation);};
+  $('review-dialog').addEventListener('close',()=>{
+    if(!busy)keepDraft();revisionDraft=null;busy=false;safeRender();
+    const origin=formOrigin?.isConnected?formOrigin:formOrigin?.dataset.consultation?[...document.querySelectorAll('[data-consultation]')].find(b=>b.dataset.consultation===formOrigin.dataset.consultation):formOrigin?.id?$(formOrigin.id):null;
+    if(origin&&!origin.hidden&&!origin.disabled)origin.focus({preventScroll:true});
+  });
   const loadState=document.createElement('div');loadState.id='reviews-load-state';loadState.className='review-load-state';loadState.hidden=true;loadState.setAttribute('role','status');
   loadState.innerHTML='<span id="reviews-load-message"></span><button class="btn btn-outline-primary btn-sm" id="retry-reviews" type="button"><i class="fa fa-refresh" aria-hidden="true"></i></button>';
   document.querySelector('.review-heading').before(loadState);
   $('retry-reviews').title=text('Повторить загрузку','Retry Loading');$('retry-reviews').setAttribute('aria-label',$('retry-reviews').title);
   function showLoadState(loading){
     ownPanel.hidden=true;
+    sessionPanel.hidden=true;
     loadState.hidden=false;loadState.setAttribute('role',loading?'status':'alert');loadState.classList.toggle('text-danger',!loading);
     $('reviews-load-message').textContent=loading?text('Загрузка отзывов…','Loading Reviews…'):text('Не удалось загрузить отзывы.','Reviews Could Not Be Loaded.');
     $('retry-reviews').hidden=loading;$('rating-summary').hidden=true;profileRating.hidden=true;$('review-list').replaceChildren();$('review-empty').hidden=true;$('write-review').hidden=true;$('published-notice').hidden=true;
   }
   function errorMessage(error){
+    if(error.message==='consultation_ineligible')return text('Эта консультация недоступна для оценки. Черновик сохранён.','This Consultation Is Not Eligible for a Review. Your Draft Is Preserved.');
     const lifecycle={review_conflict:['Отзыв изменился. Черновик сохранён. Закройте форму и откройте актуальную запись.','Your Review Changed. Your Draft Is Preserved. Close the Form and Open the Current Submission.'],appeal_pending:['Запрос пересмотра уже рассматривается. Дождитесь ответа.','Your Reconsideration Request Is Being Reviewed. Wait for the Reply.'],appeal_exists:['Пересмотр этого решения уже запрошен.','Reconsideration Was Already Requested for This Decision.'],unchanged:['Измените текст перед повторной проверкой.','Change the Text Before Resubmitting.'],reason:['Напишите сообщение от 1 до 500 символов.','Enter a Message of 1 to 500 Characters.']};
     if(lifecycle[error.message])return text(...lifecycle[error.message]);
     const messages={stars:['Выберите оценку от 1 до 5 звёзд.','Choose a Rating from 1 to 5.'],duplicate_consultation:['Отзыв по этой консультации уже отправлен.','A Review for This Consultation Was Already Submitted.'],text_required:['Добавьте текст отзыва.','Add Review Text.'],anonymous_disabled:['Анонимные отзывы отключены. Снимите флажок, чтобы продолжить.','Anonymous Reviews Are Disabled. Clear the Checkbox to Continue.'],submissions_closed:['Приём отзывов сейчас закрыт.','Review Submissions Are Currently Closed.']};
@@ -47,6 +98,7 @@
     return text(...(messages[error.message]||['Не удалось сохранить отзыв. Изменения не выполнены.','Your Review Could Not Be Saved. No Changes Applied.']));
   }
   function policy(){
+    updateSessions();
     const p=store.settings(),required=p.moderationMode==='premoderation';
     $('send').textContent=required||revisionDraft?text('Отправить на проверку','Submit for Review'):text('Опубликовать','Publish');
     const publication=$('client-publication-policy'),showPolicy=(required||!!revisionDraft)&&p.moderationMode!=='none';
@@ -61,6 +113,7 @@
     if(!revisionDraft&&$('review-dialog').open&&(!p.reviewsEnabled||!p.clientSubmissionEnabled)){$('client-state').textContent=errorMessage({message:'submissions_closed'});$('client-state').hidden=false;}
   }
   function ownNotice(own){
+    $('own-review-title').textContent=own?text('Мой отзыв · ','My Review · ')+own.consultationId:text('Мой отзыв','My Review');
     ownPanel.hidden=!own;
     if(!own){$('published-notice').hidden=true;return;}
     const review=own.hasText;
@@ -85,11 +138,11 @@
   document.querySelector('.review-heading').after(intakeState);
   function renderPublic(){
     const p=store.settings();
-    ownNotice(store.clientStatus());
+    ownNotice(ownStatus());
     $('reviews').hidden=!p.reviewsEnabled;
     if(!p.reviewsEnabled){profileRating.hidden=true;policy();return;}
     if(scenario?.ui.phase&&!phaseRecovered){showLoadState(scenario.ui.phase==='loading');return;}
-    const pub=store.publicReviews('EX-101'),summary=store.publicSummary('EX-101')||{rating:null,votes:0,textCount:pub.length},own=store.clientStatus();
+    const pub=store.publicReviews('EX-101'),summary=store.publicSummary('EX-101')||{rating:null,votes:0,textCount:pub.length},own=ownStatus(),available=sessionRows().filter(s=>s.eligible&&!s.own);
     loadState.hidden=true;
     const average=summary.rating;
     $('rating').textContent=average===null?'—':average.toFixed(1);
@@ -104,13 +157,13 @@
     $('review-empty').hidden=!p.textReviewsVisible||pub.length!==0;
     $('review-empty').querySelector('strong').textContent=text('Текстовых отзывов пока нет','No Text Reviews Yet');
     $('review-empty').querySelector('p').textContent=summary.votes?text('Оценки без комментария учтены в рейтинге.','Ratings Without Comments Are Included in the Rating.'):text('Первый отзыв появится после публикации.','The First Review Will Appear Once Published.');
-    $('write-review').hidden=!canReview||(!p.clientSubmissionEnabled&&!own);
-    $('write-review').disabled=!!own;
+    $('write-review').hidden=!canReview||(!p.clientSubmissionEnabled&&!own)||(!own&&!available.length);
+    $('write-review').disabled=!!own&&!available.length;
     intakeState.hidden=!canReview||p.clientSubmissionEnabled||!!own;
     const ownLabels=own?.hasText?
       {pending:['На проверке','Pending Moderation'],published:['Отзыв опубликован','Review Published'],rejected:['Отзыв отклонён','Review Rejected'],hidden:['Отзыв скрыт','Review Hidden'],deleted:['Отзыв удалён','Review Deleted']}:
       {pending:['На проверке','Pending Moderation'],published:['Оценка учтена','Rating Counted'],rejected:['Оценка отклонена','Rating Rejected'],hidden:['Оценка скрыта','Rating Hidden'],deleted:['Оценка удалена','Rating Deleted']};
-    $('write-review').textContent=own?text(...ownLabels[own.status]):p.textReviewsVisible&&summary.textCount===0?text('Оставить первый отзыв','Write the First Review'):text('Оставить отзыв','Write a Review');
+    $('write-review').textContent=own&&!available.length?text(...ownLabels[own.status]):p.textReviewsVisible&&summary.textCount===0?text('Оставить первый отзыв','Write the First Review'):text('Оставить отзыв','Write a Review');
     policy();
   }
   render=renderPublic;
@@ -126,17 +179,18 @@
   let operationId=crypto.randomUUID(),busy=false;
   $('appeal-title').textContent=text('Запросить пересмотр','Request Reconsideration');$('appeal-label').textContent=text('Почему решение нужно пересмотреть?','Why Should This Decision Be Reconsidered?');$('appeal-send').textContent=text('Отправить запрос','Send Request');$('appeal-cancel').textContent=text('Отмена','Cancel');
   $('appeal-dialog').querySelector('[data-close]').title=text('Закрыть','Close');$('appeal-dialog').querySelector('[data-close]').setAttribute('aria-label',text('Закрыть','Close'));
-  $('revise-review').onclick=()=>{try{const own=store.clientStatus();if(!own?.canRevise)return;revisionDraft=own;operationId=crypto.randomUUID();busy=false;$('review-title').textContent=text('Исправить отзыв','Edit Your Review');$('review-text').value=own.text;$('review-anonymous').checked=own.anonymous;document.querySelectorAll('[name="stars"]').forEach(el=>{el.checked=Number(el.value)===own.stars;el.nextElementSibling.classList.toggle('chosen',Number(el.value)<=own.stars);});$('client-state').hidden=true;policy();openDialog('review-dialog');}catch(e){notify(errorMessage(e));}};
-  $('appeal-review').onclick=()=>{try{const own=store.clientStatus();if(!own?.canAppeal)return;appealDraft=own;appealOperation=crypto.randomUUID();$('appeal-context').textContent=own.id+' · CT-1024 · Marcus Antoniu';$('appeal-text').value='';$('appeal-error').hidden=true;$('appeal-send').disabled=false;openDialog('appeal-dialog');}catch(e){notify(errorMessage(e));}};
+  $('revise-review').onclick=()=>{try{const own=ownStatus();if(!own?.canRevise)return;const draft=drafts.get('revise:'+own.id);formOrigin=document.activeElement;revisionDraft=draft?.review||own;restoreDraft(draft||{text:own.text,stars:own.stars,anonymous:own.anonymous});$('review-title').textContent=text('Исправить отзыв','Edit Your Review');$('client-state').hidden=true;policy();openDialog('review-dialog');}catch(e){notify(errorMessage(e));}};
+  $('appeal-review').onclick=()=>{try{const own=ownStatus();if(!own?.canAppeal)return;appealDraft=own;appealOperation=crypto.randomUUID();$('appeal-context').textContent=own.id+' · '+own.consultationId+' · Marcus Antoniu';$('appeal-text').value='';$('appeal-error').hidden=true;$('appeal-send').disabled=false;openDialog('appeal-dialog');}catch(e){notify(errorMessage(e));}};
   $('appeal-form').onsubmit=e=>{e.preventDefault();if(!appealDraft||$('appeal-send').disabled)return;$('appeal-send').disabled=true;try{store.appealClient({id:appealDraft.id,version:appealDraft.version,operationId:appealOperation,message:$('appeal-text').value});$('appeal-dialog').close();safeRender();ownPanel.scrollIntoView({block:'center'});}catch(e){$('appeal-error').textContent=errorMessage(e);$('appeal-error').hidden=false;$('appeal-send').disabled=false;}};
   $('review-text').oninput=()=>{try{policy();}catch(_){}};
   $('review-anonymous').onchange=()=>{try{policy();}catch(_){}};
-  $('write-review').onclick=()=>{try{const p=store.settings();if(!canReview||!p.reviewsEnabled||!p.clientSubmissionEnabled||store.clientStatus())return;policy();$('client-state').hidden=true;openDialog('review-dialog');}catch(e){notify(errorMessage(e));}};
+  $('write-review').onclick=()=>{try{const available=sessionRows().filter(s=>s.eligible&&!s.own);const id=available.find(s=>s.id===selectedConsultation)?.id||available[0]?.id;if(id)openNew(id);}catch(e){notify(errorMessage(e));}};
   $('review-form').onsubmit=e=>{
     e.preventDefault();if(busy||!canReview)return;
     busy=true;$('send').disabled=true;$('client-state').hidden=true;
     try{
-      const review=revisionDraft?store.reviseClient({id:revisionDraft.id,version:revisionDraft.version,operationId,text:$('review-text').value}):store.submitClient({operationId,expertId:'EX-101',stars:document.querySelector('[name="stars"]:checked')?.value||'',text:$('review-text').value,anonymous:$('review-anonymous').checked});
+      const review=revisionDraft?store.reviseClient({id:revisionDraft.id,version:revisionDraft.version,operationId,text:$('review-text').value}):store.submitClient({operationId,consultationId:selectedConsultation,expertId:'EX-101',stars:document.querySelector('[name="stars"]:checked')?.value||'',text:$('review-text').value,anonymous:$('review-anonymous').checked});
+      drafts.delete(revisionDraft?'revise:'+revisionDraft.id:selectedConsultation);
       $('published-notice').textContent=review.status==='pending'?(review.text?text('Отзыв отправлен на проверку. Он появится в анкете после одобрения модератором.','Your Review Was Submitted for Moderation. It Will Appear After Approval.'):text('Оценка отправлена на проверку. Она будет учтена после одобрения модератором.','Your Rating Was Submitted for Moderation. It Will Be Counted After Approval.')):(review.text?text('Ваш отзыв опубликован. Спасибо!','Your Review Has Been Published. Thank You!'):text('Ваша оценка учтена. Спасибо!','Your Rating Has Been Counted. Thank You!'));
       $('published-notice').hidden=false;safeRender();$('review-dialog').close();ownPanel.scrollIntoView({behavior:'smooth',block:'center'});
     }catch(e){busy=false;try{policy();}catch(_){}$('client-state').textContent=errorMessage(e);$('client-state').hidden=false;}
@@ -173,7 +227,7 @@
       if(ui.sending){busy=true;document.querySelectorAll('#review-form input,#review-form textarea,#review-form button').forEach(el=>{el.disabled=true;});$('send').textContent=text('Отправка…','Sending…');}
       openDialog('review-dialog');
     }
-    if(!ui.form)$('reviews').scrollIntoView({block:'start'});
+    if(!ui.form)(mockState.get('case')==='multiple-consultations'?sessionPanel:$('reviews')).scrollIntoView({block:'start'});
   }
   if(mockState.get('view')==='admin')location.replace('reviews.html?role=moderator&lang='+(en?'en':'ru'));
 })();
