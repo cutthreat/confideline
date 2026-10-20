@@ -1,20 +1,25 @@
 <!doctype html>
-<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>#21 — комплект для Игоря</title><link rel="stylesheet" href="developer/inherited-doc-style.css"></head><body><header><a href="developer/tz.html">ТЗ #21</a><a href="acceptance.html">Приёмка</a><a href="mockups/all-psychic.html">Каталог</a><a href="mockups/account/psychics.html">Кабинет</a></header><main><h1>#21. Фильтр каталога экспертов: комплект для Игоря</h1>
-<p>15.10.2026 · P1 · <a href="https://trello.com/c/vJC3T3vd">карточка #21</a>.</p>
-<p>Это передача существующих требований и вёрстки, не новый аудит и не приёмка работающего фильтра.</p>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>#21 — фильтр: комплект для Игоря</title><link rel="stylesheet" href="developer/inherited-doc-style.css"></head><body><header><a href="developer/tz.html">ТЗ</a><a href="current-site/catalog-filter.html">Без входа</a><a href="current-site/catalog-filter-auth.html">После входа</a><a href="developer/frontend.html">Подключение</a><a href="acceptance.html">Приёмка</a></header><main><h1>#21. Фильтр каталога экспертов: комплект для Игоря</h1>
+<p>20.10.2026 · P1 · <a href="https://trello.com/c/vJC3T3vd">карточка #21</a>.</p>
+<p>Это актуальное ТЗ и готовый frontend фильтра на текущем дизайне сайта. Backend не подключён; публикация не является его приёмкой.</p>
 <h2>Материалы</h2>
 <ul>
 <li><a href="developer/tz.html">Актуальное ТЗ</a> · <a href="developer/TZ.md">Markdown</a>.</li>
 <li><a href="acceptance.html">Критерии приёмки</a> · <a href="ACCEPTANCE.md">Markdown</a>.</li>
-<li><a href="mockups/all-psychic.html">Публичный каталог: исходный макет</a>.</li>
-<li><a href="mockups/account/psychics.html">Каталог в кабинете: исходный макет</a>.</li>
+<li><a href="current-site/catalog-filter.html">Текущий сайт: без входа</a>.</li>
+<li><a href="current-site/catalog-filter-auth.html">Текущий сайт: после входа</a>.</li>
+<li><a href="developer/frontend.html">Файлы и подключение frontend</a> · <a href="developer/FRONTEND-INTEGRATION.md">Markdown</a>.</li>
+<li><a href="developer/GEOMETRY.md">Размеры и адаптация</a>.</li>
+<li><a href="developer/FRONTEND-QA.md">Проверки frontend и ограничения</a>.</li>
+<li><a href="mockups/all-psychic.html">Новая вёрстка для будущей миграции: публичный каталог</a>.</li>
+<li><a href="mockups/account/psychics.html">Новая вёрстка для будущей миграции: кабинет</a>.</li>
 <li><a href="materials/MOCKUPS.md">Границы макетов и ресурсов</a>.</li>
 <li><a href="materials/OPTION-MAP.json">11 исходных соответствий</a>.</li>
 <li><a href="review.html">Согласование комплекта</a>.</li>
 <li><a href="catalog-filter-21-20261015-r1.zip">Скачать весь комплект</a>.</li>
 </ul>
 <h2>Задача Сейчас</h2>
-<p>Подтвердить технический способ подключения уже готовых макетов к существующим данным. Не запрашивать заново референс, дизайн или сокращение исходных 11 опций.</p>
+<p>Подтвердить технический способ подключения готового frontend в <code>current-site/</code> к существующим данным, затем выполнить интеграцию в разрешённом объёме. Сохраняем текущий дизайн сайта; перенос в новую вёрстку <code>mockups/</code> будет отдельным шагом после её готовности. Не запрашивать заново референс, дизайн или сокращение исходных11 опций.</p>
 <p>Вернуть в одном ответе:</p>
 <ol>
 <li><a href="templates/BUILD.md">Паспорт сборки</a>: точный commit, развёрнутое окружение, миграции и действующая конфигурация. Без паролей, ключей и выгрузки персональных данных.</li>
@@ -30,6 +35,7 @@
 <h2>Решения Владельца</h2>
 <p>Новых обязательных решений Алексея сейчас нет. Только если по принятым источникам невозможно однозначно определить смысл конкретной связи, вернуть точные варианты, затронутые данные и последствия. Техническая сложность защищённого справочника не повод повторно утверждать объём фильтра.</p>
 <h2>Готовность И Ограничения</h2>
-<p>Все 11 опций сохраняются. Два HTML и поставленные зависимости переносятся из исходной вёрстки без изменения байтов; макеты не перерисовывались. Их демоданные, старое обозначение Neuro, тексты, другие маршруты и предложения не становятся требованиями #21. Каталог в кабинете содержит статические интенты, а не подтверждённый фильтрующий backend. Подробности в MOCKUPS.md.</p>
+<p>Все11 опций сохраняются. <code>current-site/</code> содержит финальный работающий frontend на одинаковых искусственных данных в двух оболочках. Фильтр имеет ровную сетку направлений, пиктограммы, selected/focus/hover/disabled, явный поиск, сброс и состояния загрузки/ошибки. Пустых квадратов и строки «Изменения не применены» нет; нативные checkbox и клавиатура сохранены. В публичной auth-копии обезличены только данные аккаунта, без изменения структуры шапки.</p>
+<p><code>mockups/</code> содержит неизменённую вёрстку будущего сайта, а не вторую актуальную реализацию фильтра. Её демоданные, старое обозначение Neuro, тексты и соседние маршруты не становятся требованиями #21. Подробности в MOCKUPS.md.</p>
 <p>Приёмка технического ответа A21 отделена от приёмки реализации F01–F10. Пауза live-QA #25, STOP #23 и hold #73 сохраняются. #49/#64/#70 не переоткрываются; эта публикация не закрывает #21.</p>
 </main></body></html>
