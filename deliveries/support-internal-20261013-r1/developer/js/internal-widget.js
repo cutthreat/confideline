@@ -173,7 +173,26 @@ const ui={open:false,section:'cases',selected:null,work:null,pendingPeer:null,di
     const work=Boolean(ui.work),n=t.id,k=work?null:key(t);
     if(commit(s=>{const c=work?s.workChats.find(w=>w.id===n&&canReadWork(w)):s.cases.find(t=>t.id===n&&canSee(t))?.channels[k],shown=c?.messages.find(m=>m.id===boundary);if(shown)c.readCursors[actor.id]=Math.max(c.readCursors[actor.id]||0,shown.seq);},'mark_read'))refreshPreservingView();
   }
-  function access() {const mobile=innerWidth<768,w=$('.content-wrapper');w.inert=mobile&&ui.open;for(const n of w.children)n.inert=!staff;$('.main-sidebar').inert=!staff||mobile&&ui.open;$('.main-footer').inert=!staff||mobile&&ui.open;const d=$('#cl-internal-drawer');d.setAttribute('role',mobile?'dialog':'complementary');if(mobile&&ui.open)d.setAttribute('aria-modal','true');else d.removeAttribute('aria-modal');}
+  const backgroundInert=new Map();
+  function access() {
+    const mobile=innerWidth<768,d=$('#cl-internal-drawer');
+    if(mobile&&ui.open){
+      let node=d;
+      while(node.parentElement){
+        for(const sibling of node.parentElement.children){
+          if(sibling===node||sibling.matches('script,style,link,#cl-internal-modal,#cl-internal-feedback'))continue;
+          if(!backgroundInert.has(sibling))backgroundInert.set(sibling,{present:sibling.hasAttribute('inert'),value:sibling.getAttribute('inert')});
+          sibling.inert=true;
+        }
+        node=node.parentElement;if(node===document.body)break;
+      }
+    }else{
+      for(const [node,original] of backgroundInert){if(original.present)node.setAttribute('inert',original.value);else node.removeAttribute('inert');}
+      backgroundInert.clear();
+    }
+    d.setAttribute('role',mobile?'dialog':'complementary');
+    if(mobile&&ui.open)d.setAttribute('aria-modal','true');else d.removeAttribute('aria-modal');
+  }
   function toggle(open) {ui.open=open;if(open)read();render();(open?$('#cl-i-close'):$('#cl-internal-toggle')).focus();}
   function backToInbox() {rememberScroll();ui.selected=null;ui.work=null;ui.pendingPeer=null;ui.searchOpen=false;ui.menu=null;ui.answer=null;render();($(`#cl-i-tab-${ui.section}`)||$('#cl-i-inbox-title'))?.focus();}
   function choose(n) {if(!visibleCases().some(t=>t.id===n))return;rememberScroll();ui.open=true;ui.section='cases';ui.selected=n;ui.work=null;ui.pendingPeer=null;ui.directory=false;ui.answer=null;const t=current();if(t.sourceType==='widget')ui.channels[n]=`participant:${t.reporterId}`;prepareThread();read();render();($('#cl-i-back')||$('#cl-i-close')).focus();}
@@ -185,15 +204,19 @@ const ui={open:false,section:'cases',selected:null,work:null,pendingPeer:null,di
   const effectiveWidth=()=>innerWidth<768?innerWidth:Math.min(maxWidth(),Math.max(360,preferredWidth??compactWidth()));
   function saveWidth() {try{if(preferredWidth===null)localStorage.removeItem(LAYOUT_KEY);else localStorage.setItem(LAYOUT_KEY,String(preferredWidth));}catch{feedback('Размер изменён, но браузер не сохранил настройку.');}}
   function applyWidth() {
-    const width=effectiveWidth(),d=$('#cl-internal-drawer');d.style.setProperty('--cl-drawer-width',`${width}px`);document.body.style.setProperty('--cl-drawer-width',`${width}px`);
+    const width=effectiveWidth(),d=$('#cl-internal-drawer');d.style.setProperty('--cl-drawer-width',`${width}px`);
+    const header=$('.main-header'),bar=header?.querySelector('.navbar');
+    const top=Math.max(0,header?.getBoundingClientRect().bottom||0,bar?.getBoundingClientRect().bottom||0);
+    d.style.setProperty('--cl-widget-top',`${Math.min(top,Math.max(0,innerHeight-160))}px`);
+    const hostChat=Boolean($('[data-chat-operator-tools]'));d.toggleAttribute('data-host-chat',hostChat);$('#cl-internal-feedback').toggleAttribute('data-host-chat',hostChat);
     const separator=$('#cl-i-resize');if(separator){separator.setAttribute('aria-valuemin','360');separator.setAttribute('aria-valuemax',String(maxWidth()));separator.setAttribute('aria-valuenow',String(width));}
     const button=$('#cl-i-width');if(button){const wide=width>=innerWidth*.5-2;button.title=wide?'Компактная ширина':'На половину экрана';button.setAttribute('aria-label',wide?'Вернуть компактную ширину':'Развернуть на половину экрана');button.innerHTML=fa(wide?'compress':'expand');}
   }
   function bindWidth() {
     applyWidth();$('#cl-i-width').onclick=()=>{preferredWidth=effectiveWidth()>=innerWidth*.5-2?null:Math.round(innerWidth*.5);saveWidth();refreshPreservingView();};
     const edge=$('#cl-i-resize');let start=null;
-    const finish=cancel=>{if(!start)return;const editing=document.activeElement?.id==='cl-i-input';if(cancel)preferredWidth=start.preferred;else saveWidth();start=null;ui.resizing=false;document.body.classList.remove('cl-messages-resizing');applyWidth();refreshPreservingView();if(!editing)$('#cl-i-resize')?.focus({preventScroll:true});};
-    edge.onpointerdown=e=>{if(e.button!==0||innerWidth<768)return;e.preventDefault();start={x:e.clientX,width:effectiveWidth(),preferred:preferredWidth};ui.resizing=true;edge.setPointerCapture(e.pointerId);document.body.classList.add('cl-messages-resizing');};
+    const finish=cancel=>{if(!start)return;const editing=document.activeElement?.id==='cl-i-input';if(cancel)preferredWidth=start.preferred;else saveWidth();start=null;ui.resizing=false;$('#cl-internal-drawer').classList.remove('cl-i-resizing');applyWidth();refreshPreservingView();if(!editing)$('#cl-i-resize')?.focus({preventScroll:true});};
+    edge.onpointerdown=e=>{if(e.button!==0||innerWidth<768)return;e.preventDefault();start={x:e.clientX,width:effectiveWidth(),preferred:preferredWidth};ui.resizing=true;edge.setPointerCapture(e.pointerId);$('#cl-internal-drawer').classList.add('cl-i-resizing');};
     edge.onpointermove=e=>{if(!start)return;preferredWidth=Math.min(maxWidth(),Math.max(360,start.width+start.x-e.clientX));applyWidth();};
     edge.onpointerup=()=>finish(false);edge.onpointercancel=()=>finish(true);edge.onlostpointercapture=()=>finish(false);
     edge.ondblclick=()=>{preferredWidth=null;saveWidth();refreshPreservingView();};
@@ -568,7 +591,7 @@ const ui={open:false,section:'cases',selected:null,work:null,pendingPeer:null,di
   }
   function render() {
     captureDraft();
-    const count=visibleCases().filter(t=>!closed(t)&&(unread(t)||needs(t))).length+visibleWork().filter(w=>w.unreadBy[actor.id]).length;$('#cl-internal-count').textContent=count>99?'99+':count||'';$('#cl-internal-toggle').setAttribute('aria-expanded',String(ui.open));$('#cl-internal-toggle').setAttribute('aria-label',`${widgetName}. Тикеты и рабочие чаты. Требуют внимания: ${count}`);$('#cl-internal-drawer').hidden=!ui.open;document.body.classList.toggle('cl-messages-open',ui.open);access();applyWidth();if(!ui.open)return;
+    const count=visibleCases().filter(t=>!closed(t)&&(unread(t)||needs(t))).length+visibleWork().filter(w=>w.unreadBy[actor.id]).length;$('#cl-internal-count').textContent=count>99?'99+':count||'';$('#cl-internal-toggle').setAttribute('aria-expanded',String(ui.open));$('#cl-internal-toggle').setAttribute('aria-label',`${widgetName}. Тикеты и рабочие чаты. Требуют внимания: ${count}`);$('#cl-internal-drawer').hidden=!ui.open;access();applyWidth();if(!ui.open)return;
     if(ui.selected&&!visibleCases().some(t=>t.id===ui.selected)){ui.selected=null;ui.answer=null;}if(ui.work&&!current()){ui.work=null;ui.pendingPeer=null;}
     const t=current(),d=$('#cl-internal-drawer'),split=isSplit(),content=ui.directory?recipientPicker():ui.work?workThread():ui.selected?ticketThread():inbox();d.innerHTML=navigation()+`<div id="cl-i-panel" class="${split?'cl-i-panel-split':''}" ${`role="tabpanel" aria-labelledby="cl-i-tab-${ui.section}"`}>${split?`<div class="cl-i-master">${inbox()}</div>`:''}<div class="cl-i-detail">${content}</div></div>`;$('#cl-i-close').onclick=()=>toggle(false);bindWidth();
 
@@ -638,9 +661,9 @@ const ui={open:false,section:'cases',selected:null,work:null,pendingPeer:null,di
   window.addEventListener('focus',read);document.addEventListener('visibilitychange',read);
   window.addEventListener('cl-report-problem',e=>openReportForm(e.detail?.conversationId||null));
   $('#cl-internal-toggle').onclick=()=>toggle(!ui.open);$('#cl-internal-modal-close').onclick=closeDialog;$('#cl-internal-modal-cancel').onclick=closeDialog;$('#cl-internal-modal').addEventListener('cancel',e=>{e.preventDefault();closeDialog();});$('#cl-internal-modal-form').onsubmit=e=>{e.preventDefault();if(!$('#cl-internal-modal').open)return;const readOnlyAction=['Закрыть','Открыть обсуждение'].includes($('#cl-internal-modal-submit').textContent);if(closed(state.cases.find(t=>t.id===modalCaseId))&&!readOnlyAction){closeDialog();feedback('Обращение закрыто. Доступна только история.');return;}committingAction=!readOnlyAction;try{if(modalAction&&modalAction()!==false)closeDialog();}finally{committingAction=false;}};
-  document.addEventListener('click',e=>{if(!e.target.closest('.cl-i-ticket-action-wrap'))closeTicketMenu();if(ui.menu&&!e.target.closest('.cl-i-message-menu,[data-cl-message-menu]'))closeMessageMenu();if(e.target.closest('.sidebar-menu a[aria-disabled],.main-header a[aria-disabled],.breadcrumb a[aria-disabled],.main-footer a[aria-disabled]'))e.preventDefault();},true);
+  document.addEventListener('click',e=>{if(!e.target.closest('.cl-i-ticket-action-wrap'))closeTicketMenu();if(ui.menu&&!e.target.closest('.cl-i-message-menu,[data-cl-message-menu]'))closeMessageMenu();},true);
   document.addEventListener('keydown',e=>{if($('#cl-internal-modal').open)return;if(e.key==='Escape'&&ui.open){if(ui.menu){closeMessageMenu(true);}else if(ui.searchOpen){ui.searchOpen=false;ui.searchQuery='';refreshPreservingView();$('#cl-i-search-toggle')?.focus();}else{const m=$('#cl-i-action-menu');if(m&&!m.hidden){closeTicketMenu(true);}else if(ui.directory){ui.directory=false;render();(document.querySelector('[data-cl-new-chat]')||$('#cl-i-tab-work')).focus();}else if(ui.creating)switchSection('cases');else toggle(false);}}if(e.key==='Tab'&&ui.open&&innerWidth<768){const ns=Array.from($('#cl-internal-drawer').querySelectorAll('button,textarea,select,input')).filter(n=>n.getClientRects().length&&!n.disabled&&n.tabIndex!==-1);if(e.shiftKey&&document.activeElement===ns[0]){e.preventDefault();ns.at(-1).focus();}else if(!e.shiftKey&&document.activeElement===ns.at(-1)){e.preventDefault();ns[0].focus();}}});let mobileQuestionMode=innerWidth<768;window.addEventListener('resize',()=>{const next=innerWidth<768;if(next&&!mobileQuestionMode)ui.questionsExpanded=false;mobileQuestionMode=next;access();refreshPreservingView();});
-  const profile=$('.cl-admin-user');profile.querySelector('.cl-admin-avatar').textContent=actor.initials;profile.querySelector('span:not(.cl-admin-avatar)').textContent=actor.name;profile.title=actor.title;const trigger=$('#cl-internal-toggle'),triggerLabel=trigger.querySelector('span:not(.cl-internal-counter)');triggerLabel.textContent=widgetName;triggerLabel.classList.add('cl-internal-label');trigger.title=widgetName+': тикеты и рабочие чаты';document.body.classList.toggle('cl-has-chat-header-tools',Boolean($('.main-header .header-tools')));$('#cl-internal-drawer').setAttribute('aria-label',widgetName);
+  const trigger=$('#cl-internal-toggle'),triggerLabel=trigger.querySelector('span:not(.cl-internal-counter)');triggerLabel.textContent=widgetName;triggerLabel.classList.add('cl-internal-label');trigger.title=widgetName+': тикеты и рабочие чаты';$('#cl-internal-drawer').setAttribute('aria-label',widgetName);
   commit(()=>{});const q=params.get('ticket'),t=q==='client'?state.cases.find(t=>t.kind==='client'):q==='report'?state.cases.find(t=>t.sourceRef==='chat-v2-report-1043'):q==='second'?state.cases.find(t=>t.sourceRef==='chat-v2-report-1045'):q==='closed'?state.cases.find(t=>t.sourceRef==='chat-v2-report-closed'):state.cases.find(t=>t.id===Number(q));
   if(t&&visibleCases().some(c=>c.id===t.id)){ui.open=true;ui.selected=t.id;}else if(params.get('section')==='cases'){ui.open=true;ui.section='cases';}else if(role==='agent'||params.get('section')==='work'||document.documentElement.dataset.internalStart==='work'){ui.open=true;ui.section='work';}if(params.has('recipient')&&canContact(actor.id,Number(params.get('recipient'))))openRecipient(Number(params.get('recipient')));else{if(document.documentElement.dataset.internalInitial==='closed'&&!params.has('section')&&!params.has('ticket'))ui.open=false;if(current())prepareThread();read();render();}
 })();
