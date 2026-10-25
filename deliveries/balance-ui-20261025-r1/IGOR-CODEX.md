@@ -1,19 +1,25 @@
-# Игорю: баланс и финансы — проверенный комплект r3
+# Игорю: баланс и финансы — исправленный комплект r4
 
 Сохраняем отдельные баланс, Мои выплаты, карточку и реквизиты. Для трёх экранов выплат принят доработанный компонент с карточкой баланса/запроса и отдельной историей; упрощённую заменуv9 не использовать. Общая шапка/логотип/меню/footer — существующие, без global_custom и общего shared-admin.
 
+## Исправление r4: действующий сайт — эталон исходных компонентов
+
+Для «Заказов», «Операций баланса» и таблицы «Мой баланс» сохранены составные ячейки действующего сайта: пользователь/логин/аватар, GUID с копированием, кредитные и статусные бейджи, значки оплаты, знаки/цвета сумм, разные типы операций и множественный фильтр типов. Меняются только согласованные короткие подписи RU/EN. Не заменять эти рабочие компоненты универсальными текстовыми td из прежней v9.
+
+В preview подменены только значения демонстрационных записей. Сумма заказа — независимое значение, не результат credits × ставки выплаты. reference-grid-preview.js и reference-avatar.png нужны только локальному макету; на сайт их не переносить. Общие CSS, global_custom, контроллеры, AssetBundle, расчёты и зарегистрированные виджеты сохраняются. Остальные пять страниц поставки r3 оставлены побайтно прежними, включая доработанные выплаты и партнёров.
+
 ## Какой источник у каждой страницы
 
-| Экран | Источник | Что сохранить |
-|---|---|---|
-| Мой баланс | current site/customer balance_custom + approved24.10 RU/EN | separate page, link to own payouts, current shell, same wallet source |
-| Операции баланса | current11-column wallet-owner projection + approved RU/EN | separate owner filter, checkbox and original order, existing transaction logic |
-| Заказы | current customer/site order components + approved RU/EN | Customer replaces User, provider labels, original filters and sort, order detail/refund unchanged |
-| Реестр выплат | current manual-payout register + approved RU/EN | approval separate from actual payment, five fixture statuses, shared date range |
-| Мои выплаты | polished finance-headings-v6 payout component + later approved short headings/shared date range | balance/request card, separate history panel, status badges, ready/empty/error, no forced1120 or native-date pair |
-| Карточка выплаты | polished finance-headings-v6 payout card + deterministic current fixtures | correct status tone, credits/USD/rate, recipient/wallet, three timestamps, transfer/commission/reason, structured actual-status timeline |
-| Реквизиты | polished finance-headings-v6 payout form | countryCode/nameAndFamily, three provider fieldsets, existing PayoutDetailsForm names, validation/correction, own balance section active |
-| Партнёры | unchanged current site reference, owner instruction25.10 | no redesigned layout, original headings/Select2/badges/actions, no withdrawn partner-layout or new credit modal |
+| Экран | Источник |
+|---|---|
+| Мой баланс | Owner-designated current live DOM 2026-10-25; nested components retained, fixture leaf values anonymized; approved RU/EN headings only |
+| Операции баланса | Owner-designated current live DOM 2026-10-25; nested components retained, fixture leaf values anonymized; approved RU/EN headings only |
+| Заказы | Owner-designated current live DOM 2026-10-25; nested components retained, fixture leaf values anonymized; approved RU/EN headings only |
+| Реестр выплат | current manual-payout register + approved RU/EN |
+| Мои выплаты | polished finance-headings-v6 payout component + later approved short headings/shared date range |
+| Карточка выплаты | polished finance-headings-v6 payout card + deterministic current fixtures |
+| Реквизиты | polished finance-headings-v6 payout form |
+| Партнёры | unchanged current site reference, owner instruction25.10 |
 
 Машиночитаемая карта — PAGES-AND-APPROVALS.json. Пять финансовых таблиц имеют только утверждённые EN-заголовки, остальные тексты не объявляются полностью переведёнными.
 

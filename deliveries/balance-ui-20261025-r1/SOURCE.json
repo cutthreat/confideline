@@ -1,564 +1,122 @@
 {
-  "revision": "balance-audit-r3",
-  "source_variant": "Page-specific sources locked in PAGES-AND-APPROVALS.json; no single replacement baseline",
-  "owner_decision": "Keep the separate page; separation is not a defect",
-  "customer_site_css": [
-    {
-      "name": "balance_custom.css",
-      "sha256": "0edc2f3cda5de05e36f50a545b6ecaa42badfcd304bcc40a5572941729dcfe25",
-      "same_as_site": true
-    },
-    {
-      "name": "transactions_custom.css",
-      "sha256": "55af85813154ad06479b40ad4a4c9405b5ea6ac9835fa09175a9dfc7f90a4edc",
-      "same_as_site": true
-    },
-    {
-      "name": "order_custom.css",
-      "sha256": "e36b8a610724ecabfd75327adae28d89432d2a4983804673b060e8a2c6c421c3",
-      "same_as_site": true
-    },
-    {
-      "name": "partner_custom.css",
-      "sha256": "55957450f693d353728acba7bfeb01e45cd46dfcdc9b12b85248fef6203c472a",
-      "same_as_site": true
-    }
-  ],
-  "source_comparison_date": "2026-10-25 (v9 audit)",
-  "preview_only_changes": [
-    "relative resource/financial navigation URLs",
-    "unrelated navigation made inert",
-    "account in header anonymized",
-    "payout CSS loaded from the same integration file",
-    "Payout family restored from original polished variant; same fixed fixtures and current blue shell"
-  ],
-  "unused_source_reference": [
-    "content/assets/38c24d7b/img/boxed-bg.jpg"
-  ],
-  "pages": {
-    "balance": "Мой баланс",
-    "transactions": "Операции баланса",
-    "order": "Заказы",
-    "payouts": "Реестр выплат",
-    "my-payouts": "Мои выплаты",
-    "my-payout-view": "Карточка выплаты",
-    "my-payout-details": "Реквизиты для выплат",
-    "partner": "Партнёры — неизменённый эталон"
+  "revision": "live-components-r4",
+  "approved_page_contract": "PAGES-AND-APPROVALS.json",
+  "reference_urls": {
+    "order": "https://confideline.com/ru/admin/order/index",
+    "transactions": "https://confideline.com/ru/admin/balance-transaction/index",
+    "balance": "https://confideline.com/ru/admin/balance/index"
   },
-  "production_mutations": false,
-  "payout_reference": "20261025-finance-headings-v6/preview/finance/my-payouts*.html; shared-admin common rules scoped to #cl-my-payouts",
-  "correction": "Restore approved payout layout; reject the simplified v9 substitution",
-  "page_sources": {
-    "balance": {
-      "name": "Мой баланс",
-      "source": "current site/customer balance_custom + approved24.10 RU/EN",
-      "columns": 9,
-      "field_keys": [
-        "id",
-        "code",
-        "expert",
-        "customer",
-        "credits",
-        "before",
-        "date",
-        "description"
-      ],
-      "preserve": [
-        "separate page",
-        "link to own payouts",
-        "current shell",
-        "same wallet source"
-      ]
-    },
-    "transactions": {
-      "name": "Операции баланса",
-      "source": "current11-column wallet-owner projection + approved RU/EN",
-      "columns": 11,
-      "field_keys": [
-        "id",
-        "code",
-        "owner",
-        "customer",
-        "expert",
-        "agent",
-        "credits",
-        "before",
-        "date",
-        "description"
-      ],
-      "preserve": [
-        "separate owner filter",
-        "checkbox and original order",
-        "existing transaction logic"
-      ]
-    },
-    "order": {
-      "name": "Заказы",
-      "source": "current customer/site order components + approved RU/EN",
-      "columns": 9,
-      "field_keys": [
-        "customer",
-        "guid",
-        "credits",
-        "amount",
-        "updated",
-        "status",
-        "provider"
-      ],
-      "preserve": [
-        "Customer replaces User",
-        "provider labels",
-        "original filters and sort",
-        "order detail/refund unchanged"
-      ]
-    },
-    "payouts": {
-      "name": "Реестр выплат",
-      "source": "current manual-payout register + approved RU/EN",
-      "columns": 9,
-      "field_keys": [
-        "id",
-        "owner",
-        "credits",
-        "usd",
-        "status",
-        "created",
-        "approved",
-        "paid"
-      ],
-      "preserve": [
-        "approval separate from actual payment",
-        "five fixture statuses",
-        "shared date range"
-      ]
-    },
-    "my-payouts": {
-      "name": "Мои выплаты",
-      "source": "polished finance-headings-v6 payout component + later approved short headings/shared date range",
-      "columns": 8,
-      "field_keys": [
-        "id",
-        "credits",
-        "usd",
-        "status",
-        "created",
-        "approved",
-        "paid"
-      ],
-      "preserve": [
-        "balance/request card",
-        "separate history panel",
-        "status badges",
-        "ready/empty/error",
-        "no forced1120 or native-date pair"
-      ]
-    },
-    "my-payout-view": {
-      "name": "Карточка выплаты",
-      "source": "polished finance-headings-v6 payout card + deterministic current fixtures",
-      "semantic_fields": 14,
-      "preserve": [
-        "correct status tone",
-        "credits/USD/rate",
-        "recipient/wallet",
-        "three timestamps",
-        "transfer/commission/reason",
-        "structured actual-status timeline"
-      ]
-    },
-    "my-payout-details": {
-      "name": "Реквизиты",
-      "source": "polished finance-headings-v6 payout form",
-      "preserve": [
-        "countryCode/nameAndFamily",
-        "three provider fieldsets",
-        "existing PayoutDetailsForm names",
-        "validation/correction",
-        "own balance section active"
-      ]
-    },
-    "partner": {
-      "name": "Партнёры",
-      "source": "unchanged current site reference, owner instruction25.10",
-      "columns": 11,
-      "preserve": [
-        "no redesigned layout",
-        "original headings/Select2/badges/actions",
-        "no withdrawn partner-layout or new credit modal"
-      ]
-    }
-  },
-  "input_asset_snapshots": [
-    {
-      "path": "contact/demo/assets/vendor/80b2b25fb1fd-moment.min.js",
-      "sha256": "0aeb4ecf1091b9c52c9fa0ba4dc118b1abafbd88a51278935e574f6baff0bb49"
-    },
-    {
-      "path": "finance/preview-grid.js",
-      "sha256": "b803940f7dd83739b210f3b17e566c909a2e4eb1aa718d80cc49b3a988477937"
-    },
-    {
-      "path": "finance/assets/vendor/8c14357092f7-adminlte.min.js",
-      "sha256": "7a67b6c4dba7eceb6504af73c37a21b1d92a86f7331c85d7024ba36fcaff6236"
-    },
-    {
-      "path": "finance/assets/vendor/cd5a496a805f-jquery.js",
-      "sha256": "78a85aca2f0b110c29e0d2b137e09f0a1fb7a8e554b499f740d6744dc8962cfe"
-    },
-    {
-      "path": "contact/demo/assets/vendor/e70e86a900ea-select2.full.min.js",
-      "sha256": "5c6fdab80cb86a279695dccc226a1fac50e2c922bea70242edaa28f52b7bad2d"
-    },
-    {
-      "path": "content/assets/f0c49788/transactions_custom.css",
-      "sha256": "55af85813154ad06479b40ad4a4c9405b5ea6ac9835fa09175a9dfc7f90a4edc"
-    },
-    {
-      "path": "content/assets/7168a606/css/font-awesome.min.css",
-      "sha256": "799aeb25cc0373fdee0e1b1db7ad6c2f6a0e058dfadaa3379689f583213190bd"
-    },
-    {
-      "path": "content/assets/7168a606/fonts/fontawesome-webfont.svg",
-      "sha256": "ad6157926c1622ba4e1d03d478f1541368524bfc46f51e42fe0d945f7ef323e4"
-    },
-    {
-      "path": "content/assets/7168a606/fonts/fontawesome-webfont.ttf",
-      "sha256": "aa58f33f239a0fb02f5c7a6c45c043d7a9ac9a093335806694ecd6d4edc0d6a8"
-    },
-    {
-      "path": "content/assets/7168a606/fonts/fontawesome-webfont.woff",
-      "sha256": "ba0c59deb5450f5cb41b3f93609ee2d0d995415877ddfa223e8a8a7533474f07"
-    },
-    {
-      "path": "content/assets/7168a606/fonts/fontawesome-webfont.woff2",
-      "sha256": "2adefcbc041e7d18fcf2d417879dc5a09997aa64d675b7a3c4b6ce33da13f3fe"
-    },
-    {
-      "path": "content/assets/7168a606/fonts/fontawesome-webfont.eot",
-      "sha256": "7bfcab6db99d5cfbf1705ca0536ddc78585432cc5fa41bbd7ad0f009033b2979"
-    },
-    {
-      "path": "content/assets/b2754a7/css/daterangepicker-kv.min.css",
-      "sha256": "42bb5e901247b7e0652a116d8ae09366555de1ccffd930f564b1afac80df3029"
-    },
-    {
-      "path": "content/assets/5db5a641/css/bootstrap.css",
-      "sha256": "d170052c16caec3810f2dee6456539045d8e326f6d8ed7c7f78e59ed34de348a"
-    },
-    {
-      "path": "content/assets/5db5a641/fonts/glyphicons-halflings-regular.svg",
-      "sha256": "42f60659d265c1a3c30f9fa42abcbb56bd4a53af4d83d316d6dd7a36903c43e5"
-    },
-    {
-      "path": "content/assets/5db5a641/fonts/glyphicons-halflings-regular.ttf",
-      "sha256": "e395044093757d82afcb138957d06a1ea9361bdcf0b442d06a18a8051af57456"
-    },
-    {
-      "path": "content/assets/5db5a641/fonts/glyphicons-halflings-regular.woff",
-      "sha256": "a26394f7ede100ca118eff2eda08596275a9839b959c226e15439557a5a80742"
-    },
-    {
-      "path": "content/assets/5db5a641/fonts/glyphicons-halflings-regular.woff2",
-      "sha256": "fe185d11a49676890d47bb783312a0cda5a44c4039214094e7957b4c040ef11c"
-    },
-    {
-      "path": "content/assets/5db5a641/fonts/glyphicons-halflings-regular.eot",
-      "sha256": "13634da87d9e23f8c3ed9108ce1724d183a39ad072e73e1b3d8cbf646d2d0407"
-    },
-    {
-      "path": "shared/period-preview.js",
-      "sha256": "f9136cb0da88b4671e31e2b64616dc309c64ed4ab3b7b38f7e45d7e5ab3913f7"
-    },
-    {
-      "path": "content/assets/22efc5c3/css/select2-addl.min.css",
-      "sha256": "35f117b6d993e83efcf7cbe8678498f75e4d4b8e44319ca19f86a2b1c5e95b31"
-    },
-    {
-      "path": "content/assets/373d692a/css/field-range-bs3.min.css",
-      "sha256": "a95b042a44c6b7d6a1d12326cbb39864f5337ba8e4ae24c7bff4939b6197bb6b"
-    },
-    {
-      "path": "content/assets/38c24d7b/css/admin-sidebar-v1.css",
-      "sha256": "e62368be69a6e3701a25c24e238d334a4afedc5b270ddca601761025e4cc005f"
-    },
-    {
-      "path": "content/assets/b2754a7/css/daterangepicker.min.css",
-      "sha256": "2677d2344b7664ba4ade985f9bccf7497e71cb28ede01bf92eb7d1d9afbe83e1"
-    },
-    {
-      "path": "content/assets/38c24d7b/css/jquery.fancybox.min.css",
-      "sha256": "f6f3d53dd2240261f157695adf386a5c08014298c19f62ccf63cd162996892d0"
-    },
-    {
-      "path": "content/assets/f0c49788/partner_custom.css",
-      "sha256": "55957450f693d353728acba7bfeb01e45cd46dfcdc9b12b85248fef6203c472a"
-    },
-    {
-      "path": "content/assets/f0c49788/order_custom.css",
-      "sha256": "e36b8a610724ecabfd75327adae28d89432d2a4983804673b060e8a2c6c421c3"
-    },
-    {
-      "path": "content/assets/f0c49788/balance_custom.css",
-      "sha256": "0edc2f3cda5de05e36f50a545b6ecaa42badfcd304bcc40a5572941729dcfe25"
-    },
-    {
-      "path": "finance/my-payouts-preview.js",
-      "sha256": "67efccb3fad31ad743910f9a3fb02f69f2bbda4781744513821f2a28ae6d8923"
-    },
-    {
-      "path": "content/assets/38c24d7b/css/messenger-theme-flat.css",
-      "sha256": "5648f08313fd6104d9c007cff3dcfa861b36d92268e20fae1a1509c522c8cdbe"
-    },
-    {
-      "path": "content/assets/fddbaec0/select2-bootstrap.min.css",
-      "sha256": "07bca80d55bc81f4f2843e15c96c764527e192edc9a74d983c49683fff1489f0"
-    },
-    {
-      "path": "content/assets/38c24d7b/css/admin.min.css",
-      "sha256": "73dc96e78fb85a683fc9574d8b3805fc59c4565304373bd19fd31fa908df927e"
-    },
-    {
-      "path": "content/assets/38c24d7b/images/payments/robokassa.svg",
-      "sha256": "1760a87ac19b52dd5beb06ed374a5676d2aabf25849278599190eea6c789dbb3"
-    },
-    {
-      "path": "content/assets/38c24d7b/images/payments/paypal.svg",
-      "sha256": "e1e8078076a6467dc8e2e0b8f109ec52454a8cc92c5be24c831d598b2e2604b4"
-    },
-    {
-      "path": "content/assets/38c24d7b/images/payments/stripe.svg",
-      "sha256": "66d172eb10920022f45815178f1d6659a849a306ec15a752cbda294958e337e3"
-    },
-    {
-      "path": "content/assets/38c24d7b/images/logo-h50@2x.png",
-      "sha256": "9e098853dc6175bf55ec6627d88cf04380cf856c3b7e18d72d7b187d56c15318"
-    },
-    {
-      "path": "content/assets/38c24d7b/images/logo-h50.png",
-      "sha256": "fd2d2b71e0217d83218601f574d18af69011bf0b3179fc1edb4ec563c8795f42"
-    },
-    {
-      "path": "content/assets/38c24d7b/images/logo-small@2x.png",
-      "sha256": "b9670bf6bb94b6593438a15f63dda0e01173625f1cf6c3f91e13de6a9e98dfae"
-    },
-    {
-      "path": "content/assets/38c24d7b/images/logo-small.png",
-      "sha256": "807125a168949bb1bd465b26aaf61fbba4210d115b3f6d158fccd31ced774307"
-    },
-    {
-      "path": "external/rsms.me/inter/inter.css",
-      "sha256": "46d01c7807f64a24c1b2853b756ef15f3a2facdf4a9f066eaf5d39c0c9935441"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterDisplay-BlackItalic.woff2",
-      "sha256": "9746bf2bd43fe158144b83ede747088e80396daad55b9e6ea7232e0e22ee6fce"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterDisplay-Black.woff2",
-      "sha256": "05650cb83c70fda2a465eade0c0a1a6c25d37ec49df3cd74b7e564683f9729f1"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterDisplay-ExtraBoldItalic.woff2",
-      "sha256": "159b72ba47887032915420aa1445ae6768197e7ea732230182998f14d1cdb932"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterDisplay-ExtraBold.woff2",
-      "sha256": "97eeee5a6f4f22fef1f607cf8836104d65968f03e59bc068a7586bf18364a8a7"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterDisplay-BoldItalic.woff2",
-      "sha256": "5a0fe1f01b8777fab4a5f73c757743fa52579c7723b0291777625cb53c0a792a"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterDisplay-Bold.woff2",
-      "sha256": "23bc37619593377e128f24660fedb2869d18277b4026cb46e5637be7643faf91"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterDisplay-SemiBoldItalic.woff2",
-      "sha256": "dd9d78314bdd5062302a73c7e2954008bab8158304fa7ac4f0ea8977b841dccb"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterDisplay-SemiBold.woff2",
-      "sha256": "d9f63a82b826fb0117c92715c3a52a2d2247bc321bc39341420bf52d91e8277a"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterDisplay-MediumItalic.woff2",
-      "sha256": "6bf254c1a65c806c019f52818add66747da83595a314112917911bcf5fa2f5c5"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterDisplay-Medium.woff2",
-      "sha256": "f1227907684853882ad00d7f97ce9f64bc17b89a2a291a7d4ec84fccfa442934"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterDisplay-Italic.woff2",
-      "sha256": "dfd398d7372b61278e1505bfbdfc5ab0f6511ef887a47a2c90c13475eae585da"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterDisplay-Regular.woff2",
-      "sha256": "3a9463a58c3e7ba1e3cd65b5dbff91a35c508ff78a104cd1121feff83efeb787"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterDisplay-LightItalic.woff2",
-      "sha256": "59b5be56306fd353d067aa6995c2c92bc3feb3ace73684d94e3c6e73fe2beaac"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterDisplay-Light.woff2",
-      "sha256": "01dd2d491ed863177e61f6e9458813baa85453ad97b32c5c1216927d4eebfe65"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterDisplay-ExtraLightItalic.woff2",
-      "sha256": "e8d7078160ef92b82c2123857c1b3aefaa4a795a44b56df5fe3edade60d81576"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterDisplay-ExtraLight.woff2",
-      "sha256": "9031b6d2a1a559753d50b311ecb463ddf7acaaae1d992a7e9b009620d8ce6def"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterDisplay-ThinItalic.woff2",
-      "sha256": "eff21589eacf1f6a596191038d7b47b4dd2455a096b175bb3572ecb6d026a611"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterDisplay-Thin.woff2",
-      "sha256": "21cfe42e7f1031b410e247ed199f43fc362415af81b3a8e442a97f63b4dbe327"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/Inter-BlackItalic.woff2",
-      "sha256": "308e101141e9dee3b6b121614da03969eb8179886975a9eeb5348021b04368fe"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/Inter-Black.woff2",
-      "sha256": "12ed0eed6749099b46c7b2e8198dc30c2d7e0f2a4e5fb1d12f0b6ae2c4f33cc4"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/Inter-ExtraBoldItalic.woff2",
-      "sha256": "53bb20ba292e2ac28a0777bf0f56f31b98be432a3cc04359e2eb608c758349c7"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/Inter-ExtraBold.woff2",
-      "sha256": "6f75025856f8db1b2186e9cb89be9de9894932c8b7b20f4df5e65916ff714e34"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/Inter-BoldItalic.woff2",
-      "sha256": "4a10532d76c90c4597c0ad4bfc9284600e597d3012dd1ec16c1d44e0ad0058ab"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/Inter-Bold.woff2",
-      "sha256": "fa888127b6da015b65569f0351f3b5c391ad928904951f1c20e9f8462a8d95ea"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/Inter-SemiBoldItalic.woff2",
-      "sha256": "5e2a2bc3b5b9af0644f005693b10499dab18065d6aedbf46c8b74ccede27daeb"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/Inter-SemiBold.woff2",
-      "sha256": "5cb7103e4e605989afebc03d989c79201e54b21b5183db33981f70db9178a301"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/Inter-MediumItalic.woff2",
-      "sha256": "1b0df503de488a92082a8c5d72ddc4c0229183ceb645ae1c25c2d0d63778517c"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/Inter-Medium.woff2",
-      "sha256": "0ff3e94614e1493eb556314fd247ae6c4a85a7783b4cc86be539940cf83f2a48"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/Inter-Italic.woff2",
-      "sha256": "2d078cb3bc8f934740d53b39dd23b0678f2f97477e49ec785dd9d8acd8b96bfc"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/Inter-Regular.woff2",
-      "sha256": "e06f6b1bc553aaea4e4668023ed0ab0a147129c3107f511bc7d03d361b0ae085"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/Inter-LightItalic.woff2",
-      "sha256": "050265b27d11860a26c66c054210852661abb5d229c4e0bb3525757a830f3790"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/Inter-Light.woff2",
-      "sha256": "e111a1e2ad914ccda9179b95e83fb10234dd52a1932e0b93c480476227983fd9"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/Inter-ExtraLightItalic.woff2",
-      "sha256": "38bad3a6a9ad1a7fcd8082e6423ba5e0baea16598f2cf304e527844f697e32b2"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/Inter-ExtraLight.woff2",
-      "sha256": "ba4fc81dbb25871f1bcabc664b1e37703fca0a05f7248a923e7db497c6d211cc"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/Inter-ThinItalic.woff2",
-      "sha256": "930d666b74e0dc0c26c2821f5643b701f8a41beaf3bb95ce146298104f29169c"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/Inter-Thin.woff2",
-      "sha256": "70ca998635d9fc627dede8108f04d0989e6e03346183f0ad0917723e790f6973"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterVariable-Italic.woff2",
-      "sha256": "e564f652916db6c139570fefb9524a77c4d48f30c92928de9db19b6b5c7a262a"
-    },
-    {
-      "path": "external/rsms.me/inter/font-files/InterVariable.woff2",
-      "sha256": "693b77d4f32ee9b8bfc995589b5fad5e99adf2832738661f5402f9978429a8e3"
-    },
-    {
-      "path": "finance/approved-headings.js",
-      "sha256": "54d41cf1ad7bbb64a7691210dea59240e4981547bfdd93a715cd49dd9e13b5b9"
-    },
+  "reference_rule": "Current owner-designated nested components retained; only demo leaf values changed",
+  "original_css_files": [
     {
-      "path": "finance/assets/vendor/f2ffdfd60f17-jquery.slimscroll.min.js",
-      "sha256": "a84ffabdd498cd0bbd960a2c2b1845a65113bd6bea00096602e47ec8f87fd122"
+      "path": "integration/payout-feature.css",
+      "sha256": "97663c6f5740ed39c35b8149d97a65404365f9edcc2dd78c8d8b9fde93bada06"
     },
     {
-      "path": "shared/period-preview.css",
+      "path": "preview/assets/shared/period-preview.css",
       "sha256": "ce384c2445990c89f2c02b08e3affafaccd3606da80d047c326018434af80c7a"
     },
     {
-      "path": "finance/assets/vendor/d382ea563e56-bootstrap.js",
-      "sha256": "dbd2a35e72edc7d6bde483481a912f1c38aa57fab2747d9b071d317339ee03a2"
+      "path": "preview/assets/content/assets/f0c49788/balance_custom.css",
+      "sha256": "0edc2f3cda5de05e36f50a545b6ecaa42badfcd304bcc40a5572941729dcfe25"
     },
     {
-      "path": "content/assets/3c725d5d/css/kv-widgets.min.css",
-      "sha256": "140a204f9eccd989e6b4f7b2d14d516e49d18de89520892a09ee65e5688a73be"
+      "path": "preview/assets/content/assets/f0c49788/order_custom.css",
+      "sha256": "e36b8a610724ecabfd75327adae28d89432d2a4983804673b060e8a2c6c421c3"
     },
     {
-      "path": "content/assets/3c725d5d/img/loading-plugin.gif",
-      "sha256": "abb2c87444ef9f0ad7ff70d880ab21728e26380949753c630fa1831fe62b8026"
+      "path": "preview/assets/content/assets/f0c49788/partner_custom.css",
+      "sha256": "55957450f693d353728acba7bfeb01e45cd46dfcdc9b12b85248fef6203c472a"
     },
     {
-      "path": "content/assets/3f304719/css/select2.min.css",
+      "path": "preview/assets/content/assets/f0c49788/transactions_custom.css",
+      "sha256": "55af85813154ad06479b40ad4a4c9405b5ea6ac9835fa09175a9dfc7f90a4edc"
+    },
+    {
+      "path": "preview/assets/content/assets/fddbaec0/select2-bootstrap.min.css",
+      "sha256": "07bca80d55bc81f4f2843e15c96c764527e192edc9a74d983c49683fff1489f0"
+    },
+    {
+      "path": "preview/assets/content/assets/21c97e52/css/select2.min.css",
       "sha256": "15d6ad4dfdb43d0affad683e70029f97a8f8fc8637a28845009ee0542dccdf81"
     },
     {
-      "path": "content/assets/38c24d7b/css/messenger.css",
-      "sha256": "edd1282d19c0d6c24b65635f44c29e11e54a4489577a77057b7d3064e3c4dd26"
+      "path": "preview/assets/content/assets/22efc5c3/css/select2-addl.min.css",
+      "sha256": "35f117b6d993e83efcf7cbe8678498f75e4d4b8e44319ca19f86a2b1c5e95b31"
     },
     {
-      "path": "content/assets/38c24d7b/css/admin-header-v2.css",
-      "sha256": "b9c3884cb4efe01bc804321c62967767d07f6b069f90c49401454754076774d6"
-    },
-    {
-      "path": "content/assets/22efc5c3/css/select2-bootstrap.min.css",
+      "path": "preview/assets/content/assets/22efc5c3/css/select2-bootstrap.min.css",
       "sha256": "8590c963a244719bb8864deace2ac555aa8c46d2050771688d45d734a1b6ceac"
     },
     {
-      "path": "content/assets/38c24d7b/css/financial-adapter.css",
+      "path": "preview/assets/content/assets/373d692a/css/field-range-bs3.min.css",
+      "sha256": "a95b042a44c6b7d6a1d12326cbb39864f5337ba8e4ae24c7bff4939b6197bb6b"
+    },
+    {
+      "path": "preview/assets/content/assets/38c24d7b/css/admin-header-v2.css",
+      "sha256": "b9c3884cb4efe01bc804321c62967767d07f6b069f90c49401454754076774d6"
+    },
+    {
+      "path": "preview/assets/content/assets/38c24d7b/css/admin-sidebar-v1.css",
+      "sha256": "e62368be69a6e3701a25c24e238d334a4afedc5b270ddca601761025e4cc005f"
+    },
+    {
+      "path": "preview/assets/content/assets/38c24d7b/css/admin.min.css",
+      "sha256": "73dc96e78fb85a683fc9574d8b3805fc59c4565304373bd19fd31fa908df927e"
+    },
+    {
+      "path": "preview/assets/content/assets/38c24d7b/css/financial-adapter.css",
       "sha256": "0ad63eae1213d999416ec2cfd054594f19d73dd2e24461b7fd30fbbb8ed43fb1"
     },
     {
-      "path": "finance/payout-detail-preview.js",
-      "sha256": "fa936338fc4e82392f7b58d2f753f0ac945cf46323e7b61a73cf4bf400671087"
+      "path": "preview/assets/content/assets/38c24d7b/css/jquery.fancybox.min.css",
+      "sha256": "f6f3d53dd2240261f157695adf386a5c08014298c19f62ccf63cd162996892d0"
     },
     {
-      "path": "contact/demo/assets/vendor/ba9a80ea4142-daterangepicker.min.js",
-      "sha256": "2b513a262a64ac1fa1958779e84d079399da33fe9af4bf869ce78135b6a110b3"
+      "path": "preview/assets/content/assets/38c24d7b/css/messenger-theme-flat.css",
+      "sha256": "5648f08313fd6104d9c007cff3dcfa861b36d92268e20fae1a1509c522c8cdbe"
     },
     {
-      "path": "content/assets/21c97e52/css/select2.min.css",
+      "path": "preview/assets/content/assets/38c24d7b/css/messenger.css",
+      "sha256": "edd1282d19c0d6c24b65635f44c29e11e54a4489577a77057b7d3064e3c4dd26"
+    },
+    {
+      "path": "preview/assets/content/assets/3c725d5d/css/kv-widgets.min.css",
+      "sha256": "140a204f9eccd989e6b4f7b2d14d516e49d18de89520892a09ee65e5688a73be"
+    },
+    {
+      "path": "preview/assets/content/assets/3f304719/css/select2.min.css",
       "sha256": "15d6ad4dfdb43d0affad683e70029f97a8f8fc8637a28845009ee0542dccdf81"
+    },
+    {
+      "path": "preview/assets/content/assets/5db5a641/css/bootstrap.css",
+      "sha256": "d170052c16caec3810f2dee6456539045d8e326f6d8ed7c7f78e59ed34de348a"
+    },
+    {
+      "path": "preview/assets/content/assets/7168a606/css/font-awesome.min.css",
+      "sha256": "799aeb25cc0373fdee0e1b1db7ad6c2f6a0e058dfadaa3379689f583213190bd"
+    },
+    {
+      "path": "preview/assets/content/assets/b2754a7/css/daterangepicker-kv.min.css",
+      "sha256": "42bb5e901247b7e0652a116d8ae09366555de1ccffd930f564b1afac80df3029"
+    },
+    {
+      "path": "preview/assets/content/assets/b2754a7/css/daterangepicker.min.css",
+      "sha256": "2677d2344b7664ba4ade985f9bccf7497e71cb28ede01bf92eb7d1d9afbe83e1"
+    },
+    {
+      "path": "preview/assets/external/rsms.me/inter/inter.css",
+      "sha256": "46d01c7807f64a24c1b2853b756ef15f3a2facdf4a9f066eaf5d39c0c9935441"
     }
   ],
-  "delivered_resources": [
+  "unchanged_page_sha256": {
+    "payouts": "3ce701c8fbdf585f09bd97f8f495e20e58f8639a29bee4fdc4c631d87eefde9f",
+    "my-payouts": "0c1b509439483625a4576fb0f5813ad99d2de89de760d3dfefde418fbea08124",
+    "my-payout-view": "f52fa26679948384e2b68fdd248f167e2e6b27d8bcd5ccb08c28d4fd70236de3",
+    "my-payout-details": "77f9964bb0faac04dc6160fb3ddbe121eaf2cbb0dc57fba7355cf503c90f7c34",
+    "partner": "cf35353fdb7aeae7b3b97a388110a686d65657c4baa61dd09aa67a9833d18e51"
+  },
+  "delivered_preview_resources": [
     {
       "path": "preview/assets/contact/demo/assets/vendor/80b2b25fb1fd-moment.min.js",
       "sha256": "0aeb4ecf1091b9c52c9fa0ba4dc118b1abafbd88a51278935e574f6baff0bb49"
@@ -920,20 +478,70 @@
       "sha256": "b803940f7dd83739b210f3b17e566c909a2e4eb1aa718d80cc49b3a988477937"
     },
     {
+      "path": "preview/assets/finance/reference-avatar.png",
+      "sha256": "333863fab105f21d0fb4edd61e2d4fc759eef4f8d8094c7f492bb595d84324d0"
+    },
+    {
+      "path": "preview/assets/finance/reference-grid-preview.js",
+      "sha256": "fdc19d5e0789545c9a77aaea5ff896433b3d5abfc37160327a78f8229debd1bd"
+    },
+    {
       "path": "preview/assets/shared/period-preview.css",
       "sha256": "ce384c2445990c89f2c02b08e3affafaccd3606da80d047c326018434af80c7a"
     },
     {
       "path": "preview/assets/shared/period-preview.js",
       "sha256": "fc1ca4823ca57f07e993a9a950f83adbcf02899f7716d02977c38257fb843a5d"
+    },
+    {
+      "path": "preview/finance/balance.html",
+      "sha256": "8a85652be309adac2a1da63b47fa9205026dbe2abb9e056856035aeb544b638d"
+    },
+    {
+      "path": "preview/finance/my-payout-details.html",
+      "sha256": "77f9964bb0faac04dc6160fb3ddbe121eaf2cbb0dc57fba7355cf503c90f7c34"
+    },
+    {
+      "path": "preview/finance/my-payout-view.html",
+      "sha256": "f52fa26679948384e2b68fdd248f167e2e6b27d8bcd5ccb08c28d4fd70236de3"
+    },
+    {
+      "path": "preview/finance/my-payouts.html",
+      "sha256": "0c1b509439483625a4576fb0f5813ad99d2de89de760d3dfefde418fbea08124"
+    },
+    {
+      "path": "preview/finance/order.html",
+      "sha256": "8b346f2adcff480a73bed2ed0540faa3a12c8f7606857042a1b27acc8d96299e"
+    },
+    {
+      "path": "preview/finance/partner.html",
+      "sha256": "cf35353fdb7aeae7b3b97a388110a686d65657c4baa61dd09aa67a9833d18e51"
+    },
+    {
+      "path": "preview/finance/payouts.html",
+      "sha256": "3ce701c8fbdf585f09bd97f8f495e20e58f8639a29bee4fdc4c631d87eefde9f"
+    },
+    {
+      "path": "preview/finance/transactions.html",
+      "sha256": "d8fa0714ca4b9034c6faf8519f413c2acf327d504bc4334802ff0afa0f691e6a"
+    },
+    {
+      "path": "preview/payout-headings.js",
+      "sha256": "6c04dd07f495edc0db5c42ffbcd293125eea8cb898e7a51df69a4a438e49cf48"
+    },
+    {
+      "path": "preview/payout-period-preview.js",
+      "sha256": "ab1a9bd84e05b0f73456f1f95b13dd99d326eda23d3bd81102540408f99e05a2"
+    },
+    {
+      "path": "preview/restored-payouts-preview.js",
+      "sha256": "8bb8dc81ed57594ecbe1637e8b4e9020332e06f80bd11cc84968f742fb6982d0"
+    },
+    {
+      "path": "preview/viewer.js",
+      "sha256": "e385126ed2d7603bf8e9ec4b6f3b68b7f8cbceaf04b932458aae98c5d4e77241"
     }
   ],
-  "audit_corrections": [
-    "Consistent three-partial/CSS documentation",
-    "Correct active balance section in payout card/details",
-    "Preview reset clears empty range control",
-    "Dynamic threshold placeholders",
-    "Revisioned financial navigation links",
-    "Source snapshots separated from delivered resource hashes"
-  ]
+  "prior_source_history": "https://github.com/cutthreat/confideline/blob/cd46829eb51a577bbe84077224c51b6fcd6f2031/deliveries/balance-ui-20261025-r1/SOURCE.json",
+  "raw_live_records_included": false
 }
