@@ -1,0 +1,88 @@
+/* Project integration only. Customer originals are loaded first and stay unchanged. */
+.finance-page { min-width:0; }
+.finance-page .finance-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px; padding:12px 15px; background:var(--grid-head,#fbfcfd); border:1px solid var(--grid-border,#e4e9ef); color:var(--grid-muted,#83919e); font-size:12px; }
+.finance-page .finance-page-size-control { display:flex; align-items:center; gap:8px; margin-left:auto; }
+.finance-page .finance-page-size-control label { margin:0; font-weight:400; }
+.finance-page .finance-page-size { width:68px; height:30px; font-size:12px; border:1px solid #dce3eb; border-radius:3px; }
+/* Customer lists put the real record range above and page size below the table. */
+.finance-page .finance-table-header { display:flex; align-items:center; justify-content:space-between; background:var(--grid-head,#fbfcfd); }
+.finance-page .finance-table-header > .summary { min-width:0; }
+.finance-page .finance-toolbar-header { flex-shrink:0; margin-left:auto; border:0; background:transparent; }
+.finance-page .finance-toolbar-footer { padding:0; border:0; background:transparent; }
+.finance-page .finance-toolbar-header .finance-reset { font-size:11px; background:#f7fafc; border-color:#dce5ed; color:#526f88; }
+.finance-page .finance-toolbar-header .finance-reset:hover { background:#eaf1f7; border-color:#bed0df; color:#355d7e; }
+.finance-page .finance-scroll { width:100%; max-width:100%; overflow-x:auto; scrollbar-width:thin; -webkit-overflow-scrolling:touch; }
+.finance-page .finance-scroll:focus-visible { outline:2px solid #79a8cf; outline-offset:-2px; }
+.finance-page .finance-card:not(.order-card) { background:#fff; overflow:hidden; min-width:0; }
+.finance-page .finance-footer { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:12px 15px; background:#fff; }
+.finance-page .finance-footer .pagination { margin:0; }
+.finance-page .finance-number { text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.finance-page .finance-select, .finance-page .finance-select-cell { width:38px; min-width:38px; text-align:center; }
+.finance-page .finance-actions { white-space:nowrap; text-align:center; }
+.finance-page .finance-reason { max-width:350px; white-space:normal; overflow-wrap:anywhere; }
+.finance-page .finance-payment-method { display:inline-flex; align-items:center; justify-content:center; }
+.finance-page .finance-user { min-width:0; overflow-wrap:anywhere; }
+.finance-page .finance-copy-value { display:flex; align-items:center; gap:6px; min-width:0; }
+.finance-page .finance-copy-value code { overflow-wrap:anywhere; white-space:normal; }
+.finance-page .finance-copy-button:not(.order-guid-copy):not(.order-copy-btn) { width:26px; height:26px; padding:4px; flex-shrink:0; border:1px solid #e2e8ee; border-radius:4px; background:#fff; color:#8094a5; }
+.finance-page .finance-copy-status { color:#667484; font-size:11px; }
+.finance-page .finance-copy-button:focus-visible { outline:2px solid #79a8cf; outline-offset:2px; }
+/* The host renders a real multi-select; the source demo added its caret with JS. */
+.finance-page :is(.tx-col-type,.balance-col-type) .select2-selection--multiple::after { content:''; position:absolute; right:8px; top:12px; width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; border-top:4px solid #8a96a3; pointer-events:none; }
+.finance-page :is(.tx-col-type,.balance-col-type) .select2-container--open .select2-selection--multiple::after { transform:rotate(180deg); }
+.finance-page :is(.tx-col-type,.balance-col-type) .select2-selection--multiple:has(.select2-selection__clear)::after { display:none; }
+.finance-page :is(.tx-description-text,.balance-description-text) { font-size:11px; line-height:1.5; }
+/* The global ledger additionally keeps a separate wallet-owner column. */
+.finance-ledger .transactions-grid-view .tx-col-owner { min-width:110px; }
+/* The original partner HTML fixes the ID column at 80px. */
+.finance-partners .finance-table .partner-col-id { width:80px; min-width:80px; max-width:80px; }
+.finance-partners .finance-table .partner-col-id .form-control { width:100%; min-width:0; box-sizing:border-box; }
+/* Users has a 100px ID in the source; ledger IDs use their natural content width. */
+.finance-users .finance-table .user-col-id { width:100px; min-width:100px; max-width:100px; }
+.finance-users .finance-table .user-col-id .form-control { width:100%; min-width:0; box-sizing:border-box; }
+.finance-page .finance-table :is(.tx-col-id,.balance-col-id) { width:1%; white-space:nowrap; }
+.finance-page .finance-filter-errors { margin:0; }
+/* Calendar controls fit the source filter cells; popovers are attached to body. */
+.finance-page .finance-date-filter { position:relative; min-width:0; }
+.content .finance-page table.table .filters .finance-date-filter .form-control { width:100%; min-width:0; box-sizing:border-box; padding-left:22px; padding-right:18px; font-size:11px; }
+.finance-page .finance-date-filter :is(.finance-date-open,.finance-date-clear) { position:absolute; top:0; bottom:0; width:20px; padding:0; border:0; background:transparent; color:#83919e; line-height:1; }
+.finance-page .finance-date-open { left:0; font-size:11px; }
+.finance-page .finance-date-clear { right:0; font-size:17px; }
+.finance-page .finance-date-clear[hidden] { display:none; }
+.finance-page .finance-date-filter button:focus-visible { outline:2px solid #79a8cf; outline-offset:-2px; }
+.finance-date-picker { font-size:12px; z-index:1100; }
+.finance-date-picker .drp-buttons .btn { font-size:11px; }
+.finance-page .finance-empty { padding:18px; color:#83919e; font-size:12px; }
+.finance-my-balance #finance-payout-unavailable { margin:8px 0 16px; color:#83919e; font-size:11px; }
+/* Existing server refund states extend the customer card without changing its rules. */
+.finance-page .finance-badge:not(.label):not(.order-status) { display:inline-block; padding:3px 6px; border:1px solid #dce5ed; border-radius:4px; background:#f5f8fa; color:#738798; font-size:10px; line-height:1; white-space:nowrap; }
+.finance-page :is(.finance-state-completed,.finance-state-succeeded,.finance-state-success):not(.label) { background:#f0f8f3; border-color:#cce3d5; color:#367650; }
+.finance-page :is(.finance-state-cancelled,.finance-state-canceled,.finance-state-failed,.finance-state-declined,.finance-state-danger):not(.label) { background:#fff4f4; border-color:#efd0d0; color:#a65b5b; }
+.finance-page :is(.finance-state-pending,.finance-state-requested,.finance-state-requires_action,.finance-state-expired,.finance-state-warning):not(.label) { background:#fffaf0; border-color:#efdfbc; color:#8a7856; }
+.finance-page .finance-state-in_progress:not(.label) { background:#eef7fc; border-color:#cbdfea; color:#367cab; }
+.finance-order-view .finance-card-body { padding:18px; }
+.finance-order-view .finance-note { margin:12px 0; padding:10px 12px; border-left:2px solid #e6c990; background:#fffaf0; color:#8a7856; line-height:1.6; overflow-wrap:anywhere; }
+.finance-order-view .finance-card-body .order-refund-facts { margin:0 0 12px; }
+.finance-order-view .order-refund-form { padding:0; }
+.finance-order-view .order-overview .order-overview-value { overflow-wrap:anywhere; }
+@media(max-width:767px) {
+    .finance-page .finance-date-filter[data-finance-date-mode="single"] { min-width:140px; }
+    .content .finance-page table.table .filters .finance-date-filter .form-control { font-size:16px; }
+    .finance-page .finance-toolbar { gap:10px; padding:10px; }
+    .finance-page .finance-page-size-control { margin-left:0; }
+    .finance-order-view .finance-card-body { padding:14px; }
+}
+/* One stable feedback surface for explicit verification, including PJAX refreshes. */
+.finance-action-feedback { min-height: 22px; padding: 2px 15px; font-size: 11px; }
+.finance-action-feedback:empty { display: none; }
+/* Register reuses the original Transactions stylesheet through the shared asset. */
+.finance-payouts .finance-payout-id { width: 55px; min-width: 55px; }
+.finance-payout-card { padding: 18px; margin-bottom: 16px; }
+.finance-payout-details { display: grid; grid-template-columns: minmax(140px, 220px) minmax(0, 1fr); gap: 8px 20px; margin-bottom: 16px; }
+.finance-payout-details dd { margin: 0; overflow-wrap: anywhere; }
+.finance-payout-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+@media (max-width: 600px) { .finance-payout-details { grid-template-columns: 1fr; gap: 4px; } .finance-payout-details dd { margin-bottom: 8px; } }
+/* Project adaptation for new credit actions; original customer CSS stays separate. */
+.finance-evidence-list { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+.finance-evidence-list img { max-width: 200px; max-height: 140px; object-fit: contain; border: 1px solid #dce4ec; }
+.finance-reason { white-space: normal; overflow-wrap: anywhere; }
