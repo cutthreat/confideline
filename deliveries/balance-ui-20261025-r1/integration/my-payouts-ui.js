@@ -1,0 +1,4 @@
+(function(){'use strict';
+function init(root){if(root.dataset.payoutUiReady)return;root.dataset.payoutUiReady='true';const scroll=root.querySelector('.cl-table-scroll'),top=root.querySelector('.cl-table-scroll-top');if(!scroll||!top)return;const table=scroll.querySelector('table');const update=()=>{top.firstElementChild.style.width=table.scrollWidth+'px';top.hidden=scroll.scrollWidth<=scroll.clientWidth+1;};top.addEventListener('scroll',()=>{if(Math.abs(scroll.scrollLeft-top.scrollLeft)>1)scroll.scrollLeft=top.scrollLeft;});scroll.addEventListener('scroll',()=>{if(Math.abs(scroll.scrollLeft-top.scrollLeft)>1)top.scrollLeft=scroll.scrollLeft;});const observer=new ResizeObserver(update);observer.observe(scroll);observer.observe(table);root.clPayoutDispose=()=>observer.disconnect();update();}
+document.querySelectorAll('.cl-my-payouts').forEach(init);
+})();
