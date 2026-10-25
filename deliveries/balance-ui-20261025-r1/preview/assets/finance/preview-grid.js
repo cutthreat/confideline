@@ -11,6 +11,8 @@
     const key=field.dataset.filterField,cell=row.querySelector('td[data-field="'+key+'"]');if(!cell)return;
     if(key==='description'&&field.tagName==='SELECT'){if(row.dataset.type!==value)show=false;return;}
     const raw=cell.textContent.trim();if(key==='status'&&field.tagName==='SELECT'){if(row.dataset.status!==value&&raw!==value)show=false;return;}
+    if(key==='role'&&field.tagName==='SELECT'){const role=field.selectedOptions[0]?.textContent.match(/\(([^)]+)\)\s*$/)?.[1]||value;if(raw!==role)show=false;return;}
+    if(key==='blocked'&&field.tagName==='SELECT'){const expected=value==='Да'?'1':value==='Нет'?'0':value;if(row.dataset.blocked!==expected)show=false;return;}
     if(/amount_(min|max)/.test(field.name)){const n=Number(raw.replace(/\s/g,'').replace(',','.')),v=Number(value);if(field.name.includes('_min')?n<v:n>v)show=false;return;}
     const partyId=row.dataset[key+'Id'];
     if(/^\d+$/.test(value)&&partyId){if(partyId!==value)show=false;return;}
