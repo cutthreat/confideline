@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+
+<html lang="ru"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="default-src 'self' data:; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'none'; form-action 'none'; object-src 'none'; base-uri 'none'" http-equiv="Content-Security-Policy"/><title>QA: Реестр выплат — длинные значения</title><link href="../preview/assets/external/rsms.me/inter/inter.css" rel="stylesheet"/><link href="../preview/assets/content/assets/5db5a641/css/bootstrap.css" rel="stylesheet"/><link href="../preview/assets/content/assets/7168a606/css/font-awesome.min.css" rel="stylesheet"/><link href="../preview/assets/content/assets/38c24d7b/css/messenger.css" rel="stylesheet"/><link href="../preview/assets/content/assets/38c24d7b/css/messenger-theme-flat.css" rel="stylesheet"/><link href="../preview/assets/content/assets/38c24d7b/css/jquery.fancybox.min.css" rel="stylesheet"/><link href="../preview/assets/content/assets/38c24d7b/css/admin.min.css" rel="stylesheet"/><link href="../preview/assets/content/assets/38c24d7b/css/admin-header-v2.css" rel="stylesheet"/><link href="../preview/assets/content/assets/38c24d7b/css/admin-sidebar-v1.css" rel="stylesheet"/><link href="../preview/assets/content/assets/b2754a7/css/daterangepicker.min.css" rel="stylesheet"/><link href="../preview/assets/content/assets/b2754a7/css/daterangepicker-kv.min.css" rel="stylesheet"/><link href="../preview/assets/content/assets/3c725d5d/css/kv-widgets.min.css" rel="stylesheet"/><link href="../preview/assets/content/assets/f0c49788/transactions_custom.css" rel="stylesheet"/><link href="../preview/assets/content/assets/38c24d7b/css/financial-adapter.css" rel="stylesheet"/><link href="../preview/assets/shared/period-preview.css" rel="stylesheet"/><link href="../integration/payout-register-columns.css?revision=columns-r7" rel="stylesheet"/></head><body class="skin-youdate fixed sidebar-mini"><div class="wrapper"><header class="main-header">
+<a class="logo" href="#">
+<span class="logo-mini">YouDate</span>
+<span class="logo-lg">YouDate</span>
+</a>
+<nav class="navbar navbar-static-top" role="navigation">
+<a class="sidebar-toggle" data-toggle="offcanvas" href="#" role="button">
+<span class="sr-only">Toggle navigation</span>
+</a>
+<div class="navbar-custom-menu position-relative">
+<div class="navbar-form navbar-search pull-left hidden-xs header-search">
+<div class="form-group">
+<div class="input-group">
+<input autocomplete="off" class="form-control header-search-query" name="q" placeholder="Поиск" type="text" value=""/>
+<span class="input-group-btn">
+<button class="btn btn-primary header-search-btn" type="submit">
+<i class="icon fa fa-search"></i>
+</button>
+</span>
+</div>
+</div>
+<div class="header-search-results hidden">
+<div class="results"></div>
+<div class="loader">
+<i aria-hidden="true" class="fa fa-refresh fa-spin"></i>
+</div>
+</div>
+</div>
+<ul class="nav navbar-nav">
+<li class="dropdown user user-menu">
+<a aria-expanded="false" aria-haspopup="true" aria-label="Демонстрационный пользователь" class="dropdown-toggle" data-toggle="dropdown" href="#" title="Демонстрационный пользователь">
+<span aria-hidden="true" class="admin-user-trigger-avatar">M</span>
+<span class="admin-user-trigger-text">Демо</span>
+<i aria-hidden="true" class="caret"></i>
+</a>
+<ul class="dropdown-menu admin-user-menu">
+<li class="admin-user-card">
+<div class="admin-user-meta">
+<strong>Демо</strong>
+<span>Демо</span>
+<small>Демо</small>
+</div>
+</li>
+<li class="admin-menu-section">
+<div class="admin-menu-label">Демо</div>
+<a class="admin-menu-link" data-preview-inert="true" href="#">
+<i aria-hidden="true" class="fa fa-user"></i>
+<span>Демо</span>
+</a>
+<a class="admin-menu-link" data-preview-inert="true" href="#">
+<i aria-hidden="true" class="fa fa-bell"></i>
+<span>Демо</span>
+</a>
+<a class="admin-menu-link" data-preview-inert="true" href="#">
+<i aria-hidden="true" class="fa fa-inbox"></i>
+<span>Демо</span>
+</a>
+<button aria-disabled="true" class="admin-menu-link is-unavailable" disabled="" type="button">
+<i aria-hidden="true" class="fa fa-history"></i>
+<span>Демо</span>
+</button>
+</li>
+<li class="admin-menu-section">
+<div class="admin-menu-label">Демо</div>
+<button aria-disabled="true" class="admin-menu-link is-unavailable" disabled="" type="button">
+<i aria-hidden="true" class="fa fa-compress"></i>
+<span>Демо</span>
+</button>
+<button aria-disabled="true" class="admin-menu-link is-unavailable" disabled="" type="button">
+<i aria-hidden="true" class="fa fa-volume-up"></i>
+<span>Демо</span>
+</button>
+<button aria-disabled="true" class="admin-menu-link is-unavailable" disabled="" type="button">
+<i aria-hidden="true" class="fa fa-flag"></i>
+<span>Демо</span>
+</button>
+<button aria-disabled="true" class="admin-menu-link is-unavailable" disabled="" type="button">
+<i aria-hidden="true" class="fa fa-keyboard-o"></i>
+<span>Демо</span>
+</button>
+</li>
+<li class="admin-menu-logout">
+<a data-preview-inert="true" href="#">
+<i aria-hidden="true" class="fa fa-sign-out"></i>
+<span>Демо</span>
+</a>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</nav>
+</header><aside aria-label="Администрирование" class="main-sidebar admin-sidebar-modern">
+<div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 670px;"><section aria-label="Администрирование" class="sidebar" style="height: 670px; overflow: hidden; width: auto;">
+<ul class="sidebar-menu"><li><a data-preview-inert="true" href="#" title="Главное"><i class="fa fa-cog"></i> <span>Главное</span> </a></li>
+<li class="header"><span>Содержимое</span></li>
+<li><a data-preview-inert="true" href="#" title="Пользователи"><i class="fa fa-user"></i> <span>Пользователи</span> </a></li>
+<li><a href="../preview/finance/partner.html?revision=remaining-audit-r6" title="Партнеры"><i class="fa fa-user-circle-o"></i> <span>Партнеры</span> </a></li>
+<li class="active"><a aria-expanded="true" href="#" role="button" title="Финансы"><i class="fa fa-credit-card"></i> <span>Финансы</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class="treeview-menu" style="display: block">
+<li class="active"><a aria-current="page" href="../preview/finance/payouts.html?revision=remaining-audit-r6" title="Реестр выплат"><i class="fa fa-send"></i> <span>Реестр выплат</span> </a></li>
+<li><a href="../preview/finance/order.html?revision=remaining-audit-r6" title="Заказы"><i class="fa fa-money"></i> <span>Заказы</span> </a></li>
+<li><a href="../preview/finance/transactions.html?revision=remaining-audit-r6" title="Транзакции"><i class="fa fa-gavel"></i> <span>Транзакции</span> </a></li>
+<li><a href="../preview/finance/balance.html?revision=remaining-audit-r6" title="Мой баланс"><i class="fa fa-balance-scale"></i> <span>Мой баланс</span> </a></li>
+</ul>
+</li>
+<li><a aria-expanded="false" href="#" role="button" title="Reviews"><i class="fa fa-star-o"></i> <span>Reviews</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class="treeview-menu">
+<li><a data-preview-inert="true" href="#" title="Reviews"><i class="fa fa-list"></i> <span>Reviews</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Write a review"><i class="fa fa-pencil-square-o"></i> <span>Write a review</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Review settings"><i class="fa fa-cog"></i> <span>Review settings</span> </a></li>
+</ul>
+</li>
+<li><a aria-expanded="false" href="#" role="button" title="Поддержка"><i class="fa fa-hand-paper-o"></i> <span>Поддержка</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class="treeview-menu">
+<li><a data-preview-inert="true" href="#" title="Цензура"><i class="fa fa-shield"></i> <span>Цензура</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Баны"><i class="fa fa-ban"></i> <span>Баны</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Жалобы"><i class="fa fa-flag"></i> <span>Жалобы</span> <span class="pull-right label label-success">3</span></a></li>
+<li><a data-preview-inert="true" href="#" title="Поддержка"><i class="fa fa-hand-paper-o"></i> <span>Поддержка</span> <span class="pull-right label label-success">16</span></a></li>
+</ul>
+</li>
+<li><a data-preview-inert="true" href="#" title="Группы"><i class="fa fa-users"></i> <span>Группы</span> </a></li>
+<li><a aria-expanded="false" href="#" role="button" title="Диалоги"><i class="fa fa-envelope"></i> <span>Диалоги</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class="treeview-menu">
+<li><a data-preview-inert="true" href="#" title="Взаимодействия пользователей"><i class="fa fa-bar-chart"></i> <span>Взаимодействия пользователей</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Чат"><i class="fa fa-comments"></i> <span>Чат</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Мои шаблоны"><i class="fa fa-file-text-o"></i> <span>Мои шаблоны</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Шаблоны чата эксперта"><i class="fa fa-files-o"></i> <span>Шаблоны чата эксперта</span> </a></li>
+</ul>
+</li>
+<li><a aria-expanded="false" href="#" role="button" title="Содержимое"><i class="fa fa-database"></i> <span>Содержимое</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class="treeview-menu">
+<li><a data-preview-inert="true" href="#" title="Новости"><i class="fa fa-newspaper-o"></i> <span>Новости</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Справка"><i class="fa fa-question-circle"></i> <span>Справка</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Информационные блоки"><i class="fa fa-folder-open-o"></i> <span>Информационные блоки</span> </a></li>
+<li><a aria-expanded="false" href="#" role="button" title="Страны и города"><i class="fa fa-map"></i> <span>Страны и города</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class="treeview-menu">
+<li><a data-preview-inert="true" href="#" title="Страны"><i class="fa fa-flag-o"></i> <span>Страны</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Города"><i class="fa fa-map-marker"></i> <span>Города</span> </a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="header"><span>Модерация</span></li>
+<li><a data-preview-inert="true" href="#" title="Фотографии"><i class="fa fa-photo"></i> <span>Фотографии</span> <span class="pull-right label label-success">21</span></a></li>
+<li><a data-preview-inert="true" href="#" title="Сообщения"><i class="fa fa-envelope"></i> <span>Сообщения</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Верификации"><i class="fa fa-check-circle"></i> <span>Верификации</span> </a></li>
+<li class="header"><span>Система</span></li>
+<li><a aria-expanded="false" href="#" role="button" title="Настройки"><i class="fa fa-cog"></i> <span>Настройки</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class="treeview-menu">
+<li><a data-preview-inert="true" href="#" title="Общие настройки"><i class="fa fa-cog"></i> <span>Общие настройки</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Настройки чата"><i class="fa fa-comments-o"></i> <span>Настройки чата</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Правила цензуры"><i class="fa fa-shield"></i> <span>Правила цензуры</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Платежи и тарифы"><i class="fa fa-credit-card"></i> <span>Платежи и тарифы</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Шаблоны писем"><i class="fa fa-envelope-o"></i> <span>Шаблоны писем</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Страницы"><i class="fa fa-file"></i> <span>Страницы</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Языки"><i class="fa fa-globe"></i> <span>Языки</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Настройка темы"><i class="fa fa-cog"></i> <span>Настройка темы</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Темы"><i class="fa fa-file-code-o"></i> <span>Темы</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="SEO (переводы)"><i class="fa fa-globe"></i> <span>SEO (переводы)</span> </a></li>
+<li><a aria-expanded="false" href="#" role="button" title="Поля профиля"><i class="fa fa-vcard"></i> <span>Поля профиля</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class="treeview-menu">
+<li><a data-preview-inert="true" href="#" title="Поля профиля"><i class="fa fa-circle-o"></i> <span>Поля профиля</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Категории полей"><i class="fa fa-circle-o"></i> <span>Категории полей</span> </a></li>
+</ul>
+</li>
+<li><a data-preview-inert="true" href="#" title="Плагины"><i class="fa fa-code"></i> <span>Плагины</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Подарки"><i class="fa fa-gift"></i> <span>Подарки</span> </a></li>
+</ul>
+</li>
+<li><a aria-expanded="false" href="#" role="button" title="Обслуживание"><i class="fa fa-wrench"></i> <span>Обслуживание</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class="treeview-menu">
+<li><a aria-expanded="false" href="#" role="button" title="Логи"><i class="fa fa-file-text-o"></i> <span>Логи</span> <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a>
+<ul class="treeview-menu">
+<li><a data-preview-inert="true" href="#" title="Системный журнал"><i class="fa fa-file-text-o"></i> <span>Системный журнал</span> <span class="pull-right label label-danger">53</span></a></li>
+<li><a data-preview-inert="true" href="#" title="Журнал действий"><i class="fa fa-list-alt"></i> <span>Журнал действий</span> </a></li>
+</ul>
+</li>
+<li><a data-preview-inert="true" href="#" title="Монитор очереди"><i class="fa fa-feed"></i> <span>Монитор очереди</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Кеш Redis"><i class="fa fa-shopping-basket"></i> <span>Кеш Redis</span> </a></li>
+<li><a data-preview-inert="true" href="#" title="Монитор WebSocket"><i class="fa fa-podcast"></i> <span>Монитор WebSocket</span> </a></li>
+<li id="place-admin-php-info"><a data-preview-inert="true" href="#" title="Информация о PHP"><i class="caret-right"></i> <span>Информация о PHP</span> </a></li>
+</ul>
+</li></ul> </section><div class="slimScrollBar" style="background: rgba(0, 0, 0, 0.2); width: 3px; position: absolute; top: 0px; opacity: 0.4; display: block; border-radius: 7px; z-index: 99; right: 1px; height: 529.363px;"></div><div class="slimScrollRail" style="width: 3px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;"></div></div>
+</aside><div class="content-wrapper" data-preview-finance="payouts" id="finance-preview-payouts">
+<section class="content-header">
+<h1>Реестр выплат — длинные значения (QA)</h1>
+<ol class="breadcrumb"><li><a href="#">Администрирование</a></li>
+<li class="active">Реестр выплат</li>
+</ol> </section>
+<section class="content">
+<div class="finance-page finance-payouts">
+<div class="finance-note">Ручные выплаты в USD. Одобрение и фактическая выплата фиксируются отдельно.</div>
+<div id="finance-payouts-pjax"> <div style="display:none"><p>Исправьте следующие ошибки:</p><ul></ul></div> <div class="grid-view" id="finance-payouts-grid"><div class="finance-table-header"><div class="summary">Показаны записи 1–5 из 5.</div><div class="finance-toolbar finance-toolbar-header"><a class="btn btn-sm btn-default finance-reset" data-preview-reset="true" href="../preview/finance/payouts.html?revision=remaining-audit-r6">Сбросить фильтр</a></div></div><div class="finance-scroll"><table class="table finance-table" data-preview-grid="payouts"><thead>
+<tr><th class="finance-payout-id" data-field="id"><a data-sort="id" href="../preview/finance/payouts.html?revision=remaining-audit-r6">ID</a></th><th data-field="owner"><a data-sort="user_id" href="../preview/finance/payouts.html?revision=remaining-audit-r6">Владелец кошелька</a></th><th data-field="credits"><a data-sort="credits" href="../preview/finance/payouts.html?revision=remaining-audit-r6">Кредиты</a></th><th data-field="usd"><a data-sort="usd_amount" href="../preview/finance/payouts.html?revision=remaining-audit-r6">Сумма получателю, USD</a></th><th data-field="status"><a data-sort="status" href="../preview/finance/payouts.html?revision=remaining-audit-r6">Статус</a></th><th class="grid-date-cell" data-field="created"><a data-sort="requested_at" href="../preview/finance/payouts.html?revision=remaining-audit-r6">Дата заявки</a></th><th class="grid-date-cell" data-field="approved"><a data-sort="approved_at" href="../preview/finance/payouts.html?revision=remaining-audit-r6">Дата одобрения</a></th><th class="grid-date-cell" data-field="paid"><a data-sort="paid_at" href="../preview/finance/payouts.html?revision=remaining-audit-r6">Дата фактической выплаты</a></th><th class="action-column"> </th></tr><tr class="filters" id="finance-payouts-grid-filters"><td><input class="form-control" data-filter-field="id" name="PayoutSearch[id]" type="text" value=""/></td><td><input class="form-control" data-filter-field="owner" name="PayoutSearch[user_id]" type="text" value=""/></td><td> </td><td> </td><td><select class="form-control" data-filter-field="status" name="PayoutSearch[status]">
+<option></option>
+<option>Заявка создана</option>
+<option>Одобрено</option>
+<option>Выплата подтверждена</option>
+<option>Отклонено</option>
+<option>Отменён</option>
+</select></td><td class="grid-date-cell"><div class="finance-date-filter" data-finance-date-mode="range"><input aria-label="Период создания заявок на выплату" autocomplete="off" class="form-control" data-filter-field="created" data-finance-date-input="" data-preview-period="true" id="w1-date" name="w1-range" placeholder="Период" readonly="readonly" title="Период" type="text" value=""/><button aria-controls="w1-date" aria-label="Выбрать дату" class="finance-date-open" data-finance-date-open="" title="Выбрать дату" type="button"><i aria-hidden="true" class="fa fa-calendar"></i></button><button aria-controls="w1-date" aria-label="Очистить фильтр даты" class="finance-date-clear" data-finance-date-clear="" hidden="hidden" title="Очистить фильтр даты" type="button"><span aria-hidden="true">×</span></button></div></td><td class="grid-date-cell"> </td><td class="grid-date-cell"> </td><td> </td></tr>
+</thead>
+<tbody><tr data-agent-id="15" data-approved-date="" data-customer-id="201" data-date="2026-10-15" data-expert-id="184" data-id="1041" data-owner="Alex Example" data-owner-id="1" data-paid-date="" data-status="cancelled" data-type="Расчёт за консультацию"><td class="finance-number finance-payout-id" data-field="id">1041</td><td class="" data-field="owner">Александра Константинова — длинное имя владельца</td><td class="finance-number" data-field="credits">9 999 999,99</td><td class="finance-number" data-field="usd">499 999,99</td><td class="" data-field="status">Отменён</td><td class="grid-date-cell" data-field="created">15.10.26 12:00</td><td class="grid-date-cell" data-field="approved">—</td><td class="grid-date-cell" data-field="paid">—</td><td class="" data-field=""><a aria-label="Просмотр выплаты 1041" class="btn btn-xs btn-default" href="../preview/finance/my-payout-view.html?id=1041&amp;revision=remaining-audit-r6" title="Просмотр"><i aria-hidden="true" class="fa fa-eye"></i></a></td></tr><tr data-agent-id="12" data-approved-date="2026-10-16" data-customer-id="202" data-date="2026-10-16" data-expert-id="183" data-id="1042" data-owner="Partner Demo" data-owner-id="2" data-paid-date="" data-status="rejected" data-type="Связанное исправление"><td class="finance-number finance-payout-id" data-field="id">1042</td><td class="" data-field="owner"><span class="finance-user">Partner Demo</span></td><td class="finance-number" data-field="credits">750,50</td><td class="finance-number" data-field="usd">37,52</td><td class="" data-field="status">Отклонено</td><td class="grid-date-cell" data-field="created">16.10.26 12:00</td><td class="grid-date-cell" data-field="approved">16.10.26 12:00</td><td class="grid-date-cell" data-field="paid">—</td><td class="" data-field=""><a aria-label="Просмотр выплаты 1042" class="btn btn-xs btn-default" href="../preview/finance/my-payout-view.html?id=1042&amp;revision=remaining-audit-r6" title="Просмотр"><i aria-hidden="true" class="fa fa-eye"></i></a></td></tr><tr data-agent-id="15" data-approved-date="2026-10-17" data-customer-id="203" data-date="2026-10-17" data-expert-id="184" data-id="1043" data-owner="Alex Example" data-owner-id="1" data-paid-date="2026-10-17" data-status="paid" data-type="Расчёт за консультацию"><td class="finance-number finance-payout-id" data-field="id">1043</td><td class="" data-field="owner"><span class="finance-user">Alex Example</span></td><td class="finance-number" data-field="credits">1 200,00</td><td class="finance-number" data-field="usd">60,00</td><td class="" data-field="status">Выплата подтверждена</td><td class="grid-date-cell" data-field="created">17.10.26 12:00</td><td class="grid-date-cell" data-field="approved">17.10.26 12:00</td><td class="grid-date-cell" data-field="paid">17.10.26 12:00</td><td class="" data-field=""><a aria-label="Просмотр выплаты 1043" class="btn btn-xs btn-default" href="../preview/finance/my-payout-view.html?id=1043&amp;revision=remaining-audit-r6" title="Просмотр"><i aria-hidden="true" class="fa fa-eye"></i></a></td></tr><tr data-agent-id="12" data-approved-date="2026-10-18" data-customer-id="204" data-date="2026-10-18" data-expert-id="183" data-id="1044" data-owner="Partner Demo" data-owner-id="2" data-paid-date="" data-status="approved" data-type="Связанное исправление"><td class="finance-number finance-payout-id" data-field="id">1044</td><td class="" data-field="owner"><span class="finance-user">Partner Demo</span></td><td class="finance-number" data-field="credits">625,00</td><td class="finance-number" data-field="usd">31,25</td><td class="" data-field="status">Одобрено</td><td class="grid-date-cell" data-field="created">18.10.26 12:00</td><td class="grid-date-cell" data-field="approved">18.10.26 12:00</td><td class="grid-date-cell" data-field="paid">—</td><td class="" data-field=""><a aria-label="Просмотр выплаты 1044" class="btn btn-xs btn-default" href="../preview/finance/my-payout-view.html?id=1044&amp;revision=remaining-audit-r6" title="Просмотр"><i aria-hidden="true" class="fa fa-eye"></i></a></td></tr><tr data-agent-id="15" data-approved-date="" data-customer-id="205" data-date="2026-10-19" data-expert-id="184" data-id="1045" data-owner="Alex Example" data-owner-id="1" data-paid-date="" data-status="pending" data-type="Расчёт за консультацию"><td class="finance-number finance-payout-id" data-field="id">1045</td><td class="" data-field="owner"><span class="finance-user">Alex Example</span></td><td class="finance-number" data-field="credits">850,00</td><td class="finance-number" data-field="usd">42,50</td><td class="" data-field="status">Заявка создана</td><td class="grid-date-cell" data-field="created">19.10.26 12:00</td><td class="grid-date-cell" data-field="approved">—</td><td class="grid-date-cell" data-field="paid">—</td><td class="" data-field=""><a aria-label="Просмотр выплаты 1045" class="btn btn-xs btn-default" href="../preview/finance/my-payout-view.html?id=1045&amp;revision=remaining-audit-r6" title="Просмотр"><i aria-hidden="true" class="fa fa-eye"></i></a></td></tr></tbody></table></div><div class="finance-footer"><div class="finance-toolbar finance-toolbar-footer"><div class="finance-page-size-control"><label>Строк на странице</label> <select class="form-control finance-page-size" data-finance-page-param="page" data-finance-page-size="" id="w0-page-size" name="per-page">
+<option>10</option>
+<option selected="">20</option>
+<option>50</option>
+<option>100</option>
+</select></div></div></div></div> </div></div>
+</section>
+<div class="content-fade"></div>
+</div><footer class="main-footer">
+        Powered by <strong><a href="#">YouDate</a></strong>
+</footer></div><script src="../preview/assets/finance/assets/vendor/cd5a496a805f-jquery.js"></script><script src="../preview/assets/finance/assets/vendor/d382ea563e56-bootstrap.js"></script><script src="../preview/assets/finance/assets/vendor/f2ffdfd60f17-jquery.slimscroll.min.js"></script><script src="../preview/assets/finance/assets/vendor/8c14357092f7-adminlte.min.js"></script><script src="../preview/assets/contact/demo/assets/vendor/e70e86a900ea-select2.full.min.js"></script><script src="../preview/assets/contact/demo/assets/vendor/80b2b25fb1fd-moment.min.js"></script><script src="../preview/assets/contact/demo/assets/vendor/ba9a80ea4142-daterangepicker.min.js"></script><script src="../preview/assets/shared/period-preview.js?revision=balance-audit-r3"></script><script src="../preview/assets/finance/preview-grid.js?revision=remaining-audit-r6"></script><script src="../preview/assets/finance/approved-headings.js?revision=remaining-audit-r6"></script><script src="../preview/viewer.js"></script></body></html>
