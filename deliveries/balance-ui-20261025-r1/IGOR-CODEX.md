@@ -1,42 +1,36 @@
+# Игорю: баланс и финансы — проверенный комплект r3
 
-## Исправление r2 — восстановлен ранее доработанный макет «Мои выплаты»
+Сохраняем отдельные баланс, Мои выплаты, карточку и реквизиты. Для трёх экранов выплат принят доработанный компонент с карточкой баланса/запроса и отдельной историей; упрощённую заменуv9 не использовать. Общая шапка/логотип/меню/footer — существующие, без global_custom и общего shared-admin.
 
-Версия r1 ошибочно подменила доработанный интерфейс обычной версией при сборке v9. В r2 возвращены карточка баланса, двухколоночный запрос, самостоятельная панель истории, бейджи статусов, разметка карточки и реквизитов. Образец — finance-headings-v6 / my-payouts, а не упрощённый v9. Отдельная страница сохраняется.
+## Какой источник у каждой страницы
 
-Сокращённые RU/EN-подписи и существующий range-picker сохранены; min-width1120 и два native-date не возвращены. Общая шапка остаётся текущей синей: global_custom/shared-admin целиком не подключаются. Только нужные общие правила старого макета изолированы в #cl-my-payouts внутри payout-feature.css, вместе с его прежними компонентами. На других страницах этот CSS не работает.
+| Экран | Источник | Что сохранить |
+|---|---|---|
+| Мой баланс | current site/customer balance_custom + approved24.10 RU/EN | separate page, link to own payouts, current shell, same wallet source |
+| Операции баланса | current11-column wallet-owner projection + approved RU/EN | separate owner filter, checkbox and original order, existing transaction logic |
+| Заказы | current customer/site order components + approved RU/EN | Customer replaces User, provider labels, original filters and sort, order detail/refund unchanged |
+| Реестр выплат | current manual-payout register + approved RU/EN | approval separate from actual payment, five fixture statuses, shared date range |
+| Мои выплаты | polished finance-headings-v6 payout component + later approved short headings/shared date range | balance/request card, separate history panel, status badges, ready/empty/error, no forced1120 or native-date pair |
+| Карточка выплаты | polished finance-headings-v6 payout card + deterministic current fixtures | correct status tone, credits/USD/rate, recipient/wallet, three timestamps, transfer/commission/reason, structured actual-status timeline |
+| Реквизиты | polished finance-headings-v6 payout form | countryCode/nameAndFamily, three provider fieldsets, existing PayoutDetailsForm names, validation/correction, own balance section active |
+| Партнёры | unchanged current site reference, owner instruction25.10 | no redesigned layout, original headings/Select2/badges/actions, no withdrawn partner-layout or new credit modal |
 
-Для внедрения: три partial внутри существующей content-wrapper, один уникальный #cl-my-payouts на странице; payout-feature.css и my-payouts-ui.js. UI-scroll adapter согласовать с lifecycle текущего модуля. Данные, фильтры, i18n, confirm, запросы, CSRF, request key и финансы — текущие серверные механизмы. restored-payouts-preview.js и payout-headings.js только для макетов. Демонстрационное подтверждение HTML не является production/OS-dialog проверкой.
+Машиночитаемая карта — PAGES-AND-APPROVALS.json. Пять финансовых таблиц имеют только утверждённые EN-заголовки, остальные тексты не объявляются полностью переведёнными.
 
-# Игорю: баланс и финансовые страницы · комплект r1 · 25.10.2026
+## Что брать для интеграции
 
-Сохраняем отдельную страницу. Это прямое решение Алексея в текущем поручении: разделение не является ошибкой и не подлежит устранению. Сохраняем также отдельные Мои выплаты, карточку заявки и реквизиты; маршруты не объединяем.
+1. HEADINGS-RU-EN.json, FINANCE-TABLE-HEADINGS-RU-EN.md и TABLE-FIELDS.json — короткие подписи, полные доступные имена и порядок пяти существующих GridView. Применять через i18n, сохраняя sorting links, filter names и controller. Подсказки hover/focus, Escape; клиент=Customer, владелец=Owner, Было=Before, USD=сумма получателю, Система=Provider.
+2. payout-feature.css — только восстановленные история/запрос, карточка и реквизиты, уникальный #cl-my-payouts. Все селекторы ограничены этим корнем. В общий реестр, баланс, операции, заказы и партнёров этот CSS не подключать. Штатные CSS сайта не менять.
+3. Три partial: my-payouts.partial.html, my-payout-view.partial.html, my-payout-details.partial.html. Встраивать по одному внутрь штатной content-wrapper; второй content-wrapper не создавать. Это образцы разметки с placeholders, не готовые PHP views. Значения/eligibility/disabled/порог/курс/комиссия — из текущих моделей и сервера.
+4. my-payouts-ui.js — прежний UI-адаптер синхронизации локальной прокрутки. Связать init/dispose с действующим lifecycle/PJAX, не дублировать обработчики. Финансовый controller/источники/запросы не заменять.
+5. Период — существующий finance-date-filter с form-control, calendar/clear и DateRangePicker/Krajee. Сохранить штатное применение финансовых фильтров. Два native-date и min-width1120 не возвращать; локальная прокрутка на узком экране допустима.
+6. Формы: PayoutActionForm[method], существующий request key, POST/CSRF и idempotency; PayoutDetailsForm[countryCode], nameAndFamily, walletCapitalistIsActive/Number, walletPaySeraIsActive/Number, walletAdvCashIsActive/Number. Полный список стран, доступность методов и суммы берутся из приложения; демо-данные не копировать как бизнес-константы.
+7. Сохранить действующий confirm, отмену без эффекта, отказ чужому wallet/ID и одно ledger-событие при повторе/параллельном запросе. Approval и фактическая выплата — разные факты. Клиентским JS деньги/курс/округление не вычислять.
 
-## Основа и объём
+## Что не переносить
 
-Основа пяти неизменённых финансовых страниц — v9; для трёх экранов выплат восстановлена доработанная версия finance-headings-v6 с исправлениями A01–A08 и согласованными короткими заголовками RU/EN. Старые варианты v2–v6 не смешивать с этим комплектом. Интерактивные страницы: баланс, операции, заказы, реестр выплат, мои выплаты, карточка выплаты, реквизиты. Партнёры приложены как неизменённый эталон — это не поручение перевёрстывать их страницу. Карточка заказа/возвраты не перерабатываются этим пакетом; в preview переход к ним отключён.
+preview/assets и demo helpers, restored-payouts-preview.js, payout-period-preview.js, payout-headings.js, preview-grid.js, period-preview.js, payout-detail-preview.js, viewer.js — только автономный макет. Не переносить шапку, vendor/theme, global_custom, shared-admin, отозванный partner-layout или новое окно начисления. Production deploy, реальные деньги и реквизиты этим комплектом не изменялись.
 
-## Что внедрить
+## Проверка
 
-1. Согласованные подписи из integration/HEADINGS-RU-EN.json и FINANCE-TABLE-HEADINGS-RU-EN.md — в пять существующих Yii GridView: balance, balance-transaction, order, payout, my-payout. TABLE-FIELDS.json фиксирует существующий порядок. В операциях11 столбцов с флажком и отдельным владельцем. Заказы: Клиент/Customer вместо Пользователь. Партнёрам новые названия здесь не назначаются.
-2. Сохранить sorting links, filterInputOptions, существующие labels/доступные имена и i18n приложения. Полные Было/Before, USD, даты и Система/Provider показывать штатной подсказкой hover/focus; Escape закрывает её. Использовать уже зарегистрированный tooltip, без второго Bootstrap/jQuery. В preview EN меняет только согласованные заголовки, не все тексты страницы.
-3. Финансовые периоды — существующий finance-date-filter сайта целиком: form-control, data-finance-date-input, calendar/clear, DateRangePicker/Krajee. Один диапазон в истории; штатный controller/события/PJAX остаются прежними. Правило двухэтапного применения взаимодействий не переносить на финансовые GridView.
-4. Снять только ошибочные добавления наших прежних макетов: общий shared-admin, partner-layout, произвольный min-width1120, двойные native-date. Не удалять существующий financial-adapter сайта и не заменять CSS заказчика. Сама локальная прокрутка широкой таблицы на узком экране допустима.
-5. Для восстановленного раздела выплат, карточки и реквизитов — payout-feature.css, ограниченный .cl-my-payouts. Два partial — образец внутренней разметки с placeholders. Вставлять внутрь существующей content-wrapper, второй content-wrapper не создавать. Подставить серверные модели, route helpers, ActiveForm/CSRF и validation; это не готовые PHP views. Имена PayoutDetailsForm сохранены. Этот CSS подключать к восстановленной истории, карточке и реквизитам; в общий реестр его не добавлять.
-6. Сохранить уже работающие запрос выплаты, подтверждение, способы/порог и проверки. Форма/бизнес-логика определяется текущими моделями PayoutActionForm/PayoutDetailsForm, а не цифрами макета. Одобрение и фактическая выплата фиксируются отдельно. Суммы, курс, комиссии, номера кошельков и история из сервера. Не пересчитывать credits/USD клиентским JS и не задавать новый тариф/округление из примера.
-
-## Маршруты
-
-- Мой баланс: /ru/admin/balance/index
-- Операции: /ru/admin/balance-transaction/index
-- Заказы: /ru/admin/order/index
-- Реестр выплат: /ru/admin/payout/index
-- Мои выплаты: /ru/admin/my-payout/index
-- Карточка: /ru/admin/my-payout/view?id=<server-id>
-- Реквизиты: /ru/admin/my-payout/payment-details
-- Партнёры: /ru/admin/partner/index — сохранить текущий вид.
-
-## Передача и приёмка
-
-Сначала посмотреть index.html; скачать полный ZIP. Для сайта использовать только описанные изменения и integration; preview/assets, viewer.js, preview-grid.js, period-preview.js, my-payouts-preview.js, approved-headings.js и payout-detail-preview.js — демонстрация, не production bundle. Не копировать шапку или глобальные CSS из автономной копии.
-
-Проверка после внедрения — ACCEPTANCE.xlsx: сборка/commit → роль → исходные данные → действие → ожидаемое → факт → доказательство. Для финансов отдельно нужны серверный отказ чужому владельцу/ID, точные суммы, идемпотентность и сверка ledger. Live деньги, сохранение настоящих реквизитов, rollback/deploy и41 оставшаяся ролевая проверка не выполнялись при подготовке этой UI-поставки.
+Открыть index.html: восемь отдельных макетов,5 EN-вариантов и ready/empty/error. Пройти ACCEPTANCE.xlsx: build/commit → роль → исходные данные → действие → ожидаемое → факт → доказательство. Backend/RBAC/ledger, реальные финансовые запросы и41 live-проверка — отдельная приёмка; CSS viewport не является физическим телефоном.

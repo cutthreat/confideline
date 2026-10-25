@@ -23,6 +23,6 @@
   wrap.querySelector('.finance-date-open')?.addEventListener('click',()=>picker.show());
   wrap.querySelector('.finance-date-clear')?.addEventListener('click',()=>apply('',''));
   input.addEventListener('keydown',e=>{if(e.key==='Escape'){picker.hide();input.focus();}if(e.key==='Enter'||e.key===' '){e.preventDefault();picker.show();}});
-  input.addEventListener('preview:reset-period',()=>{input.dataset.rangeStart='';input.dataset.rangeEnd='';input.value='';});
+  input.addEventListener('preview:reset-period',()=>{input.dataset.rangeStart='';input.dataset.rangeEnd='';input.value='';const clear=wrap.querySelector('.finance-date-clear');if(clear)clear.hidden=true;});
  });
 })();
