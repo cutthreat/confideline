@@ -1,1 +1,1 @@
-Текущий r8 — R8-REVIEW.md и R8-*.json, screens/r8-my-payouts-*.png. qa/my-payouts-long.html — синтетические крупные суммы, не production. R7 и более ранние отчёты сохранены как датированные доказательства своего объёма.
+Текущий r9: R9-REVIEW.md, независимый REVIEW-ASTRA, LAYOUT-MATRIX и ACTIVE-STATES. Снимки r9-partner-before/after. Предыдущие отчёты сохранены как датированные доказательства своей области.
