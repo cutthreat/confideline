@@ -47,23 +47,20 @@
 #client-chat .cc-icon[aria-expanded=true] { background:#edf4ff; color:#2b6eb8; }
 #client-chat .cc-icon:disabled { opacity:.4; }
 #client-chat .cc-back { display:none; }
-#client-chat .cc-session { flex:none; display:flex; gap:12px; align-items:center; padding:13px 22px; background:#f7faff; border-bottom:1px solid var(--cc-line); min-height:66px; }
-#client-chat .cc-session-mark { display:inline-flex; align-items:center; justify-content:center; flex:none; width:30px; height:30px; color:#4c83bf; background:#eaf1fc; border-radius:50%; font-size:14px; }
+#client-chat .cc-session { flex:none; display:flex; gap:12px; align-items:center; padding:8px 20px 0; background:#fff; border-top:1px solid var(--cc-line); min-height:60px; }
 #client-chat .cc-session-copy { min-width:0; flex:1; }
-#client-chat .cc-session-copy strong { display:block; font-size:14px; font-weight:600; line-height:20px; }
-#client-chat .cc-session-copy p { margin:2px 0 0; color:var(--cc-muted); font-size:12px; line-height:18px; }
-#client-chat .cc-session .btn { min-height:38px; display:inline-flex; align-items:center; justify-content:center; gap:7px; white-space:nowrap; font-size:13px; padding:7px 12px; line-height:20px; }
-#client-chat .cc-session-actions { display:flex; align-items:center; gap:6px; flex:none; }
-#client-chat .cc-session-check { display:block; font-size:12px; margin-top:3px; }
-#client-chat .cc-session[data-state=active] { background:#f4fbf7; }
-#client-chat .cc-session[data-state=active] .cc-session-mark { color:#278561; background:#e6f5ed; }
-#client-chat .cc-session[data-state=paused], #client-chat .cc-session[data-state=low-balance] { background:#fffaf0; }
-#client-chat .cc-session[data-state=paused] .cc-session-mark, #client-chat .cc-session[data-state=low-balance] .cc-session-mark { background:#fff0ce; color:#a87a24; }
-#client-chat .cc-session[data-state=completed] { background:#f6f8fa; }
+#client-chat .cc-rate { display:inline-flex; align-items:center; gap:8px; max-width:100%; min-height:28px; padding:0; border:0; border-radius:3px; background:transparent; color:var(--cc-text); text-align:left; }
+#client-chat .cc-rate strong { font-size:14px; font-weight:600; line-height:20px; }
+#client-chat .cc-rate > i { flex:none; color:#70859f; font-size:13px; }
+#client-chat .cc-rate:hover { color:#246ab8; }
+#client-chat .cc-session-copy p { margin:0; color:#687c95; font-size:12px; line-height:18px; }
+#client-chat .cc-session .btn { flex:none; min-height:36px; display:inline-flex; align-items:center; justify-content:center; gap:7px; white-space:nowrap; font-size:13px; padding:6px 12px; line-height:20px; }
+#client-chat .cc-session[data-state=active] .cc-session-copy p { color:#287852; }
+#client-chat .cc-session:is([data-state=paused],[data-state=low-balance]) .cc-session-copy p { color:#8c631a; }
 #client-chat .cc-session-time { font-variant-numeric:tabular-nums; white-space:nowrap; }
 #client-chat .cc-connection { display:flex; align-items:center; gap:10px; padding:9px 20px; background:#fff3e8; color:#8d5b25; font-size:13px; border-bottom:1px solid #f5e2cf; flex:none; }
 #client-chat .cc-connection button { padding:0; font-size:13px; margin-left:auto; }
-#client-chat .cc-timeline-wrap { flex:1; min-height:0; position:relative; display:flex; }
+#client-chat .cc-timeline-wrap { flex:1; min-height:0; position:relative; display:flex; overflow:hidden; }
 #client-chat .cc-timeline { width:100%; overflow:auto; padding:24px 28px 20px; overscroll-behavior:contain; scrollbar-gutter:stable; background:#fff; }
 #client-chat .cc-date { text-align:center; color:var(--cc-muted); font-size:12px; margin:0 0 24px; }
 #client-chat .cc-day { display:flex; align-items:center; justify-content:center; gap:16px; margin:26px 0; color:var(--cc-muted); font-size:12px; }
@@ -93,7 +90,7 @@
 #client-chat .cc-retry { padding:0; border:0; color:#367ac5; background:none; font-size:12px; }
 #client-chat .cc-image-message { display:block; max-width:240px; max-height:220px; object-fit:cover; border-radius:4px; }
 #client-chat .cc-jump { position:absolute; bottom:14px; left:50%; transform:translateX(-50%); border:1px solid #dbe6f2; border-radius:20px; background:#fff; box-shadow:0 2px 9px #29456114; padding:7px 12px; color:#4777ac; display:flex; gap:7px; align-items:center; font-size:12px; white-space:nowrap; }
-#client-chat .cc-composer { flex:none; margin:0; padding:16px 20px; border-top:1px solid var(--cc-line); background:#fff; position:relative; }
+#client-chat .cc-composer { flex:none; margin:0; padding:10px 20px 16px; background:#fff; position:relative; }
 #client-chat .cc-compose-row { display:flex; align-items:flex-end; gap:7px; padding:7px 6px; border:1px solid #dce5ef; border-radius:6px; background:#fff; }
 #client-chat .cc-compose-row:focus-within { border-color:#8eb6e8; box-shadow:0 0 0 2px #2b7ae40c; }
 #client-chat #cc-draft { display:block; border:0; background:none; color:var(--cc-text); min-width:0; width:100%; padding:8px 3px; min-height:36px; max-height:138px; line-height:21px; resize:none; font-size:15px; outline:none; }
@@ -154,19 +151,25 @@
 #client-chat .cc-report-reasons label { display:flex; align-items:center; gap:8px; min-height:36px; margin:0; }
 #client-chat .cc-consent { display:flex; align-items:baseline; gap:9px; margin:18px 0 0; font-size:14px; }
 #client-chat .cc-dialog-error { color:#b04f4f; margin-top:10px; font-size:13px; }
-#client-chat .cc-terms-kicker { margin:18px 0 6px; font-size:13px; color:var(--cc-muted); }
-#client-chat .cc-dialog[data-purpose=consultation] { width:560px; }
-#client-chat .cc-dialog[data-purpose=consultation] .cc-dialog-body { font-size:14px; line-height:21px; }
+#client-chat .cc-consult-panel { flex:0 1 auto; min-height:0; max-height:70%; display:flex; flex-direction:column; border-top:1px solid var(--cc-line); background:#f8faff; }
+#client-chat .cc-consult-panel > header { display:flex; align-items:center; gap:8px; flex:none; padding:7px 20px; }
+#client-chat .cc-consult-panel h2 { flex:1; margin:0; font-size:15px; line-height:22px; font-weight:600; }
+#client-chat .cc-consult-body { padding:0 20px 12px; min-height:0; overflow-y:auto; overscroll-behavior:contain; font-size:13px; line-height:20px; }
+#client-chat .cc-consult-body > p { margin:0 0 10px; }
+#client-chat .cc-consult-panel > footer { flex:none; display:flex; justify-content:flex-end; flex-wrap:wrap; gap:8px; padding:8px 20px; border-top:1px solid var(--cc-line); }
+#client-chat .cc-consult-panel > footer:empty { display:none; }
+#client-chat .cc-consult-panel .btn { font-size:13px; min-height:38px; padding:7px 12px; }
+#client-chat .cc-consult-panel .cc-consent { font-size:13px; margin:8px 0 0; }
 #client-chat .cc-terms-facts { margin:0 0 8px; font-size:14px; }
-#client-chat .cc-terms-facts > div { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.2fr); gap:8px 16px; padding:10px 0; border-bottom:1px solid var(--cc-line); align-items:start; }
+#client-chat .cc-terms-facts > div { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.2fr); gap:8px 16px; padding:7px 0; border-bottom:1px solid var(--cc-line); align-items:start; }
 #client-chat .cc-terms-facts dt { margin:0; font-weight:400; color:var(--cc-muted); }
 #client-chat .cc-terms-facts dd { margin:0; text-align:right; font-weight:600; font-variant-numeric:tabular-nums; }
-#client-chat .cc-terms-price dd { color:var(--cc-text); font-size:19px; line-height:25px; }
-#client-chat .cc-terms-rules { font-size:14px; line-height:21px; }
+#client-chat .cc-terms-price dd { color:var(--cc-text); font-size:16px; line-height:22px; }
+#client-chat .cc-terms-rules { font-size:13px; line-height:20px; }
 #client-chat .cc-terms-rules h3 { margin:16px 0 6px; font-size:14px; line-height:21px; font-weight:600; }
 #client-chat .cc-terms-rules p { margin:0 0 10px; }
 #client-chat .cc-terms-limit { padding-left:12px; border-left:3px solid #d9a23e; }
-#client-chat .cc-terms-notice { margin:14px 0 0; padding:10px 12px; background:#f0f6fd; border-left:3px solid #4c83bf; font-size:14px; line-height:21px; }
+#client-chat .cc-terms-notice { margin:10px 0 0; font-size:13px; line-height:20px; }
 #client-chat .cc-request-steps { padding-left:22px; margin:14px 0; font-size:14px; }
 #client-chat .cc-request-steps li + li { margin-top:7px; }
 #client-chat .cc-terms-decline { display:block; min-height:44px; margin:8px 0 0; padding:7px 0; color:var(--cc-muted); background:transparent; border:0; text-decoration:underline; font-size:13px; }
@@ -206,8 +209,6 @@
   #client-chat .cc-heading-tools { gap:2px; }
   #client-chat .cc-timeline { padding-inline:19px; }
   #client-chat .cc-session { padding-inline:16px; }
-  #client-chat .cc-session-mark { display:none; }
-  #client-chat .cc-session { flex-wrap:wrap; }
   #client-chat .cc-person-label strong { font-size:16px; }
   #client-chat .cc-composer { padding:14px; }
   #client-chat .cc-list-heading { padding-inline:16px; }
@@ -228,13 +229,16 @@
   #client-chat .cc-list-heading { padding-top:18px; }
   #client-chat .cc-list-search input, #client-chat .cc-thread-search input { font-size:16px; }
   #client-chat .cc-contact { min-height:88px; }
-  #client-chat .cc-session { min-height:70px; padding:10px 13px; gap:8px; align-items:center; flex-wrap:wrap; }
-  #client-chat .cc-session-copy { flex:1 1 124px; }
-  #client-chat .cc-session-actions { margin-left:auto; max-width:100%; flex-wrap:wrap; }
-  #client-chat .cc-session .btn { min-height:44px; padding:8px 12px; font-size:13px; }
-  #client-chat .cc-session .btn > i { display:none; }
-  #client-chat .cc-session-copy strong { font-size:13px; }
+  #client-chat .cc-session { min-height:68px; padding:5px 12px 0; gap:8px; }
+  #client-chat .cc-session .btn { min-height:44px; padding:8px 10px; font-size:13px; }
+  #client-chat .cc-rate { min-height:32px; }
+  #client-chat .cc-rate strong { font-size:14px; }
   #client-chat .cc-session-copy p { font-size:12px; line-height:16px; }
+  #client-chat .cc-consult-panel > header, #client-chat .cc-consult-panel > footer { padding:5px 12px; }
+  #client-chat .cc-consult-body { padding:0 12px 10px; }
+  #client-chat .cc-consult-panel .btn { min-height:44px; }
+  #client-chat .cc-terms-facts { font-size:13px; }
+  #client-chat .cc-terms-price dd { font-size:14px; }
   #client-chat .cc-timeline { padding:20px 13px 14px; }
   #client-chat .cc-message-line { max-width:94%; gap:2px; }
   #client-chat .cc-bubble { font-size:15px; line-height:22px; padding:10px 12px; }
@@ -277,6 +281,8 @@
   #client-chat .cc-chat-heading { min-height:56px; padding-block:5px; }
   #client-chat .cc-session { min-height:48px; padding-block:5px; }
   #client-chat .cc-composer { padding-block:6px; }
+  #client-chat .cc-conversation:has(.cc-consult-panel:not([hidden])) :is(.cc-composer,.cc-timeline-wrap) { display:none; }
+  #client-chat .cc-consult-panel { max-height:100%; flex:1; }
 }
 @media (max-width:400px) {
   #client-chat .cc-dialog > footer { display:grid; grid-template-columns:minmax(0,1fr); }
@@ -284,6 +290,7 @@
 }
 @media (max-width:359px) {
   #client-chat .cc-emoji-menu { grid-template-columns:repeat(4,44px); }
+  #client-chat .cc-chat-heading .cc-avatar { display:none; }
 }
 @media (pointer:coarse) and (min-width:768px) {
   #client-chat .cc-icon, #client-chat .cc-send { width:44px; height:44px; }

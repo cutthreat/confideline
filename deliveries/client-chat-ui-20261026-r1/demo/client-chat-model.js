@@ -23,9 +23,10 @@
         message('ma-1',false,'Здравствуйте! Сейчас я не в сети, но прочитаю ваше сообщение, когда вернусь.','10:20'),
         message('ma-2',false,'Буду рад продолжить наш разговор.','10:21')
       ]}
-    ].map(chat => ({...chat,deleted:false,draft:{text:'',replyId:null,revision:0,files:[]},pending:null,session:{id:null,version:0,status:'free',rate:10,elapsed:0}}));
+    ].map(chat => ({...chat,catalogRate:10,deleted:false,draft:{text:'',replyId:null,revision:0,files:[]},pending:null,session:{id:null,version:0,status:'free',rate:10,elapsed:0}}));
     const states = new Set(['free','offer','waiting','connecting','active','paused','low-balance','completed','reconnecting','trial']);
     const first = chats[0];
+    if (scenario==='price-unknown') first.catalogRate=null;
     if (states.has(scenario) && scenario !== 'free') first.session = {id:'DEMO-SESSION-1',version:1,status:scenario,rate:10,elapsed:324,canAccept:scenario==='offer',total:scenario === 'completed' ? '82,50' : null,duration:scenario === 'completed' ? '08:15' : null};
     if (scenario === 'offer-low-balance' || scenario === 'offer-checking') first.session = {id:'DEMO-SESSION-1',version:1,status:'offer',rate:10,elapsed:0,canAccept:scenario==='offer-checking'?null:false};
     if (['offer-trial','offer-incomplete','offer-timeout','offer-error'].includes(scenario)) first.session = {id:'DEMO-SESSION-1',version:1,status:'offer',rate:10,elapsed:0,canAccept:true};
