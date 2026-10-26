@@ -1,0 +1,15 @@
+(function(root,factory){'use strict';if(typeof module==='object'&&module.exports)module.exports=factory();else root.ClientSupportModel=factory();})(typeof globalThis!=='undefined'?globalThis:this,function(){
+  'use strict';
+  const categories={consultation:'Вопрос о консультации',payment:'Платеж или списание',access:'Доступ к сервису',technical:'Техническая проблема',consultation_complaint:'Жалоба на консультацию',other:'Другой вопрос'};
+  function createStore(){return {tickets:[{id:'DEMO-101',title:'Уточнить условия консультации',category:'consultation',closed:false,context:'elena',created:'26.10.2026, 13:10',messages:[{author:'Вы',text:'Подскажите, пожалуйста, как продолжить консультацию после перерыва?',time:'26.10.2026, 13:10',files:[]},{author:'Поддержка',text:'Здравствуйте! Уточните, какое сообщение вы видите в статусе консультации. Мы проверим подключение.',time:'26.10.2026, 13:25',files:[]}]},{id:'DEMO-102',title:'Вопрос о платеже',category:'payment',closed:true,context:null,created:'25.10.2026, 17:20',messages:[{author:'Вы',text:'Подскажите, где посмотреть историю платежей?',time:'25.10.2026, 17:20',files:[]},{author:'Поддержка',text:'История доступна в разделе баланса. Обращение закрыто.',time:'25.10.2026, 17:30',files:[]}]}],drafts:{},next:103};}
+  function validateForm(d){if(!categories[d.category])throw Error('category');if(!d.title.trim()||d.title.length>255)throw Error('title');if(!d.description.trim()||d.description.length>10000)throw Error('description');}
+  function validateFiles(files,existing=[]){
+    if(files.length+existing.length>10)throw Error('count');
+    const allowed=new Set(['jpg','jpeg','png','webp','heic','pdf','txt','docx','xlsx','csv']);
+    for(const f of files){if(!allowed.has(f.name.toLowerCase().split('.').pop())||/^(audio|video)\//.test(f.type||'')||/(html|javascript|executable)/.test(f.type||''))throw Error('type');if(!f.size||f.size>15*1024*1024)throw Error('size');}
+    if([...files,...existing].reduce((s,f)=>s+f.size,0)>30*1024*1024)throw Error('total');return true;
+  }
+  function addTicket(store,draft,operationId){validateForm(draft);const old=store.tickets.find(t=>t.operationId===operationId);if(old)return old;const time=new Date().toLocaleString('ru-RU');const ticket={id:'DEMO-'+store.next++,operationId,title:draft.title.trim(),category:draft.category,context:draft.context||null,closed:false,created:time,messages:[{author:'Вы',text:draft.description.trim(),time,files:(draft.files||[]).map(f=>({name:f.name,size:f.size}))}]};store.tickets.unshift(ticket);return ticket;}
+  function addReply(ticket,text,files,operationId){if(ticket.closed)throw Error('closed');if(!text.trim()&&!files.length)throw Error('empty');if(text.length>10000)throw Error('length');if(ticket.messages.some(m=>m.operationId===operationId))return false;ticket.messages.push({author:'Вы',text:text.trim(),files:files.map(f=>({name:f.name,size:f.size})),operationId,time:new Date().toLocaleString('ru-RU')});return true;}
+  return {categories,createStore,validateForm,validateFiles,addTicket,addReply};
+});
