@@ -1,1 +1,1 @@
-R7: текущий реестр — R7-REVIEW.md, R7-LAYOUT-MATRIX.json, R7-EXTRA-STATES.json, R7-ACTIVE-STATES.json и screens/r7-payouts-*.png; payouts-long.html — синтетический стресс-пример. Прежние r3–r6 остаются датированными доказательствами своих объёмов, не полной новой визуальной приёмкой.
+Текущий r8 — R8-REVIEW.md и R8-*.json, screens/r8-my-payouts-*.png. qa/my-payouts-long.html — синтетические крупные суммы, не production. R7 и более ранние отчёты сохранены как датированные доказательства своего объёма.
