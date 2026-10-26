@@ -9,7 +9,7 @@
   const fileSize = bytes => bytes > 1024 * 1024 ? (bytes / 1024 / 1024).toFixed(1).replace('.',',') + ' МБ' : Math.max(1,Math.round(bytes / 1024)) + ' КБ';
   const mq = matchMedia('(max-width:767px)');
   let openPopup = null, popupReturn = null, dialogReturn = null, saveTimer, feedbackTimer, selectedMessage = null, searchMatches = [], searchIndex = 0, dialogGeneration = 0;
-  let sessionClockStarted = Date.now(), sessionClockBase = current().session.elapsed;
+  let sessionClockStarted = Date.now(), sessionClockBase = current().session.elapsed, termsContext = null;
   function error(message) { $('cc-composer-error').textContent = message; $('cc-composer-error').hidden = false; }
   function feedback(message, undo) {
     const el = $('cc-feedback'); clearTimeout(feedbackTimer); el.replaceChildren(document.createTextNode(message));
@@ -26,7 +26,7 @@
   try {
     const saved=JSON.parse(sessionStorage.getItem(runtimeKey)||'null');
     if(!query.has('scenario')&&saved&&Array.isArray(saved.chats)){
-      for(const c of state.chats){const item=saved.chats.find(x=>x.id===c.id);if(!item)continue;c.deleted=!!item.deleted;if(item.session)M.applySession(c,item.session);if(Array.isArray(item.messages))c.messages=item.messages.filter(m=>typeof m.id==='string'&&typeof m.text==='string').slice(-200).map(m=>({...m,status:m.status==='pending'?'failed':m.status}));if(typeof item.preview==='string')c.preview=item.preview;}
+      for(const c of state.chats){const item=saved.chats.find(x=>x.id===c.id);if(!item)continue;c.deleted=!!item.deleted;if(item.session){M.applySession(c,item.session);if(item.session.pendingOperation)c.session.pendingOperation={...item.session.pendingOperation,status:'unknown'};}if(Array.isArray(item.messages))c.messages=item.messages.filter(m=>typeof m.id==='string'&&typeof m.text==='string').slice(-200).map(m=>({...m,status:m.status==='pending'?'failed':m.status}));if(typeof item.preview==='string')c.preview=item.preview;}
       if(Number.isFinite(saved.balance)&&saved.balance>=0)state.balance=saved.balance;
       if(Number.isFinite(saved.savedAt)){const delta=Math.max(0,Math.floor((Date.now()-saved.savedAt)/1000));state.chats.filter(c=>c.session.status==='active').forEach(c=>c.session.elapsed+=delta);}
       sessionClockBase=current().session.elapsed||0;sessionClockStarted=Date.now();
@@ -58,6 +58,8 @@
   function closeDialog() { $('cc-dialog').close(); }
   function dialog(title, body, actions, options = {}) {
     dialogGeneration++;
+    termsContext = null;
+    $('cc-dialog').removeAttribute('data-purpose');
     const origin = popupReturn || document.activeElement;
     closePopup(); if (!$('cc-dialog').open) dialogReturn = origin;
     $('cc-dialog-title').textContent = title;
@@ -72,9 +74,10 @@
     if (!$('cc-dialog').open) $('cc-dialog').showModal();
     (options.focusTitle !== false ? $('cc-dialog-title') : $('cc-dialog-footer').querySelector('button')).focus({preventScroll:true});
     $('cc-dialog').scrollTop = 0;
+    $('cc-dialog-body').scrollTop = 0;
   }
   $('cc-dialog-close').onclick = closeDialog;
-  $('cc-dialog').addEventListener('close',() => { (dialogReturn?.isConnected && dialogReturn.getBoundingClientRect().width ? dialogReturn : root.querySelector('[data-session-action]') || $('cc-profile')).focus({preventScroll:true}); });
+  $('cc-dialog').addEventListener('close',() => { termsContext=null; const matching=dialogReturn?.dataset.sessionAction && [...root.querySelectorAll('[data-session-action]')].find(b=>b.dataset.sessionAction===dialogReturn.dataset.sessionAction); (dialogReturn?.isConnected && dialogReturn.getBoundingClientRect().width ? dialogReturn : matching || root.querySelector('[data-session-action]') || $('cc-profile')).focus({preventScroll:true}); });
   $('cc-dialog').addEventListener('keydown',e => {
     if (e.key !== 'Tab') return;
     const nodes = [...$('cc-dialog').querySelectorAll('button,a[href],input,textarea,select')].filter(n => !n.disabled && !n.hidden && n.getBoundingClientRect().width);
@@ -97,11 +100,11 @@
     if (chat.id === state.selected) { sessionClockBase = chat.session.elapsed || 0; sessionClockStarted = Date.now(); renderSession(); }
   }
   function renderSession() {
-    const c = current(), s = c.session, rate = s.rate + ' кредитов/мин';
+    const c = current(), s = c.session, terms=s.acceptedTerms||s.terms, rate = terms ? esc(terms.rate)+' '+esc(terms.unit) : 'Тариф уточняется';
     const map = {
-      free:{icon:'comments-o',title:s.outcome==='expired'?'Предложение истекло':s.outcome==='declined'?'Предложение отклонено':'Переписка',note:s.outcome==='expired'?'Условия больше не действуют. Можно запросить консультацию снова.':'Консультация не запущена',action:'request',label:'Консультация',symbol:'bolt'},
-      offer:{icon:'bolt',title:'Предложение консультации',note:rate+' · Оплата ещё не началась',action:'request',label:'Посмотреть условия',symbol:'arrow-right'},
-      waiting:{icon:'clock-o',title:'Ожидает подключения',note:(s.consentAccepted ? 'Условия приняты. ' : 'Запрос отправлен эксперту. ')+'Ожидаем запуска оператором.<span class="cc-session-check">'+(s.consentAccepted ? 'Оплата ещё не началась' : 'Проверяем условия оплаты')+'</span>'},
+      free:{icon:'comments-o',title:s.outcome==='expired'?'Предложение истекло':s.outcome==='declined'?'Предложение отклонено':'Платная консультация',note:'Не началась · До согласия списаний нет',action:'request',label:'Запросить',symbol:'bolt'},
+      offer:{icon:'bolt',title:s.terms?.expiresAt<=Date.now()?'Предложение истекло':'Предложение консультации',note:rate+' · Оплата не началась',action:'terms',label:'Условия и согласие',symbol:'arrow-right'},
+      waiting:{icon:'clock-o',title:s.consentAccepted?'Ожидаем подключения':'Ожидаем предложение',note:s.consentAccepted?'Условия приняты · Оплата не началась':'Запрос отправлен · Оплата не началась'},
       connecting:{icon:'circle-o-notch fa-spin',title:'Подключение к консультации',note:'Оплата начнётся после подключения обеих сторон'},
       active:{icon:'check',title:'Консультация идёт',note:`<span class="cc-session-time" id="cc-session-time">${M.duration(s.elapsed)}</span> · ${rate}`},
       trial:{icon:'clock-o',title:'Пробная консультация',note:'Пробный период · Условия оплаты приняты'},
@@ -110,9 +113,10 @@
       'low-balance':{icon:'pause',title:'Недостаточно средств',note:'Консультация на паузе · Списаний нет',action:'balance',label:'Пополнить'},
       completed:{icon:'check-circle-o',title:'Консультация завершена',note:s.total ? `${esc(s.duration)} · ${esc(s.total)} кредитов` : 'Списания остановлены · Итоги уточняются',action:'summary',label:'Итоги'}
     };
-    const v = s.requesting ? {icon:'circle-o-notch fa-spin',title:'Отправляем запрос',note:'Ожидаем подтверждения сервиса'} : map[s.status];
+    const pending=s.pendingOperation;
+    const v = pending ? {icon:pending.status==='unknown'?'info-circle':'circle-o-notch fa-spin',title:pending.status==='unknown'?'Уточняем результат':'Отправляем запрос',note:pending.status==='unknown'?'Подтверждение не получено. Не отправляйте повторно.':'Ожидаем подтверждения сервиса'} : map[s.status];
     $('cc-session').dataset.state = s.status;
-    $('cc-session').innerHTML = `<span class="cc-session-mark"><i class="fa fa-${v.icon}" aria-hidden="true"></i></span><div class="cc-session-copy"><strong>${v.title}</strong><p>${v.note}</p></div><div class="cc-session-actions"><button type="button" class="btn btn-outline-secondary" data-session-action="help" title="Помощь с этой консультацией"><i class="fa fa-life-ring" aria-hidden="true"></i>Помощь</button>${v.action ? `<button type="button" class="btn ${['request','balance'].includes(v.action) ? 'btn-primary' : 'btn-outline-secondary'}" data-session-action="${v.action}">${v.symbol ? `<i class="fa fa-${v.symbol}" aria-hidden="true"></i>` : ''}${v.label}</button>` : ''}</div>`;
+    $('cc-session').innerHTML = `<span class="cc-session-mark"><i class="fa fa-${v.icon}" aria-hidden="true"></i></span><div class="cc-session-copy"><strong>${v.title}</strong><p>${v.note}</p></div><div class="cc-session-actions"><button type="button" class="btn btn-outline-secondary" data-session-action="help" title="Помощь с этой консультацией"><i class="fa fa-life-ring" aria-hidden="true"></i>Помощь</button>${v.action!=='terms'?'<button type="button" class="btn btn-outline-secondary" data-session-action="terms"><i class="fa fa-file-text-o" aria-hidden="true"></i>Условия</button>':''}${v.action ? `<button type="button" class="btn ${['request','balance','terms'].includes(v.action) ? 'btn-primary' : 'btn-outline-secondary'}" data-session-action="${v.action}">${v.symbol ? `<i class="fa fa-${v.symbol}" aria-hidden="true"></i>` : ''}${v.label}</button>` : ''}</div>`;
   }
   function renderHeader() {
     const c = current(); $('cc-name').textContent = c.name; $('cc-avatar').src = c.image;
@@ -228,8 +232,9 @@
     if (options) {
       selectedMessage = options.dataset.messageOptions; togglePopup(options,messageMenu);
       const box = options.getBoundingClientRect(), area = root.getBoundingClientRect();
-      messageMenu.style.left = Math.max(8,Math.min(box.left-area.left,area.width-238))+'px'; messageMenu.style.right = 'auto';
-      messageMenu.style.top = Math.max(8,Math.min(box.bottom-area.top+5,area.height-100))+'px'; return;
+      const menu = messageMenu.getBoundingClientRect();
+      messageMenu.style.left = Math.max(8,Math.min(box.left-area.left,area.width-menu.width-8))+'px'; messageMenu.style.right = 'auto';
+      messageMenu.style.top = Math.max(8,Math.min(box.bottom-area.top+5,area.height-menu.height-8))+'px'; return;
     }
     const jump = e.target.closest('[data-jump-to]');
     if (jump) root.querySelector(`[data-message-id="${jump.dataset.jumpTo}"]`)?.scrollIntoView({block:'center',behavior:'instant'});
@@ -239,7 +244,7 @@
   };
   messageMenu.onclick = async e => {
     const b = e.target.closest('[data-message-action]'); if (!b) return; const c = current(), m = c.messages.find(x => x.id === selectedMessage); if (!m) return;
-    closePopup();
+    closePopup(b.dataset.messageAction === 'copy');
     if (b.dataset.messageAction === 'reply') { M.editDraft(c,{replyId:m.id}); renderComposer(); persist(); $('cc-draft').focus(); }
     else { try { await navigator.clipboard.writeText(m.text); feedback('Текст скопирован'); } catch { feedback('Не удалось скопировать текст'); } }
   };
@@ -270,32 +275,100 @@
     }
   };
   $('cc-dialog-body').onclick = e => { const b = e.target.closest('[data-library-file]'); if (b) openFile(b.dataset.libraryFile,Number(b.dataset.fileIndex)); };
-  function requestConsultation() {
-    const c = current(), offer = c.session.status === 'offer', ready=c.session.canAccept===true, checking=c.session.canAccept==null, offline=state.network!=='online';
-    if (c.session.requesting) return;
-    const terms = offer ? `<dl class="cc-price-details"><dt>Стоимость</dt><dd>${c.session.rate} кредитов/мин</dd><dt>Ваш баланс</dt><dd>${state.balance.toFixed(2).replace('.',',')} кредитов</dd></dl><p class="cc-dialog-note">Списания начнутся только после принятия условий и запуска консультации оператором с подключением обеих сторон.</p>${!ready ? checking ? '<p class="cc-dialog-note">Проверяем условия оплаты. Принятие предложения пока недоступно.</p>' : `<p class="cc-dialog-error">Для принятия предложения недостаточно средств.</p><p><a href="https://confideline.com/ru/balance/services" target="_blank" rel="noopener">Пополнить баланс <i class="fa fa-external-link" aria-hidden="true"></i></a></p>` : '<label class="cc-consent"><input type="checkbox" id="cc-consent"><span>Согласен с условиями и стоимостью консультации</span></label>'}` : '<p>Отправить эксперту запрос на консультацию?</p><p class="cc-dialog-note">Сам запрос не начинает оплату. После проверки условий понадобится подтверждённое предложение и запуск консультации оператором.</p>';
-    dialog(offer ? 'Условия консультации' : 'Запросить консультацию',expertCard(c)+terms+`<p class="cc-dialog-error" id="cc-consent-error" role="alert" ${offline?'':'hidden'}>${offline?'Нет соединения. Запрос не отправлен.':''}</p>`,[{label:offer ? 'Отказаться' : 'Отмена',run:() => { closeDialog(); if (offer) {sessionSnapshot(c,{status:'free',elapsed:0,outcome:'declined'});persist();} }},{label:offer ? 'Принять предложение' : 'Отправить запрос',primary:true,disabled:offer && !ready || offline,run:() => {
-      if (c.session.requesting) return;
-      if (offer && !$('cc-consent')?.checked) { $('cc-consent-error').textContent = 'Подтвердите условия перед принятием предложения.'; $('cc-consent-error').hidden = false; $('cc-consent')?.focus(); return; }
-      const generation = dialogGeneration, failed = state.failSessionNext; state.failSessionNext = false;
-      c.session.requesting = true; $('cc-dialog-footer').querySelectorAll('button').forEach(b=>b.disabled=true); renderSession();
-      setTimeout(()=>{
-        c.session.requesting = false;
-        if (failed) { if (generation === dialogGeneration && $('cc-dialog').open) { $('cc-consent-error').textContent='Не удалось отправить запрос. Попробуйте ещё раз.'; $('cc-consent-error').hidden=false; $('cc-dialog-footer').querySelectorAll('button').forEach(b=>b.disabled=false); } if(c.id===state.selected) renderSession(); return; }
-        const id = offer ? c.session.id : 'DEMO-'+crypto.randomUUID();
-        sessionSnapshot(c,{id,status:'waiting',elapsed:0,total:null,consentAccepted:offer,outcome:null});
-        if(c.id===state.selected)$('cc-live').textContent=offer?'Условия приняты. Ожидаем запуска оператором.':'Запрос отправлен. Ожидаем запуска оператором.';
-        c.messages.push({id:crypto.randomUUID(),system:true,text:offer ? 'Вы приняли условия консультации. Ожидаем запуска оператором.' : 'Вы запросили запуск консультации.',time:new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})});
-        if(c.id===state.selected) renderMessages();
-        persist();
-        if(generation===dialogGeneration && $('cc-dialog').open) closeDialog();
-      },650);
-    }}]);
+  const credit = value => Number(value).toLocaleString('ru-RU',{maximumFractionDigits:2})+' кредитов';
+  const expectedSession = c => ({id:c.session.id,version:c.session.version,termsKey:M.termsKey(c.session.terms)});
+  function consultationError(code) {
+    return ({offer_changed:'Предложение изменилось. Откройте актуальные условия и подтвердите их заново.',offer_expired:'Срок предложения истёк. Принять его уже нельзя. Запросите новое предложение.',terms_incomplete:'Не все условия получены. Принятие недоступно до их подтверждения.',payment_check:'Условия оплаты ещё не подтверждены. Принятие недоступно.',consent:'Подтвердите условия перед принятием предложения.',offline:'Нет соединения. Запрос не отправлен.',request_pending:'Результат предыдущего запроса ещё не подтверждён. Повторная отправка недоступна.'})[code] || 'Не удалось выполнить действие. Обратитесь в поддержку.';
   }
+  function showConsultationError(message) {
+    const el=$('cc-consent-error'); if(el){el.textContent=message;el.hidden=false;}
+  }
+  function submitConsultation(c,kind,expected) {
+    let operation;
+    try { operation=M.prepareConsultation(c,kind,crypto.randomUUID(),expected,!!$('cc-consent')?.checked,state.network); }
+    catch(e){showConsultationError(consultationError(e.message));if(e.message==='consent')$('cc-consent')?.focus();return;}
+    const generation=dialogGeneration, failed=state.failSessionNext, unknown=state.unknownSessionNext;
+    state.failSessionNext=state.unknownSessionNext=false;
+    $('cc-dialog-footer').querySelectorAll('button').forEach(b=>b.disabled=true);
+    $('cc-consent')?.setAttribute('disabled','');
+    if($('cc-consult-submit'))$('cc-consult-submit').textContent='Отправляем…';
+    renderSession();persist();
+    // Demo response only. A timeout is not a confirmed rejection or a new request.
+    setTimeout(()=>{
+      let changed=false, failure='';
+      try { changed=M.settleConsultation(c,operation.id,unknown?'unknown':failed?'rejected':'success'); }
+      catch(e){failure=consultationError(e.message);}
+      if(c.id===state.selected)renderSession();persist();
+      if(changed){
+        const text=kind==='accept'?'Условия приняты: '+credit(operation.terms.rate)+'/мин. Ожидаем подключения; оплата не началась.':kind==='decline'?'Вы отклонили предложение. Оплата не началась.':'Запрос отправлен. Ожидаем предложение с условиями; оплата не началась.';
+        c.messages.push({id:operation.id,system:true,text,time:new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})});
+        if(c.id===state.selected){renderMessages();$('cc-live').textContent=text;}
+        persist();if(generation===dialogGeneration&&$('cc-dialog').open)closeDialog();
+      } else if(generation===dialogGeneration&&$('cc-dialog').open){
+        if(unknown){showTerms(c);showConsultationError('Подтверждение не получено. Уточняем результат того же запроса; повторная отправка недоступна.');}
+        else if(failed){showTerms(c,kind==='request');showConsultationError('Сервис отклонил отправку. Действие не выполнено; можно повторить.');}
+        else {showTerms(c);showConsultationError(failure||'Состояние уже изменилось. Проверьте актуальные условия.');}
+      }
+    },650);
+  }
+  function termsMarkup(t, accepted) {
+    const rate=Number.isFinite(t.rate)?credit(t.rate)+'/мин':'Уточняется';
+    const trial=Number.isSafeInteger(t.trialMinutes)?t.trialMinutes?`${t.trialMinutes} мин бесплатно, затем ${rate}`:'Не предусмотрен':'Уточняется';
+    const billing=t.billing==='deferred_seconds'?(t.trialMinutes?'Пробные минуты не оплачиваются. Затем учитывается активное время по тарифу. Итог округляется вверх до целого кредита.':'При старте списывается первая минута целиком. Далее учитываются активные секунды; остаток списывается после завершения с округлением вверх до целого кредита.'):
+      t.billing==='minute_legacy'?'Каждая начатая платная минута оплачивается целиком.':'Порядок списания ещё не получен.';
+    return `<p class="cc-terms-kicker">${accepted?'Принятые условия':'Персональное предложение'}</p><dl class="cc-terms-facts"><div class="cc-terms-price"><dt>Стоимость</dt><dd>${esc(rate)}</dd></div><div><dt>Пробный период</dt><dd>${esc(trial)}</dd></div><div><dt>Для принятия на балансе</dt><dd>${Number.isFinite(t.minimumBalance)?esc(credit(t.minimumBalance)):'Уточняется'}</dd></div>${!accepted&&Number.isFinite(t.expiresAt)?`<div><dt>Предложение действует до</dt><dd>${esc(new Date(t.expiresAt).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}))}</dd></div>`:''}</dl><p class="cc-dialog-note">Требование к балансу — не предоплата и не лимит стоимости.</p><div class="cc-terms-rules"><h3>Начало оплаты</h3><p>После вашего согласия и подключения обеих сторон оператором${t.trialMinutes?', когда закончатся пробные минуты':''}. Ожидание и подключение бесплатны.</p><h3>Порядок списания</h3><p>${esc(billing)}</p><p>Подтверждённая пауза не оплачивается; итог доступен после завершения.</p><p class="cc-terms-limit">Фиксированного лимита суммы и длительности нет. При нехватке средств — пауза; итоговый расчёт может превысить остаток баланса.</p></div>`;
+  }
+  function showTerms(c=current(), request=false) {
+    const s=c.session, pending=!!s.pendingOperation, offer=!request&&s.status==='offer', accepted=!request&&!!s.acceptedTerms;
+    const t=accepted?s.acceptedTerms:offer?s.terms:null, complete=M.completeTerms(t), expired=offer&&t?.expiresAt<=Date.now();
+    const ready=offer&&complete&&!expired&&s.canAccept===true&&!pending&&state.network==='online';
+    const expected=expectedSession(c);
+    let content=t?termsMarkup(t,accepted):`<p>${s.status==='waiting'?'Запрос отправлен. Эксперт подготовит предложение.':'Эксперт подготовит предложение для этого диалога.'}</p><ol class="cc-request-steps"><li>Получите стоимость и условия.</li><li>Примите предложение, если оно вам подходит.</li><li>Дождитесь запуска оператором и подключения.</li></ol><p class="cc-terms-notice">Отправка запроса бесплатна. Цена ещё не согласована; запрос не даёт согласия на списания.</p>${!c.online?'<p class="cc-dialog-note">Эксперт сейчас не в сети. Точное время ответа неизвестно.</p>':''}`;
+    if(pending)content+='<p class="cc-terms-notice">Уточняем результат отправки. Закрытие окна не отменяет запрос. Не отправляйте его повторно.</p>';
+    if(offer&&!pending){
+      if(expired)content+='<p class="cc-dialog-error">Предложение истекло. Оплата не началась.</p>';
+      else if(!complete)content+='<p class="cc-dialog-error">Не все условия получены. Принятие недоступно.</p>';
+      else if(s.canAccept===false)content+=`<p class="cc-dialog-error">Недостаточно средств для принятия. Нужно не менее ${esc(credit(t.minimumBalance))}.</p><p><a href="https://confideline.com/ru/balance/services" target="_blank" rel="noopener">Пополнить баланс <i class="fa fa-external-link" aria-hidden="true"></i></a></p><p class="cc-dialog-note">Пополнение не принимает предложение и не запускает консультацию. Вернитесь к этому диалогу и подтвердите актуальные условия.</p>`;
+      else if(s.canAccept!==true)content+='<p class="cc-terms-notice">Проверяем возможность оплаты. Принятие пока недоступно.</p>';
+      if(ready)content+=`<label class="cc-consent"><input type="checkbox" id="cc-consent"><span>Принимаю стоимость и порядок списания${t.trialMinutes?', включая переход к оплате после пробных минут':''}.</span></label>`;
+      if(!expired)content+='<button class="cc-terms-decline" type="button" id="cc-offer-decline">Отклонить предложение</button>';
+    }
+    if(accepted)content+='<p class="cc-terms-notice">Условия сохранены для этой консультации. Просмотр ничего не меняет.</p>';
+    if(state.network!=='online')content+='<p class="cc-dialog-error">Нет соединения. Отправка недоступна.</p>';
+    content+='<p class="cc-dialog-error" id="cc-consent-error" role="alert" hidden></p>';
+    const actions=[{label:request?'Отмена':'Закрыть'}];
+    if(!pending&&offer&&!expired)actions.push({id:'cc-consult-submit',label:'Принять условия',primary:true,disabled:!ready,run:()=>submitConsultation(c,'accept',expected)});
+    if(!pending&&request&&['free','completed'].includes(s.status))actions.push({id:'cc-consult-submit',label:'Отправить запрос',primary:true,disabled:state.network!=='online',run:()=>submitConsultation(c,'request',expected)});
+    if(expired&&!pending)actions.push({label:'Запросить заново',primary:true,run:()=>{sessionSnapshot(c,{status:'free',terms:null,acceptedTerms:null,outcome:'expired'});requestConsultation();}});
+    dialog(request?'Запросить консультацию':'Условия консультации',expertCard(c)+content,actions);
+    $('cc-dialog').dataset.purpose='consultation';
+    termsContext={chatId:c.id,expected,offer,expired};
+    if($('cc-offer-decline'))$('cc-offer-decline').onclick=()=>dialog('Отклонить предложение?',expertCard(c)+'<p>Оплата не начнётся. Позже можно запросить новое предложение.</p><p class="cc-dialog-error" id="cc-consent-error" role="alert" hidden></p>',[{label:'Назад',run:()=>showTerms(c)},{label:'Отклонить',run:()=>submitConsultation(c,'decline',expected)}]);
+  }
+  function requestConsultation() { showTerms(current(),true); }
+  function checkOpenTerms() {
+    if(!termsContext||!$('cc-dialog').open||!termsContext.offer)return;
+    const c=state.chats.find(c=>c.id===termsContext.chatId), s=c?.session;
+    const expired=s?.terms?.expiresAt<=Date.now();
+    if(!s||s.pendingOperation)return;
+    if(expired&&!termsContext.expired||s.version!==termsContext.expected.version||s.id!==termsContext.expected.id||M.termsKey(s.terms)!==termsContext.expected.termsKey){
+      if($('cc-consult-submit'))$('cc-consult-submit').disabled=true;
+      if($('cc-consent')){$('cc-consent').checked=false;$('cc-consent').disabled=true;}
+      if($('cc-offer-decline'))$('cc-offer-decline').disabled=true;
+      showConsultationError(consultationError(expired?'offer_expired':'offer_changed'));
+      if(!$('cc-terms-refresh')){const b=document.createElement('button');b.type='button';b.id='cc-terms-refresh';b.className='btn btn-secondary';b.textContent='Актуальные условия';b.onclick=()=>showTerms(c);$('cc-dialog-footer').append(b);}
+    }
+  }
+  // Local demo snapshot hook. Production transport and financial authority stay outside this file.
+  root.addEventListener('clientchat:session',e=>{
+    const c=state.chats.find(c=>c.id===e.detail?.chatId);if(!c)return;
+    try{if(M.applySession(c,e.detail.snapshot)){if(c.id===state.selected)renderSession();checkOpenTerms();persist();}}catch{feedback('Не удалось обновить состояние консультации.');}
+  });
   $('cc-session').onclick = e => {
     const b = e.target.closest('[data-session-action]'); if (!b) return; const c = current(), action = b.dataset.sessionAction;
     if (action === 'help') openSupport();
     if (action === 'request') requestConsultation();
+    if (action === 'terms') showTerms();
     if (action === 'balance') dialog('Пополнение баланса','<p>Консультация приостановлена. После пополнения эксперт должен возобновить её с повторным подключением.</p><p><a href="https://confideline.com/ru/balance/services" target="_blank" rel="noopener">Открыть пополнение баланса <i class="fa fa-external-link" aria-hidden="true"></i></a></p>',[{label:'Закрыть'}]);
     if (action === 'summary') dialog('Итоги консультации',expertCard(c)+(c.session.total ? `<dl class="cc-price-details"><dt>Продолжительность</dt><dd>${esc(c.session.duration)}</dd><dt>Списано</dt><dd>${esc(c.session.total)} кредитов</dd></dl>` : '<p>Консультация завершена. Сервис готовит итоговую сумму.</p>')+'<p class="cc-dialog-note">История переписки сохранена в этом диалоге.</p>',[{label:'Закрыть'},{label:'Новая консультация',primary:true,run:requestConsultation}],{focusTitle:true});
   };
@@ -309,10 +382,12 @@
     }
   });
   document.addEventListener('pointerdown',e => { if (openPopup && !openPopup.contains(e.target) && !popupReturn?.contains(e.target)) closePopup(); });
+  root.addEventListener('focusin',e => { if (openPopup && !openPopup.contains(e.target) && !popupReturn?.contains(e.target)) closePopup(); });
   document.querySelectorAll('[data-shell-link]').forEach(a => a.addEventListener('click',e => e.preventDefault()));
   addEventListener('pagehide',persist);
   addEventListener('beforeunload',e => { if (state.chats.some(c => c.draft.files.length)) { e.preventDefault(); e.returnValue = ''; } });
   setInterval(() => { const c = current(); if (c.session.status === 'active' && !c.session.ending && $('cc-session-time')) $('cc-session-time').textContent = M.duration(sessionClockBase+Math.floor((Date.now()-sessionClockStarted)/1000)); },1000);
+  setInterval(checkOpenTerms,1000);
   const initial = query.get('chat') || location.hash.replace('#chat=','');
   if(current().deleted)state.selected=state.chats.find(c=>!c.deleted)?.id||state.selected;
   if (state.chats.some(c => c.id === initial && !c.deleted)) state.selected = initial;
@@ -329,4 +404,14 @@
   addEventListener('resize',fitMobileViewport);
   visualViewport?.addEventListener('resize',fitMobileViewport);
   fitMobileViewport();
+  // Fonts and responsive height can settle after the first message render.
+  const timeline = $('cc-timeline');
+  let followLatest = true;
+  timeline.addEventListener('scroll',() => { followLatest = timeline.scrollHeight-timeline.scrollTop-timeline.clientHeight < 80; });
+  new ResizeObserver(() => {
+    if (followLatest && !$('cc-thread-search').hidden) return;
+    if (followLatest) timeline.scrollTop = timeline.scrollHeight;
+    updateJump();
+  }).observe(timeline);
+  document.fonts.ready.then(() => { if (followLatest) timeline.scrollTop = timeline.scrollHeight; });
 })();

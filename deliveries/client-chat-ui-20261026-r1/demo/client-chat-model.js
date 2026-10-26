@@ -28,8 +28,14 @@
     const first = chats[0];
     if (states.has(scenario) && scenario !== 'free') first.session = {id:'DEMO-SESSION-1',version:1,status:scenario,rate:10,elapsed:324,canAccept:scenario==='offer',total:scenario === 'completed' ? '82,50' : null,duration:scenario === 'completed' ? '08:15' : null};
     if (scenario === 'offer-low-balance' || scenario === 'offer-checking') first.session = {id:'DEMO-SESSION-1',version:1,status:'offer',rate:10,elapsed:0,canAccept:scenario==='offer-checking'?null:false};
+    if (['offer-trial','offer-incomplete','offer-timeout','offer-error'].includes(scenario)) first.session = {id:'DEMO-SESSION-1',version:1,status:'offer',rate:10,elapsed:0,canAccept:true};
     if (scenario === 'offer-expired') first.session.outcome='expired';
-    return {chats,selected:'elena',network:scenario === 'offline' ? 'offline' : 'online',failNext:scenario === 'send-error',failSessionNext:scenario === 'request-error',filter:'all',search:'',balance:scenario === 'offer-low-balance' ? 20 : 120};
+    if (!['free','waiting'].includes(first.session.status)) {
+      first.session.terms = {id:'DEMO-OFFER-1',version:1,rate:10,unit:'кредитов/мин',minimumBalance:30,trialMinutes:scenario==='offer-trial'||scenario==='trial'?3:0,billing:'deferred_seconds',expiresAt:Date.now()+15*60*1000};
+      if (scenario==='offer-incomplete') first.session.terms.billing=null;
+      if (first.session.status!=='offer') first.session.acceptedTerms={...first.session.terms};
+    }
+    return {chats,selected:'elena',network:scenario === 'offline' ? 'offline' : 'online',failNext:scenario === 'send-error',failSessionNext:['request-error','offer-error'].includes(scenario),unknownSessionNext:scenario==='offer-timeout',filter:'all',search:'',balance:scenario === 'offer-low-balance' ? 20 : 120};
   }
   function editDraft(chat, patch) {
     chat.draft = {...chat.draft, ...patch, revision:chat.draft.revision + 1};
@@ -75,6 +81,51 @@
     chat.session = {...snapshot};
     return true;
   }
+  function completeTerms(terms) {
+    return !!terms && typeof terms.id==='string' && !!terms.id && Number.isSafeInteger(terms.version) && terms.version>0 &&
+      Number.isFinite(terms.rate) && terms.rate>0 && terms.unit==='кредитов/мин' &&
+      Number.isFinite(terms.minimumBalance) && terms.minimumBalance>=0 &&
+      Number.isSafeInteger(terms.trialMinutes) && terms.trialMinutes>=0 &&
+      ['deferred_seconds','minute_legacy'].includes(terms.billing) && Number.isFinite(terms.expiresAt);
+  }
+  function termsKey(terms) {
+    return terms ? JSON.stringify([terms.id,terms.version,terms.rate,terms.unit,terms.minimumBalance,terms.trialMinutes,terms.billing,terms.expiresAt]) : '';
+  }
+  function consultationGuard(chat, kind, expected, now=Date.now()) {
+    const s=chat.session;
+    if (s.version!==expected.version || s.id!==expected.id || termsKey(s.terms)!==expected.termsKey) throw new Error('offer_changed');
+    if (kind==='request') {
+      if (!['free','completed'].includes(s.status)) throw new Error('request_pending');
+    } else {
+      if (s.status!=='offer') throw new Error('offer_changed');
+      if (!s.terms || s.terms.expiresAt<=now) throw new Error('offer_expired');
+      if (kind==='accept' && !completeTerms(s.terms)) throw new Error('terms_incomplete');
+      if (kind==='accept' && s.canAccept!==true) throw new Error('payment_check');
+    }
+  }
+  function prepareConsultation(chat, kind, id, expected, consent=false, network='online', now=Date.now()) {
+    if (!['request','accept','decline'].includes(kind)) throw new Error('operation');
+    if (chat.session.pendingOperation) throw new Error('request_pending');
+    if (network!=='online') throw new Error('offline');
+    consultationGuard(chat,kind,expected,now);
+    if (kind==='accept' && !consent) throw new Error('consent');
+    const operation={id,kind,expected:{...expected},terms:kind==='accept'?{...chat.session.terms}:null,status:'pending'};
+    chat.session.pendingOperation=operation;
+    return operation;
+  }
+  function settleConsultation(chat, id, outcome, now=Date.now()) {
+    const s=chat.session, op=s.pendingOperation;
+    if (!op || op.id!==id) return false;
+    if (!['success','rejected','unknown'].includes(outcome)) throw new Error('operation');
+    if (outcome==='unknown') { op.status='unknown'; return false; }
+    delete s.pendingOperation;
+    if (outcome==='rejected') return false;
+    consultationGuard(chat,op.kind,op.expected,now);
+    if (op.kind==='request') chat.session={id:'DEMO-'+id,version:s.version+1,status:'waiting',elapsed:0,consentAccepted:false};
+    else if (op.kind==='accept') chat.session={...s,version:s.version+1,status:'waiting',elapsed:0,consentAccepted:true,acceptedTerms:{...op.terms}};
+    else chat.session={id:null,version:s.version+1,status:'free',elapsed:0,outcome:'declined'};
+    return true;
+  }
   function validateFiles(files, existing = []) {
     if (files.length + existing.length > 5) throw new Error('file_count');
     const allowed = new Set(['jpg','jpeg','png','webp','pdf','txt','csv','doc','docx','xls','xlsx']);
@@ -93,5 +144,5 @@
   function duration(seconds) {
     return Math.floor(Math.max(0,seconds) / 60).toString().padStart(2,'0') + ':' + Math.floor(Math.max(0,seconds) % 60).toString().padStart(2,'0');
   }
-  return {createState,editDraft,prepareSend,settleSend,retrySend,applySession,validateFiles,duration};
+  return {createState,editDraft,prepareSend,settleSend,retrySend,applySession,completeTerms,termsKey,prepareConsultation,settleConsultation,validateFiles,duration};
 });

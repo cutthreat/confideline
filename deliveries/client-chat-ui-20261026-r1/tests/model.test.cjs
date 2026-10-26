@@ -66,3 +66,72 @@ test('elapsed time display uses whole, nonnegative seconds', () => {
   assert.equal(M.duration(0),'00:00'); assert.equal(M.duration(-1),'00:00');
   assert.equal(M.duration(324.9),'05:24'); assert.equal(M.duration(3600),'60:00');
 });
+
+const quote = c => ({id:c.session.id,version:c.session.version,termsKey:M.termsKey(c.session.terms)});
+const offered = scenario => M.createState(scenario||'offer').chats[0];
+test('request alone preserves draft and cannot start billing or invent a price',()=>{
+  const c=chat();M.editDraft(c,{text:'two\nlines'});
+  M.prepareConsultation(c,'request','r1',quote(c));M.settleConsultation(c,'r1','success');
+  assert.equal(c.session.status,'waiting');assert.equal(c.session.consentAccepted,false);
+  assert.equal(c.session.terms,undefined);assert.equal(c.session.acceptedTerms,undefined);assert.equal(c.draft.text,'two\nlines');
+});
+test('double request and unknown response cannot be retried',()=>{
+  const c=chat(), expected=quote(c);M.prepareConsultation(c,'request','r1',expected);
+  assert.throws(()=>M.prepareConsultation(c,'request','r2',expected),/request_pending/);
+  M.settleConsultation(c,'r1','unknown');assert.equal(c.session.pendingOperation.status,'unknown');
+  assert.throws(()=>M.prepareConsultation(c,'request','r3',expected),/request_pending/);
+  assert.equal(M.settleConsultation(c,'r1','success'),true);assert.equal(M.settleConsultation(c,'r1','success'),false);
+});
+test('confirmed rejection allows explicit retry, but keeps draft and quote',()=>{
+  const c=offered();M.editDraft(c,{text:'draft'});const before=M.termsKey(c.session.terms);
+  M.prepareConsultation(c,'accept','a1',quote(c),true);M.settleConsultation(c,'a1','rejected');
+  assert.equal(c.session.status,'offer');assert.equal(M.termsKey(c.session.terms),before);assert.equal(c.draft.text,'draft');
+  M.prepareConsultation(c,'accept','a2',quote(c),true);assert.equal(M.settleConsultation(c,'a2','success'),true);
+});
+test('accept needs consent, complete terms, eligibility and online state',()=>{
+  const c=offered();assert.throws(()=>M.prepareConsultation(c,'accept','x',quote(c)),/consent/);
+  assert.throws(()=>M.prepareConsultation(c,'accept','x',quote(c),true,'offline'),/offline/);
+  for(const scenario of ['offer-checking','offer-low-balance','offer-incomplete']){
+    const other=offered(scenario);assert.throws(()=>M.prepareConsultation(other,'accept','x',quote(other),true),/payment_check|terms_incomplete/);
+    assert.equal(other.session.pendingOperation,undefined);
+  }
+});
+test('accept saves immutable shown quote and still waits without billing',()=>{
+  const c=offered('offer-trial');M.prepareConsultation(c,'accept','a',quote(c),true);M.settleConsultation(c,'a','success');
+  assert.equal(c.session.status,'waiting');assert.equal(c.session.consentAccepted,true);assert.equal(c.session.acceptedTerms.trialMinutes,3);
+  c.session.terms.rate=99;assert.equal(c.session.acceptedTerms.rate,10);
+});
+test('stale price is rejected even if incoming version was not incremented',()=>{
+  const c=offered(), expected=quote(c);c.session.terms.rate=20;
+  assert.throws(()=>M.prepareConsultation(c,'accept','a',expected,true),/offer_changed/);
+});
+test('expiry before click or while pending never accepts an offer',()=>{
+  const c=offered(), time=c.session.terms.expiresAt;
+  assert.throws(()=>M.prepareConsultation(c,'accept','a',quote(c),true,'online',time),/offer_expired/);
+  M.prepareConsultation(c,'accept','a',quote(c),true,'online',time-1000);
+  assert.throws(()=>M.settleConsultation(c,'a','success',time+1),/offer_expired/);
+  assert.equal(c.session.consentAccepted,undefined);
+});
+test('offer change during pending prevents consent from transferring',()=>{
+  const c=offered();M.prepareConsultation(c,'accept','a',quote(c),true);c.session.terms={...c.session.terms,id:'new',version:2};
+  assert.throws(()=>M.settleConsultation(c,'a','success'),/offer_changed/);assert.equal(c.session.status,'offer');
+});
+test('decline has no billing and is terminal only for that offer',()=>{
+  const c=offered();M.prepareConsultation(c,'decline','d',quote(c));M.settleConsultation(c,'d','success');
+  assert.equal(c.session.status,'free');assert.equal(c.session.outcome,'declined');assert.equal(c.session.terms,undefined);
+  M.prepareConsultation(c,'request','next',quote(c));M.settleConsultation(c,'next','success');assert.equal(c.session.id,'DEMO-next');
+});
+test('new consultation does not inherit old agreed terms',()=>{
+  const c=offered('completed');assert.ok(c.session.acceptedTerms);
+  M.prepareConsultation(c,'request','next',quote(c));M.settleConsultation(c,'next','success');
+  assert.equal(c.session.acceptedTerms,undefined);assert.equal(c.session.consentAccepted,false);assert.equal(c.session.total,undefined);
+});
+test('unknown billing, missing unit and invalid values fail closed',()=>{
+  const t=offered().session.terms;assert.equal(M.completeTerms(t),true);
+  for(const patch of [{billing:'unknown'},{unit:null},{rate:0},{minimumBalance:NaN},{trialMinutes:-1},{version:0},{expiresAt:null}]) assert.equal(M.completeTerms({...t,...patch}),false);
+});
+test('a late acknowledgement cannot override a newer authoritative session',()=>{
+  const c=offered();M.prepareConsultation(c,'accept','a',quote(c),true);
+  M.applySession(c,{...c.session,pendingOperation:undefined,version:2,status:'free',outcome:'expired'});
+  assert.equal(M.settleConsultation(c,'a','success'),false);assert.equal(c.session.status,'free');
+});

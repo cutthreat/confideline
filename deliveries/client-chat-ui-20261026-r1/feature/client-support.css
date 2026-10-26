@@ -1,11 +1,11 @@
 #client-support { color:#4e5e72; letter-spacing:0; }
 #client-support *, #client-support *::before, #client-support *::after { box-sizing:border-box; letter-spacing:0; }
 #client-support [hidden] { display:none !important; }
-#client-support .cs-page-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; margin:0 0 18px; }
+#client-support .cs-page-heading { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px 20px; margin:0 0 20px; }
 #client-support h1 { font-size:24px; line-height:30px; font-weight:600; margin:0; }
 #client-support h2 { font-size:18px; line-height:25px; margin:0 0 10px; }
-#client-support .cs-chat-return { display:inline-block; margin-bottom:9px; color:#246ab8; font-size:14px; }
-#client-support .cs-list-link { color:#246ab8; font-size:14px; white-space:nowrap; }
+#client-support .cs-chat-return { display:inline-flex; align-items:center; gap:7px; min-height:36px; margin-bottom:8px; color:#246ab8; font-size:14px; }
+#client-support .cs-list-link { display:inline-flex; align-items:center; gap:7px; min-height:36px; color:#246ab8; font-size:14px; white-space:nowrap; }
 #client-support .cs-context { display:flex; align-items:center; gap:9px; padding:10px 0 16px; color:#60738b; font-size:14px; }
 #client-support .cs-context strong { color:#4e5e72; }
 #client-support .cs-card { border:1px solid #e7edf4; border-radius:6px; background:#fff; margin-bottom:20px; }
@@ -15,26 +15,50 @@
 #client-support .cs-form .form-group { margin-bottom:19px; }
 #client-support .cs-form .form-control { min-height:42px; color:#4e5e72; font-size:15px; }
 #client-support .cs-form textarea { resize:vertical; min-height:140px; }
-#client-support .cs-form input[type=file] { max-width:100%; font-size:14px; }
+#client-support .cs-upload { display:inline-flex; position:relative; border:1px solid #c9d6e6; border-radius:4px; color:#526780; background:#fff; }
+#client-support .cs-upload > span { min-height:40px; display:inline-flex; align-items:center; gap:8px; padding:8px 14px; font-size:14px; line-height:22px; }
+#client-support .cs-upload input { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; }
+#client-support .cs-upload:has(input:focus-visible) { outline:2px solid #2872d2; outline-offset:2px; }
+#client-support .cs-upload:has(input:disabled) { opacity:.55; }
+#client-support .cs-upload input:disabled { cursor:default; }
+#client-support .cs-form .form-control { border-color:#d5dfeb; border-radius:4px; line-height:22px; transition:border-color 120ms ease,box-shadow 120ms ease; }
+#client-support .cs-form .form-control:focus { border-color:#8eb6e8; box-shadow:0 0 0 2px #2872d214; }
+#client-support .cs-form [aria-invalid=true] { border-color:#b04f4f; }
+#client-support .cs-field-error { color:#a34343; font-size:13px; line-height:20px; margin:6px 0 0; }
+#client-support .cs-form .form-group:last-child, #client-support .cs-form .form-group:has(+ .cs-error) { margin-bottom:0; }
+#client-support .cs-reply-files { margin-top:18px; }
 #client-support .cs-file-help { color:#60738b; font-size:13px; line-height:19px; margin:9px 0 0; }
 #client-support .cs-file-list { margin:10px 0 0; padding:0; list-style:none; }
 #client-support .cs-file-list li { display:flex; gap:10px; align-items:center; padding:7px 0; border-bottom:1px solid #edf1f6; font-size:13px; }
 #client-support .cs-file-list li span { flex:1; overflow-wrap:anywhere; }
 #client-support .cs-file-list button { width:32px; height:32px; padding:0; background:none; border:0; color:#60738b; border-radius:4px; cursor:pointer; }
 #client-support .cs-actions { display:flex; justify-content:flex-end; gap:10px; align-items:center; border-top:1px solid #e7edf4; padding:16px 24px; }
-#client-support .btn { display:inline-flex; gap:7px; align-items:center; justify-content:center; min-height:40px; font-size:14px; white-space:normal; }
+#client-support .btn { display:inline-flex; gap:8px; align-items:center; justify-content:center; min-height:40px; font-size:14px; line-height:20px; white-space:normal; border-radius:4px; transition:background-color 120ms ease,border-color 120ms ease,color 120ms ease; }
+#client-support .btn > i { width:16px; flex:none; line-height:1; text-align:center; }
+#client-support .btn-secondary, #client-support .btn-outline-secondary { border-color:#c9d6e6; color:#526780; background:#fff; }
+#client-support .btn:disabled { cursor:default; opacity:.55; }
+#client-support #cs-submit { min-width:210px; }
+#client-support .cs-actions-reply { justify-content:space-between; }
 #client-support .btn-primary { background:#2872d2; border-color:#2872d2; }
 #client-support .btn-primary:hover { background:#2069c8; border-color:#2069c8; }
 #client-support .cs-error { color:#a34343; background:#fff4f4; border:1px solid #f0d8d8; padding:10px 12px; font-size:14px; margin:14px 0 0; }
 #client-support .cs-feedback { padding:12px 15px; background:#f2f9f5; border:1px solid #cee7d7; color:#36694e; margin-bottom:15px; border-radius:4px; }
+#client-support .cs-feedback[data-tone=error] { background:#fff4f4; color:#a34343; border-color:#f0d8d8; }
 #client-support .cs-ticket-row { display:flex; gap:16px; justify-content:space-between; padding:18px 20px; border-bottom:1px solid #e7edf4; color:#4e5e72; text-decoration:none; }
 #client-support .cs-ticket-row:last-child { border:0; }
 #client-support .cs-ticket-row:hover { background:#f7faff; }
+#client-support .cs-ticket-row { align-items:center; transition:background-color 120ms ease; }
+#client-support .cs-ticket-row:first-child { border-radius:5px 5px 0 0; }
+#client-support .cs-ticket-row:last-child { border-radius:0 0 5px 5px; }
+#client-support .cs-ticket-copy { min-width:0; flex:1; }
+#client-support .cs-ticket-copy strong { overflow-wrap:anywhere; line-height:23px; }
+#client-support .cs-ticket-copy p { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; line-height:21px; }
+#client-support .cs-row-arrow { flex:none; width:12px; font-size:19px; color:#60738b; }
 #client-support .cs-ticket-row strong { display:block; font-size:16px; margin-bottom:6px; }
 #client-support .cs-ticket-row p { font-size:14px; color:#60738b; margin:0 0 7px; overflow-wrap:anywhere; }
 #client-support .cs-ticket-row small { color:#60738b; }
 #client-support .cs-ticket-meta { display:flex; flex-direction:column; align-items:flex-end; flex:none; gap:8px; font-size:13px; color:#60738b; }
-#client-support .cs-status { display:inline-flex; padding:4px 8px; border-radius:4px; background:#edf4ff; color:#2b639f; font-size:13px; white-space:nowrap; }
+#client-support .cs-status { display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:4px; background:#edf4ff; color:#2b639f; font-size:13px; line-height:20px; white-space:nowrap; }
 #client-support .cs-status[data-closed=true] { color:#60738b; background:#f0f3f7; }
 #client-support .cs-ticket-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; padding:20px 24px; border-bottom:1px solid #e7edf4; }
 #client-support .cs-ticket-heading p { color:#60738b; font-size:13px; margin:7px 0 0; }
@@ -44,12 +68,28 @@
 #client-support .cs-message header { display:flex; justify-content:space-between; gap:12px; margin-bottom:10px; }
 #client-support .cs-message time { color:#60738b; font-size:12px; }
 #client-support .cs-message p { white-space:pre-wrap; overflow-wrap:anywhere; margin:0; }
+#client-support .cs-message { font-size:15px; line-height:23px; }
+#client-support .cs-message[data-support=true] header strong { color:#246ab8; }
 #client-support .cs-reply { border-top:1px solid #e7edf4; }
 #client-support .cs-close-confirm { border-top:1px solid #e7edf4; padding:18px 24px; background:#fffaf2; }
 #client-support .cs-close-confirm .cs-actions { padding:12px 0 0; border:0; }
 #client-support .cs-close-error { color:#a34343; }
 #client-support .cs-closed { border-top:1px solid #e7edf4; padding:20px 24px; color:#60738b; background:#f8fafc; }
 #client-support .cs-closed a { display:inline-block; margin-top:8px; }
+#client-support .cs-ticket-heading > div { min-width:0; overflow-wrap:anywhere; }
+#client-support .cs-ticket-heading .cs-status { flex:none; }
+#client-support .cs-empty { padding:40px 24px; text-align:center; }
+#client-support .cs-empty > i { font-size:28px; color:#60738b; margin-bottom:16px; }
+#client-support .cs-empty p { color:#60738b; margin:0; }
+#client-support .cs-file-list button:hover { color:#963e3e; background:#fff2f2; }
+#client-support .cs-card:has(.cs-ticket-row:focus-visible) { overflow:visible; }
+#client-support .cs-ticket-row:focus-visible { outline-offset:-3px; }
+#client-support .btn-primary:active:not(:disabled) { background:#1f5ca8; border-color:#1f5ca8; }
+#client-support .btn-primary:disabled:hover { background:#2872d2; border-color:#2872d2; }
+@media (hover:hover) {
+  #client-support .btn-secondary:hover, #client-support .btn-outline-secondary:hover, #client-support .cs-upload:has(input:not(:disabled)):hover { background:#edf4ff; color:#205fae; border-color:#9db9db; }
+  #client-support .cs-chat-return:hover, #client-support .cs-list-link:hover, #client-support .cs-closed a:hover { color:#205fae; text-decoration:underline; text-underline-offset:3px; }
+}
 #client-support :is(a,button,input,select,textarea,[tabindex]):focus-visible { outline:2px solid #2872d2; outline-offset:2px; }
 @media (max-width:767px) {
   #client-support .cs-page-heading { flex-wrap:wrap; align-items:flex-start; gap:12px; }
@@ -60,7 +100,28 @@
   #client-support .cs-form .form-control { font-size:16px; }
   #client-support .cs-ticket-row { padding:16px; gap:10px; flex-wrap:wrap; }
   #client-support .cs-ticket-meta { flex-direction:row; align-items:center; width:100%; justify-content:space-between; }
+  #client-support .cs-ticket-copy { flex-basis:100%; }
+  #client-support .cs-row-arrow { display:none; }
   #client-support .cs-message header { flex-wrap:wrap; gap:4px; }
   #client-support .cs-ticket-heading { flex-wrap:wrap; }
   #client-support .cs-actions .btn { min-height:44px; }
+  #client-support .cs-page-heading > .btn { min-height:44px; }
+  #client-support .cs-list-link, #client-support .cs-chat-return { min-height:44px; }
+  #client-support .cs-file-list button { width:44px; height:44px; flex:none; }
+  #client-support .cs-upload > span { min-height:44px; }
+  #client-support .cs-card-body, #client-support .cs-ticket-heading { padding:20px 16px; }
+  #client-support .cs-thread { padding-inline:16px; }
+  #client-support .cs-actions { padding:16px; flex-wrap:wrap; }
+  #client-support .cs-close-confirm { padding:20px 16px; }
+}
+@media (max-width:479px) {
+  #client-support .cs-page-heading { display:flex; flex-direction:column; align-items:flex-start; gap:4px; }
+  #client-support .cs-page-heading > .btn { margin-top:8px; }
+  #client-support .cs-actions { display:flex; flex-direction:column; align-items:stretch; gap:10px; }
+  #client-support .cs-actions .btn { width:100%; }
+  #client-support .cs-ticket-meta { flex-wrap:wrap; }
+  #client-support h1 { overflow-wrap:anywhere; }
+}
+@media (prefers-reduced-motion:reduce) {
+  #client-support *, #client-support *::before, #client-support *::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; }
 }
