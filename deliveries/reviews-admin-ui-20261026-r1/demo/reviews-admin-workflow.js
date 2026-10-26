@@ -217,20 +217,58 @@
       return data.reviews.filter(r => r.expertId === expertId && r.status === 'published' && r.text.trim()).map(r => ({id:r.id,author:r.anonymous ? 'Анонимный клиент' : r.author,anonymous:r.anonymous,stars:r.stars,text:r.text,verified:r.verified,consultationVerified:r.consultationVerified === true && !!r.consultation,createdAt:r.createdAt}));
     }
     function ratingValue(data, expertId) {
+      if (!experts.some(e => e.id === expertId)) throw new Error('expert');
       const value = data.overrides[expertId] || {mode:'auto',rating:null,votes:null};
       const version = value.version === undefined ? 0 : value.version;
       if (!Number.isSafeInteger(version) || version < 0) throw new Error('storage');
       return {...value,version};
     }
-    function setRating(role, expertId, input, reason, expectedVersion) {
+    function ratingPolicyValue(data) {
+      const value = data.ratingPolicy || {mode:'individual',version:0};
+      if (!['individual','auto','manual'].includes(value.mode) || !Number.isSafeInteger(value.version) || value.version < 0) throw new Error('storage');
+      return copy(value);
+    }
+    function baseValue(value) {
+      return model.validateRating({mode:'manual',rating:value.rating,votes:value.votes ?? 0});
+    }
+    function effectiveRating(data, expertId) {
+      const individual = ratingValue(data,expertId), policy = ratingPolicyValue(data);
+      return {...baseValue(individual),mode:policy.mode === 'individual' ? individual.mode : policy.mode};
+    }
+    function ratingComparison(expertId) {
+      const data=read(), individual=ratingValue(data,expertId), policy=ratingPolicyValue(data), base=baseValue(individual);
+      return {individual,policy,base,published:model.aggregate(data.reviews,expertId),withBase:model.aggregate(data.reviews,expertId,base),effective:model.aggregate(data.reviews,expertId,effectiveRating(data,expertId))};
+    }
+    function setRatingPolicy(role, mode, reason, expectedVersion) {
+      return transact(role,'rating',data => {
+        requirePermission(role,'settings');
+        reason=model.validateReason(reason);
+        if (!['individual','auto','manual'].includes(mode)) throw new Error('mode');
+        const before=ratingPolicyValue(data);
+        if (expectedVersion !== before.version || before.version === Number.MAX_SAFE_INTEGER) throw new Error('policy_conflict');
+        if (before.mode === mode) return {...before,replayed:true};
+        const after={mode,version:before.version+1};
+        data.ratingPolicy=after;
+        audit(data,role,'rating_policy','all-experts',reason,before,after);
+        return after;
+      });
+    }
+    function setRating(role, expertId, input, reason, expectedVersion, expectedPolicyVersion) {
       return transact(role,'rating',data => {
         if (!experts.some(e => e.id === expertId)) throw new Error('expert');
+        requirePermission(role,'settings');
+        const policy=ratingPolicyValue(data);
+        if (policy.mode !== 'individual') throw new Error('rating_locked');
+        if (expectedPolicyVersion !== policy.version) throw new Error('policy_conflict');
         reason = model.validateReason(reason);
         const before = ratingValue(data,expertId);
         if (!Number.isSafeInteger(expectedVersion) || expectedVersion !== before.version || before.version === Number.MAX_SAFE_INTEGER) throw new Error('rating_conflict');
-        const value = model.validateRating(input);
-        if (JSON.stringify(value) === JSON.stringify(model.validateRating(before))) return {...before,replayed:true};
-        model.aggregate(data.reviews,expertId,value);
+        if (!['auto','manual'].includes(input.mode)) throw new Error('mode');
+        // Keep the base independently of whether it is currently included.
+        const value = {...baseValue(input),mode:input.mode};
+        const previous = {...baseValue(before),mode:before.mode};
+        if (JSON.stringify(value) === JSON.stringify(previous)) return {...before,replayed:true};
+        model.aggregate(data.reviews,expertId,{...value,mode:'manual'});
         value.version = before.version + 1;
         data.overrides[expertId] = value;
         audit(data,role,'rating',expertId,reason,before,value);
@@ -278,11 +316,11 @@
       return data.audit.filter(a=>a.id===id&&actions.includes(a.action)).map(a=>({at:a.at,action:a.action,actorName:a.actorName||(a.actor==='DEMO-MODERATOR'?'Alexey Saava':a.actor==='DEMO-SUPERADMIN'?'Admin Admin':'Клиент'),actorRole:a.actor==='DEMO-SUPERADMIN'?'superadmin':a.actor==='DEMO-MODERATOR'?'moderator':'client',from:a.before?.status||null,to:a.after?.status||null,decision:['reject','hide','delete'].includes(a.action)&&a.after?.clientDecision?{code:a.after.clientDecision.code,message:a.after.clientDecision.message}:null,reply:a.action.startsWith('appeal_')?a.after?.appeal?.reply||'':'',outcome:a.action.startsWith('appeal_')?a.after?.appeal?.status||null:null}));
     }
     return {
-      list,publicReviews,moderate,reviseClient,appealClient,resolveAppeal,setRating,setModeration,setSettings,settings,clientStatus,consultations,moderationHistory,
+      list,publicReviews,moderate,reviseClient,appealClient,resolveAppeal,setRating,setRatingPolicy,ratingComparison,ratingPolicy:()=>ratingPolicyValue(read()),setModeration,setSettings,settings,clientStatus,consultations,moderationHistory,
       createReview:(role,input) => submit(role,input,false),
       submitClient:input => submit('client',input,true),
-      summary:expertId => { const data = read(); return model.aggregate(data.reviews,expertId,data.overrides[expertId]); },
-      publicSummary:expertId => { const data=read(); return data.reviewsEnabled && data.ratingVisible ? model.aggregate(data.reviews,expertId,data.overrides[expertId]) : null; },
+      summary:expertId => { const data = read(); return model.aggregate(data.reviews,expertId,effectiveRating(data,expertId)); },
+      publicSummary:expertId => { const data=read(); return data.reviewsEnabled && data.ratingVisible ? model.aggregate(data.reviews,expertId,effectiveRating(data,expertId)) : null; },
       rating:expertId => copy(ratingValue(read(),expertId)),
       audit:role => { requirePermission(role,'audit'); return copy(read().audit); }
     };

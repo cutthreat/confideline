@@ -201,7 +201,47 @@
 </li></ul> </section><div class="slimScrollBar" style="background: rgba(0, 0, 0, 0.2); width: 3px; position: absolute; top: 0px; opacity: 0.4; display: block; border-radius: 7px; z-index: 99; right: 1px; height: 529.363px;"></div><div class="slimScrollRail" style="width: 3px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;"></div></div>
 <!-- /.sidebar -->
 </aside><div class="content-wrapper" id="confideline-reviews"><section class="content-header"><h1>Настройки отзывов</h1><ol class="breadcrumb"><li>Администрирование</li><li>Настройки</li><li>Общие настройки</li><li class="active">Отзывы</li></ol></section><main class="content"><div class="review-settings-layout"><aside class="review-settings-catalog"><details open=""><summary>Разделы настроек</summary><nav aria-label="Разделы настроек"><ul class="nav nav-stacked nav-vertical"><li><a href="https://confideline.com/ru/admin/settings/index"><span>Основные настройки</span></a></li><li><a href="https://confideline.com/ru/admin/settings/photo"><span>Настройки фото</span></a></li><li><a href="https://confideline.com/ru/admin/settings/support"><span>Настройки поддержки</span></a></li><li class="active"><a aria-current="page" href="settings.html"><span>Отзывы</span></a></li><li><a href="https://confideline.com/ru/admin/settings/groups"><span>Настройки группы</span></a></li><li><a href="https://confideline.com/ru/admin/settings/stories"><span>Настройки историй</span></a></li><li><a href="https://confideline.com/ru/admin/html-macro-variable/index"><span>HTML-макропеременные</span></a></li><li><a href="https://confideline.com/ru/admin/settings/social"><span>Социальная аутентификация</span></a></li><li><a href="https://confideline.com/ru/admin/settings/genders"><span>Гендерные настройки</span></a></li><li><a href="https://confideline.com/ru/admin/settings/cloud-flare"><span>Настройки API Cloudflare</span></a></li><li><a href="https://confideline.com/ru/admin/settings/cached-data"><span>Кэшированные данные</span></a></li><li><a href="https://confideline.com/ru/admin/settings/admin"><span>Админ панель</span></a></li><li><a href="https://confideline.com/ru/admin/settings/role"><span>Настройка ролей</span></a></li><li><a href="https://confideline.com/ru/admin/settings/license"><span>Лицензионный ключ</span></a></li><li><a href="https://confideline.com/ru/admin/settings/app-status"><span>Статус приложения</span></a></li><li><a href="https://confideline.com/ru/admin/settings/amazon"><span>Файловое хранилище</span></a></li><li><a href="https://confideline.com/ru/admin/settings/premium-legacy"><span>Настройки Premium (устаревшие)</span></a></li></ul></nav></details></aside><div class="review-settings-main">
-<div class="alert alert-danger" hidden="" id="settings-forbidden" role="alert"><i aria-hidden="true" class="fa fa-lock"></i> <strong data-i18n="forbidden">Доступ запрещён</strong></div><div hidden="" id="settings-surface">
+<div class="alert alert-danger" hidden="" id="settings-forbidden" role="alert"><i aria-hidden="true" class="fa fa-lock"></i> <strong data-i18n="forbidden">Доступ запрещён</strong></div><div hidden="" id="settings-surface"><section class="box no-border" hidden="" id="expert-rating-settings">
+<header class="box-header with-border"><h2 class="box-title" data-rating-label="title">Расчёт рейтинга</h2></header>
+<div class="review-rating-policy box-body">
+<form id="rating-policy-form">
+<label data-rating-label="policy" for="rating-policy">Общий режим</label>
+<div class="review-policy-controls">
+<select aria-describedby="rating-policy-state" class="form-control" id="rating-policy">
+<option data-rating-label="individual" value="individual">Индивидуально</option>
+<option data-rating-label="allAuto" value="auto">Для всех: только опубликованные оценки</option>
+<option data-rating-label="allManual" value="manual">Для всех: с учётом ручной базы</option>
+</select>
+<button class="btn btn-primary" disabled="" id="rating-policy-apply" type="submit"><i aria-hidden="true" class="fa fa-save"></i> <span data-rating-label="applyPolicy">Сохранить режим</span></button>
+<button class="btn btn-default review-rating-icon" data-rating-title="reload" id="rating-policy-reload" type="button"><i aria-hidden="true" class="fa fa-refresh"></i></button>
+</div>
+<p class="text-muted" id="rating-policy-state"></p>
+</form>
+<p class="text-success" hidden="" id="rating-feedback" role="status"></p>
+<p class="text-danger" hidden="" id="rating-error" role="alert"></p>
+</div>
+<div class="review-rating-toolbar">
+<label class="review-rating-search"><span class="sr-only" data-rating-label="search">Эксперт: имя или ID</span><i aria-hidden="true" class="fa fa-search"></i><input class="form-control" data-rating-placeholder="search" id="rating-search" type="search"/></label>
+<span class="text-muted" id="rating-count" role="status"></span>
+</div>
+<div aria-labelledby="rating-table-title" class="review-rating-table-wrap" role="region" tabindex="0">
+<table class="table table-bordered table-hover review-rating-table">
+<caption class="sr-only" data-rating-label="registry" id="rating-table-title">Реестр рейтингов экспертов</caption>
+<colgroup><col class="rating-col-expert"/><col/><col/><col/><col class="rating-col-mode"/><col/><col class="rating-col-action"/></colgroup>
+<thead><tr>
+<th aria-sort="ascending" scope="col"><button id="rating-sort" type="button"><span data-rating-label="expert">Эксперт</span> <i aria-hidden="true" class="fa fa-sort-alpha-asc"></i></button></th>
+<th class="rating-number" data-rating-label="published" data-rating-title="publishedFull" scope="col">Оценки</th>
+<th class="rating-number" data-rating-label="base" data-rating-title="baseFull" scope="col">Ручная база</th>
+<th class="rating-number" data-rating-label="withBase" data-rating-title="withBaseFull" scope="col">С базой</th>
+<th data-rating-label="mode" scope="col">Режим</th>
+<th class="rating-number" data-rating-label="total" scope="col">Итог</th>
+<th scope="col"><span class="sr-only" data-rating-label="actions">Действия</span></th>
+</tr></thead>
+<tbody id="rating-rows"></tbody>
+</table>
+</div>
+<details class="review-rating-history" hidden="" id="rating-history"><summary data-rating-label="history">История изменений расчёта</summary><ol id="rating-history-list"></ol><p class="text-muted" data-rating-label="emptyHistory" id="rating-history-empty">Изменений пока нет</p></details>
+</section>
 <section class="box box-solid review-create-surface" id="publication-settings"><header class="box-header with-border"><h2 class="box-title" data-review-label="globalSettings">Общие параметры</h2></header>
 <form id="settings-form" novalidate=""><div class="box-body review-settings-body">
 <fieldset class="review-policy-group"><legend data-i18n="siteDisplay">Отображение на сайте</legend>
@@ -223,8 +263,31 @@
 <p class="text-warning" data-i18n="settingsConflict" hidden="" id="settings-stale" role="status">Настройки изменены в другой вкладке. Загрузите актуальные значения.</p>
 </div><footer class="box-footer review-settings-footer"><button class="btn btn-primary" id="settings-save" type="submit"><i aria-hidden="true" class="fa fa-save"></i> <span data-i18n="save">Сохранить</span></button><button class="btn btn-default" id="settings-reload" type="button"><i aria-hidden="true" class="fa fa-undo"></i></button><span class="text-muted" data-i18n="unsavedChanges" hidden="" id="settings-dirty">Есть несохранённые изменения</span></footer></form>
 </section>
-<section class="box no-border review-create-surface" hidden="" id="expert-rating-settings"><header class="box-header with-border"><h2 class="box-title" data-review-label="expertCalculation">Расчёт рейтинга эксперта</h2></header><p class="text-success review-save-feedback" hidden="" id="rating-feedback" role="status"></p><form id="rating-form" novalidate=""><div class="box-body"><div class="form-group"><label data-i18n="expert" for="rating-expert">Эксперт</label><select class="form-control" id="rating-expert"><option value="EX-101">Marcus Antoniu · EX-101</option><option value="EX-102">Elena Petrova · EX-102</option></select></div><div id="rating-summary" role="status"><dl class="review-rating-breakdown"><dt data-i18n="publishedRatings">Опубликованные оценки</dt><dd id="rating-published-summary"></dd><dt data-i18n="ratingBase">Ручная база</dt><dd id="rating-base-summary"></dd><dt class="review-rating-total" data-i18n="totalRating">Итог</dt><dd class="review-rating-total" id="rating-total-summary"></dd></dl></div>
-<fieldset class="review-mode-picker"><legend data-i18n="ratingSource">Расчёт рейтинга</legend><label><input checked="" name="rating-mode" type="radio" value="auto"/> <span data-i18n="autoSource">Только опубликованные оценки</span></label><label><input name="rating-mode" type="radio" value="manual"/> <span data-i18n="manualSource">С учётом ручной базы</span></label></fieldset><div class="review-rating-fields" hidden="" id="manual-rating-fields"><div class="form-group"><label data-i18n="manualRating" for="manual-rating">Рейтинг базы</label><input class="form-control" id="manual-rating" inputmode="decimal" maxlength="3" placeholder="1.0–5.0"/></div><div class="form-group"><label data-i18n="manualVotes" for="manual-votes">Голосов в базе</label><input class="form-control" id="manual-votes" inputmode="numeric" maxlength="16" placeholder="0"/></div></div><div class="form-group"><label data-i18n="ratingReason" for="rating-reason">Причина изменения</label><textarea class="form-control" id="rating-reason" maxlength="500" required="" rows="2"></textarea></div><p class="text-danger" hidden="" id="rating-error" role="alert"></p></div><footer class="box-footer review-settings-footer"><button class="btn btn-primary" id="rating-save" type="submit"><i aria-hidden="true" class="fa fa-save"></i> <span data-i18n="save">Сохранить</span></button><button class="btn btn-default" id="rating-reload" type="button"><i aria-hidden="true" class="fa fa-undo"></i></button><span class="text-muted" id="rating-save-context"></span><span class="text-muted" data-i18n="unsavedChanges" hidden="" id="rating-dirty">Есть несохранённые изменения</span></footer></form><details class="review-rating-history" hidden="" id="rating-history"><summary data-review-label="ratingHistory">История изменений рейтинга</summary><ol id="rating-history-list"></ol><p class="text-muted" data-review-label="noChanges" id="rating-history-empty">Изменений пока нет</p></details></section></div></div></div></main><div class="review-admin-feedback" hidden="" id="admin-feedback" role="status"></div><dialog aria-describedby="rating-discard-description" aria-labelledby="rating-discard-title" class="review-admin-dialog" id="rating-discard-dialog"><header class="modal-header"><h2 class="modal-title" data-review-label="unsavedTitle" id="rating-discard-title" tabindex="-1">Есть несохранённые изменения</h2></header><div class="modal-body"><p id="rating-discard-description"></p></div><footer class="modal-footer"><button class="btn btn-default" data-review-label="keepEditing" id="rating-keep" type="button">Продолжить редактирование</button><button class="btn btn-primary" data-review-label="discardChanges" id="rating-discard" type="button">Не сохранять</button></footer></dialog></div><footer class="main-footer">
+</div></div></div></main><div class="review-admin-feedback" hidden="" id="admin-feedback" role="status"></div><dialog aria-describedby="rating-policy-impact" aria-labelledby="rating-policy-title" class="review-admin-dialog" id="rating-policy-dialog">
+<form id="rating-policy-confirm-form">
+<header class="modal-header"><h2 class="modal-title" data-rating-label="policyConfirm" id="rating-policy-title" tabindex="-1">Изменить расчёт для всех экспертов?</h2></header>
+<div class="modal-body"><p id="rating-policy-transition"></p><p id="rating-policy-impact"></p><label data-rating-label="reason" for="rating-policy-reason">Причина изменения</label><textarea class="form-control" id="rating-policy-reason" maxlength="500" required="" rows="3"></textarea><p class="text-danger" hidden="" id="rating-policy-error" role="alert"></p></div>
+<footer class="modal-footer"><button class="btn btn-default" data-rating-label="cancel" id="rating-policy-cancel" type="button">Отмена</button><button class="btn btn-primary" data-rating-label="confirm" id="rating-policy-confirm" type="submit">Подтвердить</button></footer>
+</form>
+</dialog><dialog aria-labelledby="rating-expert-title" class="review-admin-dialog" id="rating-expert-dialog">
+<form id="rating-form">
+<header class="modal-header"><h2 class="modal-title" id="rating-expert-title" tabindex="-1"></h2></header>
+<div class="modal-body">
+<p class="text-muted" id="rating-expert-context"></p>
+<dl class="review-rating-breakdown"><dt data-rating-label="publishedFull">Только опубликованные оценки</dt><dd id="rating-published-summary"></dd><dt data-rating-label="withBaseFull">С учётом ручной базы</dt><dd id="rating-total-summary"></dd></dl>
+<fieldset class="review-mode-picker"><legend data-rating-label="expertMode">Расчёт для эксперта</legend><label><input checked="" name="rating-mode" type="radio" value="auto"/> <span data-rating-label="publishedFull">Только опубликованные оценки</span></label><label><input name="rating-mode" type="radio" value="manual"/> <span data-rating-label="withBaseMode">С учётом ручной базы</span></label></fieldset>
+<fieldset id="manual-rating-fields"><legend data-rating-label="base">Ручная база</legend><div class="review-rating-fields"><div class="form-group"><label data-rating-label="baseRating" for="manual-rating">Рейтинг базы</label><input class="form-control" id="manual-rating" inputmode="decimal" max="5" min="1" step="0.1" type="number"/></div><div class="form-group"><label data-rating-label="baseVotes" for="manual-votes">Голосов базы</label><input class="form-control" id="manual-votes" inputmode="numeric" min="0" required="" step="1" type="number"/></div></div></fieldset>
+<p class="text-muted" id="rating-base-state"></p>
+<label data-rating-label="reason" for="rating-reason">Причина изменения</label><textarea class="form-control" id="rating-reason" maxlength="500" required="" rows="3"></textarea>
+<p class="text-danger" hidden="" id="rating-expert-error" role="alert"></p>
+</div>
+<footer class="modal-footer"><button class="btn btn-default" data-rating-label="cancel" id="rating-expert-cancel" type="button">Отмена</button><button class="btn btn-default review-rating-icon" data-rating-title="reload" id="rating-reload" type="button"><i aria-hidden="true" class="fa fa-refresh"></i></button><button class="btn btn-primary" id="rating-save" type="submit"><i aria-hidden="true" class="fa fa-save"></i> <span data-rating-label="save">Сохранить</span></button></footer>
+</form>
+</dialog><dialog aria-describedby="rating-discard-description" aria-labelledby="rating-discard-title" class="review-admin-dialog" id="rating-discard-dialog">
+<header class="modal-header"><h2 class="modal-title" data-rating-label="unsaved" id="rating-discard-title" tabindex="-1">Есть несохранённые изменения</h2></header>
+<div class="modal-body"><p data-rating-label="discardDescription" id="rating-discard-description">Не сохранять изменения выбранного эксперта?</p></div>
+<footer class="modal-footer"><button class="btn btn-default" data-rating-label="keep" id="rating-keep" type="button">Продолжить редактирование</button><button class="btn btn-primary" data-rating-label="discard" id="rating-discard" type="button">Не сохранять</button></footer>
+</dialog></div><footer class="main-footer">
         Powered by <strong><a href="https://youdate.website">YouDate</a></strong>
 </footer></div>
 
