@@ -6,6 +6,10 @@
   'use strict';
   const areas = ['astrology', 'mediums', 'taro', 'numerology', 'palmistry'];
   const topics = ['love', 'fortune', 'career', 'life-path', 'fertility', 'soulmate'];
+  const profileLabels = {
+    areas: { astrology: 'Astrologer', mediums: 'Medium', taro: 'Tarot Reader', numerology: 'Numerologist', palmistry: 'Palmistry', psychic: 'Psychic', clairvoyant: 'Clairvoyant', 'spiritual-practitioner': 'Spiritual Practitioner', 'psychoenergetic-practitioner': 'Psychoenergetic Practitioner', 'energy-healer': 'Energy Healer', 'intuitive-consultant': 'Intuitive Consultant', 'karmic-consultant': 'Karmic Consultant', 'spiritual-mentor': 'Spiritual Mentor', 'mindfulness-practitioner': 'Mindfulness Practitioner', 'subconscious-work-specialist': 'Subconscious Work Specialist', empath: 'Empath' },
+    topics: { love: 'Love & Relationships', fortune: 'Fortune', career: 'Career & Purpose', 'life-path': 'Future & Life Path', fertility: 'Fertility', soulmate: 'Soulmate', romance: 'Romance & Dating', family: 'Marriage & Family', breakups: 'Breakups & Divorce', partner: 'Finding a Partner', compatibility: 'Compatibility', finances: 'Money & Finances', business: 'Business & Projects', decisions: 'Choices & Decisions', karmic: 'Karmic Connections', energy: 'Energy Diagnostics', growth: 'Personal Growth', balance: 'Emotional Balance', uncertainty: 'Worries & Uncertainty', blocks: 'Inner Blocks', confidence: 'Confidence & Self-Esteem', spiritual: 'Spiritual Development', ancestral: 'Ancestral Themes', relocation: 'Relocation & Life Changes' }
+  };
   function normalize(values, allowed) {
     return [...new Set(values)].filter(value => allowed.includes(value));
   }
@@ -50,5 +54,5 @@
     if (state.lang === 'en') params.set('lang', 'en');
     return params.toString();
   }
-  return { areas, topics, normalize, select, paginate, readQuery, writeQuery };
+  return { areas, topics, profileLabels, normalize, select, paginate, readQuery, writeQuery };
 });

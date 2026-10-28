@@ -120,11 +120,7 @@
     const result = response.result;
     applied.page = result.page; total = result.total; mode = 'ready';
     updateUrl(false); updatePending(); grid.hidden = !total;
-    grid.innerHTML = result.items.map(profile => `<div class="col-6 col-sm-6 col-md-4 col-lg-3 directory-item"><article class="card cl-expert" data-profile-id="${escape(profile.id)}">
-      <div class="card-img-top-wrapper d-flex justify-content-center"><img class="card-img-top" src="${escape(profile.photo)}" width="500" height="500" alt="${escape(profile.name)}"></div>
-      <div class="card-body d-flex flex-column"><h2><span class="display-name">${escape(profile.name)}</span><span class="cl-presence" data-status="${profile.status}" title="${escape(text[applied.lang][profile.status])}"><i aria-hidden="true"></i><span class="sr-only">${escape(text[applied.lang][profile.status])}</span></span></h2>
-      <div class="text-muted cl-expert-areas">${profile.areas.map(id => labels[id]).join(' · ')}</div>
-      <div class="text-muted cl-expert-topics">${profile.topics.map(id => labels[id]).join(' · ')}</div></div></article></div>`).join('');
+    grid.innerHTML = result.items.map(profile => window.CatalogExpertCard.render(profile, applied.lang)).join('');
     if (!total) showMessage(text[applied.lang].emptyTitle, text[applied.lang].emptyText, 'reset');
     pagination(result.pages, result.page);
     restorePageFocus(nav.hidden ? root.querySelector('#catalog-heading') : nav.querySelector('[aria-current="page"]'));
