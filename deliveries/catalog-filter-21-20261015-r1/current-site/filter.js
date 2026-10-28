@@ -64,6 +64,7 @@
     root.querySelectorAll('[data-i18n]').forEach(node => { node.textContent = t[node.dataset.i18n]; });
     form.setAttribute('aria-label', t.filter);
     nav.setAttribute('aria-label', t.pages);
+    grid.setAttribute('aria-label', t.title);
     root.lang = applied.lang;
     // A filter locale never rewrites the captured RU shell.
   }
@@ -77,8 +78,8 @@
     numbers.forEach((n, i) => {
       if (i && n - numbers[i - 1] > 1) html += '<span class="cl-page-gap" aria-hidden="true">…</span>';
       const current = n === page;
-      const content = current ? `<span class="cl-page-desktop">${n}</span><span class="cl-page-mobile">${n} / ${pages}</span>` : String(n);
-      html += button(n, current ? `${t.page(n)} / ${pages}` : t.page(n), content, false, current, true);
+      const content = current ? `<span class="cl-page-desktop">${n}</span><span class="cl-page-mobile">${t.page(n)} ${applied.lang === 'ru' ? 'из' : 'of'} ${pages}</span>` : String(n);
+      html += button(n, current ? `${t.page(n)} ${applied.lang === 'ru' ? 'из' : 'of'} ${pages}` : t.page(n), content, false, current, true);
     });
     nav.innerHTML = html + button(page + 1, t.next, '<i class="fa fa-angle-right" aria-hidden="true"></i>', page === pages);
   }
@@ -87,7 +88,7 @@
     const pageOwnedFocus = focusPage && nav.contains(document.activeElement);
     const resultOwnedFocus = focusResult && (document.activeElement === submit || message.contains(document.activeElement));
     const restorePageFocus = target => {
-      if (pageOwnedFocus && focusToken === focusRevision) target?.focus({ preventScroll: true });
+      if (pageOwnedFocus && focusToken === focusRevision) target?.focus();
     };
     const restoreResultFocus = target => {
       if (resultOwnedFocus && focusToken === focusRevision) target?.focus();
@@ -121,9 +122,10 @@
     applied.page = result.page; total = result.total; mode = 'ready';
     updateUrl(false); updatePending(); grid.hidden = !total;
     grid.innerHTML = result.items.map(profile => window.CatalogExpertCard.render(profile, applied.lang)).join('');
+    grid.scrollLeft = 0;
     if (!total) showMessage(text[applied.lang].emptyTitle, text[applied.lang].emptyText, 'reset');
     pagination(result.pages, result.page);
-    restorePageFocus(nav.hidden ? root.querySelector('#catalog-heading') : nav.querySelector('[aria-current="page"]'));
+    restorePageFocus(root.querySelector('#catalog-heading'));
     restoreResultFocus(total ? root.querySelector('#catalog-heading') : message.querySelector('h2'));
   }
   function apply() { applied = draft(); invalid = []; return load({ push: true, focusResult: true }); }
