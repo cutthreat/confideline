@@ -1,0 +1,560 @@
+{
+  "schema": "confideline.client-chat.live-protocol.v1",
+  "source_protocol_sha256": "53fad964ba3a6245e347d10132e7ed302348fd85fb022a7c00bae43ae9fbb2d8",
+  "observations": [
+    {
+      "id": "CHAT-TERMS-01",
+      "observed_at": "2026-10-28T14:30:51.440Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189",
+      "action": "Открыть условия до запроса",
+      "expected": "Бесплатный первичный запрос; отдельное согласие на предложение, RU-текст",
+      "actual": "Панель: A client request is consent..., required balance to request or accept 30 credits; основной запрос не обозначен бесплатным. Копия панели и компактная панель показаны одновременно.",
+      "status": "FAIL",
+      "evidence": [
+        "evidence/originals/client-terms-before.jpg"
+      ]
+    },
+    {
+      "id": "CHAT-TERMS-02",
+      "observed_at": "2026-10-28T15:08:09.947Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189",
+      "action": "Открыть условия → Escape",
+      "expected": "Панель закрыта, focus вернулся к кнопке тарифа",
+      "actual": "Escape закрывает панель, document.activeElement aria-label=Consultation details.",
+      "status": "PASS",
+      "evidence": [
+        "evidence/originals/chat-terms-360.png"
+      ]
+    },
+    {
+      "id": "CHAT-LIST-01",
+      "observed_at": "2026-10-28T15:03:10.732Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189",
+      "action": "Search contact: Solara, затем QA-NO-MATCH-20261028",
+      "expected": "Совпадение и явное пустое состояние",
+      "actual": "Solara ограничивает список разрешённым peer; отсутствующий маркер показывает No conversations found и Обзор людей. Очистка возвращает список.",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "id": "CHAT-MSG-01",
+      "observed_at": "2026-10-28T14:30:32.691Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189 + оператор #12",
+      "action": "Однократная отправка C1, независимый readback у оператора и reload клиента",
+      "expected": "Одна доставленная запись; Unicode и перенос строки сохранены",
+      "actual": "В диалоге #57 обе стороны видят C1 с 🙂 😀 Ж € ✓ и второй строкой; после reload запись сохранена. Баланс до старта 8546.00.",
+      "status": "PASS",
+      "evidence": [
+        "evidence/originals/client-message-delivery.jpg"
+      ]
+    },
+    {
+      "id": "CHAT-MSG-02",
+      "observed_at": "2026-10-28T14:31:20.814Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189 + оператор #12",
+      "action": "Ответ оператора A1 с обычной защитой отправки",
+      "expected": "Ответ доставлен клиенту без искажения",
+      "actual": "После штатной 5-секундной разблокировки и одной отправки клиент получил A1 со всеми Unicode символами.",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "id": "CHAT-PAID-01",
+      "observed_at": "2026-10-28T14:33:15.892Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189 + оператор #12",
+      "action": "Клиент нажимает первичный Request paid consultation в диалоге #56",
+      "expected": "Только бесплатный запрос; ожидание предложения с отдельным принятием условий",
+      "actual": "Без предложения и checkbox сервер создал session #26, оператор видит Готов к подключению и Start client-requested consultation. Баланс 8546.00 не изменился.",
+      "status": "FAIL",
+      "evidence": [
+        "evidence/originals/client-request-ready.jpg",
+        "evidence/originals/operator-request-ready.jpg"
+      ]
+    },
+    {
+      "id": "CHAT-PAID-02",
+      "observed_at": "2026-10-28T14:34:10.037Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189 + оператор #12",
+      "action": "Оператор подключает session #26, затем ставит на паузу",
+      "expected": "Запрос бесплатен; списание только после старта; пауза останавливает биллинг",
+      "actual": "До старта 8546.00, после активного старта 8536.00: первая минута 10 кредитов. Обе стороны показывают активна, затем пауза.",
+      "status": "PASS",
+      "evidence": [
+        "evidence/originals/client-session-active.jpg",
+        "evidence/originals/operator-session-paused.jpg"
+      ]
+    },
+    {
+      "id": "CHAT-DRAFT-01",
+      "observed_at": "2026-10-28T14:39:08.484Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189",
+      "action": "Ввести черновик в #56; Help в отдельной вкладке; reload чата",
+      "expected": "Черновик и выбранный peer сохранены",
+      "actual": "После Help и reload выбран Solara/#56, текст QA-DRAFT восстановлен, баланс обновлён до 8536.00.",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "id": "CHAT-FAVORITE-01",
+      "observed_at": "2026-10-28T15:26:23.801Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189",
+      "action": "Изолированно Добавить в избранное → дождаться результата без переключения фильтра",
+      "expected": "При Premium-ограничении показано пояснение, нет ложного добавления",
+      "actual": "Показано модальное окно Получить Premium с Only Premium can mark profiles as favorites... и OK. Ограничение объяснено, профиль не добавлен. Ранний FAIL после быстрого переключения фильтра отозван. Английский текст учтён отдельно в CHAT-RU-01.",
+      "status": "PASS",
+      "evidence": [
+        "evidence/originals/favorite-isolated-final.jpg"
+      ]
+    },
+    {
+      "id": "CHAT-PAID-03",
+      "observed_at": "2026-10-28T14:41:05.396Z",
+      "url": "https://confideline.com/ru/admin/chat/v2?conversationId=56&leadType=chats",
+      "role": "Оператор #12 + клиент #189",
+      "action": "Пауза >3 минут, resume, завершить, открыть billing inspector",
+      "expected": "Пауза не оплачивается; конечный дебет согласуется с первой минутой, баланс и ledger",
+      "actual": "Session #26/ss-51ee2f0f849888322a3acec6 завершена, сервер 27 активных секунд, 60 оплаченных секунд, wallet #266 -10.00; 8546→8536, новых дебетов при паузе и завершении нет.",
+      "status": "PASS",
+      "evidence": [
+        "evidence/originals/operator-billing-ledger-266.jpg"
+      ]
+    },
+    {
+      "id": "CHAT-FILE-01",
+      "observed_at": "2026-10-28T14:42:26.713Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189 + оператор #12",
+      "action": "Выбрать TXT и отправить с подписью",
+      "expected": "Разрешённый файл с Unicode подписью доставлен обеим сторонам",
+      "actual": "qa-chat-small.txt 76 B с FILE-подписью получен оператором в #56. EXE отклонён видимым сообщением о правилах выбора, вложение не создано.",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "id": "CHAT-COMPOSER-02",
+      "observed_at": "2026-10-28T15:02:42.827Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189",
+      "action": "В свободном редакторе ввести EMOJI-префикс → Emoji → 😀 → отдельный readback",
+      "expected": "К тексту добавляется выбранный emoji",
+      "actual": "Палитра закрывается, но поле остаётся ровно QA-CHAT-20261028-R1-EMOJI: без 😀. Проверено изолированно, незавершённых Send нет. Раннее предположение о неработающей цитате отозвано: CHAT-QUOTE-01 подтверждает её работу.",
+      "status": "FAIL",
+      "evidence": [
+        "evidence/originals/chat-emoji-isolated.jpg"
+      ]
+    },
+    {
+      "id": "CHAT-PAID-04",
+      "observed_at": "2026-10-28T14:45:19.486Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189 + оператор #12",
+      "action": "Оператор Offer; клиент Принять предложение",
+      "expected": "Рассмотреть открывает условия; требуется отдельный checkbox и явное принятие",
+      "actual": "Принять предложение сразу переводит session в Готов к подключению, checkbox отсутствует; промежуточного просмотра существенных условий нет. Списание не началось, 8536.00.",
+      "status": "FAIL",
+      "evidence": [
+        "evidence/originals/client-offer-direct-accept.jpg"
+      ]
+    },
+    {
+      "id": "CHAT-LIMIT-01",
+      "observed_at": "2026-10-28T14:55:50.239Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189 + оператор #12",
+      "action": "990 символов + обычный клавиатурный ввод сверх лимита; отправить один раз",
+      "expected": "Ровно 1000 символов; независимая доставка 1000",
+      "actual": "Клавиатурный ввод остановился на maxLength=1000, validity=true. В сообщении обе стороны получили 1000 символов с маркером LIMIT.",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "id": "CHAT-FILE-02",
+      "observed_at": "2026-10-28T14:55:50.247Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189 + оператор #12",
+      "action": "Синтетический PNG с подписью; TXT download через авторизованный IAB",
+      "expected": "Изображение/подпись доставлены, TXT скачивается без искажения",
+      "actual": "PNG доставлен в #56 обеим сторонам. TXT attachment#44 скачан штатным downloadMedia, 76 байт и SHA256 fba4bb307bb78eabe033570bc024cee8a83a7581ebd8fed6149b471391f27565 совпали с исходником.",
+      "status": "PASS",
+      "evidence": [
+        "evidence/originals/received-attachment44.txt"
+      ]
+    },
+    {
+      "id": "CHAT-NET-01",
+      "observed_at": "2026-10-28T14:57:16.347Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189",
+      "action": "Временный offline текущей вкладки; одна Send; сеть восстановлена; Retry same message",
+      "expected": "Текст сохранён; исходная операция сверяется без дубликата",
+      "actual": "При offline: unknown, исходный текст сохранён и новый Send заблокирован. После восстановления сети Retry same message доставил один экземпляр оператору; приложение очистило draft. Сеть восстановлена.",
+      "status": "PASS",
+      "evidence": [
+        "evidence/originals/chat-offline-unknown-retained.jpg"
+      ]
+    },
+    {
+      "id": "CHAT-DELETE-01",
+      "observed_at": "2026-10-28T14:58:14.678Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189",
+      "action": "Меню Удаление беседы → Отмена",
+      "expected": "Есть подтверждение; отмена не удаляет диалог/сообщения",
+      "actual": "Открыто Удалить эту беседу? с Отмена/Удалить. Отмена сохранила #56 и OFFLINE-сообщение. Необратимое удаление старой истории не выполнялось.",
+      "status": "PASS",
+      "evidence": [
+        "evidence/originals/chat-delete-confirm.jpg"
+      ]
+    },
+    {
+      "id": "CHAT-FILE-LIMIT-01",
+      "observed_at": "2026-10-28T14:59:38.122Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189",
+      "action": "EXE, 6 малых TXT, отдельный 16 MiB, три по 9 MiB",
+      "expected": "Запрещённые/сверхлимитные файлы не отправляются; ≤5/10MiB/25MiB",
+      "actual": "EXE и 16MiB отклонены; шесть малых ограничены пятью; суммарные 27MiB отклонены без очереди. Крупные тестовые файлы не отправлены.",
+      "status": "PASS",
+      "evidence": [
+        "evidence/originals/chat-total-limit.jpg"
+      ]
+    },
+    {
+      "id": "CHAT-QUOTE-01",
+      "observed_at": "2026-10-28T15:02:42.876Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189 + оператор #12",
+      "action": "Reply на OFFLINE → текст QUOTE → отправка; выбрать/снять Select message",
+      "expected": "Цитата сохраняет исходное сообщение, выбор показывает число и снимается",
+      "actual": "Показано Reply to QA Client и Cancel reply; QUOTE отправлен с цитатой OFFLINE, оператор получил. Select message меняет aria-pressed=true, появляется 1 у удаления; повтор снимает выбор. Удаление не выполнялось.",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "id": "CHAT-SEARCH-01",
+      "observed_at": "2026-10-28T15:08:09.952Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189",
+      "action": "Маркер в поиске истории → Previous → отсутствующий текст → очистка",
+      "expected": "Совпадения и переходы работают, нет результата показано явно",
+      "actual": "QA-маркер дал 5 совпадений, Previous изменил счётчик на 2/5; отсутствующий текст показал Совпадений не найдено. Очистка/закрытие возвращает историю.",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "id": "CHAT-UI-01",
+      "observed_at": "2026-10-28T15:08:09.955Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189",
+      "action": "Условия на 360 и 1280px",
+      "expected": "При открытых условиях компактная тарифная панель скрыта согласно TZ",
+      "actual": "Полная панель условий и компактная панель тарифа одновременно присутствуют на обоих размерах.",
+      "status": "FAIL",
+      "evidence": [
+        "evidence/originals/chat-terms-360.png",
+        "evidence/originals/chat-terms-1280.png"
+      ]
+    },
+    {
+      "id": "CHAT-UI-02",
+      "observed_at": "2026-10-28T15:08:09.959Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189",
+      "action": "Открыть диалог при 360 CSS px",
+      "expected": "Placeholder/текст редактора читаем, без внутренней обрезки пустого поля",
+      "actual": "Пустой placeholder Введите ваше сообщение... переносится на вторую обрезанную строку; внутри пустого поля видна прокрутка.",
+      "status": "FAIL",
+      "evidence": [
+        "evidence/originals/chat-thread-360.png"
+      ]
+    },
+    {
+      "id": "CHAT-RU-01",
+      "observed_at": "2026-10-28T15:08:20.657Z",
+      "url": "https://confideline.com/ru/messages",
+      "role": "Клиент #189",
+      "action": "Открыть RU-чат, список, условия, файлы",
+      "expected": "Подписи соответствуют RU-макету поставки",
+      "actual": "Search contact, Unread, Consultation details, Request paid consultation, Drafts..., Photos and documents и существенные условия остаются на английском.",
+      "status": "FAIL",
+      "evidence": [
+        "evidence/originals/client-terms-before.jpg",
+        "evidence/originals/chat-thread-992.png"
+      ]
+    },
+    {
+      "id": "CHAT-PAID-05",
+      "status": "PASS",
+      "action": "Финальный расчёт сверх первой минуты",
+      "expected": "Первая минута 10 + ceil(45 × 10 / 60)=8, всего18; после завершения один финальный debit и актуальный readback обеих ролей.",
+      "actual": "Session#27 ss-01c1f0a62ee9b8cd7abaeb37 завершена:105 активных/105 оплаченных секунд; #268 -10 и #269 -8 (15:07UTC), 8536→8518. Client Final calculation completed;18 credits. Всего в этом QA 28 demo-кредитов (session26=10, session27=18). Активного биллинга и ожидания старта нет.",
+      "role": "Клиент #189 + оператор #12",
+      "url": "https://confideline.com/ru/messages",
+      "observed_at": "2026-10-28T15:26:35.274432+00:00",
+      "evidence": [
+        "evidence/originals/second-session-final.json",
+        "evidence/originals/second-session-final.jpg"
+      ]
+    },
+    {
+      "id": "CHAT-AUTH-01",
+      "status": "PASS",
+      "action": "Login as user в двух независимых браузерах",
+      "expected": "Подтверждённые клиент #189 и агент #12, независимые сессии",
+      "actual": "IAB вошёл клиентом #189; Chrome после этого оставался Admin, затем вошёл Kristy #12. Верифицированы роли и общий диалог #57/#56. Windows native recovery этим не заявляется.",
+      "role": "Клиент #189 + Kristy #12",
+      "url": "https://confideline.com/ru/messages",
+      "observed_at": "2026-10-28T15:26:35.274432+00:00",
+      "evidence": [
+        "evidence/originals/login-client-189.json",
+        "evidence/originals/login-agent-12.json",
+        "evidence/originals/client-login-identity.jpg",
+        "evidence/originals/agent-login-identity.jpg"
+      ]
+    },
+    {
+      "id": "CHAT-PAID-BUSY-01",
+      "status": "PASS",
+      "action": "Запрос к занятому эксперту Talia",
+      "expected": "409 с понятной причиной, без нового старта и дебета",
+      "actual": "В диалоге #57 endpoint paid-session-request вернул 409; показано Этот эксперт сейчас занят другой платной консультацией. Другую активную консультацию не завершали.",
+      "role": "Клиент #189",
+      "url": "https://confideline.com/ru/messages",
+      "observed_at": "2026-10-28T15:26:35.274432+00:00",
+      "evidence": [
+        "evidence/protocol.json"
+      ]
+    },
+    {
+      "id": "CHAT-REPORT-01",
+      "status": "PASS",
+      "action": "Открыть и отменить жалобу",
+      "expected": "Шесть причин, описание, отмена сохраняет чат; support отдельно",
+      "actual": "Открыта форма с six categories spam/profile/rude/fake/fraud/other; отмена сохранила #56. Жалоба не подавалась.",
+      "role": "Клиент #189",
+      "url": "https://confideline.com/ru/messages",
+      "observed_at": "2026-10-28T15:26:35.274432+00:00",
+      "evidence": [
+        "evidence/originals/chat-report-modal.jpg"
+      ]
+    },
+    {
+      "id": "CHAT-RESP-01",
+      "status": "PASS",
+      "action": "Проверить ширины чата и мобильный список/диалог",
+      "expected": "На пяти CSS-ширинах нет горизонтального переполнения; mobile открывает выбранный peer",
+      "actual": "360/480/768/992/1280 CSS px при scale=1. Документ не выходит по горизонтали. При 360 сначала список, выбор Solara открывает диалог. Локальная обрезка редактора вынесена в CHAT-UI-02.",
+      "role": "Клиент #189",
+      "url": "https://confideline.com/ru/messages",
+      "observed_at": "2026-10-28T15:26:35.274432+00:00",
+      "evidence": [
+        "evidence/originals/responsive-metrics.json",
+        "evidence/originals/mobile-width-confirmed.json",
+        "evidence/originals/chat-list-360.png",
+        "evidence/originals/chat-thread-360.png",
+        "evidence/originals/chat-thread-480.png",
+        "evidence/originals/chat-thread-768.png",
+        "evidence/originals/chat-thread-992.png",
+        "evidence/originals/chat-thread-1280.png"
+      ]
+    }
+  ],
+  "original_name_map": {
+    "evidence/originals/client-terms-before.png": {
+      "path": "evidence/originals/client-terms-before.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\client-terms-before.png",
+      "sha256": "3b0b0be50741ab889e73ab8fdb48d9a03b0eb4ed792b61cc378e0f1e410c4d4f",
+      "caption": "client-terms-before"
+    },
+    "evidence/originals/chat-terms-360.png": {
+      "path": "evidence/originals/chat-terms-360.png",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-terms-360.png",
+      "sha256": "014e08706197ba13c343b331a8b5d6b033e37c0f25addf2ea922e6053d72be79",
+      "caption": "chat-terms-360"
+    },
+    "evidence/originals/client-message-delivery.png": {
+      "path": "evidence/originals/client-message-delivery.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\client-message-delivery.png",
+      "sha256": "a31274214e76598cb7e7a3c901c43608705072805046d7058297993af7a1fff0",
+      "caption": "client-message-delivery"
+    },
+    "evidence/originals/client-request-ready.png": {
+      "path": "evidence/originals/client-request-ready.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\client-request-ready.png",
+      "sha256": "330d7cd2b0070801fbe516e971c7f0b202ca63fb54a93a0ec01f9607ddc08739",
+      "caption": "client-request-ready"
+    },
+    "evidence/originals/operator-request-ready.png": {
+      "path": "evidence/originals/operator-request-ready.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\operator-request-ready.png",
+      "sha256": "5a14fb66e971846af7fe01082c4822531bdfc8457e4275ea1ecb82a56e435d67",
+      "caption": "operator-request-ready"
+    },
+    "evidence/originals/client-session-active.png": {
+      "path": "evidence/originals/client-session-active.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\client-session-active.png",
+      "sha256": "2a1f458bd7ddcdaea06a7124035a0169348b185d8c07e7316df8dd6ea2f867bd",
+      "caption": "client-session-active"
+    },
+    "evidence/originals/operator-session-paused.png": {
+      "path": "evidence/originals/operator-session-paused.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\operator-session-paused.png",
+      "sha256": "b66cbdf6d5acfff41e09ac0b2696bf817a36932c0c7ec28a1a960ef03fbb8922",
+      "caption": "operator-session-paused"
+    },
+    "checks/favorite-isolated-final.jpg": {
+      "path": "evidence/originals/favorite-isolated-final.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\checks\\favorite-isolated-final.jpg",
+      "sha256": "906f7d1e7f07b20397936090fae512214670ba1ac64482f7c7f8cf01e3a5121c",
+      "caption": "favorite-isolated-final"
+    },
+    "evidence/originals/operator-billing-ledger-266.png": {
+      "path": "evidence/originals/operator-billing-ledger-266.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\operator-billing-ledger-266.png",
+      "sha256": "0b6be42c34dcaada6b27223d5c8481fa00e4704f5a9e95e7c6c84cb80f579b62",
+      "caption": "operator-billing-ledger-266"
+    },
+    "evidence/originals/chat-emoji-isolated.png": {
+      "path": "evidence/originals/chat-emoji-isolated.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-emoji-isolated.png",
+      "sha256": "e2e7e4677d0f69833e374c826cc72427af9a2a615c1b2af513f4a2920a87f836",
+      "caption": "chat-emoji-isolated"
+    },
+    "evidence/originals/client-offer-direct-accept.png": {
+      "path": "evidence/originals/client-offer-direct-accept.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\client-offer-direct-accept.png",
+      "sha256": "5d40f30287f29e49c364598a6b7e6853c098feb5c07bc7187f5710be34441c67",
+      "caption": "client-offer-direct-accept"
+    },
+    "evidence/received-attachment44.txt": {
+      "path": "evidence/originals/received-attachment44.txt",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\received-attachment44.txt",
+      "sha256": "fba4bb307bb78eabe033570bc024cee8a83a7581ebd8fed6149b471391f27565",
+      "caption": "received-attachment44"
+    },
+    "evidence/originals/chat-offline-unknown-retained.png": {
+      "path": "evidence/originals/chat-offline-unknown-retained.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-offline-unknown-retained.png",
+      "sha256": "d4675421945efa289ebb36ec9a1eadba45dc9c24c4a21a0659c297f34346d248",
+      "caption": "chat-offline-unknown-retained"
+    },
+    "evidence/originals/chat-delete-confirm.png": {
+      "path": "evidence/originals/chat-delete-confirm.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-delete-confirm.png",
+      "sha256": "8bab651f78afe820e10eefbec477fda6c5035b22dea73f993ca09fb6c04614a9",
+      "caption": "chat-delete-confirm"
+    },
+    "evidence/originals/chat-total-limit.png": {
+      "path": "evidence/originals/chat-total-limit.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-total-limit.png",
+      "sha256": "5b25ae3cf1f255a916fa0209bb05d6b3b9949e25cb1194bb0a3d1799e1eb1038",
+      "caption": "chat-total-limit"
+    },
+    "evidence/originals/chat-terms-1280.png": {
+      "path": "evidence/originals/chat-terms-1280.png",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-terms-1280.png",
+      "sha256": "56eae16fa8844f9b37aa974b8e4a2e9073fb3597e4de9a6eed3e21cdc43804e0",
+      "caption": "chat-terms-1280"
+    },
+    "evidence/originals/chat-thread-360.png": {
+      "path": "evidence/originals/chat-thread-360.png",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-thread-360.png",
+      "sha256": "f53905362ef43542423ede392c76933780bc6e21c652556628309d335a4c53c3",
+      "caption": "chat-thread-360"
+    },
+    "evidence/originals/chat-thread-992.png": {
+      "path": "evidence/originals/chat-thread-992.png",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-thread-992.png",
+      "sha256": "3054edbe655c116a8db3abc97de73b78ae46dd1cdf91f9184f1ce6192bc9edc6",
+      "caption": "chat-thread-992"
+    },
+    "checks/second-session-final.json": {
+      "path": "evidence/originals/second-session-final.json",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\checks\\second-session-final.json",
+      "sha256": "ab6ed330483135f77c50ae26e8107a7f9c0b2e389c77c1c5f86d3cb36800c7db",
+      "caption": "second-session-final"
+    },
+    "evidence/originals/second-session-final.png": {
+      "path": "evidence/originals/second-session-final.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\second-session-final.png",
+      "sha256": "c86bf046f77fbd7d1767cfc0499ab7392eed48cb32f78b48ac70dcd0f439d49d",
+      "caption": "second-session-final"
+    },
+    "checks/login-client-189.json": {
+      "path": "evidence/originals/login-client-189.json",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\checks\\login-client-189.json",
+      "sha256": "4c91d7b8271c015de5f51901af508d0b1b223451acac4048369549b06db32a07",
+      "caption": "login-client-189"
+    },
+    "checks/login-agent-12.json": {
+      "path": "evidence/originals/login-agent-12.json",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\checks\\login-agent-12.json",
+      "sha256": "d9daa0bc722f02e1f5b38f78664ff07d1f466389ad13b7ba8b7dd5eb87a64ec4",
+      "caption": "login-agent-12"
+    },
+    "evidence/originals/client-login-identity.png": {
+      "path": "evidence/originals/client-login-identity.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\client-login-identity.png",
+      "sha256": "c0e3a37f64c59642508fb254c60e8a0e3834cae27da089c80ecfa909b1d39c80",
+      "caption": "client-login-identity"
+    },
+    "evidence/originals/agent-login-identity.png": {
+      "path": "evidence/originals/agent-login-identity.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\agent-login-identity.png",
+      "sha256": "c29027c17d36f30a44cbd5863a3966812d7c56c69ccf4e6ac1f02c70ecf0f8e0",
+      "caption": "agent-login-identity"
+    },
+    "evidence/originals/chat-report-modal.png": {
+      "path": "evidence/originals/chat-report-modal.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-report-modal.png",
+      "sha256": "66df5307e21f4e601ed09adb70b4e920e1abf236f01714488064374f43e73763",
+      "caption": "chat-report-modal"
+    },
+    "checks/responsive-metrics.json": {
+      "path": "evidence/originals/responsive-metrics.json",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\checks\\responsive-metrics.json",
+      "sha256": "ebff5336e9286be7f149394bb71c4a1b220ace4915886c83aa52bee52556b5ee",
+      "caption": "responsive-metrics"
+    },
+    "checks/mobile-width-confirmed.json": {
+      "path": "evidence/originals/mobile-width-confirmed.json",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\checks\\mobile-width-confirmed.json",
+      "sha256": "3e578f9e5045ab1cbfcfc2c83a1dfec3aaa86631800480ee13375baa2becfc56",
+      "caption": "mobile-width-confirmed"
+    },
+    "evidence/originals/chat-list-360.png": {
+      "path": "evidence/originals/chat-list-360.png",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-list-360.png",
+      "sha256": "ce0cff6120996716d626f3de773868d2df576463553ed24de57ea50a16167129",
+      "caption": "chat-list-360"
+    },
+    "evidence/originals/chat-thread-480.png": {
+      "path": "evidence/originals/chat-thread-480.png",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-thread-480.png",
+      "sha256": "2c478ade200444d78a1a1dc0783badea5a3a9c0b76ff311790aa8ab6e053d669",
+      "caption": "chat-thread-480"
+    },
+    "evidence/originals/chat-thread-768.png": {
+      "path": "evidence/originals/chat-thread-768.png",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-thread-768.png",
+      "sha256": "796d1ec3f4558b450233007903a0e68e78275d629b115cc9f500e790dd4339f2",
+      "caption": "chat-thread-768"
+    },
+    "evidence/originals/chat-thread-1280.png": {
+      "path": "evidence/originals/chat-thread-1280.png",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-thread-1280.png",
+      "sha256": "bbdc970aead5884c073a5559afa387c4a0ddaf3e443672f30b3e11b428bf5c75",
+      "caption": "chat-thread-1280"
+    }
+  },
+  "early_observation_corrections": "Только последняя строка по ID идёт в матрицу. Ранние предположения о неисправности Reply и об отсутствии Premium-пояснения отозваны после изолированной проверки и завершённой обработки интерфейса. В раннем getByText чтении до async-обновления пустой результат не означал отказ."
+}

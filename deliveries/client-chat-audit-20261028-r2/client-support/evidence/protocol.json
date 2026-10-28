@@ -1,0 +1,177 @@
+{
+  "schema": "confideline.client-chat.live-protocol.v1",
+  "source_protocol_sha256": "53fad964ba3a6245e347d10132e7ed302348fd85fb022a7c00bae43ae9fbb2d8",
+  "observations": [
+    {
+      "id": "SUP-CREATE-01",
+      "observed_at": "2026-10-28T14:35:18.541Z",
+      "url": "https://confideline.com/ru/support/requests/32",
+      "role": "Клиент #189",
+      "action": "Открыть Help из paused #56/session #26, пустая отправка, EXE и TXT, одна отправка",
+      "expected": "Категория и связь сохранены, обязательные поля/запрещённый тип отклонены, один тикет",
+      "actual": "Создан #32, категория консультация, связь #56/#26 и операция #266, TXT #9 доступен. Пустые title/description блокируются; EXE явно отклонён; введённый текст сохранён.",
+      "status": "PASS",
+      "evidence": [
+        "evidence/originals/support-create-bound.jpg"
+      ]
+    },
+    {
+      "id": "SUP-CONFLICT-01",
+      "observed_at": "2026-10-28T14:36:13.300Z",
+      "url": "https://confideline.com/ru/support/requests/32",
+      "role": "Клиент #189 + Kristy #12",
+      "action": "Одновременное назначение тикета оператором и ответ клиента из старой версии",
+      "expected": "Конфликт версии не создаёт дубликат, текст и файлы остаются",
+      "actual": "Сервер отклонил устаревшую версию: changed while editing, request not sent, text/files kept. Текст ответа клиента остался в редакторе, показан Retry same operation.",
+      "status": "PASS",
+      "evidence": [
+        "evidence/originals/support-conflict-retained.jpg"
+      ]
+    },
+    {
+      "id": "SUP-RETRY-01",
+      "observed_at": "2026-10-28T14:37:14.983Z",
+      "url": "https://confideline.com/ru/support/requests/32",
+      "role": "Клиент #189",
+      "action": "После конфликта обновить страницу и Retry the same operation",
+      "expected": "Штатный retry после обновления отправляет один сохранённый ответ",
+      "actual": "После reload черновик восстановлен, но и Отправить ответ, и Retry same operation повторяют changed while editing; клиентская запись отсутствует, текст остаётся.",
+      "status": "FAIL",
+      "evidence": [
+        "evidence/originals/support-retry-conflict-loop.jpg"
+      ]
+    },
+    {
+      "id": "SUP-PRIVACY-01",
+      "observed_at": "2026-10-28T14:37:28.131Z",
+      "url": "https://confideline.com/ru/support/requests/32",
+      "role": "Клиент #189 + Kristy #12",
+      "action": "Поддержка пишет публичный ответ и внутреннюю заметку, клиент reload",
+      "expected": "Публичный ответ виден, служебная заметка отсутствует",
+      "actual": "Публичный PUBLIC доставлен с Unicode; INTERNAL сохранена на стороне сотрудников и отсутствует в клиентской DOM после reload.",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "id": "SUP-CLOSE-01",
+      "observed_at": "2026-10-28T14:40:41.737Z",
+      "url": "https://confideline.com/ru/support/requests/32",
+      "role": "Клиент #189",
+      "action": "Закрыть → Keep open с черновиком → reload → подтвердить закрытие",
+      "expected": "Отмена сохраняет draft; подтверждение закрывает; редактор исчезает; история остаётся",
+      "actual": "Отмена сохранила CLOSE-DRAFT. После подтверждения #32 Закрыто, редактора нет, черновик показан отдельно; доступно Создать повторное обращение.",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "id": "SUP-FOLLOWUP-01",
+      "observed_at": "2026-10-28T14:45:59.876Z",
+      "url": "https://confideline.com/ru/support/requests/33",
+      "role": "Клиент #189 + Kristy #12",
+      "action": "Создать повторное по закрытому #32; ответить в #33; readback сотрудником",
+      "expected": "Новый связанный тикет, закрытый не меняется; ответ клиента сохраняется",
+      "actual": "Создан #33 Follow-up с ссылкой на #32, ответ REPLY33 доставлен сотруднику. Ошибка retry в #32 не воспроизвелась в новом тикете без конфликта.",
+      "status": "PASS",
+      "evidence": []
+    },
+    {
+      "id": "SUP-FILE-LIMIT-01",
+      "observed_at": "2026-10-28T14:59:38.206Z",
+      "url": "https://confideline.com/ru/support/requests/33",
+      "role": "Клиент #189",
+      "action": "EXE, 11 TXT, отдельный 16MiB, три по 11MiB в форме без submit",
+      "expected": "≤10 файлов, ≤15MiB каждый, ≤30MiB сумма; понятные отказы",
+      "actual": "EXE отклонён явно, 11 ограничены 10 с пояснением; 16MiB отклонён с именем/лимитом15; 33MiB ограничены22MiB и показан лимит30. Очередь очищена, третий тикет не создан.",
+      "status": "PASS",
+      "evidence": [
+        "evidence/originals/support-total-limit.jpg"
+      ]
+    },
+    {
+      "id": "SUP-LIST-01",
+      "observed_at": "2026-10-28T15:03:34.677Z",
+      "url": "https://confideline.com/ru/support?originConversationId=56&originServiceSessionId=26&originBalanceTransactionId=266",
+      "role": "Клиент #189",
+      "action": "Открыть Мои обращения с контекстом #56",
+      "expected": "Новые тикеты присутствуют один раз, статусы и последний ответ верны",
+      "actual": "В списке #33 и #32 по одной строке, оба Закрыто, показаны REPLY33 и PUBLIC; контекст разговора сохранён.",
+      "status": "PASS",
+      "evidence": [
+        "evidence/originals/support-list-closed.jpg"
+      ]
+    },
+    {
+      "id": "SUP-UI-01",
+      "observed_at": "2026-10-28T15:08:09.962Z",
+      "url": "https://confideline.com/ru/support?originConversationId=56&originServiceSessionId=26&originBalanceTransactionId=266",
+      "role": "Клиент #189",
+      "action": "Закрытый тикет #33 при 360 CSS px",
+      "expected": "Нет горизонтального скролла страницы",
+      "actual": "documentElement clientWidth=345, scrollWidth=350, видна горизонтальная полоса. Переполнение 5px.",
+      "status": "FAIL",
+      "evidence": [
+        "evidence/originals/support-closed-360.png",
+        "evidence/originals/mobile-width-confirmed.json"
+      ]
+    },
+    {
+      "id": "SUP-RU-01",
+      "observed_at": "2026-10-28T15:08:20.660Z",
+      "url": "https://confideline.com/ru/support?originConversationId=56&originServiceSessionId=26&originBalanceTransactionId=266",
+      "role": "Клиент #189",
+      "action": "RU-поддержка: Help/create/reply/close",
+      "expected": "Элементы управления соответствуют RU-макету",
+      "actual": "Back to conversation, Conversation with..., Add files, Keep open и ошибки восстановления написаны по-английски.",
+      "status": "FAIL",
+      "evidence": [
+        "evidence/originals/support-closed-360.png",
+        "evidence/originals/support-retry-conflict-loop.jpg"
+      ]
+    }
+  ],
+  "original_name_map": {
+    "evidence/originals/support-create-bound.png": {
+      "path": "evidence/originals/support-create-bound.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\support-create-bound.png",
+      "sha256": "86819786056580a1ba55363c845c86eb39f7c9bb9305c3ad00be991e4471507c",
+      "caption": "support-create-bound"
+    },
+    "evidence/originals/support-conflict-retained.png": {
+      "path": "evidence/originals/support-conflict-retained.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\support-conflict-retained.png",
+      "sha256": "fe3c568803a37eccd34436c058259e143e49b02d58578718c791a5294d680261",
+      "caption": "support-conflict-retained"
+    },
+    "evidence/originals/support-retry-conflict-loop.png": {
+      "path": "evidence/originals/support-retry-conflict-loop.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\support-retry-conflict-loop.png",
+      "sha256": "2321ef23c1fd0055b4ffc5982f9093c8bff1d4c564c4552fcdaa5cc994741205",
+      "caption": "support-retry-conflict-loop"
+    },
+    "evidence/originals/support-total-limit.png": {
+      "path": "evidence/originals/support-total-limit.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\support-total-limit.png",
+      "sha256": "9e8c0dd555c7082ac03a6b5d97ce51fa31ecc95d3ba39514532bcf7a31f3d374",
+      "caption": "support-total-limit"
+    },
+    "evidence/originals/support-list-closed.png": {
+      "path": "evidence/originals/support-list-closed.jpg",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\support-list-closed.png",
+      "sha256": "71375e7e6ce885804712a1db552ef3f7759023d8163aa526c54421e775efd0bc",
+      "caption": "support-list-closed"
+    },
+    "evidence/originals/support-closed-360.png": {
+      "path": "evidence/originals/support-closed-360.png",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\support-closed-360.png",
+      "sha256": "8ea52968ab1387bdde16a469e1778e9070cf2f7d2eea3517fd642a417dbfd348",
+      "caption": "support-closed-360"
+    },
+    "checks/mobile-width-confirmed.json": {
+      "path": "evidence/originals/mobile-width-confirmed.json",
+      "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\checks\\mobile-width-confirmed.json",
+      "sha256": "3e578f9e5045ab1cbfcfc2c83a1dfec3aaa86631800480ee13375baa2becfc56",
+      "caption": "mobile-width-confirmed"
+    }
+  },
+  "early_observation_corrections": "Только последняя строка по ID идёт в матрицу. Ранние предположения о неисправности Reply и об отсутствии Premium-пояснения отозваны после изолированной проверки и завершённой обработки интерфейса. В раннем getByText чтении до async-обновления пустой результат не означал отказ."
+}

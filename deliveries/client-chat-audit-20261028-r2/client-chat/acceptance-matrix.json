@@ -1,0 +1,1250 @@
+{
+  "module": "client-chat",
+  "counts": {
+    "FAIL": 8,
+    "PASS": 21,
+    "NOT_RUN": 10
+  },
+  "scenario_counts": {
+    "FAIL": 8,
+    "PASS": 21,
+    "NOT_RUN": 10
+  },
+  "product_acceptance": "NOT_COMPLETE",
+  "cases": [
+    {
+      "id": "CHAT-TERMS-01",
+      "module": "client-chat",
+      "title": "Открыть условия до запроса",
+      "status": "FAIL",
+      "role": "Клиент #189",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Бесплатный первичный запрос; отдельное согласие на предложение, RU-текст",
+      "result_note": "Панель: A client request is consent..., required balance to request or accept 30 credits; основной запрос не обозначен бесплатным. Копия панели и компактная панель показаны одновременно.",
+      "steps": [
+        "Открыть условия до запроса"
+      ],
+      "verified_at_utc": "2026-10-28T14:30:51.440Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/client-terms-before.jpg",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/client-terms-before.jpg",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\client-terms-before.png",
+          "sha256": "3b0b0be50741ab889e73ab8fdb48d9a03b0eb4ed792b61cc378e0f1e410c4d4f",
+          "caption": "client-terms-before"
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Исправить подтверждённый дефект и повторить те же шаги.",
+      "delivery_status": "FAIL"
+    },
+    {
+      "id": "CHAT-TERMS-02",
+      "module": "client-chat",
+      "title": "Открыть условия → Escape",
+      "status": "PASS",
+      "role": "Клиент #189",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Панель закрыта, focus вернулся к кнопке тарифа",
+      "result_note": "Escape закрывает панель, document.activeElement aria-label=Consultation details.",
+      "steps": [
+        "Открыть условия → Escape"
+      ],
+      "verified_at_utc": "2026-10-28T15:08:09.947Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/chat-terms-360.png",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/chat-terms-360.png",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-terms-360.png",
+          "sha256": "014e08706197ba13c343b331a8b5d6b033e37c0f25addf2ea922e6053d72be79",
+          "caption": "chat-terms-360",
+          "rects": [
+            [
+              0,
+              0.211,
+              0.956,
+              0.258
+            ],
+            [
+              0,
+              0.469,
+              0.956,
+              0.133
+            ]
+          ]
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-LIST-01",
+      "module": "client-chat",
+      "title": "Search contact: Solara, затем QA-NO-MATCH-20261028",
+      "status": "PASS",
+      "role": "Клиент #189",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Совпадение и явное пустое состояние",
+      "result_note": "Solara ограничивает список разрешённым peer; отсутствующий маркер показывает No conversations found и Обзор людей. Очистка возвращает список.",
+      "steps": [
+        "Search contact: Solara, затем QA-NO-MATCH-20261028"
+      ],
+      "verified_at_utc": "2026-10-28T15:03:10.732Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-MSG-01",
+      "module": "client-chat",
+      "title": "Однократная отправка C1, независимый readback у оператора и reload клиента",
+      "status": "PASS",
+      "role": "Клиент #189 + оператор #12",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Одна доставленная запись; Unicode и перенос строки сохранены",
+      "result_note": "В диалоге #57 обе стороны видят C1 с 🙂 😀 Ж € ✓ и второй строкой; после reload запись сохранена. Баланс до старта 8546.00.",
+      "steps": [
+        "Однократная отправка C1, независимый readback у оператора и reload клиента"
+      ],
+      "verified_at_utc": "2026-10-28T14:30:32.691Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/client-message-delivery.jpg",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/client-message-delivery.jpg",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\client-message-delivery.png",
+          "sha256": "a31274214e76598cb7e7a3c901c43608705072805046d7058297993af7a1fff0",
+          "caption": "client-message-delivery"
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-MSG-02",
+      "module": "client-chat",
+      "title": "Ответ оператора A1 с обычной защитой отправки",
+      "status": "PASS",
+      "role": "Клиент #189 + оператор #12",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Ответ доставлен клиенту без искажения",
+      "result_note": "После штатной 5-секундной разблокировки и одной отправки клиент получил A1 со всеми Unicode символами.",
+      "steps": [
+        "Ответ оператора A1 с обычной защитой отправки"
+      ],
+      "verified_at_utc": "2026-10-28T14:31:20.814Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-PAID-01",
+      "module": "client-chat",
+      "title": "Клиент нажимает первичный Request paid consultation в диалоге #56",
+      "status": "FAIL",
+      "role": "Клиент #189 + оператор #12",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Только бесплатный запрос; ожидание предложения с отдельным принятием условий",
+      "result_note": "Без предложения и checkbox сервер создал session #26, оператор видит Готов к подключению и Start client-requested consultation. Баланс 8546.00 не изменился.",
+      "steps": [
+        "Клиент нажимает первичный Request paid consultation в диалоге #56"
+      ],
+      "verified_at_utc": "2026-10-28T14:33:15.892Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/client-request-ready.jpg",
+        "evidence/originals/operator-request-ready.jpg",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/client-request-ready.jpg",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\client-request-ready.png",
+          "sha256": "330d7cd2b0070801fbe516e971c7f0b202ca63fb54a93a0ec01f9607ddc08739",
+          "caption": "client-request-ready"
+        },
+        {
+          "path": "evidence/originals/operator-request-ready.jpg",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\operator-request-ready.png",
+          "sha256": "5a14fb66e971846af7fe01082c4822531bdfc8457e4275ea1ecb82a56e435d67",
+          "caption": "operator-request-ready"
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Исправить подтверждённый дефект и повторить те же шаги.",
+      "delivery_status": "FAIL"
+    },
+    {
+      "id": "CHAT-PAID-02",
+      "module": "client-chat",
+      "title": "Оператор подключает session #26, затем ставит на паузу",
+      "status": "PASS",
+      "role": "Клиент #189 + оператор #12",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Запрос бесплатен; списание только после старта; пауза останавливает биллинг",
+      "result_note": "До старта 8546.00, после активного старта 8536.00: первая минута 10 кредитов. Обе стороны показывают активна, затем пауза.",
+      "steps": [
+        "Оператор подключает session #26, затем ставит на паузу"
+      ],
+      "verified_at_utc": "2026-10-28T14:34:10.037Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/client-session-active.jpg",
+        "evidence/originals/operator-session-paused.jpg",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/client-session-active.jpg",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\client-session-active.png",
+          "sha256": "2a1f458bd7ddcdaea06a7124035a0169348b185d8c07e7316df8dd6ea2f867bd",
+          "caption": "client-session-active"
+        },
+        {
+          "path": "evidence/originals/operator-session-paused.jpg",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\operator-session-paused.png",
+          "sha256": "b66cbdf6d5acfff41e09ac0b2696bf817a36932c0c7ec28a1a960ef03fbb8922",
+          "caption": "operator-session-paused"
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-DRAFT-01",
+      "module": "client-chat",
+      "title": "Ввести черновик в #56; Help в отдельной вкладке; reload чата",
+      "status": "PASS",
+      "role": "Клиент #189",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Черновик и выбранный peer сохранены",
+      "result_note": "После Help и reload выбран Solara/#56, текст QA-DRAFT восстановлен, баланс обновлён до 8536.00.",
+      "steps": [
+        "Ввести черновик в #56; Help в отдельной вкладке; reload чата"
+      ],
+      "verified_at_utc": "2026-10-28T14:39:08.484Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-FAVORITE-01",
+      "module": "client-chat",
+      "title": "Изолированно Добавить в избранное → дождаться результата без переключения фильтра",
+      "status": "PASS",
+      "role": "Клиент #189",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "При Premium-ограничении показано пояснение, нет ложного добавления",
+      "result_note": "Показано модальное окно Получить Premium с Only Premium can mark profiles as favorites... и OK. Ограничение объяснено, профиль не добавлен. Ранний FAIL после быстрого переключения фильтра отозван. Английский текст учтён отдельно в CHAT-RU-01.",
+      "steps": [
+        "Изолированно Добавить в избранное → дождаться результата без переключения фильтра"
+      ],
+      "verified_at_utc": "2026-10-28T15:26:23.801Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/favorite-isolated-final.jpg",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/favorite-isolated-final.jpg",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\checks\\favorite-isolated-final.jpg",
+          "sha256": "906f7d1e7f07b20397936090fae512214670ba1ac64482f7c7f8cf01e3a5121c",
+          "caption": "favorite-isolated-final"
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-PAID-03",
+      "module": "client-chat",
+      "title": "Пауза >3 минут, resume, завершить, открыть billing inspector",
+      "status": "PASS",
+      "role": "Оператор #12 + клиент #189",
+      "url": "https://confideline.com/ru/admin/chat/v2?conversationId=56&leadType=chats",
+      "expected": "Пауза не оплачивается; конечный дебет согласуется с первой минутой, баланс и ledger",
+      "result_note": "Session #26/ss-51ee2f0f849888322a3acec6 завершена, сервер 27 активных секунд, 60 оплаченных секунд, wallet #266 -10.00; 8546→8536, новых дебетов при паузе и завершении нет.",
+      "steps": [
+        "Пауза >3 минут, resume, завершить, открыть billing inspector"
+      ],
+      "verified_at_utc": "2026-10-28T14:41:05.396Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/operator-billing-ledger-266.jpg",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/operator-billing-ledger-266.jpg",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\operator-billing-ledger-266.png",
+          "sha256": "0b6be42c34dcaada6b27223d5c8481fa00e4704f5a9e95e7c6c84cb80f579b62",
+          "caption": "operator-billing-ledger-266"
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-FILE-01",
+      "module": "client-chat",
+      "title": "Выбрать TXT и отправить с подписью",
+      "status": "PASS",
+      "role": "Клиент #189 + оператор #12",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Разрешённый файл с Unicode подписью доставлен обеим сторонам",
+      "result_note": "qa-chat-small.txt 76 B с FILE-подписью получен оператором в #56. EXE отклонён видимым сообщением о правилах выбора, вложение не создано.",
+      "steps": [
+        "Выбрать TXT и отправить с подписью"
+      ],
+      "verified_at_utc": "2026-10-28T14:42:26.713Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-COMPOSER-02",
+      "module": "client-chat",
+      "title": "В свободном редакторе ввести EMOJI-префикс → Emoji → 😀 → отдельный readback",
+      "status": "FAIL",
+      "role": "Клиент #189",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "К тексту добавляется выбранный emoji",
+      "result_note": "Палитра закрывается, но поле остаётся ровно QA-CHAT-20261028-R1-EMOJI: без 😀. Проверено изолированно, незавершённых Send нет. Раннее предположение о неработающей цитате отозвано: CHAT-QUOTE-01 подтверждает её работу.",
+      "steps": [
+        "В свободном редакторе ввести EMOJI-префикс → Emoji → 😀 → отдельный readback"
+      ],
+      "verified_at_utc": "2026-10-28T15:02:42.827Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/chat-emoji-isolated.jpg",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/chat-emoji-isolated.jpg",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-emoji-isolated.png",
+          "sha256": "e2e7e4677d0f69833e374c826cc72427af9a2a615c1b2af513f4a2920a87f836",
+          "caption": "chat-emoji-isolated"
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Исправить подтверждённый дефект и повторить те же шаги.",
+      "delivery_status": "FAIL"
+    },
+    {
+      "id": "CHAT-PAID-04",
+      "module": "client-chat",
+      "title": "Оператор Offer; клиент Принять предложение",
+      "status": "FAIL",
+      "role": "Клиент #189 + оператор #12",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Рассмотреть открывает условия; требуется отдельный checkbox и явное принятие",
+      "result_note": "Принять предложение сразу переводит session в Готов к подключению, checkbox отсутствует; промежуточного просмотра существенных условий нет. Списание не началось, 8536.00.",
+      "steps": [
+        "Оператор Offer; клиент Принять предложение"
+      ],
+      "verified_at_utc": "2026-10-28T14:45:19.486Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/client-offer-direct-accept.jpg",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/client-offer-direct-accept.jpg",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\client-offer-direct-accept.png",
+          "sha256": "5d40f30287f29e49c364598a6b7e6853c098feb5c07bc7187f5710be34441c67",
+          "caption": "client-offer-direct-accept"
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Исправить подтверждённый дефект и повторить те же шаги.",
+      "delivery_status": "FAIL"
+    },
+    {
+      "id": "CHAT-LIMIT-01",
+      "module": "client-chat",
+      "title": "990 символов + обычный клавиатурный ввод сверх лимита; отправить один раз",
+      "status": "PASS",
+      "role": "Клиент #189 + оператор #12",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Ровно 1000 символов; независимая доставка 1000",
+      "result_note": "Клавиатурный ввод остановился на maxLength=1000, validity=true. В сообщении обе стороны получили 1000 символов с маркером LIMIT.",
+      "steps": [
+        "990 символов + обычный клавиатурный ввод сверх лимита; отправить один раз"
+      ],
+      "verified_at_utc": "2026-10-28T14:55:50.239Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-FILE-02",
+      "module": "client-chat",
+      "title": "Синтетический PNG с подписью; TXT download через авторизованный IAB",
+      "status": "PASS",
+      "role": "Клиент #189 + оператор #12",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Изображение/подпись доставлены, TXT скачивается без искажения",
+      "result_note": "PNG доставлен в #56 обеим сторонам. TXT attachment#44 скачан штатным downloadMedia, 76 байт и SHA256 fba4bb307bb78eabe033570bc024cee8a83a7581ebd8fed6149b471391f27565 совпали с исходником.",
+      "steps": [
+        "Синтетический PNG с подписью; TXT download через авторизованный IAB"
+      ],
+      "verified_at_utc": "2026-10-28T14:55:50.247Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/received-attachment44.txt",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/received-attachment44.txt",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\received-attachment44.txt",
+          "sha256": "fba4bb307bb78eabe033570bc024cee8a83a7581ebd8fed6149b471391f27565",
+          "caption": "received-attachment44"
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-NET-01",
+      "module": "client-chat",
+      "title": "Временный offline текущей вкладки; одна Send; сеть восстановлена; Retry same message",
+      "status": "PASS",
+      "role": "Клиент #189",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Текст сохранён; исходная операция сверяется без дубликата",
+      "result_note": "При offline: unknown, исходный текст сохранён и новый Send заблокирован. После восстановления сети Retry same message доставил один экземпляр оператору; приложение очистило draft. Сеть восстановлена.",
+      "steps": [
+        "Временный offline текущей вкладки; одна Send; сеть восстановлена; Retry same message"
+      ],
+      "verified_at_utc": "2026-10-28T14:57:16.347Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/chat-offline-unknown-retained.jpg",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/chat-offline-unknown-retained.jpg",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-offline-unknown-retained.png",
+          "sha256": "d4675421945efa289ebb36ec9a1eadba45dc9c24c4a21a0659c297f34346d248",
+          "caption": "chat-offline-unknown-retained"
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-DELETE-01",
+      "module": "client-chat",
+      "title": "Меню Удаление беседы → Отмена",
+      "status": "PASS",
+      "role": "Клиент #189",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Есть подтверждение; отмена не удаляет диалог/сообщения",
+      "result_note": "Открыто Удалить эту беседу? с Отмена/Удалить. Отмена сохранила #56 и OFFLINE-сообщение. Необратимое удаление старой истории не выполнялось.",
+      "steps": [
+        "Меню Удаление беседы → Отмена"
+      ],
+      "verified_at_utc": "2026-10-28T14:58:14.678Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/chat-delete-confirm.jpg",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/chat-delete-confirm.jpg",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-delete-confirm.png",
+          "sha256": "8bab651f78afe820e10eefbec477fda6c5035b22dea73f993ca09fb6c04614a9",
+          "caption": "chat-delete-confirm"
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-FILE-LIMIT-01",
+      "module": "client-chat",
+      "title": "EXE, 6 малых TXT, отдельный 16 MiB, три по 9 MiB",
+      "status": "PASS",
+      "role": "Клиент #189",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Запрещённые/сверхлимитные файлы не отправляются; ≤5/10MiB/25MiB",
+      "result_note": "EXE и 16MiB отклонены; шесть малых ограничены пятью; суммарные 27MiB отклонены без очереди. Крупные тестовые файлы не отправлены.",
+      "steps": [
+        "EXE, 6 малых TXT, отдельный 16 MiB, три по 9 MiB"
+      ],
+      "verified_at_utc": "2026-10-28T14:59:38.122Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/chat-total-limit.jpg",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/chat-total-limit.jpg",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-total-limit.png",
+          "sha256": "5b25ae3cf1f255a916fa0209bb05d6b3b9949e25cb1194bb0a3d1799e1eb1038",
+          "caption": "chat-total-limit"
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-QUOTE-01",
+      "module": "client-chat",
+      "title": "Reply на OFFLINE → текст QUOTE → отправка; выбрать/снять Select message",
+      "status": "PASS",
+      "role": "Клиент #189 + оператор #12",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Цитата сохраняет исходное сообщение, выбор показывает число и снимается",
+      "result_note": "Показано Reply to QA Client и Cancel reply; QUOTE отправлен с цитатой OFFLINE, оператор получил. Select message меняет aria-pressed=true, появляется 1 у удаления; повтор снимает выбор. Удаление не выполнялось.",
+      "steps": [
+        "Reply на OFFLINE → текст QUOTE → отправка; выбрать/снять Select message"
+      ],
+      "verified_at_utc": "2026-10-28T15:02:42.876Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-SEARCH-01",
+      "module": "client-chat",
+      "title": "Маркер в поиске истории → Previous → отсутствующий текст → очистка",
+      "status": "PASS",
+      "role": "Клиент #189",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Совпадения и переходы работают, нет результата показано явно",
+      "result_note": "QA-маркер дал 5 совпадений, Previous изменил счётчик на 2/5; отсутствующий текст показал Совпадений не найдено. Очистка/закрытие возвращает историю.",
+      "steps": [
+        "Маркер в поиске истории → Previous → отсутствующий текст → очистка"
+      ],
+      "verified_at_utc": "2026-10-28T15:08:09.952Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-UI-01",
+      "module": "client-chat",
+      "title": "Условия на 360 и 1280px",
+      "status": "FAIL",
+      "role": "Клиент #189",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "При открытых условиях компактная тарифная панель скрыта согласно TZ",
+      "result_note": "Полная панель условий и компактная панель тарифа одновременно присутствуют на обоих размерах.",
+      "steps": [
+        "Условия на 360 и 1280px"
+      ],
+      "verified_at_utc": "2026-10-28T15:08:09.955Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/chat-terms-360.png",
+        "evidence/originals/chat-terms-1280.png",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/chat-terms-360.png",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-terms-360.png",
+          "sha256": "014e08706197ba13c343b331a8b5d6b033e37c0f25addf2ea922e6053d72be79",
+          "caption": "chat-terms-360",
+          "rects": [
+            [
+              0,
+              0.211,
+              0.956,
+              0.258
+            ],
+            [
+              0,
+              0.469,
+              0.956,
+              0.133
+            ]
+          ]
+        },
+        {
+          "path": "evidence/originals/chat-terms-1280.png",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-terms-1280.png",
+          "sha256": "56eae16fa8844f9b37aa974b8e4a2e9073fb3597e4de9a6eed3e21cdc43804e0",
+          "caption": "chat-terms-1280"
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Исправить подтверждённый дефект и повторить те же шаги.",
+      "delivery_status": "FAIL"
+    },
+    {
+      "id": "CHAT-UI-02",
+      "module": "client-chat",
+      "title": "Открыть диалог при 360 CSS px",
+      "status": "FAIL",
+      "role": "Клиент #189",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Placeholder/текст редактора читаем, без внутренней обрезки пустого поля",
+      "result_note": "Пустой placeholder Введите ваше сообщение... переносится на вторую обрезанную строку; внутри пустого поля видна прокрутка.",
+      "steps": [
+        "Открыть диалог при 360 CSS px"
+      ],
+      "verified_at_utc": "2026-10-28T15:08:09.959Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/chat-thread-360.png",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/chat-thread-360.png",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-thread-360.png",
+          "sha256": "f53905362ef43542423ede392c76933780bc6e21c652556628309d335a4c53c3",
+          "caption": "chat-thread-360",
+          "rects": [
+            [
+              0.028,
+              0.864,
+              0.9,
+              0.077
+            ]
+          ]
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Исправить подтверждённый дефект и повторить те же шаги.",
+      "delivery_status": "FAIL"
+    },
+    {
+      "id": "CHAT-RU-01",
+      "module": "client-chat",
+      "title": "Открыть RU-чат, список, условия, файлы",
+      "status": "FAIL",
+      "role": "Клиент #189",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Подписи соответствуют RU-макету поставки",
+      "result_note": "Search contact, Unread, Consultation details, Request paid consultation, Drafts..., Photos and documents и существенные условия остаются на английском.",
+      "steps": [
+        "Открыть RU-чат, список, условия, файлы"
+      ],
+      "verified_at_utc": "2026-10-28T15:08:20.657Z",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/client-terms-before.jpg",
+        "evidence/originals/chat-thread-992.png",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/client-terms-before.jpg",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\client-terms-before.png",
+          "sha256": "3b0b0be50741ab889e73ab8fdb48d9a03b0eb4ed792b61cc378e0f1e410c4d4f",
+          "caption": "client-terms-before"
+        },
+        {
+          "path": "evidence/originals/chat-thread-992.png",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-thread-992.png",
+          "sha256": "3054edbe655c116a8db3abc97de73b78ae46dd1cdf91f9184f1ce6192bc9edc6",
+          "caption": "chat-thread-992"
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Исправить подтверждённый дефект и повторить те же шаги.",
+      "delivery_status": "FAIL"
+    },
+    {
+      "id": "CHAT-PAID-05",
+      "module": "client-chat",
+      "title": "Финальный расчёт сверх первой минуты",
+      "status": "PASS",
+      "role": "Клиент #189 + оператор #12",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Первая минута 10 + ceil(45 × 10 / 60)=8, всего18; после завершения один финальный debit и актуальный readback обеих ролей.",
+      "result_note": "Session#27 ss-01c1f0a62ee9b8cd7abaeb37 завершена:105 активных/105 оплаченных секунд; #268 -10 и #269 -8 (15:07UTC), 8536→8518. Client Final calculation completed;18 credits. Всего в этом QA 28 demo-кредитов (session26=10, session27=18). Активного биллинга и ожидания старта нет.",
+      "steps": [
+        "Финальный расчёт сверх первой минуты"
+      ],
+      "verified_at_utc": "2026-10-28T15:26:35.274432+00:00",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/second-session-final.json",
+        "evidence/originals/second-session-final.jpg",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/second-session-final.json",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\checks\\second-session-final.json",
+          "sha256": "ab6ed330483135f77c50ae26e8107a7f9c0b2e389c77c1c5f86d3cb36800c7db",
+          "caption": "second-session-final"
+        },
+        {
+          "path": "evidence/originals/second-session-final.jpg",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\second-session-final.png",
+          "sha256": "c86bf046f77fbd7d1767cfc0499ab7392eed48cb32f78b48ac70dcd0f439d49d",
+          "caption": "second-session-final"
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-AUTH-01",
+      "module": "client-chat",
+      "title": "Login as user в двух независимых браузерах",
+      "status": "PASS",
+      "role": "Клиент #189 + Kristy #12",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Подтверждённые клиент #189 и агент #12, независимые сессии",
+      "result_note": "IAB вошёл клиентом #189; Chrome после этого оставался Admin, затем вошёл Kristy #12. Верифицированы роли и общий диалог #57/#56. Windows native recovery этим не заявляется.",
+      "steps": [
+        "Login as user в двух независимых браузерах"
+      ],
+      "verified_at_utc": "2026-10-28T15:26:35.274432+00:00",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/login-client-189.json",
+        "evidence/originals/login-agent-12.json",
+        "evidence/originals/client-login-identity.jpg",
+        "evidence/originals/agent-login-identity.jpg",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/login-client-189.json",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\checks\\login-client-189.json",
+          "sha256": "4c91d7b8271c015de5f51901af508d0b1b223451acac4048369549b06db32a07",
+          "caption": "login-client-189"
+        },
+        {
+          "path": "evidence/originals/login-agent-12.json",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\checks\\login-agent-12.json",
+          "sha256": "d9daa0bc722f02e1f5b38f78664ff07d1f466389ad13b7ba8b7dd5eb87a64ec4",
+          "caption": "login-agent-12"
+        },
+        {
+          "path": "evidence/originals/client-login-identity.jpg",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\client-login-identity.png",
+          "sha256": "c0e3a37f64c59642508fb254c60e8a0e3834cae27da089c80ecfa909b1d39c80",
+          "caption": "client-login-identity"
+        },
+        {
+          "path": "evidence/originals/agent-login-identity.jpg",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\agent-login-identity.png",
+          "sha256": "c29027c17d36f30a44cbd5863a3966812d7c56c69ccf4e6ac1f02c70ecf0f8e0",
+          "caption": "agent-login-identity"
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-PAID-BUSY-01",
+      "module": "client-chat",
+      "title": "Запрос к занятому эксперту Talia",
+      "status": "PASS",
+      "role": "Клиент #189",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "409 с понятной причиной, без нового старта и дебета",
+      "result_note": "В диалоге #57 endpoint paid-session-request вернул 409; показано Этот эксперт сейчас занят другой платной консультацией. Другую активную консультацию не завершали.",
+      "steps": [
+        "Запрос к занятому эксперту Talia"
+      ],
+      "verified_at_utc": "2026-10-28T15:26:35.274432+00:00",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-REPORT-01",
+      "module": "client-chat",
+      "title": "Открыть и отменить жалобу",
+      "status": "PASS",
+      "role": "Клиент #189",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Шесть причин, описание, отмена сохраняет чат; support отдельно",
+      "result_note": "Открыта форма с six categories spam/profile/rude/fake/fraud/other; отмена сохранила #56. Жалоба не подавалась.",
+      "steps": [
+        "Открыть и отменить жалобу"
+      ],
+      "verified_at_utc": "2026-10-28T15:26:35.274432+00:00",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/chat-report-modal.jpg",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/chat-report-modal.jpg",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-report-modal.png",
+          "sha256": "66df5307e21f4e601ed09adb70b4e920e1abf236f01714488064374f43e73763",
+          "caption": "chat-report-modal"
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-RESP-01",
+      "module": "client-chat",
+      "title": "Проверить ширины чата и мобильный список/диалог",
+      "status": "PASS",
+      "role": "Клиент #189",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "На пяти CSS-ширинах нет горизонтального переполнения; mobile открывает выбранный peer",
+      "result_note": "360/480/768/992/1280 CSS px при scale=1. Документ не выходит по горизонтали. При 360 сначала список, выбор Solara открывает диалог. Локальная обрезка редактора вынесена в CHAT-UI-02.",
+      "steps": [
+        "Проверить ширины чата и мобильный список/диалог"
+      ],
+      "verified_at_utc": "2026-10-28T15:26:35.274432+00:00",
+      "fresh_live": true,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/responsive-metrics.json",
+        "evidence/originals/mobile-width-confirmed.json",
+        "evidence/originals/chat-list-360.png",
+        "evidence/originals/chat-thread-360.png",
+        "evidence/originals/chat-thread-480.png",
+        "evidence/originals/chat-thread-768.png",
+        "evidence/originals/chat-thread-992.png",
+        "evidence/originals/chat-thread-1280.png",
+        "evidence/protocol.json"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/chat-thread-360.png",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-thread-360.png",
+          "sha256": "f53905362ef43542423ede392c76933780bc6e21c652556628309d335a4c53c3",
+          "caption": "chat-thread-360",
+          "rects": [
+            [
+              0.028,
+              0.864,
+              0.9,
+              0.077
+            ]
+          ]
+        },
+        {
+          "path": "evidence/originals/chat-thread-992.png",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-thread-992.png",
+          "sha256": "3054edbe655c116a8db3abc97de73b78ae46dd1cdf91f9184f1ce6192bc9edc6",
+          "caption": "chat-thread-992"
+        },
+        {
+          "path": "evidence/originals/responsive-metrics.json",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\checks\\responsive-metrics.json",
+          "sha256": "ebff5336e9286be7f149394bb71c4a1b220ace4915886c83aa52bee52556b5ee",
+          "caption": "responsive-metrics"
+        },
+        {
+          "path": "evidence/originals/mobile-width-confirmed.json",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\checks\\mobile-width-confirmed.json",
+          "sha256": "3e578f9e5045ab1cbfcfc2c83a1dfec3aaa86631800480ee13375baa2becfc56",
+          "caption": "mobile-width-confirmed"
+        },
+        {
+          "path": "evidence/originals/chat-list-360.png",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-list-360.png",
+          "sha256": "ce0cff6120996716d626f3de773868d2df576463553ed24de57ea50a16167129",
+          "caption": "chat-list-360"
+        },
+        {
+          "path": "evidence/originals/chat-thread-480.png",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-thread-480.png",
+          "sha256": "2c478ade200444d78a1a1dc0783badea5a3a9c0b76ff311790aa8ab6e053d669",
+          "caption": "chat-thread-480"
+        },
+        {
+          "path": "evidence/originals/chat-thread-768.png",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-thread-768.png",
+          "sha256": "796d1ec3f4558b450233007903a0e68e78275d629b115cc9f500e790dd4339f2",
+          "caption": "chat-thread-768"
+        },
+        {
+          "path": "evidence/originals/chat-thread-1280.png",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\evidence\\originals\\chat-thread-1280.png",
+          "sha256": "bbdc970aead5884c073a5559afa387c4a0ddaf3e443672f30b3e11b428bf5c75",
+          "caption": "chat-thread-1280"
+        }
+      ],
+      "source": "sources/TZ.md",
+      "limits": "Результат ограничен указанными шагами и текущей сборкой; server commit не предоставлен.",
+      "next_step": "Сохранить результат; повторить после изменения затронутой реализации.",
+      "delivery_status": "PASS"
+    },
+    {
+      "id": "CHAT-TRIAL-01",
+      "module": "client-chat",
+      "title": "Пробные минуты и переход к платной части",
+      "status": "NOT_RUN",
+      "role": "Клиент/назначенный оператор/второй контрольный клиент по критерию",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Пробные минуты расходуются из lifetime-остатка один раз, затем применяется принятый тариф.",
+      "result_note": "У клиента #189 сервер показывает No trial minutes remain. Не пополнялись trial и не менялись настройки/права.",
+      "limits": "У клиента #189 сервер показывает No trial minutes remain. Не пополнялись trial и не менялись настройки/права.",
+      "next_step": "Игорь: подготовить существующий тестовый аккаунт с остатком trial; Codex: пройти две стороны.",
+      "steps": [],
+      "fresh_live": false,
+      "coverage": "none",
+      "evidence": [],
+      "evidence_meta": [],
+      "source": "sources/TZ.md",
+      "delivery_status": "NOT_RUN",
+      "delivery_owner": "Тестер Codex",
+      "delivery_reason": "У клиента #189 сервер показывает No trial minutes remain. Не пополнялись trial и не менялись настройки/права.",
+      "delivery_next_action": "Игорь: подготовить существующий тестовый аккаунт с остатком trial; Codex: пройти две стороны."
+    },
+    {
+      "id": "CHAT-LOW-BALANCE-01",
+      "module": "client-chat",
+      "title": "Недостаточный баланс и пополнение в sandbox",
+      "status": "NOT_RUN",
+      "role": "Клиент/назначенный оператор/второй контрольный клиент по критерию",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Отказ до согласия/старта; пополнение не запускает чат автоматически.",
+      "result_note": "Клиент #189 имеет положительный баланс. Реальная покупка, обнуление кошелька и изменение прав ради fixture не выполнялись.",
+      "limits": "Клиент #189 имеет положительный баланс. Реальная покупка, обнуление кошелька и изменение прав ради fixture не выполнялись.",
+      "next_step": "Игорь: дать разрешённый low-balance fixture и явно видимый Stripe test; Codex: проверить отказ/возврат.",
+      "steps": [],
+      "fresh_live": false,
+      "coverage": "none",
+      "evidence": [],
+      "evidence_meta": [],
+      "source": "sources/TZ.md",
+      "delivery_status": "NOT_RUN",
+      "delivery_owner": "Тестер Codex",
+      "delivery_reason": "Клиент #189 имеет положительный баланс. Реальная покупка, обнуление кошелька и изменение прав ради fixture не выполнялись.",
+      "delivery_next_action": "Игорь: дать разрешённый low-balance fixture и явно видимый Stripe test; Codex: проверить отказ/возврат."
+    },
+    {
+      "id": "CHAT-OFFER-EXPIRY-01",
+      "module": "client-chat",
+      "title": "Истечение/обновление предложения и сброс согласия",
+      "status": "NOT_RUN",
+      "role": "Клиент/назначенный оператор/второй контрольный клиент по критерию",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Серверное истечение и новая цена требуют нового согласия, нет списания по старому согласию.",
+      "result_note": "Не изменялись часы, тарифы, TTL или серверные события. Новая цена/истечение не воспроизведены.",
+      "limits": "Не изменялись часы, тарифы, TTL или серверные события. Новая цена/истечение не воспроизведены.",
+      "next_step": "Игорь: дать управляемые short-TTL/changed-offer fixtures; Codex: проверить обе стороны.",
+      "steps": [],
+      "fresh_live": false,
+      "coverage": "none",
+      "evidence": [],
+      "evidence_meta": [],
+      "source": "sources/TZ.md",
+      "delivery_status": "NOT_RUN",
+      "delivery_owner": "Тестер Codex",
+      "delivery_reason": "Не изменялись часы, тарифы, TTL или серверные события. Новая цена/истечение не воспроизведены.",
+      "delivery_next_action": "Игорь: дать управляемые short-TTL/changed-offer fixtures; Codex: проверить обе стороны."
+    },
+    {
+      "id": "CHAT-RACE-01",
+      "module": "client-chat",
+      "title": "Конкурирующие старты/завершения и серверная идемпотентность",
+      "status": "NOT_RUN",
+      "role": "Клиент/назначенный оператор/второй контрольный клиент по критерию",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Повтор с одинаковой операцией и конкурентные команды не создают второй дебет.",
+      "result_note": "UI-retry одного сообщения проверен; гонки финансовых команд и server-side replay не выполнялись и этим не доказаны.",
+      "limits": "UI-retry одного сообщения проверен; гонки финансовых команд и server-side replay не выполнялись и этим не доказаны.",
+      "next_step": "Игорь: предоставить изолированный серверный сценарий по регламенту; Codex: сопоставить ledger.",
+      "steps": [],
+      "fresh_live": false,
+      "coverage": "none",
+      "evidence": [],
+      "evidence_meta": [],
+      "source": "sources/TZ.md",
+      "delivery_status": "NOT_RUN",
+      "delivery_owner": "Тестер Codex",
+      "delivery_reason": "UI-retry одного сообщения проверен; гонки финансовых команд и server-side replay не выполнялись и этим не доказаны.",
+      "delivery_next_action": "Игорь: предоставить изолированный серверный сценарий по регламенту; Codex: сопоставить ledger."
+    },
+    {
+      "id": "CHAT-ACL-01",
+      "module": "client-chat",
+      "title": "Запрет чужих вложений/сессий",
+      "status": "NOT_RUN",
+      "role": "Клиент/назначенный оператор/второй контрольный клиент по критерию",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Клиент и агент видят только разрешённые документы, внутренние идентификаторы и консультации.",
+      "result_note": "Положительные роли и приватность support note проверены. Отрицательный контроль другим клиентом и прямой URL чужой тестовой записи не выполнен.",
+      "limits": "Положительные роли и приватность support note проверены. Отрицательный контроль другим клиентом и прямой URL чужой тестовой записи не выполнен.",
+      "next_step": "Игорь: дать второй ограниченный аккаунт и его разрешённую контрольную запись; Codex: проверить 403/404.",
+      "steps": [],
+      "fresh_live": false,
+      "coverage": "none",
+      "evidence": [],
+      "evidence_meta": [],
+      "source": "sources/TZ.md",
+      "delivery_status": "NOT_RUN",
+      "delivery_owner": "Тестер Codex",
+      "delivery_reason": "Положительные роли и приватность support note проверены. Отрицательный контроль другим клиентом и прямой URL чужой тестовой записи не выполнен.",
+      "delivery_next_action": "Игорь: дать второй ограниченный аккаунт и его разрешённую контрольную запись; Codex: проверить 403/404."
+    },
+    {
+      "id": "CHAT-DEVICE-01",
+      "module": "client-chat",
+      "title": "Физические iPhone и Android",
+      "status": "NOT_RUN",
+      "role": "Клиент/назначенный оператор/второй контрольный клиент по критерию",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Touch, клавиатура, viewport и отправка проверены на реальных устройствах с получателем.",
+      "result_note": "Выполнены CSS viewport 360/480/768/992/1280 при scale=1; физические телефоны не подключены.",
+      "limits": "Выполнены CSS viewport 360/480/768/992/1280 при scale=1; физические телефоны не подключены.",
+      "next_step": "Codex: выполнить на доступных реальных iPhone/Android; CSS-размеры не повышать до device PASS.",
+      "steps": [],
+      "fresh_live": false,
+      "coverage": "none",
+      "evidence": [],
+      "evidence_meta": [],
+      "source": "sources/TZ.md",
+      "delivery_status": "NOT_RUN",
+      "delivery_owner": "Тестер Codex",
+      "delivery_reason": "Выполнены CSS viewport 360/480/768/992/1280 при scale=1; физические телефоны не подключены.",
+      "delivery_next_action": "Codex: выполнить на доступных реальных iPhone/Android; CSS-размеры не повышать до device PASS."
+    },
+    {
+      "id": "CHAT-DELETE-FINAL-01",
+      "module": "client-chat",
+      "title": "Окончательное удаление и серверное сохранение",
+      "status": "NOT_RUN",
+      "role": "Клиент/назначенный оператор/второй контрольный клиент по критерию",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Подтверждённое удаление специально выделенного disposable-диалога даёт ожидаемую историю обеим сторонам.",
+      "result_note": "Проверены только подтверждение и отмена. Старая тестовая история #56/#57 не удалялась.",
+      "limits": "Проверены только подтверждение и отмена. Старая тестовая история #56/#57 не удалялась.",
+      "next_step": "Подготовить отдельный disposable-диалог и применимый допуск финального удаления; затем проверить readback.",
+      "steps": [],
+      "fresh_live": false,
+      "coverage": "none",
+      "evidence": [],
+      "evidence_meta": [],
+      "source": "sources/TZ.md",
+      "delivery_status": "NOT_RUN",
+      "delivery_owner": "Тестер Codex",
+      "delivery_reason": "Проверены только подтверждение и отмена. Старая тестовая история #56/#57 не удалялась.",
+      "delivery_next_action": "Подготовить отдельный disposable-диалог и применимый допуск финального удаления; затем проверить readback."
+    },
+    {
+      "id": "CHAT-POLICY-01",
+      "module": "client-chat",
+      "title": "Серверные отказы файлов и работа в долгом офлайне",
+      "status": "NOT_RUN",
+      "role": "Клиент/назначенный оператор/второй контрольный клиент по критерию",
+      "url": "https://confideline.com/ru/messages",
+      "expected": "Сервер отклоняет обход клиентских лимитов; долгий reconnect не создаёт потерю/дубликат.",
+      "result_note": "Проверены видимые клиентские лимиты и один контролируемый offline/retry; HTTP bypass и длительные сетевые гонки не выполнялись.",
+      "limits": "Проверены видимые клиентские лимиты и один контролируемый offline/retry; HTTP bypass и длительные сетевые гонки не выполнялись.",
+      "next_step": "Игорь: предоставить штатный изолированный server QA путь, без обхода защиты.",
+      "steps": [],
+      "fresh_live": false,
+      "coverage": "none",
+      "evidence": [],
+      "evidence_meta": [],
+      "source": "sources/TZ.md",
+      "delivery_status": "NOT_RUN",
+      "delivery_owner": "Тестер Codex",
+      "delivery_reason": "Проверены видимые клиентские лимиты и один контролируемый offline/retry; HTTP bypass и длительные сетевые гонки не выполнялись.",
+      "delivery_next_action": "Игорь: предоставить штатный изолированный server QA путь, без обхода защиты."
+    },
+    {
+      "id": "CHAT-RATING-01",
+      "module": "client-chat",
+      "title": "Рейтинг только в профиле эксперта",
+      "status": "FAIL",
+      "role": "Клиент; эксперт/агент для зависимой приёмки",
+      "url": "https://confideline.com/ru/messages?contactId=103",
+      "expected": "Рейтинг (звёзды, средняя оценка, число голосов/отзывов) только в профиле эксперта; во всём чате, включая список и шапку, отсутствует. Избранное и действие оценки завершённого сеанса сохраняются; пустого отступа нет.",
+      "result_note": "На предоставленном Алексеем снимке /ru/messages?contactId=103 рейтинг Solara Ortiz виден в списке и шапке. Область исправления уточнена владельцем: убрать из всего чата. Новый live-readback не выполнен; время съёмки неизвестно.",
+      "steps": [
+        "Открыть клиентский чат и проверить указанные области по решению владельца."
+      ],
+      "fresh_live": false,
+      "coverage": "full",
+      "evidence": [
+        "evidence/originals/owner-rating-chat.png"
+      ],
+      "evidence_meta": [
+        {
+          "path": "evidence/originals/owner-rating-chat.png",
+          "original_path": "C:\\Users\\alexe\\OneDrive\\Документы\\Confideline\\outputs\\client-chat-audit-20261028-r2\\addenda\\cc-f07\\owner-screenshot.png",
+          "sha256": "431a0a06ecfe73ea3bc404fc617fe3d91415162b76af7c2c15610224ca830a72",
+          "caption": "Снимок владельца: рейтинг в списке и шапке; время съёмки неизвестно, не новый live-тест"
+        }
+      ],
+      "source": "sources/OWNER-DECISIONS-20261028.md",
+      "limits": "На предоставленном Алексеем снимке /ru/messages?contactId=103 рейтинг Solara Ortiz виден в списке и шапке. Область исправления уточнена владельцем: убрать из всего чата. Новый live-readback не выполнен; время съёмки неизвестно.",
+      "next_step": "Игорь: убрать рейтинг из чата; Codex: проверить список/шапку, фильтры, поиск, обновления, переход в профиль, избранное и узкую вёрстку.",
+      "basis": "owner_screenshot",
+      "delivery_status": "FAIL"
+    },
+    {
+      "id": "CHAT-PRESENCE-01",
+      "module": "client-chat",
+      "title": "Три состояния индикатора эксперта",
+      "status": "NOT_RUN",
+      "role": "Клиент; эксперт/агент для зависимой приёмки",
+      "url": "https://confideline.com/ru/messages?contactId=103",
+      "expected": "Единый актуальный статус в списке и шапке: зелёный В сети / Online, жёлтый Занят / Busy, серый Не в сети / Offline. Существующие стили, текстовая расшифровка и доступное имя сохранены.",
+      "result_note": "Решение владельца включено в R2; три состояния и переходы после внедрения не проверялись. Двоичная точка не доказывает трёхцветную реализацию.",
+      "steps": [],
+      "fresh_live": false,
+      "coverage": "none",
+      "evidence": [],
+      "evidence_meta": [],
+      "source": "sources/OWNER-DECISIONS-20261028.md",
+      "limits": "Решение владельца включено в R2; три состояния и переходы после внедрения не проверялись. Двоичная точка не доказывает трёхцветную реализацию.",
+      "next_step": "Игорь: внедрить единый трёхцветный статус; Codex: проверить состояния/переходы, RU/EN и синхронность списка с шапкой.",
+      "basis": "owner_requirement_not_executed",
+      "delivery_status": "NOT_RUN",
+      "delivery_owner": "Игорь — внедрение; Codex — проверка",
+      "delivery_reason": "Решение владельца включено в R2; три состояния и переходы после внедрения не проверялись. Двоичная точка не доказывает трёхцветную реализацию.",
+      "delivery_next_action": "Игорь: внедрить единый трёхцветный статус; Codex: проверить состояния/переходы, RU/EN и синхронность списка с шапкой."
+    },
+    {
+      "id": "CHAT-PAID-AVAIL-01",
+      "module": "client-chat",
+      "title": "Запрет новой платной консультации при занятости/оффлайне",
+      "status": "NOT_RUN",
+      "role": "Клиент; эксперт/агент для зависимой приёмки",
+      "url": "https://confideline.com/ru/messages?contactId=103",
+      "expected": "При занятости/оффлайне кнопки нового запроса/начала нет, в том числе в Tab-порядке. Сервер проверяет доступность до начала/первого списания: при устаревшем статусе нет нового сеанса/дебета. Статус и кнопка обновляются вместе; управление текущим сеансом сохраняется.",
+      "result_note": "Скрытие кнопки, оффлайн и гонка статуса по новому правилу владельца не проверялись. Прежний CHAT-PAID-BUSY-01 PASS подтверждает только наблюдавшийся 409 без нового старта/дебета.",
+      "steps": [],
+      "fresh_live": false,
+      "coverage": "none",
+      "evidence": [],
+      "evidence_meta": [],
+      "source": "sources/OWNER-DECISIONS-20261028.md",
+      "limits": "Скрытие кнопки, оффлайн и гонка статуса по новому правилу владельца не проверялись. Прежний CHAT-PAID-BUSY-01 PASS подтверждает только наблюдавшийся 409 без нового старта/дебета.",
+      "next_step": "Игорь: внедрить UI- и серверное ограничение; Codex: проверить busy/offline, смену статуса до подтверждения, два клиента, отсутствие списания и сохранение управления текущим сеансом.",
+      "basis": "owner_requirement_not_executed",
+      "delivery_status": "NOT_RUN",
+      "delivery_owner": "Игорь — внедрение; Codex — проверка",
+      "delivery_reason": "Скрытие кнопки, оффлайн и гонка статуса по новому правилу владельца не проверялись. Прежний CHAT-PAID-BUSY-01 PASS подтверждает только наблюдавшийся 409 без нового старта/дебета.",
+      "delivery_next_action": "Игорь: внедрить UI- и серверное ограничение; Codex: проверить busy/offline, смену статуса до подтверждения, два клиента, отсутствие списания и сохранение управления текущим сеансом."
+    }
+  ]
+}
