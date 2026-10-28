@@ -16,7 +16,7 @@
       new Set(result.items.map(item => item?.id)).size !== result.items.length) throw new Error('invalid_response');
     for (const item of result.items) {
       if (!item || typeof item.id !== 'string' || !item.id || typeof item.name !== 'string' || !item.name ||
-        typeof item.photo !== 'string' || !/^(?:images\/[\w.-]+|https:\/\/)/.test(item.photo) ||
+        (item.photo !== null && (typeof item.photo !== 'string' || !/^(?:images\/[\w.-]+|https:\/\/)/.test(item.photo))) ||
         !Array.isArray(item.areas) || item.areas.some(id => !Object.hasOwn(model.profileLabels.areas, id)) ||
         !Array.isArray(item.topics) || item.topics.some(id => !Object.hasOwn(model.profileLabels.topics, id)) ||
         !['online', 'busy', 'offline'].includes(item.status)) throw new Error('invalid_response');
