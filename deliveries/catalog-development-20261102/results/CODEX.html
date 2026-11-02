@@ -1,0 +1,176 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Codex: Выдача и карточки</title><style>*{box-sizing:border-box}body{margin:0;color:#202b33;background:white;font:16px/1.6 Arial,sans-serif;letter-spacing:0}main,header>div{max-width:1120px;margin:auto;padding:0 28px}header{border-bottom:1px solid #dce1e5;padding:18px 0}header>div{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}header span{color:#63727c;font-size:14px}main{padding-top:26px;padding-bottom:48px}h1{font-size:32px;line-height:1.2;margin:0 0 12px}h2{font-size:23px;line-height:1.3;margin:0 0 12px}h3{font-size:18px}p{margin:0 0 16px}a{color:#185e94;text-underline-offset:3px}a:focus-visible,summary:focus-visible{outline:3px solid #237bad;outline-offset:4px}.intro{max-width:760px;color:#52616b;margin-bottom:22px}.tasks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}.task{min-width:0;border:1px solid #dce1e5;border-radius:6px;overflow:hidden}.preview{margin:0;background:#f4f6f8;border-bottom:1px solid #dce1e5;height:188px;display:flex;align-items:center;justify-content:center;padding:14px}.preview img{display:block;max-width:100%;max-height:100%;object-fit:contain}.body{padding:20px}.number{display:block;font-size:13px;color:#63727c;margin-bottom:8px}.summary{min-height:64px}.actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0}.primary{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 16px;background:#185e94;color:white;text-decoration:none;border-radius:4px}.secondary{display:inline-flex;align-items:center;min-height:46px;padding:8px 0}details{border-top:1px solid #dce1e5;padding-top:16px;margin-top:20px}summary{cursor:pointer;font-weight:bold;min-height:44px;line-height:1.4;padding:10px 0}details p,details li{font-size:15px}ul{padding-left:20px}li{margin:8px 0}.formats{display:flex;gap:18px;flex-wrap:wrap}.foot{margin-top:30px;padding-top:20px;border-top:1px solid #dce1e5;color:#52616b;font-size:14px}.foot p{margin-bottom:8px}table{border-collapse:collapse;font-size:14px;width:100%}td,th{padding:8px;border:1px solid #dce1e5;text-align:left;vertical-align:top;overflow-wrap:anywhere}pre{overflow:auto}code{overflow-wrap:anywhere}@media(max-width:700px){main,header>div{padding-left:18px;padding-right:18px}h1{font-size:27px}.tasks{grid-template-columns:1fr;gap:24px}.summary{min-height:0}.preview{height:220px}}</style><header><div><a href="../index.html">К двум задачам</a><a href="TZ.html">ТЗ для человека</a></div></header><main><h1>Codex: Выдача и карточки</h1>
+<p>Редакция передачи r3. <a href="TZ.html">ТЗ для человека</a> — основной документ, <a href="TZ.md">TZ.md</a> — его текстовый источник. Эта инструкция производная, не добавляет продуктовых требований.</p>
+<h2>Поручение</h2>
+<p>Реализовать задачу «Выдача и карточки» в целевом репозитории после чтения его AGENTS и проверки текущего кода. Этот комплект — макеты и примеры, не рабочий backend.</p>
+<p>Область: Представление выдачи, карточки, действия, все существующие входы в бесплатный чат и настройка карточек.</p>
+<h2>Порядок</h2>
+<ol>
+<li>Прочитать всё ТЗ с иллюстрациями, состояниями и приёмкой. Все необходимые правила изложены там; коды сохранены только в техническом приложении. Если документы расходятся, исправить комплект, не выбирать удобную трактовку.</li>
+<li>Найти текущие маршруты, проверки ролей, старые шаблоны, параметры и настройки. Использовать техническое приложение ТЗ и <a href="../integration/README.md">интеграцию</a>. Примеры <a href="../integration/cards/">integration/cards</a> адаптировать, не подменять ими backend.</li>
+<li>Новый подраздел настроек разместить в «Настройки → Общие настройки → Каталог экспертов», после «Основные настройки». <a href="../admin.html">Точный макет</a> использует замороженную текущую оболочку. CSS нового блока в integration/admin изолирован; admin-shell — только demo reference. Не переносить глобальные стили оболочки в приложение.</li>
+<li>Сохранить прежние рабочие варианты и пользовательские данные, два независимых выбора. Общие серверные доступность/подсчёт и бесплатный чат обязательны при любом оформлении. Гость видит только online, клиент — online/busy/offline; вход/сообщение не запускают оплату, Start отдельный. Эти правила уже заданы основным ТЗ.</li>
+<li>Проверить все 14 строк приёмки своей задачи, включая матрицу настроек и конфликт одного поля. Заполнить копию acceptance.xlsx фактами и доказательствами; наличие макета не превращает NOT_RUN в PASS. Запустить штатные тесты репозитория.</li>
+<li>Передать файлы, результаты по тем же номерам и техническим кодам, снимки состояний и остаток. Production deploy, реальные платежи и изменение активной консультации не разрешены одним наличием пакета.</li>
+</ol>
+<h2>Материалы</h2>
+<ul>
+<li><a href="../demo/catalog-filter-auth.html">Макет каталога</a> — искусственные профили.</li>
+<li><a href="../admin.html">Макет настроек</a> — локальное сохранение, не рабочий сервер.</li>
+<li><a href="../REVIEW.md">Проверки и ограничения</a>.</li>
+<li><a href="../sources/requirements-map.md">Источники</a>, legacy-reference — только история.</li>
+</ul>
+<h2>Приёмка и приложение: точная копия основного ТЗ</h2>
+<h2>Приёмка задачи 2</h2>
+<p>Все строки — проверки после внедрения, сейчас «Не проверено». Макет не доказывает реальные права, доставку, сохранение переписки, деньги или платный запуск.</p>
+<table>
+<thead>
+<tr>
+<th>№</th>
+<th>Условия и действие</th>
+<th>Ожидаемый результат</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Сравнить карточку с реальным профилем</td>
+<td>Реальные публичные данные, без возраста/географии/биографии; другие страницы не изменены</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Нажать по очереди фото, имя, сердце, «+N», рейтинг, чат</td>
+<td>Отдельные действия с правильным экспертом, без конфликтующих вложений и оплаты</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Нет/есть рейтинг и цена, рейтинг выключен, бесплатное начало неприменимо</td>
+<td>Правдивые условия без ложных нулей/минут, оценки не названы текстовыми отзывами</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Нет/ошибка фото, длинные поля, текст 200%, русский/английский</td>
+<td>Нейтральная заглушка, переносы без перекрытий и выдуманных данных</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Выбрать эксперта, войти/отменить вход, вернуться браузером</td>
+<td>Эксперт и контекст сохранены, отменённое не повторяется, оплаты нет</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Все статусы, неизвестный статус, закрытый профиль; гость и клиент</td>
+<td>Гостю только «В сети», клиенту три известных статуса; недоступные/неизвестные исключены до подсчёта</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Загрузка, пустота, ошибка, страницы, возврат, смена карточек</td>
+<td>Выдача согласована с запросом, ошибка не ложный ноль, оформление не меняет набор/порядок</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Телефон/компьютер, свайп, стрелки/Home/End, Tab, «+N», Escape; одна/несколько карточек</td>
+<td>Сетка и лента как описано, без дублей, доступные действия, единственная карточка полной ширины</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Дважды открыть чат каждого статуса, в том числе с нулевым балансом</td>
+<td>Один бесплатный постоянный диалог без авто-сообщения, таймера, списания и начисления</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Во время входа эксперт стал занят/вышел из сети либо профиль закрыт</td>
+<td>Первые два — диалог с актуальным статусом; закрытый — безопасный отказ и возврат</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Ошибка сети/просроченная авторизация при открытии, повтор</td>
+<td>Тот же эксперт/диалог и контекст, без дублей и внешнего небезопасного возврата</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Каждая строка таблицы существующих входов в переписку</td>
+<td>Один эксперт/диалог, правильный возврат, без редизайна и создания отсутствующих кнопок</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Открыть чат, отправить бесплатное сообщение, согласиться на платное предложение без Start</td>
+<td>Баланс, начисления и таймер неизменны; платный старт — отдельное действие существующего модуля</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Четыре сочетания настроек, обновление, возврат к прежним карточкам, ошибка, два окна</td>
+<td>Независимость, сохранённый черновик при ошибке, конфликт без затирания, старые шаблоны и данные сохранены</td>
+</tr>
+</tbody></table>
+<p>Игорь передаёт реализованные страницы/переходы, изменённые файлы, заполненную приёмку с доказательствами и остатком; затем QA/PM проверяет согласованную среду. Пакет сам не разрешает production deploy, рабочие платежи или изменение действующей консультации.</p>
+<h2>Техническое приложение</h2>
+<p>Коды нужны для происхождения и передачи агенту; весь продуктовый смысл изложен выше.</p>
+<table>
+<thead>
+<tr>
+<th>Код</th>
+<th>№ проверки выше</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>F13</td>
+<td>1</td>
+</tr>
+<tr>
+<td>F15</td>
+<td>2</td>
+</tr>
+<tr>
+<td>F16</td>
+<td>3</td>
+</tr>
+<tr>
+<td>F17</td>
+<td>4</td>
+</tr>
+<tr>
+<td>F18</td>
+<td>5</td>
+</tr>
+<tr>
+<td>C01</td>
+<td>6</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>7</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>8</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>9</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>10</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>11</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>12</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>13</td>
+</tr>
+<tr>
+<td>S02</td>
+<td>14</td>
+</tr>
+</tbody></table>
+<p><code>integration/cards/</code> — самостоятельные partial, CSS/JS, AssetBundle без фильтра. Сетка/лента ограничена <code>.cl-catalog-results</code>, не требует <code>.cl-catalog-filter</code>. Рейтинг и избранное брать из существующих компонентов. <code>cards/views/_results.php</code> — пример view, не серверный поиск. HTML компонентов только доверенный результат серверного view, URL проверяет приложение. <code>integration/shared/</code> — схема представлений/входа, не новый платный модуль. Данные, авторизацию и сообщения демо не переносить вместо реальных. <code>CODEX.html</code>/<code>CODEX.md</code> — производное ТЗ для агента.</p>
+<p>Целевой новый подраздел <code>admin/settings/catalog</code>, категория <code>catalog</code>, пункт в текущем <code>settings/_layout.php</code>. Старая локальная копия Yii подтверждает семейство <code>SettingsController</code>/<code>SettingsAction</code>/<code>SettingsForm</code>, не сегодняшний backend. Сверить актуальный репозиторий. Предлагаемые ключи <code>catalog.filter_version</code> и <code>catalog.cards_version</code>, <code>1</code> (прежний) / <code>2</code> (новый), отсутствие — <code>1</code>. При существующих эквивалентных ключах адаптировать без второго источника. Штатные защита формы, права и журнал; allowlist, запись изменённых полей, исходная ревизия каждого, атомарность. Публичный URL настройку не меняет. Новый CSS <code>integration/admin/catalog-settings.css</code> только внутри <code>.cl-catalog-admin</code>; замороженный <code>admin-shell/</code> не переносить как глобальные стили.</p>
+<p>Предметное основание: «Профиль эксперта» G3.3, разделы 9–10; «Подбор и старт» G3.4, разделы 9–12; решения владельца и карта продукта Nebula. Выдержки в <code>sources/source-excerpts.md</code>, но для понимания поведения читать их не требуется. Статическая подпись Book session не доказывает бронирования, эта задача его не добавляет. <code>legacy-reference/</code> — история, не актуальное ТЗ и не рабочие серверные шаблоны.</p>
+<h2>Связь источника</h2>
+<p>SHA-256 TZ.md: <code>096ece1c3db61e82a006788a37e7903c4a8ccf16e3f8a2180170110af868cdd8</code>. Полные связи — ../handoff-consistency.json.</p>
+</main></html>
