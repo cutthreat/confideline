@@ -1,0 +1,1 @@
+(function(){'use strict';const root=document.querySelector('.cl-catalog');window.CatalogFilterFixtures=window.CatalogFilterFixtures.filter(p=>['online','busy','offline'].includes(p.status)&&(root.dataset.audience!=='guest'||p.status==='online'));})();
