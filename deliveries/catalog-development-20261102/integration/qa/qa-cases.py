@@ -14,7 +14,8 @@ def reference_expectations(case):
     return {
         'catalog': catalog,
         'profile': 'Вход' if case['hide_profiles_from_guests'] else 'Доступен по правам',
-        'profile_fields': 'Скрыты' if case['hide_extended_profile_fields'] else 'По правам поля',
+        'profile_fields': ('Профиль закрыт' if case['hide_profiles_from_guests'] else
+                           'Скрыты' if case['hide_extended_profile_fields'] else 'По правам поля'),
     }
 
 

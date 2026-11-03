@@ -4,7 +4,7 @@
   const id = params.get('id');
   const client = params.get('audience') === 'client';
   const previous = new URLSearchParams(params.get('return') || '');
-  const previewNames = ['preview', 'onlineOnly', 'hideDirectory', 'hideProfiles', 'hideFields'];
+  const previewNames = ['preview', 'onlineOnly', 'hideDirectory', 'hideProfiles', 'hideFields', 'sourceFailure', 'searchFailure'];
   const validNames = ['areas', 'topics', 'page', 'lang', ...previewNames];
   const allowedAreas = Object.keys(window.CatalogFilterModel.profileLabels.areas).filter(key => key !== 'palmistry');
   const allowedTopics = Object.keys(window.CatalogFilterModel.profileLabels.topics).filter(key => !['fortune', 'fertility', 'soulmate'].includes(key));

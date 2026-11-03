@@ -102,6 +102,21 @@
     }
     return selected;
   }
+  for (const field of fields) {
+    const control = controlFor(field.id);
+    for (const event of ['input', 'change']) control.addEventListener(event, () => control.setCustomValidity(''));
+  }
+  form.addEventListener('submit', event => {
+    for (const field of fields) {
+      const control = controlFor(field.id);
+      if (!control || control.disabled) continue;
+      const value = field.type === 'checkbox' ? (control.checked ? '1' : '') : control.value.trim();
+      control.setCustomValidity(value && !valid(field, value) ? (english ? 'Enter a valid value.' : 'Введите корректное значение.') : '');
+      if (!control.checkValidity()) {
+        event.preventDefault(); event.stopImmediatePropagation(); control.focus(); control.reportValidity(); return;
+      }
+    }
+  }, true);
   function restore(values = {}) {
     for (const field of fields) {
       const control = controlFor(field.id), value = values[field.id] || '';
@@ -119,7 +134,7 @@
     if (control.type === 'checkbox') control.checked = false; else control.value = '';
   }
   const originalRead = model.readQuery, originalWrite = model.writeQuery;
-  const previewKeys = ['preview', 'onlineOnly', 'hideDirectory', 'hideProfiles', 'hideFields'];
+  const previewKeys = ['preview', 'onlineOnly', 'hideDirectory', 'hideProfiles', 'hideFields', 'sourceFailure', 'searchFailure'];
   model.readQuery = function (search) {
     const params = new URLSearchParams(search), extras = {}, invalid = [];
     for (const name of previewKeys) params.delete(name);
@@ -147,6 +162,8 @@
   };
   const originalDemo = data.demo;
   data.demo = profiles => async query => {
+    if (window.CatalogDemoSourceFailure) throw new Error('Synthetic availability source failure');
+    if (window.CatalogDemoSearchFailure && (query.areas.length || query.topics.length || Object.keys(query.extras || {}).length)) throw new Error('Synthetic search failure');
     const visible = profiles.filter(profile => Object.entries(query.extras || {}).every(([id, value]) => {
       const field = fieldMap.get(id), actual = profile[field.property];
       if (field.match === 'minimum') return Number.isFinite(actual) && actual > Number(value);

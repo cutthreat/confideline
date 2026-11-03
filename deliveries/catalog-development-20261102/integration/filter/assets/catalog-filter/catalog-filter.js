@@ -33,6 +33,10 @@
       dialog.querySelector('h2')?.focus({ preventScroll: true });
     });
     close.addEventListener('click', () => finish(true));
+    dialog.addEventListener('click', event => {
+      const box = dialog.getBoundingClientRect();
+      if (event.target === dialog && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom)) finish(true);
+    });
     dialog.addEventListener('cancel', event => { event.preventDefault(); finish(true); });
     dialog.addEventListener('close', () => opener.setAttribute('aria-expanded', 'false'));
     form.addEventListener('cl:filter-applied', () => finish(false));

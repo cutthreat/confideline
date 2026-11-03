@@ -6,6 +6,9 @@
   try { savedOnline = JSON.parse(localStorage.getItem('catalog-settings-preview-r3'))?.values?.guestOnlineOnly === true; } catch {}
   const policy = window.CatalogPreviewPolicy.fromQuery(root.dataset.audience, location.search, savedOnline);
   window.CatalogDemoAccess = policy;
+  const query = new URLSearchParams(location.search);
+  window.CatalogDemoSourceFailure = policy.onlineOnly && query.get('preview') === '1' && query.get('sourceFailure') === '1';
+  window.CatalogDemoSearchFailure = query.get('preview') === '1' && query.get('searchFailure') === '1';
   window.CatalogFilterFixtures = window.CatalogPreviewPolicy.visibleProfiles(window.CatalogFilterFixtures, policy);
   if (!policy.hideDirectory) return;
   const content = root.querySelector(':scope > .container');
