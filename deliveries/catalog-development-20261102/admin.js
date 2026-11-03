@@ -10,6 +10,12 @@
   const hideDirectory=form.elements.hideDirectory;
   const online=form.elements.guestOnlineOnly;
   const onlineHint=document.querySelector('#guest-online-hint');
+  const extras=hideDirectory?[...form.querySelectorAll('input:not([name]),select:not([name]),textarea:not([name])')]:[];
+  const extraKey='catalog-settings-preview-basic-fields';
+  const extraSnapshot=()=>extras.map(el=>el.type==='checkbox'?el.checked:el.value);
+  function restoreExtras(values){extras.forEach((el,i)=>{if(values?.[i]===undefined)return;if(el.type==='checkbox')el.checked=values[i]===true;else el.value=String(values[i]);});}
+  try{restoreExtras(JSON.parse(localStorage.getItem(extraKey)));}catch{}
+  let baselineExtras=extraSnapshot();
   const en=new URL(location.href).searchParams.get('lang')==='en';
   const names=en?{filter:{1:'Horizontal filter',2:'Vertical filter'},cards:{1:'Dating',2:'Spiritual services'},guestOnlineOnly:{true:'On',false:'Off'}}:{filter:{1:'Горизонтальный фильтр',2:'Вертикальный фильтр'},cards:{1:'Знакомства',2:'Эзотерика'},guestOnlineOnly:{true:'Включено',false:'Выключено'}};
   const titles=en?{filter:'Directory filter',cards:'Profile listing',guestOnlineOnly:'Guests: online experts only'}:{filter:'Фильтр каталога',cards:'Выдача анкет',guestOnlineOnly:'Гостям только эксперты онлайн'};
@@ -21,7 +27,7 @@
     unknown:'The save result is not yet confirmed. Check the saved settings before trying again.',check:'Check saved settings',checkFailed:'Could not check the save result. Check again before saving.',checked:'Saved settings checked. Review any remaining draft.',
     error:'Unable to save settings. Previous settings remain active and your selections are preserved. Try again.',
     conflict:'A setting was changed in another window. Nothing was overwritten. Refresh saved values and review your selection.',
-    success:'Directory settings saved.',shortError:'Unable to save settings. Previous settings remain active and your selections are preserved.',
+    success:hideDirectory?'Settings saved.':'Directory settings saved.',shortError:'Unable to save settings. Previous settings remain active and your selections are preserved.',
     conflictDetail:(title,current,selected)=>`${title}: saved “${current}”, your selection “${selected}”.`
   }:{
     saved:'Сохранено: ',readonly:'Только просмотр. У вас нет права изменять настройки каталога.',cancelled:'Несохранённые изменения отменены.',
@@ -29,7 +35,7 @@
     unknown:'Результат сохранения пока не подтверждён. Проверьте сохранённые настройки перед повтором.',check:'Проверить сохранённые настройки',checkFailed:'Не удалось проверить результат сохранения. Повторите проверку перед сохранением.',checked:'Сохранённые настройки проверены. Проверьте оставшийся черновик.',
     error:'Не удалось сохранить настройки. Прежние значения действуют, ваш выбор оставлен в полях. Повторите сохранение.',
     conflict:'Настройка изменена в другом окне. Ничего не перезаписано. Обновите сохранённые значения и проверьте свой выбор.',
-    success:'Настройки каталога сохранены.',shortError:'Не удалось сохранить настройки. Прежние значения действуют, ваш выбор оставлен в полях.',
+    success:hideDirectory?'Настройки сохранены.':'Настройки каталога сохранены.',shortError:'Не удалось сохранить настройки. Прежние значения действуют, ваш выбор оставлен в полях.',
     conflictDetail:(title,current,selected)=>`${title}: сейчас сохранено «${current}», ваш выбор «${selected}».`
   };
   const requestedScenario=new URL(location.href).searchParams.get('scenario');
@@ -71,7 +77,7 @@
     form.querySelector('button[type=submit]').disabled=true;form.querySelector('button[type=reset]').disabled=true;
     message('info',text.readonly);
   }
-  form.addEventListener('reset',e=>{e.preventDefault();if(unknownPending)return;baseline=read();render(true);details.hidden=true;refresh.hidden=true;message('info',text.cancelled);});
+  form.addEventListener('reset',e=>{e.preventDefault();if(unknownPending)return;baseline=read();restoreExtras(baselineExtras);render(true);details.hidden=true;refresh.hidden=true;message('info',text.cancelled);});
   refresh.addEventListener('click',()=>{
     if(unknownPending&&!unknownReadbackFailed){unknownReadbackFailed=true;message('error',text.checkFailed);return;}
     const changed=new Set(fields.filter(field=>value(field)!==baseline.values[field]));
@@ -85,7 +91,8 @@
     renderAccess();
     const next=Object.fromEntries(fields.map(f=>[f,value(f)]));
     const changed=fields.filter(f=>next[f]!==baseline.values[f]);
-    if(!changed.length){message('info',text.unchanged);return;}
+    const extraChanged=JSON.stringify(extraSnapshot())!==JSON.stringify(baselineExtras);
+    if(!changed.length&&!extraChanged){message('info',text.unchanged);return;}
     if(scenario==='error'){message('error',text.error);return;}
     let current=read();
     if(changed.includes('guestOnlineOnly')&&(changed.includes('hideDirectory')?next.hideDirectory:current.values.hideDirectory)){
@@ -113,6 +120,7 @@
     try{
       for(const f of changed){current.values[f]=next[f];current.revision[f]++;}
       localStorage.setItem(key,JSON.stringify(current));
+      if(extras.length){localStorage.setItem(extraKey,JSON.stringify(extraSnapshot()));baselineExtras=extraSnapshot();}
       baseline=read();render(true);details.hidden=true;refresh.hidden=true;message('success',text.success);
     }catch{message('error',text.shortError);}
   });
