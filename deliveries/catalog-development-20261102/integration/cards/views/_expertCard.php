@@ -44,10 +44,7 @@ $tag = static function ($value) { return Html::tag('span', Html::encode($value),
             <div class="cl-expert-areas"><?= implode('', array_map($tag, array_slice($areaLabels, 0, 2))) ?></div>
         <?php endif; ?>
         <?php if (count($areaLabels) > 2): ?>
-            <details class="cl-expert-more">
-                <summary><span class="cl-expert-more-label">+<?= count($areaLabels) - 2 ?><span class="sr-only">: <?= Html::encode(Yii::t('app', 'Expertise for {name}', ['name' => $name])) ?></span></span><span class="cl-expert-less-label"><span aria-hidden="true">−</span><span class="sr-only"><?= Html::encode(Yii::t('app', 'Show less')) ?>: <?= Html::encode(Yii::t('app', 'Expertise for {name}', ['name' => $name])) ?></span></span></summary>
-                <div class="cl-expert-areas"><?= implode('', array_map($tag, array_slice($areaLabels, 2))) ?></div>
-            </details>
+            <?= Html::a(Html::tag('span', '+' . (count($areaLabels) - 2)), $profileUrl, ['class' => 'cl-expert-more-link', 'aria-label' => Yii::t('app', 'Open profile: {name}, {count} more', ['name' => $name, 'count' => count($areaLabels) - 2])]) ?>
         <?php endif; ?>
         </div><div class="cl-expert-footer">
             <div class="cl-expert-offer">

@@ -18,21 +18,22 @@
   };
   function render(p, lang = 'ru', labels = window.CatalogFilterModel.profileLabels) {
     const t = words[lang], id = esc(p.id), name = esc(p.name);
+    const profileHref = 'profile-preview.html?' + new URLSearchParams({id:p.id,audience:document.body.classList.contains('light')?'client':'guest',return:location.search}).toString();
     const tag = key => `<span class="cl-expert-tag" title="${esc(labels.areas[key])}">${esc(labels.areas[key])}</span>`;
     const areas = [...new Set(p.areas)].filter(key => Object.hasOwn(labels.areas, key));
     const rating = Number.isFinite(p.rating) && p.rating >= 1 && p.rating <= 5 && Number.isSafeInteger(p.votes) && p.votes > 0;
     return `<div class="col-12 col-sm-6 col-lg-4 col-xl-3 directory-item cl-expert-item"><article class="card cl-expert-card" data-profile-id="${id}">
       ${document.body.classList.contains('light') && validTrial(p) ? `<span class="cl-expert-trial"><i class="fa fa-gift" aria-hidden="true"></i>${esc(t.trial(p.trialMinutes))}</span>` : ''}
       <div class="cl-expert-content"><div class="cl-expert-heading"><div class="cl-expert-avatar">
-      <a class="cl-expert-photo" href="#profile-${id}" data-card-action="profile" aria-label="${esc(t.profile)}: ${name}">${p.photo ? `<img class="card-img-top" src="${esc(p.photo)}" width="500" height="500" alt="${name}">` : ''}<span class="cl-expert-photo-fallback" aria-hidden="true"${p.photo ? ' hidden' : ''}><i class="fa fa-user" aria-hidden="true"></i></span></a>
+      <a class="cl-expert-photo" href="${esc(profileHref)}" aria-label="${esc(t.profile)}: ${name}">${p.photo ? `<img class="card-img-top" src="${esc(p.photo)}" width="500" height="500" alt="${name}">` : ''}<span class="cl-expert-photo-fallback" aria-hidden="true"${p.photo ? ' hidden' : ''}><i class="fa fa-user" aria-hidden="true"></i></span></a>
       ${['online','busy','offline'].includes(p.status) ? `<details class="cl-expert-presence" data-status="${esc(p.status)}"><summary aria-label="${name}: ${esc(t[p.status])}"><span aria-hidden="true"></span></summary><span class="cl-expert-presence-label">${esc(t[p.status])}</span></details>` : ''}</div>
       <div class="cl-expert-favorite"><button type="button" data-card-action="favorite" aria-pressed="${favorite.has(p.id)}" aria-label="${esc(favorite.has(p.id) ? t.unfavorite : t.favorite)}: ${name}" title="${esc(favorite.has(p.id) ? t.unfavorite : t.favorite)}"><i class="fa ${favorite.has(p.id) ? 'fa-heart' : 'fa-heart-o'}" aria-hidden="true"></i></button></div>
-      <div class="cl-expert-identity"><h2 class="cl-expert-title"><a href="#profile-${id}" data-card-action="profile">${name}</a></h2>
+      <div class="cl-expert-identity"><h2 class="cl-expert-title"><a href="${esc(profileHref)}">${name}</a></h2>
       <div class="cl-expert-rating-slot">${rating ? `<a class="cl-expert-rating" href="#reviews-${id}" data-card-action="reviews" aria-label="${esc(`${p.name}: ${p.rating.toFixed(1)} / 5, ${t.votes(p.votes)}`)}"><i class="fa fa-star" aria-hidden="true"></i><strong>${p.rating.toFixed(1)}</strong><span>${esc(t.votes(p.votes))}</span></a>` : `<span class="cl-expert-rating-empty">${lang==='ru'?'Пока нет оценок':'No ratings yet'}</span>`}</div>
       ${Number.isSafeInteger(p.experience) && p.experience > 0 ? `<p class="cl-expert-experience"><i class="fa fa-graduation-cap" aria-hidden="true"></i>${esc(t.experience(p.experience))}</p>` : ''}
       </div></div><div class="cl-expert-directions">
       ${areas.length ? `<div class="cl-expert-areas">${areas.slice(0,2).map(tag).join('')}</div>` : ''}
-      ${areas.length > 2 ? `<details class="cl-expert-more"><summary><span class="cl-expert-more-label">+${areas.length-2}<span class="sr-only">: ${esc(t.directions)}, ${name}</span></span><span class="cl-expert-less-label"><span aria-hidden="true">−</span><span class="sr-only">${lang==='ru'?'Свернуть':'Show less'}: ${esc(t.directions)}, ${name}</span></span></summary><div class="cl-expert-areas">${areas.slice(2).map(tag).join('')}</div></details>` : ''}
+      ${areas.length > 2 ? `<a class="cl-expert-more-link" href="${esc(profileHref)}" aria-label="${esc(t.profile)}: ${name}, ${esc(t.more(areas.length-2))}"><span>+${areas.length-2}</span></a>` : ''}
       </div><div class="cl-expert-footer">${offer(p,lang,false)}
       <a class="btn btn-primary cl-expert-chat" href="#chat-${id}" data-card-action="chat"><i class="fa fa-comment-o" aria-hidden="true"></i>${lang==='ru'?'Начать чат':'Start chat'}<span class="sr-only">: ${name}</span></a></div></div></article></div>`;
   }
