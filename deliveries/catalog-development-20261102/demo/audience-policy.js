@@ -2,9 +2,9 @@
   'use strict';
   const root = document.querySelector('.cl-catalog');
   if (!root) return;
-  let savedOnline = false;
-  try { savedOnline = JSON.parse(localStorage.getItem('catalog-settings-preview-r3'))?.values?.guestOnlineOnly === true; } catch {}
-  const policy = window.CatalogPreviewPolicy.fromQuery(root.dataset.audience, location.search, savedOnline);
+  let saved;
+  try { saved = JSON.parse(localStorage.getItem('catalog-settings-preview-r3'))?.values; } catch {}
+  const policy = window.CatalogPreviewPolicy.fromQuery(root.dataset.audience, location.search, saved?.guestOnlineOnly, saved?.hideDirectory);
   window.CatalogDemoAccess = policy;
   const query = new URLSearchParams(location.search);
   window.CatalogDemoSourceFailure = policy.onlineOnly && query.get('preview') === '1' && query.get('sourceFailure') === '1';

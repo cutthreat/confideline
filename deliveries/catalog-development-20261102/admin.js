@@ -1,14 +1,20 @@
 (function(){
   'use strict';
-  const form=document.querySelector('#versions'),notice=document.querySelector('#save-status');
+  const form=document.querySelector('#versions, #guest-access'),notice=document.querySelector('#save-status');
   const summary=document.querySelector('#combination'),details=document.querySelector('#conflict-detail');
   const refresh=document.querySelector('#refresh-current');
   const saveButton=form.querySelector('button[type=submit]'),resetButton=form.querySelector('button[type=reset]');
   const key='catalog-settings-preview-r3';
-  const fields=['filter','cards','guestOnlineOnly'];
+  const defaults={filter:'1',cards:'1',guestOnlineOnly:false,hideDirectory:false};
+  const fields=Object.keys(defaults).filter(field=>form.elements[field]);
+  const hideDirectory=form.elements.hideDirectory;
+  const online=form.elements.guestOnlineOnly;
+  const onlineHint=document.querySelector('#guest-online-hint');
   const en=new URL(location.href).searchParams.get('lang')==='en';
   const names=en?{filter:{1:'Horizontal filter',2:'Vertical filter'},cards:{1:'Dating',2:'Spiritual services'},guestOnlineOnly:{true:'On',false:'Off'}}:{filter:{1:'Горизонтальный фильтр',2:'Вертикальный фильтр'},cards:{1:'Знакомства',2:'Эзотерика'},guestOnlineOnly:{true:'Включено',false:'Выключено'}};
   const titles=en?{filter:'Directory filter',cards:'Profile listing',guestOnlineOnly:'Guests: online experts only'}:{filter:'Фильтр каталога',cards:'Выдача анкет',guestOnlineOnly:'Гостям только эксперты онлайн'};
+  names.hideDirectory=names.guestOnlineOnly;
+  titles.hideDirectory=en?'Hide directory from guests':'Скрыть каталог пользователей от гостей';
   const text=en?{
     saved:'Saved: ',readonly:'View only. You do not have permission to change directory settings.',cancelled:'Unsaved changes discarded.',
     refreshed:'Saved values refreshed. Your changed fields remain in the draft; other fields are updated.',unchanged:'No changes.',
@@ -29,26 +35,35 @@
   const requestedScenario=new URL(location.href).searchParams.get('scenario');
   const scenario=['normal','error','conflict','readonly','unknown'].includes(requestedScenario)?requestedScenario:'normal';
   function read(){
-    const values={filter:'1',cards:'1',guestOnlineOnly:false},revision={filter:0,cards:0,guestOnlineOnly:0};
+    const values={...defaults},revision=Object.fromEntries(Object.keys(defaults).map(field=>[field,0]));
     try{
       const state=JSON.parse(localStorage.getItem(key)),v=state?.values,r=state?.revision;
       if(v&&['1','2'].includes(v.filter))values.filter=v.filter;
       if(v&&['1','2'].includes(v.cards))values.cards=v.cards;
       if(typeof v?.guestOnlineOnly==='boolean')values.guestOnlineOnly=v.guestOnlineOnly;
-      for(const field of fields)if(Number.isSafeInteger(r?.[field])&&r[field]>=0)revision[field]=r[field];
+      if(typeof v?.hideDirectory==='boolean')values.hideDirectory=v.hideDirectory;
+      for(const field of Object.keys(defaults))if(Number.isSafeInteger(r?.[field])&&r[field]>=0)revision[field]=r[field];
     }catch{}
     return{values,revision};
   }
   let baseline=read(),forcedConflict=false,forcedUnknown=false,unknownPending=false,unknownReadbackFailed=false;
   function message(kind,text){notice.hidden=false;notice.dataset.kind=kind;notice.textContent=text;}
-  function value(field){return field==='guestOnlineOnly'?form.elements[field].checked:form.elements[field].value;}
-  function setValue(field,v){if(field==='guestOnlineOnly')form.elements[field].checked=v;else form.elements[field].value=v;}
+  function value(field){return typeof defaults[field]==='boolean'?form.elements[field].checked:form.elements[field].value;}
+  function setValue(field,v){if(typeof defaults[field]==='boolean')form.elements[field].checked=v;else form.elements[field].value=v;}
+  function renderAccess(){
+    if(!online)return;
+    if(hideDirectory.checked)online.checked=baseline.values.guestOnlineOnly;
+    online.disabled=hideDirectory.checked||scenario==='readonly';
+    onlineHint.hidden=!hideDirectory.checked;
+  }
+  hideDirectory?.addEventListener('change',renderAccess);
   function render(reset){
     for(const field of fields){
       if(reset)setValue(field,baseline.values[field]);
       document.querySelector('#'+field+'-current').textContent=text.saved+names[field][baseline.values[field]];
     }
     summary.textContent=fields.map(f=>titles[f]+': '+names[f][baseline.values[f]]).join('; ')+'.';
+    renderAccess();
   }
   render(true);
   if(scenario==='readonly'){
@@ -67,11 +82,17 @@
   });
   form.addEventListener('submit',e=>{
     e.preventDefault();if(scenario==='readonly'||unknownPending)return;
+    renderAccess();
     const next=Object.fromEntries(fields.map(f=>[f,value(f)]));
     const changed=fields.filter(f=>next[f]!==baseline.values[f]);
     if(!changed.length){message('info',text.unchanged);return;}
     if(scenario==='error'){message('error',text.error);return;}
     let current=read();
+    if(changed.includes('guestOnlineOnly')&&(changed.includes('hideDirectory')?next.hideDirectory:current.values.hideDirectory)){
+      refresh.hidden=false;
+      message('conflict',text.conflict);
+      return;
+    }
     if(scenario==='unknown'&&!forcedUnknown){
       for(const field of changed){current.values[field]=next[field];current.revision[field]++;}
       try{localStorage.setItem(key,JSON.stringify(current));}catch{message('error',text.shortError);return;}
@@ -95,6 +116,9 @@
       baseline=read();render(true);details.hidden=true;refresh.hidden=true;message('success',text.success);
     }catch{message('error',text.shortError);}
   });
+  for(const a of document.querySelectorAll('.nav-vertical a[href="admin.html"],.nav-vertical a[href="admin-general.html"]')){
+    if(en)a.href=a.getAttribute('href')+'?lang=en';
+  }
   document.querySelector('.sidebar-toggle').addEventListener('click',()=>document.body.classList.toggle(innerWidth<768?'sidebar-open':'sidebar-collapse'));
   for(const a of document.querySelectorAll('a[data-original-route]'))a.addEventListener('click',e=>{
     e.preventDefault();const list=a.parentElement.querySelector(':scope > .treeview-menu');
