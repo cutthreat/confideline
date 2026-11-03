@@ -4,30 +4,36 @@
   const summary=document.querySelector('#combination'),details=document.querySelector('#conflict-detail');
   const refresh=document.querySelector('#refresh-current');
   const key='catalog-settings-preview-r3';
-  const names={filter:{1:'Горизонтальный фильтр',2:'Вертикальный фильтр'},cards:{1:'Знакомства',2:'Эзотерика'}};
+  const fields=['filter','cards','guestOnlineOnly'];
+  const names={filter:{1:'Горизонтальный фильтр',2:'Вертикальный фильтр'},cards:{1:'Знакомства',2:'Эзотерика'},guestOnlineOnly:{true:'Включено',false:'Выключено'}};
+  const titles={filter:'Фильтр каталога',cards:'Выдача анкет',guestOnlineOnly:'Гостям только эксперты онлайн'};
   const requestedScenario=new URL(location.href).searchParams.get('scenario');
   const scenario=['normal','error','conflict','readonly'].includes(requestedScenario)?requestedScenario:'normal';
   function read(){
-    let values={filter:'1',cards:'1'},revision={filter:0,cards:0};
+    const values={filter:'1',cards:'1',guestOnlineOnly:false},revision={filter:0,cards:0,guestOnlineOnly:0};
     try{
       const state=JSON.parse(localStorage.getItem(key)),v=state?.values,r=state?.revision;
-      if(v&&['1','2'].includes(v.filter)&&['1','2'].includes(v.cards))values=v;
-      if(r&&Number.isSafeInteger(r.filter)&&Number.isSafeInteger(r.cards))revision=r;
+      if(v&&['1','2'].includes(v.filter))values.filter=v.filter;
+      if(v&&['1','2'].includes(v.cards))values.cards=v.cards;
+      if(typeof v?.guestOnlineOnly==='boolean')values.guestOnlineOnly=v.guestOnlineOnly;
+      for(const field of fields)if(Number.isSafeInteger(r?.[field])&&r[field]>=0)revision[field]=r[field];
     }catch{}
     return{values,revision};
   }
   let baseline=read(),forcedConflict=false;
   function message(kind,text){notice.hidden=false;notice.dataset.kind=kind;notice.textContent=text;}
+  function value(field){return field==='guestOnlineOnly'?form.elements[field].checked:form.elements[field].value;}
+  function setValue(field,v){if(field==='guestOnlineOnly')form.elements[field].checked=v;else form.elements[field].value=v;}
   function render(reset){
-    for(const field of ['filter','cards']){
-      if(reset)form.elements[field].value=baseline.values[field];
-      document.querySelector('#'+(field==='filter'?'filter':'cards')+'-current').textContent='Сохранено: '+names[field][baseline.values[field]];
+    for(const field of fields){
+      if(reset)setValue(field,baseline.values[field]);
+      document.querySelector('#'+field+'-current').textContent='Сохранено: '+names[field][baseline.values[field]];
     }
-    summary.textContent=names.filter[baseline.values.filter]+'; '+names.cards[baseline.values.cards]+'.';
+    summary.textContent=fields.map(f=>titles[f]+': '+names[f][baseline.values[f]]).join('; ')+'.';
   }
   render(true);
   if(scenario==='readonly'){
-    for(const field of ['filter','cards'])form.elements[field].disabled=true;
+    for(const field of fields)form.elements[field].disabled=true;
     form.querySelector('button[type=submit]').disabled=true;form.querySelector('button[type=reset]').disabled=true;
     message('info','Только просмотр. У вас нет права изменять настройки каталога.');
   }
@@ -35,8 +41,8 @@
   refresh.addEventListener('click',()=>{baseline=read();render(false);details.hidden=true;refresh.hidden=true;message('info','Сохранённые значения обновлены. Ваш выбор оставлен в полях; проверьте его перед сохранением.');});
   form.addEventListener('submit',e=>{
     e.preventDefault();if(scenario==='readonly')return;
-    const next={filter:form.elements.filter.value,cards:form.elements.cards.value};
-    const changed=['filter','cards'].filter(f=>next[f]!==baseline.values[f]);
+    const next=Object.fromEntries(fields.map(f=>[f,value(f)]));
+    const changed=fields.filter(f=>next[f]!==baseline.values[f]);
     if(!changed.length){message('info','Изменений нет.');return;}
     if(scenario==='error'){message('error','Не удалось сохранить настройки. Прежние значения действуют, ваш выбор оставлен в полях. Повторите сохранение.');return;}
     let current=read();
@@ -47,7 +53,7 @@
     }
     const conflicts=changed.filter(f=>current.revision[f]!==baseline.revision[f]||current.values[f]!==baseline.values[f]);
     if(conflicts.length){
-      details.textContent=conflicts.map(f=>(f==='filter'?'Фильтр каталога':'Выдача анкет')+': сейчас сохранено «'+names[f][current.values[f]]+'», ваш выбор «'+names[f][next[f]]+'».').join(' ');
+      details.textContent=conflicts.map(f=>titles[f]+': сейчас сохранено «'+names[f][current.values[f]]+'», ваш выбор «'+names[f][next[f]]+'».').join(' ');
       details.hidden=false;refresh.hidden=false;
       message('conflict','Настройка изменена в другом окне. Ничего не перезаписано. Обновите сохранённые значения и проверьте свой выбор.');return;
     }

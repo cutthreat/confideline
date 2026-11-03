@@ -3,8 +3,21 @@
   const params = new URLSearchParams(location.search);
   const id = params.get('id');
   const client = params.get('audience') === 'client';
-  const requested = window.CatalogFilterModel.readQuery(params.get('return') || '');
-  const query = requested.invalid.length ? '' : window.CatalogFilterModel.writeQuery(requested);
+  const previous = new URLSearchParams(params.get('return') || '');
+  const validNames = ['areas', 'topics', 'page', 'lang'];
+  const allowedAreas = Object.keys(window.CatalogFilterModel.profileLabels.areas).filter(key => key !== 'palmistry');
+  const allowedTopics = Object.keys(window.CatalogFilterModel.profileLabels.topics).filter(key => !['fortune', 'fertility', 'soulmate'].includes(key));
+  let valid = [...previous.keys()].every(name => validNames.includes(name) || /^x_[a-z][a-z0-9_-]*$/.test(name));
+  for (const [name, allowed] of [['areas', allowedAreas], ['topics', allowedTopics]]) {
+    valid = valid && previous.getAll(name).flatMap(value => value.split(',')).every(value => allowed.includes(value));
+  }
+  for (const name of new Set(previous.keys())) {
+    if (name.startsWith('x_')) valid = valid && previous.getAll(name).length === 1 && previous.get(name).length <= 100;
+  }
+  if (previous.has('page')) valid = valid && /^[1-9]\d*$/.test(previous.get('page'));
+  if (previous.has('lang')) valid = valid && ['ru', 'en'].includes(previous.get('lang'));
+  const requested = { lang: previous.get('lang') === 'en' ? 'en' : 'ru' };
+  const query = valid ? previous.toString() : '';
   const catalog = 'catalog-filter' + (client ? '-auth' : '') + '.html' + (query ? '?' + query : '');
   const clientCatalog = 'catalog-filter-auth.html' + (query ? '?' + query : '');
   const profile = window.CatalogFilterFixtures.find(item => item.id === id);
@@ -54,7 +67,8 @@
   $('profile-rating').textContent = rating ? '★ ' + profile.rating.toFixed(1) + ' · ' + profile.votes + ' ' + votes : (en ? 'No ratings yet' : 'Пока нет оценок');
   $('profile-reviews').textContent = rating ? profile.votes + ' ' + votes + ' · ' + profile.rating.toFixed(1) + (en ? ' out of 5' : ' из 5') : (en ? 'No ratings yet' : 'Пока нет оценок');
   const hasPrice = Number.isFinite(profile.creditsPerMinute) && profile.creditsPerMinute > 0;
-  $('profile-price').textContent = hasPrice ? profile.creditsPerMinute + (en ? ' credits / min' : ' кредитов / мин') : (en ? 'Terms in chat' : 'Условия в чате');
+  $('profile-price').textContent = hasPrice ? profile.creditsPerMinute + (en ? ' credits / min' : ' кредитов / мин') : '';
+  $('profile-price').hidden = !hasPrice;
   if (client && hasPrice && Number.isSafeInteger(profile.trialMinutes) && profile.trialMinutes > 0) {
     $('profile-trial').textContent = en ? 'First ' + profile.trialMinutes + ' min free' : 'Первые ' + profile.trialMinutes + ' мин бесплатно';
     $('profile-trial').hidden = false;

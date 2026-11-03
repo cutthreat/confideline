@@ -7,7 +7,8 @@ use yii\helpers\Html;
  * $cards: prepared _expertCard argument arrays for this page only.
  * $paginationControl: trusted rendered application pager, never user input.
  * $recoveryUrl: validated internal URL with the applied search parameters.
- * The host owns the shared heading/count and request lifecycle.
+ * The host owns the shared heading/count, authorization and request lifecycle.
+ * State and labels come from the existing application, not from the card template.
  */
 ExpertCardsAsset::register($this);
 $cards = $cards ?? [];
@@ -15,15 +16,17 @@ $state = $state ?? (count($cards) ? 'ready' : 'empty');
 if (!in_array($state, ['ready', 'loading', 'empty', 'error'], true)) {
     throw new \InvalidArgumentException('Invalid result state');
 }
-$labels = [
-    'loading' => Yii::t('app', 'Loading experts...'),
-    'empty' => Yii::t('app', 'No matching experts'),
-    'error' => Yii::t('app', 'Unable to load experts'),
+$labels = $labels ?? [
+    'loading' => Yii::t('app', 'Loading...'),
+    'empty' => Yii::t('app', 'No results'),
+    'error' => Yii::t('app', 'Unable to load results'),
 ];
+$resultsLabel = $resultsLabel ?? Yii::t('app', 'Search results');
+$pageLabel = $pageLabel ?? Yii::t('app', 'Results on this page');
 ?>
-<section class="cl-catalog-results" aria-label="<?= Html::encode(Yii::t('app', 'Expert results')) ?>" aria-busy="<?= $state === 'loading' ? 'true' : 'false' ?>">
+<section class="cl-catalog-results" aria-label="<?= Html::encode($resultsLabel) ?>" aria-busy="<?= $state === 'loading' ? 'true' : 'false' ?>">
 <?php if ($state === 'ready'): ?>
-    <div class="cl-expert-grid" tabindex="0" role="group" aria-label="<?= Html::encode(Yii::t('app', 'Experts on this page')) ?>">
+    <div class="cl-expert-grid" tabindex="0" role="group" aria-label="<?= Html::encode($pageLabel) ?>">
         <?php foreach ($cards as $params): ?>
             <div class="cl-expert-item"><?= $this->render('_expertCard', $params) ?></div>
         <?php endforeach; ?>

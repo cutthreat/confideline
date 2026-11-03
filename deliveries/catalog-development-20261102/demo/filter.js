@@ -27,7 +27,7 @@
   document.addEventListener('focusin', () => { ++focusRevision; });
   const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const selected = name => Array.from(form.querySelectorAll(`input[name="${name}"]:checked`), input => input.value);
-  const draft = () => ({ areas: selected('areas'), topics: selected('topics'), page: 1, lang: applied.lang });
+  const draft = () => ({ areas: selected('areas'), topics: selected('topics'), extras: window.CatalogDynamicDemo.readDraft(), page: 1, lang: applied.lang });
   function updateUrl(push) {
     const query = model.writeQuery(applied);
     const url = location.pathname + (query ? '?' + query : '') + location.hash;
@@ -49,7 +49,7 @@
     }
     submit.disabled = mode === 'loading' && !changed;
     submit.setAttribute('aria-busy', String(mode === 'loading'));
-    root.querySelector('#catalog-reset').disabled = !invalid.length && !changed && !applied.areas.length && !applied.topics.length;
+    root.querySelector('#catalog-reset').disabled = !invalid.length && !changed && !applied.areas.length && !applied.topics.length && !Object.keys(applied.extras || {}).length;
     status.textContent = text[applied.lang][mode === 'loading' ? 'loading' : 'errorCount'];
     if (mode === 'ready') status.textContent = text[applied.lang].found(total);
   }
@@ -131,14 +131,14 @@
   function apply() { applied = draft(); invalid = []; return load({ push: true, focusResult: true }); }
   function reset() {
     const ownedFocus = document.activeElement === root.querySelector('#catalog-reset');
-    form.reset(); applied = { areas: [], topics: [], page: 1, lang: applied.lang }; invalid = [];
+    form.reset(); applied = { areas: [], topics: [], extras: {}, page: 1, lang: applied.lang }; invalid = [];
     const pending = load({ push: true });
     if (ownedFocus) form.querySelector('input').focus();
     return pending;
   }
   function restore() {
     const state = model.readQuery(location.search);
-    applied = { areas: state.areas, topics: state.topics, page: state.page, lang: state.lang }; invalid = state.invalid;
+    applied = { areas: state.areas, topics: state.topics, extras: state.extras, page: state.page, lang: state.lang }; invalid = state.invalid; window.CatalogDynamicDemo.restore(state.extras);
     for (const name of ['areas', 'topics']) form.querySelectorAll(`input[name="${name}"]`).forEach(input => { input.checked = state[name].includes(input.value); });
     return load();
   }

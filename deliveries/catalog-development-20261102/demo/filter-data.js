@@ -19,7 +19,7 @@
         (item.photo !== null && (typeof item.photo !== 'string' || !/^(?:images\/[\w.-]+|https:\/\/)/.test(item.photo))) ||
         !Array.isArray(item.areas) || item.areas.some(id => !Object.hasOwn(model.profileLabels.areas, id)) ||
         !Array.isArray(item.topics) || item.topics.some(id => !Object.hasOwn(model.profileLabels.topics, id)) ||
-        !['online', 'busy', 'offline'].includes(item.status)) throw new Error('invalid_response');
+        !(item.status == null || typeof item.status === 'string')) throw new Error('invalid_response');
     }
     return { ...result, pages: Math.max(1, Math.ceil(result.total / pageSize)) };
   }

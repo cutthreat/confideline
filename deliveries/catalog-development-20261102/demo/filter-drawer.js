@@ -12,7 +12,7 @@
   const counter = root.querySelector('#catalog-applied-count');
   const summary = root.querySelector('#catalog-applied');
   let scrollOrigin = null;
-  const labels = Object.fromEntries([...form.querySelectorAll('input')].map(input => [input.value, input.closest('label').querySelector('.cl-option-label').textContent]));
+  const labels = Object.fromEntries([...form.querySelectorAll('input[name=areas],input[name=topics]')].map(input => [input.value, input.closest('label').querySelector('.cl-option-label').textContent]));
   const strings = {
     ru: { title: 'Фильтры', close: 'Закрыть фильтры', reset: 'Сбросить фильтр', all: 'Все выбранные фильтры', more: n => `Все выбранные фильтры, ещё ${n}`, applied: 'Применённые фильтры', remove: label => `Убрать фильтр ${label}`, open: n => n ? `Фильтры, применено: ${n}` : 'Фильтры' },
     en: { title: 'Filters', close: 'Close filters', reset: 'Reset filters', all: 'All selected filters', more: n => `All selected filters, ${n} more`, applied: 'Applied filters', remove: label => `Remove ${label} filter`, open: n => n ? `Filters, ${n} applied` : 'Filters' }
@@ -20,7 +20,7 @@
   const applied = () => model.readQuery(location.search);
   function sync() {
     const state = applied(), t = strings[state.lang];
-    const values = [...state.areas.map(value => ['areas', value]), ...state.topics.map(value => ['topics', value])];
+    const values = [...state.areas.map(value => ['areas', value]), ...state.topics.map(value => ['topics', value]), ...Object.entries(state.extras || {}).map(([id,value]) => ['extra:' + id, value])];
     heading.textContent = t.title;
     close.title = t.close; close.setAttribute('aria-label', t.close);
     const reset = root.querySelector('#catalog-reset');
@@ -31,11 +31,12 @@
     counter.textContent = String(values.length); counter.hidden = !values.length;
     summary.hidden = !values.length; summary.setAttribute('aria-label', t.applied);
     summary.replaceChildren(...values.map(([name, value]) => {
+      const display = name.startsWith('extra:') ? window.CatalogDynamicDemo.labelFor(name.slice(6), value) : (labels[value] || value);
       const button = document.createElement('button');
       button.type = 'button'; button.className = 'cl-applied-chip';
       button.dataset.removeGroup = name; button.dataset.removeValue = value;
-      button.setAttribute('aria-label', t.remove(labels[value])); button.title = t.remove(labels[value]);
-      const label = document.createElement('span'); label.textContent = labels[value];
+      button.setAttribute('aria-label', t.remove(display)); button.title = t.remove(display);
+      const label = document.createElement('span'); label.textContent = display;
       const icon = document.createElement('i'); icon.className = 'fa fa-times'; icon.setAttribute('aria-hidden', 'true');
       button.append(label, icon); return button;
     }));
@@ -52,7 +53,8 @@
   }
   function restoreForm() {
     const state = applied();
-    for (const input of form.querySelectorAll('input')) input.checked = state[input.name].includes(input.value);
+    for (const input of form.querySelectorAll('input[name=areas],input[name=topics]')) input.checked = state[input.name].includes(input.value);
+    window.CatalogDynamicDemo.restore(state.extras);
     form.dispatchEvent(new Event('change', { bubbles: true }));
   }
   function syncViewport() {
@@ -120,6 +122,7 @@
     const button = event.target.closest('[data-remove-value]');
     if (!button) return;
     restoreForm();
+    if (button.dataset.removeGroup.startsWith('extra:')) { window.CatalogDynamicDemo.clearField(button.dataset.removeGroup.slice(6)); form.dispatchEvent(new Event('change', { bubbles: true })); form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })); return; }
     const input = form.querySelector(`input[name="${button.dataset.removeGroup}"][value="${button.dataset.removeValue}"]`);
     input.checked = false;
     form.dispatchEvent(new Event('change', { bubbles: true }));
