@@ -5,6 +5,9 @@ use yii\helpers\Html;
  * Presentation only: pass the site's prepared public values and existing controls.
  * $ratingControl and $favoriteControl are trusted rendered site components, not user HTML.
  */
+// The application must resolve these permissions on the server for this viewer.
+if (($mayDisplayAreas ?? false) !== true) { $areaLabels = []; }
+if (($mayDisplayExperience ?? false) !== true) { $experienceLabel = ''; }
 $areaLabels = array_values(array_unique(array_filter(array_map('trim', array_filter($areaLabels ?? [], 'is_string')), static function ($value) { return $value !== ''; })));
 $name = $name ?? '';
 $photoUrl = $photoUrl ?? '';
