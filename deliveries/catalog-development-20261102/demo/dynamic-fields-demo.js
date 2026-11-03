@@ -47,7 +47,7 @@
   ];
   const source = Array.isArray(window.CatalogDemoFieldConfig) ? window.CatalogDemoFieldConfig : defaults;
   const premium = window.CatalogDemoPremium === true;
-  const fields = source.filter(field => field && field.searchable === true && /^[a-z][a-z0-9_-]*$/.test(field.id) && ['select', 'text', 'number', 'checkbox'].includes(field.type));
+  const fields = source.filter(field => field && (field.searchable === true || field.searchablePremium === true) && /^[a-z][a-z0-9_-]*$/.test(field.id) && ['select', 'text', 'number', 'checkbox'].includes(field.type));
   const body = form.querySelector('.cl-drawer-body');
   for (const field of fields) {
     const group = document.createElement('div'); group.className = 'cl-filter-group cl-extra-field';

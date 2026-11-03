@@ -79,4 +79,4 @@
 
 ## Связь источника
 
-SHA-256 TZ.md: `1654ec16f44942f20ae5c5cbf687b030f97e755f8709501926be53a5fe0d9d4c`. Полные связи — ../handoff-consistency.json.
+SHA-256 TZ.md: `e13995cef7fa91977626eaf7938432b0c0fe75464391beff362d66dbb6b4888a`. Полные связи — ../handoff-consistency.json.
