@@ -4,7 +4,8 @@
   const id = params.get('id');
   const client = params.get('audience') === 'client';
   const previous = new URLSearchParams(params.get('return') || '');
-  const validNames = ['areas', 'topics', 'page', 'lang'];
+  const previewNames = ['preview', 'onlineOnly', 'hideDirectory', 'hideProfiles', 'hideFields'];
+  const validNames = ['areas', 'topics', 'page', 'lang', ...previewNames];
   const allowedAreas = Object.keys(window.CatalogFilterModel.profileLabels.areas).filter(key => key !== 'palmistry');
   const allowedTopics = Object.keys(window.CatalogFilterModel.profileLabels.topics).filter(key => !['fortune', 'fertility', 'soulmate'].includes(key));
   let valid = [...previous.keys()].every(name => validNames.includes(name) || /^x_[a-z][a-z0-9_-]*$/.test(name));
@@ -16,6 +17,7 @@
   }
   if (previous.has('page')) valid = valid && /^[1-9]\d*$/.test(previous.get('page'));
   if (previous.has('lang')) valid = valid && ['ru', 'en'].includes(previous.get('lang'));
+  for (const name of previewNames) if (previous.has(name)) valid = valid && previous.getAll(name).length === 1 && previous.get(name) === '1';
   const requested = { lang: previous.get('lang') === 'en' ? 'en' : 'ru' };
   const query = valid ? previous.toString() : '';
   const catalog = 'catalog-filter' + (client ? '-auth' : '') + '.html' + (query ? '?' + query : '');
@@ -31,6 +33,12 @@
   }
   for (const name of ['brand-link', 'header-back', 'back-link']) $(name).href = catalog;
   if (!profile) { $('profile-missing').hidden = false; return; }
+  if (!client && previous.get('preview') === '1' && previous.get('hideProfiles') === '1') {
+    document.title = en ? 'Sign in to view this profile' : 'Войдите, чтобы открыть профиль';
+    $('profile-login-link').href = clientCatalog;
+    $('profile-login-required').hidden = false;
+    return;
+  }
   const words = window.CatalogFilterModel.profileLabels;
   const status = en ? { online: 'Online', busy: 'Busy', offline: 'Offline' } : { online: 'В сети', busy: 'Занят', offline: 'Не в сети' };
   document.title = profile.name + (en ? ' — expert profile' : ' — профиль эксперта');
@@ -47,18 +55,22 @@
     $('profile-photo').hidden = true;
     $('photo-placeholder').hidden = false;
   }
-  const areas = profile.areas.map(key => words.areas[key]).filter(Boolean);
-  const topics = profile.topics.map(key => words.topics[key]).filter(Boolean);
+  const hideFields = !client && previous.get('preview') === '1' && previous.get('hideFields') === '1';
+  const areas = hideFields ? [] : profile.areas.map(key => words.areas[key]).filter(Boolean);
+  const topics = hideFields ? [] : profile.topics.map(key => words.topics[key]).filter(Boolean);
   function tags(id, values) {
     const list = $(id);
     for (const value of values) { const li = document.createElement('li'); li.textContent = value; list.append(li); }
   }
   tags('profile-areas', areas);
   tags('profile-topics', topics);
+  if (hideFields) {
+    for (const name of ['areas-section', 'topics-section', 'experience-section']) $(name).hidden = true;
+  }
   $('profile-about').textContent = en
     ? (topics.length ? 'I work with questions about ' + topics.join(', ') + '. You can discuss your question and the consultation format in chat.' : 'You can discuss your question and the consultation format in chat.')
     : (topics.length ? 'Работаю с запросами по темам: ' + topics.join(', ') + '. В переписке можно уточнить ваш вопрос и формат консультации.' : 'В переписке можно уточнить ваш вопрос и формат консультации.');
-  if (Number.isSafeInteger(profile.experience) && profile.experience > 0) {
+  if (!hideFields && Number.isSafeInteger(profile.experience) && profile.experience > 0) {
     const years = en ? (profile.experience === 1 ? 'year of experience' : 'years of experience') : ({one:'год опыта',few:'года опыта',many:'лет опыта',other:'лет опыта'}[new Intl.PluralRules('ru').select(profile.experience)]);
     $('profile-experience').textContent = profile.experience + ' ' + years;
   } else $('experience-section').hidden = true;

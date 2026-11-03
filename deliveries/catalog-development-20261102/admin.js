@@ -5,8 +5,24 @@
   const refresh=document.querySelector('#refresh-current');
   const key='catalog-settings-preview-r3';
   const fields=['filter','cards','guestOnlineOnly'];
-  const names={filter:{1:'Горизонтальный фильтр',2:'Вертикальный фильтр'},cards:{1:'Знакомства',2:'Эзотерика'},guestOnlineOnly:{true:'Включено',false:'Выключено'}};
-  const titles={filter:'Фильтр каталога',cards:'Выдача анкет',guestOnlineOnly:'Гостям только эксперты онлайн'};
+  const en=new URL(location.href).searchParams.get('lang')==='en';
+  const names=en?{filter:{1:'Horizontal filter',2:'Vertical filter'},cards:{1:'Dating',2:'Spiritual services'},guestOnlineOnly:{true:'On',false:'Off'}}:{filter:{1:'Горизонтальный фильтр',2:'Вертикальный фильтр'},cards:{1:'Знакомства',2:'Эзотерика'},guestOnlineOnly:{true:'Включено',false:'Выключено'}};
+  const titles=en?{filter:'Directory filter',cards:'Profile listing',guestOnlineOnly:'Guests: online experts only'}:{filter:'Фильтр каталога',cards:'Выдача анкет',guestOnlineOnly:'Гостям только эксперты онлайн'};
+  const text=en?{
+    saved:'Saved: ',readonly:'View only. You do not have permission to change directory settings.',cancelled:'Unsaved changes discarded.',
+    refreshed:'Saved values refreshed. Your selections remain in the fields; review them before saving.',unchanged:'No changes.',
+    error:'Unable to save settings. Previous settings remain active and your selections are preserved. Try again.',
+    conflict:'A setting was changed in another window. Nothing was overwritten. Refresh saved values and review your selection.',
+    success:'Directory settings saved.',shortError:'Unable to save settings. Previous settings remain active and your selections are preserved.',
+    conflictDetail:(title,current,selected)=>`${title}: saved “${current}”, your selection “${selected}”.`
+  }:{
+    saved:'Сохранено: ',readonly:'Только просмотр. У вас нет права изменять настройки каталога.',cancelled:'Несохранённые изменения отменены.',
+    refreshed:'Сохранённые значения обновлены. Ваш выбор оставлен в полях; проверьте его перед сохранением.',unchanged:'Изменений нет.',
+    error:'Не удалось сохранить настройки. Прежние значения действуют, ваш выбор оставлен в полях. Повторите сохранение.',
+    conflict:'Настройка изменена в другом окне. Ничего не перезаписано. Обновите сохранённые значения и проверьте свой выбор.',
+    success:'Настройки каталога сохранены.',shortError:'Не удалось сохранить настройки. Прежние значения действуют, ваш выбор оставлен в полях.',
+    conflictDetail:(title,current,selected)=>`${title}: сейчас сохранено «${current}», ваш выбор «${selected}».`
+  };
   const requestedScenario=new URL(location.href).searchParams.get('scenario');
   const scenario=['normal','error','conflict','readonly'].includes(requestedScenario)?requestedScenario:'normal';
   function read(){
@@ -27,7 +43,7 @@
   function render(reset){
     for(const field of fields){
       if(reset)setValue(field,baseline.values[field]);
-      document.querySelector('#'+field+'-current').textContent='Сохранено: '+names[field][baseline.values[field]];
+      document.querySelector('#'+field+'-current').textContent=text.saved+names[field][baseline.values[field]];
     }
     summary.textContent=fields.map(f=>titles[f]+': '+names[f][baseline.values[f]]).join('; ')+'.';
   }
@@ -35,16 +51,16 @@
   if(scenario==='readonly'){
     for(const field of fields)form.elements[field].disabled=true;
     form.querySelector('button[type=submit]').disabled=true;form.querySelector('button[type=reset]').disabled=true;
-    message('info','Только просмотр. У вас нет права изменять настройки каталога.');
+    message('info',text.readonly);
   }
-  form.addEventListener('reset',e=>{e.preventDefault();baseline=read();render(true);details.hidden=true;refresh.hidden=true;message('info','Несохранённые изменения отменены.');});
-  refresh.addEventListener('click',()=>{baseline=read();render(false);details.hidden=true;refresh.hidden=true;message('info','Сохранённые значения обновлены. Ваш выбор оставлен в полях; проверьте его перед сохранением.');});
+  form.addEventListener('reset',e=>{e.preventDefault();baseline=read();render(true);details.hidden=true;refresh.hidden=true;message('info',text.cancelled);});
+  refresh.addEventListener('click',()=>{baseline=read();render(false);details.hidden=true;refresh.hidden=true;message('info',text.refreshed);});
   form.addEventListener('submit',e=>{
     e.preventDefault();if(scenario==='readonly')return;
     const next=Object.fromEntries(fields.map(f=>[f,value(f)]));
     const changed=fields.filter(f=>next[f]!==baseline.values[f]);
-    if(!changed.length){message('info','Изменений нет.');return;}
-    if(scenario==='error'){message('error','Не удалось сохранить настройки. Прежние значения действуют, ваш выбор оставлен в полях. Повторите сохранение.');return;}
+    if(!changed.length){message('info',text.unchanged);return;}
+    if(scenario==='error'){message('error',text.error);return;}
     let current=read();
     if(scenario==='conflict'&&!forcedConflict){
       const field=changed[0];current.values[field]=next[field];current.revision[field]++;
@@ -53,15 +69,15 @@
     }
     const conflicts=changed.filter(f=>current.revision[f]!==baseline.revision[f]||current.values[f]!==baseline.values[f]);
     if(conflicts.length){
-      details.textContent=conflicts.map(f=>titles[f]+': сейчас сохранено «'+names[f][current.values[f]]+'», ваш выбор «'+names[f][next[f]]+'».').join(' ');
+      details.textContent=conflicts.map(f=>text.conflictDetail(titles[f],names[f][current.values[f]],names[f][next[f]])).join(' ');
       details.hidden=false;refresh.hidden=false;
-      message('conflict','Настройка изменена в другом окне. Ничего не перезаписано. Обновите сохранённые значения и проверьте свой выбор.');return;
+      message('conflict',text.conflict);return;
     }
     try{
       for(const f of changed){current.values[f]=next[f];current.revision[f]++;}
       localStorage.setItem(key,JSON.stringify(current));
-      baseline=read();render(true);details.hidden=true;refresh.hidden=true;message('success','Настройки каталога сохранены.');
-    }catch{message('error','Не удалось сохранить настройки. Прежние значения действуют, ваш выбор оставлен в полях.');}
+      baseline=read();render(true);details.hidden=true;refresh.hidden=true;message('success',text.success);
+    }catch{message('error',text.shortError);}
   });
   document.querySelector('.sidebar-toggle').addEventListener('click',()=>document.body.classList.toggle(innerWidth<768?'sidebar-open':'sidebar-collapse'));
   for(const a of document.querySelectorAll('a[data-original-route]'))a.addEventListener('click',e=>{

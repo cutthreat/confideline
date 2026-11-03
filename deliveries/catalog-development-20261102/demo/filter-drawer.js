@@ -14,13 +14,20 @@
   let scrollOrigin = null;
   const labels = Object.fromEntries([...form.querySelectorAll('input[name=areas],input[name=topics]')].map(input => [input.value, input.closest('label').querySelector('.cl-option-label').textContent]));
   const strings = {
-    ru: { title: 'Фильтры', close: 'Закрыть фильтры', reset: 'Сбросить фильтр', all: 'Все выбранные фильтры', more: n => `Все выбранные фильтры, ещё ${n}`, applied: 'Применённые фильтры', remove: label => `Убрать фильтр ${label}`, open: n => n ? `Фильтры, применено: ${n}` : 'Фильтры' },
-    en: { title: 'Filters', close: 'Close filters', reset: 'Reset filters', all: 'All selected filters', more: n => `All selected filters, ${n} more`, applied: 'Applied filters', remove: label => `Remove ${label} filter`, open: n => n ? `Filters, ${n} applied` : 'Filters' }
+    ru: { title: 'Фильтры', areas: 'Направление', topics: 'Темы', close: 'Закрыть фильтры', reset: 'Сбросить фильтр', all: 'Все выбранные фильтры', more: n => `Все выбранные фильтры, ещё ${n}`, applied: 'Применённые фильтры', remove: label => `Убрать фильтр ${label}`, open: n => n ? `Фильтры, применено: ${n}` : 'Фильтры' },
+    en: { title: 'Filters', areas: 'Expertise', topics: 'Topics', close: 'Close filters', reset: 'Reset filters', all: 'All selected filters', more: n => `All selected filters, ${n} more`, applied: 'Applied filters', remove: label => `Remove ${label} filter`, open: n => n ? `Filters, ${n} applied` : 'Filters' }
   };
   const applied = () => model.readQuery(location.search);
   function sync() {
     const state = applied(), t = strings[state.lang];
-    const values = [...state.areas.map(value => ['areas', value]), ...state.topics.map(value => ['topics', value]), ...Object.entries(state.extras || {}).map(([id,value]) => ['extra:' + id, value])];
+    const values = [];
+    for (const name of ['areas', 'topics']) {
+      if (state[name].length) values.push([name, name, t[name] + ': ' + state[name].map(value => labels[value] || value).join(', ')]);
+    }
+    const extraEntries = Object.entries(state.extras || {});
+    const ageEntries = extraEntries.filter(([id]) => id === 'age_from' || id === 'age_to');
+    if (ageEntries.length) values.push(['extra:ageRange', 'ageRange', ageEntries.map(([id, value]) => window.CatalogDynamicDemo.labelFor(id, value)).join(', ')]);
+    for (const [id, value] of extraEntries) if (id !== 'age_from' && id !== 'age_to') values.push(['extra:' + id, value, window.CatalogDynamicDemo.labelFor(id, value)]);
     heading.textContent = t.title;
     close.title = t.close; close.setAttribute('aria-label', t.close);
     const reset = root.querySelector('#catalog-reset');
@@ -30,8 +37,7 @@
     opener.dataset.active = String(values.length > 0);
     counter.textContent = String(values.length); counter.hidden = !values.length;
     summary.hidden = !values.length; summary.setAttribute('aria-label', t.applied);
-    summary.replaceChildren(...values.map(([name, value]) => {
-      const display = name.startsWith('extra:') ? window.CatalogDynamicDemo.labelFor(name.slice(6), value) : (labels[value] || value);
+    summary.replaceChildren(...values.map(([name, value, display]) => {
       const button = document.createElement('button');
       button.type = 'button'; button.className = 'cl-applied-chip';
       button.dataset.removeGroup = name; button.dataset.removeValue = value;
@@ -122,9 +128,13 @@
     const button = event.target.closest('[data-remove-value]');
     if (!button) return;
     restoreForm();
-    if (button.dataset.removeGroup.startsWith('extra:')) { window.CatalogDynamicDemo.clearField(button.dataset.removeGroup.slice(6)); form.dispatchEvent(new Event('change', { bubbles: true })); form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })); return; }
-    const input = form.querySelector(`input[name="${button.dataset.removeGroup}"][value="${button.dataset.removeValue}"]`);
-    input.checked = false;
+    if (button.dataset.removeGroup.startsWith('extra:')) {
+      const id = button.dataset.removeGroup.slice(6);
+      for (const field of id === 'ageRange' ? ['age_from', 'age_to'] : [id]) window.CatalogDynamicDemo.clearField(field);
+      form.dispatchEvent(new Event('change', { bubbles: true }));
+      form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })); return;
+    }
+    for (const input of form.querySelectorAll(`input[name="${button.dataset.removeGroup}"]`)) input.checked = false;
     form.dispatchEvent(new Event('change', { bubbles: true }));
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
   });

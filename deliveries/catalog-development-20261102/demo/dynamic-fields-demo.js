@@ -49,8 +49,17 @@
   const premium = window.CatalogDemoPremium === true;
   const fields = source.filter(field => field && (field.searchable === true || field.searchablePremium === true) && /^[a-z][a-z0-9_-]*$/.test(field.id) && ['select', 'text', 'number', 'checkbox'].includes(field.type));
   const body = form.querySelector('.cl-drawer-body');
+  const section = document.createElement('section');
+  section.className = 'cl-filter-group cl-extra-section';
+  const sectionHeading = document.createElement('h3');
+  sectionHeading.className = 'cl-extra-heading';
+  sectionHeading.textContent = english ? 'Additional filters' : 'Дополнительные параметры';
+  const extraFields = document.createElement('div');
+  extraFields.className = 'cl-extra-fields';
+  section.append(sectionHeading, extraFields);
   for (const field of fields) {
-    const group = document.createElement('div'); group.className = 'cl-filter-group cl-extra-field';
+    const group = document.createElement('div'); group.className = 'cl-extra-field';
+    group.dataset.wide = String(field.id === 'location' || field.label.length > 24);
     const label = document.createElement('label'); label.className = 'cl-extra-label'; label.htmlFor = 'demo-extra-' + field.id;
     const title = document.createElement('span'); title.textContent = field.label; label.append(title);
     const locked = field.searchablePremium === true && !premium;
@@ -71,8 +80,9 @@
       const hint = document.createElement('small'); hint.id = control.id + '-hint'; hint.textContent = english ? 'Premium only' : 'Только Premium';
       control.setAttribute('aria-describedby', hint.id); group.append(hint);
     }
-    body.append(group);
+    extraFields.append(group);
   }
+  if (fields.length) body.append(section);
   const fieldMap = new Map(fields.map(field => [field.id, field]));
   const controlFor = id => form.querySelector('[data-extra-field="' + id + '"]');
   function allowed(field) { return field && (!field.searchablePremium || premium); }
@@ -109,8 +119,10 @@
     if (control.type === 'checkbox') control.checked = false; else control.value = '';
   }
   const originalRead = model.readQuery, originalWrite = model.writeQuery;
+  const previewKeys = ['preview', 'onlineOnly', 'hideDirectory', 'hideProfiles', 'hideFields'];
   model.readQuery = function (search) {
     const params = new URLSearchParams(search), extras = {}, invalid = [];
+    for (const name of previewKeys) params.delete(name);
     for (const name of [...new Set(params.keys())]) {
       if (!name.startsWith('x_')) continue;
       const id = name.slice(2), field = fieldMap.get(id), values = params.getAll(name);
@@ -123,6 +135,10 @@
   };
   model.writeQuery = function (state) {
     const params = new URLSearchParams(originalWrite(state));
+    const original = new URLSearchParams(location.search);
+    if (original.get('preview') === '1') {
+      for (const name of previewKeys) if (original.has(name)) params.set(name, original.get(name));
+    }
     for (const id of Object.keys(state.extras || {}).sort()) {
       const field = fieldMap.get(id), value = String(state.extras[id]);
       if (allowed(field) && valid(field, value)) params.set('x_' + id, value);
