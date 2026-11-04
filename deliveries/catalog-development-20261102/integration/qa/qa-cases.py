@@ -6,9 +6,10 @@ import sys
 
 
 def reference_expectations(case):
+    experts = 'Только допущенные эксперты' if case['experts_only'] else None
     if case['audience'] != 'guest':
-        return {'catalog': 'По обычным правам', 'profile': 'По обычным правам', 'profile_fields': 'По правам поля и тарифа'}
-    catalog = 'Вход' if case['hide_directory_from_guests'] else 'Доступен по правам'
+        return {'catalog': experts or 'По обычным правам', 'profile': 'По обычным правам', 'profile_fields': 'По правам поля и тарифа'}
+    catalog = 'Вход' if case['hide_directory_from_guests'] else (experts or 'Доступен по правам')
     if case['guest_experts_online_only'] and catalog != 'Вход':
         catalog = 'Только допущенные эксперты online'
     return {

@@ -5,7 +5,7 @@
   const refresh=document.querySelector('#refresh-current');
   const saveButton=form.querySelector('button[type=submit]'),resetButton=form.querySelector('button[type=reset]');
   const key='catalog-settings-preview-r3';
-  const defaults={filter:'1',cards:'1',guestOnlineOnly:false,hideDirectory:false};
+  const defaults={filter:'1',cards:'1',guestOnlineOnly:false,hideDirectory:false,expertsOnly:false};
   const fields=Object.keys(defaults).filter(field=>form.elements[field]);
   const hideDirectory=form.elements.hideDirectory;
   const online=form.elements.guestOnlineOnly;
@@ -19,6 +19,9 @@
   const en=new URL(location.href).searchParams.get('lang')==='en';
   const names=en?{filter:{1:'Horizontal filter',2:'Vertical filter'},cards:{1:'Dating',2:'Spiritual services'},guestOnlineOnly:{true:'On',false:'Off'}}:{filter:{1:'Горизонтальный фильтр',2:'Вертикальный фильтр'},cards:{1:'Знакомства',2:'Эзотерика'},guestOnlineOnly:{true:'Включено',false:'Выключено'}};
   const titles=en?{filter:'Directory filter',cards:'Profile listing',guestOnlineOnly:'Guests: online experts only'}:{filter:'Фильтр каталога',cards:'Выдача анкет',guestOnlineOnly:'Гостям только эксперты онлайн'};
+  names.expertsOnly=names.guestOnlineOnly;
+  titles.expertsOnly=en?'Show experts only':'Показывать только экспертов';
+  if(en && form.elements.expertsOnly) form.elements.expertsOnly.closest('label').lastChild.textContent=' Show experts only';
   names.hideDirectory=names.guestOnlineOnly;
   titles.hideDirectory=en?'Hide directory from guests':'Скрыть каталог пользователей от гостей';
   const text=en?{
@@ -47,6 +50,7 @@
       if(v&&['1','2'].includes(v.filter))values.filter=v.filter;
       if(v&&['1','2'].includes(v.cards))values.cards=v.cards;
       if(typeof v?.guestOnlineOnly==='boolean')values.guestOnlineOnly=v.guestOnlineOnly;
+      if(typeof v?.expertsOnly==='boolean')values.expertsOnly=v.expertsOnly;
       if(typeof v?.hideDirectory==='boolean')values.hideDirectory=v.hideDirectory;
       for(const field of Object.keys(defaults))if(Number.isSafeInteger(r?.[field])&&r[field]>=0)revision[field]=r[field];
     }catch{}

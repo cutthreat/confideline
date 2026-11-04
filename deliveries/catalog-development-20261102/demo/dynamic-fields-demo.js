@@ -134,7 +134,7 @@
     if (control.type === 'checkbox') control.checked = false; else control.value = '';
   }
   const originalRead = model.readQuery, originalWrite = model.writeQuery;
-  const previewKeys = ['preview', 'onlineOnly', 'hideDirectory', 'hideProfiles', 'hideFields', 'sourceFailure', 'searchFailure'];
+  const previewKeys = ['preview', 'expertsOnly', 'expertSourceFailure', 'onlineOnly', 'hideDirectory', 'hideProfiles', 'hideFields', 'sourceFailure', 'searchFailure'];
   model.readQuery = function (search) {
     const params = new URLSearchParams(search), extras = {}, invalid = [];
     for (const name of previewKeys) params.delete(name);

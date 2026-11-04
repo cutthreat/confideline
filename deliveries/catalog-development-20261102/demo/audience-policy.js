@@ -4,10 +4,10 @@
   if (!root) return;
   let saved;
   try { saved = JSON.parse(localStorage.getItem('catalog-settings-preview-r3'))?.values; } catch {}
-  const policy = window.CatalogPreviewPolicy.fromQuery(root.dataset.audience, location.search, saved?.guestOnlineOnly, saved?.hideDirectory);
+  const policy = window.CatalogPreviewPolicy.fromQuery(root.dataset.audience, location.search, saved?.guestOnlineOnly, saved?.hideDirectory, saved?.expertsOnly);
   window.CatalogDemoAccess = policy;
   const query = new URLSearchParams(location.search);
-  window.CatalogDemoSourceFailure = policy.onlineOnly && query.get('preview') === '1' && query.get('sourceFailure') === '1';
+  window.CatalogDemoSourceFailure = query.get('preview') === '1' && ((policy.onlineOnly && query.get('sourceFailure') === '1') || (!policy.hideDirectory && (policy.onlineOnly || policy.expertsOnly) && query.get('expertSourceFailure') === '1'));
   window.CatalogDemoSearchFailure = query.get('preview') === '1' && query.get('searchFailure') === '1';
   window.CatalogFilterFixtures = window.CatalogPreviewPolicy.visibleProfiles(window.CatalogFilterFixtures, policy);
   if (!policy.hideDirectory) return;

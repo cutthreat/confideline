@@ -7,6 +7,7 @@
   function derive(audience, flags) {
     const guest = audience === 'guest';
     return {
+      expertsOnly: flags.expertsOnly === true,
       onlineOnly: guest && flags.hideDirectory !== true && flags.onlineOnly === true,
       hideDirectory: guest && flags.hideDirectory === true,
       hideProfiles: guest && flags.hideProfiles === true,
@@ -15,13 +16,14 @@
   }
   function visibleProfiles(profiles, policy) {
     if (policy.hideDirectory) return [];
-    if (!policy.onlineOnly) return profiles.slice();
-    return profiles.filter(profile => profile.isExpert === true && profile.status === 'online');
+    if (!policy.expertsOnly && !policy.onlineOnly) return profiles.slice();
+    return profiles.filter(profile => profile.isExpert === true && (!policy.onlineOnly || profile.status === 'online'));
   }
-  function fromQuery(audience, search, savedOnline, savedHidden) {
+  function fromQuery(audience, search, savedOnline, savedHidden, savedExperts) {
     const query = new URLSearchParams(search);
     const explicit = query.get('preview') === '1';
     return derive(audience, {
+      expertsOnly: explicit ? query.get('expertsOnly') === '1' : savedExperts === true,
       onlineOnly: explicit ? query.get('onlineOnly') === '1' : savedOnline === true,
       hideDirectory: explicit ? query.get('hideDirectory') === '1' : savedHidden === true,
       hideProfiles: explicit && query.get('hideProfiles') === '1',
