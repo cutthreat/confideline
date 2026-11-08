@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№70 · Черновик при выборе шаблона в Chat V2</title>
+<style>
+  :root { color-scheme: light; font: 16px/1.55 system-ui, sans-serif; color: #24384d; background: #f4f7fa; }
+  main { max-width: 54rem; margin: 2rem auto; padding: 0 16px 2rem; }
+  h1, h2 { line-height: 1.2; }
+  a { color: #145488; text-underline-offset: .16em; }
+  section { margin: 1.25rem 0; padding: 1rem 1.25rem; background: white; border: 1px solid #cddce7; border-radius: .6rem; }
+  figure { margin: 1rem 0; }
+  img { display: block; width: 100%; max-width: 696px; height: auto; border: 1px solid #cddce7; border-radius: .35rem; }
+  figcaption { margin-top: .4rem; }
+  .meta { color: #445970; }
+</style>
+</head>
+<body>
+<main>
+  <p class="meta">Confideline DEV №70 · R70-01 · Проверка 8 ноября 2026</p>
+  <h1>Сохранить черновик при выборе шаблона</h1>
+  <p>В админском Chat V2 выбор нового шаблона может стереть уже набранный ответ. Если поле занято, оператор должен сам решить, что сделать с новым текстом.</p>
+  <p><a href="mockup.html">Открыть интерактивный макет редактора</a> · <a href="https://trello.com/c/5gFS8lCO">Открыть карточку Trello</a></p>
+  <section>
+    <h2>Как есть сейчас</h2>
+    <p>Откройте тестовую беседу в <a href="https://confideline.com/ru/admin/chat/v2">Chat V2</a>. Нажмите «Шаблоны и метки» и выберите «Уточнить время». На снимке виден первый черновик.</p>
+    <figure>
+      <a href="live-first.png"><img src="live-first.png" width="696" height="90" alt="В поле Chat V2 текст первого шаблона об удобном времени и часовом поясе"></a>
+      <figcaption>Кадр 1. В поле текст «Уточнить время».</figcaption>
+    </figure>
+    <p>Снова откройте список и выберите «Проверка данных». Первый текст сразу исчезает. В поле остаётся только второй шаблон.</p>
+    <figure>
+      <a href="live-second.png"><img src="live-second.png" width="696" height="90" alt="Текст об удобном времени исчез, в поле только текст второго шаблона о проверке данных"></a>
+      <figcaption>Кадр 2. В поле только «Проверка данных». Диалог выбора не появился.</figcaption>
+    </figure>
+    <p class="meta">Кадры показывают поле ввода действующей админки, 1280 × 720. Интерфейс русский, система подставила английские версии шаблонов. Отправка была заблокирована. История беседы осталась прежней.</p>
+  </section>
+  <section>
+    <h2>Как должно быть</h2>
+    <p><a href="mockup.html">Повторите эти шаги в интерактивном макете того же редактора</a>. Текст в поле сохраняется до выбора действия. <a href="target-choice.png">Посмотреть окно выбора в макете</a>.</p>
+    <ul>
+      <li><strong>Заменить.</strong> Оставить в поле только новый шаблон.</li>
+      <li><strong>Добавить в конец.</strong> Сохранить исходный текст и добавить шаблон с новой строки. Если перенос уже есть, использовать его.</li>
+      <li><strong>Отмена.</strong> Оставить исходный текст. Escape и крестик дают тот же результат.</li>
+    </ul>
+    <p>В пустое поле шаблон вставляется сразу. Пробелы и переводы строки считаются вводом. Шаблон остаётся редактируемым черновиком и отправляется только отдельной командой оператора.</p>
+  </section>
+  <section>
+    <h2>Как принять на тестовой сборке</h2>
+    <p>Повторите действия по одному с одинаковым черновиком. Сверьте поле до выбора и после каждого результата. Проверьте пустое поле, уже имеющийся перенос строки и отсутствие нового сообщения в истории. Отдельно проверьте, что при ошибке подготовки сохраняется черновик, а ответ от старой беседы не попадает в новую. Существующее копирование шаблона сохраняется. <a href="https://cutthreat.github.io/confideline/deliveries/chat-templates-70-20261015-r1/developer/tz.html">Полное согласованное ТЗ №70</a>.</p>
+  </section>
+</main>
+</body>
+</html>
