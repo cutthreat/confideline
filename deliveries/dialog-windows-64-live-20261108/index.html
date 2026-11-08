@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>№64 · Фокус и закрытие окон на главной Confideline</title>
+<style>
+  :root { color-scheme: light; color: #213247; background: #f4f7fa; font: 1rem/1.6 system-ui, sans-serif; }
+  body { margin: 0; }
+  main { max-width: 68rem; margin: auto; padding: 2rem clamp(1rem, 4vw, 3rem) 3rem; }
+  h1, h2, h3 { line-height: 1.2; }
+  h1 { font-size: clamp(1.9rem, 4vw, 2.7rem); margin: .25rem 0 1rem; }
+  h2 { font-size: 1.5rem; margin-top: 0; }
+  h3 { font-size: 1.05rem; margin: 1.4rem 0 .45rem; }
+  section { background: white; border: 1px solid #cedae6; border-radius: .75rem; padding: clamp(1rem, 3vw, 2rem); margin: 1.4rem 0; }
+  a { color: #145488; text-underline-offset: .17em; }
+  a:focus-visible { outline: 3px solid #145488; outline-offset: 3px; }
+  .meta, figcaption { color: #445970; }
+  figure { margin: 1rem 0; }
+  img { display: block; width: 100%; height: auto; border: 1px solid #cedae6; border-radius: .4rem; }
+  figcaption { margin-top: .4rem; }
+  kbd { border: 1px solid #becbd8; border-radius: .25rem; padding: 0 .25em; }
+</style>
+</head>
+<body>
+<main>
+  <p class="meta">Confideline DEV · №64 · Проверка 8 ноября 2026</p>
+  <h1>Фокус и закрытие двух окон внизу главной страницы</h1>
+  <p>Когда окно открыто, клавиатура должна управлять им. Сейчас в «Странах и городах» фокус уходит из окна, а выбор языка не закрывается по <kbd>Esc</kbd>. Исправьте это в существующих окнах и свяжите заголовок окна языка с его именем для скринридера.</p>
+  <p><a href="mockup.html">Открыть интерактивный макет нижней части главной</a> · <a href="https://confideline.com/">Открыть главную Confideline</a> · <a href="https://trello.com/c/xEmV8898">Открыть карточку Trello</a></p>
+
+  <section aria-labelledby="directory">
+    <h2 id="directory">1. «Страны и города»</h2>
+    <h3>Как есть сейчас</h3>
+    <p>Внизу главной откройте «Страны и города». Нажимайте <kbd>Tab</kbd>, пока фокус не окажется на нижней кнопке «Закрыть», затем нажмите <kbd>Tab</kbd> ещё раз. Окно остаётся открытым, а фокус выходит из него. Браузер показывает активным элементом фон страницы.</p>
+    <figure>
+      <a href="live-directory-tab.jpg"><img src="live-directory-tab.jpg" width="1280" height="720" alt="Открытое окно «Страны и города» после Tab с нижней кнопки. В окне нет активного элемента."></a>
+      <figcaption>Снимок действующей главной после нажатия <kbd>Tab</kbd>. Положение фокуса подтверждено в браузере.</figcaption>
+    </figure>
+    <h3>Как должно быть</h3>
+    <p>При открытии фокус на поиске. С нижней кнопки <kbd>Tab</kbd> переводит фокус на крестик, <kbd>Shift</kbd> + <kbd>Tab</kbd> с крестика возвращает его на нижнюю кнопку. <kbd>Esc</kbd> закрывает окно и возвращает фокус на «Страны и города».</p>
+    <p><a href="mockup.html">Повторить шаги в макете</a> · <a href="target-directory-tab.jpg">Посмотреть фокус после Tab в макете</a></p>
+  </section>
+
+  <section aria-labelledby="language">
+    <h2 id="language">2. Выбор языка</h2>
+    <h3>Как есть сейчас</h3>
+    <p>Внизу главной откройте «Русский» и нажмите <kbd>Esc</kbd>. Окно остаётся открытым, фокус остаётся на ссылке «Русский» за окном. Заголовок «Текущий язык: Русский» виден, но не связан с именем окна.</p>
+    <figure>
+      <a href="live-language-escape.jpg"><img src="live-language-escape.jpg" width="1280" height="720" alt="После Esc окно выбора языка открыто, контур фокуса виден на ссылке «Русский» в футере."></a>
+      <figcaption>Снимок действующей главной после <kbd>Esc</kbd>. Внизу слева виден фокус на «Русский».</figcaption>
+    </figure>
+    <h3>Как должно быть</h3>
+    <p>При открытии фокус сразу переходит на крестик. <kbd>Tab</kbd> и <kbd>Shift</kbd> + <kbd>Tab</kbd> перебирают элементы внутри окна. Первое нажатие <kbd>Esc</kbd> закрывает его и возвращает фокус на «Русский». В дереве доступности окно имеет имя «Текущий язык: Русский» из видимого заголовка.</p>
+    <p><a href="mockup.html">Повторить шаги в макете</a> · <a href="target-language-open.jpg">Посмотреть фокус при открытии</a> · <a href="target-language-escape.jpg">Посмотреть возврат фокуса после Esc</a></p>
+  </section>
+
+  <p class="meta">Снимки сделаны на главной Confideline в русской локали, 1280 × 720. Макет использует разметку и стили реальных окон и футера. В нём показана нижняя часть страницы. Поиск и управление окнами работают локально, переходы по ссылкам и смена языка отключены. Проверены клавиатурные сценарии на 1280 × 720 и открытие, закрытие и поиск на 390 × 844. Три сценария Contact Filter остаются отдельными проверками из <a href="https://cutthreat.github.io/confideline/deliveries/dialog-windows-64-20261015-r1/developer/tz.html">исходного ТЗ</a>.</p>
+</main>
+</body>
+</html>
