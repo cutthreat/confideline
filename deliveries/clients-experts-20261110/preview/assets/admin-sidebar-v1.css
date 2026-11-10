@@ -1,0 +1,200 @@
+/*
+ * Admin sidebar v1.
+ *
+ * Uses the sidebar-only rules from knowledge/left-menu/v1/assets/global_custom.css.
+ * Keep that customer-provided reference file unchanged; this runtime asset is the
+ * opt-in application copy, scoped to the real administration sidebar.
+ */
+.main-sidebar.admin-sidebar-modern {
+  --nav-surface: #222c3a;
+  --nav-text: #bac6d5;
+  --nav-muted: #8495ab;
+  --nav-accent: #93c9f4;
+  position: fixed;
+  bottom: 0;
+  min-height: 0;
+  background: var(--nav-surface);
+  border-right: 1px solid rgba(255,255,255,.06);
+}
+
+.main-sidebar.admin-sidebar-modern .slimScrollDiv,
+body.has-admin-agent-chat .main-sidebar.admin-sidebar-modern .sidebar {
+  height: 100% !important;
+  min-height: 0;
+}
+
+.main-sidebar.admin-sidebar-modern .sidebar {
+  padding: 8px 0 16px;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  scrollbar-width: thin;
+  scrollbar-color: #516076 transparent;
+  overscroll-behavior: contain;
+}
+
+.admin-sidebar-modern .slimScrollBar,
+.admin-sidebar-modern .slimScrollRail {
+  display: none !important;
+}
+
+.admin-sidebar-modern .sidebar-menu > li {
+  margin: 2px 8px;
+}
+
+.admin-sidebar-modern .sidebar-menu > li.header {
+  padding: 18px 11px 7px;
+  background: transparent;
+  color: var(--nav-muted);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.admin-sidebar-modern .sidebar-menu li > a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 9px 11px;
+  border: 0;
+  border-radius: 7px;
+  color: var(--nav-text);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+.admin-sidebar-modern .sidebar-menu li > a > i {
+  flex: 0 0 18px;
+  width: 18px;
+  margin: 0;
+  color: var(--nav-muted);
+  font: normal 14px/20px FontAwesome !important;
+  text-align: center;
+}
+
+.admin-sidebar-modern .sidebar-menu li > a > span:not(.pull-right-container):not(.label) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-sidebar-modern .sidebar-menu li > a:hover,
+.admin-sidebar-modern .sidebar-menu li > a:focus-visible {
+  color: #f0f5fb;
+  background: rgba(255,255,255,.06);
+}
+
+.admin-sidebar-modern .sidebar-menu li > a:focus-visible {
+  outline: 1px solid var(--nav-accent);
+  outline-offset: -1px;
+}
+
+.admin-sidebar-modern .sidebar-menu > li.active > a {
+  background: rgba(137,183,228,.07);
+  color: #edf4fc;
+}
+
+.admin-sidebar-modern .sidebar-menu li > a[aria-current="page"] {
+  color: #e1f1ff;
+  background: #31465e;
+  box-shadow: inset 2px 0 var(--nav-accent);
+  font-weight: 600;
+}
+
+.admin-sidebar-modern .sidebar-menu li > a[aria-current="page"] > i {
+  color: var(--nav-accent);
+}
+
+.main-sidebar.admin-sidebar-modern .sidebar-menu .treeview-menu {
+  display: none;
+  margin: 3px 0 5px 19px;
+  padding: 0 0 0 8px;
+  border-left: 1px solid #3b485a;
+  background: transparent;
+}
+
+.admin-sidebar-modern .sidebar-menu .treeview-menu > li > a {
+  min-height: 33px;
+  padding: 6px 8px;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.admin-sidebar-modern .sidebar-menu .treeview-menu > li > a > i {
+  font-size: 12px !important;
+}
+
+.admin-sidebar-modern .sidebar-menu .pull-right-container {
+  position: static;
+  margin: 0 0 0 auto;
+  flex: 0 0 12px;
+  color: var(--nav-muted);
+}
+
+.admin-sidebar-modern .sidebar-menu .pull-right-container > i {
+  margin: 0;
+  float: none;
+  display: block;
+  font: normal 12px/20px FontAwesome !important;
+  transform: rotate(-90deg);
+  transition: transform 140ms ease;
+}
+
+.admin-sidebar-modern .sidebar-menu a[aria-expanded="true"] > .pull-right-container > i {
+  transform: rotate(90deg);
+}
+
+.main-sidebar.admin-sidebar-modern .sidebar-menu .label {
+  float: none;
+  margin: 0 0 0 auto;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: #354255 !important;
+  color: #c6d4e5;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 14px;
+}
+
+.admin-sidebar-modern .sidebar-menu a[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: .55;
+}
+
+@media (min-width: 768px) {
+  .sidebar-mini.sidebar-collapse .admin-sidebar-modern .sidebar-menu > li {
+    margin: 3px 5px;
+  }
+
+  .sidebar-mini.sidebar-collapse .admin-sidebar-modern .sidebar-menu > li > a {
+    justify-content: center;
+    padding: 10px 0;
+  }
+
+  .sidebar-mini.sidebar-collapse .admin-sidebar-modern .sidebar-menu > li > a > span,
+  .sidebar-mini.sidebar-collapse .admin-sidebar-modern .sidebar-menu > li > .treeview-menu,
+  .sidebar-mini.sidebar-collapse .admin-sidebar-modern .sidebar-menu > li.header {
+    display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .admin-sidebar-modern .sidebar-menu li > a {
+    min-height: 44px;
+  }
+
+  .admin-sidebar-modern .sidebar-menu .treeview-menu > li > a {
+    min-height: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-sidebar-modern .sidebar-menu a,
+  .admin-sidebar-modern .sidebar-menu .pull-right-container > i {
+    transition: none;
+  }
+}
