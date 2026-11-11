@@ -75,15 +75,17 @@
   }
 
   function save(field, changes, feedback = "Настройки сохранены в макете.", color = "text-success") {
-    persist(feedback, () => applyRules(field, changes), color);
-    if (differences.checked && !hasDifferences(field) && !message.classList.contains("text-warning")) {
+    const saved = persist(feedback, () => applyRules(field, changes), color);
+    if (saved && differences.checked && !hasDifferences(field)) {
       message.textContent += " Настройки совпали. Поле скрыто фильтром.";
     }
+    return saved;
   }
 
   function persist(feedback, change, color = "text-success") {
     pendingChanges.push(change);
     state = readSavedState() || state;
+    const previousState = JSON.parse(JSON.stringify(state));
     for (const apply of pendingChanges) apply();
     try {
       localStorage.setItem(storageKey, JSON.stringify(state));
@@ -91,10 +93,14 @@
       message.classList.remove("text-warning", "text-success", "text-danger");
       message.classList.add(color);
       message.textContent = feedback;
+      return true;
     } catch {
+      state = previousState;
+      pendingChanges.length = 0;
       message.classList.remove("text-warning", "text-success", "text-danger");
-      message.classList.add("text-warning");
-      message.textContent = "Изменение действует до закрытия или перезагрузки вкладки. Браузер не сохранил настройки.";
+      message.classList.add("text-danger");
+      message.textContent = "Не удалось сохранить изменение в макете. Прежняя настройка восстановлена.";
+      return false;
     }
   }
 
@@ -423,9 +429,9 @@
     if (data.edit) editField(fieldsFor().find(field => field.id === data.edit), action);
     if (data.delete) confirmDelete(fieldsFor().find(field => field.id === data.delete), action);
     if (data.confirmDelete) {
-      persist("Поле удалено из списка макета", () => {
+      if (!persist("Поле удалено из списка макета", () => {
         if (!state.removed.includes(data.confirmDelete)) state.removed.push(data.confirmDelete);
-      });
+      })) { dialog.close(); return; }
       const previousCategory = category.value;
       renderCategories();
       if ([...category.options].some(option => option.value === previousCategory)) category.value = previousCategory;
@@ -473,8 +479,9 @@
       const key = control.dataset.setting;
       const feedback = "«" + fieldTitle(field) + "». " + typeNames[type] + " · " +
         propertyNames[key] + (control.checked ? " · включено." : " · выключено.");
-      save(field, { [type]: { [key]: control.checked } }, feedback,
+      const saved = save(field, { [type]: { [key]: control.checked } }, feedback,
         control.checked ? "text-success" : "text-danger");
+      if (!saved) control.checked = rulesFor(field, type)[key];
       if (sort.key === key || differences.checked) {
         renderRows(field.id);
         const selector = '[data-field="' + CSS.escape(field.id) + '"][data-setting="' + key +
@@ -501,7 +508,7 @@
         const keys = [...Object.keys(propertyNames), "required"];
         return [type, Object.fromEntries(keys.map(key => [key, data.has(type + "-" + key)]))];
       }));
-      save(field, changes);
+      if (!save(field, changes)) { dialog.close(); return; }
       const editType = focusReturn?.dataset.editType;
       renderRows(field.id);
       const trigger = '[data-edit="' + CSS.escape(field.id) + '"]' +

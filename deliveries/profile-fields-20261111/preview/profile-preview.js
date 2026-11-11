@@ -59,7 +59,7 @@
       const rules = rulesFor(field, typeSelect.value);
       if (view === "form") return rules.form;
       if (view === "profile") return rules.premiumView ? premium : rules.view;
-      return field.canSearch && (rules.search || (premium && rules.premiumSearch));
+      return field.canSearch && (rules.premiumSearch ? premium : rules.search);
     });
   }
 
