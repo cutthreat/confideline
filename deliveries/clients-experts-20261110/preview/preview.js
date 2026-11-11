@@ -2,7 +2,18 @@
 const root=document.getElementById('directory-preview');
 const clients=root.dataset.list==='clients';
 const columns=JSON.parse(document.getElementById('columns').textContent);
-const items=clients?users:experts;
+const items = clients ? users : experts;
+const referenceId = clients ? 194 : 30;
+const referenceRow = {
+ id: referenceId,
+ person: (clients ? 'Клиент' : 'Эксперт') + ' #' + referenceId,
+ login: 'Карточка в админке',
+ cities: [],
+ adminReference: true
+};
+const referenceIndex = items.findIndex(row => row.id === (clients ? referenceId : 265));
+if (referenceIndex === -1) items.push(referenceRow);
+else items[referenceIndex] = referenceRow;
 const showSnapshot=false;
 const showExpertSnapshot=false;
 if(showExpertSnapshot){
@@ -221,7 +232,7 @@ function updateSelection(){
 }
 function selectCurrentPage(checked){
  selectedRows.clear();
- if(checked)currentRows.forEach(row=>selectedRows.add(row.id));
+ if (checked) currentRows.filter(row => !row.adminReference).forEach(row => selectedRows.add(row.id));
  updateSelection();
 }
 function rowCheckbox(label){
@@ -595,6 +606,12 @@ function renderCell(k,cls,row,label){
  const td=el('td',cls),val=row[k];
  td.setAttribute('role','cell');
  td.dataset.column=k;
+ if (row.adminReference && k !== 'id' && k !== 'person') {
+  if (k !== 'pick' && k !== 'actions') {
+   td.append(el('span', 'directory-mobile-label', label), '—');
+  }
+  return td;
+ }
  if(k==='pick'){
   const check=rowCheckbox('Выбрать · '+row.person);
   check.dataset.rowId=row.id;
@@ -613,7 +630,10 @@ function renderCell(k,cls,row,label){
   avatar.alt='';
   block.append(avatar);
   const info=el('div','user-info');
-  const name=el('span','name',val);
+  const name = el(row.adminReference ? 'a' : 'span', 'name', val);
+  if (row.adminReference) {
+   name.href = 'https://confideline.com/ru/admin/user/info?id=' + row.id;
+  }
   const login=showSnapshot&&!row.snapshot?row.login+' · Демо':row.login;
   info.append(name,el('div','username',login));
   block.append(info);
@@ -742,6 +762,7 @@ function draw({preserveSelection=false}={}){
  const activeFilters=Object.entries(filters).filter(([key,value])=>value&&key!=='country'&&key!=='cities');
  const geoFiltered=Boolean(filters.country||filters.cities);
  const filtered=items.filter(r=>{
+  if (r.adminReference && (geoFiltered || activeFilters.some(([field]) => field !== 'id' && field !== 'person'))) return false;
   if(geoFiltered&&!rowPlaces(r).some(matchesGeography))return false;
   return activeFilters.every(([k,v])=>{
    const val=r[k];
