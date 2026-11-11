@@ -1,0 +1,370 @@
+/*
+ * Shared Admin V2 header chrome.
+ *
+ * Chat V2 established this account-menu structure from the approved Stage 1
+ * mock. Keep it in the base admin bundle so ordinary administration screens
+ * use the same account trigger and menu, without importing chat-only status
+ * controls or chat-only JavaScript.
+ */
+.main-header .navbar-static-top {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+    overflow: visible !important;
+}
+
+/*
+ * The toggle is visually attached to the sidebar edge, not to page content.
+ * On desktop the navbar starts after the sidebar, so -50px places the control
+ * inside that sidebar edge exactly as in the Stage 1 mock.
+ */
+.main-header .sidebar-toggle {
+    position: absolute !important;
+    top: 0 !important;
+    left: -50px !important;
+    display: inline-flex !important;
+    width: 50px !important;
+    min-width: 50px !important;
+    max-width: 50px !important;
+    height: 50px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    color: #fff !important;
+    line-height: 50px !important;
+    text-decoration: none !important;
+    z-index: 4;
+}
+
+.main-header .sidebar-toggle::before {
+    font-family: FontAwesome !important;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.main-header .navbar-custom-menu {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    flex-wrap: nowrap;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    margin-left: 0;
+    padding-left: 0;
+    padding-right: 10px;
+    overflow: visible;
+    flex: 1 1 auto;
+}
+
+.main-header .navbar-custom-menu > .navbar-nav {
+    display: flex;
+    align-items: center;
+    float: none;
+    margin: 0;
+}
+
+.main-header .navbar-custom-menu .header-search {
+    flex: 0 0 auto;
+    min-width: 0;
+    float: none !important;
+    margin: 0 0 0 15px !important;
+    padding: 0 !important;
+}
+
+.main-header .navbar-custom-menu .header-search .form-group {
+    margin: 0 !important;
+}
+
+.main-header .navbar-custom-menu .header-search .input-group {
+    display: flex;
+    height: 34px;
+    margin: 0 !important;
+}
+
+.main-header .navbar-custom-menu .header-search .header-search-query,
+.main-header .navbar-custom-menu .header-search .header-search-btn {
+    height: 34px !important;
+}
+
+.main-header .navbar-custom-menu .header-search .header-search-query {
+    margin: 0 !important;
+    border-color: rgba(255, 255, 255, .18) !important;
+    background: rgba(255, 255, 255, .14) !important;
+    color: rgba(247, 251, 255, .96) !important;
+    box-shadow: none !important;
+}
+
+.main-header .navbar-custom-menu .header-search .header-search-query::placeholder {
+    color: rgba(247, 251, 255, .68) !important;
+}
+
+.main-header .navbar-custom-menu .header-search .header-search-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    border-color: rgba(255, 255, 255, .12) !important;
+    background: rgba(255, 255, 255, .10) !important;
+    color: rgba(247, 251, 255, .92) !important;
+    box-shadow: none !important;
+}
+
+.main-header .navbar-custom-menu .user-menu {
+    position: relative !important;
+}
+
+.main-header .navbar-custom-menu > .header-tools,
+.main-header .navbar-custom-menu > .navbar-nav {
+    margin-left: auto !important;
+}
+
+.main-header .user-menu > .dropdown-toggle {
+    display: inline-flex !important;
+    height: 34px;
+    align-items: center;
+    gap: 7px;
+    margin: 8px 0;
+    padding: 3px 9px 3px 4px !important;
+    border: 1px solid rgba(255, 255, 255, .20);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .16) !important;
+    color: rgba(247, 251, 255, .96) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14);
+}
+
+.main-header .user-menu.open > .dropdown-toggle,
+.main-header .user-menu > .dropdown-toggle:hover,
+.main-header .user-menu > .dropdown-toggle:focus {
+    border-color: rgba(255, 255, 255, .28);
+    background: rgba(255, 255, 255, .24) !important;
+}
+
+.main-header .admin-user-trigger-avatar {
+    display: inline-flex;
+    width: 26px;
+    height: 26px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .96), rgba(226, 238, 248, .94));
+    color: #365a76;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, .14);
+}
+
+.main-header .admin-user-trigger-text {
+    overflow: hidden;
+    color: rgba(247, 251, 255, .96);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.main-header .user-menu > .dropdown-toggle .caret {
+    margin-left: 1px;
+    color: rgba(247, 251, 255, .86);
+}
+
+.main-header .navbar-custom-menu .user-menu > .admin-user-menu {
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    right: 0 !important;
+    left: auto !important;
+    z-index: 1050;
+    width: 290px;
+    margin: 0 !important;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #d9e5ef;
+    border-radius: 15px;
+    background: #f8fbfe;
+    box-shadow: 0 18px 42px rgba(15, 23, 42, .22), 0 4px 12px rgba(15, 23, 42, .10);
+    transform: none !important;
+}
+
+.main-header .admin-user-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border-bottom: 1px solid #e5edf5;
+    background: linear-gradient(180deg, #fff, #f4f8fc);
+}
+
+.main-header .admin-user-avatar {
+    display: block;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border: 2px solid #fff;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, .14);
+}
+
+.main-header .admin-user-avatar-fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #e5eef6;
+    color: #365a76;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.main-header .admin-user-meta {
+    display: grid;
+    min-width: 0;
+    gap: 2px;
+}
+
+.main-header .admin-user-meta strong {
+    color: #26384d;
+    font-size: 13px;
+    line-height: 1.15;
+}
+
+.main-header .admin-user-meta span,
+.main-header .admin-user-meta small {
+    overflow: hidden;
+    color: #718297;
+    font-size: 10px;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.main-header .admin-menu-section {
+    padding: 9px 10px;
+    border-bottom: 1px solid #e8eff6;
+}
+
+.main-header .admin-menu-label {
+    margin: 0 0 6px;
+    color: #7b8da1;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .06em;
+    line-height: 1.1;
+    text-transform: uppercase;
+}
+
+.main-header .admin-menu-link {
+    display: grid !important;
+    width: 100%;
+    min-height: 30px;
+    grid-template-columns: 18px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    margin: 0 !important;
+    padding: 6px 7px !important;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #3f5063 !important;
+    font-size: 12px;
+    line-height: 1 !important;
+    text-align: left;
+}
+
+.main-header a.admin-menu-link:hover,
+.main-header a.admin-menu-link:focus {
+    background: #eef7fc;
+    color: #245f83 !important;
+    outline: none;
+}
+
+.main-header .admin-menu-link i {
+    width: 18px;
+    min-width: 18px;
+    color: #7b8da1;
+    text-align: center;
+}
+
+.main-header .admin-menu-link span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.main-header .admin-menu-link.is-unavailable,
+.main-header .admin-menu-link.is-unavailable:disabled {
+    cursor: not-allowed;
+    opacity: .52;
+}
+
+.main-header .admin-menu-logout {
+    padding: 9px 10px 10px;
+}
+
+.main-header .admin-menu-logout > a {
+    display: grid !important;
+    min-height: 30px;
+    grid-template-columns: 18px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    margin: 0 !important;
+    padding: 6px 7px !important;
+    border-radius: 8px;
+    color: #8f4d4d !important;
+    font-size: 12px;
+    line-height: 1 !important;
+}
+
+.main-header .admin-menu-logout > a > i {
+    width: 18px;
+    min-width: 18px;
+    text-align: center;
+}
+
+.main-header .admin-menu-logout > a:hover,
+.main-header .admin-menu-logout > a:focus {
+    background: #fff1f1;
+    color: #9f3535 !important;
+}
+
+@media (max-width: 767px) {
+    .main-header .navbar-static-top {
+        min-height: 50px !important;
+        padding-left: 44px !important;
+    }
+
+    .main-header .sidebar-toggle {
+        top: 0 !important;
+        left: 0 !important;
+        width: 44px !important;
+        min-width: 44px !important;
+        max-width: 44px !important;
+        height: 50px !important;
+        min-height: 50px !important;
+        background: rgba(255, 255, 255, .08) !important;
+        z-index: 40 !important;
+    }
+
+    .main-header .navbar-custom-menu {
+        height: 50px;
+        max-width: 100%;
+        padding-left: 5px;
+        padding-right: 8px;
+    }
+
+    .main-header .navbar-custom-menu .user-menu > .admin-user-menu {
+        width: min(290px, calc(100vw - 16px)) !important;
+        max-width: calc(100vw - 16px) !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-header .admin-user-trigger-text {
+        display: none;
+    }
+}
