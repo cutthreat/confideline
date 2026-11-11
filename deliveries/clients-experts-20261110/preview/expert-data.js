@@ -89,6 +89,27 @@ demoExperts.push(...expertDemoState.created.map(row=>({
 for(const row of demoExperts){
  if(Object.hasOwn(expertDemoState.assigned,row.id))row.agent=expertDemoState.assigned[row.id];
 }
+const expertEditorStorage = 'confideline-expert-editor-demo-20261111';
+function expertEditorKey(id) {
+ return Number(id) === 512 ? expertEditorStorage : expertEditorStorage + ':' + id;
+}
+function readExpertEditor(id) {
+ try { return JSON.parse(localStorage.getItem(expertEditorKey(id)) || '{}') || {}; }
+ catch { return {}; }
+}
+function saveExpertEditor(id, profile) {
+ localStorage.setItem(expertEditorKey(id), JSON.stringify(profile));
+}
+for (const row of demoExperts) {
+ const saved = readExpertEditor(row.id);
+ if (typeof saved.name === 'string') row.person = saved.name;
+ if (typeof saved.description === 'string') row.description = saved.description;
+ if (Array.isArray(saved.areas)) row.areas = saved.areas.map(value => expertAreaOptions[Number(value) - 1]).filter(Boolean);
+ if (Array.isArray(saved.languages)) row.langs = saved.languages.map(value => expertLanguageOptions[Number(value) - 1]?.[1]).filter(Boolean);
+ if (Object.hasOwn(saved, 'consultations')) row.ncons = saved.consultations || null;
+ if (Object.hasOwn(saved, 'experience')) row.experience = saved.experience || null;
+ if (typeof saved.__blocked === 'boolean') row.blocked = saved.__blocked ? 'Да' : 'Нет';
+}
 const expertSnapshot=false;
 const experts=demoExperts;
 function saveExpertDemoState(){

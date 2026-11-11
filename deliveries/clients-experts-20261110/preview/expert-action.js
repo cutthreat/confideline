@@ -4,7 +4,7 @@ const params = new URLSearchParams(location.search);
 const isClient = params.has('client');
 const person = (isClient ? users : experts).find(row => String(row.id) === params.get(isClient ? 'client' : 'expert'));
 const headings = new Map([
-    ['profile', isClient ? 'Карточка клиента' : 'Анкета эксперта'],
+    ['profile', (isClient ? 'Пользователь' : 'Эксперт') + (person ? ' #' + person.id : '')],
     ['edit', isClient ? 'Редактирование аккаунта' : 'Редактирование анкеты'],
     ['credits', 'Корректировка кредитов']
 ]);
@@ -29,8 +29,13 @@ function element(tag, className, text) {
 function actionLink(label, target) {
     const link = element('a', 'btn btn-sm btn-default', label);
     const linkParams = new URLSearchParams(params);
-    linkParams.set('action', target);
-    link.href = 'expert-action.html?' + linkParams;
+    if (!isClient && target === 'edit') {
+        const editorParams = new URLSearchParams({expert: person.id, list: returnParams.toString()});
+        link.href = '../expert-editor-draft-20261111/?' + editorParams;
+    } else {
+        linkParams.set('action', target);
+        link.href = 'expert-action.html?' + linkParams;
+    }
     return link;
 }
 function demoDescription(row) {
@@ -54,7 +59,7 @@ returnLink.href = back;
 if (isClient) returnLink.lastChild.textContent = ' К клиентам';
 const breadcrumb = byId('expert-breadcrumb');
 breadcrumb.href = back;
-breadcrumb.textContent = isClient ? 'Клиенты' : 'Эксперты';
+breadcrumb.textContent = isClient ? (action === 'profile' ? 'Пользователи' : 'Клиенты') : 'Эксперты';
 if (isClient) {
     const other = document.querySelector('.main-sidebar a[href="experts.html"][aria-current]');
     const current = document.querySelector('.main-sidebar a[href="clients.html"]');

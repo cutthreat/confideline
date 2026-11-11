@@ -3,7 +3,30 @@
   const root=document.getElementById('expert-editor-demo');
   const form=document.getElementById('ee-form');
   const feedback=document.getElementById('ee-feedback');
-  const key='confideline-expert-editor-demo-20261111';
+  const editorQuery = new URLSearchParams(location.search);
+  const expertId = editorQuery.get('expert') ?? '512';
+  const row = experts.find(expert => String(expert.id) === expertId);
+  const listQuery = new URLSearchParams(editorQuery.get('list') || '');
+  const activeConsultation = expertId === '512' && editorQuery.get('consultation') === 'active';
+  if (activeConsultation) listQuery.set('consultation', 'active');
+  if (listQuery.size) document.querySelectorAll('a[href="../preview/experts.html"]').forEach(a => {
+    a.href = '../preview/experts.html?' + listQuery;
+  });
+  if (!row) {
+    const message = 'Анкета эксперта не найдена';
+    document.querySelector('.content-header h1').textContent = message;
+    document.querySelector('.content-header .breadcrumb .active').textContent = message;
+    document.title = message + ' · Макет Confideline';
+    root.hidden = true;
+    return;
+  }
+  const heading = 'Эксперт #' + row.id;
+  document.querySelector('.content-header h1').textContent = heading;
+  document.querySelector('.content-header .breadcrumb .active').textContent = heading;
+  document.title = heading + ' · Макет Confideline';
+  const profileName = root.querySelector('.widget-user-username');
+  profileName.textContent = row.person;
+  root.querySelector('.widget-user-desc').textContent = row.login;
   const languageSelect=document.getElementById('ee-translation-language');
   const translationPanels=Array.from(root.querySelectorAll('[data-translation-panel]'));
   const translationCount=document.getElementById('ee-translation-count');
@@ -30,11 +53,23 @@
     detail.classList.toggle('ee-opens-up',up);
     menu.style.maxHeight=`${Math.max(60,Math.min(220,up?above:below))}px`;
   }
-  try{
-    const stored=JSON.parse(localStorage.getItem(key)||'null');
-    if(stored){for(const element of form.elements){if(!element.name)continue;if(element.type==='checkbox') element.checked=(stored[element.name]||[]).includes(element.value); else if(element.name in stored) element.value=stored[element.name];}if(languageLabels.has(stored.__translationLanguage))languageSelect.value=stored.__translationLanguage;}
-    else {const filled=translationPanels.find(panel=>panel.querySelector('textarea').value.trim());if(filled)languageSelect.value=filled.dataset.translationPanel;}
-  }catch(e){}
+  const stored = readExpertEditor(row.id);
+  form.elements.namedItem('name').value = row.person;
+  form.elements.namedItem('description').value = row.description ?? (row.id === 512 ? form.elements.namedItem('description').defaultValue : '');
+  form.elements.namedItem('consultations').value = row.ncons ?? '';
+  form.elements.namedItem('experience').value = row.experience ?? '';
+  for (const input of form.querySelectorAll('input[type="checkbox"]')) {
+    if (input.name === 'areas') input.checked = row.areas.includes(expertAreaOptions[Number(input.value) - 1]);
+    if (input.name === 'languages') input.checked = row.langs.includes(expertLanguageOptions[Number(input.value) - 1]?.[1]);
+    if (input.name === 'topics') input.checked = stored.topics?.includes(input.value) ?? (row.id === 512 && input.defaultChecked);
+  }
+  for (const panel of translationPanels) {
+    const input = panel.querySelector('textarea');
+    input.value = stored[input.name] ?? (row.id === 512 ? input.defaultValue : '');
+  }
+  const filled = translationPanels.find(panel => panel.querySelector('textarea').value.trim());
+  if (languageLabels.has(stored.__translationLanguage)) languageSelect.value = stored.__translationLanguage;
+  else if (filled) languageSelect.value = filled.dataset.translationPanel;
   function captureSavedTranslations(){return Object.fromEntries(translationPanels.map(panel=>[panel.dataset.translationPanel,panel.querySelector('textarea').value]));}
   savedTranslations=captureSavedTranslations();
   function renderTranslations(){
@@ -55,13 +90,49 @@
   form.addEventListener('input',()=>feedback.hidden=true);
   form.addEventListener('submit',event=>{
     event.preventDefault();
-    const data={__translationLanguage:languageSelect.value};for(const element of form.elements){if(!element.name)continue;if(element.type==='checkbox'){if(!data[element.name])data[element.name]=[];if(element.checked)data[element.name].push(element.value);}else data[element.name]=element.value;}
-    try{localStorage.setItem(key,JSON.stringify(data));savedTranslations=captureSavedTranslations();renderTranslations();feedback.className='alert alert-success ee-feedback';feedback.textContent='Изменения сохранены в макете.';}
+    const data={__translationLanguage:languageSelect.value,__blocked:readBlock()};for(const element of form.elements){if(!element.name)continue;if(element.type==='checkbox'){if(!data[element.name])data[element.name]=[];if(element.checked)data[element.name].push(element.value);}else data[element.name]=element.value;}
+    try{saveExpertEditor(row.id,data);profileName.textContent=data.name;savedTranslations=captureSavedTranslations();renderTranslations();feedback.className='alert alert-success ee-feedback';feedback.textContent='Изменения сохранены в макете.';}
     catch(e){feedback.className='alert alert-danger ee-feedback';feedback.textContent='Не удалось сохранить изменения в макете.';}
     feedback.hidden=false;feedback.scrollIntoView({block:'nearest'});
   });
   document.querySelectorAll('a[href="#"]').forEach(a=>a.addEventListener('click',event=>event.preventDefault()));
   root.querySelectorAll('.nav-pills a[href="#"]').forEach(a=>{a.setAttribute('aria-disabled','true');a.setAttribute('tabindex','-1');a.setAttribute('title','Действие доступно на сайте');});
+  const blockAction=document.getElementById('ee-block-action');
+  const blockDialog=document.getElementById('ee-block-dialog');
+  const blockTitle=document.getElementById('ee-block-title');
+  const blockMessage=document.getElementById('ee-block-message');
+  const blockCancel=document.getElementById('ee-block-cancel');
+  const blockConfirm=document.getElementById('ee-block-confirm');
+  const readBlock = () => readExpertEditor(row.id).__blocked ?? (row.blocked === 'Да');
+  function showBlockState(){blockAction.querySelector('span').textContent=readBlock()?'Разблокировать':'Заблокировать';}
+  showBlockState();
+  blockAction.addEventListener('click',event=>{
+    event.preventDefault();
+    const blocked=readBlock();
+    blockTitle.textContent=blocked?'Разблокировать анкету?':'Заблокировать анкету?';
+    blockCancel.textContent='Отмена';blockConfirm.hidden=false;
+    blockConfirm.textContent=blocked?'Разблокировать':'Заблокировать';
+    if(!blocked&&activeConsultation){
+      blockTitle.textContent='Блокировка недоступна';
+      blockMessage.textContent='Предложение для согласования. По этой анкете идёт платная консультация. Завершите её, затем заблокируйте анкету.';
+      blockConfirm.hidden=true;blockCancel.textContent='Понятно';
+    }else{
+      const verb = blocked ? 'разблокировать' : 'заблокировать';
+      blockMessage.textContent='Вы уверены, что хотите '+verb+' этого пользователя?';
+    }
+    blockDialog.showModal();
+  });
+  blockCancel.addEventListener('click',()=>blockDialog.close());
+  blockDialog.addEventListener('close',()=>blockAction.focus());
+  blockConfirm.addEventListener('click',()=>{
+    if (!readBlock() && activeConsultation) return;
+    try {
+      saveExpertEditor(row.id, {...readExpertEditor(row.id), __blocked: !readBlock()});
+      showBlockState();
+      blockDialog.close();
+    }
+    catch(e){blockMessage.textContent='Не удалось изменить состояние в макете. Попробуйте ещё раз.';}
+  });
   document.querySelectorAll('[data-menu-group]').forEach(control=>control.addEventListener('click',()=>{const menu=control.nextElementSibling;const open=control.getAttribute('aria-expanded')==='true';control.setAttribute('aria-expanded',String(!open));if(menu)menu.style.display=open?'none':'block';}));
   const sidebarToggle=document.querySelector('.sidebar-toggle');
   const mobileMenu=matchMedia('(max-width: 767px)');
