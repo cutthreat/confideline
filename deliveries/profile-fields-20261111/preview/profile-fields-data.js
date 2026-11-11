@@ -34,7 +34,7 @@ const profileFieldsData = (() => {
     },
     {
       id: "birth-date", title: "Дата рождения", key: "Profile[dob]", component: "date",
-      sample: "1995-05-14", showInView: false
+      sample: "1995-05-14", showInView: false, canSearch: true
     },
     {
       id: "country", title: "Страна", key: "Profile[country]", component: "select",
@@ -58,12 +58,12 @@ const profileFieldsData = (() => {
     {
       id: "looking", title: "Я ищу", category: "dating",
       key: "Profile[looking_for_sex_array]", component: "multi",
-      options: ["Мужчины", "Женщины"], sample: "Мужчины", canSearch: true
+      options: ["Мужчины", "Женщины"], sample: "Мужчины", canSearch: false
     },
     {
       id: "age", title: "Возрастом", category: "dating",
       key: "Profile[looking_for_from_age] и Profile[looking_for_to_age]", component: "age",
-      sample: "25–40 лет", canSearch: true
+      sample: "25–40 лет", canSearch: false
     }
   ].map(field => ({ category: "basic", types: ["client"], ...field, origin: "built-in" }));
 

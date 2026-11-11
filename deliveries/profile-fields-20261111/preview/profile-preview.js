@@ -85,6 +85,11 @@
     if (field.component === "photo") {
       return '<div class="preview-full"><strong>Фотографии</strong><p class="preview-example">Фотографии добавляются в разделе «Фотографии».</p></div>';
     }
+    if (location === "search" && field.id === "birth-date") {
+      return '<div class="preview-full preview-age-range">' +
+        '<label>Возраст от <input class="form-control" type="number" value="18"></label>' +
+        '<label>Возраст до <input class="form-control" type="number" value="100"></label></div>';
+    }
     if (field.component === "age") {
       return '<fieldset class="' + full + '"><legend>' + name + marker + '</legend><div class="row">' +
         '<label class="col">С <input class="form-control" type="number" value="25"></label>' +
@@ -156,9 +161,10 @@
   }
 
   function searchPage(fields) {
-    const controls = fields.map(field => {
+    const rank = field => field.id === "sex" ? 0 : field.id === "birth-date" ? 1 : 2;
+    const controls = [...fields].sort((a, b) => rank(a) - rank(b)).map(field => {
       if (field.id === "sex") return controlsFor({ ...field, frontTitle: "Я ищу", options: ["Не важно", "Мужчины", "Женщины"] }, "search");
-      if (field.id === "age") return controlsFor({ ...field, frontTitle: "Возраст" }, "search");
+      if (field.id === "birth-date") return controlsFor({ ...field, component: "age", frontTitle: "Возраст" }, "search");
       return controlsFor(field, "search");
     }).join("");
     return '<div class="preview-search-layout"><section class="card"><div class="preview-card-title">Обзор</div>' +
