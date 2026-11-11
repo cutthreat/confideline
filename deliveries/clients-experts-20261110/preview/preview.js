@@ -83,10 +83,8 @@ function openClientCreation(){
  content.append(el('p','','В списке клиентов «Создать» открывает штатную форму создания пользователя.'),formLink);
  showDetail('Создание клиента',content);
 }
-function announce(message,link){
- const feedback=id('directory-feedback');
- feedback.replaceChildren(message);
- if(link)feedback.append(' ',link);
+function announce(message){
+ id('directory-feedback').textContent=message;
 }
 function demoRowButton(row,label,kind,open){
  const button=simpleBtn(label,'btn btn-xs btn-'+kind+' directory-row-command',open);
@@ -155,9 +153,7 @@ function openExpertCreation(){
  showDetail('Создать анкету эксперта',content,{label:'Создать',commit:data=>{
   const row=createDemoExpert(String(data.get('person')).trim(),String(data.get('description')).trim());
   resetDirectoryList();
-  const link=el('a','','Открыть анкету');
-  link.href=directoryActionUrl(row,'profile');
-  announce('Анкета эксперта «'+row.person+'» создана.',link);
+  announce('Анкета эксперта «'+row.person+'» создана.');
  }});
 }
 function accountStatus(row){
@@ -509,17 +505,10 @@ function directoryListParams(){
  params.set('size',id('page-size').value);
  return params;
 }
-function directoryActionUrl(row,action){
- if (!clients && action === 'edit') {
-  const next = new URLSearchParams({expert: row.id, list: directoryListParams().toString()});
-  if (Number(row.id) === 512 && new URLSearchParams(location.search).get('consultation') === 'active') next.set('consultation', 'active');
-  return '../expert-editor-draft-20261111/?'+next;
- }
- const params=directoryListParams();
- if(!showSnapshot)params.set('data','demo');
- params.set(clients?'client':'expert',row.id);
- params.set('action',action);
- return 'expert-action.html?'+params;
+function expertEditorUrl(row){
+ const params = new URLSearchParams({expert: row.id, list: directoryListParams().toString()});
+ if (Number(row.id) === 512 && new URLSearchParams(location.search).get('consultation') === 'active') params.set('consultation', 'active');
+ return '../expert-editor-draft-20261111/?' + params;
 }
 function syncListAddress(){
  if(location.protocol!=='http:'&&location.protocol!=='https:')return;
@@ -536,15 +525,22 @@ function syncListAddress(){
  for(const [param,value] of params)url.searchParams.set(param,value);
  if(url.href!==location.href)history.replaceState(history.state,'',url);
 }
-function directoryActionLink(row,action,title,icon){
- const link=el('a','btn btn-sm btn-default');
- link.href=directoryActionUrl(row,action);
- link.title=title;
- link.setAttribute('aria-label',title+' · '+row.person);
- const glyph=el('span','fa '+icon);
- glyph.setAttribute('aria-hidden','true');
- link.append(glyph);
- return link;
+function directoryRowAction(row, title, icon, href){
+ const control = el(href ? 'a' : 'button', 'btn btn-sm btn-default');
+ const label = title + ' · ' + row.person;
+ control.title = title;
+ control.setAttribute('aria-label', label);
+ if (href) {
+  control.href = href;
+ } else {
+  control.type = 'button';
+  control.disabled = true;
+  control.title = title + ' · В действующей админке';
+ }
+ const glyph = el('span', 'fa ' + icon);
+ glyph.setAttribute('aria-hidden', 'true');
+ control.append(glyph);
+ return control;
 }
 function restoreDirectoryList(){
  const params=new URLSearchParams(location.search);
@@ -617,8 +613,7 @@ function renderCell(k,cls,row,label){
   avatar.alt='';
   block.append(avatar);
   const info=el('div','user-info');
-  const name=el('a','name',val);
-  name.href=directoryActionUrl(row,'profile');
+  const name=el('span','name',val);
   const login=showSnapshot&&!row.snapshot?row.login+' · Демо':row.login;
   info.append(name,el('div','username',login));
   block.append(info);
@@ -630,9 +625,13 @@ function renderCell(k,cls,row,label){
   if(!val)td.classList.add('client-status-none');
  }else if(k==='actions'){
   const actions=el('div','directory-row-actions');
-  actions.append(directoryActionLink(row,'edit',clients?'Редактировать аккаунт':'Редактировать анкету','fa-pencil'));
-  if(!clients)actions.append(directoryActionLink(row,'reviews','Отзывы эксперта','fa-comments-o'));
-  actions.append(directoryActionLink(row,'credits','Корректировка кредитов','fa-usd'));
+  if (clients) {
+   actions.append(directoryRowAction(row, 'Редактировать аккаунт', 'fa-pencil'));
+  } else {
+   actions.append(directoryRowAction(row, 'Редактировать анкету', 'fa-pencil', expertEditorUrl(row)));
+   actions.append(directoryRowAction(row, 'Отзывы эксперта', 'fa-comments-o'));
+  }
+  actions.append(directoryRowAction(row, 'Корректировка кредитов', 'fa-usd'));
   td.append(actions);
  }else if(k==='rating'){
   if(row.rating){
