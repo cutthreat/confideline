@@ -74,15 +74,6 @@ function showDetail(title,content,confirmation){
  },{once:true});
  dialog.showModal();
 }
-function openClientCreation(){
- const content=document.createDocumentFragment();
- const formLink=el('a','','Открыть действующую форму в админке');
- formLink.href='https://confideline.com/ru/admin/user/create';
- formLink.target='_blank';
- formLink.rel='noopener';
- content.append(el('p','','В списке клиентов «Создать» открывает штатную форму создания пользователя.'),formLink);
- showDetail('Создание клиента',content);
-}
 function announce(message){
  id('directory-feedback').textContent=message;
 }
@@ -96,24 +87,22 @@ function accountStatusButton(row,label,kind,field,value){
   const content=document.createDocumentFragment();
   content.append(el('p','',row.person+' · '+row.login));
   if(!clients&&Number(row.id)===512&&field==='blocked'&&value==='Да'&&new URLSearchParams(location.search).get('consultation')==='active'){
-   content.append(el('p','text-muted','Предложение для согласования.'),el('p','','По этой анкете идёт платная консультация. Завершите её, затем заблокируйте анкету.'));
+   content.append(el('p','','По этой анкете идёт платная консультация. Завершите её, затем заблокируйте анкету.'));
    showDetail('Блокировка недоступна',content,null);return;
   }
   if (field === 'blocked') content.append(el('p','','Вы уверены, что хотите '+label.toLowerCase()+' этого пользователя?'));
-  content.append(el('p','text-muted','Изменение действует в этом макете.'));
   showDetail(label,content,{label,commit:()=>{
    if (!clients && field === 'blocked') {
     try { saveExpertEditor(row.id, {...readExpertEditor(row.id), __blocked: value === 'Да'}); }
-    catch { announce('Не удалось изменить состояние в макете.'); return; }
+    catch { announce('Не удалось изменить статус.'); return; }
    }
    row[field]=value;
    draw();
-   announce('Аккаунт «'+row.person+'» обновлён в макете.');
+   announce('Аккаунт «'+row.person+'» обновлён.');
   }});
  });
  if(row.snapshot){
   button.disabled=true;
-  button.title='Действие доступно на демоданных';
  }
  return button;
 }
@@ -148,8 +137,7 @@ function openExpertCreation(){
  description.rows=3;
  description.maxLength=500;
  const content=document.createDocumentFragment();
- content.append(demoField('Имя в анкете',name),demoField('Описание',description),
-  el('p','text-muted','Демонстрационная анкета сохраняется в этой вкладке.'));
+ content.append(demoField('Имя в анкете',name),demoField('Описание',description));
  showDetail('Создать анкету эксперта',content,{label:'Создать',commit:data=>{
   const row=createDemoExpert(String(data.get('person')).trim(),String(data.get('description')).trim());
   resetDirectoryList();
@@ -535,7 +523,6 @@ function directoryRowAction(row, title, icon, href){
  } else {
   control.type = 'button';
   control.disabled = true;
-  control.title = title + ' · В действующей админке';
  }
  const glyph = el('span', 'fa ' + icon);
  glyph.setAttribute('aria-hidden', 'true');
@@ -813,7 +800,6 @@ if(!clients){
   id('create-expert').title='Создание анкеты доступно на демоданных';
  }else id('create-expert').addEventListener('click',openExpertCreation);
 }
-id('create-client')?.addEventListener('click', openClientCreation);
 document.querySelector('.main-header form')?.addEventListener('submit',e=>e.preventDefault());
 document.querySelectorAll('a[href="#"]:not(.finance-page a)').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();if(a.dataset.previewSidebar)document.body.classList.toggle(innerWidth<768?'sidebar-open':'sidebar-collapse')}));
 function bindMobileTools(){

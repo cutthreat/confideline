@@ -91,12 +91,12 @@
   form.addEventListener('submit',event=>{
     event.preventDefault();
     const data={__translationLanguage:languageSelect.value,__blocked:readBlock()};for(const element of form.elements){if(!element.name)continue;if(element.type==='checkbox'){if(!data[element.name])data[element.name]=[];if(element.checked)data[element.name].push(element.value);}else data[element.name]=element.value;}
-    try{saveExpertEditor(row.id,data);profileName.textContent=data.name;savedTranslations=captureSavedTranslations();renderTranslations();feedback.className='alert alert-success ee-feedback';feedback.textContent='Изменения сохранены в макете.';}
-    catch(e){feedback.className='alert alert-danger ee-feedback';feedback.textContent='Не удалось сохранить изменения в макете.';}
+    try{saveExpertEditor(row.id,data);profileName.textContent=data.name;savedTranslations=captureSavedTranslations();renderTranslations();feedback.className='alert alert-success ee-feedback';feedback.textContent='Изменения сохранены.';}
+    catch(e){feedback.className='alert alert-danger ee-feedback';feedback.textContent='Не удалось сохранить изменения.';}
     feedback.hidden=false;feedback.scrollIntoView({block:'nearest'});
   });
   document.querySelectorAll('a[href="#"]').forEach(a=>a.addEventListener('click',event=>event.preventDefault()));
-  root.querySelectorAll('.nav-pills a[href="#"]').forEach(a=>{a.setAttribute('aria-disabled','true');a.setAttribute('tabindex','-1');a.setAttribute('title','Действие доступно на сайте');});
+  root.querySelectorAll('.nav-pills a[href="#"]').forEach(a=>{a.setAttribute('aria-disabled','true');a.setAttribute('tabindex','-1');});
   const blockAction=document.getElementById('ee-block-action');
   const blockDialog=document.getElementById('ee-block-dialog');
   const blockTitle=document.getElementById('ee-block-title');
@@ -114,7 +114,7 @@
     blockConfirm.textContent=blocked?'Разблокировать':'Заблокировать';
     if(!blocked&&activeConsultation){
       blockTitle.textContent='Блокировка недоступна';
-      blockMessage.textContent='Предложение для согласования. По этой анкете идёт платная консультация. Завершите её, затем заблокируйте анкету.';
+      blockMessage.textContent='По этой анкете идёт платная консультация. Завершите её, затем заблокируйте анкету.';
       blockConfirm.hidden=true;blockCancel.textContent='Понятно';
     }else{
       const verb = blocked ? 'разблокировать' : 'заблокировать';
@@ -131,7 +131,7 @@
       showBlockState();
       blockDialog.close();
     }
-    catch(e){blockMessage.textContent='Не удалось изменить состояние в макете. Попробуйте ещё раз.';}
+    catch(e){blockMessage.textContent='Не удалось изменить статус. Попробуйте ещё раз.';}
   });
   document.querySelectorAll('[data-menu-group]').forEach(control=>control.addEventListener('click',()=>{const menu=control.nextElementSibling;const open=control.getAttribute('aria-expanded')==='true';control.setAttribute('aria-expanded',String(!open));if(menu)menu.style.display=open?'none':'block';}));
   const sidebarToggle=document.querySelector('.sidebar-toggle');
