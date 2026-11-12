@@ -139,6 +139,16 @@
  $('#cities-close').addEventListener('click',()=>{$('#cities-dialog').close();$('[data-profile-cities="'+profileAction+'"]')?.focus();});
  $('#cities-form').addEventListener('submit',e=>{e.preventDefault();const city=$('#cities-input').value.trim();if(!city)return;const result=model.addCity(profileAction,city);$('#cities-message').textContent=result.error||'Город добавлен.';if(result.state){sync(result.state);renderCities();$('#cities-input').value='';}});
  $('#remove-profile-cancel').addEventListener('click',()=>{$('#remove-profile-dialog').close();$('[data-profile-remove="'+profileAction+'"]')?.focus();});
+ $('#emergency-profile-open').addEventListener('click',()=>{$('#remove-profile-dialog').close();$('#emergency-profile-reason').value='';$('#emergency-profile-error').textContent='';$('#emergency-profile-dialog').showModal();$('#emergency-profile-reason').focus();});
+ $('#emergency-profile-cancel').addEventListener('click',()=>{$('#emergency-profile-dialog').close();$('#remove-profile-dialog').showModal();$('#emergency-profile-open').focus();});
+ $('#emergency-profile-form').addEventListener('submit',e=>{
+  e.preventDefault();if(!e.currentTarget.reportValidity())return;
+  const result=model.emergencyRemove(profileAction,$('#emergency-profile-reason').value);
+  if(result.error){$('#emergency-profile-error').textContent=result.error;return;}
+  sync(result.state);$('#emergency-profile-dialog').close();refillProfiles();renderProfiles();
+  $('#profile-action-message').textContent='Доступ отозван. Консультация остановлена. Проверьте расчёт и будущие записи.';
+  $('#profile-search').focus();
+ });
  $('#remove-profile-open-bookings').addEventListener('click',()=>{
   const id=profileAction;$('#remove-profile-dialog').close();bookingContext={profile:id,from:'profiles'};
   $('#booking-profile').value=id;$('#booking-status').value='all';selected=null;nav('bookings');
@@ -264,7 +274,8 @@
   const hold=b.proposal?model.proposalDeadline(b):model.holdDescription(b);
   const profile=profiles.find(p=>p.id===b.profile),conflict=model.scheduleConflicts([b],saved,profile,b.profile)[0];
   const conflictText=conflict?(conflict.scheduleConflictOriginal&&conflict.scheduleConflictProposal?' · Конфликт обоих окон':conflict.scheduleConflictProposal?' · Конфликт предложенного времени':' · Конфликт графика'):'';
-  return '<div class="entry"><button type="button" class="entry-btn" data-entry="'+b.id+'"><strong>'+esc(shownTime)+'</strong><span class="entry-main"><strong>'+esc(b.client)+' · '+esc(name(b.profile))+'</strong><span>'+esc(dateText(shownDate))+(slot?.proposed?' · Предложенное время':'')+(hold?' · '+esc(hold):'')+conflictText+(overlapConflict(b,shownDate,shownTime)?' · Конфликт записей':'')+'</span></span><span class="status '+esc(status)+'">'+esc(statuses[status])+'</span></button></div>';
+  const unassigned=active(b)&&!profiles.some(p=>p.id===b.profile)?' · Требуется назначить агента':'';
+  return '<div class="entry"><button type="button" class="entry-btn" data-entry="'+b.id+'"><strong>'+esc(shownTime)+'</strong><span class="entry-main"><strong>'+esc(b.client)+' · '+esc(name(b.profile))+'</strong><span>'+esc(dateText(shownDate))+(slot?.proposed?' · Предложенное время':'')+(hold?' · '+esc(hold):'')+conflictText+unassigned+(overlapConflict(b,shownDate,shownTime)?' · Конфликт записей':'')+'</span></span><span class="status '+esc(status)+'">'+esc(statuses[status])+'</span></button></div>';
  }
  function renderBookings(){
   sync();
@@ -317,8 +328,10 @@
   const scheduleConflict=conflict?'<p class="proposal-note">'+(conflict.scheduleConflictOriginal?'Исходное время вне рабочего графика. ':'')+(conflict.scheduleConflictProposal?'Предложенное время вне рабочего графика. ':'')+'Выберите действие, чтобы решить конфликт.</p>':'';
   const doubleBooking=overlapConflict(b)?'<p class="proposal-note">На исходное время у партнёра есть другая запись.</p>':'';
   const proposalOverlap=b.proposal&&overlapConflict(b,b.proposal.date,b.proposal.time)?'<p class="proposal-note">На предложенное время у партнёра есть другая запись.</p>':'';
+  const clientSuggestion=b.clientSuggestion?'<p class="proposal-note">Клиент предложил время: '+esc(dateText(b.clientSuggestion.date))+' · '+esc(b.clientSuggestion.time)+'. Проверьте возможность переноса и ответьте клиенту.</p>':'';
+  const unassigned=active(b)&&!profiles.some(p=>p.id===b.profile)?'<p class="proposal-note">По этой анкете нужно назначить агента и обеспечить встречу в согласованное время. При необходимости изменения времени свяжитесь с клиентом.</p>':'';
   const back=detailOrigin==='schedule'?'К графику':view==='list'?'К записям':'К календарю';
-  d.innerHTML='<button type="button" class="text-button" data-back>‹ '+back+'</button><div class="detail-heading"><div><h3>'+esc(b.client)+'</h3><p>'+esc(name(b.profile))+' · '+esc(dateText(b.date))+' · '+esc(b.time)+'</p></div><span class="status '+esc(status)+'">'+esc(statuses[status])+'</span></div><div class="detail-grid"><div><span>Анкета</span><strong>'+esc(name(b.profile))+'</strong></div><div><span>Следующее действие</span><strong>'+esc(b.proposal?model.proposalDeadline(b):b.deadline)+'</strong></div><div><span>Окно в графике</span><strong>'+esc(b.time)+'–'+model.time(numeric(b.time)+model.slotLength)+'</strong></div>'+price+'</div>'+scheduleConflict+doubleBooking+proposed+proposalOverlap+outcome+'<div class="form-row">'+actions+'</div><details><summary>История записи</summary><ul>'+b.history.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details>';
+  d.innerHTML='<button type="button" class="text-button" data-back>‹ '+back+'</button><div class="detail-heading"><div><h3>'+esc(b.client)+'</h3><p>'+esc(name(b.profile))+' · '+esc(dateText(b.date))+' · '+esc(b.time)+'</p></div><span class="status '+esc(status)+'">'+esc(statuses[status])+'</span></div><div class="detail-grid"><div><span>Анкета</span><strong>'+esc(name(b.profile))+'</strong></div><div><span>Следующее действие</span><strong>'+esc(b.proposal?model.proposalDeadline(b):b.deadline)+'</strong></div><div><span>Окно в графике</span><strong>'+esc(b.time)+'–'+model.time(numeric(b.time)+model.slotLength)+'</strong></div>'+price+'</div>'+unassigned+scheduleConflict+doubleBooking+proposed+proposalOverlap+clientSuggestion+outcome+'<div class="form-row">'+actions+'</div><details><summary>История записи</summary><ul>'+b.history.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details>';
  }
  function openEntry(id,origin='bookings'){
   selected=id;detailOrigin=origin;show('bookings');renderDetail(entries.find(b=>b.id===id));$('#booking-detail [data-back]').focus();
@@ -378,7 +391,19 @@
   const sort=e.target.closest('[data-profile-sort]');if(sort){profileSortDirection=profileSort===sort.dataset.profileSort?-profileSortDirection:1;profileSort=sort.dataset.profileSort;renderProfiles();return;}
   const city=e.target.closest('[data-profile-cities]');if(city){profileAction=city.dataset.profileCities;$('#cities-input').value='';$('#cities-message').textContent='';renderCities();$('#cities-dialog').showModal();return;}
   const pv=e.target.closest('[data-profile-view]');if(pv){profileAction=pv.dataset.profileView;$('#profile-view-name').textContent=name(profileAction);$('#profile-view-dialog').showModal();return;}
-  const remove=e.target.closest('[data-profile-remove]');if(remove){sync();profileAction=remove.dataset.profileRemove;const blocked=entries.filter(entry=>entry.profile===profileAction&&active(entry));$('#remove-profile-copy').textContent='Снять назначение анкеты '+name(profileAction)+' с этого партнёра?'+(blocked.length?' У анкеты есть активные заявки или записи, поэтому выберите нового агента.':'');$('#remove-profile-message').textContent='';$('#remove-profile-open-bookings').hidden=!blocked.length;$('#remove-profile-confirm').hidden=Boolean(blocked.length);$('#transfer-profile-options').hidden=!blocked.length;$('#transfer-profile-confirm').hidden=!blocked.length;$('#transfer-profile-confirm').disabled=true;$('#transfer-agent').value='';$('#transfer-summary').textContent='';$('#remove-profile-dialog').showModal();(blocked.length?$('#transfer-agent'):$('#remove-profile-cancel')).focus();return;}
+  const remove=e.target.closest('[data-profile-remove]');if(remove){
+   sync();profileAction=remove.dataset.profileRemove;
+   const blocked=entries.filter(entry=>entry.profile===profileAction&&active(entry));
+   const live=model.hasLiveSession(data,profileAction);
+   $('#remove-profile-title').textContent='Снять назначение: '+name(profileAction)+'?';
+   $('#remove-profile-copy').textContent=live?'По этой анкете идёт консультация. Снимите назначение после её завершения.':'Снять назначение анкеты '+name(profileAction)+' с этого партнёра?'+(blocked.length?' У анкеты есть активные заявки или записи, поэтому выберите нового агента.':'');
+   $('#remove-profile-message').textContent='';$('#remove-profile-open-bookings').hidden=!blocked.length;
+   $('#remove-profile-confirm').hidden=Boolean(blocked.length)||live;
+   $('#transfer-profile-options').hidden=!blocked.length||live;$('#transfer-profile-confirm').hidden=!blocked.length||live;
+   $('#emergency-profile-open').hidden=!live;
+   $('#transfer-profile-confirm').disabled=true;$('#transfer-agent').value='';$('#transfer-summary').textContent='';
+   $('#remove-profile-dialog').showModal();(live?$('#remove-profile-cancel'):blocked.length?$('#transfer-agent'):$('#remove-profile-cancel')).focus();return;
+  }
   const former=e.target.closest('[data-former-bookings]');if(former){bookingContext=null;$('#booking-profile').value=former.dataset.formerBookings;$('#booking-status').value='all';selected=null;nav('bookings');return;}
   const goto=e.target.closest('[data-goto]');if(goto){requestScheduleLeave(()=>nav(goto.dataset.goto),goto);return;}
   if(e.target.closest('#booking-back-profile')){const context=bookingContext;bookingContext=null;nav('profiles');if(context)$('[data-profile-bookings="'+context.profile+'"]')?.focus();return;}

@@ -2,7 +2,7 @@
  'use strict';
 
  const scenario = new URLSearchParams(location.search).get('scenario') || 'default';
- const key = 'confideline-shared-agent-schedule-20261112-v2';
+ const key = 'confideline-shared-agent-schedule-20261112-v2' + (['active-session','client-conflict'].includes(scenario) ? '-' + scenario + '-20261113a' : '');
  const partnerSample = scenario.startsWith('partner195');
  const noProfiles = scenario.startsWith('partner-moderator');
  const otherView = new URLSearchParams(location.search).get('demoAgent') === 'kristy';
@@ -135,7 +135,13 @@
   const interests = defaultInterests().map(item=>({...item,date:today()}));
   const otherProfile={id:'solara',name:'Solara Ortiz',username:'SolaraOrtiz',userId:103,assignment:16};
   const otherAgent={agent:clone(agent),profiles:[otherProfile],entries:[{id:101,client:'Анна Д.',profile:'solara',assignment:16,date:firstDate,time:'11:00',state:'confirmed',advancePaid:true,paymentMode:'after-confirmation',acceptedPrice:10,deadline:'Встреча подтверждена',history:['Заявка подтверждена.']}],interests:[],firstDate,paymentMode:'after-confirmation'};
-  return {agent, profiles, entries, interests, firstDate, paymentMode, otherAgent};
+  let liveSession = null;
+  if (scenario === 'active-session') {
+   liveSession = {profile:'alisa', status:'active', active:true, provider:'partner195'};
+   entries.push({id:10,client:'Мария Л.',profile:'alisa',date:nextDate,time:'12:00',state:'confirmed',deadline:'Встреча подтверждена',history:['Встреча подтверждена.'],paymentMode:'after-confirmation',acceptedPrice:12,advancePaid:true});
+  }
+  if (scenario === 'client-conflict') entries.push({id:9,client:'Анна С.',profile:'alisa',date:today(),time:now().slice(11,16),state:'confirmed',deadline:'Встреча подтверждена',history:['Встреча подтверждена.'],paymentMode:'after-confirmation',acceptedPrice:12,advancePaid:true,advanceAmount:36,previewClient:true,delayed:true});
+  return {agent, profiles, entries, interests, firstDate, paymentMode, otherAgent, liveSession};
  }
 
  let fallback;
@@ -199,7 +205,7 @@
  }
  function occupied(entries,date,start,ignoreId) {
   const matches=(day,at)=>day===date&&overlaps(start,start+slotLength,minutes(at),minutes(at)+slotLength);
-  return entries.filter(booking => booking.id !== ignoreId && active(booking) &&
+  return entries.filter(booking => booking.id !== ignoreId && active(booking) && !booking.unassigned &&
    (matches(booking.date,booking.time) || (booking.proposal?.holdsSlot && matches(booking.proposal.date,booking.proposal.time))));
  }
  function alternatives(state,booking,date) {
@@ -260,7 +266,7 @@
   const meetingAt = atTime(booking.date,booking.time);
   if (meetingAt <= Date.now()) {
    if (booking.state !== 'confirmed') return [];
-   const result = booking.noShowEligible && Date.now() >= meetingAt + 10 * 60 * 1000 ? ['no-show'] : [];
+   const result = booking.noShowEligible && !booking.delayed && Date.now() >= meetingAt + 10 * 60 * 1000 ? ['no-show'] : [];
    if (!booking.proposal?.acceptedAt) result.push(booking.proposal ? 'withdraw' : 'reschedule');
    return result;
   }
@@ -386,12 +392,15 @@
   const createdIso=today(),created=new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'short',year:'numeric'}).format(parse(createdIso));
   const previous=(state.formerProfiles||[]).slice().reverse().find(p=>p.id===profile.id);
   const restoredPrice=previous?.price===undefined?{}:{price:previous.price};
-  state.profiles.push({...profile,...restoredPrice,assignment:id,previewOnly:true,created,createdIso});write(state);return {state};
+  state.profiles.push({...profile,...restoredPrice,assignment:id,previewOnly:true,created,createdIso});
+  state.entries.filter(b=>b.profile===profile.id&&b.unassigned&&active(b)).forEach(b=>{b.unassigned=false;b.assignment=id;b.history.push('Анкета вновь назначена агенту.');});
+  write(state);return {state};
  }
  function removeProfile(id) {
   const state=read();
   const profile=state.profiles.find(p=>p.id===id);
   if(!profile)return {error:'Анкета уже не назначена. Обновите список.'};
+  if(hasLiveSession(state,id))return {error:'По этой анкете идёт консультация. Снимите назначение после её завершения.'};
   if(state.entries.some(b=>b.profile===id&&active(b)))return {error:'У анкеты есть активные заявки или записи. Сначала рассмотрите их.'};
   state.formerProfiles ||= [];
   const former=state.formerProfiles.filter(item=>item.id===id);
@@ -414,7 +423,7 @@
    return times.filter(t=>occupied(target.entries,t.date,minutes(t.time)).length).map(t=>({id:b.id,client:b.client,...t}));
   });
   const scheduleIssues=scheduleConflicts(activeEntries,target.agent,profile,id);
-  const live=Boolean(state.liveSession?.profile===id&&state.liveSession?.active);
+  const live=hasLiveSession(state,id);
   return {activeEntries,conflicts,scheduleIssues,live};
  }
  function transferProfile(id,targetId) {
@@ -439,6 +448,37 @@
   settleAcceptedProposals(state,at);
   settleAcceptedProposals(target,at);
   writeRoot(root);return {state,conflicts:check.conflicts,scheduleIssues:check.scheduleIssues};
+ }
+ function hasLiveSession(state,id) {
+  const session=state.liveSession;
+  return Boolean(session && session.profile===id && (session.active || ['active','trial','paused','reconnecting'].includes(session.status)));
+ }
+ function emergencyRemove(id,reason) {
+  const state=read(),profile=state.profiles.find(p=>p.id===id);
+  if(!profile || !hasLiveSession(state,id))return {error:'Состояние консультации изменилось. Проверьте анкету.'};
+  if(!reason.trim())return {error:'Укажите причину срочного отзыва доступа.'};
+  const session=state.liveSession;
+  session.active=false;session.status='stopped';session.stoppedAt=Date.now();session.reason=reason.trim();
+  state.formerProfiles ||= [];
+  state.formerProfiles.push({...clone(profile),bookingIds:state.entries.filter(b=>b.profile===id).map(b=>b.id)});
+  state.profiles=state.profiles.filter(p=>p.id!==id);
+  state.entries.filter(b=>b.profile===id&&active(b)).forEach(b=>{b.unassigned=true;b.history.push('Назначение снято. Запись сохранена для рассмотрения.');});
+  state.audit ||= [];state.audit.push({event:'emergency-unassignment',profile:id,provider:session.provider,at:session.stoppedAt,reason:session.reason,financialStatus:'review'});
+  write(state);return {state};
+ }
+ function clientDelayAction(id,action,values={}) {
+  const state=read(),booking=state.entries.find(b=>b.id===id&&b.previewClient&&b.delayed&&b.state==='confirmed');
+  if(!booking)return {error:'Состояние встречи изменилось. Откройте запись ещё раз.'};
+  if(action==='wait') {booking.clientChoice='wait';booking.clientSuggestion=null;booking.history.push('Клиент выбрал ожидание.');}
+  else if(action==='reschedule') {
+   const {date,time:next}=values,profile=state.profiles.find(p=>p.id===booking.profile);
+   if(!profile||!date||!next||atTime(date,next)<=Date.now()||availability(state.agent,null,date,minutes(next))||occupied(state.entries,date,minutes(next),booking.id).length)return {error:'Это время уже недоступно. Выберите другое.'};
+   booking.clientChoice='reschedule';booking.clientSuggestion={date,time:next};booking.history.push('Клиент предложил другое время: '+date+' '+next+'.');
+  } else if(action==='cancel') {
+   booking.state='cancelled';booking.clientChoice='cancel';booking.delayed=false;booking.clientSuggestion=null;booking.proposal=null;
+   booking.refundStatus=booking.advancePaid?'processing':'none';booking.history.push('Клиент отменил задержанную встречу.');
+  } else return {error:'Выберите действие.'};
+  write(state);return {state,booking};
  }
  function addCity(id,city) {const state=read(),p=state.profiles.find(item=>item.id===id);if(!p)return {error:'Анкета не найдена.'};p.cities ||= p.city?[p.city]:[];if(p.cities.includes(city))return {error:'Город уже добавлен.'};p.cities.push(city);p.city ||= city;write(state);return {state};}
  function savePrice(profileId, value) {
@@ -469,5 +509,5 @@
   const query=new URLSearchParams();if(scenario)query.set('scenario',scenario);if(otherView)query.set('demoAgent','kristy');
   return page + (query.toString()?'?'+query.toString():'') + '#' + hash;
  }
- window.BookingPreview = {expertId,partnerName,otherView,slotLength,labels,now,today,addDays,minutes,time,clone,same,active,visibleStatus,holdDescription,proposalDeadline,proposalDescription,needsOutcomeCheck,effective,availability,occupied,alternatives,dayRows,calendarEvents,calendarBookings,scheduleConflicts,actions,read,watch,perform,answerReschedule,saveSchedule,savePrice,addProfile,removeProfile,inspectTransfer,transferProfile,addCity,defaultInterests,deadline,requestBooking,cancelOwnRequest,link};
+ window.BookingPreview = {expertId,partnerName,otherView,slotLength,labels,now,today,addDays,minutes,time,clone,same,active,visibleStatus,holdDescription,proposalDeadline,proposalDescription,needsOutcomeCheck,effective,availability,occupied,alternatives,dayRows,calendarEvents,calendarBookings,scheduleConflicts,actions,read,watch,perform,answerReschedule,saveSchedule,savePrice,addProfile,removeProfile,hasLiveSession,emergencyRemove,clientDelayAction,inspectTransfer,transferProfile,addCity,defaultInterests,deadline,requestBooking,cancelOwnRequest,link};
 })();

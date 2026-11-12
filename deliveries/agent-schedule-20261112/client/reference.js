@@ -71,6 +71,7 @@ let monthIndex = 0;
 let selectedInstant = null;
 let bookingProfile = 'alisa';
 let currentBookingId = null;
+let movingBookingId = null;
 let displayedQuote = null;
 let slotIndex = new Map();
 let subscription = false;
@@ -122,7 +123,8 @@ function updateCardLabels(state) {
   for (const button of root.querySelectorAll('[data-open="booking"][data-profile-id]')) {
     const profile = state.profiles.find(item => item.id === button.dataset.profileId);
     button.hidden = !profile;
-    setCardActionLabel('booking', ownBooking(state, button.dataset.profileId) ? 'Посмотреть заявку' : 'Забронировать время', button.dataset.profileId);
+    const booking=ownBooking(state,button.dataset.profileId);
+    setCardActionLabel('booking', booking ? (booking.state==='confirmed'?'Посмотреть запись':'Посмотреть заявку') : 'Забронировать время', button.dataset.profileId);
   }
 }
 function buildSlots() {
@@ -226,20 +228,26 @@ function updateBookingReview() {
 function showBooking() {
   const state = model.read();
   const profile = state.profiles.find(item => item.id === bookingProfile);
-  const booking = ownBooking(state, bookingProfile);
+  const booking = ownBooking(state, bookingProfile) || state.entries.find(item=>item.id===currentBookingId&&item.previewClient&&item.profile===bookingProfile&&item.state==='cancelled');
   currentBookingId = booking?.id ?? null;
+  movingBookingId = null;
+  find('#booking-title').textContent = booking ? 'Ваша запись' : 'Забронировать время';
   find('#booking-profile-name').textContent = profile?.name || 'Эксперт';
   find('#booking-price').textContent = (profile?.price ?? 10) + ' кредитов/мин';
   find('#booking-payment').textContent = state.paymentMode === 'after-confirmation' ? 'после подтверждения — аванс за 3 минуты, на оплату 30 минут' : 'оплата с начала сеанса';
   if (!booking) displayedQuote = {price:profile?.price ?? 10, mode:state.paymentMode};
   bookingForm.hidden = Boolean(booking);
   find('#booking-result').hidden = !booking;
+  find('#booking-delay-options').hidden = !booking?.delayed || booking.state!=='confirmed';
+  find('#booking-delay-cancel-confirm').hidden = true;
+  find('#booking-form [type=submit]').textContent = 'Отправить заявку';
   if (booking) {
-    find('#booking-result h3').textContent = ({pending:'Ожидает подтверждения', processing:'Ожидает оплаты', confirmed:'Запись подтверждена'})[booking.state] || model.labels[booking.state];
+    find('#booking-result h3').textContent = booking.delayed ? 'Начало встречи задерживается' : ({pending:'Ожидает подтверждения', processing:'Ожидает оплаты', confirmed:'Запись подтверждена',cancelled:'Встреча отменена'})[booking.state] || model.labels[booking.state];
     find('#booking-result-time').textContent = (profile?.name || 'Эксперт') + ' · ' + dateLabel(bookingInstant(booking)) + ' · ' + zoneLabel();
-    find('#booking-result-due').textContent = booking.state === 'pending' ? 'Агент ответит до ' + dateLabel(new Date(booking.deadlineAt)) + '.' : booking.deadline;
+    find('#booking-result-due').textContent = booking.state === 'pending' ? 'Ответ до ' + dateLabel(new Date(booking.deadlineAt)) + '.' : booking.state==='cancelled' ? (booking.refundStatus==='processing'?'Возврат неиспользованного аванса в обработке.':'Дополнительных списаний нет.') : booking.deadline;
     find('#booking-result-price').textContent = booking.acceptedPrice + ' кредитов за минуту.';
     find('#booking-cancel-request').hidden = booking.state !== 'pending';
+    if(booking.delayed) find('#booking-delay-message').textContent = booking.clientChoice==='wait' ? 'Вы решили подождать. Сообщим, когда эксперт сможет начать. Время ожидания не оплачивается.' : booking.clientSuggestion ? 'Ваше предложение отправлено. Сообщим, когда время будет подтверждено. Прежняя цена сохранится.' : 'Эксперт сможет подключиться позже. Вы можете подождать, выбрать другое время или отменить встречу. Время ожидания не оплачивается; цена останется прежней.';
   } else {
     buildSlots();
     if (!slotsForDay(selectedDay).length) {
@@ -292,7 +300,7 @@ root.querySelectorAll('[data-open]').forEach(button => button.addEventListener('
   event.stopPropagation();
   trigger = button;
   const dialog = document.getElementById(button.dataset.open);
-  if (dialog.id === 'booking') { bookingProfile = button.dataset.profileId; selectedInstant = null; find('#booking-error').hidden = true; showBooking(); }
+  if (dialog.id === 'booking') { bookingProfile = button.dataset.profileId; selectedInstant = null; currentBookingId=null; movingBookingId=null; find('#booking-error').hidden = true; showBooking(); }
   else showWait();
   dialog.showModal();
   dialog.querySelector('.modal-title').focus();
@@ -347,7 +355,7 @@ zone.addEventListener('change', () => {
   }
   renderDays();
   renderTimes();
-  if (currentBookingId) showBooking();
+  if (currentBookingId && !movingBookingId) showBooking();
 });
 timeList.addEventListener('change', event => {
   selectedInstant = event.target.value;
@@ -355,6 +363,12 @@ timeList.addEventListener('change', event => {
 });
 bookingForm.addEventListener('submit', event => {
   event.preventDefault();
+  if(movingBookingId && selectedInstant){
+    const stamp=model.now(new Date(selectedInstant).getTime());
+    const result=model.clientDelayAction(movingBookingId,'reschedule',{date:stamp.slice(0,10),time:stamp.slice(11,16)});
+    if(result.error){find('#booking-error').textContent=result.error;find('#booking-error').hidden=false;buildSlots();renderDays();renderTimes();return;}
+    movingBookingId=null;find('#booking-error').hidden=true;showBooking();find('#booking-result h3').focus();return;
+  }
   if (!selectedInstant || currentBookingId) return;
   const current = model.read();
   const profile = current.profiles.find(item => item.id === bookingProfile);
@@ -390,10 +404,36 @@ find('#booking-cancel-request').addEventListener('click', () => {
   updateCardLabels(result.state);
   find('#booking').close();
 });
+find('#booking-delay-wait').addEventListener('click',()=>{
+  const result=model.clientDelayAction(currentBookingId,'wait');
+  if(!result.error)showBooking();else find('#booking-delay-message').textContent=result.error;
+});
+find('#booking-delay-move').addEventListener('click',()=>{
+  movingBookingId=currentBookingId;selectedInstant=null;
+  const booking=model.read().entries.find(item=>item.id===currentBookingId);
+  find('#booking-title').textContent='Выберите другое время';
+  find('#booking-result').hidden=true;bookingForm.hidden=false;
+  find('#booking-price').textContent=(booking?.acceptedPrice??0)+' кредитов/мин';
+  find('#booking-payment').textContent=booking?.advancePaid?'предоплата сохранится':'оплата по прежним условиям';
+  find('#booking-form [type=submit]').textContent='Предложить время';
+  buildSlots();renderDays();renderTimes();find('#booking-title').focus();
+});
+find('#booking-delay-cancel').addEventListener('click',()=>{
+  const b=model.read().entries.find(x=>x.id===currentBookingId);
+  find('#booking-delay-options').hidden=true;find('#booking-delay-cancel-confirm').hidden=false;
+  find('#booking-delay-cancel-copy').textContent=b?.advancePaid?'Отменить встречу? Неиспользованный аванс вернётся на ваш баланс.':'Отменить встречу? Дополнительных списаний не будет.';
+  find('#booking-delay-cancel-back').focus();
+});
+find('#booking-delay-cancel-back').addEventListener('click',()=>{showBooking();find('#booking-delay-cancel').focus();});
+find('#booking-delay-cancel-confirm-button').addEventListener('click',()=>{
+  const result=model.clientDelayAction(currentBookingId,'cancel');
+  if(result.error){find('#booking-delay-cancel-copy').textContent=result.error;return;}
+  showBooking();updateCardLabels(result.state);find('#booking-result h3').focus();
+});
 model.watch(state => {
   updateCardLabels(state);
   if (find('#booking').open) {
-    if (currentBookingId) showBooking();
+    if (currentBookingId && !movingBookingId) showBooking();
     else { buildSlots(); renderDays(); renderTimes(); }
   }
 });
