@@ -2,7 +2,7 @@
  'use strict';
 
  const scenario = new URLSearchParams(location.search).get('scenario') || 'default';
- const key = 'confideline-shared-agent-schedule-20261112-v2' + (['active-session','client-conflict'].includes(scenario) ? '-' + scenario + '-20261113a' : '');
+ const key = 'confideline-shared-agent-schedule-20261112-v2' + (['active-session','client-conflict'].includes(scenario) ? '-' + scenario + '-20261113b' : '');
  const partnerSample = scenario.startsWith('partner195');
  const noProfiles = scenario.startsWith('partner-moderator');
  const otherView = new URLSearchParams(location.search).get('demoAgent') === 'kristy';
@@ -476,7 +476,11 @@
    booking.clientChoice='reschedule';booking.clientSuggestion={date,time:next};booking.history.push('Клиент предложил другое время: '+date+' '+next+'.');
   } else if(action==='cancel') {
    booking.state='cancelled';booking.clientChoice='cancel';booking.delayed=false;booking.clientSuggestion=null;booking.proposal=null;
-   booking.refundStatus=booking.advancePaid?'processing':'none';booking.history.push('Клиент отменил задержанную встречу.');
+   if(booking.advancePaid && Number.isFinite(booking.advanceAmount)){
+    booking.refundStatus='complete';booking.refundAmount=booking.advanceAmount;
+    state.previewBalance=(state.previewBalance||0)+booking.refundAmount;
+   }else booking.refundStatus=booking.advancePaid?'processing':'none';
+   booking.history.push('Клиент отменил задержанную встречу.');
   } else return {error:'Выберите действие.'};
   write(state);return {state,booking};
  }

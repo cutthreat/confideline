@@ -120,6 +120,7 @@ const dateInZone = (instant, timeZone) => new Intl.DateTimeFormat('sv-SE', {time
 const bookingInstant = booking => new Date(booking.date + 'T' + booking.time + ':00+03:00');
 const ownBooking = (state, profileId) => state.entries.find(item => item.previewClient && item.profile === profileId && model.active(item));
 function updateCardLabels(state) {
+  if(Number.isFinite(state.previewBalance))find('#user-balance-in-header').textContent=state.previewBalance.toFixed(2);
   for (const button of root.querySelectorAll('[data-open="booking"][data-profile-id]')) {
     const profile = state.profiles.find(item => item.id === button.dataset.profileId);
     button.hidden = !profile;
@@ -244,7 +245,7 @@ function showBooking() {
   if (booking) {
     find('#booking-result h3').textContent = booking.delayed ? 'Начало встречи задерживается' : ({pending:'Ожидает подтверждения', processing:'Ожидает оплаты', confirmed:'Запись подтверждена',cancelled:'Встреча отменена'})[booking.state] || model.labels[booking.state];
     find('#booking-result-time').textContent = (profile?.name || 'Эксперт') + ' · ' + dateLabel(bookingInstant(booking)) + ' · ' + zoneLabel();
-    find('#booking-result-due').textContent = booking.state === 'pending' ? 'Ответ до ' + dateLabel(new Date(booking.deadlineAt)) + '.' : booking.state==='cancelled' ? (booking.refundStatus==='processing'?'Возврат неиспользованного аванса в обработке.':'Дополнительных списаний нет.') : booking.deadline;
+    find('#booking-result-due').textContent = booking.state === 'pending' ? 'Ответ до ' + dateLabel(new Date(booking.deadlineAt)) + '.' : booking.state==='cancelled' ? (booking.refundStatus==='complete'?'На ваш баланс возвращено '+booking.refundAmount+' кредитов.':booking.refundStatus==='processing'?'Возврат неиспользованного аванса в обработке.':'Дополнительных списаний нет.') : booking.deadline;
     find('#booking-result-price').textContent = booking.acceptedPrice + ' кредитов за минуту.';
     find('#booking-cancel-request').hidden = booking.state !== 'pending';
     if(booking.delayed) find('#booking-delay-message').textContent = booking.clientChoice==='wait' ? 'Вы решили подождать. Сообщим, когда эксперт сможет начать. Время ожидания не оплачивается.' : booking.clientSuggestion ? 'Ваше предложение отправлено. Сообщим, когда время будет подтверждено. Прежняя цена сохранится.' : 'Эксперт сможет подключиться позже. Вы можете подождать, выбрать другое время или отменить встречу. Время ожидания не оплачивается; цена останется прежней.';
