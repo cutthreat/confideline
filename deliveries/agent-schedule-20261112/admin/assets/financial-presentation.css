@@ -1,0 +1,70 @@
+/* Host integration after the byte-preserved customer files. */
+.finance-heading-tooltip {
+    position: fixed; z-index: 1100; max-width: min(320px, calc(100vw - 16px));
+    padding: 7px 10px; color: #fff; background: #26384a; border-radius: 4px;
+    font: 12px/1.45 "Segoe UI", Arial, sans-serif; overflow-wrap: anywhere;
+    box-shadow: 0 2px 7px rgb(0 0 0 / 15%);
+}
+.finance-page th[data-finance-heading]:focus-visible { outline: 2px solid #245b9e; outline-offset: -2px; }
+/* Only the personal payout screens own their inner heading. The common shell is unchanged. */
+.content-wrapper:has(> .content > #cl-my-payouts) > .content-header { display: none; }
+.content-wrapper > .content:has(> #cl-my-payouts) { padding: 0; }
+#cl-my-payouts { padding: 0; }
+#cl-my-payouts .cl-payout-heading { margin-bottom: 0; }
+#cl-my-payouts .cl-payout-heading a { text-decoration: none; }
+#cl-my-payouts .cl-panel-heading .finance-toolbar { padding: 0; border: 0; background: transparent; }
+#cl-my-payouts .cl-panel-heading .summary { padding: 0; margin: 4px 0 0; border: 0; background: transparent; }
+#cl-my-payouts .finance-toolbar-header .finance-reset { font-size: 12px; background: #fff; border-color: #c8d2df; color: #304359; }
+#cl-my-payouts .cl-panel-footer .finance-toolbar { padding: 0; border: 0; background: transparent; }
+#cl-my-payouts .cl-panel-footer .pagination { margin: 0; }
+#cl-my-payouts .form-group { margin-bottom: 14px; }
+#cl-my-payouts .cl-payout-method { margin: 14px 0 8px; }
+#cl-my-payouts .cl-payout-method > label { display: block; margin-bottom: 6px; }
+#cl-my-payouts .cl-payout-method > .help-block:empty { display: none; }
+#cl-my-payouts .cl-request-controls { align-items: stretch; margin: 0; }
+#cl-my-payouts .cl-request-controls > .form-control { flex: 1; max-width: 340px; min-width: 0; }
+#cl-my-payouts .cl-request-controls > button { flex-shrink: 0; }
+#cl-my-payouts .cl-recipient-grid { align-items: start; }
+#cl-my-payouts .cl-provider .checkbox { margin: 0 0 12px; }
+#cl-my-payouts .cl-provider .checkbox label { font-weight: 400; min-height: 32px; }
+#cl-my-payouts .help-block { white-space: normal; font-size: 12px; margin-bottom: 0; }
+#cl-my-payouts .has-error .help-block { color: #9e3936; }
+#cl-my-payouts .has-error .form-control { border-color: #9e3936; }
+#cl-my-payouts .error-summary:empty { display: none; }
+#cl-my-payouts .cl-panel-footer .btn-danger { color: #fff; background: #b34843; border-color: #b34843; }
+#cl-my-payouts .cl-timeline li > div { min-width: 0; overflow-wrap: anywhere; }
+#cl-my-payouts .cl-timeline time { color: #65788d; white-space: nowrap; }
+#cl-my-payouts .cl-timeline p { margin: 3px 0 0; }
+#cl-my-payouts .cl-cancel-body { padding: 16px 20px; }
+/* GridView owns the div ID. Its real inner table receives the supplied r8 geometry. */
+#cl-my-payouts #finance-my-payouts-grid { width: 100%; min-width: 0; max-width: none; table-layout: auto; }
+#cl-my-payouts #finance-my-payouts-grid > .cl-table-scroll > table.finance-table { width: 100%; min-width: 984px; table-layout: fixed; }
+#cl-my-payouts #finance-my-payouts-grid > .cl-table-scroll > table.finance-table > thead > tr:first-child > th { box-sizing: border-box; }
+/* Let the variable-length status use spare width while IDs, amounts and dates stay compact. */
+#cl-my-payouts #finance-my-payouts-grid th[data-field="status"] { width: auto; }
+#cl-my-payouts #finance-my-payouts-grid .finance-number { text-align: right; }
+#cl-my-payouts #finance-my-payouts-grid .cl-table-scroll { max-width: 100%; }
+#cl-my-payouts #finance-my-payouts-grid .filters > td { vertical-align: middle; }
+#cl-my-payouts #finance-my-payouts-grid .finance-date-filter { min-width: 0; }
+#cl-my-payouts #finance-my-payouts-grid .finance-date-filter .form-control { padding-left: 28px; padding-right: 25px; }
+#cl-my-payouts #finance-my-payouts-grid .finance-date-filter .finance-date-clear { width: 22px; }
+#cl-my-payouts .cl-icon-action { text-decoration: none; }
+@media(max-width:767px) {
+    #cl-my-payouts .cl-request-controls > .form-control { max-width: none; }
+    #cl-my-payouts .cl-provider .checkbox label { min-height: 44px; }
+    #cl-my-payouts #finance-my-payouts-grid > .cl-table-scroll > table.finance-table { width: 100%; min-width: 996px; }
+    #cl-my-payouts .cl-timeline time { white-space: normal; }
+}
+
+#cl-my-payouts .cl-panel-heading.finance-table-header { background: transparent; }
+
+#finance-payouts-grid tbody td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; }
+
+/* Fill the admin content width while retaining the supplied compact owner column. */
+#finance-payouts-grid { width: 100%; max-width: none; }
+#finance-payouts-grid th:has(> a[data-sort="user_id"]) { width: 168px; }
+#finance-payouts-grid th:nth-child(n+6):nth-child(-n+8) { width: auto; }
+
+.finance-my-balance .balance-page-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 16px; margin-bottom: 12px; }
+.finance-my-balance #finance-payout-unavailable { flex: 1 1 320px; min-width: 0; margin: 0; }
+.finance-my-balance .balance-header-actions { flex: 0 1 auto; min-width: 0; }

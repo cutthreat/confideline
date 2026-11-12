@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; frame-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<title>Confideline · Запись и ожидание</title>
+<link rel="stylesheet" href="assets/css/app.min.css">
+<link rel="stylesheet" href="assets/css/layout-change.css">
+<link rel="stylesheet" href="assets/css/font-awesome.min.css">
+<link rel="stylesheet" href="expert-card.css">
+<link rel="stylesheet" href="expert-card-demo.css">
+<link rel="stylesheet" href="reference.css?v=6">
+<script src="filter-model.js" defer></script>
+<script src="filter-fixtures.js" defer></script>
+<script src="expert-card-demo.js" defer></script>
+<script src="../admin/booking-model.js" defer></script>
+<script src="reference.js?v=shared1" defer></script>
+<script src="expert-card.js" defer></script>
+</head>
+<body class="ltr body-directory-index light">
+<div class="page client-reference">
+  <div class="page-main">
+    <div class="header py-2">
+<div class="container">
+<div class="d-flex">
+<span class="header-brand flex-shrink-0">
+<img alt="YouDate" class="header-brand-img" src="assets/auth-images/b1f711ffe390d727.png"/> </span>
+<div class="d-flex align-items-center order-lg-2 ml-auto">
+<span class="mr-3">Справка</span> <div class="dropdown dropdown-notifications d-flex">
+<span class="nav-link py-2 icon">
+<i class="fe fe-bell"></i> <span class="nav-unread hidden"></span>
+</span>
+
+</div>
+<div class="nav-item d-none d-sm-block">
+<span class="btn btn-outline-primary btn-sm" title="Баланс">
+<i class="fa fa-money mr-2"></i> <span class="user-balance" id="user-balance-in-header">0.00</span>
+</span>
+</div>
+<div class="dropdown">
+<span class="nav-link pr-0 leading-none">
+<span class="avatar"></span>
+<span class="ml-2 d-none d-lg-block">
+<span class="text-default">Анна С.</span>
+
+</span>
+</span>
+
+</div>
+<button aria-controls="header-navigation" aria-expanded="false" aria-label="Навигация" class="header-toggler d-lg-none ml-3 ml-lg-0 reference-nav-toggle" type="button">
+<span class="header-toggler-icon"></span>
+</button>
+</div>
+</div>
+</div>
+</div><div class="header collapse d-md-block p-0" id="header-navigation">
+<div class="container">
+<div class="row align-items-center">
+<div class="col-lg order-lg-first">
+<ul class="nav nav-tabs border-0 d-flex flex-row justify-content-center justify-content-sm-start"><li class="nav-item"><span class="nav-link d-flex flex-column flex-md-row">
+<i class="fe fe-home icon"></i>
+<span class="label">Главная </span>
+</span></li>
+<li class="nav-item active"><span aria-current="page" class="nav-link d-flex flex-column flex-md-row active">
+<i class="fe fe-user icon"></i>
+<span class="label">Обзор </span>
+</span></li>
+<li class="nav-item"><span class="nav-link d-flex flex-column flex-md-row">
+<i class="fe fe-grid icon"></i>
+<span class="label">Группы </span>
+</span></li>
+<li class="nav-item"><span class="nav-link d-flex flex-column flex-md-row">
+<i class="fe fe-heart icon"></i>
+<span class="label">Контакты </span>
+</span></li>
+<li class="nav-item"><span class="nav-link d-flex flex-column flex-md-row">
+<i class="fe fe-mail icon"></i>
+<span class="label">Сообщения </span>
+</span></li>
+<li class="nav-item"><span class="nav-link d-flex flex-column flex-md-row">
+<i class="fe fe-map icon"></i>
+<span class="label">Страны </span>
+</span></li></ul> </div>
+</div>
+</div>
+</div>
+    <main class="content my-3 my-md-5 cl-catalog">
+      <div class="container">
+        <div class="catalog-heading">
+          <h1 class="page-title">Найти людей</h1>
+        </div>
+        <section class="cl-catalog-results" aria-label="Эксперты">
+          <div class="row row-cards row-deck cl-expert-grid" id="catalog-grid" tabindex="0" role="group" aria-label="Эксперты"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <dialog id="booking" class="reference-dialog" aria-labelledby="booking-title">
+    <header class="modal-header">
+      <div><h2 class="modal-title" id="booking-title" tabindex="-1">Забронировать время</h2><p class="text-muted" id="booking-profile-name"></p></div>
+      <button type="button" class="dialog-close" data-close aria-label="Закрыть">×</button>
+    </header>
+    <div class="modal-body booking-body">
+      <form id="booking-form">
+        <div class="booking-inputs">
+        <div class="booking-controls">
+          <label for="booking-zone">Часовой пояс<select id="booking-zone" class="form-control">
+            <option value="Europe/Minsk">Минск (UTC+3)</option>
+            <option value="Europe/Warsaw">Варшава (UTC+1)</option>
+            <option value="Europe/Lisbon">Лиссабон (UTC+0)</option>
+          </select></label>
+        </div>
+        <section class="booking-calendar" aria-labelledby="booking-month">
+          <div class="calendar-header">
+            <button type="button" class="calendar-arrow" id="month-previous" aria-label="Предыдущий месяц">‹</button>
+            <h3 id="booking-month" aria-live="polite"></h3>
+            <button type="button" class="calendar-arrow" id="month-next" aria-label="Следующий месяц">›</button>
+          </div>
+          <table aria-labelledby="booking-month" class="calendar-table">
+            <thead><tr><th scope="col" aria-label="Понедельник">Пн</th><th scope="col" aria-label="Вторник">Вт</th><th scope="col" aria-label="Среда">Ср</th><th scope="col" aria-label="Четверг">Чт</th><th scope="col" aria-label="Пятница">Пт</th><th scope="col" aria-label="Суббота">Сб</th><th scope="col" aria-label="Воскресенье">Вс</th></tr></thead>
+            <tbody id="booking-days"></tbody>
+          </table>
+          <p class="calendar-legend"><span class="calendar-key" aria-hidden="true"></span> Есть свободное время</p>
+        </section>
+        <fieldset class="choice-group"><legend>Время</legend><div id="booking-times" class="times"></div><p id="booking-empty" class="text-muted" role="status" hidden></p></fieldset>
+        <details class="booking-terms">
+          <summary>Условия записи</summary>
+          <p>Заявку сначала подтверждает агент. При отправке заявки средства не списываются.</p>
+          <p>Консультация может продолжаться, пока хватает кредитов и эксперт доступен. Если у эксперта есть следующая запись, текущую консультацию нужно завершить к её началу.</p>
+        </details>
+        </div>
+        <div class="booking-review">
+          <div class="price-box">
+            <p><strong id="booking-price"></strong> · <span id="booking-payment"></span></p>
+            <p id="booking-summary" role="status"></p><p id="booking-error" role="alert" hidden></p>
+          </div>
+          <div class="dialog-actions"><button type="button" class="btn btn-secondary" data-close>Отмена</button><button type="submit" class="btn btn-primary" disabled>Отправить заявку</button></div>
+        </div>
+      </form>
+      <div id="booking-result" hidden>
+        <h3 tabindex="-1">Ожидает подтверждения</h3>
+        <p id="booking-result-time"></p>
+        <p id="booking-result-due"></p>
+        <p id="booking-result-price"></p>
+        <div class="dialog-actions"><button type="button" class="btn btn-secondary" id="booking-cancel-request">Отменить заявку</button><button type="button" class="btn btn-primary" data-close>Понятно</button></div>
+      </div>
+    </div>
+  </dialog>
+  <dialog id="wait" class="reference-dialog wait-dialog" aria-labelledby="wait-title">
+    <header class="modal-header">
+      <div><h2 class="modal-title" id="wait-title" tabindex="-1">Уведомить, когда освободится?</h2><p class="text-muted">Вера Ланская</p></div>
+      <button type="button" class="dialog-close" data-close aria-label="Закрыть">×</button>
+    </header>
+    <div class="modal-body">
+      <div id="wait-form">
+        <p id="wait-description">Проверяем доступные способы уведомления…</p>
+        <p id="wait-channel-message" role="status"></p>
+        <p><a id="wait-settings" href="../settings-mockup/client-channels.html" target="_blank" rel="noopener noreferrer" hidden>Настройки уведомлений</a></p>
+        <div class="dialog-actions"><button type="button" class="btn btn-secondary" data-close>Не сейчас</button><button type="button" class="btn btn-primary" id="wait-confirm">Уведомить меня</button></div>
+      </div>
+      <div id="wait-active" hidden>
+        <p><strong>Ожидание активно</strong></p>
+        <p id="wait-until"></p>
+        <p id="wait-active-channel-message" role="status"></p>
+        <p><a id="wait-active-settings" href="../settings-mockup/client-channels.html" target="_blank" rel="noopener noreferrer" hidden>Настройки уведомлений</a></p>
+        <p>Подписку можно отменить до отправки уведомления.</p>
+        <div class="dialog-actions"><button type="button" class="btn btn-secondary" id="wait-cancel">Отменить ожидание</button><button type="button" class="btn btn-primary" data-close>Готово</button></div>
+      </div>
+      <div id="wait-cancelled" hidden>
+        <p>Ожидание отменено.</p>
+        <div class="dialog-actions"><button type="button" class="btn btn-primary" data-close>Готово</button></div>
+      </div>
+    </div>
+  </dialog>
+</div>
+</body>
+</html>
