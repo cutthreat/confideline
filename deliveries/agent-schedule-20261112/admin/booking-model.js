@@ -466,6 +466,7 @@
   state.audit ||= [];state.audit.push({event:'emergency-unassignment',profile:id,provider:session.provider,at:session.stoppedAt,reason:session.reason,financialStatus:'review'});
   write(state);return {state};
  }
+ function resetClientConflict() { if(scenario==='client-conflict') writeRoot(seed()); }
  function clientDelayAction(id,action,values={}) {
   const state=read(),booking=state.entries.find(b=>b.id===id&&b.previewClient&&b.delayed&&b.state==='confirmed');
   if(!booking)return {error:'Состояние встречи изменилось. Откройте запись ещё раз.'};
@@ -513,5 +514,5 @@
   const query=new URLSearchParams();if(scenario)query.set('scenario',scenario);if(otherView)query.set('demoAgent','kristy');
   return page + (query.toString()?'?'+query.toString():'') + '#' + hash;
  }
- window.BookingPreview = {expertId,partnerName,otherView,slotLength,labels,now,today,addDays,minutes,time,clone,same,active,visibleStatus,holdDescription,proposalDeadline,proposalDescription,needsOutcomeCheck,effective,availability,occupied,alternatives,dayRows,calendarEvents,calendarBookings,scheduleConflicts,actions,read,watch,perform,answerReschedule,saveSchedule,savePrice,addProfile,removeProfile,hasLiveSession,emergencyRemove,clientDelayAction,inspectTransfer,transferProfile,addCity,defaultInterests,deadline,requestBooking,cancelOwnRequest,link};
+ window.BookingPreview = {expertId,partnerName,otherView,slotLength,labels,now,today,addDays,minutes,time,clone,same,active,visibleStatus,holdDescription,proposalDeadline,proposalDescription,needsOutcomeCheck,effective,availability,occupied,alternatives,dayRows,calendarEvents,calendarBookings,scheduleConflicts,actions,read,watch,perform,answerReschedule,saveSchedule,savePrice,addProfile,removeProfile,hasLiveSession,emergencyRemove,clientDelayAction,resetClientConflict,inspectTransfer,transferProfile,addCity,defaultInterests,deadline,requestBooking,cancelOwnRequest,link};
 })();

@@ -1,6 +1,7 @@
 const root = document.querySelector('.client-reference');
 const find = selector => root.querySelector(selector);
 const model = window.BookingPreview;
+if (new URLSearchParams(location.search).get('scenario') === 'client-conflict') model.resetClientConflict();
 const cardActions = {
   offline: {dialog: 'booking', icon: 'fa-calendar-o', label: 'Забронировать время'},
   busy: {dialog: 'wait', icon: 'fa-bell-o', label: 'Уведомить, когда освободится'},
