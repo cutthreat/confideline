@@ -24,15 +24,10 @@
   $$('[data-sample-only]').forEach(el=>{el.classList.remove('text-success','text-warning');el.textContent='—';});
  }
  function sync(state=model.read()){data=state;bookings=data.entries.filter(b=>b.profile===expertId);}
- let selected=null,price=initialProfile.price==null?'':String(initialProfile.price),active=null,focusBefore=null,journalView='list',detailOrigin=null;
+ let selected=null,price=initialProfile.price==null?'':String(initialProfile.price),active=null,focusBefore=null;
  const showPrice=()=>{$$('[data-price]').forEach(el=>el.textContent=price===''?'Общий тариф сайта':Number(price)===0?'Платные консультации отключены':price+' кредитов / мин');$('#price-input').value=price;};
  showPrice();
  const dateText=x=>x.split('-').reverse().join('.');
- const iso=d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
- const parseDate=s=>{let [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d,12);};
- const addDays=(s,n)=>{let d=parseDate(s);d.setDate(d.getDate()+n);return iso(d);};
- const ruDate=s=>new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long',weekday:'short'}).format(parseDate(s));
- let journalDate=data.firstDate;
  function alternativeSlots(booking,date){
   sync();
   return model.alternatives(data,bookings.find(b=>b.id===booking.id),date).map(time=>({date,time}));
@@ -63,7 +58,7 @@
  function setFilterLayout(){ $('.journal-filter-panel').open=!compactFilters.matches; }
  compactFilters.addEventListener('change',setFilterLayout);setFilterLayout();
  function navigate(section){
-  selected=null;detailOrigin=null;$('#booking-detail').hidden=true;$('#booking-workspace').hidden=false;
+  selected=null;$('#booking-detail').hidden=true;$('#booking-workspace').hidden=false;
   if(location.hash!=='#'+section)history.pushState(null,'','#'+section);
   show(section);
   const heading=$('.expert-panel:not([hidden]) h2');
@@ -85,31 +80,6 @@
  function matching(b,filter,search){return (filter==='all'||model.visibleStatus(b)===filter||(filter==='cancelled'&&b.state==='declined'))&&b.client.toLocaleLowerCase().includes(search);}
  function bookingConflict(b){return model.scheduleConflicts([b],data.agent,assignedProfile(),expertId)[0];}
  function bookingTile(b,slot=null){const status=model.visibleStatus(b),hold=b.proposal?model.proposalDeadline(b):model.holdDescription(b),urgency=hold?'<span class="journal-due">'+esc(hold)+'</span>':'',shownTime=slot?.time||b.time,shownDate=slot?.date||b.date,conflict=bookingConflict(b),conflictText=conflict?(conflict.scheduleConflictOriginal&&conflict.scheduleConflictProposal?' · Конфликт обоих окон':conflict.scheduleConflictProposal?' · Конфликт предложенного времени':' · Конфликт графика'):'';return '<button type="button" class="journal-item" data-booking-action="details" data-id="'+b.id+'"><span class="journal-item-time">'+esc(shownTime)+'</span><span class="journal-item-main"><strong>'+esc(b.client)+'</strong><small>'+dateText(shownDate)+(slot?.proposed?' · Предложенное время':'')+' · '+esc(labels[status])+conflictText+'</small>'+urgency+'</span><span aria-hidden="true" class="journal-chevron">›</span></button>';}
- function calendarRender(items){
-  const container=$('#journal-calendar'),bar=$('#journal-date-bar');
-  bar.hidden=journalView==='list';container.hidden=journalView==='list';$('#booking-rows').hidden=journalView!=='list';
-  $$('#view-bookings [data-journal-view]').forEach(b=>{let on=b.dataset.journalView===journalView;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on));});
-  $('#journal-date').value=journalDate;if(journalView==='list')return;
-  if(journalView==='day'){
-   $('#journal-period').textContent=ruDate(journalDate);
-   const rows=model.dayRows(data,journalDate,expertId);
-   const body=rows.map(({time,end,booking,label,proposed})=>{
-    const content=booking?(items.includes(booking)?bookingTile(booking,{date:journalDate,time,proposed}):'<div class="agent-busy">'+(booking.profile===expertId?'Запись вне фильтра':'Агент занят')+'</div>'):'<span class="day-free">'+esc(label)+'</span>';
-    return '<div class="day-line"><span class="day-hour">'+time+(booking?'':'–'+end)+'</span><div class="day-content">'+content+'</div></div>';
-   }).join('');
-   const history=model.calendarEvents(items,journalDate).filter(slot=>!rows.some(row=>row.booking?.id===slot.booking.id&&Boolean(row.proposed)===slot.proposed)).map(slot=>bookingTile(slot.booking,slot)).join('');
-   container.innerHTML='<div class="day-schedule">'+(body||'<p class="journal-empty">У агента выходной.</p>')+history+'</div>';
-  } else {
-   let start=addDays(journalDate,-((parseDate(journalDate).getDay()+6)%7)),end=addDays(start,6);$('#journal-period').textContent=ruDate(start)+' — '+ruDate(end);
-   container.innerHTML='<div class="week-schedule">'+Array.from({length:7},(_,i)=>{
-    const date=addDays(start,i),events=model.calendarEvents(items,date);
-    const busy=model.calendarEvents(data.entries,date).filter(slot=>model.active(slot.booking)&&!items.includes(slot.booking))
-     .map(slot=>'<span class="agent-busy">'+esc(slot.time)+(slot.booking.profile===expertId?' · Запись вне фильтра':' · Агент занят')+'</span>');
-    const content=events.map(slot=>bookingTile(slot.booking,slot)).join('')+busy.join('');
-    return '<section class="week-day"><button type="button" class="week-heading" data-open-day="'+date+'">'+ruDate(date)+'</button>'+(content||'<span class="day-free">'+(model.effective(data.agent,date).enabled?'Нет записей':'У агента выходной')+'</span>')+'</section>';
-   }).join('')+'</div>';
-  }
- }
  function renderBookings(){
   sync();
   let filter=$('#booking-filter').value,search=$('#booking-search').value.trim().toLocaleLowerCase(),items=bookings.filter(b=>matching(b,filter,search));
@@ -120,12 +90,6 @@
   $$('#view-bookings [data-quick]').forEach(b=>{let on=b.dataset.quick===filter;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on));});
   $('#booking-count').textContent='Найдено: '+items.length;
   $('#booking-rows').innerHTML=items.length?items.map(bookingTile).join(''):'<div class="journal-empty">По выбранным условиям записей нет. Измените фильтры или дату.</div>';
-  calendarRender(items);
-  if(journalView!=='list'){
-   let start=journalView==='day'?journalDate:addDays(journalDate,-((parseDate(journalDate).getDay()+6)%7)),end=journalView==='day'?start:addDays(start,6);
-   let shown=items.filter(b=>(b.date>=start&&b.date<=end)||(b.proposal?.holdsSlot&&b.proposal.date>=start&&b.proposal.date<=end));
-   $('#booking-count').textContent='Записей в периоде: '+shown.length;
-  }
   if(selected)renderDetails(bookings.find(b=>b.id===selected));
  }
  function renderDetails(b){
@@ -136,7 +100,7 @@
   const waiting=b.state==='review'?'<p class="role-note">Передано ответственному сотруднику на проверку.</p>':b.proposal?'<p class="role-note">Предложено: '+dateText(b.proposal.date)+' · '+esc(b.proposal.time)+'. '+esc(model.proposalDescription(b))+'</p>':'';
   const outcome=model.needsOutcomeCheck(b)?'<p class="role-note">Время встречи наступило. Проверьте состояние консультации в чате.</p>':'';
   const conflict=bookingConflict(b),scheduleConflict=conflict?'<p class="role-note">'+(conflict.scheduleConflictOriginal?'Исходное время вне рабочего графика. ':'')+(conflict.scheduleConflictProposal?'Предложенное время вне рабочего графика. ':'')+'Выберите действие, чтобы решить конфликт.</p>':'';
-  el.innerHTML='<button class="journal-back" type="button" data-close-detail>‹ '+(detailOrigin==='schedule'?'К графику':journalView==='list'?'К списку':'К календарю')+'</button><div class="detail-heading"><div><span class="detail-kicker">Запись · '+esc(currentProfile().name)+'</span><h3>'+esc(b.client)+'</h3><p>'+dateText(b.date)+' · '+esc(b.time)+'</p></div><span class="status-pill state-'+esc(status)+'">'+esc(labels[status])+'</span></div><div class="detail-grid"><div><span>Срок / следующее действие</span><strong>'+esc(b.proposal?model.proposalDeadline(b):b.deadline)+'</strong></div><div><span>Ответственный агент</span><strong>'+esc(model.partnerName)+'</strong></div>'+price+'</div>'+scheduleConflict+waiting+outcome+'<div class="booking-actions detail-actions">'+actions(b)+'</div><details class="detail-history"><summary>История записи · '+b.history.length+'</summary><ul>'+b.history.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details>';
+  el.innerHTML='<button class="journal-back" type="button" data-close-detail>‹ К списку</button><div class="detail-heading"><div><span class="detail-kicker">Запись · '+esc(currentProfile().name)+'</span><h3>'+esc(b.client)+'</h3><p>'+dateText(b.date)+' · '+esc(b.time)+'</p></div><span class="status-pill state-'+esc(status)+'">'+esc(labels[status])+'</span></div><div class="detail-grid"><div><span>Срок / следующее действие</span><strong>'+esc(b.proposal?model.proposalDeadline(b):b.deadline)+'</strong></div><div><span>Ответственный агент</span><strong>'+esc(model.partnerName)+'</strong></div>'+price+'</div>'+scheduleConflict+waiting+outcome+'<div class="booking-actions detail-actions">'+actions(b)+'</div><details class="detail-history"><summary>История записи · '+b.history.length+'</summary><ul>'+b.history.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details>';
  }
  const dialog=$('#booking-dialog');
  function openDialog(b,action){
@@ -158,23 +122,18 @@
  function closeDialog(){dialog.close();if(focusBefore?.isConnected)focusBefore.focus();active=null;}
  root.addEventListener('click',e=>{
   let link=e.target.closest('[data-panel]');if(link){e.preventDefault();navigate(link.dataset.panel);return;}
-  let quick=e.target.closest('[data-quick]');if(quick){selected=null;$('#booking-detail').hidden=true;$('#booking-workspace').hidden=false;$('#booking-filter').value=quick.dataset.quick;$('#booking-search').value='';journalView='list';renderBookings();return;}
-  let view=e.target.closest('[data-journal-view]');if(view){journalView=view.dataset.journalView;renderBookings();return;}
-  let step=e.target.closest('[data-journal-step]');if(step){journalDate=addDays(journalDate,Number(step.dataset.journalStep)*(journalView==='week'?7:1));renderBookings();return;}
-  if(e.target.closest('[data-journal-today]')){journalDate=agentNow().slice(0,10);renderBookings();return;}
-  let day=e.target.closest('[data-open-day]');if(day){journalDate=day.dataset.openDay;journalView='day';renderBookings();return;}
+  let quick=e.target.closest('[data-quick]');if(quick){selected=null;$('#booking-detail').hidden=true;$('#booking-workspace').hidden=false;$('#booking-filter').value=quick.dataset.quick;$('#booking-search').value='';renderBookings();return;}
   if(e.target.closest('[data-close-detail]')){
    const previous=selected;selected=null;$('#booking-detail').hidden=true;$('#booking-workspace').hidden=false;
    renderBookings();
-   const origin=$((journalView==='list'?'#booking-rows ':'#journal-calendar ')+'[data-booking-action="details"][data-id="'+previous+'"]');
+   const origin=$('#booking-rows [data-booking-action="details"][data-id="'+previous+'"]');
    const filterTarget=$('.journal-filter-panel').open?$('#booking-filter'):$('.journal-filter-panel summary');
    (origin||filterTarget).focus();return;
   }
   let btn=e.target.closest('[data-booking-action]');if(!btn)return;let b=bookings.find(x=>x.id===Number(btn.dataset.id));if(!b)return;
-  if(btn.dataset.bookingAction==='details'){detailOrigin=null;selected=b.id;renderDetails(b);$('#booking-detail').scrollIntoView({block:'nearest'});$('#booking-detail [data-close-detail]').focus();}else openDialog(b,btn.dataset.bookingAction);
+  if(btn.dataset.bookingAction==='details'){selected=b.id;renderDetails(b);$('#booking-detail').scrollIntoView({block:'nearest'});$('#booking-detail [data-close-detail]').focus();}else openDialog(b,btn.dataset.bookingAction);
  });
  $('#booking-filter').addEventListener('change',renderBookings);$('#booking-search').addEventListener('input',renderBookings);
- $('#journal-date').addEventListener('change',e=>{if(e.target.value){journalDate=e.target.value;renderBookings();}});
  $('#journal-reset').addEventListener('click',()=>{$('#booking-filter').value='all';$('#booking-search').value='';renderBookings();});
  $('#dialog-close').addEventListener('click',closeDialog);$('#dialog-cancel').addEventListener('click',closeDialog);dialog.addEventListener('cancel',e=>{e.preventDefault();closeDialog();});
  $('#booking-action-form').addEventListener('submit',e=>{

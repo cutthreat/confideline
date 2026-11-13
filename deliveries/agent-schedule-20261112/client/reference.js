@@ -4,7 +4,7 @@ const model = window.BookingPreview;
 if (new URLSearchParams(location.search).get('scenario') === 'client-conflict') model.resetClientConflict();
 const cardActions = {
   offline: {dialog: 'booking', icon: 'fa-calendar-o', label: 'Забронировать время'},
-  busy: {dialog: 'wait', icon: 'fa-bell-o', label: 'Уведомить, когда освободится'},
+  busy: {dialog: 'wait', icon: 'fa-bell-o', label: 'Уведомить меня'},
 };
 const catalog = find('#catalog-grid');
 for (const profile of window.CatalogFilterFixtures) {
@@ -27,14 +27,6 @@ for (const profile of window.CatalogFilterFixtures) {
   label.textContent = action.label;
   button.append(icon, label, original.querySelector('.sr-only'));
   original.replaceWith(button);
-  if (profile.id === 'vera') {
-    const bookingButton = button.cloneNode(true);
-    bookingButton.dataset.open = 'booking';
-    bookingButton.setAttribute('aria-controls', 'booking');
-    bookingButton.querySelector('i').className = 'fa fa-calendar-o';
-    bookingButton.querySelector('[data-action-label]').textContent = 'Забронировать время';
-    button.insertAdjacentElement('afterend', bookingButton);
-  }
 }
 const setCardActionLabel = (dialog, label, profileId = null) => {
   const selector = '[data-open="' + dialog + '"]' + (profileId ? '[data-profile-id="' + profileId + '"]' : '') + ' [data-action-label]';
@@ -307,8 +299,22 @@ root.querySelectorAll('[data-open]').forEach(button => button.addEventListener('
   dialog.showModal();
   dialog.querySelector('.modal-title').focus();
 }));
-root.querySelectorAll('dialog').forEach(dialog => dialog.addEventListener('close', () => trigger?.focus()));
+root.querySelectorAll('dialog').forEach(dialog => dialog.addEventListener('close', () => {
+  if (!root.querySelector('dialog[open]')) trigger?.focus();
+}));
 root.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => button.closest('dialog').close()));
+find('#wait-booking').addEventListener('click', event => {
+  event.preventDefault();
+  bookingProfile = trigger?.dataset.profileId || 'vera';
+  selectedInstant = null;
+  currentBookingId = null;
+  movingBookingId = null;
+  find('#booking-error').hidden = true;
+  find('#wait').close();
+  showBooking();
+  find('#booking').showModal();
+  find('#booking .modal-title').focus();
+});
 
 function stepMonth(offset) {
   const target = monthIndex + offset;

@@ -9,5 +9,10 @@ window.CatalogFilterFixtures = [
     areas: ['mediums', 'clairvoyant'], topics: ['family', 'love'],
     rating: 4.6, votes: 58, experience: 6, creditsPerMinute: 30, trialMinutes: 0,
   },
+  {
+    id: 'solara', name: 'Solara Ortiz', photo: '', status: 'online',
+    areas: ['taro', 'intuitive-consultant'], topics: ['love', 'growth'],
+    rating: 4.8, votes: 42, experience: 8, creditsPerMinute: 10, trialMinutes: 0,
+  },
 ];
 
