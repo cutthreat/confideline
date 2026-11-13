@@ -43,6 +43,8 @@
       captionInput.value = row.caption;
       caption.append(label,captionInput);
       const action = selectField('Действие',`action-${row.id}`,actions,row.action);
+      const actionHint = make('p','После изменения действия проверьте, что текст кнопки ему соответствует.',{class:'help-block conf-action-hint',hidden:''});
+      action.container.append(actionHint);
       grid.append(caption,action.container);
       const linkGroup = make('div','',{class:'form-group',hidden:''});
       const linkId = `link-${row.id}`;
@@ -103,7 +105,15 @@
     document.getElementById('conf-paid-status').textContent = saved.paidEnabled ? 'Включён' : hasObligations ? 'Завершение обязательств' : 'Выключен';
     document.getElementById('conf-obligations').hidden = !!saved.paidEnabled || !hasObligations;
   }
-  const updateDirty = () => { if (page === 'catalog') save.disabled = JSON.stringify(capture()) === JSON.stringify(saved); status.textContent = ''; displayPayment(); };
+  const refreshActionHints = () => {
+    if(page !== 'catalog') return;
+    rows.forEach(row => {
+      const action = form.querySelector(`[name="action-${row.id}"]`);
+      const hint = action.closest('.form-group').querySelector('.conf-action-hint');
+      hint.hidden = action.value === 'none' || action.value === saved[`action-${row.id}`];
+    });
+  };
+  const updateDirty = () => { if (page === 'catalog') save.disabled = JSON.stringify(capture()) === JSON.stringify(saved); status.textContent = ''; displayPayment(); refreshActionHints(); };
   form.addEventListener('input',updateDirty); form.addEventListener('change',updateDirty);
   if (cancel) cancel.addEventListener('click',() => { apply(saved); updateDirty(); });
   form.addEventListener('submit',event => {
@@ -122,7 +132,7 @@
         save.disabled = true;
         displaySavedCatalog();
       }
-      displayPaid(); status.textContent = 'Настройки сохранены';
+      displayPaid(); refreshActionHints(); status.textContent = 'Настройки сохранены';
     }
     catch (_) { status.textContent = 'Не удалось сохранить настройки.'; }
   });

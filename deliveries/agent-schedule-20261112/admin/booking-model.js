@@ -24,6 +24,7 @@
    latePaymentGraceMinutes:number('latePaymentGraceMinutes',30,0),noShowMinutes:number('noShowMinutes',10,0),
    reviewHours:number('reviewHours',24),rescheduleHours:number('rescheduleHours',24),
    agentReminderMinutes:number('agentReminderMinutes',60),responseAlertHours:number('responseAlertHours',24),
+   conflictEscalationMinutes:number('conflictEscalationMinutes',60),
    paymentReviewMinutes:number('paymentReviewMinutes',60),reminderFirstHours:number('reminderFirstHours',72),
    reminderSecondMinutes:number('reminderSecondMinutes',60),agentNoticeMinutes:number('agentNoticeMinutes',5),
    lateCancelMode:['percent','full','manual'].includes(raw.lateCancelMode)?raw.lateCancelMode:'percent',
