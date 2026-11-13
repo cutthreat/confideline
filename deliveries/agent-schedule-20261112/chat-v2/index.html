@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chat V2 · Сигналы агента</title>
+<link rel="stylesheet" href="reference.css?v=7">
+<script src="reference.js?v=9" defer></script>
+</head>
+<body>
+<div class="chat-v2-reference">
+  <aside class="demo-bar" aria-label="Настройки демонстрации" hidden>
+    <strong>Chat V2 · Учебный макет</strong>
+    <div class="demo-controls">
+      <label for="demo-time">Учебное время</label>
+      <select id="demo-time">
+        <option value="early">14:54 · обычный чат</option>
+        <option value="ongoing">14:55 · консультация уже идёт</option>
+        <option value="starting">14:58 · консультация началась</option>
+        <option value="none">Без следующей записи</option>
+      </select>
+    </div>
+    <label class="simulate-error"><input id="demo-error" type="checkbox"> Сбой следующей отправки</label>
+    <details class="demo-extra">
+      <summary>Учебные события клиента</summary>
+      <div>
+        <button type="button" class="demo-event" id="demo-no-thread">Беседа не выбрана</button>
+        <button type="button" class="demo-event" id="demo-client-reply">Павел ответил на сообщение</button>
+        <button type="button" class="demo-event" id="demo-booking">Павел отправил заявку</button>
+      </div>
+    </details>
+    <span id="demo-feedback" class="sr-only" role="status"></span>
+  </aside>
+  <header class="admin-top">
+    <div class="brand"><img src="assets/logo-h50.png" alt="YouDate"><span aria-hidden="true">☰</span></div>
+    <div class="admin-search" aria-hidden="true">Поиск <span>⌕</span></div>
+    <div class="operator"><span class="presence">Подключён</span><span class="issue">⚑ Проблема</span><span class="presence">Онлайн</span><strong>Ирина О.</strong></div>
+  </header>
+  <div class="admin-body">
+    <aside class="admin-menu" aria-label="Оболочка администрирования">
+      <span>⚙　Главное</span>
+      <small>Содержимое</small>
+      <span>♙　Партнёры</span>
+      <span>▤　Финансы</span>
+      <span>♧　Поддержка</span>
+      <span>⌁　Аналитика</span>
+      <span class="menu-section">✉　Диалоги</span>
+      <strong class="menu-current">☷　Чат</strong>
+      <span class="menu-child">Мои шаблоны</span>
+      <span class="menu-child">Шаблоны чата эксперта</span>
+      <small>Модерация</small>
+      <span>✉　Сообщения</span>
+    </aside>
+    <main class="chat-layout" data-mobile="conversation" aria-label="Chat V2">
+      <section class="chat-list" aria-label="Рабочий список Chat V2">
+        <div class="tabs" role="tablist" aria-label="Разделы Chat V2">
+          <button role="tab" type="button" id="tab-chats" aria-selected="true" aria-controls="panel-chats">Чаты</button>
+          <button role="tab" type="button" id="tab-pings" aria-selected="false" aria-controls="panel-pings" tabindex="-1">Пинги</button>
+          <button role="tab" type="button" id="tab-declined" aria-selected="false" aria-controls="panel-declined" tabindex="-1">Отклонённые</button>
+        </div>
+        <div id="panel-chats" class="list-panel" role="tabpanel" aria-labelledby="tab-chats">
+          <div class="filters" aria-hidden="true"><span>Поиск</span><span>Пол ▾</span><span>Эксперт ▾</span></div>
+          <div id="chat-rows"></div>
+        </div>
+        <div id="panel-pings" class="list-panel" role="tabpanel" aria-labelledby="tab-pings" hidden>
+          <div class="filters" aria-hidden="true"><span>Поиск</span><span>Пользователь ▾</span><span>Эксперт ▾</span></div>
+          <div id="ping-rows"></div>
+          <p class="empty" id="ping-empty" hidden>Новых пингов нет.</p>
+        </div>
+        <div id="panel-declined" class="list-panel" role="tabpanel" aria-labelledby="tab-declined" tabindex="0" hidden><p class="empty">Отклонённых диалогов нет.</p></div>
+      </section>
+      <section class="conversation" aria-labelledby="conversation-title">
+        <header class="conversation-head">
+          <div class="mobile-actions"><button type="button" id="open-chats">‹ Чаты</button><button type="button" id="open-pings">Пинги</button></div>
+          <div class="conversation-id"><span id="profile-initial" class="avatar violet" aria-hidden="true"></span><h2 id="conversation-title" tabindex="-1"></h2></div>
+          <div class="meta"><span id="conversation-number"></span></div>
+        </header>
+        <div class="session"><span id="session-label" class="pill">Обычный чат</span></div>
+        <div id="related-booking" class="related-booking" hidden></div>
+        <div id="next-booking-alert" class="alert-zone" role="alert"></div>
+        <div class="messages" aria-label="Переписка"></div>
+        <form class="compose" novalidate>
+          <label class="sr-only" for="draft-message">Черновик сообщения</label>
+          <textarea id="draft-message" rows="2" placeholder="Введите сообщение…" aria-describedby="send-error"></textarea>
+          <p id="send-error" class="send-error" role="alert"></p>
+          <p id="send-status" class="send-status" role="status"></p>
+          <div class="compose-tools"><span aria-hidden="true">♧　☷　ᴬ</span><button type="submit" class="send-button">Отправить</button></div>
+        </form>
+      </section>
+      <aside class="context" aria-hidden="true">Контекст</aside>
+    </main>
+  </div>
+</div>
+</body>
+</html>

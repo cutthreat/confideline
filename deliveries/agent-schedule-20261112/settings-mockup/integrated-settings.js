@@ -8,13 +8,13 @@
   const status = document.querySelector('#conf-save-status');
   const actions = [
     ['chat','Открыть чат'], ['wait','Уведомить о доступности'],
-    ['booking','Открыть календарь записи'], ['link','Перейти по ссылке']
+    ['booking','Открыть календарь записи'], ['link','Перейти по ссылке'],
+    ['none','Не показывать кнопку']
   ];
-  // These are illustrative entries for the site's existing language dictionary.
   const rows = [
-    {id:'chat', source:'Start chat', caption:'Начать чат', action:'chat', statuses:['online']},
-    {id:'wait', source:'Notify me when available', caption:'Уведомить, когда освободится', action:'wait', statuses:['busy']},
-    {id:'book', source:'Book a time', caption:'Забронировать время', action:'booking', statuses:['offline']}
+    {id:'online', title:'Онлайн', caption:'Написать в чат', action:'chat'},
+    {id:'busy', title:'Занят', caption:'Уведомить, когда освободится', action:'wait'},
+    {id:'offline', title:'Не в сети', caption:'Забронировать время', action:'booking'}
   ];
   function make(tag, text, attrs = {}) {
     const node = document.createElement(tag);
@@ -34,28 +34,29 @@
     const container = document.querySelector('#conf-button-fields');
     rows.forEach(row => {
       const fs = make('fieldset','',{class:'conf-buttons-row'});
-      fs.append(make('legend',row.caption));
+      fs.append(make('legend',row.title));
       const grid = make('div','',{class:'conf-grid'});
       const caption = make('div','',{class:'form-group'});
-      caption.append(make('label','Подпись'),make('div',row.caption,{class:'conf-caption'}));
-      const translations = make('a','Изменить русский перевод',{class:'conf-translation',target:'_blank',rel:'noopener noreferrer'});
-      translations.href = 'https://confideline.com/ru/admin/language/translate?language_id=ru-RU&LanguageSourceSearch%5Bcategory%5D=expert_profile_buttons&LanguageSourceSearch%5Bmessage%5D=' + encodeURIComponent(row.source);
-      caption.append(translations);
+      const captionId = `caption-${row.id}`;
+      const label = make('label','Текст кнопки (русский)',{for:captionId});
+      const captionInput = make('input','',{class:'form-control',id:captionId,name:captionId,type:'text',maxlength:'80'});
+      captionInput.value = row.caption;
+      caption.append(label,captionInput);
       const action = selectField('Действие',`action-${row.id}`,actions,row.action);
       grid.append(caption,action.container);
       const linkGroup = make('div','',{class:'form-group',hidden:''});
       const linkId = `link-${row.id}`;
-      linkGroup.append(make('label','Адрес ссылки',{for:linkId}),make('input','',{class:'form-control',id:linkId,name:linkId,type:'url',placeholder:'https://'}));
+      const link = make('input','',{class:'form-control',id:linkId,name:linkId,type:'text',placeholder:'https:// или /страница'});
+      linkGroup.append(make('label','Адрес ссылки',{for:linkId}),link);
       grid.append(linkGroup);
-      const updateAction = () => { linkGroup.hidden = action.input.value !== 'link'; };
+      const updateAction = () => {
+        const hidden = action.input.value === 'none';
+        caption.hidden = hidden; captionInput.required = !hidden;
+        linkGroup.hidden = action.input.value !== 'link';
+        link.required = !linkGroup.hidden;
+      };
       action.input.addEventListener('change',updateAction);
-      const states = make('fieldset','',{class:'conf-statuses'});
-      states.append(make('legend','Показывать при статусе'));
-      [['online','Онлайн'],['busy','Занят'],['offline','Не в сети']].forEach(([value,title]) => {
-        const label = make('label'); const check = make('input','',{type:'checkbox',name:`status-${row.id}-${value}`});
-        check.checked = row.statuses.includes(value); label.append(check,document.createTextNode(' '+title)); states.append(label);
-      });
-      fs.append(grid,states); container.append(fs); updateAction();
+      fs.append(grid); container.append(fs); updateAction();
     });
   }
   const controls = () => Array.from(form.querySelectorAll('input[name],select[name],textarea[name]'));
@@ -70,7 +71,19 @@
   function displayPayment() {
     const selected = form.querySelector('[name="paymentMode"]');
     if (!selected) return;
-    document.getElementById('advance-field').hidden = selected.value !== 'confirm';
+    const hasAdvance = selected.value === 'confirm';
+    document.getElementById('advance-field').hidden = !hasAdvance;
+    ['booking-payment-deadline','booking-full-refund','booking-late-policy','booking-late-fee','booking-grace','booking-no-show','booking-review-deadline','booking-payment-review'].forEach(id => {
+      const field=document.getElementById(id); if(field)field.closest('.form-group').hidden=!hasAdvance;
+    });
+    const late=document.getElementById('booking-late-policy'),fee=document.getElementById('booking-late-fee');
+    if(fee && late)fee.closest('.form-group').hidden=!hasAdvance || late.value!=='percent';
+    const payout=form.querySelector('[name="payoutSchedule"]');
+    if(payout){
+      const week=document.getElementById('payout-weekday-field'),month=document.getElementById('payout-monthday-field');
+      week.hidden=payout.value!=='weekly';month.hidden=payout.value!=='monthly';
+      week.querySelector('select').required=!week.hidden;month.querySelector('input').required=!month.hidden;
+    }
   }
   function displaySavedCatalog() {
     if (page !== 'catalog') return;
@@ -80,7 +93,7 @@
     });
   }
   let saved = capture();
-  try { const existing = JSON.parse(localStorage.getItem(storageKey)); if (existing) { saved = {...saved,...existing}; apply(saved); } } catch (_) {}
+  try { const existing = JSON.parse(localStorage.getItem(storageKey)); if (existing) { apply(existing); saved = capture(); } } catch (_) {}
   const save = form.querySelector('button[type="submit"],.box-footer button');
   const cancel = Array.from(form.querySelectorAll('.box-footer button')).find(b => b.textContent.trim() === 'Отменить изменения');
   function displayPaid() {
@@ -95,8 +108,12 @@
   if (cancel) cancel.addEventListener('click',() => { apply(saved); updateDirty(); });
   form.addEventListener('submit',event => {
     event.preventDefault();
-    for (const el of form.querySelectorAll('input[type="url"]')) {
-      if (!el.closest('[hidden]') && (!el.value || !el.validity.valid)) { el.setCustomValidity('Укажите корректный адрес ссылки.'); el.reportValidity(); el.setCustomValidity(''); return; }
+    for (const el of form.querySelectorAll('input[name^="link-"]')) {
+      if (el.closest('[hidden]')) continue;
+      const value = el.value.trim();
+      let valid = /^\/(?![\/\\])\S*$/.test(value);
+      if (!valid) { try { valid = ['http:','https:'].includes(new URL(value).protocol); } catch (_) {} }
+      if (!valid) { el.setCustomValidity('Укажите корректный адрес ссылки.'); el.reportValidity(); el.setCustomValidity(''); return; }
     }
     const values = capture();
     try {

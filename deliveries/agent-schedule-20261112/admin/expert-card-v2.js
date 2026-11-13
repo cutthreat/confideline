@@ -116,7 +116,7 @@
    $('#alternative-date').addEventListener('change',()=>updateAlternativeSlots(b));
   } else submit.disabled=false;
   if(action==='withdraw'){const hold=model.holdDescription(b),holdNote=hold?'Прежнее время удерживается. '+hold+'.':'Прежнее время сохраняется, пока запись подтверждена.';head.textContent='Отозвать предложение';body.innerHTML=who+'<p>Предложение другого времени будет отозвано. '+esc(holdNote)+'</p>';submit.textContent='Отозвать предложение';}
-  if(action==='no-show'){head.textContent='Сообщить о возможной неявке';body.innerHTML=who+'<p>Вы ожидаете клиента более 10 минут. Случай будет передан ответственному сотруднику для проверки.</p>';submit.textContent='Сообщить о неявке';}
+  if(action==='no-show'){head.textContent='Сообщить о возможной неявке';body.innerHTML=who+'<p>Клиент пока не присоединился. Случай будет передан ответственному сотруднику для проверки.</p>';submit.textContent='Сообщить о неявке';}
   dialog.showModal();(action==='reschedule'?$('#alternative-date'):$('#action-note')||$('#dialog-cancel')).focus();
  }
  function closeDialog(){dialog.close();if(focusBefore?.isConnected)focusBefore.focus();active=null;}

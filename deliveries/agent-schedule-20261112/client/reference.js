@@ -2,31 +2,44 @@ const root = document.querySelector('.client-reference');
 const find = selector => root.querySelector(selector);
 const model = window.BookingPreview;
 if (new URLSearchParams(location.search).get('scenario') === 'client-conflict') model.resetClientConflict();
+const configScenario = new URLSearchParams(location.search).get('scenario') || '';
+const configSuffix = /^[a-z0-9-]{1,40}$/.test(configScenario) ? '-' + configScenario : '';
+let buttonSettings = {};
+try { buttonSettings = JSON.parse(localStorage.getItem('confideline-integrated-settings-v2-catalog' + configSuffix)) || {}; } catch (_) {}
 const cardActions = {
-  offline: {dialog: 'booking', icon: 'fa-calendar-o', label: 'Забронировать время'},
-  busy: {dialog: 'wait', icon: 'fa-bell-o', label: 'Уведомить меня'},
+  online: {action:'chat',label:'Написать в чат'},
+  busy: {action:'wait',label:'Уведомить, когда освободится'},
+  offline: {action:'booking',label:'Забронировать время'},
 };
+const actionIcons = {chat:'fa-comment-o',wait:'fa-bell-o',booking:'fa-calendar-o',link:'fa-external-link'};
+for (const [status, action] of Object.entries(cardActions)) {
+  action.action = buttonSettings['action-' + status] || action.action;
+  action.label = buttonSettings['caption-' + status] || action.label;
+  action.url = buttonSettings['link-' + status] || '';
+}
 const catalog = find('#catalog-grid');
 for (const profile of window.CatalogFilterFixtures) {
   catalog.insertAdjacentHTML('beforeend', window.CatalogExpertCard.render(profile));
   const action = cardActions[profile.status];
-  if (!action) continue;
   const original = catalog.lastElementChild.querySelector('[data-card-action="chat"]');
+  if (!action || action.action === 'none') { original.remove(); continue; }
+  const label = document.createElement('span'); label.dataset.actionLabel = ''; label.textContent = action.label;
+  const icon = original.querySelector('i'); icon.className = 'fa ' + (actionIcons[action.action] || actionIcons.chat);
+  original.replaceChildren(icon, label, original.querySelector('.sr-only'));
+  if (action.action === 'chat') continue;
+  if (action.action === 'link') {
+    let safe=/^\/(?![\/\\])\S*$/.test(action.url);
+    if(!safe){try{safe=['http:','https:'].includes(new URL(action.url).protocol);}catch(_){}}
+    if(!safe){original.remove();continue;}
+    original.removeAttribute('data-card-action'); original.href = action.url;
+    original.rel = 'noopener noreferrer'; continue;
+  }
   const button = document.createElement('button');
-  button.type = 'button';
-  button.className = original.className;
-  button.dataset.cardAction = original.dataset.cardAction;
-  button.dataset.open = action.dialog;
-  button.dataset.profileId = profile.id;
-  button.setAttribute('aria-haspopup', 'dialog');
-  button.setAttribute('aria-controls', action.dialog);
-  const icon = original.querySelector('i');
-  icon.className = 'fa ' + action.icon;
-  const label = document.createElement('span');
-  label.dataset.actionLabel = '';
-  label.textContent = action.label;
-  button.append(icon, label, original.querySelector('.sr-only'));
-  original.replaceWith(button);
+  button.type = 'button'; button.className = original.className;
+  button.dataset.cardAction = 'chat'; button.dataset.open = action.action;
+  button.dataset.profileId = profile.id; button.setAttribute('aria-haspopup','dialog');
+  button.setAttribute('aria-controls',action.action);
+  button.replaceChildren(...original.childNodes); original.replaceWith(button);
 }
 const setCardActionLabel = (dialog, label, profileId = null) => {
   const selector = '[data-open="' + dialog + '"]' + (profileId ? '[data-profile-id="' + profileId + '"]' : '') + ' [data-action-label]';
@@ -52,12 +65,15 @@ const monthTitleFor = date => {
   const value = new Intl.DateTimeFormat('ru', {month:'long', year:'numeric', timeZone:'UTC'}).format(date);
   return value.charAt(0).toUpperCase() + value.slice(1);
 };
-const nextMonthStart = new Date(Date.UTC(monthStart.getUTCFullYear(), monthStart.getUTCMonth() + 1, 1, 12));
-const afterNextMonth = new Date(Date.UTC(monthStart.getUTCFullYear(), monthStart.getUTCMonth() + 2, 1, 12)).toISOString().slice(0, 10);
-const months = [monthStart, nextMonthStart].map(date => [date.toISOString().slice(0, 7), monthTitleFor(date)]);
+const afterLastDay = addCalendarDays(calendarToday, Math.ceil(model.readPolicy().horizonDays) + 1);
+const months = [];
+for (let date = monthStart; date.toISOString().slice(0,10) < afterLastDay; date = new Date(Date.UTC(date.getUTCFullYear(),date.getUTCMonth()+1,1,12))) {
+  months.push([date.toISOString().slice(0,7), monthTitleFor(date)]);
+}
 const dates = [];
-for (let day = calendarToday; day < afterNextMonth; day = addCalendarDays(day, 1)) dates.push(day);
-let demonstrationSubscriptionDeadline = null;
+for (let day = calendarToday; day < afterLastDay; day = addCalendarDays(day, 1)) dates.push(day);
+const subscriptions = new Map();
+let waitProfile = 'vera';
 const calendarDate = new Intl.DateTimeFormat('ru', {day: 'numeric', month: 'long', weekday: 'long', timeZone: 'UTC'});
 let selectedDay = calendarToday;
 let monthIndex = 0;
@@ -67,7 +83,6 @@ let currentBookingId = null;
 let movingBookingId = null;
 let displayedQuote = null;
 let slotIndex = new Map();
-let subscription = false;
 let trigger = null;
 
 // The preview settings and the catalogue run on separate local ports. Only the
@@ -115,30 +130,33 @@ const ownBooking = (state, profileId) => state.entries.find(item => item.preview
 function updateCardLabels(state) {
   if(Number.isFinite(state.previewBalance))find('#user-balance-in-header').textContent=state.previewBalance.toFixed(2);
   for (const button of root.querySelectorAll('[data-open="booking"][data-profile-id]')) {
-    const profile = state.profiles.find(item => item.id === button.dataset.profileId);
+    const profileState = model.readForProfile(button.dataset.profileId);
+    const profile = profileState.profiles.find(item => item.id === button.dataset.profileId);
     button.hidden = !profile;
-    const booking=ownBooking(state,button.dataset.profileId);
-    setCardActionLabel('booking', booking ? (booking.state==='confirmed'?'Посмотреть запись':'Посмотреть заявку') : 'Забронировать время', button.dataset.profileId);
+    const booking=ownBooking(profileState,button.dataset.profileId);
+    const fixture=window.CatalogFilterFixtures.find(item=>item.id===button.dataset.profileId);
+    setCardActionLabel('booking', booking ? (booking.state==='confirmed'?'Посмотреть запись':'Посмотреть заявку') : cardActions[fixture?.status]?.label || 'Забронировать время', button.dataset.profileId);
   }
 }
 function buildSlots() {
-  const state = model.read();
+  const state = model.readForProfile(bookingProfile);
   slotIndex = new Map();
   updateCardLabels(state);
   if (!state.profiles.some(item => item.id === bookingProfile)) return;
   if (!state.agent.days.some(day => day.enabled) && !state.agent.exceptions.some(day => day.kind === 'hours')) return;
-  const end = Date.parse(afterNextMonth + 'T23:59:00+03:00');
+  const end = Date.parse(afterLastDay + 'T23:59:00+03:00');
   const replyAt = model.deadline(state.agent, Date.now(), end);
   if (!replyAt) return;
-  for (let date = addCalendarDays(calendarToday, -1); date <= afterNextMonth; date = addCalendarDays(date, 1)) {
+  for (let date = addCalendarDays(calendarToday, -1); date <= afterLastDay; date = addCalendarDays(date, 1)) {
     const rule = model.effective(state.agent, date);
-    for (let start = Math.ceil(model.minutes(rule.from) / model.slotLength) * model.slotLength;
-         rule.enabled && start + model.slotLength <= model.minutes(rule.to); start += model.slotLength) {
+    const step=model.readPolicy().stepMinutes;
+    for (let start = Math.ceil(model.minutes(rule.from) / step) * step;
+         rule.enabled && start + model.slotLength <= model.minutes(rule.to); start += step) {
       const value = model.time(start);
       const instant = new Date(date + 'T' + value + ':00+03:00');
-      if (+instant <= Date.now() || +instant <= replyAt + 60 * 60 * 1000 || model.availability(state.agent, null, date, start) || model.occupied(state.entries, date, start).length) continue;
+      if (+instant <= Date.now() || +instant <= replyAt + model.readPolicy().beforeHours * 60 * 60 * 1000 || model.availability(state.agent, null, date, start) || model.occupied(state.entries, date, start).length) continue;
       const localDay = dateInZone(instant, zone.value);
-      if (localDay < calendarToday || localDay >= afterNextMonth) continue;
+      if (localDay < calendarToday || localDay >= afterLastDay) continue;
       if (!slotIndex.has(localDay)) slotIndex.set(localDay, []);
       slotIndex.get(localDay).push(instant.toISOString());
     }
@@ -220,7 +238,7 @@ function updateBookingReview() {
 }
 
 function showBooking() {
-  const state = model.read();
+  const state = model.readForProfile(bookingProfile);
   const profile = state.profiles.find(item => item.id === bookingProfile);
   const booking = ownBooking(state, bookingProfile) || state.entries.find(item=>item.id===currentBookingId&&item.previewClient&&item.profile===bookingProfile&&item.state==='cancelled');
   currentBookingId = booking?.id ?? null;
@@ -228,11 +246,17 @@ function showBooking() {
   find('#booking-title').textContent = booking ? 'Ваша запись' : 'Забронировать время';
   find('#booking-profile-name').textContent = profile?.name || 'Эксперт';
   find('#booking-price').textContent = (profile?.price ?? 10) + ' кредитов/мин';
-  find('#booking-payment').textContent = state.paymentMode === 'after-confirmation' ? 'после подтверждения — аванс за 3 минуты, на оплату 30 минут' : 'оплата с начала сеанса';
-  if (!booking) displayedQuote = {price:profile?.price ?? 10, mode:state.paymentMode};
+  const policy=booking?.policySnapshot || model.readPolicy();
+  const paymentMode=booking?.paymentMode || policy.paymentMode || state.paymentMode;
+  find('#booking-payment').textContent = paymentMode === 'after-confirmation' ? 'после подтверждения — аванс за ' + policy.advanceMinutes + ' мин., на оплату ' + policy.paymentDeadlineMinutes + ' мин.' : 'оплата с начала сеанса';
+  const lateTerms=policy.lateCancelMode==='full'?'позже аванс также возвращается полностью':policy.lateCancelMode==='manual'?'позднюю отмену рассматривает сотрудник':'позже удерживается '+policy.lateCancelPercent+'%';
+  find('#booking-cancel-terms').textContent = paymentMode === 'after-confirmation' ? 'При отмене не позднее чем за ' + policy.fullRefundHours + ' ч. аванс возвращается полностью; ' + lateTerms + '. Для поздней оплаты действует льготный срок ' + policy.latePaymentGraceMinutes + ' мин.' : 'До начала консультации аванс не списывается.';
+  if (!booking) displayedQuote = {price:profile?.price ?? 10, mode:paymentMode, policy:JSON.stringify(policy)};
   bookingForm.hidden = Boolean(booking);
   find('#booking-result').hidden = !booking;
   find('#booking-delay-options').hidden = !booking?.delayed || booking.state!=='confirmed';
+  find('#booking-delay-move').hidden = policy.rescheduleMode==='disabled';
+  find('#booking-delay-move').textContent = policy.rescheduleMode==='manual'?'Обратиться в поддержку':'Выбрать другое время';
   find('#booking-delay-cancel-confirm').hidden = true;
   find('#booking-form [type=submit]').textContent = 'Отправить заявку';
   if (booking) {
@@ -241,7 +265,7 @@ function showBooking() {
     find('#booking-result-due').textContent = booking.state === 'pending' ? 'Ответ до ' + dateLabel(new Date(booking.deadlineAt)) + '.' : booking.state==='cancelled' ? (booking.refundStatus==='complete'?'На ваш баланс возвращено '+booking.refundAmount+' кредитов.':booking.refundStatus==='processing'?'Возврат неиспользованного аванса в обработке.':'Дополнительных списаний нет.') : booking.deadline;
     find('#booking-result-price').textContent = booking.acceptedPrice + ' кредитов за минуту.';
     find('#booking-cancel-request').hidden = booking.state !== 'pending';
-    if(booking.delayed) find('#booking-delay-message').textContent = booking.clientChoice==='wait' ? 'Вы решили подождать. Сообщим, когда эксперт сможет начать. Время ожидания не оплачивается.' : booking.clientSuggestion ? 'Ваше предложение отправлено. Сообщим, когда время будет подтверждено. Прежняя цена сохранится.' : 'Эксперт сможет подключиться позже. Вы можете подождать, выбрать другое время или отменить встречу. Время ожидания не оплачивается; цена останется прежней.';
+    if(booking.delayed) find('#booking-delay-message').textContent = booking.clientChoice==='wait' ? 'Вы решили подождать. Сообщим, когда эксперт сможет начать. Время ожидания не оплачивается.' : booking.clientSuggestion ? 'Ваше предложение отправлено. Сообщим, когда время будет подтверждено. Прежняя цена сохранится.' : (policy.rescheduleMode==='disabled'?'Эксперт сможет подключиться позже. Вы можете подождать или отменить встречу. Время ожидания не оплачивается.':policy.rescheduleMode==='manual'?'Эксперт сможет подключиться позже. Вы можете подождать, обратиться в поддержку или отменить встречу. Время ожидания не оплачивается.':'Эксперт сможет подключиться позже. Вы можете подождать, выбрать другое время или отменить встречу. Время ожидания не оплачивается; цена останется прежней.');
   } else {
     buildSlots();
     if (!slotsForDay(selectedDay).length) {
@@ -255,19 +279,24 @@ function showBooking() {
 let channelRender = 0;
 async function showWait(cancelled = false) {
   const renderId = ++channelRender;
+  const subscription = subscriptions.get(waitProfile);
+  const profile = window.CatalogFilterFixtures.find(item=>item.id===waitProfile);
+  find('#wait-profile-name').textContent = profile?.name || 'Эксперт';
+  find('#wait-title').textContent = profile?.status === 'offline' ? 'Уведомить, когда появится онлайн?' : 'Уведомить, когда освободится?';
   find('#wait-form').hidden = subscription || cancelled;
   find('#wait-active').hidden = !subscription;
   find('#wait-cancelled').hidden = !cancelled;
-  find('#wait-until').textContent = subscription ? 'Подписка действует до ' + dateLabel(demonstrationSubscriptionDeadline) + ' · ' + zoneLabel() + '.' : '';
-  setCardActionLabel('wait', subscription ? 'Посмотреть ожидание' : cardActions.busy.label);
+  find('#wait-until').textContent = subscription ? 'Подписка действует до ' + dateLabel(subscription.deadline) + ' · ' + zoneLabel() + '.' : '';
+  setCardActionLabel('wait', subscription ? 'Посмотреть ожидание' : cardActions[profile?.status]?.label || 'Уведомить меня', waitProfile);
   if (cancelled) return;
   const confirm = find('#wait-confirm');
-  confirm.disabled = true;
+  confirm.hidden = false; confirm.disabled = true;
   find('#wait-settings').hidden = true;
   find('#wait-active-settings').hidden = true;
   find('#wait-description').textContent = 'Проверяем доступные способы уведомления…';
   find('#wait-channel-message').textContent = '';
   find('#wait-active-channel-message').textContent = '';
+  if(profile?.status==='online' && !subscription){find('#wait-description').textContent='Эксперт уже доступен. Вы можете написать ему в чат.';confirm.hidden=true;return;}
   const channels = await getChannels();
   if (renderId !== channelRender) return;
   if (!channels) {
@@ -285,7 +314,7 @@ async function showWait(cancelled = false) {
     find(subscription ? '#wait-active-settings' : '#wait-settings').hidden = false;
     find('#wait-description').textContent = '';
   } else {
-    find('#wait-description').textContent = 'Сообщим, когда Вера Ланская снова будет доступна. Ожидание действует 7 дней.';
+    find('#wait-description').textContent = 'Сообщим, когда эксперт снова будет доступен. Ожидание действует ' + model.readPolicy().waitingDays + ' дней.';
     if (!subscription) confirm.disabled = false;
   }
 }
@@ -295,7 +324,7 @@ root.querySelectorAll('[data-open]').forEach(button => button.addEventListener('
   trigger = button;
   const dialog = document.getElementById(button.dataset.open);
   if (dialog.id === 'booking') { bookingProfile = button.dataset.profileId; selectedInstant = null; currentBookingId=null; movingBookingId=null; find('#booking-error').hidden = true; showBooking(); }
-  else showWait();
+  else { waitProfile = button.dataset.profileId; showWait(); }
   dialog.showModal();
   dialog.querySelector('.modal-title').focus();
 }));
@@ -373,19 +402,20 @@ bookingForm.addEventListener('submit', event => {
   event.preventDefault();
   if(movingBookingId && selectedInstant){
     const stamp=model.now(new Date(selectedInstant).getTime());
-    const result=model.clientDelayAction(movingBookingId,'reschedule',{date:stamp.slice(0,10),time:stamp.slice(11,16)});
+    const result=model.clientDelayAction(movingBookingId,'reschedule',{date:stamp.slice(0,10),time:stamp.slice(11,16)},bookingProfile);
     if(result.error){find('#booking-error').textContent=result.error;find('#booking-error').hidden=false;buildSlots();renderDays();renderTimes();return;}
     movingBookingId=null;find('#booking-error').hidden=true;showBooking();find('#booking-result h3').focus();return;
   }
   if (!selectedInstant || currentBookingId) return;
-  const current = model.read();
+  const current = model.readForProfile(bookingProfile);
   const profile = current.profiles.find(item => item.id === bookingProfile);
-  if (profile && ((profile.price ?? 10) !== displayedQuote.price || current.paymentMode !== displayedQuote.mode)) {
+  const policy = model.readPolicy(), paymentMode = policy.paymentMode || current.paymentMode;
+  if (profile && ((profile.price ?? 10) !== displayedQuote.price || paymentMode !== displayedQuote.mode || JSON.stringify(policy) !== displayedQuote.policy)) {
     find('#booking-error').textContent = 'Цена или условия оплаты изменились. Проверьте их перед отправкой заявки.';
     find('#booking-error').hidden = false;
-    displayedQuote = {price:profile.price ?? 10, mode:current.paymentMode};
+    displayedQuote = {price:profile.price ?? 10, mode:paymentMode, policy:JSON.stringify(policy)};
     find('#booking-price').textContent = displayedQuote.price + ' кредитов/мин';
-    find('#booking-payment').textContent = displayedQuote.mode === 'after-confirmation' ? 'после подтверждения — аванс за 3 минуты, на оплату 30 минут' : 'оплата с начала сеанса';
+    find('#booking-payment').textContent = displayedQuote.mode === 'after-confirmation' ? 'после подтверждения — аванс за '+policy.advanceMinutes+' мин., на оплату '+policy.paymentDeadlineMinutes+' мин.' : 'оплата с начала сеанса';
     return;
   }
   const stamp = model.now(new Date(selectedInstant).getTime());
@@ -405,7 +435,7 @@ bookingForm.addEventListener('submit', event => {
 });
 find('#booking-cancel-request').addEventListener('click', () => {
   if (!currentBookingId) return;
-  const result = model.cancelOwnRequest(currentBookingId);
+  const result = model.cancelOwnRequest(currentBookingId,bookingProfile);
   if (result.error) { showBooking(); return; }
   currentBookingId = null;
   selectedInstant = null;
@@ -413,12 +443,14 @@ find('#booking-cancel-request').addEventListener('click', () => {
   find('#booking').close();
 });
 find('#booking-delay-wait').addEventListener('click',()=>{
-  const result=model.clientDelayAction(currentBookingId,'wait');
+  const result=model.clientDelayAction(currentBookingId,'wait',{},bookingProfile);
   if(!result.error)showBooking();else find('#booking-delay-message').textContent=result.error;
 });
 find('#booking-delay-move').addEventListener('click',()=>{
+  const booking=model.readForProfile(bookingProfile).entries.find(item=>item.id===currentBookingId);
+  const rescheduleMode=booking?.policySnapshot?.rescheduleMode || model.readPolicy().rescheduleMode;
+  if(rescheduleMode!=='consent'){find('#booking-delay-message').textContent='Чтобы изменить время, обратитесь в поддержку.';return;}
   movingBookingId=currentBookingId;selectedInstant=null;
-  const booking=model.read().entries.find(item=>item.id===currentBookingId);
   find('#booking-title').textContent='Выберите другое время';
   find('#booking-result').hidden=true;bookingForm.hidden=false;
   find('#booking-price').textContent=(booking?.acceptedPrice??0)+' кредитов/мин';
@@ -427,14 +459,14 @@ find('#booking-delay-move').addEventListener('click',()=>{
   buildSlots();renderDays();renderTimes();find('#booking-title').focus();
 });
 find('#booking-delay-cancel').addEventListener('click',()=>{
-  const b=model.read().entries.find(x=>x.id===currentBookingId);
+  const b=model.readForProfile(bookingProfile).entries.find(x=>x.id===currentBookingId);
   find('#booking-delay-options').hidden=true;find('#booking-delay-cancel-confirm').hidden=false;
   find('#booking-delay-cancel-copy').textContent=b?.advancePaid?'Отменить встречу? Неиспользованный аванс вернётся на ваш баланс.':'Отменить встречу? Дополнительных списаний не будет.';
   find('#booking-delay-cancel-back').focus();
 });
 find('#booking-delay-cancel-back').addEventListener('click',()=>{showBooking();find('#booking-delay-cancel').focus();});
 find('#booking-delay-cancel-confirm-button').addEventListener('click',()=>{
-  const result=model.clientDelayAction(currentBookingId,'cancel');
+  const result=model.clientDelayAction(currentBookingId,'cancel',{},bookingProfile);
   if(result.error){find('#booking-delay-cancel-copy').textContent=result.error;return;}
   showBooking();updateCardLabels(result.state);find('#booking-result h3').focus();
 });
@@ -451,15 +483,13 @@ find('#wait-confirm').addEventListener('click', async () => {
   find('#wait-confirm').disabled = true;
   const channels = await getChannels();
   if (!channels || !channels.allowed.length || !channels.selected.length) { showWait(); return; }
-  subscription = true;
-  demonstrationSubscriptionDeadline = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  subscriptions.set(waitProfile,{deadline:new Date(Date.now() + model.readPolicy().waitingDays * 24 * 60 * 60 * 1000)});
   showWait();
   find('#wait-active [data-close]').focus();
 });
 window.addEventListener('focus', () => { if (find('#wait').open) showWait(); });
 find('#wait-cancel').addEventListener('click', () => {
-  subscription = false;
-  demonstrationSubscriptionDeadline = null;
+  subscriptions.delete(waitProfile);
   showWait(true);
   find('#wait-cancelled [data-close]').focus();
 });
