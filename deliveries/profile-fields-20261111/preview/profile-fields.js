@@ -8,7 +8,12 @@
   const search = manager.querySelector("#field-search");
   const category = manager.querySelector("#field-category");
   const origin = manager.querySelector("#field-origin");
-  const profileFilter = manager.querySelector("#field-profile");
+  const allProfiles = manager.querySelector("#field-profile-all");
+  const profileChecks = [...manager.querySelectorAll(".pf-profile-picker input")];
+  const selectedProfile = () => {
+    const selected = profileChecks.filter(control => control.checked);
+    return selected.length === 1 ? selected[0].id.replace("field-profile-", "") : "";
+  };
   const differences = manager.querySelector("#field-differences");
   const pageSize = manager.querySelector("#field-page-size");
   const pages = manager.querySelector("#field-pages");
@@ -19,7 +24,11 @@
   const message = manager.querySelector("#field-message");
   const isAllMode = new URLSearchParams(location.search).get("mode") === "all";
   const storageKey = "confideline-profile-field-draft-20261113-v3-" + (isAllMode ? "all" : "expert");
-  if (isAllMode) { manager.querySelector("#mode-note").hidden = false; document.querySelector("#new-field-link").href = "field-form.html?mode=all"; }
+  if (isAllMode) {
+    manager.querySelector("#mode-note").hidden = false;
+    document.querySelector("#new-field-link").href = "field-form.html?mode=all";
+    allProfiles.setAttribute("aria-disabled", "true");
+  }
   const { typeNames, profileTypes, listSettings, originalCategories, categories, propertyNames, modelClasses, builtIns, customCatalog, emptySettings } = profileFieldsData;
   const flagSortButtons = [...manager.querySelectorAll("[data-sort]")].filter(button =>
     listSettings.includes(button.dataset.sort)
@@ -137,12 +146,12 @@
     if (!settingAvailable(field, key)) {
       return '<td class="pf-setting pf-unavailable" title="Настройка не применяется"><span class="sr-only">Не применяется</span></td>';
     }
-    const title = propertyNames[key] + " — " + typeNames[type] + " — " + fieldTitle(field);
+    const title = propertyNames[key] + " — " + (isAllMode ? "Все анкеты" : typeNames[type]) + " — " + fieldTitle(field);
     const isChecked = rulesFor(field, type)[key];
     return '<td class="pf-setting"><label class="pf-toggle" title="' + escapeText(title) +
       '"><input type="checkbox" data-field="' + escapeText(field.id) + '" data-setting="' + key +
       '" data-profile-type="' + type + '" aria-label="' + escapeText(title) + '"' +
-      (isChecked ? " checked" : "") + (isAllMode && type === "expert" ? ' disabled title="В этом режиме настройки одинаковы для всех анкет"' : "") + '></label></td>';
+      (isChecked ? " checked" : "") + '></label></td>';
   }
 
   function categoryOptions(type) {
@@ -195,7 +204,7 @@
     if (key === "fieldClass") return fieldClass(field);
     if (key === "alias") return fieldAlias(field);
     if (!settingAvailable(field, key)) return "";
-    return Number(rulesFor(field, profileFilter.value)[key]);
+    return Number(rulesFor(field, selectedProfile())[key]);
   }
 
   function rowActions(field, span) {
@@ -232,16 +241,19 @@
   }
 
   function syncRoleFilter() {
-    const filtered = Boolean(profileFilter.value);
+    const common = allProfiles.getAttribute("aria-pressed") === "true";
+    profileChecks.forEach(control => { control.disabled = common; });
+    const filtered = Boolean(selectedProfile());
+    const canSortFlags = filtered || isAllMode;
     differences.disabled = filtered || isAllMode;
     if (filtered || isAllMode) differences.checked = false;
     if (isAllMode) differences.title = "В этом режиме настройки полей одинаковы для всех анкет";
-    sortHint.hidden = filtered;
+    sortHint.hidden = canSortFlags;
     flagSortButtons.forEach(button => {
-      button.disabled = !filtered;
-      button.closest("th").title = filtered ? "" : "Для сортировки выберите тип анкеты";
+      button.disabled = !canSortFlags;
+      button.closest("th").title = canSortFlags ? "" : "Для сортировки выберите один тип анкеты";
     });
-    if (!filtered && listSettings.includes(sort.key)) {
+    if (!canSortFlags && listSettings.includes(sort.key)) {
       sort = { key: "", descending: false };
       manager.querySelector("th[aria-sort]")?.removeAttribute("aria-sort");
     }
@@ -259,7 +271,9 @@
   }
 
   function resetFilters() {
-    for (const control of [search, category, origin, profileFilter]) control.value = "";
+    for (const control of [search, category, origin]) control.value = "";
+    allProfiles.setAttribute("aria-pressed", "true");
+    profileChecks.forEach(control => { control.checked = true; });
     differences.checked = false;
     syncRoleFilter();
     startResults();
@@ -273,7 +287,7 @@
   }
 
   function renderRows(revealField = "") {
-    const type = profileFilter.value;
+    const type = selectedProfile();
     const query = search.value.trim().toLocaleLowerCase("ru");
     const found = fieldsFor(type).filter(field => {
       const label = [registeredId(field), field.title, field.frontTitle, field.originalTitle, field.key].join(" ").toLocaleLowerCase("ru");
@@ -302,7 +316,7 @@
       "Найдено полей: 0.";
     renderPages(totalPages);
     rows.innerHTML = found.slice(firstIndex, lastIndex).map((field, fieldIndex) => {
-      const types = type ? [type] : typesFor(field);
+      const types = isAllMode ? ["client"] : type ? [type] : typesFor(field);
       const span = types.length;
       const id = registeredId(field);
       const source = field.origin === "built-in" ? '<span class="pf-origin">Встроенное</span>' : '';
@@ -312,14 +326,14 @@
         '</span>' + source + '</td>' +
         technicalDetails(field, span);
       return types.map((type, index) => {
+        const scope = isAllMode ? "Все анкеты" : typeNames[type];
         const first = index === 0;
         const rowClasses = [fieldIndex % 2 ? "pf-field-even" : "", first ? "" : "pf-type-continuation"];
         return '<tr data-field-row="' + escapeText(field.id) + '" data-row-type="' + type + '" class="' +
           rowClasses.filter(Boolean).join(" ") + '">' + (first ? metadata : '') +
           '<th scope="row" class="pf-profile-scope"><button type="button" class="pf-sort" data-edit="' +
           escapeText(field.id) + '" data-edit-type="' + type + '" aria-label="Настройки — ' +
-          escapeText(typeNames[type] + " — " + fieldTitle(field)) + '"' +
-          (isAllMode && type === "expert" ? ' disabled title="В этом режиме настройки одинаковы для всех анкет"' : '') + '>' + typeNames[type] + '</button></th>' +
+          escapeText(scope + " — " + fieldTitle(field)) + '">' + scope + '</button></th>' +
           listSettings.map(key => toggleCell(field, key, type)).join("") +
           (first ? rowActions(field, span) : '') + '</tr>';
       }).join("");
@@ -345,7 +359,7 @@
   }
 
   function editField(field, trigger) {
-    const type = trigger.dataset.editType || profileFilter.value;
+    const type = trigger.dataset.editType || selectedProfile();
     const editTypes = isAllMode ? ["client"] : type ? [type] : typesFor(field);
     const typeControls = editTypes.map(type => {
       const rules = rulesFor(field, type);
@@ -422,11 +436,11 @@
     }
     if ("preview" in data) {
       const params = new URLSearchParams();
-      if (profileFilter.value) params.set("type", profileFilter.value);
+      if (selectedProfile()) params.set("type", selectedProfile());
       if (isAllMode) params.set("mode", "all");
       history.replaceState({ ...history.state, profileFieldsUi: {
         search: search.value, category: category.value, origin: origin.value,
-        type: profileFilter.value, differences: differences.checked,
+        type: selectedProfile(), allProfiles: allProfiles.getAttribute("aria-pressed") === "true", differences: differences.checked,
         pageSize: pageSize.value, page, sort,
         scroll: document.querySelector(".wrapper").scrollTop
       } }, "");
@@ -470,10 +484,19 @@
     startResults();
     focusResults();
   });
-  profileFilter.addEventListener("change", () => {
+  allProfiles.addEventListener("click", () => {
+    if (isAllMode) return;
+    const enable = allProfiles.getAttribute("aria-pressed") !== "true";
+    allProfiles.setAttribute("aria-pressed", String(enable));
+    if (enable) profileChecks.forEach(control => { control.checked = true; });
     syncRoleFilter();
     startResults();
   });
+  profileChecks.forEach(control => control.addEventListener("change", () => {
+    if (!profileChecks.some(item => item.checked)) control.checked = true;
+    syncRoleFilter();
+    startResults();
+  }));
   const mobileQuery = matchMedia("(max-width: 767px)");
   const navToggle = document.querySelector(".sidebar-toggle");
   function syncSidebar() {
@@ -490,7 +513,7 @@
       const field = fieldsFor().find(item => item.id === control.dataset.field);
       const type = control.dataset.profileType;
       const key = control.dataset.setting;
-      const feedback = "«" + fieldTitle(field) + "». " + typeNames[type] + " · " +
+      const feedback = "«" + fieldTitle(field) + "». " + (isAllMode ? "Все анкеты" : typeNames[type]) + " · " +
         propertyNames[key] + (control.checked ? " · включено." : " · выключено.");
       const saved = save(field, { [type]: { [key]: control.checked } }, feedback,
         control.checked ? "text-success" : "text-danger");
@@ -540,7 +563,10 @@
       search.value = saved.search || "";
       category.value = saved.category || "";
       origin.value = saved.origin || "";
-      profileFilter.value = saved.type || "";
+      allProfiles.setAttribute("aria-pressed", String(isAllMode || (saved.allProfiles ?? !saved.type)));
+      profileChecks.forEach(control => {
+        control.checked = isAllMode || !saved.type || control.id === "field-profile-" + saved.type;
+      });
       differences.checked = Boolean(saved.differences);
       pageSize.value = saved.pageSize || "20";
       page = saved.page || 1;

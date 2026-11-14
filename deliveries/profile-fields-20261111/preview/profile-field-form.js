@@ -21,6 +21,8 @@
   const title = element("field-title-form");
   const alias = element("field-alias-form");
   const visible = element("field-visible-form");
+  const premiumView = element("field-premium-view-form");
+  const inForm = element("field-in-form");
   const searchable = element("field-search-form");
   const premium = element("field-premium-form");
   const required = element("field-required-form");
@@ -38,7 +40,6 @@
     element("field-order-form").value = definition.order ?? (field.id === "17" ? "16" : "");
     element("field-weight-form").value = definition.weight ?? (field.id === "17" ? "0" : "");
     required.checked = !!definition.required;
-    required.closest(".checkbox").hidden = true;
     element("field-initial-rules").hidden = true;
     element("field-output-form").value = definition.output || "Через запятую";
     element("field-format-form").value = definition.format || "";
@@ -54,6 +55,10 @@
   }
   function showOptions() { element("field-options-block").hidden = !["select", "multi", "checkbox"].includes(type.value); }
   type.addEventListener("change", showOptions); showOptions();
+  inForm.addEventListener("change", () => {
+    required.disabled = !inForm.checked;
+    if (required.disabled) required.checked = false;
+  });
   form.addEventListener("submit", event => {
     event.preventDefault();
     const error = element("field-form-error");
@@ -90,11 +95,12 @@
       for (const role of assigned) {
         state.rules[role][id] = {
           ...emptySettings,
-          form: true,
+          form: inForm.checked,
           view: visible.checked,
+          premiumView: premiumView.checked,
           search: searchable.checked,
           premiumSearch: premium.checked,
-          required: !element("field-options-block").hidden && required.checked
+          required: inForm.checked && required.checked
         };
       }
     }
