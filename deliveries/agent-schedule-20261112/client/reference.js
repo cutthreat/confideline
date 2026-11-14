@@ -6,17 +6,17 @@ const configScenario = new URLSearchParams(location.search).get('scenario') || '
 const configSuffix = /^[a-z0-9-]{1,40}$/.test(configScenario) ? '-' + configScenario : '';
 let buttonSettings = {};
 try { buttonSettings = JSON.parse(localStorage.getItem('confideline-integrated-settings-v2-catalog' + configSuffix)) || {}; } catch (_) {}
-const cardActions = {
-  online: {action:'chat',label:'Написать в чат'},
-  busy: {action:'wait',label:'Уведомить, когда освободится'},
-  offline: {action:'booking',label:'Забронировать время'},
-};
+const {defaults, actionLabels, isValid} = window.CatalogActionLabels;
+const cardActions = Object.fromEntries(Object.entries(defaults).map(([status, preset]) => {
+  const action = buttonSettings['action-' + status] || preset.action;
+  const savedLabel = buttonSettings['caption-' + status];
+  return [status, {
+    action,
+    label: isValid(savedLabel) ? savedLabel.trim() : actionLabels[action] || preset.label,
+    url: buttonSettings['link-' + status] || ''
+  }];
+}));
 const actionIcons = {chat:'fa-comment-o',wait:'fa-bell-o',booking:'fa-calendar-o',link:'fa-external-link'};
-for (const [status, action] of Object.entries(cardActions)) {
-  action.action = buttonSettings['action-' + status] || action.action;
-  action.label = buttonSettings['caption-' + status] || action.label;
-  action.url = buttonSettings['link-' + status] || '';
-}
 const catalog = find('#catalog-grid');
 for (const profile of window.CatalogFilterFixtures) {
   catalog.insertAdjacentHTML('beforeend', window.CatalogExpertCard.render(profile));
@@ -135,7 +135,7 @@ function updateCardLabels(state) {
     button.hidden = !profile;
     const booking=ownBooking(profileState,button.dataset.profileId);
     const fixture=window.CatalogFilterFixtures.find(item=>item.id===button.dataset.profileId);
-    setCardActionLabel('booking', booking ? (booking.state==='confirmed'?'Посмотреть запись':'Посмотреть заявку') : cardActions[fixture?.status]?.label || 'Забронировать время', button.dataset.profileId);
+    setCardActionLabel('booking', booking ? (booking.state==='confirmed'?'Посмотреть запись':'Посмотреть заявку') : cardActions[fixture?.status]?.label || actionLabels.booking, button.dataset.profileId);
   }
 }
 function buildSlots() {

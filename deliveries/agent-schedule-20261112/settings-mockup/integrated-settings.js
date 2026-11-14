@@ -11,11 +11,8 @@
     ['booking','Открыть календарь записи'], ['link','Перейти по ссылке'],
     ['none','Не показывать кнопку']
   ];
-  const rows = [
-    {id:'online', title:'Онлайн', caption:'Написать в чат', action:'chat'},
-    {id:'busy', title:'Занят', caption:'Уведомить, когда освободится', action:'wait'},
-    {id:'offline', title:'Не в сети', caption:'Забронировать время', action:'booking'}
-  ];
+  const labels = window.CatalogActionLabels;
+  const rows = [['online', 'Онлайн'], ['busy', 'Занят'], ['offline', 'Не в сети']];
   function make(tag, text, attrs = {}) {
     const node = document.createElement(tag);
     if (text) node.textContent = text;
@@ -32,22 +29,24 @@
   }
   if (page === 'catalog') {
     const container = document.querySelector('#conf-button-fields');
-    rows.forEach(row => {
+    rows.forEach(([id, title]) => {
+      const preset = labels.defaults[id];
       const fs = make('fieldset','',{class:'conf-buttons-row'});
-      fs.append(make('legend',row.title));
+      fs.append(make('legend',title));
       const grid = make('div','',{class:'conf-grid'});
       const caption = make('div','',{class:'form-group'});
-      const captionId = `caption-${row.id}`;
+      const captionId = `caption-${id}`;
       const label = make('label','Текст кнопки (русский)',{for:captionId});
-      const captionInput = make('input','',{class:'form-control',id:captionId,name:captionId,type:'text',maxlength:'80'});
-      captionInput.value = row.caption;
-      caption.append(label,captionInput);
-      const action = selectField('Действие',`action-${row.id}`,actions,row.action);
+      const captionInput = make('input','',{class:'form-control',id:captionId,name:captionId,type:'text',maxlength:String(labels.limit),'aria-describedby':`caption-help-${id}`});
+      captionInput.value = preset.label;
+      const captionHelp = make('p', `До ${labels.limit} символов, одна строка.`, {class:'help-block',id:`caption-help-${id}`});
+      caption.append(label,captionInput,captionHelp);
+      const action = selectField('Действие',`action-${id}`,actions,preset.action);
       const actionHint = make('p','После изменения действия проверьте, что текст кнопки ему соответствует.',{class:'help-block conf-action-hint',hidden:''});
       action.container.append(actionHint);
       grid.append(caption,action.container);
       const linkGroup = make('div','',{class:'form-group',hidden:''});
-      const linkId = `link-${row.id}`;
+      const linkId = `link-${id}`;
       const link = make('input','',{class:'form-control',id:linkId,name:linkId,type:'text',placeholder:'https:// или /страница'});
       linkGroup.append(make('label','Адрес ссылки',{for:linkId}),link);
       grid.append(linkGroup);
@@ -107,17 +106,28 @@
   }
   const refreshActionHints = () => {
     if(page !== 'catalog') return;
-    rows.forEach(row => {
-      const action = form.querySelector(`[name="action-${row.id}"]`);
+    rows.forEach(([id]) => {
+      const action = form.querySelector(`[name="action-${id}"]`);
       const hint = action.closest('.form-group').querySelector('.conf-action-hint');
-      hint.hidden = action.value === 'none' || action.value === saved[`action-${row.id}`];
+      hint.hidden = action.value === 'none' || action.value === saved[`action-${id}`];
     });
   };
   const updateDirty = () => { if (page === 'catalog') save.disabled = JSON.stringify(capture()) === JSON.stringify(saved); status.textContent = ''; displayPayment(); refreshActionHints(); };
-  form.addEventListener('input',updateDirty); form.addEventListener('change',updateDirty);
+  form.addEventListener('input',event => {
+    if (event.target.name?.startsWith('caption-')) event.target.setCustomValidity('');
+    updateDirty();
+  });
+  form.addEventListener('change',updateDirty);
   if (cancel) cancel.addEventListener('click',() => { apply(saved); updateDirty(); });
   form.addEventListener('submit',event => {
     event.preventDefault();
+    for (const el of form.querySelectorAll('input[name^="caption-"]')) {
+      if (el.closest('[hidden]') || labels.isValid(el.value)) continue;
+      el.setCustomValidity(`Введите подпись до ${labels.limit} символов в одну строку.`);
+      el.reportValidity();
+      el.setCustomValidity('');
+      return;
+    }
     for (const el of form.querySelectorAll('input[name^="link-"]')) {
       if (el.closest('[hidden]')) continue;
       const value = el.value.trim();
