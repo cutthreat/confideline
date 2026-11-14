@@ -17,7 +17,9 @@
   const rows = manager.querySelector("#field-rows");
   const count = manager.querySelector("#field-count");
   const message = manager.querySelector("#field-message");
-  const storageKey = "confideline-profile-field-mock-20261110";
+  const isAllMode = new URLSearchParams(location.search).get("mode") === "all";
+  const storageKey = "confideline-profile-field-draft-20261113-v3-" + (isAllMode ? "all" : "expert");
+  if (isAllMode) { manager.querySelector("#mode-note").hidden = false; document.querySelector("#new-field-link").href = "field-form.html?mode=all"; }
   const { typeNames, profileTypes, listSettings, originalCategories, categories, propertyNames, modelClasses, builtIns, customCatalog, emptySettings } = profileFieldsData;
   const flagSortButtons = [...manager.querySelectorAll("[data-sort]")].filter(button =>
     listSettings.includes(button.dataset.sort)
@@ -44,31 +46,40 @@
   }
 
   function appliesTo(field, type) {
+    if (isAllMode) return true;
+    const assigned = state.fieldTypes?.[field.id];
+    if (assigned) return assigned.includes(type);
     return field.types.includes(type) ||
       (!field.explicitTypes && type === "expert" && field.types.includes("client"));
   }
 
   function fieldsFor(type) {
-    return [...customCatalog, ...builtIns, ...state.added].filter(field => {
+    return [...customCatalog, ...builtIns, ...state.added].map(field => ({ ...field, ...(state.fieldOverrides?.[field.id] || {}) })).filter(field => {
       const available = type ? appliesTo(field, type) : typesFor(field).length > 0;
       return available && !state.removed.includes(field.id);
     });
   }
 
   function rulesFor(field, type) {
-    const saved = state.rules[type][field.id];
+    const saved = state.rules[isAllMode ? "client" : type][field.id];
     if (saved) return { ...emptySettings, ...saved };
     const isProfessional = field.origin === "custom" && Number(field.id) >= 17;
     const activeBuiltIn = field.origin === "built-in" && field.category !== "dating";
     return {
       ...emptySettings,
       form: activeBuiltIn || isProfessional,
-      view: (activeBuiltIn && field.showInView !== false) || (field.id === "7" && type === "client"),
+      view: activeBuiltIn && field.showInView !== false,
       search: field.canSearch && (field.id === "sex" || isProfessional)
     };
   }
 
   function applyRules(field, changes) {
+    if (isAllMode) {
+      const combined = { ...rulesFor(field, "client"), ...Object.values(changes)[0] };
+      state.rules.client[field.id] = { ...combined };
+      state.rules.expert[field.id] = { ...combined };
+      return;
+    }
     for (const [type, rules] of Object.entries(changes)) {
       state.rules[type][field.id] = { ...rulesFor(field, type), ...rules };
     }
@@ -131,7 +142,7 @@
     return '<td class="pf-setting"><label class="pf-toggle" title="' + escapeText(title) +
       '"><input type="checkbox" data-field="' + escapeText(field.id) + '" data-setting="' + key +
       '" data-profile-type="' + type + '" aria-label="' + escapeText(title) + '"' +
-      (isChecked ? " checked" : "") + '></label></td>';
+      (isChecked ? " checked" : "") + (isAllMode && type === "expert" ? ' disabled title="В этом режиме настройки одинаковы для всех анкет"' : "") + '></label></td>';
   }
 
   function categoryOptions(type) {
@@ -191,10 +202,9 @@
     const id = escapeText(field.id);
     const title = escapeText(fieldTitle(field));
     const pencil = '<i class="fa fa-pencil" aria-hidden="true"></i>';
-    const edit = registeredId(field)
-      ? '<a class="btn btn-default btn-xs" href="https://confideline.com/ru/admin/profile-field/update?id=' + id +
-        '" target="_blank" rel="noopener" title="Редактировать на сайте" aria-label="Редактировать на сайте — ' +
-        title + ' (новая вкладка)">' + pencil + '</a>'
+    const edit = field.origin === "custom"
+      ? '<a class="btn btn-default btn-xs" href="field-form.html?id=' + encodeURIComponent(field.id) + (isAllMode ? "&amp;mode=all" : "") +
+        '" title="Редактировать" aria-label="Редактировать — ' + title + '">' + pencil + '</a>'
       : '<button type="button" class="btn btn-default btn-xs" data-edit="' + id +
         '" title="Настройки в макете" aria-label="Настройки в макете — ' + title + '">' + pencil + '</button>';
     const remove = field.origin === "custom"
@@ -223,8 +233,9 @@
 
   function syncRoleFilter() {
     const filtered = Boolean(profileFilter.value);
-    differences.disabled = filtered;
-    if (filtered) differences.checked = false;
+    differences.disabled = filtered || isAllMode;
+    if (filtered || isAllMode) differences.checked = false;
+    if (isAllMode) differences.title = "В этом режиме настройки полей одинаковы для всех анкет";
     sortHint.hidden = filtered;
     flagSortButtons.forEach(button => {
       button.disabled = !filtered;
@@ -306,8 +317,9 @@
         return '<tr data-field-row="' + escapeText(field.id) + '" data-row-type="' + type + '" class="' +
           rowClasses.filter(Boolean).join(" ") + '">' + (first ? metadata : '') +
           '<th scope="row" class="pf-profile-scope"><button type="button" class="pf-sort" data-edit="' +
-          escapeText(field.id) + '" data-edit-type="' + type + '" aria-label="Настройки в макете — ' +
-          escapeText(typeNames[type] + " — " + fieldTitle(field)) + '">' + typeNames[type] + '</button></th>' +
+          escapeText(field.id) + '" data-edit-type="' + type + '" aria-label="Настройки — ' +
+          escapeText(typeNames[type] + " — " + fieldTitle(field)) + '"' +
+          (isAllMode && type === "expert" ? ' disabled title="В этом режиме настройки одинаковы для всех анкет"' : '') + '>' + typeNames[type] + '</button></th>' +
           listSettings.map(key => toggleCell(field, key, type)).join("") +
           (first ? rowActions(field, span) : '') + '</tr>';
       }).join("");
@@ -411,6 +423,7 @@
     if ("preview" in data) {
       const params = new URLSearchParams();
       if (profileFilter.value) params.set("type", profileFilter.value);
+      if (isAllMode) params.set("mode", "all");
       history.replaceState({ ...history.state, profileFieldsUi: {
         search: search.value, category: category.value, origin: origin.value,
         type: profileFilter.value, differences: differences.checked,
@@ -482,7 +495,7 @@
       const saved = save(field, { [type]: { [key]: control.checked } }, feedback,
         control.checked ? "text-success" : "text-danger");
       if (!saved) control.checked = rulesFor(field, type)[key];
-      if (sort.key === key || differences.checked) {
+      if (sort.key === key || differences.checked || isAllMode) {
         renderRows(field.id);
         const selector = '[data-field="' + CSS.escape(field.id) + '"][data-setting="' + key +
           '"][data-profile-type="' + type + '"]';

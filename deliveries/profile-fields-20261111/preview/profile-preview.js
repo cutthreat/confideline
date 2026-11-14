@@ -7,8 +7,9 @@
   const audienceLabel = document.querySelector("#preview-audience-label");
   const content = document.querySelector("#preview-content");
   const viewButtons = [...document.querySelectorAll("[data-view]")];
-  const storageKey = "confideline-profile-field-mock-20261110";
   const query = new URLSearchParams(location.search);
+  const isAllMode = query.get("mode") === "all";
+  const storageKey = "confideline-profile-field-draft-20261113-v3-" + (isAllMode ? "all" : "expert");
   let view = "profile";
   let state = { rules: { client: {}, expert: {} }, added: [], removed: [] };
 
@@ -32,23 +33,24 @@
   }
 
   function rulesFor(field, type) {
-    const saved = state.rules[type][field.id];
+    const saved = state.rules[isAllMode ? "client" : type][field.id];
     if (saved) return { ...emptySettings, ...saved };
     const professional = field.origin === "custom" && Number(field.id) >= 17;
     const basic = field.origin === "built-in" && field.category !== "dating";
     return {
       ...emptySettings,
       form: basic || professional,
-      view: (basic && field.showInView !== false) || (field.id === "7" && type === "client"),
+      view: basic && field.showInView !== false,
       search: field.canSearch && (field.id === "sex" || professional)
     };
   }
 
   function availableFields() {
     const type = typeSelect.value;
-    return [...builtIns, ...customCatalog, ...state.added].filter(field => {
-      const applies = field.types.includes(type) ||
-        (!field.explicitTypes && type === "expert" && field.types.includes("client"));
+    return [...builtIns, ...customCatalog, ...state.added].map(field => ({ ...field, ...(state.fieldOverrides?.[field.id] || {}) })).filter(field => {
+      const assigned = state.fieldTypes?.[field.id];
+      const applies = isAllMode || (assigned ? assigned.includes(type) : field.types.includes(type) ||
+        (!field.explicitTypes && type === "expert" && field.types.includes("client")));
       return applies && !state.removed.includes(field.id);
     });
   }
@@ -68,7 +70,7 @@
   }
 
   function choicesFor(field) {
-    return field.options?.length ? field.options : (profileFieldOptions[field.id] || []);
+    return Array.isArray(field.options) ? field.options : (profileFieldOptions[field.id] || []);
   }
 
   function sampleFor(field) {
@@ -176,7 +178,7 @@
       '<label class="preview-option"><input type="checkbox"> Проверенные пользователи</label>' +
       '<label class="preview-option"><input type="checkbox"' +
       (audienceSelect.value === "premium" ? "" : " disabled") + '> Только с фото</label></div>' +
-      '<div class="preview-footer"><button type="button" class="btn btn-primary" disabled>Показать экспертов</button></div></section></div>';
+      '<div class="preview-footer"><button type="button" class="btn btn-primary" disabled>' + (isAllMode ? 'Показать анкеты' : 'Показать экспертов') + '</button></div></section></div>';
   }
 
   function render() {
