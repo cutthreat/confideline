@@ -240,7 +240,7 @@ function updateBookingReview() {
 function showBooking() {
   const state = model.readForProfile(bookingProfile);
   const profile = state.profiles.find(item => item.id === bookingProfile);
-  const booking = ownBooking(state, bookingProfile) || state.entries.find(item=>item.id===currentBookingId&&item.previewClient&&item.profile===bookingProfile&&item.state==='cancelled');
+  const booking = ownBooking(state, bookingProfile) || state.entries.find(item=>item.previewClient&&item.profile===bookingProfile&&item.state==='cancelled'&&(item.id===currentBookingId||item.transferConflict));
   currentBookingId = booking?.id ?? null;
   movingBookingId = null;
   find('#booking-title').textContent = booking ? 'Ваша запись' : 'Забронировать время';
@@ -508,7 +508,7 @@ model.watch(state => {
   }
 });
 updateCardLabels(model.read());
-if (configScenario === 'transfer-conflict' && location.hash === '#booking-alisa') {
+if (['transfer-conflict','transfer-multiple'].includes(configScenario) && location.hash === '#booking-alisa') {
   const button = find('[data-open="booking"][data-profile-id="alisa"]');
   if (button) openBookingFor(button);
 }

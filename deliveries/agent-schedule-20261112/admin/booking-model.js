@@ -2,7 +2,7 @@
  'use strict';
 
  const scenario = new URLSearchParams(location.search).get('scenario') || 'default';
- const transferScenario = ['transfer-free','transfer-conflict'].includes(scenario);
+ const transferScenario = ['transfer-free','transfer-conflict','transfer-multiple'].includes(scenario);
  const key = 'confideline-shared-agent-schedule-20261112-v2' + (transferScenario ? '-' + scenario + '-v1' : ['active-session','client-conflict'].includes(scenario) ? '-' + scenario + '-20261113b' : '');
  const partnerSample = scenario.startsWith('partner195');
  const noProfiles = scenario.startsWith('partner-moderator');
@@ -90,9 +90,9 @@
  function inBreak(schedule, start, length = slotLength) {
   return schedule.breakEnabled && overlaps(start, start + length, minutes(schedule.breakFrom), minutes(schedule.breakTo));
  }
- function availability(agent, profile, date, start) {
-  if (!inHours(effective(agent,date),start)) return 'Вне графика агента';
-  if (inBreak(agent,start)) return 'Перерыв агента';
+ function availability(agent, profile, date, start, length=slotLength) {
+  if (!inHours(effective(agent,date),start,length)) return 'Вне графика агента';
+  if (inBreak(agent,start,length)) return 'Перерыв агента';
   // One schedule belongs to the agent; profiles do not have separate hours.
   return '';
  }
@@ -160,7 +160,14 @@
   const otherAgent={agent:clone(agent),profiles:[otherProfile],entries:[{id:101,client:'Анна Д.',profile:'solara',assignment:16,date:firstDate,time:'11:00',state:'confirmed',advancePaid:true,paymentMode:'after-confirmation',acceptedPrice:10,deadline:'Встреча подтверждена',history:['Заявка подтверждена.']}],interests:[],firstDate,paymentMode:'after-confirmation'};
   if (transferScenario) {
    entries.push({id:9,client:'Мария Л.',profile:'alisa',date:firstDate,time:'09:30',state:'confirmed',acceptedPrice:12,advancePaid:true,advanceAmount:36,paymentMode:'after-confirmation',deadline:'Встреча подтверждена',history:['Заявка подтверждена.'],previewClient:true});
-   otherAgent.entries[0].time=scenario==='transfer-conflict'?'09:30':'11:00';
+   otherAgent.entries[0].time=scenario==='transfer-free'?'11:00':'09:30';
+   if(scenario==='transfer-multiple'){
+    const first=entries[entries.length-1];
+    first.policySnapshot={...readPolicy(),slotMinutes:60};
+    otherAgent.entries[0].time='10:00';
+    entries.push({...clone(first),id:10,time:'11:00',client:'Ирина С.',policySnapshot:readPolicy(),previewClient:false});
+    otherAgent.entries.push({...clone(otherAgent.entries[0]),id:102,time:'11:00',client:'Ольга К.'});
+   }
   }
   let liveSession = null;
   if (scenario === 'active-session') {
@@ -214,8 +221,27 @@
   const state=otherView?root.otherAgent:root;
   const at = Date.now();
   let changed = false;
+  const records=[...root.entries,...root.otherAgent.entries],used=new Set();
+  let nextId=Math.max(0,...records.map(b=>Number(b.id)||0));
+  for(const booking of records){
+   if(!booking.policySnapshot?.slotMinutes){
+    booking.policySnapshot={...booking.policySnapshot,slotMinutes:30};
+    changed=true;
+   }
+   if(used.has(booking.id)){
+    const previous=booking.id;
+    booking.id=++nextId;
+    const owner=root.entries.includes(booking)?root:root.otherAgent;
+    for(const profile of owner.formerProfiles||[]){
+     if(profile.id===booking.profile&&profile.assignment===booking.assignment)
+      profile.bookingIds=(profile.bookingIds||[]).map(id=>id===previous?booking.id:id);
+    }
+    changed=true;
+   }
+   used.add(booking.id);
+  }
   for (const booking of state.entries) if (expire(booking,at)) changed = true;
-  if (changed) write(state);
+  if (changed) { settleAcceptedProposals(state,at); writeRoot(root); }
   return state;
  }
  function readForProfile(profileId) {
@@ -245,10 +271,24 @@
   window.addEventListener('focus', refresh);
   window.setInterval(refresh, 1000);
  }
- function occupied(entries,date,start,ignoreId) {
-  const matches=(day,at,length)=>day===date&&overlaps(start,start+slotLength,minutes(at),minutes(at)+length);
-  return entries.filter(booking => booking.id !== ignoreId && active(booking) && !booking.unassigned &&
-   (matches(booking.date,booking.time,booking.policySnapshot?.slotMinutes||slotLength) || (booking.proposal?.holdsSlot && matches(booking.proposal.date,booking.proposal.time,booking.policySnapshot?.slotMinutes||slotLength))));
+ const bookingLength=booking=>booking.policySnapshot?.slotMinutes??slotLength;
+ function heldWindows(booking){
+  const length=bookingLength(booking);
+  const windows=[{date:booking.date,time:booking.time,length,proposed:false}];
+  if(booking.proposal?.holdsSlot)windows.push({date:booking.proposal.date,time:booking.proposal.time,length,proposed:true});
+  return windows;
+ }
+ function overlappingWindows(entries,date,start,ignoreId,length=slotLength){
+  return entries.filter(b=>b.id!==ignoreId&&active(b)&&!b.unassigned).flatMap(booking=>
+   heldWindows(booking).filter(w=>w.date===date&&overlaps(start,start+length,minutes(w.time),minutes(w.time)+w.length))
+    .map(w=>({...w,booking})));
+ }
+ function occupied(entries,date,start,ignoreId,length=slotLength){
+  return [...new Set(overlappingWindows(entries,date,start,ignoreId,length).map(w=>w.booking))];
+ }
+ function bookingConflicts(state,booking){
+  if(!active(booking))return [];
+  return heldWindows(booking).flatMap(w=>overlappingWindows(state.entries,w.date,minutes(w.time),booking.id,w.length));
  }
  function alternatives(state,booking,date) {
   if (!booking || !date || !active(booking) || date < today()) return [];
@@ -256,10 +296,11 @@
   const profile = state.profiles.find(item => item.id === booking.profile);
   if (!profile) return [];
   const slots = [];
-  for (let start = Math.ceil(minutes(rule.from)/slotLength)*slotLength; rule.enabled && start + slotLength <= minutes(rule.to); start += slotLength) {
+  const length=bookingLength(booking),step=readPolicy().stepMinutes;
+  for (let start = Math.ceil(minutes(rule.from)/step)*step; rule.enabled && start + length <= minutes(rule.to); start += step) {
    const value = time(start);
    if (atTime(date,value) <= Date.now() || (date === booking.date && value === booking.time)) continue;
-   if (availability(state.agent,profile,date,start) || occupied(state.entries,date,start,booking.id).length) continue;
+   if (availability(state.agent,profile,date,start,length) || occupied(state.entries,date,start,booking.id,length).length) continue;
    slots.push(value);
   }
   return slots;
@@ -275,7 +316,7 @@
    if (!bookings.length && previous?.label === label) previous.end = time(start + slotLength);
    else if (!bookings.length) rows.push({time:time(start),end:time(start + slotLength),label});
    else for (const booking of bookings) {
-    const original=booking.date===date&&overlaps(start,start+slotLength,minutes(booking.time),minutes(booking.time)+slotLength);
+    const original=booking.date===date&&overlaps(start,start+slotLength,minutes(booking.time),minutes(booking.time)+bookingLength(booking));
     rows.push({time:time(start),end:time(start + slotLength),booking,proposed:!original});
    }
   }
@@ -297,7 +338,7 @@
  }
  function scheduleConflicts(entries,agent,profile,profileId) {
   return entries.filter(booking=>active(booking)&&(!profileId||booking.profile===profileId)).flatMap(booking=>{
-   const conflictsAt=(date,time)=>atTime(date,time)>Date.now()&&Boolean(availability(agent,profile,date,minutes(time)));
+   const conflictsAt=(date,time)=>atTime(date,time)>Date.now()&&Boolean(availability(agent,profile,date,minutes(time),bookingLength(booking)));
    const original=conflictsAt(booking.date,booking.time);
    const proposed=Boolean(booking.proposal?.holdsSlot&&conflictsAt(booking.proposal.date,booking.proposal.time));
    return original||proposed?[{...booking,scheduleConflictOriginal:original,scheduleConflictProposal:proposed}]:[];
@@ -308,8 +349,9 @@
   const meetingAt = atTime(booking.date,booking.time);
   if (meetingAt <= Date.now()) {
    if (booking.state !== 'confirmed') return [];
-   const result = booking.noShowEligible && !booking.delayed && Date.now() >= meetingAt + (booking.policySnapshot?.noShowMinutes ?? readPolicy().noShowMinutes) * 60 * 1000 ? ['no-show'] : [];
+   const result = booking.noShowEligible && !booking.delayed && !booking.transferConflict && Date.now() >= meetingAt + (booking.policySnapshot?.noShowMinutes ?? readPolicy().noShowMinutes) * 60 * 1000 ? ['no-show'] : [];
    if (!booking.proposal?.acceptedAt && (booking.proposal || (booking.policySnapshot?.rescheduleMode ?? readPolicy().rescheduleMode)==='consent')) result.push(booking.proposal ? 'withdraw' : 'reschedule');
+   if(booking.transferConflict&&!booking.transferConflict.resolvedAt)result.push('cancel');
    return result;
   }
   const result = booking.state === 'pending' ? ['confirm','decline'] : ['cancel'];
@@ -332,7 +374,7 @@
   if (action === 'confirm') {
    const profile = state.profiles.find(item => item.id === booking.profile);
    if (!profile) return {error:'Анкета больше не назначена. Проверьте запись и назначение.'};
-   if (availability(state.agent,profile,booking.date,minutes(booking.time)) || occupied(state.entries,booking.date,minutes(booking.time),id).length) return {error:'Интервал больше недоступен.'};
+   if (availability(state.agent,profile,booking.date,minutes(booking.time),bookingLength(booking)) || occupied(state.entries,booking.date,minutes(booking.time),id,bookingLength(booking)).length) return {error:'Интервал больше недоступен.'};
   }
   if (action === 'reschedule' && !alternatives(state,booking,date).includes(proposedTime)) return {error:'Это время больше недоступно. Выберите другое.'};
   const at = Date.now();
@@ -344,6 +386,19 @@
    confirmRequest(booking,at,state.paymentMode);
    booking.history.push('Агент подтвердил заявку.');
   } else if (action === 'decline' || action === 'cancel') {
+   const platformConflict=action==='cancel'&&booking.transferConflict&&
+    (bookingConflicts(state,booking).length||scheduleConflicts([booking],state.agent,null,booking.profile).length||(!booking.transferConflict.resolvedAt&&at>=atTime(booking.date,booking.time)));
+   if(platformConflict){
+    if(hasLiveSession(state,booking.profile))return {error:'Сначала завершите консультацию и проверьте расчёт.'};
+    if(!booking.paymentUncertain&&booking.advancePaid&&Number.isFinite(booking.advanceAmount)&&(at<atTime(booking.date,booking.time)||booking.serviceNotProvided||Number.isFinite(booking.paidServiceCredits))){
+     const remainder=Math.max(0,Math.round((booking.advanceAmount-(booking.paidServiceCredits??0))*100)/100);
+     booking.refundStatus=remainder?'complete':'none';
+     booking.refundAmount=remainder;
+     if(booking.previewClient)state.previewBalance=Math.round(((state.previewBalance||0)+remainder)*100)/100;
+    }else{
+     booking.refundStatus=booking.advancePaid||booking.paymentUncertain?'processing':'none';
+    }
+   }
    booking.state = action === 'decline' ? 'declined' : 'cancelled';
    booking.deadline = '—';
    booking.proposal = null;
@@ -372,6 +427,7 @@
  function applyAcceptedReschedule(booking,at,paymentMode) {
   booking.date=booking.proposal.date;
   booking.time=booking.proposal.time;
+  if(booking.transferConflict)booking.transferConflict.resolvedAt=at;
   if(booking.state==='pending')confirmRequest(booking,at,paymentMode);
   booking.history.push(booking.proposal.acceptedAt
    ? 'Конфликт устранён. Согласованный перенос применён.'
@@ -386,7 +442,7 @@
    if(due&&at>=due)continue;
    const profile=state.profiles.find(item=>item.id===booking.profile);
    const start=minutes(proposal.time);
-   if(!profile||occupied(state.entries,proposal.date,start,booking.id).length)continue;
+   if(!profile||occupied(state.entries,proposal.date,start,booking.id,bookingLength(booking)).length)continue;
    applyAcceptedReschedule(booking,at,state.paymentMode);
   }
  }
@@ -404,7 +460,7 @@
    const profile=state.profiles.find(item=>item.id===booking.profile);
    const start=minutes(proposal.time);
    if(!profile)return {error:'Предложенное время сейчас недоступно. Передайте конфликт ответственному.'};
-   const occupiedByAnother=occupied(state.entries,proposal.date,start,booking.id).length>0;
+   const occupiedByAnother=occupied(state.entries,proposal.date,start,booking.id,bookingLength(booking)).length>0;
    if(occupiedByAnother&&proposal.transferConflict){
     proposal.acceptedAt=at;
     booking.history.push('Клиент согласовал перенос. Новое время пока занято другой записью агента.');
@@ -456,30 +512,36 @@
   state.profiles=state.profiles.filter(p=>p.id!==id);write(state);return {state};
  }
  function inspectTransfer(id,targetId) {
+  read();
   const root=readRoot(),state=otherView?root?.otherAgent:root,target=otherView?root:root?.otherAgent;
   const profile=state?.profiles.find(p=>p.id===id),validTarget=otherView?targetId==='partner195':targetId==='kristy';
   if(!validTarget||!profile||!target)return {error:'Выберите доступного агента и анкету.'};
   if(target.profiles.some(p=>p.id===id))return {error:'Анкета уже назначена выбранному агенту.'};
-  const activeEntries=state.entries.filter(b=>b.profile===id&&active(b));
-  target.entries.forEach(b=>expire(b,Date.now()));
+  const at=Date.now();
+  const current=list=>list.map(b=>{const copy=clone(b);expire(copy,at);return copy;});
+  const activeEntries=current(state.entries).filter(b=>b.profile===id&&active(b));
+  const targetEntries=current(target.entries);
   const targetName=id=>target.profiles.find(p=>p.id===id)?.name||'Анкета';
-  const conflicts=activeEntries.flatMap(b=>{
-   const times=[{date:b.date,time:b.time}];if(b.proposal?.holdsSlot)times.push({date:b.proposal.date,time:b.proposal.time,proposed:true});
-   return times.flatMap(t=>occupied(target.entries,t.date,minutes(t.time)).map(other=>({
+  const conflicts=activeEntries.flatMap(b=>heldWindows(b).flatMap(t=>
+   overlappingWindows(targetEntries,t.date,minutes(t.time),undefined,t.length).map(other=>({
     id:b.id,client:b.client,...t,
-    other:{id:other.id,client:other.client,profile:targetName(other.profile),date:other.date,time:other.time}
-   })));
-  });
+    other:{id:other.booking.id,client:other.booking.client,profile:targetName(other.booking.profile),
+     date:other.date,time:other.time,length:other.length,proposed:other.proposed}
+   }))));
   const scheduleIssues=scheduleConflicts(activeEntries,target.agent,profile,id);
   const live=hasLiveSession(state,id);
-  return {activeEntries,conflicts,scheduleIssues,live};
+  const signature=JSON.stringify({targetId,assignment:profile.assignment,activeEntries,conflicts,scheduleIssues,live});
+  return {activeEntries,conflicts,scheduleIssues,live,signature};
  }
- function transferProfile(id,targetId) {
+ function transferProfile(id,targetId,signature) {
   const check=inspectTransfer(id,targetId);if(check.error)return check;
   if(check.live)return {error:'Передать анкету можно после завершения текущей консультации.'};
+  if(check.signature!==signature)return {changed:true};
   const root=readRoot(),state=otherView?root.otherAgent:root,target=otherView?root:root.otherAgent,profile=state.profiles.find(p=>p.id===id);
   if(!profile||target.profiles.some(p=>p.id===id))return {error:'Назначение изменилось. Обновите список.'};
   const newAssignment=Math.max(0,...target.profiles.map(p=>p.assignment||0))+1;
+  const at=Date.now();
+  for(const agent of [state,target])agent.entries.forEach(b=>expire(b,at));
   const moved=state.entries.filter(b=>b.profile===id&&active(b));
   const historical=state.entries.filter(b=>b.profile===id&&!active(b)).map(b=>b.id);
   state.formerProfiles ||= [];
@@ -493,9 +555,14 @@
   for(const booking of moved){
    const received={...clone(booking),assignment:newAssignment,history:[...booking.history,'Анкета и запись переданы другому агенту.']};
    if(received.proposal&&check.conflicts.some(conflict=>conflict.id===booking.id&&conflict.proposed))received.proposal.transferConflict=true;
+   if(check.conflicts.some(c=>c.id===booking.id)||check.scheduleIssues.some(c=>c.id===booking.id)){
+    const next=Math.min(at+readPolicy().conflictEscalationMinutes*60000,atTime(booking.date,booking.time));
+    received.transferConflict={responsible:'Администратор',dueAt:Math.max(at,next)};
+   }
    target.entries.push(received);
   }
-  const at=Date.now();
+  state.audit ||= [];
+  state.audit.push({event:'profile-transfer',profile:id,from:partnerName,to:otherView?'saffettr':'Kristy',at,bookings:moved.map(b=>b.id)});
   settleAcceptedProposals(state,at);
   settleAcceptedProposals(target,at);
   writeRoot(root);return {state,conflicts:check.conflicts,scheduleIssues:check.scheduleIssues};
@@ -557,7 +624,8 @@
   if(!Number.isFinite(meeting)||meeting<=Date.now()||!due||availability(state.agent,null,date,start)||occupied(state.entries,date,start).length)
    return {error:'Это время уже недоступно. Выберите другое.'};
   const policySnapshot=readPolicy();
-  const booking={id:Math.max(0,...state.entries.map(item=>Number(item.id)||0))+1, client:'Анна С.',
+  const root=readRoot();
+  const booking={id:Math.max(0,...[...root.entries,...root.otherAgent.entries].map(item=>Number(item.id)||0))+1, client:'Анна С.',
    profile:profileId,date,time:value,state:'pending',deadlineAt:due,deadline:'Ответить до '+displayDeadline.format(due),
    history:['Заявка получена. Окно удержано.'],paymentMode:policySnapshot.paymentMode||state.paymentMode,policySnapshot,acceptedPrice:profile.price??10,previewClient:true};
   state.entries.push(booking); writeForProfile(state,profileId); return {state,booking};
@@ -573,5 +641,5 @@
   const query=new URLSearchParams();if(scenario)query.set('scenario',scenario);if(otherView)query.set('demoAgent','kristy');
   return page + (query.toString()?'?'+query.toString():'') + '#' + hash;
  }
- window.BookingPreview = {expertId,partnerName,otherView,get slotLength(){return slotLength;},labels,now,today,addDays,minutes,time,clone,same,active,visibleStatus,holdDescription,proposalDeadline,proposalDescription,needsOutcomeCheck,effective,availability,occupied,alternatives,dayRows,calendarEvents,calendarBookings,scheduleConflicts,actions,read,readPolicy,readForProfile,watch,perform,answerReschedule,saveSchedule,savePrice,addProfile,removeProfile,hasLiveSession,emergencyRemove,clientDelayAction,resetClientConflict,inspectTransfer,transferProfile,addCity,defaultInterests,deadline,requestBooking,cancelOwnRequest,link};
+ window.BookingPreview = {expertId,partnerName,otherView,get slotLength(){return slotLength;},labels,now,today,addDays,minutes,time,clone,same,active,bookingLength,bookingConflicts,visibleStatus,holdDescription,proposalDeadline,proposalDescription,needsOutcomeCheck,effective,availability,occupied,alternatives,dayRows,calendarEvents,calendarBookings,scheduleConflicts,actions,read,readPolicy,readForProfile,watch,perform,answerReschedule,saveSchedule,savePrice,addProfile,removeProfile,hasLiveSession,emergencyRemove,clientDelayAction,resetClientConflict,inspectTransfer,transferProfile,addCity,defaultInterests,deadline,requestBooking,cancelOwnRequest,link};
 })();
