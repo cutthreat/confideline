@@ -346,17 +346,17 @@
 
   function editField(field, trigger) {
     const type = trigger.dataset.editType || profileFilter.value;
-    const editTypes = type ? [type] : typesFor(field);
+    const editTypes = isAllMode ? ["client"] : type ? [type] : typesFor(field);
     const typeControls = editTypes.map(type => {
       const rules = rulesFor(field, type);
       const controls = Object.entries(propertyNames).filter(([key]) => settingAvailable(field, key))
         .map(([key, label]) => checkControl(type + "-" + key, label, rules[key])).join("");
-      return '<fieldset class="pf-role-settings"><legend>' + typeNames[type] + '</legend>' +
+      return '<fieldset class="pf-role-settings"><legend>' + (isAllMode ? "Все анкеты" : typeNames[type]) + '</legend>' +
         controls + checkControl(type + "-required", "Обязательно в форме", rules.required, !rules.form) +
         '</fieldset>';
     }).join("");
     const body = '<form id="field-editor" data-edit-field="' + escapeText(field.id) +
-      '" data-edit-type="' + type + '">' +
+      '" data-edit-type="' + (isAllMode ? "client" : type) + '">' +
       '<p class="text-muted">' + escapeText(categories.get(field.category)) + '</p>' +
       '<p>Источник <code>' + escapeText(field.key) + '</code></p>' +
       '<div class="pf-settings-columns">' + typeControls + '</div>' +
