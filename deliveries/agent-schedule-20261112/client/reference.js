@@ -259,11 +259,20 @@ function showBooking() {
   find('#booking-delay-move').textContent = policy.rescheduleMode==='manual'?'Обратиться в поддержку':'Выбрать другое время';
   find('#booking-delay-cancel-confirm').hidden = true;
   find('#booking-form [type=submit]').textContent = 'Отправить заявку';
+  const proposal = booking?.proposal;
+  find('#booking-proposal').hidden = !proposal;
+  if (proposal) {
+    const time = bookingInstant(proposal);
+    find('#booking-proposal-time').textContent = dateLabel(time) + ' · ' + zoneLabel() +
+      '. До вашего согласия действует прежнее время. Цена и аванс сохранятся.';
+    for (const button of root.querySelectorAll('[data-booking-answer]')) button.disabled = Boolean(proposal.acceptedAt);
+    if (proposal.acceptedAt) find('#booking-proposal-time').textContent = dateLabel(time) + ' · Время уточняется.';
+  }
   if (booking) {
     find('#booking-result h3').textContent = booking.delayed ? 'Начало встречи задерживается' : ({pending:'Ожидает подтверждения', processing:'Ожидает оплаты', confirmed:'Запись подтверждена',cancelled:'Встреча отменена'})[booking.state] || model.labels[booking.state];
     find('#booking-result-time').textContent = (profile?.name || 'Эксперт') + ' · ' + dateLabel(bookingInstant(booking)) + ' · ' + zoneLabel();
     find('#booking-result-due').textContent = booking.state === 'pending' ? 'Ответ до ' + dateLabel(new Date(booking.deadlineAt)) + '.' : booking.state==='cancelled' ? (booking.refundStatus==='complete'?'На ваш баланс возвращено '+booking.refundAmount+' кредитов.':booking.refundStatus==='processing'?'Возврат неиспользованного аванса в обработке.':'Дополнительных списаний нет.') : booking.deadline;
-    find('#booking-result-price').textContent = booking.acceptedPrice + ' кредитов за минуту.';
+    find('#booking-result-price').textContent = booking.acceptedPrice + ' кредитов за минуту.' + (booking.advancePaid && Number.isFinite(booking.advanceAmount) ? ' Аванс: ' + booking.advanceAmount + ' кредитов.' : '');
     find('#booking-cancel-request').hidden = booking.state !== 'pending';
     if(booking.delayed) find('#booking-delay-message').textContent = booking.clientChoice==='wait' ? 'Вы решили подождать. Сообщим, когда эксперт сможет начать. Время ожидания не оплачивается.' : booking.clientSuggestion ? 'Ваше предложение отправлено. Сообщим, когда время будет подтверждено. Прежняя цена сохранится.' : (policy.rescheduleMode==='disabled'?'Эксперт сможет подключиться позже. Вы можете подождать или отменить встречу. Время ожидания не оплачивается.':policy.rescheduleMode==='manual'?'Эксперт сможет подключиться позже. Вы можете подождать, обратиться в поддержку или отменить встречу. Время ожидания не оплачивается.':'Эксперт сможет подключиться позже. Вы можете подождать, выбрать другое время или отменить встречу. Время ожидания не оплачивается; цена останется прежней.');
   } else {
@@ -319,12 +328,33 @@ async function showWait(cancelled = false) {
   }
 }
 
+function openBookingFor(button) {
+  trigger = button;
+  bookingProfile = button.dataset.profileId; selectedInstant = null; currentBookingId = null; movingBookingId = null;
+  find('#booking-error').hidden = true;
+  find('#booking-proposal-message').hidden = true;
+  showBooking();
+  find('#booking').showModal();
+  find('#booking .modal-title').focus();
+}
+for (const button of root.querySelectorAll('[data-booking-answer]')) button.addEventListener('click', () => {
+  const booking = ownBooking(model.readForProfile(bookingProfile), bookingProfile);
+  if (!booking?.proposal) return;
+  const accept = button.dataset.bookingAnswer === 'accept';
+  const result = model.answerReschedule(booking.id, accept, booking.proposal.id, bookingProfile);
+  showBooking();
+  const notice = find('#booking-proposal-message');
+  notice.hidden = false;
+  notice.textContent = result.error || (result.deferred ? 'Согласие принято. Уточняем новое время.' :
+    accept ? 'Время записи изменено.' : 'Прежнее время сохранено.');
+  find('#booking-result h3').focus();
+});
 root.querySelectorAll('[data-open]').forEach(button => button.addEventListener('click', event => {
   event.stopPropagation();
   trigger = button;
-  const dialog = document.getElementById(button.dataset.open);
-  if (dialog.id === 'booking') { bookingProfile = button.dataset.profileId; selectedInstant = null; currentBookingId=null; movingBookingId=null; find('#booking-error').hidden = true; showBooking(); }
-  else { waitProfile = button.dataset.profileId; showWait(); }
+  if (button.dataset.open === 'booking') { openBookingFor(button); return; }
+  const dialog = find('#wait');
+  waitProfile = button.dataset.profileId; showWait();
   dialog.showModal();
   dialog.querySelector('.modal-title').focus();
 }));
@@ -478,6 +508,10 @@ model.watch(state => {
   }
 });
 updateCardLabels(model.read());
+if (configScenario === 'transfer-conflict' && location.hash === '#booking-alisa') {
+  const button = find('[data-open="booking"][data-profile-id="alisa"]');
+  if (button) openBookingFor(button);
+}
 
 find('#wait-confirm').addEventListener('click', async () => {
   find('#wait-confirm').disabled = true;

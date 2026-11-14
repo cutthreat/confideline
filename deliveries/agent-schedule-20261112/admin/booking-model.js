@@ -2,7 +2,8 @@
  'use strict';
 
  const scenario = new URLSearchParams(location.search).get('scenario') || 'default';
- const key = 'confideline-shared-agent-schedule-20261112-v2' + (['active-session','client-conflict'].includes(scenario) ? '-' + scenario + '-20261113b' : '');
+ const transferScenario = ['transfer-free','transfer-conflict'].includes(scenario);
+ const key = 'confideline-shared-agent-schedule-20261112-v2' + (transferScenario ? '-' + scenario + '-v1' : ['active-session','client-conflict'].includes(scenario) ? '-' + scenario + '-20261113b' : '');
  const partnerSample = scenario.startsWith('partner195');
  const noProfiles = scenario.startsWith('partner-moderator');
  const otherView = new URLSearchParams(location.search).get('demoAgent') === 'kristy';
@@ -157,6 +158,10 @@
   const interests = defaultInterests().map(item=>({...item,date:today()}));
   const otherProfile={id:'solara',name:'Solara Ortiz',username:'SolaraOrtiz',userId:103,assignment:16};
   const otherAgent={agent:clone(agent),profiles:[otherProfile],entries:[{id:101,client:'Анна Д.',profile:'solara',assignment:16,date:firstDate,time:'11:00',state:'confirmed',advancePaid:true,paymentMode:'after-confirmation',acceptedPrice:10,deadline:'Встреча подтверждена',history:['Заявка подтверждена.']}],interests:[],firstDate,paymentMode:'after-confirmation'};
+  if (transferScenario) {
+   entries.push({id:9,client:'Мария Л.',profile:'alisa',date:firstDate,time:'09:30',state:'confirmed',acceptedPrice:12,advancePaid:true,advanceAmount:36,paymentMode:'after-confirmation',deadline:'Встреча подтверждена',history:['Заявка подтверждена.'],previewClient:true});
+   otherAgent.entries[0].time=scenario==='transfer-conflict'?'09:30':'11:00';
+  }
   let liveSession = null;
   if (scenario === 'active-session') {
    liveSession = {profile:'alisa', status:'active', active:true, provider:'partner195'};
@@ -385,11 +390,13 @@
    applyAcceptedReschedule(booking,at,state.paymentMode);
   }
  }
- function answerReschedule(id,accepted,proposalId) {
-  const state=read(),booking=state.entries.find(item=>item.id===id);
+ function answerReschedule(id,accepted,proposalId,profileId) {
+  const state=profileId?readForProfile(profileId):read();
+  const save=()=>profileId?writeForProfile(state,profileId):write(state);
+  const booking=state.entries.find(item=>item.id===id&&(!profileId||item.profile===profileId));
   if (!booking || !active(booking) || !booking.proposal?.holdsSlot) return {error:'Предложение переноса уже недоступно.'};
   const at=Date.now();
-  if(expire(booking,at)){write(state);return {error:'Срок предложения переноса истёк.'};}
+  if(expire(booking,at)){save();return {error:'Срок предложения переноса истёк.'};}
   if (!proposalId || booking.proposal.id!==proposalId) return {error:'Предложение изменилось. Откройте актуальное время и подтвердите его отдельно.'};
   const proposal=booking.proposal;
   if(proposal.acceptedAt)return accepted ? {state,deferred:true} : {error:'Клиент уже согласовал перенос.'};
@@ -401,7 +408,7 @@
    if(occupiedByAnother&&proposal.transferConflict){
     proposal.acceptedAt=at;
     booking.history.push('Клиент согласовал перенос. Новое время пока занято другой записью агента.');
-    write(state);return {state,deferred:true};
+    save();return {state,deferred:true};
    }
    if(occupiedByAnother)
     return {error:'Предложенное время сейчас недоступно. Передайте конфликт ответственному.'};
@@ -410,7 +417,7 @@
    booking.history.push('Клиент отклонил перенос. Исходная запись сохранена.');
    booking.proposal=null;
   }
-  write(state);return {state};
+  save();return {state};
  }
  function saveSchedule(candidate, baseline, profileId) {
   if (profileId) return {error:'Расписание задаётся только в графике агента.'};
@@ -455,9 +462,13 @@
   if(target.profiles.some(p=>p.id===id))return {error:'Анкета уже назначена выбранному агенту.'};
   const activeEntries=state.entries.filter(b=>b.profile===id&&active(b));
   target.entries.forEach(b=>expire(b,Date.now()));
+  const targetName=id=>target.profiles.find(p=>p.id===id)?.name||'Анкета';
   const conflicts=activeEntries.flatMap(b=>{
    const times=[{date:b.date,time:b.time}];if(b.proposal?.holdsSlot)times.push({date:b.proposal.date,time:b.proposal.time,proposed:true});
-   return times.filter(t=>occupied(target.entries,t.date,minutes(t.time)).length).map(t=>({id:b.id,client:b.client,...t}));
+   return times.flatMap(t=>occupied(target.entries,t.date,minutes(t.time)).map(other=>({
+    id:b.id,client:b.client,...t,
+    other:{id:other.id,client:other.client,profile:targetName(other.profile),date:other.date,time:other.time}
+   })));
   });
   const scheduleIssues=scheduleConflicts(activeEntries,target.agent,profile,id);
   const live=hasLiveSession(state,id);
@@ -476,6 +487,9 @@
   state.profiles=state.profiles.filter(p=>p.id!==id);
   state.entries=state.entries.filter(b=>!(b.profile===id&&active(b)));
   target.profiles.push({...clone(profile),assignment:newAssignment});
+  target.interests ||= [];
+  target.interests.push(...(state.interests||[]).filter(item=>item.profile===id));
+  state.interests=(state.interests||[]).filter(item=>item.profile!==id);
   for(const booking of moved){
    const received={...clone(booking),assignment:newAssignment,history:[...booking.history,'Анкета и запись переданы другому агенту.']};
    if(received.proposal&&check.conflicts.some(conflict=>conflict.id===booking.id&&conflict.proposed))received.proposal.transferConflict=true;
@@ -502,6 +516,12 @@
   state.entries.filter(b=>b.profile===id&&active(b)).forEach(b=>{b.unassigned=true;b.history.push('Назначение снято. Запись сохранена для рассмотрения.');});
   state.audit ||= [];state.audit.push({event:'emergency-unassignment',profile:id,provider:session.provider,at:session.stoppedAt,reason:session.reason,financialStatus:'review'});
   write(state);return {state};
+ }
+ const demoUrl=new URL(location.href);
+ if(transferScenario&&demoUrl.searchParams.get('reset')==='1'){
+  writeRoot(seed());
+  demoUrl.searchParams.delete('reset');
+  history.replaceState(history.state,'',demoUrl);
  }
  function resetClientConflict() { if(scenario==='client-conflict') writeRoot(seed()); }
  function clientDelayAction(id,action,values={},profileId=null) {

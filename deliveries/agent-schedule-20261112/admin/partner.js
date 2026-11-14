@@ -4,6 +4,8 @@
  $$('.partner-nav i').forEach(el=>el.setAttribute('aria-hidden','true'));
  const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const model=window.BookingPreview;
+ const demoScenario=new URLSearchParams(location.search).get('scenario');
+ const transferDemo=['transfer-free','transfer-conflict'].includes(demoScenario);
  const {today,clone,active,labels:statuses}=model;
  if(model.otherView){
   document.title='Пользователь #12 · Confideline';
@@ -120,7 +122,7 @@
    const viewButton=isLocal?'<button class="btn btn-default btn-sm" type="button" title="Просмотр" aria-label="Просмотр: '+esc(p.name)+'" data-profile-view="'+p.id+'"><i class="fa fa-eye"></i></button>':'<a class="btn btn-default btn-sm" href="'+esc(view)+'" title="Просмотр" aria-label="Просмотр: '+esc(p.name)+'"><i class="fa fa-eye"></i></a>';
    const person=photo+'<span><strong>'+esc(p.name)+'</strong><small>'+esc(p.username||p.name)+'</small></span>';
    const personCell=user?'<a class="profile-user" href="'+esc(user)+'">'+person+'</a>':'<span class="profile-user">'+person+'</span>';
-   return '<tr><td>'+esc(p.assignment||'—')+'</td><td>'+personCell+'</td><td>'+(p.city?'<span class="label label-success">'+esc(p.city)+'</span>':'—')+'</td><td>'+esc(p.created||'—')+'</td><td><div class="profile-actions">'+viewButton+'<button type="button" class="btn btn-default btn-sm" title="Города эксперта" aria-label="Города эксперта: '+esc(p.name)+'" data-profile-cities="'+p.id+'"><i class="fa fa-map-marker"></i></button><button type="button" class="btn btn-default btn-sm profile-action-text" aria-label="Записи: '+esc(p.name)+'" data-profile-bookings="'+p.id+'">Записи</button><button type="button" class="btn btn-default btn-sm text-danger" title="Снять назначение" aria-label="Снять назначение: '+esc(p.name)+'" data-profile-remove="'+p.id+'"><i class="fa fa-trash"></i></button></div></td></tr>';
+   return '<tr><td>'+esc(p.assignment||'—')+'</td><td>'+personCell+'</td><td>'+(p.city?'<span class="label label-success">'+esc(p.city)+'</span>':'—')+'</td><td>'+esc(p.created||'—')+'</td><td><div class="profile-actions">'+viewButton+'<button type="button" class="btn btn-default btn-sm" title="Города эксперта" aria-label="Города эксперта: '+esc(p.name)+'" data-profile-cities="'+p.id+'"><i class="fa fa-map-marker"></i></button><button type="button" class="btn btn-default btn-sm profile-action-text" aria-label="Записи: '+esc(p.name)+'" data-profile-bookings="'+p.id+'">Записи</button><button type="button" class="btn btn-default btn-sm profile-action-text" aria-label="Передать анкету: '+esc(p.name)+'" data-profile-transfer="'+p.id+'">Передать</button><button type="button" class="btn btn-default btn-sm text-danger" title="Снять назначение" aria-label="Снять назначение: '+esc(p.name)+'" data-profile-remove="'+p.id+'"><i class="fa fa-trash"></i></button></div></td></tr>';
   }).join(''):'<tr><td colspan="5" class="profiles-empty">Нет анкет по выбранным условиям</td></tr>';
  }
  ['profile-search','profile-id-filter','profile-date-filter','profile-date-to'].forEach(id=>$('#'+id).addEventListener('input',renderProfiles));
@@ -138,7 +140,8 @@
  function renderCities(){const p=profiles.find(x=>x.id===profileAction);if(!p)return;$('#cities-title').textContent='Города эксперта: '+p.name;const cities=p.cities||(p.city?[p.city]:[]);$('#cities-list').innerHTML=cities.map((c,i)=>'<div class="list-group-item">'+esc(c)+(i===0?' <span class="label label-success">По умолчанию</span>':'')+'</div>').join('')||'Города не назначены.';}
  $('#cities-close').addEventListener('click',()=>{$('#cities-dialog').close();$('[data-profile-cities="'+profileAction+'"]')?.focus();});
  $('#cities-form').addEventListener('submit',e=>{e.preventDefault();const city=$('#cities-input').value.trim();if(!city)return;const result=model.addCity(profileAction,city);$('#cities-message').textContent=result.error||'Город добавлен.';if(result.state){sync(result.state);renderCities();$('#cities-input').value='';}});
- $('#remove-profile-cancel').addEventListener('click',()=>{$('#remove-profile-dialog').close();$('[data-profile-remove="'+profileAction+'"]')?.focus();});
+ let assignmentTrigger;
+ $('#remove-profile-cancel').addEventListener('click',()=>{$('#remove-profile-dialog').close();assignmentTrigger?.focus();});
  $('#emergency-profile-open').addEventListener('click',()=>{$('#remove-profile-dialog').close();$('#emergency-profile-reason').value='';$('#emergency-profile-error').textContent='';$('#emergency-profile-dialog').showModal();$('#emergency-profile-reason').focus();});
  $('#emergency-profile-cancel').addEventListener('click',()=>{$('#emergency-profile-dialog').close();$('#remove-profile-dialog').showModal();$('#emergency-profile-open').focus();});
  $('#emergency-profile-form').addEventListener('submit',e=>{
@@ -153,21 +156,42 @@
   const id=profileAction;$('#remove-profile-dialog').close();bookingContext={profile:id,from:'profiles'};
   $('#booking-profile').value=id;$('#booking-status').value='all';selected=null;nav('bookings');
  });
- $('#transfer-agent').addEventListener('change',()=>{
-  const target=$('#transfer-agent').value,button=$('#transfer-profile-confirm'),summary=$('#transfer-summary');
-  if(!target){button.disabled=true;summary.textContent='';return;}
+ const hasTransferConflict=result=>Boolean(result.conflicts.length||result.scheduleIssues.length);
+ function updateTransfer(){
+  const target=$('#transfer-agent').value,button=$('#transfer-profile-confirm'),summary=$('#transfer-summary'),review=$('#transfer-review');
+  summary.textContent='';review.replaceChildren();review.hidden=true;
+  button.disabled=true;button.textContent='Передать анкету';
+  if(!target)return;
   const result=model.inspectTransfer(profileAction,target);
-  if(result.error){button.disabled=true;summary.textContent=result.error;return;}
-  button.disabled=result.live;
-  const overlaps=result.conflicts.length?'У выбранного агента есть совпадающие записи: '+result.conflicts.map(c=>dateText(c.date)+' '+c.time).join(', ')+'. ':'',outside=result.scheduleIssues.length?'Вне рабочего времени агента: '+result.scheduleIssues.map(c=>dateText(c.scheduleConflictProposal&&!c.scheduleConflictOriginal?c.proposal.date:c.date)+' '+(c.scheduleConflictProposal&&!c.scheduleConflictOriginal?c.proposal.time:c.time)).join(', ')+'. ':'';
-  summary.textContent=result.live?'Передать анкету можно после завершения текущей консультации.':overlaps||outside?overlaps+outside+'Записи сохранятся; конфликт нужно решить с клиентами.':'Анкета и активные записи перейдут выбранному агенту.';
- });
+  if(result.error||result.live){summary.textContent=result.error||'Передать анкету можно после завершения текущей консультации.';return;}
+  const conflict=hasTransferConflict(result);
+  button.disabled=false;
+  button.textContent=conflict?'Передать и открыть конфликт':'Передать анкету';
+  summary.textContent=conflict?'Есть конфликт времени':result.activeEntries.length?'Время свободно у нового агента':'У анкеты нет открытых заявок и записей';
+  if(!result.activeEntries.length)return;
+  review.hidden=false;
+  review.className=conflict?'transfer-review has-conflict':'transfer-review';
+  const line=(label,detail)=>'<div><span>'+esc(label)+'</span><strong>'+esc(detail)+'</strong></div>';
+  const timeAt=(date,time)=>dateText(date)+' · '+time;
+  const overlaps=result.conflicts.map(c=>line(c.proposed?'Предложенный перенос':'Передаваемая запись',name(profileAction)+' · '+c.client+' · '+timeAt(c.date,c.time))+
+   line('Уже у нового агента',c.other.profile+' · '+c.other.client+' · '+timeAt(c.other.date,c.other.time))).join('');
+  const outside=result.scheduleIssues.map(c=>line('Вне рабочего графика',c.client+' · '+timeAt(c.scheduleConflictOriginal?c.date:c.proposal.date,c.scheduleConflictOriginal?c.time:c.proposal.time))).join('');
+  review.innerHTML=conflict?overlaps+outside+'<p>Обе записи сохранятся. Если обещанное время нельзя обеспечить, откройте запись и предложите клиенту другое.</p>':
+   result.activeEntries.map(b=>line(statuses[model.visibleStatus(b)],b.client+' · '+timeAt(b.date,b.time))).join('')+'<p>Время, цена и аванс сохранятся.</p>';
+ }
+ $('#transfer-agent').addEventListener('change',updateTransfer);
  $('#transfer-profile-confirm').addEventListener('click',()=>{
   const id=profileAction,profileName=name(id),result=model.transferProfile(id,$('#transfer-agent').value);
   if(result.error){$('#remove-profile-message').textContent=result.error;return;}
   sync(result.state);delete profileDrafts[id];delete profileBaselines[id];$('#remove-profile-dialog').close();refillProfiles();renderAddOptions();renderProfiles();
-  const q=new URLSearchParams(location.search),targetName=model.otherView?'saffettr':'Kristy';if(model.otherView)q.delete('demoAgent');else q.set('demoAgent','kristy');const target='partner.html?'+q.toString()+'#bookings';
-  $('#profile-action-message').innerHTML='Анкета '+esc(profileName)+' передана агенту '+esc(targetName)+'.'+(result.conflicts.length||result.scheduleIssues.length?' Есть конфликт записей. ':' ')+'<a href="'+esc(target)+'">Открыть записи агента</a>';
+  const q=new URLSearchParams(location.search),targetName=model.otherView?'saffettr':'Kristy';
+  if(model.otherView)q.delete('demoAgent');else q.set('demoAgent','kristy');
+  const conflicting=result.conflicts[0]||result.scheduleIssues[0];
+  if(conflicting)q.set('booking',conflicting.id); else q.delete('booking');
+  const target='partner.html?'+q.toString()+'#bookings'+(conflicting?'':':'+id);
+  if(conflicting){location.assign(target);return;}
+  $('#profile-action-message').innerHTML='Анкета '+esc(profileName)+' передана агенту '+esc(targetName)+'. <a href="'+esc(target)+'">Открыть записи агента</a>';
+  $('#profile-action-message a').focus();
  });
  $('#remove-profile-confirm').addEventListener('click',()=>{
   const id=profileAction,profileName=name(id),result=model.removeProfile(id);
@@ -322,16 +346,18 @@
   const actions=model.actions(b).map(action=>'<button type="button" class="btn btn-'+(action==='confirm'?'primary':'default')+'" data-action="'+action+'">'+buttons[action]+'</button>').join(' ');
   const status=model.visibleStatus(b);
   const price=Number.isFinite(b.acceptedPrice)?'<div><span>Цена этой записи</span><strong>'+esc(b.acceptedPrice)+' кредитов / мин</strong></div>':'';
-  const proposed=active(b)&&b.proposal?'<p class="proposal-note">Предложено: '+esc(dateText(b.proposal.date))+' · '+esc(b.proposal.time)+'. '+esc(model.proposalDescription(b))+'</p>':'';
+  const advance=Number.isFinite(b.advanceAmount)&&b.advancePaid?'<div><span>Аванс</span><strong>'+esc(b.advanceAmount)+' кредитов</strong></div>':'';
+  const proposed=active(b)&&b.proposal?'<div class="proposal-note"><p>Предложено: '+esc(dateText(b.proposal.date))+' · '+esc(b.proposal.time)+'. '+esc(model.proposalDescription(b))+'</p>'+(transferDemo&&b.previewClient?'<a href="../client/index.html?scenario='+esc(demoScenario)+'#booking-alisa">Открыть предложение со стороны клиента</a>':'')+'</div>':'';
   const outcome=model.needsOutcomeCheck(b)?'<p class="proposal-note">Время встречи наступило. Проверьте состояние консультации в чате.</p>':'';
   const conflict=model.scheduleConflicts([b],saved,profiles.find(p=>p.id===b.profile),b.profile)[0];
   const scheduleConflict=conflict?'<p class="proposal-note">'+(conflict.scheduleConflictOriginal?'Исходное время вне рабочего графика. ':'')+(conflict.scheduleConflictProposal?'Предложенное время вне рабочего графика. ':'')+'Выберите действие, чтобы решить конфликт.</p>':'';
-  const doubleBooking=overlapConflict(b)?'<p class="proposal-note">На исходное время у партнёра есть другая запись.</p>':'';
+  const overlapping=active(b)?model.occupied(entries,b.date,numeric(b.time),b.id):[];
+  const doubleBooking=overlapping.length?'<section class="transfer-review has-conflict"><strong>Конфликт записей</strong><p>Две встречи пересекаются в графике агента '+esc(model.partnerName)+'. Записи и цены сохранены.</p><ul>'+overlapping.map(other=>'<li><button type="button" class="text-button" data-entry="'+other.id+'">Открыть вторую запись: '+esc(name(other.profile))+' · '+esc(other.client)+' · '+esc(other.time)+'</button></li>').join('')+'</ul><p>Сначала проверьте, можно ли провести обе встречи в обещанное время. Если это невозможно, предложите клиенту свободное время.</p></section>':'';
   const proposalOverlap=b.proposal&&overlapConflict(b,b.proposal.date,b.proposal.time)?'<p class="proposal-note">На предложенное время у партнёра есть другая запись.</p>':'';
   const clientSuggestion=b.clientSuggestion?'<p class="proposal-note">Клиент предложил время: '+esc(dateText(b.clientSuggestion.date))+' · '+esc(b.clientSuggestion.time)+'. Проверьте возможность переноса и ответьте клиенту.</p>':'';
   const unassigned=active(b)&&!profiles.some(p=>p.id===b.profile)?'<p class="proposal-note">По этой анкете нужно назначить агента и обеспечить встречу в согласованное время. При необходимости изменения времени свяжитесь с клиентом.</p>':'';
   const back=detailOrigin==='schedule'?'К графику':view==='list'?'К записям':'К календарю';
-  d.innerHTML='<button type="button" class="text-button" data-back>‹ '+back+'</button><div class="detail-heading"><div><h3>'+esc(b.client)+'</h3><p>'+esc(name(b.profile))+' · '+esc(dateText(b.date))+' · '+esc(b.time)+'</p></div><span class="status '+esc(status)+'">'+esc(statuses[status])+'</span></div><div class="detail-grid"><div><span>Анкета</span><strong>'+esc(name(b.profile))+'</strong></div><div><span>Следующее действие</span><strong>'+esc(b.proposal?model.proposalDeadline(b):b.deadline)+'</strong></div><div><span>Окно в графике</span><strong>'+esc(b.time)+'–'+model.time(numeric(b.time)+model.slotLength)+'</strong></div>'+price+'</div>'+unassigned+scheduleConflict+doubleBooking+proposed+proposalOverlap+clientSuggestion+outcome+'<div class="form-row">'+actions+'</div><details><summary>История записи</summary><ul>'+b.history.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details>';
+  d.innerHTML='<button type="button" class="text-button" data-back>‹ '+back+'</button><div class="detail-heading"><div><h3>'+esc(b.client)+'</h3><p>'+esc(name(b.profile))+' · '+esc(dateText(b.date))+' · '+esc(b.time)+'</p></div><span class="status '+esc(status)+'">'+esc(statuses[status])+'</span></div><div class="detail-grid"><div><span>Анкета</span><strong>'+esc(name(b.profile))+'</strong></div><div><span>Следующее действие</span><strong>'+esc(b.proposal?model.proposalDeadline(b):b.deadline)+'</strong></div><div><span>Окно в графике</span><strong>'+esc(b.time)+'–'+model.time(numeric(b.time)+model.slotLength)+'</strong></div>'+price+advance+'</div>'+unassigned+scheduleConflict+doubleBooking+proposed+proposalOverlap+clientSuggestion+outcome+'<div class="form-row">'+actions+'</div><details><summary>История записи</summary><ul>'+b.history.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details>';
  }
  function openEntry(id,origin='bookings'){
   selected=id;detailOrigin=origin;show('bookings');renderDetail(entries.find(b=>b.id===id));$('#booking-detail [data-back]').focus();
@@ -391,18 +417,21 @@
   const sort=e.target.closest('[data-profile-sort]');if(sort){profileSortDirection=profileSort===sort.dataset.profileSort?-profileSortDirection:1;profileSort=sort.dataset.profileSort;renderProfiles();return;}
   const city=e.target.closest('[data-profile-cities]');if(city){profileAction=city.dataset.profileCities;$('#cities-input').value='';$('#cities-message').textContent='';renderCities();$('#cities-dialog').showModal();return;}
   const pv=e.target.closest('[data-profile-view]');if(pv){profileAction=pv.dataset.profileView;$('#profile-view-name').textContent=name(profileAction);$('#profile-view-dialog').showModal();return;}
-  const remove=e.target.closest('[data-profile-remove]');if(remove){
-   sync();profileAction=remove.dataset.profileRemove;
+  const assignment=e.target.closest('[data-profile-remove],[data-profile-transfer]');if(assignment){
+   sync();assignmentTrigger=assignment;
+   const isTransfer=Boolean(assignment.dataset.profileTransfer);
+   profileAction=assignment.dataset.profileTransfer||assignment.dataset.profileRemove;
    const blocked=entries.filter(entry=>entry.profile===profileAction&&active(entry));
    const live=model.hasLiveSession(data,profileAction);
-   $('#remove-profile-title').textContent='Снять назначение: '+name(profileAction)+'?';
-   $('#remove-profile-copy').textContent=live?'По этой анкете идёт консультация. Снимите назначение после её завершения.':'Снять назначение анкеты '+name(profileAction)+' с этого партнёра?'+(blocked.length?' У анкеты есть активные заявки или записи, поэтому выберите нового агента.':'');
-   $('#remove-profile-message').textContent='';$('#remove-profile-open-bookings').hidden=!blocked.length;
-   $('#remove-profile-confirm').hidden=Boolean(blocked.length)||live;
-   $('#transfer-profile-options').hidden=!blocked.length||live;$('#transfer-profile-confirm').hidden=!blocked.length||live;
-   $('#emergency-profile-open').hidden=!live;
-   $('#transfer-profile-confirm').disabled=true;$('#transfer-agent').value='';$('#transfer-summary').textContent='';
-   $('#remove-profile-dialog').showModal();(live?$('#remove-profile-cancel'):blocked.length?$('#transfer-agent'):$('#remove-profile-cancel')).focus();return;
+   $('#remove-profile-title').textContent=(isTransfer?'Передать анкету: ':'Снять назначение: ')+name(profileAction)+'?';
+   $('#remove-profile-copy').textContent=live?'По этой анкете идёт консультация. Изменить назначение можно после её завершения.':isTransfer?'Выберите агента, чтобы проверить время открытых записей.':'Снять назначение анкеты '+name(profileAction)+' с этого партнёра?'+(blocked.length?' У анкеты есть активные заявки или записи. Сначала назначьте другого агента.':'');
+   $('#remove-profile-message').textContent='';$('#remove-profile-open-bookings').hidden=!blocked.length||isTransfer;
+   $('#remove-profile-confirm').hidden=isTransfer||Boolean(blocked.length)||live;
+   const canTransfer=(isTransfer||blocked.length)&&!live;
+   $('#transfer-profile-options').hidden=!canTransfer;$('#transfer-profile-confirm').hidden=!canTransfer;
+   $('#emergency-profile-open').hidden=!live||isTransfer;
+   $('#transfer-agent').value='';updateTransfer();
+   $('#remove-profile-dialog').showModal();(canTransfer?$('#transfer-agent'):$('#remove-profile-cancel')).focus();return;
   }
   const former=e.target.closest('[data-former-bookings]');if(former){bookingContext=null;$('#booking-profile').value=former.dataset.formerBookings;$('#booking-status').value='all';selected=null;nav('bookings');return;}
   const goto=e.target.closest('[data-goto]');if(goto){requestScheduleLeave(()=>nav(goto.dataset.goto),goto);return;}
@@ -458,6 +487,8 @@
   selectDate:day=>{$('#exception-date').value=day;},editDate:()=>{$('#exception-date').scrollIntoView({block:'center'});$('#exception-date').focus();}
  });
  route();
+ const bookingFromTransfer=Number(new URLSearchParams(location.search).get('booking'));
+ if(location.hash==='#bookings'&&bookingFromTransfer&&entries.some(b=>b.id===bookingFromTransfer))openEntry(bookingFromTransfer);
  window.addEventListener('beforeunload',event=>{
   const unsavedAgent=!model.same(draft,agentBaseline);
   if(unsavedAgent){event.preventDefault();event.returnValue='';}
