@@ -127,7 +127,7 @@
 
   function save(field, changes, feedback = "Настройки сохранены.", color = "text-success") {
     const saved = persist(feedback, () => applyRules(field, changes), color);
-    if (saved && differences.checked && !hasDifferences(field)) {
+    if (saved && differences.checked && !hasDifferences(field) && !isAllMode) {
       message.textContent += " Настройки совпали. Поле скрыто фильтром.";
     }
     return saved;
@@ -168,8 +168,8 @@
     return key !== "search" || searchSupported(field);
   }
 
-  function typesFor(field) {
-    return profileTypes.filter(type => appliesTo(field, type));
+  function typesFor(field, source = state) {
+    return profileTypes.filter(type => appliesTo(field, type, source));
   }
 
   function fieldTitle(field) {
@@ -311,21 +311,22 @@
     search.focus();
   }
 
-  function hasDifferences(field) {
-    if (typesFor(field).length !== profileTypes.length) return true;
-    const [client, expert] = profileTypes.map(type => rulesFor(field, type));
+  function hasDifferences(field, source = state) {
+    if (typesFor(field, source).length !== profileTypes.length) return true;
+    const [client, expert] = profileTypes.map(type => rulesFor(field, type, source));
     return listSettings.some(key => settingAvailable(field, key) && client[key] !== expert[key]);
   }
 
   function renderRows(revealField = "") {
     const type = selectedProfile();
     const query = search.value.trim().toLocaleLowerCase("ru");
+    const baseline = isAllMode && editing ? baselineState() : null;
     const found = fieldsFor(type).filter(field => {
       const label = [registeredId(field), field.title, field.frontTitle, field.originalTitle, field.key].join(" ").toLocaleLowerCase("ru");
       return (!query || label.includes(query)) &&
         (!category.value || category.value === field.category) &&
         (!origin.value || origin.value === field.origin) &&
-        (!differences.checked || hasDifferences(field));
+        (!differences.checked || hasDifferences(field) || (baseline && hasDifferences(field, baseline)));
     });
     if (sort.key) {
       found.sort((first, second) => {
@@ -585,11 +586,16 @@
           dialogBody.insertAdjacentHTML("beforeend", '<p class="text-danger" role="alert">Настройки изменились в другой вкладке. Отмените изменения, откройте редактирование заново и повторите их.</p>');
           return;
         }
+        const baseline = baselineState();
+        const matchedFields = differences.checked && baseline && fieldsFor().some(field =>
+          hasDifferences(field, baseline) && !hasDifferences(field));
         localStorage.setItem(storageKey, JSON.stringify(state));
         for (const key of [editKey, draftKey, baseKey, rawKey, conflictKey]) sessionStorage.removeItem(key);
         editing = false; conflict = false; syncEditUI(); renderRows();
         message.classList.remove("text-warning", "text-danger"); message.classList.add("text-success");
-        message.textContent = "Настройки сохранены.";
+        message.textContent = matchedFields
+          ? "Настройки сохранены. Совпавшие поля скрыты фильтром."
+          : "Настройки сохранены.";
         focusReturn = manager.querySelector("[data-unlock]"); dialog.close();
       } catch { dialogBody.insertAdjacentHTML("beforeend", '<p class="text-danger" role="alert">Не удалось сохранить изменения. Они остались в редакторе.</p>'); }
       return;
