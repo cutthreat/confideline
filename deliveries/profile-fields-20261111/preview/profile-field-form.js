@@ -56,7 +56,6 @@
     element("field-language-form").value = definition.language ?? "app";
     element("field-order-form").value = definition.order ?? field.sortOrder ?? 100;
     element("field-weight-form").value = definition.weight ?? (field.id === "17" ? "0" : "");
-    required.checked = !!definition.required;
     element("field-initial-rules").hidden = true;
     element("field-output-form").value = definition.output || "Через запятую";
     element("field-format-form").value = definition.format || "";
@@ -121,7 +120,6 @@
       language: element("field-language-form").value,
       order: element("field-order-form").value || "100",
       weight: element("field-weight-form").value,
-      required: required.checked,
       optionsText,
       output: element("field-output-form").value,
       format: element("field-format-form").value

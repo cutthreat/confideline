@@ -408,6 +408,17 @@
       if (!wasPresent && isPresent) {
         const assigned = profileTypes.filter(type => appliesTo(newField, type, state));
         changes.push("Добавлено поле «" + name + "» · Анкеты: " + assigned.map(type => typeNames[type]).join(", "));
+        const definition = state.fieldDefinitions?.[id] || {};
+        const details = ["Категория — " + (categories.get(newField.category) || newField.category),
+          "Класс — " + (modelClasses[newField.component] || newField.component),
+          "Псевдоним — " + newField.key,
+          "Порядок — " + (definition.order || newField.sortOrder || "100"),
+          "Категория языка — " + (definition.language || "app"),
+          "Вес — " + (definition.weight || "0"),
+          "Формат вывода — " + (definition.output || "Через запятую")];
+        if (definition.optionsText) details.push("Значения — " + definition.optionsText.split(/\r?\n/).join("; "));
+        if (definition.format) details.push("Свой формат — " + definition.format);
+        changes.push("«" + name + "»: " + details.join("; "));
         for (const type of assigned) {
           const rules = rulesFor(newField, type, state);
           const settings = Object.entries({ ...propertyNames, required: "Обязательно в форме" })
@@ -443,10 +454,10 @@
           changes.push("«" + name + "»: " + label + " — «" + readable(before) + "» → «" + readable(after) + "»");
         }
       }
-      const defaults = { language: "app", order: oldField.sortOrder == null ? "" : String(oldField.sortOrder), weight: id === "17" ? "0" : "", required: false, optionsText: (oldField.options || profileFieldOptions[id] || []).map((value, i) => (i + 1) + " => " + value).join("\n"), output: "Через запятую", format: "" };
+      const defaults = { language: "app", order: oldField.sortOrder == null ? "" : String(oldField.sortOrder), weight: id === "17" ? "0" : "", optionsText: (oldField.options || profileFieldOptions[id] || []).map((value, i) => (i + 1) + " => " + value).join("\n"), output: "Через запятую", format: "" };
       const oldDefinition = { ...defaults, ...(baseline.fieldDefinitions?.[id] || {}) };
       const newDefinition = { ...defaults, ...(state.fieldDefinitions?.[id] || {}) };
-      const definitionLabels = { language: "Язык", order: "Порядок", weight: "Вес", required: "Обязательность", optionsText: "Значения", output: "Формат вывода", format: "Свой формат" };
+      const definitionLabels = { language: "Язык", order: "Порядок", weight: "Вес", optionsText: "Значения", output: "Формат вывода", format: "Свой формат" };
       for (const [key, label] of Object.entries(definitionLabels)) {
         if (oldDefinition[key] === newDefinition[key]) continue;
         const format = value => typeof value === "boolean" ? (value ? "включено" : "выключено") : (value || "не задано");
@@ -778,6 +789,25 @@
       const field = fieldsFor().find(item => item.id === control.dataset.field);
       const type = control.dataset.profileType;
       const key = control.dataset.setting;
+      if (!isAllMode) {
+        try {
+          const raw = localStorage.getItem(storageKey);
+          const latest = raw === null ? { rules: { client: {}, expert: {} }, added: [], removed: [] } : JSON.parse(raw);
+          if (!latest?.rules?.client || !latest.rules.expert || !Array.isArray(latest.added) || !Array.isArray(latest.removed)) throw new Error("invalid state");
+          if (Boolean(rulesFor(field, type)[key]) !== Boolean(rulesFor(field, type, latest)[key])) {
+            state = latest;
+            renderRows(field.id);
+            message.classList.remove("text-success", "text-danger"); message.classList.add("text-warning");
+            message.textContent = "Эту настройку изменили в другой вкладке. Показано актуальное значение.";
+            return;
+          }
+        } catch {
+          control.checked = rulesFor(field, type)[key];
+          message.classList.remove("text-success", "text-warning"); message.classList.add("text-danger");
+          message.textContent = "Не удалось проверить актуальность настройки. Попробуйте ещё раз.";
+          return;
+        }
+      }
       const feedback = "«" + fieldTitle(field) + "». " + typeNames[type] + " · " +
         propertyNames[key] + (control.checked ? " · включено." : " · выключено.");
       const saved = save(field, { [type]: { [key]: control.checked } }, feedback,
