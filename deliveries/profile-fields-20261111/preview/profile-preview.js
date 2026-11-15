@@ -33,14 +33,14 @@
   }
 
   function rulesFor(field, type) {
-    const saved = state.rules[isAllMode ? "client" : type][field.id];
+    const saved = state.rules[type][field.id];
     if (saved) return { ...emptySettings, ...saved };
     const professional = field.origin === "custom" && Number(field.id) >= 17;
     const basic = field.origin === "built-in" && field.category !== "dating";
     return {
       ...emptySettings,
       form: basic || professional,
-      view: basic && field.showInView !== false,
+      view: (basic && field.showInView !== false) || (field.id === "7" && type === "client"),
       search: field.canSearch && (field.id === "sex" || professional)
     };
   }
@@ -49,8 +49,8 @@
     const type = typeSelect.value;
     return [...builtIns, ...customCatalog, ...state.added].map(field => ({ ...field, ...(state.fieldOverrides?.[field.id] || {}) })).filter(field => {
       const assigned = state.fieldTypes?.[field.id];
-      const applies = isAllMode || (assigned ? assigned.includes(type) : field.types.includes(type) ||
-        (!field.explicitTypes && type === "expert" && field.types.includes("client")));
+      const applies = assigned ? assigned.includes(type) : field.types.includes(type) ||
+        (!field.explicitTypes && type === "expert" && field.types.includes("client"));
       return applies && !state.removed.includes(field.id);
     });
   }

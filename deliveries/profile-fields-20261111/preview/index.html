@@ -14,9 +14,10 @@
   <link rel="stylesheet" href="assets/content/assets/38c24d7b/css/admin.min.css">
   <link rel="stylesheet" href="assets/content/assets/38c24d7b/css/admin-header-v2.css">
   <link rel="stylesheet" href="assets/content/assets/38c24d7b/css/admin-sidebar-v1.css">
-  <link rel="stylesheet" href="profile-fields.css?v=20261115-1">
+  <link rel="stylesheet" href="profile-fields.css?v=20261115-13">
   <script src="profile-fields-data.js?v=20261114-3" defer></script>
-  <script src="profile-fields.js?v=20261114-3" defer></script>
+  <script src="profile-field-options.js?v=20261114-3" defer></script>
+  <script src="profile-fields.js?v=20261115-14" defer></script>
 </head>
 <body class="skin-youdate fixed sidebar-mini">
 <div class="wrapper">
@@ -101,13 +102,25 @@
     <main class="content" id="fields">
       <div class="box" id="profile-field-manager">
         <div class="box-header with-border pf-heading">
-          <span class="pf-scope">Клиентские и экспертные анкеты <small class="pf-demo-label">Макет</small></span>
+          <span class="pf-scope">Поля анкет</span>
           <div class="pf-actions">
             <button class="btn btn-default btn-sm" type="button" data-preview><i class="fa fa-eye" aria-hidden="true"></i> Предпросмотр</button>
             <a class="btn btn-primary btn-sm" href="field-form.html" id="new-field-link" title="Новое поле"><i class="fa fa-plus" aria-hidden="true"></i> Новое поле</a>
           </div>
         </div>
-        <div class="box-content">
+        <div class="pf-mode-bar">
+          <div class="pf-mode-tabs" role="tablist" aria-label="Режим работы сайта">
+            <button type="button" role="tab" id="mode-expert-tab" aria-selected="true" aria-controls="field-mode-content">Клиент — эксперт</button>
+            <button type="button" role="tab" id="mode-all-tab" aria-selected="false" aria-controls="field-mode-content" disabled>Все видят всех</button>
+          </div>
+          <div id="mode-actions" class="pf-mode-actions" hidden>
+            <span id="mode-state" class="pf-mode-state">Просмотр</span>
+            <button type="button" class="btn btn-default btn-sm" data-unlock>Изменить настройки</button>
+            <button type="button" class="btn btn-default btn-sm" data-cancel-edit hidden>Отменить</button>
+            <button type="button" class="btn btn-primary btn-sm" data-save-draft hidden disabled>Сохранить изменения</button>
+          </div>
+        </div>
+        <div class="box-content" id="field-mode-content" role="tabpanel" aria-labelledby="mode-expert-tab">
           <div class="pf-toolbar">
             <div class="pf-filters">
               <input id="field-search" class="form-control input-sm" type="search" placeholder="Найти поле" aria-label="Найти поле" autocomplete="off">
@@ -119,17 +132,16 @@
             <div class="pf-view-filters">
               <div class="pf-profile-picker" role="group" aria-labelledby="field-profile-caption" aria-describedby="mode-note">
                 <span id="field-profile-caption">Показывать поля</span>
-                <button id="field-profile-all" class="btn btn-default btn-sm" type="button" aria-pressed="true">Все анкеты</button>
                 <div class="pf-profile-options">
-                  <label><input id="field-profile-client" type="checkbox" checked disabled> Клиент</label>
-                  <label><input id="field-profile-expert" type="checkbox" checked disabled> Эксперт</label>
+                  <label><input id="field-profile-client" type="checkbox" checked> Клиент</label>
+                  <label><input id="field-profile-expert" type="checkbox" checked> Эксперт</label>
                 </div>
               </div>
               <label class="pf-differences" title="Поля только одного типа анкеты и общие поля с разными флажками"><input id="field-differences" type="checkbox"> Только различия</label>
               <button class="btn btn-default btn-sm" type="button" data-reset-filters>Сбросить фильтры</button>
             </div>
           </div>
-          <p class="pf-notice"><span id="mode-note" hidden>В режиме «Все видят всех» настройки общие. </span>Нажмите на название в столбце «Анкета», чтобы открыть настройки заполнения. <span id="field-sort-hint">Для сортировки по флагам выберите один тип анкеты.</span></p>
+          <p class="pf-notice"><span id="mode-note" hidden></span>Нажмите на название в столбце «Анкета», чтобы открыть настройки заполнения. <span id="field-sort-hint">Для сортировки по флагам выберите один тип анкеты.</span></p>
           <div class="grid-view">
             <div class="summary pf-summary">
               <span id="field-count" aria-live="polite"></span>

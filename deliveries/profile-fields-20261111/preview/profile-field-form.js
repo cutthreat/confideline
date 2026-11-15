@@ -3,12 +3,29 @@
   const query = new URLSearchParams(location.search);
   const isAllMode = query.get("mode") === "all";
   const storageKey = "confideline-profile-field-draft-20261113-v3-" + (isAllMode ? "all" : "expert");
+  const editKey = storageKey + "-editing";
+  const draftKey = storageKey + "-pending";
+  let editing = false;
+  try { editing = isAllMode && sessionStorage.getItem(editKey) === "yes"; } catch { /* keep mode locked */ }
+  if (isAllMode && !editing) { location.replace("index.html?mode=all"); return; }
   const { customCatalog, emptySettings } = profileFieldsData;
   const form = document.querySelector("#field-definition");
   const element = id => document.querySelector("#" + id);
   const selectedId = query.get("id");
   let state = { rules: { client: {}, expert: {} }, added: [], removed: [], fieldTypes: {} };
-  try { const saved = JSON.parse(localStorage.getItem(storageKey)); if (saved?.rules?.client && saved.rules.expert && Array.isArray(saved.added) && Array.isArray(saved.removed)) state = saved; } catch { /* use example state */ }
+  const formStore = isAllMode ? sessionStorage : localStorage;
+  const formStoreKey = isAllMode ? draftKey : storageKey;
+  let openedState = null;
+  let stateAvailable = true;
+  try {
+    openedState = formStore.getItem(formStoreKey);
+    if (isAllMode && openedState === null) throw new Error("missing draft");
+    if (openedState !== null) {
+      const saved = JSON.parse(openedState);
+      if (!saved?.rules?.client || !saved.rules.expert || !Array.isArray(saved.added) || !Array.isArray(saved.removed)) throw new Error("invalid state");
+      state = saved;
+    }
+  } catch { stateAvailable = false; }
   state.fieldTypes ||= {};
   state.fieldOverrides ||= {};
   state.fieldDefinitions ||= {};
@@ -49,15 +66,20 @@
     element("field-options-form").value = definition.optionsText ?? options.map((value, i) => (i + 1) + " => " + value).join("\n");
   } else { client.checked = true; expert.checked = true; }
   if (isAllMode) {
-    client.checked = expert.checked = true;
-    client.disabled = expert.disabled = true;
     element("field-mode-hint").hidden = false;
+    element("field-mode-hint").textContent = "Изменения применятся после общего сохранения.";
+    form.querySelector('button[type="submit"]').textContent = "Добавить к изменениям";
   }
   function showOptions() { element("field-options-block").hidden = !["select", "multi", "checkbox"].includes(type.value); }
   type.addEventListener("change", showOptions); showOptions();
   inForm.addEventListener("change", () => {
     required.disabled = !inForm.checked;
-    if (required.disabled) required.checked = false;
+  });
+  let formChanged = false;
+  form.addEventListener("input", () => { formChanged = true; });
+  form.addEventListener("change", () => { formChanged = true; });
+  window.addEventListener("beforeunload", event => {
+    if (formChanged) { event.preventDefault(); event.returnValue = ""; }
   });
   form.addEventListener("submit", event => {
     event.preventDefault();
@@ -65,11 +87,23 @@
     if (!category.value || !type.value || !title.value.trim() || !alias.value.trim()) { error.textContent = "Заполните категорию, класс, заголовок и псевдоним."; error.hidden = false; return; }
     const assigned = [client.checked && "client", expert.checked && "expert"].filter(Boolean);
     if (!assigned.length) { error.textContent = "Выберите хотя бы один тип анкеты."; error.hidden = false; return; }
+    try {
+      if (!stateAvailable) throw new Error("state unavailable");
+      if (formStore.getItem(formStoreKey) !== openedState) {
+        error.textContent = "Настройки изменились в другой вкладке. Вернитесь к списку и откройте поле заново.";
+        error.hidden = false;
+        return;
+      }
+    } catch {
+      error.textContent = "Не удалось проверить актуальность настроек. Попробуйте ещё раз.";
+      error.hidden = false;
+      return;
+    }
+    const previousState = JSON.parse(JSON.stringify(state));
     const id = field?.id || ("local-" + Date.now());
     const previousTypes = field ? (state.fieldTypes[id] || (field.types.includes("client") && !field.explicitTypes ? ["client", "expert"] : field.types)) : [];
-    const firstClientAssignment = Boolean(field && !isAllMode && Number(id) >= 17 && Number(id) <= 21 &&
-      previousTypes.includes("expert") && !previousTypes.includes("client") &&
-      assigned.includes("client") && !state.rules.client[id]);
+    const firstAssignments = field
+      ? assigned.filter(role => !previousTypes.includes(role) && !state.rules[role][id]) : [];
     if (field) {
       state.fieldTypes[id] = assigned;
     } else {
@@ -100,15 +134,18 @@
           premiumView: premiumView.checked,
           search: searchable.checked,
           premiumSearch: premium.checked,
-          required: inForm.checked && required.checked
+          required: required.checked
         };
       }
     }
-    if (firstClientAssignment) {
-      const expertRules = state.rules.expert[id] || { ...emptySettings, form: true, search: true };
-      state.rules.client[id] = { ...emptySettings, ...expertRules };
+    for (const role of firstAssignments) {
+      const source = role === "client" ? "expert" : "client";
+      if (!previousTypes.includes(source)) continue;
+      const professional = Number(id) >= 17 && Number(id) <= 21;
+      const fallback = { ...emptySettings, form: professional, view: id === "7" && source === "client", search: professional && !!field.canSearch };
+      state.rules[role][id] = { ...fallback, ...(state.rules[source][id] || {}) };
     }
-    try { localStorage.setItem(storageKey, JSON.stringify(state)); location.href = back; }
-    catch { error.textContent = "Не удалось сохранить изменения. Попробуйте ещё раз."; error.hidden = false; }
+    try { formStore.setItem(formStoreKey, JSON.stringify(state)); formChanged = false; location.href = back; }
+    catch { state = previousState; error.textContent = "Не удалось сохранить изменения. Попробуйте ещё раз."; error.hidden = false; }
   });
 })();
