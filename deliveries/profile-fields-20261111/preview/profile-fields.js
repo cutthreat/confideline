@@ -405,7 +405,7 @@
       const newField = { ...field, ...(state.fieldOverrides?.[id] || {}) };
       const name = fieldTitle(newField);
       if (!wasPresent && isPresent) { changes.push("Добавлено поле «" + name + "»"); continue; }
-      if (wasPresent && !isPresent) { changes.push("Удалено поле «" + fieldTitle(oldField) + "»"); continue; }
+      if (wasPresent && !isPresent) { changes.push("Будут удалены поле «" + fieldTitle(oldField) + "» и ответы пользователей"); continue; }
       if (!wasPresent || !isPresent) continue;
       const oldTypes = profileTypes.filter(type => appliesTo(oldField, type, baseline));
       const newTypes = profileTypes.filter(type => appliesTo(newField, type, state));
@@ -508,11 +508,16 @@
   }
 
   function confirmDelete(field, trigger) {
-    const body = '<p>Удалить поле <strong>«' + escapeText(fieldTitle(field)) +
-      '»</strong>?</p><p>Поле будет удалено для анкет: ' +
-      typesFor(field).map(type => typeNames[type]).join(", ") + '.</p>';
+    const pendingNew = isPendingNew(field);
+    const body = pendingNew
+      ? '<p>Убрать поле <strong>«' + escapeText(fieldTitle(field)) + '»</strong> из изменений?</p><p>Поле не будет создано.</p>'
+      : '<p>Удалить поле <strong>«' + escapeText(fieldTitle(field)) +
+        '»</strong>?</p><p>Поле будет удалено для анкет: ' +
+        typesFor(field).map(type => typeNames[type]).join(", ") + '.</p>' +
+        '<p>При удалении поля будут удалены и ответы пользователей. Чтобы скрыть поле и сохранить ответы, выключите показ, поиск и заполнение в настройках.</p>' +
+        (isAllMode ? '<p>Удаление произойдёт после сохранения изменений.</p>' : '');
     const footer = '<button type="button" class="btn btn-default" data-close autofocus>Отмена</button>' +
-      '<button type="button" class="btn btn-danger" data-confirm-delete="' + escapeText(field.id) + '">Удалить</button>';
+      '<button type="button" class="btn btn-danger" data-confirm-delete="' + escapeText(field.id) + '">' + (pendingNew ? 'Убрать' : 'Удалить') + '</button>';
     showDialog("Удалить поле", body, footer, trigger);
   }
 
