@@ -8,7 +8,7 @@
   let editing = false;
   try { editing = isAllMode && sessionStorage.getItem(editKey) === "yes"; } catch { /* keep mode locked */ }
   if (isAllMode && !editing) { location.replace("index.html?mode=all"); return; }
-  const { customCatalog, emptySettings } = profileFieldsData;
+  const { customCatalog, builtIns = [], emptySettings } = profileFieldsData;
   const form = document.querySelector("#field-definition");
   const element = id => document.querySelector("#" + id);
   const selectedId = query.get("id");
@@ -54,7 +54,7 @@
     title.value = name; alias.value = field.key;
     const definition = state.fieldDefinitions[field.id] || {};
     element("field-language-form").value = definition.language ?? "app";
-    element("field-order-form").value = definition.order ?? (field.id === "17" ? "16" : "");
+    element("field-order-form").value = definition.order ?? field.sortOrder ?? 100;
     element("field-weight-form").value = definition.weight ?? (field.id === "17" ? "0" : "");
     required.checked = !!definition.required;
     element("field-initial-rules").hidden = true;
@@ -101,6 +101,7 @@
     }
     const previousState = JSON.parse(JSON.stringify(state));
     const id = field?.id || ("local-" + Date.now());
+    const previousOrder = field ? String(state.fieldDefinitions[id]?.order ?? field.sortOrder ?? 100) : null;
     const previousTypes = field ? (state.fieldTypes[id] || (field.types.includes("client") && !field.explicitTypes ? ["client", "expert"] : field.types)) : [];
     const firstAssignments = field
       ? assigned.filter(role => !previousTypes.includes(role) && !state.rules[role][id]) : [];
@@ -118,13 +119,30 @@
     state.fieldOverrides[id] = { title: title.value.trim(), originalTitle: title.value.trim(), key: alias.value.trim(), category: category.value, component: type.value, options };
     state.fieldDefinitions[id] = {
       language: element("field-language-form").value,
-      order: element("field-order-form").value,
+      order: element("field-order-form").value || "100",
       weight: element("field-weight-form").value,
       required: required.checked,
       optionsText,
       output: element("field-output-form").value,
       format: element("field-format-form").value
     };
+    const nextOrder = element("field-order-form").value || "100";
+    if (!field || nextOrder !== previousOrder) {
+      const allFields = [...customCatalog, ...builtIns, ...state.added].filter(item => !state.removed.includes(item.id));
+      const byId = new Map(allFields.map(item => [item.id, item]));
+      const ids = [...(state.fieldOrder || []), ...allFields.map(item => item.id)]
+        .filter((fieldId, index, source) => byId.has(fieldId) && source.indexOf(fieldId) === index);
+      const customIds = ids.filter(fieldId => byId.get(fieldId).origin === "custom");
+      const oldPosition = new Map(customIds.map((fieldId, index) => [fieldId, index]));
+      const sortValue = fieldId => {
+        const raw = state.fieldDefinitions[fieldId]?.order || (byId.get(fieldId).sortOrder ?? 100);
+        const value = Number(raw);
+        return Number.isFinite(value) ? value : 100;
+      };
+      customIds.sort((a, b) => sortValue(a) - sortValue(b) || oldPosition.get(a) - oldPosition.get(b));
+      let index = 0;
+      state.fieldOrder = ids.map(fieldId => byId.get(fieldId).origin === "custom" ? customIds[index++] : fieldId);
+    }
     if (!field) {
       for (const role of assigned) {
         state.rules[role][id] = {

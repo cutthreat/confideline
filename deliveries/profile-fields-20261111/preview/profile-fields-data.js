@@ -89,9 +89,10 @@ const profileFieldsData = (() => {
     [19, "Количество консультаций", "experience", "ncons", "select", "Number of Consultations", "Более 500"],
     [20, "Опыт практики", "experience", "experience", "select", "My Experience", "Более 5 лет"],
     [21, "Языки консультаций", "expertise", "language", "multi", "My Languages", "Русский, английский"]
-  ].map(([id, title, categoryId, key, component, originalTitle, sample]) => ({
+  ].map(([id, title, categoryId, key, component, originalTitle, sample], index) => ({
     id: String(id), title, category: categoryId, key, component, originalTitle, sample,
-    origin: "custom", types: [id >= 17 ? "expert" : "client"], canSearch: true
+    origin: "custom", types: [id >= 17 ? "expert" : "client"], canSearch: true,
+    sortOrder: id === 21 ? 100 : index
   }));
 
   const emptySettings = {

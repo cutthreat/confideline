@@ -405,7 +405,18 @@
       const oldField = { ...field, ...(baseline.fieldOverrides?.[id] || {}) };
       const newField = { ...field, ...(state.fieldOverrides?.[id] || {}) };
       const name = fieldTitle(newField);
-      if (!wasPresent && isPresent) { changes.push("Добавлено поле «" + name + "»"); continue; }
+      if (!wasPresent && isPresent) {
+        const assigned = profileTypes.filter(type => appliesTo(newField, type, state));
+        changes.push("Добавлено поле «" + name + "» · Анкеты: " + assigned.map(type => typeNames[type]).join(", "));
+        for (const type of assigned) {
+          const rules = rulesFor(newField, type, state);
+          const settings = Object.entries({ ...propertyNames, required: "Обязательно в форме" })
+            .filter(([key]) => settingAvailable(newField, key))
+            .map(([key, label]) => label + " — " + (rules[key] ? "включено" : "выключено"));
+          changes.push("«" + name + "» · " + typeNames[type] + ": " + settings.join("; "));
+        }
+        continue;
+      }
       if (wasPresent && !isPresent) { changes.push("Будут удалены поле «" + fieldTitle(oldField) + "» и ответы пользователей"); continue; }
       if (!wasPresent || !isPresent) continue;
       const oldTypes = profileTypes.filter(type => appliesTo(oldField, type, baseline));
@@ -432,7 +443,7 @@
           changes.push("«" + name + "»: " + label + " — «" + readable(before) + "» → «" + readable(after) + "»");
         }
       }
-      const defaults = { language: "app", order: id === "17" ? "16" : "", weight: id === "17" ? "0" : "", required: false, optionsText: (oldField.options || profileFieldOptions[id] || []).map((value, i) => (i + 1) + " => " + value).join("\n"), output: "Через запятую", format: "" };
+      const defaults = { language: "app", order: oldField.sortOrder == null ? "" : String(oldField.sortOrder), weight: id === "17" ? "0" : "", required: false, optionsText: (oldField.options || profileFieldOptions[id] || []).map((value, i) => (i + 1) + " => " + value).join("\n"), output: "Через запятую", format: "" };
       const oldDefinition = { ...defaults, ...(baseline.fieldDefinitions?.[id] || {}) };
       const newDefinition = { ...defaults, ...(state.fieldDefinitions?.[id] || {}) };
       const definitionLabels = { language: "Язык", order: "Порядок", weight: "Вес", required: "Обязательность", optionsText: "Значения", output: "Формат вывода", format: "Свой формат" };
@@ -560,10 +571,18 @@
     }
     if ("confirmUnlock" in data) {
       try {
-        sessionStorage.setItem(baseKey, JSON.stringify(state));
-        sessionStorage.setItem(rawKey, JSON.stringify(localStorage.getItem(storageKey)));
-        sessionStorage.setItem(draftKey, JSON.stringify(state));
+        const latestRaw = localStorage.getItem(storageKey);
+        const latest = latestRaw === null
+          ? { rules: { client: {}, expert: {} }, added: [], removed: [] }
+          : JSON.parse(latestRaw);
+        if (!latest?.rules?.client || !latest.rules.expert || !Array.isArray(latest.added) || !Array.isArray(latest.removed)) {
+          throw new Error("invalid saved state");
+        }
+        sessionStorage.setItem(baseKey, JSON.stringify(latest));
+        sessionStorage.setItem(rawKey, JSON.stringify(latestRaw));
+        sessionStorage.setItem(draftKey, JSON.stringify(latest));
         sessionStorage.setItem(editKey, "yes");
+        state = latest;
         editing = true; syncEditUI(); renderRows();
         focusReturn = manager.querySelector("[data-cancel-edit]");
         dialog.close();
@@ -688,13 +707,24 @@
   function moveField(id, target, after = false) {
     if (id === target || (isAllMode && !editing)) return;
     const moved = persist("Порядок полей сохранён.", () => {
-      const order = fieldsFor().map(field => field.id);
+      const fields = fieldsFor();
+      const byId = new Map(fields.map(field => [field.id, field]));
+      const order = fields.map(field => field.id);
+      const before = order.filter(fieldId => byId.get(fieldId)?.origin === "custom");
+      const sortValues = before.map(fieldId => state.fieldDefinitions?.[fieldId]?.order ?? byId.get(fieldId).sortOrder ?? 100);
       const from = order.indexOf(id);
       const to = order.indexOf(target);
       if (from < 0 || to < 0) return;
       order.splice(from, 1);
       order.splice(order.indexOf(target) + (after ? 1 : 0), 0, id);
       state.fieldOrder = order;
+      const afterOrder = order.filter(fieldId => byId.get(fieldId)?.origin === "custom");
+      state.fieldDefinitions ||= {};
+      afterOrder.forEach((fieldId, index) => {
+        if (before[index] !== fieldId) {
+          state.fieldDefinitions[fieldId] = { ...(state.fieldDefinitions[fieldId] || {}), order: String(sortValues[index]) };
+        }
+      });
     });
     if (moved) {
       renderRows(id);

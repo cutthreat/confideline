@@ -18,7 +18,9 @@
     const fallback = new URLSearchParams(location.hash.slice(1)).get("state");
     const transferred = fallback || sessionStorage.getItem("confideline-profile-preview-session");
     if (transferred && !fallback) sessionStorage.removeItem("confideline-profile-preview-session");
-    const saved = JSON.parse(transferred || localStorage.getItem(storageKey));
+    const draft = isAllMode && sessionStorage.getItem(storageKey + "-editing") === "yes"
+      ? sessionStorage.getItem(storageKey + "-pending") : null;
+    const saved = JSON.parse(transferred || draft || localStorage.getItem(storageKey));
     if (saved?.rules?.client && saved.rules.expert && Array.isArray(saved.added) && Array.isArray(saved.removed)) {
       state = saved;
     }
@@ -47,7 +49,11 @@
 
   function availableFields() {
     const type = typeSelect.value;
-    return [...builtIns, ...customCatalog, ...state.added].map(field => ({ ...field, ...(state.fieldOverrides?.[field.id] || {}) })).filter(field => {
+    const order = new Map((state.fieldOrder || []).map((id, index) => [id, index]));
+    const fields = [...customCatalog, ...builtIns, ...state.added];
+    return fields.map((field, index) => ({ field, index })).sort((a, b) =>
+      (order.get(a.field.id) ?? order.size + a.index) - (order.get(b.field.id) ?? order.size + b.index)
+    ).map(({ field }) => ({ ...field, ...(state.fieldOverrides?.[field.id] || {}) })).filter(field => {
       const assigned = state.fieldTypes?.[field.id];
       const applies = assigned ? assigned.includes(type) : field.types.includes(type) ||
         (!field.explicitTypes && type === "expert" && field.types.includes("client"));
