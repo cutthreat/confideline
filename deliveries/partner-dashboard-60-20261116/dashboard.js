@@ -36,6 +36,9 @@
    box.append(node('span','',hoursText));
    weekBox.append(box);
   });
+  const breakInfo=document.querySelector('#pd-break');
+  breakInfo.hidden=!current.approved?.breakEnabled;
+  breakInfo.textContent=breakInfo.hidden?'':'Перерыв: '+current.approved.breakFrom+'–'+current.approved.breakTo;
   const notice=document.querySelector('#pd-next-week');notice.replaceChildren();
   const icon=node('i','fa fa-calendar-o');icon.setAttribute('aria-hidden','true');notice.append(icon);
   const nextText=current.pending?'Изменения этой недели отправлены на согласование.':upcoming.pending?'Следующая неделя отправлена на согласование.':upcoming.returned?'График на следующую неделю возвращён на доработку.':upcoming.approved&&model.canRequest(state.agent,next)?'График на следующую неделю утверждён.':upcoming.approved&&state.agent.approval.pauseActive?'После остановки график на следующую неделю нужно согласовать заново.':'График на следующую неделю не утверждён.';
