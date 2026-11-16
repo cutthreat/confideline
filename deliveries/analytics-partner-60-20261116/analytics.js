@@ -11,19 +11,23 @@
   const money = n => '$' + new Intl.NumberFormat(english?'en-US':'ru-RU', {minimumFractionDigits:2, maximumFractionDigits:2}).format(n / 100);
   const records = [];
   const prior = new Set();
+  const priorChats = new Set();
   for (let day = 59; day >= 0; day--) {
     profiles.forEach((p, pi) => {
       const n = 3 + ((day + pi * 2) % 3);
       for (let i = 0; i < n; i++) {
         const user = 'demo-' + ((day * 3 + pi * 17 + i * 11) % 120);
         const chat = i < n - 1;
+        const chatKey = p.id + ':' + user;
+        const newChat = chat && !priorChats.has(chatKey);
+        if (chat) priorChats.add(chatKey);
         const paid = chat && ((day + pi + i) % 3 !== 0);
         const repeatKey = p.id + ':' + user;
         const repeat = paid && prior.has(repeatKey);
         if (paid) prior.add(repeatKey);
         const minutes = paid ? 8 + ((day * 3 + pi * 5 + i * 7) % 20) : 0;
         const answered = chat && ((day + pi + i) % 5 !== 0);
-        records.push({date:dayKey(anchor - day * dayMs),profile:p.id,user,chat,paid,repeat,answered,minutes,
+        records.push({date:dayKey(anchor - day * dayMs),profile:p.id,user,chat,newChat,paid,repeat,answered,minutes,
           credits: paid ? minutes * (8 + pi * 2) : 0,
           remuneration: paid ? (330 + ((day * 59 + pi * 83 + i * 97) % 520)) : 0});
       }
@@ -55,7 +59,7 @@
     ['Начисления за консультации по правилам сайта. Если индивидуальный процент не задан, используется общий.','Consultation earnings according to site rules. The general rate applies if no individual rate is set.'],
     ['Для примера выберите даты с ','For the example choose dates from '], ['Дата начала не может быть позже даты окончания.','The start date cannot be later than the end date.'], ['Укажите начальную и конечную дату.','Enter both the start and end dates.'],
     ['Клиенты и консультации закреплённых анкет','Clients and consultations for assigned profiles'],
-    ['Клиенты, прошедшие этапы за выбранный период.','Clients who completed the steps during the selected period.'],
+    ['Клиенты, последовательно прошедшие этапы с одной анкетой за выбранный период.','Clients who completed the steps in order with the same profile during the selected period.'],
     ['Уникальные клиенты по закреплённым анкетам','Unique clients across assigned profiles'],
     ['Сравнение закреплённых анкет за выбранный период','Assigned profiles over the selected period'],
     ['Нажмите на название анкеты, чтобы отфильтровать панель.','Select a profile name to filter the dashboard.'],
@@ -87,7 +91,7 @@
     document.querySelectorAll('[aria-label],[title],[placeholder]').forEach(el=>{for(const attr of ['aria-label','title','placeholder'])if(el.hasAttribute(attr))el.setAttribute(attr,swap(el.getAttribute(attr)));});
     document.documentElement.lang='en'; document.title='Partner analytics · Confideline';
   }
-  const sum = (rows, key) => rows.reduce((a,r) => a + (key === 'chats' ? Number(r.chat) : key === 'paid' ? Number(r.paid) : Number(r[key] || 0)),0);
+  const sum = (rows, key) => rows.reduce((a,r) => a + (key === 'chats' ? Number(r.newChat) : key === 'paid' ? Number(r.paid) : Number(r[key] || 0)),0);
   const unique = (rows, predicate) => new Set(rows.filter(predicate).map(r=>r.user)).size;
   const fmt = (key, value) => key === 'remuneration' ? money(value) : key === 'answerRate' ? value : ruNumber(value);
   const between = (row, f) => row.date >= f.from && row.date <= f.to && (f.profile === 'all' || row.profile === f.profile);
@@ -105,7 +109,9 @@
     $('kpis').innerHTML=metricDefs.map(m=>`<button type="button" class="pa-kpi" data-metric="${m.key}" aria-label="${m.name}: ${fmt(m.key,v[m.key])}. Подробнее"><span class="pa-icon"><i class="fa fa-${m.icon}" aria-hidden="true"></i></span><span class="pa-kpi-text"><span class="pa-kpi-name">${m.name}</span><span class="pa-kpi-value">${fmt(m.key,v[m.key])}</span><span class="pa-kpi-sub">${m.sub}</span></span><i class="fa fa-angle-right pa-kpi-arrow" aria-hidden="true"></i></button>`).join('');
   }
   function renderFunnel(rows) {
-    const stages=[{label:'Посмотрели анкету',n:unique(rows,()=>true)}, {label:'Начали чат',n:unique(rows,r=>r.chat)}, {label:'Оплатили консультацию',n:unique(rows,r=>r.paid)}];
+    const started=new Set(),chatted=new Set(),paidAfterChat=new Set();
+    rows.forEach(r=>{const pair=r.profile+':'+r.user;if(r.newChat){started.add(pair);chatted.add(r.user);}if(r.paid&&started.has(pair))paidAfterChat.add(r.user);});
+    const stages=[{label:'Посмотрели анкету',n:unique(rows,()=>true)}, {label:'Начали чат',n:chatted.size}, {label:'Оплатили консультацию',n:paidAfterChat.size}];
     const max=stages[0].n;
     $('funnel').innerHTML=stages.map((s,i)=>{
       const priorValue=i?stages[i-1].n:null, ratio=priorValue?Math.round(s.n/priorValue*100)+'%':(i?'—':'Все клиенты');
