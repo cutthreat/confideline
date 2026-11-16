@@ -1,5 +1,10 @@
 (() => {
  'use strict';
+ if(new URLSearchParams(location.search).get('from')==='partner-dashboard-60'){
+  document.querySelectorAll('a[href="agent-dashboard.html"]').forEach(a=>{
+   a.href='../../partner-dashboard-60-20261116/index.html';
+  });
+ }
  document.title='Мой график · Confideline';
  const heading=document.querySelector('.content-header h1');
  const breadcrumb=document.querySelector('.content-header .breadcrumb .active');
