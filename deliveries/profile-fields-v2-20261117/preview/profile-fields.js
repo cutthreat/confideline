@@ -16,7 +16,6 @@
   const pageSize = manager.querySelector("#field-page-size");
   const pages = manager.querySelector("#field-pages");
   const tableScroll = manager.querySelector(".pf-table-scroll");
-  const sortHint = manager.querySelector("#field-sort-hint");
   const rows = manager.querySelector("#field-rows");
   const count = manager.querySelector("#field-count");
   const message = manager.querySelector("#field-message");
@@ -277,7 +276,6 @@
     const canSortFlags = filtered;
     differences.disabled = filtered;
     if (filtered) differences.checked = false;
-    sortHint.hidden = canSortFlags;
     flagSortButtons.forEach(button => {
       button.disabled = !canSortFlags;
       button.closest("th").title = canSortFlags ? "" : "Для сортировки выберите один тип анкеты";
