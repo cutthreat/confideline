@@ -63,6 +63,7 @@
  }
  updateMetrics();
  if(model){render(model.read());model.watch(render);}else{
+  const state=document.querySelector('#pd-week-state');state.textContent='Нет данных';state.className='pd-badge pd-badge--pending';
   document.querySelector('#pd-week').textContent='Не удалось загрузить график.';
   document.querySelector('#pd-bookings').textContent='Не удалось загрузить записи.';
  }
