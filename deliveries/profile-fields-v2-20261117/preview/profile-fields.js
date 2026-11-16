@@ -5,7 +5,6 @@
   const dialog = manager.querySelector("#field-dialog");
   const dialogBody = manager.querySelector("#dialog-body");
   const dialogFooter = manager.querySelector("#dialog-footer");
-  const search = manager.querySelector("#field-search");
   const category = manager.querySelector("#field-category");
   const origin = manager.querySelector("#field-origin");
   const profileChecks = [...manager.querySelectorAll(".pf-profile-picker input")];
@@ -301,12 +300,12 @@
   }
 
   function resetFilters() {
-    for (const control of [search, category, origin]) control.value = "";
+    for (const control of [category, origin]) control.value = "";
     profileChecks.forEach(control => { control.checked = true; });
     differences.checked = false;
     syncRoleFilter();
     startResults();
-    search.focus();
+    category.focus();
   }
 
   function hasDifferences(field, source = state) {
@@ -317,12 +316,9 @@
 
   function renderRows(revealField = "") {
     const type = selectedProfile();
-    const query = search.value.trim().toLocaleLowerCase("ru");
     const baseline = isAllMode && editing ? baselineState() : null;
     const found = fieldsFor(type).filter(field => {
-      const label = [registeredId(field), field.title, field.frontTitle, field.originalTitle, field.key].join(" ").toLocaleLowerCase("ru");
-      return (!query || label.includes(query)) &&
-        (!category.value || category.value === field.category) &&
+      return (!category.value || category.value === field.category) &&
         (!origin.value || origin.value === field.origin) &&
         (!differences.checked || hasDifferences(field) || (baseline && hasDifferences(field, baseline)));
     });
@@ -657,7 +653,7 @@
       if (selectedProfile()) params.set("type", selectedProfile());
       if (isAllMode) params.set("mode", "all");
       history.replaceState({ ...history.state, profileFieldsUi: {
-        search: search.value, category: category.value, origin: origin.value,
+        category: category.value, origin: origin.value,
         type: selectedProfile(), differences: differences.checked,
         pageSize: pageSize.value, page, sort,
         scroll: document.querySelector(".wrapper").scrollTop
@@ -689,7 +685,7 @@
       renderCategories();
       if ([...category.options].some(option => option.value === previousCategory)) category.value = previousCategory;
       renderRows();
-      focusReturn = search;
+      focusReturn = category;
       dialog.close();
     }
     if (data.restore) {
@@ -698,14 +694,6 @@
     if ("close" in data) dialog.close();
   });
 
-  document.querySelector("#header-search").addEventListener("submit", event => {
-    event.preventDefault();
-    const query = event.currentTarget.querySelector("input").value;
-    search.value = query;
-    startResults();
-    search.focus();
-  });
-  search.addEventListener("input", startResults);
   for (const control of [category, origin, differences]) {
     control.addEventListener("change", startResults);
   }
@@ -843,7 +831,7 @@
       renderRows(field.id);
       const trigger = '[data-edit="' + CSS.escape(field.id) + '"]' +
         (editType ? '[data-edit-type="' + editType + '"]' : ':not([data-edit-type])');
-      focusReturn = rows.querySelector(trigger) || (differences.checked ? differences : search);
+      focusReturn = rows.querySelector(trigger) || (differences.checked ? differences : category);
     }
     dialog.close();
   });
@@ -854,7 +842,6 @@
   function restoreTable() {
     const saved = history.state?.profileFieldsUi;
     if (saved) {
-      search.value = saved.search || "";
       category.value = saved.category || "";
       origin.value = saved.origin || "";
       profileChecks.forEach(control => {
