@@ -10,13 +10,13 @@
 <link rel="stylesheet" href="assets/css/font-awesome.min.css">
 <link rel="stylesheet" href="expert-card.css">
 <link rel="stylesheet" href="expert-card-demo.css">
-<link rel="stylesheet" href="reference.css?v=card-actions-20261114">
+<link rel="stylesheet" href="reference.css?v=booking-choice-20261116">
 <script src="filter-model.js" defer></script>
 <script src="filter-fixtures.js?v=three-states-20261113" defer></script>
 <script src="expert-card-demo.js" defer></script>
-<script src="../admin/booking-model.js?v=transfer2" defer></script>
-<script src="action-labels.js?v=1" defer></script>
-<script src="reference.js?v=transfer2" defer></script>
+<script src="../admin/booking-model.js?v=20261116-exception1" defer></script>
+<script src="action-labels.js?v=2" defer></script>
+<script src="reference.js?v=20261116-exception1" defer></script>
 <script src="expert-card.js" defer></script>
 </head>
 <body class="ltr body-directory-index light">
@@ -103,6 +103,8 @@
       <button type="button" class="dialog-close" data-close aria-label="Закрыть">×</button>
     </header>
     <div class="modal-body booking-body">
+      <div id="booking-unavailable" role="status" hidden><p id="booking-unavailable-copy">Запись на платную консультацию сейчас недоступна.</p><button type="button" class="btn btn-default" id="booking-stale-list" hidden>К записям</button> <button type="button" class="btn btn-default" data-close>Закрыть</button></div>
+      <section id="booking-list" aria-labelledby="booking-list-title" hidden><h3 id="booking-list-title" tabindex="-1">Выберите встречу</h3><div id="booking-list-items"></div><div class="dialog-actions"><button type="button" class="btn btn-secondary" data-new-booking>Записаться ещё</button><button type="button" class="btn btn-secondary" data-close>Закрыть</button></div></section>
       <form id="booking-form">
         <div class="booking-inputs">
         <div class="booking-controls">
@@ -136,7 +138,7 @@
             <p><strong id="booking-price"></strong> · <span id="booking-payment"></span></p>
             <p id="booking-summary" role="status"></p><p id="booking-error" role="alert" hidden></p>
           </div>
-          <div class="dialog-actions"><button type="button" class="btn btn-secondary" data-close>Отмена</button><button type="submit" class="btn btn-primary" disabled>Отправить заявку</button></div>
+          <div class="dialog-actions"><button type="button" class="btn btn-secondary" id="booking-form-back" hidden>К записям</button><button type="button" class="btn btn-secondary" data-close>Отмена</button><button type="submit" class="btn btn-primary" disabled>Отправить заявку</button></div>
         </div>
       </form>
       <div id="booking-result" hidden>
@@ -144,6 +146,8 @@
         <p id="booking-result-time"></p>
         <p id="booking-result-due"></p>
         <p id="booking-result-price"></p>
+        <p id="booking-start-status" role="status"></p>
+        <div id="booking-start-confirm" hidden><p id="booking-start-confirm-copy"></p><div class="dialog-actions"><button type="button" class="btn btn-secondary" id="booking-start-back">Назад</button><button type="button" class="btn btn-primary" id="booking-start-confirm-button">Отправить запрос</button></div></div>
         <section id="booking-proposal" class="wait-booking-option" aria-labelledby="booking-proposal-title" hidden>
           <h4 id="booking-proposal-title">Предложено другое время</h4>
           <p id="booking-proposal-time"></p>
@@ -161,7 +165,7 @@
           <p id="booking-delay-cancel-copy"></p>
           <div class="dialog-actions"><button type="button" class="btn btn-secondary" id="booking-delay-cancel-back">Назад</button><button type="button" class="btn btn-primary" id="booking-delay-cancel-confirm-button">Подтвердить отмену</button></div>
         </div>
-        <div class="dialog-actions"><button type="button" class="btn btn-secondary" id="booking-cancel-request">Отменить заявку</button><button type="button" class="btn btn-primary" data-close>Понятно</button></div>
+        <div class="dialog-actions" id="booking-result-actions"><button type="button" class="btn btn-secondary" data-new-booking>Записаться ещё</button><button type="button" class="btn btn-secondary" id="booking-back-list" hidden>К списку записей</button><button type="button" class="btn btn-secondary" id="booking-cancel-request">Отменить заявку</button><button type="button" class="btn btn-primary" id="booking-start-request" hidden>Запросить начало встречи</button><button type="button" class="btn btn-secondary" data-close>Закрыть</button></div>
       </div>
     </div>
   </dialog>

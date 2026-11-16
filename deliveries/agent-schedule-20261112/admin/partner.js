@@ -5,6 +5,7 @@
  const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const model=window.BookingPreview;
  const demoScenario=new URLSearchParams(location.search).get('scenario');
+ const scheduleAdmin=new URLSearchParams(location.search).get('scheduleView')!=='agent';
  const transferDemo=['transfer-free','transfer-conflict','transfer-multiple'].includes(demoScenario);
  const {today,clone,active,labels:statuses}=model;
  if(model.otherView){
@@ -17,13 +18,32 @@
   $('#page-info').innerHTML='<div class="box box-default"><div class="box-header with-border"><h2 class="box-title">Информация аккаунта</h2></div><div class="box-body">Агент Kristy</div></div>';
   $('#transfer-agent').innerHTML='<option value="">Выберите агента</option><option value="partner195">saffettr</option>';
  }
+ if(!scheduleAdmin){
+  document.querySelectorAll('.admin-user-trigger-text,.admin-user-name').forEach(el=>el.textContent=model.partnerName);
+  document.querySelector('.admin-user-trigger-avatar').textContent=model.partnerName.charAt(0).toUpperCase();
+  document.querySelectorAll('.sidebar-menu > li').forEach(li=>{
+   const a=li.querySelector(':scope > a'),title=a?.getAttribute('title');
+   if(title==='Пользователи'){a.href='https://confideline.com/ru/admin/expert/index';a.title='Эксперты';a.querySelector('span').textContent='Эксперты';return;}
+   if(['Отзывы','Группы','Содержимое','Фотографии','Верификации','Настройки','Обслуживание'].includes(title)||(!a&&li.textContent.trim().toLowerCase()==='система'))li.hidden=true;
+  });
+  $$('.partner-nav > li').forEach(li=>{const a=li.querySelector('a');if(!['profiles','schedule','bookings'].includes(a?.dataset.page))li.hidden=true;});
+  $('#partner-mobile-nav').querySelectorAll('option').forEach(option=>{if(!['profiles','schedule','bookings'].includes(option.value))option.remove();});
+  $('.partner-actions').hidden=true;
+ }
  const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d,12);};
  const iso=d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
  const add=(s,n)=>{let d=parse(s);d.setDate(d.getDate()+n);return iso(d);};
  const dateText=s=>new Intl.DateTimeFormat('ru-RU',{weekday:'short',day:'numeric',month:'long'}).format(parse(s));
  const numeric=model.minutes;
  let data=model.read(),saved=data.agent,profiles=data.profiles,entries=data.entries;
- let agentBaseline=clone(saved),draft=clone(saved),view='list',date=data.firstDate,selected=null,detailOrigin='bookings',profileEditing=model.expertId,profileDrafts={},profileBaselines={},dialogAction=null;
+ const requestedWeek=new URLSearchParams(location.search).get('week');
+ let selectedWeek=requestedWeek&&/^\d{4}-\d{2}-\d{2}$/.test(requestedWeek)&&iso(parse(requestedWeek))===requestedWeek?model.weekOf(requestedWeek):model.weekOf(add(today(),7)),weekRevision=0;
+ function rememberWeek(){const url=new URL(location.href);url.searchParams.set('week',selectedWeek);history.replaceState(history.state,'',url);}
+ function weekDraft(agent,week){
+  const record=model.getWeek(agent,week);
+  return clone((scheduleAdmin?record.pending:record.draft||record.pending)||record.approved||model.plainSchedule(agent));
+ }
+ let agentBaseline=weekDraft(saved,selectedWeek),draft=clone(agentBaseline),view='list',date=data.firstDate,selected=null,detailOrigin='bookings',profileEditing=model.expertId,profileDrafts={},profileBaselines={},dialogAction=null;
  let profileSort='assignment',profileSortDirection=1,profileAction=null,bookingContext=null,lastProfileTrigger=null;
  let agentCalendar,profileCalendar;
  const mobileNav=$('#partner-mobile-nav'),leaveDialog=$('#schedule-leave-dialog');
@@ -213,7 +233,12 @@
   }
   $('#profile-search').focus();
  });
- function updateAgentPreview(){$('#agent-calendar-preview').hidden=model.same(draft,agentBaseline);}
+ function updateAgentPreview(){
+  const record=model.getWeek(saved,selectedWeek),preview=$('#agent-calendar-preview');
+  const unsaved=!model.same(draft,agentBaseline),proposed=record.pending||(!scheduleAdmin&&record.draft)||!record.approved;
+  preview.hidden=!unsaved&&!proposed;
+  preview.textContent=(unsaved?'Выделенная неделя показывает ещё не сохранённый вариант графика.':!scheduleAdmin&&record.draft&&record.pending?'Выделенная неделя показывает черновик; на согласовании остаётся ранее отправленный вариант.':record.pending?'Выделенная неделя показывает график, отправленный на согласование.':'Выделенная неделя показывает ещё не утверждённый график.')+' Остальные даты показывают утверждённое расписание.';
+ }
  const scheduleMessage=(msg,error=false)=>{let box=$('#schedule-message');box.textContent=msg;box.classList.toggle('error',error);updateAgentPreview();};
  function dayAppearance(row,on){if(!row)return;row.classList.toggle('is-work',on);row.classList.toggle('is-off',!on);const state=row.querySelector('.day-state');if(state)state.textContent=on?'Рабочий':'Выходной';}
  function dayRow(d,i,profile=false){const prefix=profile?'p':'',label=esc(d.name);return '<div class="day-rule '+(d.enabled?'is-work':'is-off')+'"><label class="day-label"><input type="checkbox" data-'+prefix+'day="'+i+'" '+(d.enabled?'checked':'')+'> <span>'+label+'</span><span class="day-state">'+(d.enabled?'Рабочий':'Выходной')+'</span></label><label class="time-label">С<input aria-label="'+label+' с" class="form-control" type="time" data-'+prefix+'from="'+i+'" value="'+d.from+'" '+(!d.enabled?'disabled':'')+'></label><label class="time-label">До<input aria-label="'+label+' до" class="form-control" type="time" data-'+prefix+'to="'+i+'" value="'+d.to+'" '+(!d.enabled?'disabled':'')+'></label></div>';}
@@ -223,7 +248,37 @@
  function drawExceptions(){
   $('#exception-list').innerHTML=draft.exceptions.length?draft.exceptions.map((x,i)=>'<div class="exception-row"><span>'+dateText(x.date)+' · '+(x.kind==='closed'?'Выходной':x.from+'–'+x.to)+'</span><button type="button" class="btn btn-default btn-sm" data-remove-exception="'+i+'">Удалить</button></div>').join(''):'';
  }
- function renderSchedule(){drawDays();drawExceptions();$('#agent-break-enabled').checked=draft.breakEnabled;$('#agent-break-from').value=draft.breakFrom;$('#agent-break-to').value=draft.breakTo;$('#agent-break-from').disabled=!draft.breakEnabled;$('#agent-break-to').disabled=!draft.breakEnabled;agentCalendar?.refresh();updateAgentPreview();renderSavedScheduleConflicts();}
+ function weekLabel(week){
+  const fmt=new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'short'});
+  return fmt.format(parse(week))+' — '+fmt.format(parse(add(week,6)));
+ }
+ function showWeekState(){
+  const record=model.getWeek(saved,selectedWeek),select=$('#schedule-week'),first=model.weekOf(today());
+  const weeks=Array.from({length:12},(_,i)=>add(first,i*7));
+  if(!weeks.includes(selectedWeek))weeks.push(selectedWeek);weeks.sort();
+  select.innerHTML=weeks.map(week=>'<option value="'+week+'">'+esc(weekLabel(week))+'</option>').join('');select.value=selectedWeek;
+  const status=record.pending?'На согласовании':record.returned?'На доработке':!scheduleAdmin&&record.draft?'Черновик':record.approved?'Утверждён':'Не составлен';
+  const badge=$('#schedule-status');badge.textContent=status;badge.className='schedule-badge'+(record.pending?' is-pending':record.returned?' is-returned':record.approved&&!record.draft?' is-approved':'');
+  let description=record.pending?(record.approved?'До решения администратора действует ранее утверждённый график.':'Новые записи появятся после утверждения.'):
+   record.returned?'Комментарий администратора: '+record.returned:!scheduleAdmin&&record.draft?(record.approved?'Черновик не меняет утверждённый график.':'Отправьте график администратору.'):
+   record.approved?'График действует для новых записей этой недели.':'Составьте график и отправьте его на согласование.';
+  if(record.approved&&!model.canRequest(saved,selectedWeek))description=(record.returned?'Комментарий администратора: '+record.returned+'. ':record.pending?'График на согласовании. ':record.draft?'Черновик сохранён. ':'График утверждён. ')+'Новые записи на эту неделю закрыты до повторного утверждения.';
+  if(record.pending&&saved.approval.pauseActive&&record.pendingEpoch!==saved.approval.pauseEpoch)description+=' После остановки агенту нужно отправить график заново.';
+  if(!scheduleAdmin&&!record.pending&&!record.draft&&!record.returned&&record.adminChanges?.length)description+=' Администратор изменил: '+record.adminChanges.join('; ')+'.';
+  $('#schedule-status-detail').textContent=description;
+  const paused=saved.approval.pauseActive,notice=$('#schedule-pause-state'),someOpen=Object.values(saved.approval.weeks).some(w=>w.approved&&w.approvedEpoch>=saved.approval.pauseEpoch);notice.hidden=!paused;
+  notice.textContent=paused?(someOpen?'Запись открыта только на недели, утверждённые после остановки. На остальные недели она остаётся закрытой.':'Запись временно закрыта. После утверждения нового графика запись будет доступна на соответствующие недели. Существующие заявки и встречи сохранены.'):'';
+  $('#schedule-pause-open').hidden=scheduleAdmin||(paused&&!someOpen);
+  $('#schedule-pause-open').textContent=paused?'Снова закрыть все новые записи':'Временно закрыть запись';
+  $('#schedule-submit').textContent=scheduleAdmin?'Утвердить график':'Отправить на согласование';
+  $('#schedule-draft').hidden=scheduleAdmin;
+  $('#schedule-return-open').hidden=!scheduleAdmin||!record.pending;
+ }
+ function loadWeek(){
+  const record=model.getWeek(saved,selectedWeek);weekRevision=record.revision;
+  agentBaseline=weekDraft(saved,selectedWeek);draft=clone(agentBaseline);renderSchedule();
+ }
+ function renderSchedule(){showWeekState();drawDays();drawExceptions();$('#agent-break-enabled').checked=draft.breakEnabled;$('#agent-break-from').value=draft.breakFrom;$('#agent-break-to').value=draft.breakTo;$('#agent-break-from').disabled=!draft.breakEnabled;$('#agent-break-to').disabled=!draft.breakEnabled;agentCalendar?.refresh();updateAgentPreview();renderSavedScheduleConflicts();}
  function conflictsFor(candidate){
   return model.scheduleConflicts(entries,candidate,null,null);
  }
@@ -264,22 +319,56 @@
  $('#exception-add').addEventListener('click',()=>{
   const date=$('#exception-date').value,kind=$('#exception-kind').value,from=$('#exception-from').value,to=$('#exception-to').value;
   if(!date)return scheduleMessage('Выберите дату.',true);
+  if(model.weekOf(date)!==selectedWeek)return scheduleMessage('Выберите дату в указанной неделе.',true);
   if(draft.exceptions.some(x=>x.date===date))return scheduleMessage('Для этой даты изменение уже добавлено.',true);
   if(kind==='hours'&&(!from||!to||from>=to))return scheduleMessage('Проверьте время начала и окончания.',true);
   draft.exceptions.push({date,kind,from,to});drawExceptions();scheduleMessage('Изменение добавлено. Сохраните график.');agentCalendar?.refresh();
  });
  $('#exception-list').addEventListener('click',e=>{const x=e.target.closest('[data-remove-exception]');if(x){draft.exceptions.splice(Number(x.dataset.removeException),1);drawExceptions();scheduleMessage('Есть несохранённые изменения.');agentCalendar?.refresh();}});
- $('#schedule-reset').addEventListener('click',()=>{sync();agentBaseline=clone(saved);draft=clone(saved);renderSchedule();scheduleMessage('Загружен сохранённый график.');});
+ $('#schedule-week').addEventListener('change',e=>{
+  const next=e.target.value;e.target.value=selectedWeek;
+  requestScheduleLeave(()=>{selectedWeek=next;rememberWeek();sync();loadWeek();scheduleMessage('');},e.target);
+ });
+ $('#schedule-reset').addEventListener('click',()=>{sync();loadWeek();scheduleMessage('Изменения отменены.');});
+ function validSchedule(){
+  if(add(selectedWeek,6)<today()){scheduleMessage('Прошедшую неделю изменить нельзя.',true);return false;}
+  if(draft.days.some(d=>d.enabled&&(!d.from||!d.to||d.from>=d.to))){scheduleMessage('Проверьте время начала и окончания рабочих дней.',true);return false;}
+  if(draft.breakEnabled&&(!draft.breakFrom||!draft.breakTo||draft.breakFrom>=draft.breakTo)){scheduleMessage('Проверьте время перерыва.',true);return false;}
+  return true;
+ }
+ function changeSchedule(action,comment=''){
+  const result=model.changeWeek(selectedWeek,weekRevision,action,draft,comment);
+  if(result.error){scheduleMessage(result.error,true);return false;}
+  sync(result.state);loadWeek();
+  scheduleMessage(({draft:'Черновик сохранён.',submit:'График отправлен администратору на согласование.',approve:'График утверждён.',return:'График возвращён на доработку.'})[action]);
+  return true;
+ }
+ $('#schedule-draft').addEventListener('click',()=>{if(validSchedule())changeSchedule('draft');});
  $('#agent-schedule').addEventListener('submit',e=>{
   e.preventDefault();
-  if(draft.days.some(d=>d.enabled&&(!d.from||!d.to||d.from>=d.to)))return scheduleMessage('Проверьте время начала и окончания рабочих дней.',true);
-  if(draft.breakEnabled&&(!draft.breakFrom||!draft.breakTo||draft.breakFrom>=draft.breakTo))return scheduleMessage('Проверьте время перерыва.',true);
-  const result=model.saveSchedule(draft,agentBaseline);
-  if(result.error)return scheduleMessage(result.error,true);
-  sync(result.state);agentBaseline=clone(saved);
-  scheduleMessage('График сохранён.');
-  renderSavedScheduleConflicts();
+  if(!validSchedule())return;
+  if(!scheduleAdmin){changeSchedule('submit');return;}
+  const affected=conflictsFor(draft).filter(item=>(item.scheduleConflictOriginal&&model.weekOf(item.date)===selectedWeek)||(item.scheduleConflictProposal&&item.proposal&&model.weekOf(item.proposal.date)===selectedWeek));
+  $('#schedule-approve-copy').textContent='Неделя '+weekLabel(selectedWeek)+' После утверждения новое расписание будет доступно для записи.';
+  $('#schedule-approve-conflicts').textContent=affected.length?'Заявок и встреч вне нового графика: '+affected.length+'. Они сохранятся; проверьте конфликт в записях.':'';
+  const conflictList=$('#schedule-approve-list');conflictList.replaceChildren();conflictList.hidden=!affected.length;
+  affected.forEach(item=>{
+   const times=[];
+   if(item.scheduleConflictOriginal&&model.weekOf(item.date)===selectedWeek)times.push(dateText(item.date)+' '+item.time);
+   if(item.scheduleConflictProposal&&item.proposal&&model.weekOf(item.proposal.date)===selectedWeek)times.push('перенос: '+dateText(item.proposal.date)+' '+item.proposal.time);
+   const line=document.createElement('li');line.textContent=name(item.profile)+' · '+item.client+' · '+times.join('; ');conflictList.appendChild(line);
+  });
+  $('#schedule-approve-error').textContent='';
+  $('#schedule-approve-dialog').showModal();$('#schedule-approve-cancel').focus();
  });
+ $('#schedule-approve-cancel').addEventListener('click',()=>$('#schedule-approve-dialog').close());
+ $('#schedule-approve-confirm').addEventListener('click',()=>{if(changeSchedule('approve'))$('#schedule-approve-dialog').close();else $('#schedule-approve-error').textContent=$('#schedule-message').textContent;});
+ $('#schedule-return-open').addEventListener('click',()=>{$('#schedule-return-reason').value='';$('#schedule-return-error').textContent='';$('#schedule-return-dialog').showModal();$('#schedule-return-reason').focus();});
+ $('#schedule-return-cancel').addEventListener('click',()=>$('#schedule-return-dialog').close());
+ $('#schedule-return-confirm').addEventListener('click',()=>{if(changeSchedule('return',$('#schedule-return-reason').value.trim()))$('#schedule-return-dialog').close();else $('#schedule-return-error').textContent=$('#schedule-message').textContent;});
+ $('#schedule-pause-open').addEventListener('click',()=>{$('#schedule-pause-dialog').showModal();$('#schedule-pause-cancel').focus();});
+ $('#schedule-pause-cancel').addEventListener('click',()=>$('#schedule-pause-dialog').close());
+ $('#schedule-pause-confirm').addEventListener('click',()=>{const result=model.pauseBookings();sync(result.state);showWeekState();$('#schedule-pause-dialog').close();scheduleMessage('Новые записи закрыты. Администратор уведомлён.');});
  function refillProfiles(){
   const select=$('#booking-profile'),previous=select.value,former=[];
   for(const p of (data.formerProfiles||[]).slice().reverse()){
@@ -374,11 +463,12 @@
   if(!b)return;
   $('#booking-workspace').hidden=true;$('#booking-back-profile').hidden=true;const d=$('#booking-detail');d.hidden=false;
   const buttons={confirm:'Подтвердить',decline:'Отклонить',cancel:'Отменить запись',withdraw:'Отозвать предложение',reschedule:'Предложить перенос','no-show':'Сообщить о неявке'};
-  const actions=model.actions(b).map(action=>'<button type="button" class="btn btn-'+(action==='confirm'?'primary':'default')+'" data-action="'+action+'">'+buttons[action]+'</button>').join(' ');
+  const approveException=scheduleAdmin&&b.proposal?.needsAdminApproval&&!b.proposal.adminApprovedAt?'<button type="button" class="btn btn-primary" data-action="approve-exception">Подтвердить перенос</button>':'';
+  const actions=model.actions(b).map(action=>'<button type="button" class="btn btn-'+(action==='confirm'?'primary':'default')+'" data-action="'+action+'">'+buttons[action]+'</button>').join(' ')+approveException;
   const status=model.visibleStatus(b);
   const price=Number.isFinite(b.acceptedPrice)?'<div><span>Цена этой записи</span><strong>'+esc(b.acceptedPrice)+' кредитов / мин</strong></div>':'';
   const advance=Number.isFinite(b.advanceAmount)&&b.advancePaid?'<div><span>Аванс</span><strong>'+esc(b.advanceAmount)+' кредитов</strong></div>':'';
-  const proposed=active(b)&&b.proposal?'<div class="proposal-note"><p>Предложено: '+esc(dateText(b.proposal.date))+' · '+esc(b.proposal.time)+'. '+esc(model.proposalDescription(b))+'</p>'+(transferDemo&&b.previewClient?'<a href="../client/index.html?scenario='+esc(demoScenario)+'#booking-alisa">Открыть предложение со стороны клиента</a>':'')+'</div>':'';
+  const proposed=active(b)&&b.proposal?'<div class="proposal-note"><p>Предложено: '+esc(dateText(b.proposal.date))+' · '+esc(b.proposal.time)+'. '+esc(model.proposalDescription(b))+'</p>'+((transferDemo||demoScenario==='schedule-exception')&&b.previewClient?'<a href="../client/index.html?scenario='+esc(demoScenario)+'#booking-'+(demoScenario==='schedule-exception'?'solara':'alisa')+'">Открыть предложение со стороны клиента</a>':'')+'</div>':'';
   const outcome=model.needsOutcomeCheck(b)?'<p class="proposal-note">Время встречи наступило. Проверьте состояние консультации в чате.</p>':'';
   const conflict=model.scheduleConflicts([b],saved,profiles.find(p=>p.id===b.profile),b.profile)[0];
   const scheduleConflict=conflict?'<p class="proposal-note">'+(conflict.scheduleConflictOriginal?'Исходное время вне рабочего графика. ':'')+(conflict.scheduleConflictProposal?'Предложенное время вне рабочего графика. ':'')+'Выберите действие, чтобы решить конфликт.</p>':'';
@@ -408,25 +498,25 @@
   renderBookings();let trigger=$('[data-entry="'+old+'"]');if(trigger)trigger.focus();else $('#booking-profile').focus();
  }
  function alternatives(b,date){sync();return model.alternatives(data,entries.find(item=>item.id===b.id),date);}
- function refreshAlternatives(b){const date=$('#alternative-date').value,slots=alternatives(b,date);$('#alternative-time').innerHTML='<option value="">'+(slots.length?'Выберите время':'Нет свободного времени')+'</option>'+slots.map(t=>'<option value="'+t+'">'+t+'</option>').join('');$('#alternative-time').disabled=!slots.length;$('#dialog-submit').disabled=!slots.length;}
+ function refreshAlternatives(b){const date=$('#alternative-date').value,slots=alternatives(b,date);if(date&&data.agent.approval?.pauseActive&&!model.canRequest(data.agent,date))$('#dialog-copy').textContent='Запись на эту неделю закрыта. Для разового переноса нужно подтверждение администратора и согласие клиента. Другие записи не откроются.';$('#alternative-time').innerHTML='<option value="">'+(slots.length?'Выберите время':'Нет свободного времени')+'</option>'+slots.map(t=>'<option value="'+t+'">'+t+'</option>').join('');$('#alternative-time').disabled=!slots.length;$('#dialog-submit').disabled=!slots.length;}
  $('#alternative-date').addEventListener('change',()=>{const b=entries.find(x=>x.id===selected);if(b)refreshAlternatives(b);});
  function openDialog(action){
   const b=entries.find(x=>x.id===selected);dialogAction=action;
-  const isConfirm=action==='confirm',isMove=action==='reschedule',isWithdraw=action==='withdraw',isNoShow=action==='no-show',reason=$('#dialog-reason-label');reason.hidden=isConfirm||isWithdraw||isNoShow;$('#dialog-reason').required=['cancel','decline'].includes(action);$('#dialog-reason').value='';
+  const isConfirm=action==='confirm',isMove=action==='reschedule',isWithdraw=action==='withdraw',isNoShow=action==='no-show',isException=action==='approve-exception',reason=$('#dialog-reason-label');reason.hidden=isConfirm||isWithdraw||isNoShow||isException;$('#dialog-reason').required=['cancel','decline'].includes(action);$('#dialog-reason').value='';
   $('#dialog-reason-caption').textContent=isMove?'Комментарий клиенту (необязательно)':'Причина';
   $('#dialog-error').textContent='';
   $('#dialog-alternative').hidden=!isMove;$('#alternative-date').required=isMove;$('#alternative-time').required=isMove;$('#dialog-submit').disabled=false;
-  $('#dialog-title').textContent=isConfirm?'Подтвердить заявку':action==='decline'?'Отклонить заявку':isMove?'Предложить другое время':isWithdraw?'Отозвать предложение':isNoShow?'Сообщить о возможной неявке':'Отменить запись';
+  $('#dialog-title').textContent=isException?'Подтвердить разовый перенос':isConfirm?'Подтвердить заявку':action==='decline'?'Отклонить заявку':isMove?'Предложить другое время':isWithdraw?'Отозвать предложение':isNoShow?'Сообщить о возможной неявке':'Отменить запись';
   const hold=model.holdDescription(b),holdNote=hold?'Прежнее время удерживается. '+hold+'. ':'Прежнее время сохраняется, пока запись подтверждена. ';
-  $('#dialog-copy').textContent=isConfirm?'Время останется за этой записью.':isMove?((b.date+'T'+b.time>model.now().slice(0,16)?'Оба времени будут удерживаться до ответа клиента или окончания срока.':'Новое время будет удерживаться до ответа клиента или окончания срока.')+(b.state==='pending'?' Предложение подтверждает вашу готовность на новое время.':'')):isWithdraw?holdNote:isNoShow?'Случай будет передан на проверку.':action==='cancel'&&b.transferConflict&&conflictStatus(b)?'Отмена из-за конфликта. Неиспользованный аванс вернётся на баланс клиента. Неясный результат передаётся на сверку.':'Время освободится после сохранения.';
-  $('#dialog-submit').textContent=isConfirm?'Подтвердить':action==='decline'?'Отклонить':isMove?'Предложить время':isWithdraw?'Отозвать':isNoShow?'Сообщить о неявке':'Отменить запись';
+  $('#dialog-copy').textContent=isException?((b.proposal?.acceptedAt?'Клиент согласился. Подтвердите перенос на ':'Подтвердите предложенное время: ')+dateText(b.proposal.date)+' · '+b.proposal.time+'. '+(b.proposal?.acceptedAt?'':'Перенос состоится после согласия клиента. ')+'Новые записи на эту неделю останутся закрыты.'):isConfirm?'Время останется за этой записью.':isMove?((b.date+'T'+b.time>model.now().slice(0,16)?'Оба времени будут удерживаться до ответа клиента или окончания срока.':'Новое время будет удерживаться до ответа клиента или окончания срока.')+(b.state==='pending'?' Предложение подтверждает вашу готовность на новое время.':'')):isWithdraw?holdNote:isNoShow?'Случай будет передан на проверку.':action==='cancel'&&b.transferConflict&&conflictStatus(b)?'Отмена из-за конфликта. Неиспользованный аванс вернётся на баланс клиента. Неясный результат передаётся на сверку.':'Время освободится после сохранения.'+(b.advancePaid?' Неиспользованный аванс вернётся клиенту после проверки.':'');
+  $('#dialog-submit').textContent=isException?'Подтвердить перенос':isConfirm?'Подтвердить':action==='decline'?'Отклонить':isMove?'Предложить время':isWithdraw?'Отозвать':isNoShow?'Сообщить о неявке':'Отменить запись';
   if(isMove){$('#alternative-date').min=today();$('#alternative-date').value=b.date<today()?today():b.date;refreshAlternatives(b);}
   $('#confirm-dialog').showModal();(isMove?$('#alternative-date'):reason.hidden?$('#dialog-cancel'):$('#dialog-reason')).focus();
  }
  $('#dialog-cancel').addEventListener('click',()=>{$('#confirm-dialog').close();$('#booking-detail [data-back]').focus();});
  $('#dialog-form').addEventListener('submit',e=>{
   e.preventDefault();if(!e.currentTarget.reportValidity())return;const b=entries.find(x=>x.id===selected),note=$('#dialog-reason').value.trim();
-  const result=model.perform(b.id,dialogAction,{note,date:$('#alternative-date').value,time:$('#alternative-time').value});
+  const result=dialogAction==='approve-exception'?(scheduleAdmin?model.approveRescheduleException(b.id,b.proposal?.id):{error:'Это действие доступно администратору.'}):model.perform(b.id,dialogAction,{note,date:$('#alternative-date').value,time:$('#alternative-time').value});
   if(result.error){$('#dialog-error').textContent=result.error;if(dialogAction==='reschedule')refreshAlternatives(b);return;}
   sync(result.state);$('#confirm-dialog').close();renderBookings();$('#booking-detail [data-back]').focus();
  });
@@ -514,9 +604,13 @@
  });
  const calendarState=s=>({mode:s.mode==='inherit'?'inherited':s.mode,days:s.days.map(d=>({enabled:d.enabled,start:d.from,end:d.to})),exceptions:s.exceptions.map(x=>({...x,start:x.from,end:x.to})),breakEnabled:s.breakEnabled,breakStart:s.breakFrom,breakEnd:s.breakTo});
  agentCalendar=window.initExpertScheduleCalendar($('#agent-calendar'),{
-  getState:()=>calendarState(draft),getBookings:()=>model.calendarBookings(entries.filter(model.active)),sourceLabel:()=> 'График агента',breakLabel:'Перерыв',
-  selectDate:day=>{$('#exception-date').value=day;},editDate:()=>{$('#exception-date').scrollIntoView({block:'center'});$('#exception-date').focus();}
+  getState:()=>calendarState(draft),getBookings:()=>model.calendarBookings(entries.filter(model.active)),sourceLabel:()=> 'График агента',breakLabel:'Перерыв',showUnapproved:true,isSelectedPeriod:day=>model.weekOf(day)===selectedWeek,
+  getRule:day=>{const week=model.weekOf(day),rule=model.effective(week===selectedWeek?draft:saved,day),record=model.getWeek(saved,week),unapproved=week!==selectedWeek&&!record.approved;return {enabled:rule.enabled,start:rule.from,end:rule.to,unapproved,statusLabel:unapproved?'—':'Выходной',accessibleLabel:unapproved?'График не утверждён':undefined};},
+  getException:day=>{const week=model.weekOf(day),s=week===selectedWeek?draft:model.getWeek(saved,week).approved;return s?.exceptions.find(x=>x.date===day);},
+  selectDate:day=>{const week=model.weekOf(day);if(week===selectedWeek){$('#exception-date').value=day;return;}requestScheduleLeave(()=>{selectedWeek=week;rememberWeek();sync();loadWeek();$('#exception-date').value=day;},$('#schedule-week'));},
+  editDate:()=>{$('#exception-date').scrollIntoView({block:'center'});$('#exception-date').focus();}
  });
+ weekRevision=model.getWeek(saved,selectedWeek).revision;
  route();
  const bookingFromTransfer=Number(new URLSearchParams(location.search).get('booking'));
  if(location.hash==='#bookings'&&bookingFromTransfer&&entries.some(b=>b.id===bookingFromTransfer))openEntry(bookingFromTransfer);
@@ -529,7 +623,7 @@
   const agentChanged=!model.same(saved,state.agent);
   sync(state);renderAddOptions();
   agentCalendar?.refresh();
-   if(cleanAgent){agentBaseline=clone(saved);draft=clone(saved);}
+   if(cleanAgent){agentBaseline=weekDraft(saved,selectedWeek);draft=clone(agentBaseline);weekRevision=model.getWeek(saved,selectedWeek).revision;}
    if(!$('#page-schedule').hidden){
     if(cleanAgent&&agentChanged)renderSchedule();else renderSavedScheduleConflicts();
    }

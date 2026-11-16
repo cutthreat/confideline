@@ -7,7 +7,7 @@
   };
   const actionLabels = {chat: defaults.online.label, wait: defaults.busy.label, booking: defaults.offline.label, link: 'Подробнее'};
   function isValid(value) {
-    return typeof value === 'string' && value.trim().length > 0 && value.length <= limit && !/[\r\n\u2028\u2029]/u.test(value);
+    return typeof value === 'string' && value.trim().length > 0 && Array.from(value).length <= limit && !/[\r\n\u2028\u2029]/u.test(value);
   }
   window.CatalogActionLabels = {limit, defaults, actionLabels, isValid};
 })();

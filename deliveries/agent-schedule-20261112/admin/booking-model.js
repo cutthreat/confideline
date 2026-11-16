@@ -3,7 +3,7 @@
 
  const scenario = new URLSearchParams(location.search).get('scenario') || 'default';
  const transferScenario = ['transfer-free','transfer-conflict','transfer-multiple'].includes(scenario);
- const key = 'confideline-shared-agent-schedule-20261112-v2' + (transferScenario ? '-' + scenario + '-v1' : ['active-session','client-conflict'].includes(scenario) ? '-' + scenario + '-20261113b' : '');
+ const key = 'confideline-shared-agent-schedule-20261112-v2' + (transferScenario ? '-' + scenario + '-v1' : ['active-session','client-conflict','two-bookings','schedule-exception'].includes(scenario) ? '-' + scenario + '-20261113b' : '');
  const partnerSample = scenario.startsWith('partner195');
  const noProfiles = scenario.startsWith('partner-moderator');
  const otherView = new URLSearchParams(location.search).get('demoAgent') === 'kristy';
@@ -18,7 +18,7 @@
    if(raw[key]==null||String(raw[key]).trim()==='')return fallback;
    const value=Number(raw[key]);return Number.isFinite(value)&&value>=min&&value<=max?value:fallback;
   };
-  return {slotMinutes:number('slotMinutes',30),stepMinutes:number('stepMinutes',30),horizonDays:number('horizonDays',60),
+  return {paidCapacity:number('paidCapacity',1,0,10),slotMinutes:number('slotMinutes',30),stepMinutes:number('stepMinutes',30),horizonDays:number('horizonDays',60),
    responseHours:number('responseHours',2),beforeHours:number('beforeHours',1,0),waitingDays:number('waitingDays',7),
    advanceMinutes:number('advanceMinutes',3),paymentDeadlineMinutes:number('paymentDeadlineMinutes',30),
    fullRefundHours:number('fullRefundHours',12,0),lateCancelPercent:number('lateCancelPercent',50,0,100),
@@ -52,19 +52,20 @@
  const clone = value => JSON.parse(JSON.stringify(value));
  const same = (a,b) => JSON.stringify(a) === JSON.stringify(b);
  const active = booking => ['pending', 'processing', 'confirmed'].includes(booking.state);
- const visibleStatus = booking => active(booking) && booking.proposal ? (booking.proposal.acceptedAt ? 'accepted-conflict' : 'proposal') : booking.state;
+ const visibleStatus = booking => active(booking) && booking.proposal ? (booking.proposal.acceptedAt ? (booking.proposal.needsAdminApproval && !booking.proposal.adminApprovedAt ? 'admin-confirmation' : 'accepted-conflict') : 'proposal') : booking.state;
  const holdDescription = booking => ['pending','processing'].includes(booking.state) ? booking.deadline : '';
  const proposalDeadline = booking => booking.proposal?.holdsSlot
-  ? (booking.proposal.acceptedAt ? 'Разрешить конфликт до ' : 'Ответ клиента до ') + displayDeadline.format(booking.proposal.expiresAt)
+  ? (booking.proposal.acceptedAt ? (booking.proposal.needsAdminApproval && !booking.proposal.adminApprovedAt ? 'Подтверждение администратора до ' : 'Разрешить конфликт до ') : 'Ответ клиента до ') + displayDeadline.format(booking.proposal.expiresAt)
   : '';
  const proposalDescription = booking => booking.proposal?.holdsSlot
   ? (booking.proposal.acceptedAt
-     ? 'Клиент согласовал перенос. Новое время применится, если конфликт устранить до '
+     ? (booking.proposal.needsAdminApproval && !booking.proposal.adminApprovedAt ? 'Клиент согласовал перенос; ожидается подтверждение администратора до ' : 'Клиент согласовал перенос. Новое время применится, если конфликт устранить до ')
      : (atTime(booking.date,booking.time) > Date.now() ? 'Оба времени удерживаются до ответа клиента или до ' : 'Новое время удерживается до ответа клиента или до ')) + displayDeadline.format(booking.proposal.expiresAt) + '.'
   : 'Ожидается ответ клиента.';
  const needsOutcomeCheck = booking => booking.state === 'confirmed' && atTime(booking.date,booking.time) <= Date.now();
  labels.proposal = 'Ожидает ответа клиента';
  labels['accepted-conflict'] = 'Перенос согласован · есть конфликт';
+ labels['admin-confirmation'] = 'Ожидает подтверждения администратора';
  const overlaps = (a,b,c,d) => a < d && c < b;
  const nextWork = date => {
   while ([0,6].includes(parse(date).getDay())) date = addDays(date,1);
@@ -78,7 +79,31 @@
   {client:'Алексей В.',profile:'talia',profileName:'Talia',at:'11:10'}
  ];
 
+ // Each approved week is a separate snapshot; an unfinished proposal never
+ // changes the schedule used by the booking preview.
+ const weekOf = date => addDays(date,-((parse(date).getDay()+6)%7));
+ const plainSchedule = agent => Object.fromEntries(['days','exceptions','breakEnabled','breakFrom','breakTo'].map(k=>[k,clone(agent[k])]));
+ function ensureApproval(agent) {
+  if(agent.approval)return false;
+  const weeks={}, first=weekOf(today());
+  // These are illustrative approved weeks for the existing demo data.
+  for(let i=0;i<5;i++)weeks[addDays(first,i*7)]={approved:plainSchedule(agent),approvedEpoch:0,pending:null,draft:null,revision:1};
+  agent.approval={weeks,pauseEpoch:0,pauseActive:false,notice:''};return true;
+ }
+ function approvedFor(agent,date) {
+  if(!agent.approval)return agent;
+  return agent.approval.weeks[weekOf(date)]?.approved || null;
+ }
+ function canRequest(agent,date) {
+  if(!agent.approval)return true;
+  const a=agent.approval,w=a.weeks[weekOf(date)];
+  return Boolean(w?.approved&&(!a.pauseActive||w.approvedEpoch>=a.pauseEpoch));
+ }
  function effective(schedule, date, fallback) {
+  if(schedule.approval){
+   const approved=approvedFor(schedule,date);
+   return approved ? effective(approved,date,fallback) : {enabled:false,from:'00:00',to:'00:00'};
+  }
   const exception = schedule.exceptions.find(item => item.date === date);
   if (exception) return {...exception, enabled:exception.kind === 'hours'};
   if (fallback) return effective(fallback, date);
@@ -92,7 +117,7 @@
  }
  function availability(agent, profile, date, start, length=slotLength) {
   if (!inHours(effective(agent,date),start,length)) return 'Вне графика агента';
-  if (inBreak(agent,start,length)) return 'Перерыв агента';
+  if (inBreak(approvedFor(agent,date)||agent,start,length)) return 'Перерыв агента';
   // One schedule belongs to the agent; profiles do not have separate hours.
   return '';
  }
@@ -103,7 +128,7 @@
    const stamp = now(at);
    const date = stamp.slice(0,10);
    const minute = minutes(stamp.slice(11,16));
-   if (inHours(effective(agent,date),minute,1) && !inBreak(agent,minute,1) && --remaining === 0) return at + 60000;
+   if (inHours(effective(agent,date),minute,1) && !inBreak(approvedFor(agent,date)||agent,minute,1) && --remaining === 0) return at + 60000;
   }
   return null;
  }
@@ -158,6 +183,7 @@
   const interests = defaultInterests().map(item=>({...item,date:today()}));
   const otherProfile={id:'solara',name:'Solara Ortiz',username:'SolaraOrtiz',userId:103,assignment:16};
   const otherAgent={agent:clone(agent),profiles:[otherProfile],entries:[{id:101,client:'Анна Д.',profile:'solara',assignment:16,date:firstDate,time:'11:00',state:'confirmed',advancePaid:true,paymentMode:'after-confirmation',acceptedPrice:10,deadline:'Встреча подтверждена',history:['Заявка подтверждена.']}],interests:[],firstDate,paymentMode:'after-confirmation'};
+  if (scenario === 'schedule-exception') { otherAgent.entries[0].client='Анна С.'; otherAgent.entries[0].previewClient=true; }
   if (transferScenario) {
    entries.push({id:9,client:'Мария Л.',profile:'alisa',date:firstDate,time:'09:30',state:'confirmed',acceptedPrice:12,advancePaid:true,advanceAmount:36,paymentMode:'after-confirmation',deadline:'Встреча подтверждена',history:['Заявка подтверждена.'],previewClient:true});
    otherAgent.entries[0].time=scenario==='transfer-free'?'11:00':'09:30';
@@ -175,6 +201,10 @@
    entries.push({id:10,client:'Мария Л.',profile:'alisa',date:nextDate,time:'12:00',state:'confirmed',deadline:'Встреча подтверждена',history:['Встреча подтверждена.'],paymentMode:'after-confirmation',acceptedPrice:12,advancePaid:true});
   }
   if (scenario === 'client-conflict') entries.push({id:9,client:'Анна С.',profile:'alisa',date:today(),time:now().slice(11,16),state:'confirmed',deadline:'Встреча подтверждена',history:['Встреча подтверждена.'],paymentMode:'after-confirmation',acceptedPrice:12,advancePaid:true,advanceAmount:36,previewClient:true,delayed:true});
+  if (scenario === 'two-bookings') {
+   entries.push({id:110,client:'Анна С.',profile:'alisa',date:firstDate,time:'12:00',state:'confirmed',deadline:'Встреча подтверждена',history:['Встреча подтверждена.'],paymentMode:'after-confirmation',acceptedPrice:12,advancePaid:true,advanceAmount:36,previewClient:true,policySnapshot:readPolicy()});
+   entries.push({id:111,client:'Анна С.',profile:'alisa',date:nextDate,time:'16:00',state:'confirmed',deadline:'Встреча подтверждена',history:['Встреча подтверждена.'],paymentMode:'after-confirmation',acceptedPrice:18,advancePaid:true,advanceAmount:54,previewClient:true,policySnapshot:readPolicy()});
+  }
   return {agent, profiles, entries, interests, firstDate, paymentMode, otherAgent, liveSession};
  }
 
@@ -221,6 +251,8 @@
   const state=otherView?root.otherAgent:root;
   const at = Date.now();
   let changed = false;
+  if(ensureApproval(root.agent))changed=true;
+  if(ensureApproval(root.otherAgent.agent))changed=true;
   const records=[...root.entries,...root.otherAgent.entries],used=new Set();
   let nextId=Math.max(0,...records.map(b=>Number(b.id)||0));
   for(const booking of records){
@@ -292,7 +324,8 @@
  }
  function alternatives(state,booking,date) {
   if (!booking || !date || !active(booking) || date < today()) return [];
-  const rule = effective(state.agent,date);
+  const exceptional = Boolean(state.agent.approval?.pauseActive && !canRequest(state.agent,date));
+  const rule = exceptional ? {enabled:true,from:'00:00',to:'24:00'} : effective(state.agent,date);
   const profile = state.profiles.find(item => item.id === booking.profile);
   if (!profile) return [];
   const slots = [];
@@ -300,7 +333,7 @@
   for (let start = Math.ceil(minutes(rule.from)/step)*step; rule.enabled && start + length <= minutes(rule.to); start += step) {
    const value = time(start);
    if (atTime(date,value) <= Date.now() || (date === booking.date && value === booking.time)) continue;
-   if (availability(state.agent,profile,date,start,length) || occupied(state.entries,date,start,booking.id,length).length) continue;
+   if ((!exceptional && availability(state.agent,profile,date,start,length)) || occupied(state.entries,date,start,booking.id,length).length) continue;
    slots.push(value);
   }
   return slots;
@@ -309,8 +342,13 @@
   const rule = effective(state.agent,date);
   const profile = state.profiles.find(item => item.id === profileId);
   const rows = [];
-  for (let start = Math.ceil(minutes(rule.from)/slotLength)*slotLength; rule.enabled && start + slotLength <= minutes(rule.to); start += slotLength) {
+  const holds=state.entries.filter(active).flatMap(booking=>heldWindows(booking).filter(w=>w.date===date));
+  const starts=[...(rule.enabled?[minutes(rule.from)]:[]),...holds.map(w=>minutes(w.time))];
+  const ends=[...(rule.enabled?[minutes(rule.to)]:[]),...holds.map(w=>minutes(w.time)+w.length)];
+  if(!starts.length)return rows;
+  for (let start = Math.floor(Math.min(...starts)/slotLength)*slotLength; start < Math.max(...ends); start += slotLength) {
    const bookings = occupied(state.entries,date,start);
+   if(!bookings.length&&!inHours(rule,start,slotLength))continue;
    const label = bookings.length ? '' : availability(state.agent,profile,date,start) || 'Нет записей';
    const previous = rows.at(-1);
    if (!bookings.length && previous?.label === label) previous.end = time(start + slotLength);
@@ -374,7 +412,9 @@
   if (action === 'confirm') {
    const profile = state.profiles.find(item => item.id === booking.profile);
    if (!profile) return {error:'Анкета больше не назначена. Проверьте запись и назначение.'};
-   if (availability(state.agent,profile,booking.date,minutes(booking.time),bookingLength(booking)) || occupied(state.entries,booking.date,minutes(booking.time),id,bookingLength(booking)).length) return {error:'Интервал больше недоступен.'};
+   // A previously submitted request remains actionable after a schedule change.
+   // Its held time must still be free of another appointment.
+   if (occupied(state.entries,booking.date,minutes(booking.time),id,bookingLength(booking)).length) return {error:'Интервал больше недоступен.'};
   }
   if (action === 'reschedule' && !alternatives(state,booking,date).includes(proposedTime)) return {error:'Это время больше недоступно. Выберите другое.'};
   const at = Date.now();
@@ -388,9 +428,9 @@
   } else if (action === 'decline' || action === 'cancel') {
    const platformConflict=action==='cancel'&&booking.transferConflict&&
     (bookingConflicts(state,booking).length||scheduleConflicts([booking],state.agent,null,booking.profile).length||(!booking.transferConflict.resolvedAt&&at>=atTime(booking.date,booking.time)));
-   if(platformConflict){
-    if(hasLiveSession(state,booking.profile))return {error:'Сначала завершите консультацию и проверьте расчёт.'};
-    if(!booking.paymentUncertain&&booking.advancePaid&&Number.isFinite(booking.advanceAmount)&&(at<atTime(booking.date,booking.time)||booking.serviceNotProvided||Number.isFinite(booking.paidServiceCredits))){
+   if(action==='cancel'){
+    if(platformConflict&&hasLiveSession(state,booking.profile))return {error:'Сначала завершите консультацию и проверьте расчёт.'};
+    if(!booking.paymentUncertain&&booking.advancePaid&&Number.isFinite(booking.advanceAmount)&&((at<atTime(booking.date,booking.time)&&!hasLiveSession(state,booking.profile))||booking.serviceNotProvided||Number.isFinite(booking.paidServiceCredits))){
      const remainder=Math.max(0,Math.round((booking.advanceAmount-(booking.paidServiceCredits??0))*100)/100);
      booking.refundStatus=remainder?'complete':'none';
      booking.refundAmount=remainder;
@@ -410,7 +450,9 @@
    const expiresAt=Math.min(at+(booking.policySnapshot?.rescheduleHours ?? readPolicy().rescheduleHours)*60*60*1000,originalDeadline??Infinity,originalStart>at?originalStart:Infinity,atTime(date,proposedTime));
    if(expiresAt<=at)return {error:'Срок предложения уже истёк. Выберите другое окно.'};
    state.nextProposalId=(state.nextProposalId||0)+1;
-   booking.proposal={id:(otherView?'kristy':'partner195')+'-proposal-'+state.nextProposalId,date,time:proposedTime,holdsSlot:true,expiresAt};
+   const needsAdminApproval=Boolean(state.agent.approval?.pauseActive && !canRequest(state.agent,date));
+   booking.proposal={id:(otherView?'kristy':'partner195')+'-proposal-'+state.nextProposalId,date,time:proposedTime,holdsSlot:true,expiresAt,needsAdminApproval};
+   if(needsAdminApproval)booking.history.push('Разовый перенос на закрытую неделю ожидает подтверждения администратора.');
    booking.history.push('Предложено время: ' + date + ' ' + proposedTime + (note ? '. ' + note : ''));
   } else if (action === 'withdraw') {
    booking.proposal = null;
@@ -437,7 +479,7 @@
  function settleAcceptedProposals(state,at) {
   for(const booking of state.entries){
    const proposal=booking.proposal;
-   if(!active(booking)||!proposal?.acceptedAt||at>=proposal.expiresAt)continue;
+   if(!active(booking)||!proposal?.acceptedAt||at>=proposal.expiresAt||(proposal.needsAdminApproval&&!proposal.adminApprovedAt))continue;
    const due=originalHoldUntil(booking);
    if(due&&at>=due)continue;
    const profile=state.profiles.find(item=>item.id===booking.profile);
@@ -468,12 +510,65 @@
    }
    if(occupiedByAnother)
     return {error:'Предложенное время сейчас недоступно. Передайте конфликт ответственному.'};
+   if(proposal.needsAdminApproval&&!proposal.adminApprovedAt){
+    proposal.acceptedAt=at;booking.history.push('Клиент согласовал перенос. Ожидается подтверждение администратора.');
+    save();return {state,deferred:true};
+   }
    applyAcceptedReschedule(booking,at,state.paymentMode);
   } else {
    booking.history.push('Клиент отклонил перенос. Исходная запись сохранена.');
    booking.proposal=null;
   }
   save();return {state};
+ }
+ function approveRescheduleException(id,proposalId){
+  const state=read(),booking=state.entries.find(item=>item.id===id);
+  if(!booking||!active(booking)||!booking.proposal?.needsAdminApproval||booking.proposal.id!==proposalId)return {error:'Предложение изменилось. Откройте запись ещё раз.'};
+  const at=Date.now();
+  if(expire(booking,at)){write(state);return {error:'Срок предложения переноса истёк.'};}
+  const proposal=booking.proposal;
+  if(proposal.adminApprovedAt)return {error:'Перенос уже подтверждён администратором.'};
+  if(occupied(state.entries,proposal.date,minutes(proposal.time),booking.id,bookingLength(booking)).length)return {error:'Время уже занято другой записью. Разрешите конфликт.'};
+  proposal.adminApprovedAt=at;booking.history.push('Администратор подтвердил разовый перенос. Неделя остаётся закрытой для новых записей.');
+  if(proposal.acceptedAt)applyAcceptedReschedule(booking,at,state.paymentMode);
+  write(state);return {state};
+ }
+ function getWeek(agent,week){
+  return agent.approval.weeks[week]||{approved:null,approvedEpoch:-1,pending:null,draft:null,revision:0};
+ }
+ function changeWeek(week,revision,action,candidate,comment=''){
+  const state=read(),a=state.agent.approval,previous=getWeek(state.agent,week);
+  if(previous.revision!==revision)return {error:'График этой недели изменился. Откройте актуальную версию.'};
+  const item=clone(previous);
+  if(action==='draft')item.draft=plainSchedule(candidate);
+  if(action==='submit'){
+   item.pending=plainSchedule(candidate);item.pendingEpoch=a.pauseEpoch;item.draft=null;item.returned='';
+   a.notice='График отправлен администратору на согласование.';
+  }
+  if(action==='return'){
+   if(!item.pending)return {error:'Заявка на согласование уже рассмотрена.'};
+   item.draft=item.draft||clone(item.pending);item.pending=null;item.returned=String(comment||'Пожалуйста, уточните график.');
+   a.notice='График возвращён агенту на доработку.';
+  }
+  if(action==='approve'){
+   if(a.pauseActive&&(!item.pending||item.pendingEpoch!==a.pauseEpoch))return {error:'После остановки агенту нужно заново отправить график на согласование.'};
+   const source=item.pending||item.approved,changes=[];
+   const describe=day=>day.enabled?day.from+'–'+day.to:'выходной';
+   if(source){
+    candidate.days.forEach((day,i)=>{if(describe(day)!==describe(source.days[i]))changes.push(day.name+': '+describe(source.days[i])+' → '+describe(day));});
+    if(!same([candidate.breakEnabled,candidate.breakFrom,candidate.breakTo],[source.breakEnabled,source.breakFrom,source.breakTo]))changes.push('изменён перерыв');
+    if(!same(candidate.exceptions,source.exceptions))changes.push('изменены отдельные дни');
+   }
+   item.adminChanges=changes;
+   item.approved=plainSchedule(candidate);item.approvedEpoch=a.pauseEpoch;item.pending=null;item.returned='';
+   a.notice='График утверждён. Агент увидит принятое расписание.';
+  }
+  item.revision++;a.weeks[week]=item;write(state);return {state};
+ }
+ function pauseBookings(){
+  const state=read(),a=state.agent.approval;
+  a.pauseEpoch++;a.pauseActive=true;a.notice='Новые записи закрыты. Администратору отправлено уведомление.';
+  write(state);return {state};
  }
  function saveSchedule(candidate, baseline, profileId) {
   if (profileId) return {error:'Расписание задаётся только в графике агента.'};
@@ -585,7 +680,7 @@
   write(state);return {state};
  }
  const demoUrl=new URL(location.href);
- if(transferScenario&&demoUrl.searchParams.get('reset')==='1'){
+ if((transferScenario||scenario==='two-bookings'||scenario==='schedule-exception')&&demoUrl.searchParams.get('reset')==='1'){
   writeRoot(seed());
   demoUrl.searchParams.delete('reset');
   history.replaceState(history.state,'',demoUrl);
@@ -618,10 +713,11 @@
   profile.price=price;write(state);return {state};
  }
  function requestBooking(profileId, date, value) {
+  if (readPolicy().paidCapacity === 0) return {error:'Запись на платную консультацию сейчас недоступна.'};
   const state=readForProfile(profileId), profile=state.profiles.find(item=>item.id===profileId);
   if(!profile) return {error:'Эксперт не назначен агенту. Выберите другую анкету.'};
   const start=minutes(value), meeting=atTime(date,value), due=deadline(state.agent,Date.now(),meeting);
-  if(!Number.isFinite(meeting)||meeting<=Date.now()||!due||availability(state.agent,null,date,start)||occupied(state.entries,date,start).length)
+  if(!Number.isFinite(meeting)||meeting<=Date.now()||!due||!canRequest(state.agent,date)||availability(state.agent,null,date,start)||occupied(state.entries,date,start).length)
    return {error:'Это время уже недоступно. Выберите другое.'};
   const policySnapshot=readPolicy();
   const root=readRoot();
@@ -629,6 +725,13 @@
    profile:profileId,date,time:value,state:'pending',deadlineAt:due,deadline:'Ответить до '+displayDeadline.format(due),
    history:['Заявка получена. Окно удержано.'],paymentMode:policySnapshot.paymentMode||state.paymentMode,policySnapshot,acceptedPrice:profile.price??10,previewClient:true};
   state.entries.push(booking); writeForProfile(state,profileId); return {state,booking};
+ }
+ function requestBookedStart(id, profileId) {
+  if (readPolicy().paidCapacity === 0) return {error:'Платная консультация сейчас недоступна.'};
+  const state=readForProfile(profileId), booking=state.entries.find(item=>item.id===id&&item.profile===profileId&&item.previewClient&&item.state==='confirmed');
+  if(!booking) return {error:'Запись изменилась. Откройте её ещё раз.'};
+  if(!booking.startRequest){booking.startRequest={state:'pending',early:atTime(booking.date,booking.time)>Date.now(),requestedAt:Date.now()};booking.history.push('Клиент запросил начало консультации.');writeForProfile(state,profileId);}
+  return {state,booking};
  }
  function cancelOwnRequest(id,profileId=null) {
   const state=profileId?readForProfile(profileId):read(), booking=state.entries.find(item=>item.id===id&&item.previewClient&&item.state==='pending');
@@ -641,5 +744,5 @@
   const query=new URLSearchParams();if(scenario)query.set('scenario',scenario);if(otherView)query.set('demoAgent','kristy');
   return page + (query.toString()?'?'+query.toString():'') + '#' + hash;
  }
- window.BookingPreview = {expertId,partnerName,otherView,get slotLength(){return slotLength;},labels,now,today,addDays,minutes,time,clone,same,active,bookingLength,bookingConflicts,visibleStatus,holdDescription,proposalDeadline,proposalDescription,needsOutcomeCheck,effective,availability,occupied,alternatives,dayRows,calendarEvents,calendarBookings,scheduleConflicts,actions,read,readPolicy,readForProfile,watch,perform,answerReschedule,saveSchedule,savePrice,addProfile,removeProfile,hasLiveSession,emergencyRemove,clientDelayAction,resetClientConflict,inspectTransfer,transferProfile,addCity,defaultInterests,deadline,requestBooking,cancelOwnRequest,link};
+ window.BookingPreview = {expertId,partnerName,otherView,get slotLength(){return slotLength;},labels,now,today,addDays,minutes,time,clone,same,active,bookingLength,bookingConflicts,visibleStatus,holdDescription,proposalDeadline,proposalDescription,needsOutcomeCheck,effective,availability,occupied,alternatives,dayRows,calendarEvents,calendarBookings,scheduleConflicts,actions,read,readPolicy,readForProfile,watch,perform,answerReschedule,approveRescheduleException,saveSchedule,savePrice,addProfile,removeProfile,hasLiveSession,emergencyRemove,clientDelayAction,resetClientConflict,inspectTransfer,transferProfile,addCity,defaultInterests,deadline,requestBooking,requestBookedStart,cancelOwnRequest,canRequest,weekOf,getWeek,changeWeek,pauseBookings,plainSchedule,link};
 })();

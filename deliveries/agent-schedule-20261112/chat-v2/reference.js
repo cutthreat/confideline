@@ -9,6 +9,8 @@ const chatList = find('.chat-list');
 const messages = find('.messages');
 const draft = find('#draft-message');
 const demoTime = find('#demo-time');
+const previewTime = new URLSearchParams(location.search).get('time');
+if (['early','ongoing','starting','due','multiple','none'].includes(previewTime)) demoTime.value = previewTime;
 const demoError = find('#demo-error');
 const initialThread = 'mikhail-vera';
 const threads = new Map([
@@ -41,7 +43,7 @@ const bookingStages = [
   {status: 'Перенесена по согласию клиента', action: 'Клиент согласился на перенос', at: '14:57'},
   {status: 'Отменена', action: 'Отменить учебную запись', at: '14:58'},
 ];
-const clockLabel = () => ({early: '14:54', ongoing: '14:55', starting: '14:58', none: '15:00'}[demoTime.value]);
+const clockLabel = () => ({early: '14:54', ongoing: '14:55', starting: '14:58', due: '15:00', multiple: '14:55', none: '15:00'}[demoTime.value]);
 let activeThread = initialThread;
 let nextConversation = 101;
 
@@ -280,16 +282,22 @@ function renderDemoTime() {
   renderLists();
   if (!activeElement?.isConnected) find('[aria-selected="true"]').focus();
   renderConversation();
-  const minutes = { ongoing: 5, starting: 2 }[demoTime.value];
-  if (!minutes) {
+  const due = demoTime.value === 'due';
+  const minutes = { ongoing: 5, starting: 2, multiple: 5 }[demoTime.value];
+  if (!minutes && !due) {
     bookingAlert.replaceChildren();
     return;
   }
   bookingAlert.replaceChildren(
-    element('strong', 'Следующая запись через ' + (minutes === 5 ? '5 минут' : '2 минуты')),
+    element('strong', due ? 'Время встречи наступило' : 'Следующая запись через ' + (minutes === 5 ? '5 минут' : '2 минуты')),
     element('span', 'Сегодня, 15:00 · Алиса Берг · клиент Анна Р.'),
-    element('span', 'Завершите консультацию с Михаилом К. к началу записи.'),
+    element('span', due ? 'Ожидается начало консультации.' : 'Следите за доступностью к началу встречи.'),
   );
+  if (demoTime.value === 'multiple') {
+    const link = element('a', 'Открыть журнал записей');
+    link.href = '../admin/partner.html#bookings';
+    bookingAlert.append(element('span', 'Ещё 1 пересекающаяся запись.'), link);
+  }
 }
 
 mobileLayout.addEventListener('change', placeAlert);

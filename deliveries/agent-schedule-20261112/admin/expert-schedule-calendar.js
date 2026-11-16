@@ -48,6 +48,8 @@
       <span><i class="xsc-mark xsc-mark-off" aria-hidden="true">–</i>Выходной</span>
       <span><i class="xsc-mark xsc-mark-exception" aria-hidden="true">◆</i>Исключение</span>
       <span><i class="xsc-dot xsc-dot-busy" aria-hidden="true"></i>Заявка или запись</span>
+      ${api.showUnapproved?'<span><i class="xsc-mark" aria-hidden="true">?</i>Не утверждён</span>':''}
+      ${api.isSelectedPeriod?'<span><i class="xsc-mark xsc-period-mark" aria-hidden="true">▣</i>Выбранная неделя</span>':''}
     </div>
     <div class="xsc-week" aria-hidden="true">${week.map(([short, full]) => `<abbr title="${full}">${short}</abbr>`).join('')}</div>
     <div class="xsc-grid" role="group" aria-label="Дни месяца"></div>
@@ -69,17 +71,17 @@
     }
 
     function info(d, data) {
-      const iso = format(d), day = data.state.days?.[mondayIndex(d)], ex = data.exceptions.get(iso);
+      const iso = format(d), day = data.state.days?.[mondayIndex(d)], ex = api.getException ? api.getException(iso) : data.exceptions.get(iso);
       const rule = api.getRule?.(iso);
       const start = rule?.start ?? (ex?.kind === 'hours' ? ex.start : day?.start);
       const end = rule?.end ?? (ex?.kind === 'hours' ? ex.end : day?.end);
       const validHours = time(start) !== null && time(end) !== null && start < end;
       const on = rule ? rule.enabled && validHours : ex?.kind !== 'closed' && validHours && (ex?.kind === 'hours' || Boolean(day?.enabled));
       const unavailableDraft = !rule && ex?.kind !== 'closed' && !validHours && (ex?.kind === 'hours' || day?.enabled);
-      const kind = unavailableDraft ? 'invalid' : on ? 'work' : 'off';
+      const kind = rule?.unapproved ? 'unapproved' : unavailableDraft ? 'invalid' : on ? 'work' : 'off';
       const title = unavailableDraft ? 'Проверьте часы' : on ? start + '–' + end : (rule?.statusLabel || 'Выходной');
       const booked = data.byDate.get(iso) || [];
-      return { iso, ex, on, kind, start, end, title, booked };
+      return { iso, ex, on, kind, start, end, title, spoken:rule?.accessibleLabel||title, booked };
     }
 
     function showDetail(data) {
@@ -94,7 +96,7 @@
       const breakText = data.state.breakEnabled && time(data.state.breakStart) !== null && time(data.state.breakEnd) !== null && data.state.breakStart < data.state.breakEnd
         ? ` · ${esc(api.breakLabel || 'Дополнительный перерыв')} ${esc(data.state.breakStart)}–${esc(data.state.breakEnd)}` : '';
       details.innerHTML = `<h4>${esc(cap(dateLabel.format(parse(selected))))}</h4>
-        <p><strong>${esc(day.title)}</strong> · ${source}${day.on ? breakText : ''}</p>
+        <p><strong>${esc(day.spoken)}</strong> · ${source}${day.on ? breakText : ''}</p>
         ${day.booked.length ? `<ul class="xsc-bookings">${day.booked.map(b =>
           `<li><span>${esc(b.time)} · ${esc(b.client)}${b.proposedSlot&&b.client!=='Агент занят'&&b.client!=='Партнёр занят'?' · Предложенное время':''}</span>${b.client==='Агент занят'||b.client==='Партнёр занят'?'':`<span class="xsc-status">${esc(window.BookingPreview?.labels[window.BookingPreview.visibleStatus(b)] || blocking.get(b.state))}</span>`}</li>`
         ).join('')}</ul>` : '<p class="xsc-muted">На этот день записей нет.</p>'}
@@ -110,11 +112,12 @@
       for (let i = 0; i < before; i++) slots.push('<span class="xsc-empty" aria-hidden="true"></span>');
       for (let n = 1; n <= count; n++) {
         const d = new Date(year, mo, n, 12), x = info(d, data), busy = x.booked.length;
-        const label = [dateLabel.format(d), x.kind==='work'?'Рабочий день':x.title, x.kind==='work'?x.title:'', x.ex ? 'исключение' : '', busy ? 'заявок и записей: ' + busy : ''].filter(Boolean).join(', ');
-        slots.push(`<button type="button" class="xsc-day xsc-day-${x.kind}${x.ex?' xsc-has-exception':''}" data-xsc-date="${x.iso}"
+        const selectedPeriod = api.isSelectedPeriod?.(x.iso) || false;
+        const label = [dateLabel.format(d), selectedPeriod?'выбранная неделя':'', x.kind==='work'?'Рабочий день':x.spoken, x.kind==='work'?x.title:'', x.ex ? 'исключение' : '', busy ? 'заявок и записей: ' + busy : ''].filter(Boolean).join(', ');
+        slots.push(`<button type="button" class="xsc-day xsc-day-${x.kind}${x.ex?' xsc-has-exception':''}${selectedPeriod?' xsc-selected-week':''}" data-xsc-date="${x.iso}"
           tabindex="${x.iso === focusDay ? '0' : '-1'}" aria-pressed="${x.iso === selected}" ${x.iso === now ? 'aria-current="date"' : ''}
           aria-label="${esc(label)}" title="${esc(label)}"><span class="xsc-day-number">${n}</span>${x.ex?'<span class="xsc-exception-indicator" aria-hidden="true">◆</span>':''}<span class="xsc-hours" aria-hidden="true">${esc(x.title)}</span>
-          <span class="xsc-day-mark xsc-day-mark-${x.kind}" aria-hidden="true">${x.kind==='work'?'●':x.kind==='invalid'?'!':'–'}</span>
+          <span class="xsc-day-mark xsc-day-mark-${x.kind}" aria-hidden="true">${x.kind==='work'?'●':x.kind==='invalid'?'!':x.kind==='unapproved'?'?':'–'}</span>
           ${busy ? `<span class="xsc-count" aria-hidden="true">${busy}</span>` : ''}</button>`);
       }
       grid.innerHTML = slots.join('');

@@ -37,7 +37,7 @@
       const caption = make('div','',{class:'form-group'});
       const captionId = `caption-${id}`;
       const label = make('label','Текст кнопки (русский)',{for:captionId});
-      const captionInput = make('input','',{class:'form-control',id:captionId,name:captionId,type:'text',maxlength:String(labels.limit),'aria-describedby':`caption-help-${id}`});
+      const captionInput = make('input','',{class:'form-control',id:captionId,name:captionId,type:'text','aria-describedby':`caption-help-${id}`});
       captionInput.value = preset.label;
       const captionHelp = make('p', `До ${labels.limit} символов, одна строка.`, {class:'help-block',id:`caption-help-${id}`});
       caption.append(label,captionInput,captionHelp);
@@ -94,15 +94,14 @@
     });
   }
   let saved = capture();
-  try { const existing = JSON.parse(localStorage.getItem(storageKey)); if (existing) { apply(existing); saved = capture(); } } catch (_) {}
+  try { const existing = JSON.parse(localStorage.getItem(storageKey)); if (existing) { if (page === 'chat' && !('paidCapacity' in existing) && 'paidEnabled' in existing) existing.paidCapacity = existing.paidEnabled ? '1' : '0'; apply(existing); saved = capture(); } } catch (_) {}
   const save = form.querySelector('button[type="submit"],.box-footer button');
   const cancel = Array.from(form.querySelectorAll('.box-footer button')).find(b => b.textContent.trim() === 'Отменить изменения');
   function displayPaid() {
-    const paid = form.querySelector('[name="paidEnabled"]');
+    const paid = form.querySelector('[name="paidCapacity"]');
     if (!paid) return;
-    const hasObligations = new URLSearchParams(location.search).get('obligations') !== '0';
-    document.getElementById('conf-paid-status').textContent = saved.paidEnabled ? 'Включён' : hasObligations ? 'Завершение обязательств' : 'Выключен';
-    document.getElementById('conf-obligations').hidden = !!saved.paidEnabled || !hasObligations;
+    const enabled = Number(saved.paidCapacity) > 0;
+    document.getElementById('conf-paid-status').textContent = enabled ? 'Включён' : 'Выключен';
   }
   const refreshActionHints = () => {
     if(page !== 'catalog') return;
@@ -146,7 +145,7 @@
     }
     catch (_) { status.textContent = 'Не удалось сохранить настройки.'; }
   });
-  document.querySelectorAll('.main-sidebar a[aria-disabled="true"]').forEach(a => a.addEventListener('click',e => e.preventDefault()));
+  document.querySelectorAll('#settings-sidebar a[role="button"]').forEach(a => a.addEventListener('click',e => { e.preventDefault(); const submenu = a.nextElementSibling; if (!submenu || !submenu.classList.contains('treeview-menu')) return; const open = a.getAttribute('aria-expanded') === 'true'; a.setAttribute('aria-expanded', String(!open)); submenu.style.display = open ? 'none' : 'block'; }));
   document.querySelector('.sidebar-toggle')?.addEventListener('click',event => { event.preventDefault(); const mobile = matchMedia('(max-width: 767px)').matches; document.body.classList.toggle(mobile ? 'sidebar-open' : 'sidebar-collapse'); });
   displayPayment(); displayPaid(); displaySavedCatalog(); updateDirty();
 })();

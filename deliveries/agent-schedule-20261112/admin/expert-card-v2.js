@@ -16,7 +16,7 @@
  $$('[data-profile-name]').forEach(el=>el.textContent=initialProfile.name);
  $$('[data-agent-name]').forEach(el=>el.textContent=model.partnerName);
  if(initialProfile.userId){
-  document.querySelectorAll('[data-expert-heading]').forEach(el=>el.textContent='Пользователь #'+initialProfile.userId);
+  document.querySelectorAll('[data-expert-heading]').forEach(el=>el.textContent='Эксперт #'+initialProfile.userId);
   $('[data-expert-user-id]').textContent=initialProfile.userId;
   $('.widget-user-username').textContent=initialProfile.username||initialProfile.name;
   $('.widget-user-desc').textContent='—';

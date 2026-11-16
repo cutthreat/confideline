@@ -10,7 +10,7 @@
 <link href="assets/admin-header-v2.css" rel="stylesheet"/>
 <link href="assets/admin-sidebar-v1.css" rel="stylesheet"/>
 
-<link href="partner.css?v=transfer2" rel="stylesheet"/><link href="expert-schedule-calendar.css?v=28" rel="stylesheet"/></head>
+<link href="partner.css?v=20261116-merged1" rel="stylesheet"/><link href="expert-schedule-calendar.css?v=20261116-merged2" rel="stylesheet"/></head>
 <body class="skin-youdate fixed sidebar-mini"><div class="wrapper"><header class="main-header">
 <a class="logo" href="#">
 <span class="logo-mini">YouDate</span>
@@ -211,12 +211,14 @@
 </section>
 <section class="partner-page" hidden="" id="page-schedule">
 <div class="partner-box"><h2>График</h2><div class="partner-body">
-
 <p class="muted">Рабочее время агента · Минск, UTC+3</p>
+<div class="schedule-period"><label for="schedule-week">Неделя<select class="form-control" id="schedule-week"></select></label><div class="schedule-week-state"><span class="schedule-badge" id="schedule-status"></span><p id="schedule-status-detail"></p></div></div>
+<div class="schedule-notice" id="schedule-pause-state" hidden role="status"></div>
+<div class="schedule-actions-top"><button class="btn btn-default" id="schedule-pause-open" type="button">Временно закрыть запись</button></div>
 <p class="text-warning" hidden="" id="agent-calendar-preview" role="status">Предпросмотр несохранённых изменений</p>
 <div id="agent-calendar"></div>
 <form id="agent-schedule">
-<div class="schedule-heading"><h3>Рабочая неделя</h3></div>
+<div class="schedule-heading"><h3>Рабочая неделя</h3><p class="muted">Укажите рабочие дни и время для выбранной недели.</p></div>
 <div class="agent-days" id="agent-days"></div>
 <fieldset><legend>Перерыв</legend><label><input id="agent-break-enabled" type="checkbox"/> Рабочий перерыв</label><div class="field-row"><label>С<input class="form-control" id="agent-break-from" type="time"/></label><label>До<input class="form-control" id="agent-break-to" type="time"/></label></div></fieldset>
 <fieldset><legend>Изменение на конкретный день</legend><div class="field-row">
@@ -227,7 +229,7 @@
 <button class="btn btn-default" id="exception-add" type="button">Добавить</button>
 </div><div id="exception-list"></div></fieldset>
 <p class="muted">График действует для всех закреплённых экспертных анкет. Занятое время учитывается для всех анкет.</p>
-<div class="form-row"><button class="btn btn-primary" type="submit">Сохранить график</button><button class="btn btn-default" id="schedule-reset" type="button">Отменить изменения</button></div>
+<div class="form-row"><button class="btn btn-primary" id="schedule-submit" type="submit">Отправить на согласование</button><button class="btn btn-default" id="schedule-draft" type="button">Сохранить черновик</button><button class="btn btn-default" id="schedule-return-open" type="button" hidden>Вернуть на доработку</button><button class="btn btn-default" id="schedule-reset" type="button">Отменить изменения</button></div>
 <div class="action-message" id="schedule-message" role="status"></div>
 <div class="action-message" hidden="" id="saved-schedule-conflicts">
 <p class="text-warning" id="saved-schedule-conflict-message" role="status"></p>
@@ -236,6 +238,9 @@
 </form>
 </div></div>
 </section>
+<dialog aria-labelledby="schedule-pause-title" id="schedule-pause-dialog"><h3 id="schedule-pause-title">Временно закрыть запись?</h3><p>Новые заявки через все ваши анкеты будут остановлены, а администратор получит уведомление. Поданные заявки и встречи сохранятся.</p><p>Чтобы снова открыть запись, отправьте график на согласование.</p><div class="form-row"><button class="btn btn-primary" id="schedule-pause-confirm" type="button">Закрыть запись</button><button class="btn btn-default" id="schedule-pause-cancel" type="button">Отмена</button></div></dialog>
+<dialog aria-labelledby="schedule-approve-title" id="schedule-approve-dialog"><h3 id="schedule-approve-title">Утвердить график?</h3><p id="schedule-approve-copy"></p><p id="schedule-approve-conflicts" class="text-warning"></p><ul id="schedule-approve-list"></ul><p id="schedule-approve-error" class="action-message error" role="alert"></p><div class="form-row"><button class="btn btn-primary" id="schedule-approve-confirm" type="button">Утвердить</button><button class="btn btn-default" id="schedule-approve-cancel" type="button">Вернуться</button></div></dialog>
+<dialog aria-labelledby="schedule-return-title" id="schedule-return-dialog"><h3 id="schedule-return-title">Вернуть график на доработку</h3><label for="schedule-return-reason">Комментарий агенту</label><textarea class="form-control" id="schedule-return-reason" rows="3" placeholder="Что нужно уточнить"></textarea><p id="schedule-return-error" class="action-message error" role="alert"></p><div class="form-row"><button class="btn btn-primary" id="schedule-return-confirm" type="button">Отправить</button><button class="btn btn-default" id="schedule-return-cancel" type="button">Отмена</button></div></dialog>
 <section class="partner-page" hidden="" id="page-bookings">
 <div class="partner-box"><h2>Записи</h2><div class="partner-body">
 <p hidden="" id="return-expert-bookings"><a href="#">‹ К записям анкеты</a></p>
@@ -249,7 +254,7 @@
 <div class="period-controls"><button aria-label="Предыдущий период" class="btn btn-default" data-booking-step="-1" type="button">‹</button><button class="btn btn-default" data-booking-today="" type="button">Сегодня</button><button aria-label="Следующий период" class="btn btn-default" data-booking-step="1" type="button">›</button></div>
 <label>Дата<input class="form-control" id="booking-date" type="date"/></label><strong aria-live="polite" id="booking-period"></strong>
 </div>
-<div class="field-row"><label>Анкета<select class="form-control" id="booking-profile"></select></label><label>Статус<select class="form-control" id="booking-status"><option value="all">Все записи</option><option value="pending">Нужен ответ</option><option value="processing">Ожидает оформления</option><option value="proposal">Ожидает ответа клиента</option><option value="accepted-conflict">Перенос согласован · есть конфликт</option><option value="confirmed">Подтверждена</option><option value="cancelled">Отменена или отклонена</option><option value="expired">Истекла</option><option value="review">Возможная неявка</option><option value="completed">Завершена</option></select></label><button class="btn btn-default" id="booking-reset" type="button">Сбросить</button></div>
+<div class="field-row"><label>Анкета<select class="form-control" id="booking-profile"></select></label><label>Статус<select class="form-control" id="booking-status"><option value="all">Все записи</option><option value="pending">Нужен ответ</option><option value="processing">Ожидает оформления</option><option value="proposal">Ожидает ответа клиента</option><option value="admin-confirmation">Ожидает подтверждения администратора</option><option value="accepted-conflict">Перенос согласован · есть конфликт</option><option value="confirmed">Подтверждена</option><option value="cancelled">Отменена или отклонена</option><option value="expired">Истекла</option><option value="review">Возможная неявка</option><option value="completed">Завершена</option></select></label><button class="btn btn-default" id="booking-reset" type="button">Сбросить</button></div>
 <p aria-live="polite" class="muted" id="booking-count"></p><div id="booking-results"></div>
 </div>
 <div hidden="" id="booking-detail"></div>
@@ -267,10 +272,10 @@
 <dialog aria-labelledby="cities-title" id="cities-dialog"><h3 id="cities-title"></h3><h4>Назначенные города</h4><div id="cities-list"></div><form id="cities-form"><label>Город<input class="form-control" id="cities-input" placeholder="Начните вводить название города" required=""/></label><div class="form-row"><button class="btn btn-primary" type="submit">Добавить город</button><button class="btn btn-default" id="cities-close" type="button">Закрыть</button></div><p id="cities-message" role="status"></p></form></dialog>
 <dialog aria-describedby="schedule-leave-copy" aria-labelledby="schedule-leave-title" id="schedule-leave-dialog">
 <h3 id="schedule-leave-title">В графике есть несохранённые изменения</h3>
-<p id="schedule-leave-copy">Черновик останется в этой вкладке. Вернитесь к графику, чтобы сохранить его.</p>
+<p id="schedule-leave-copy">Несохранённые изменения могут быть потеряны при переходе. Чтобы сохранить их, останьтесь и нажмите «Сохранить черновик».</p>
 <div class="form-row">
 <button class="btn btn-default" id="schedule-leave-stay" type="button">Остаться</button>
-<button class="btn btn-primary" id="schedule-leave-go" type="button">Перейти</button>
+<button class="btn btn-primary" id="schedule-leave-go" type="button">Перейти без сохранения</button>
 </div>
 </dialog>
 <dialog aria-labelledby="profile-view-title" id="profile-view-dialog"><h3 id="profile-view-title">Анкета</h3><p id="profile-view-name"></p><div class="form-row"><button class="btn btn-default" id="profile-view-close" type="button">Закрыть</button></div></dialog>
@@ -278,4 +283,4 @@
 <dialog aria-labelledby="emergency-profile-title" id="emergency-profile-dialog"><form id="emergency-profile-form"><h3 id="emergency-profile-title">Срочный отзыв доступа</h3><p>Используйте только при необходимости немедленно прекратить доступ агента к этой анкете. Текущая консультация и платное время остановятся; клиенту будет сообщено об изменении.</p><p>Записи и история сохранятся. Неиспользованный аванс вернётся после сверки оказанной части.</p><label for="emergency-profile-reason">Причина</label><textarea class="form-control" id="emergency-profile-reason" rows="3" required></textarea><p class="action-message error" id="emergency-profile-error" role="alert"></p><div class="form-row"><button class="btn btn-danger" type="submit">Прекратить консультацию и отозвать доступ</button><button class="btn btn-default" id="emergency-profile-cancel" type="button">Назад</button></div></form></dialog>
 <dialog aria-describedby="dialog-copy" aria-labelledby="dialog-title" id="confirm-dialog"><form id="dialog-form" method="dialog"><h3 id="dialog-title"></h3><p id="dialog-copy"></p><div class="field-row" hidden="" id="dialog-alternative"><label>Дата<input class="form-control" id="alternative-date" type="date"/></label><label>Свободное время<select class="form-control" id="alternative-time"></select></label></div><label hidden="" id="dialog-reason-label"><span id="dialog-reason-caption">Причина</span><textarea class="form-control" id="dialog-reason" rows="3"></textarea></label><p class="action-message error" id="dialog-error" role="alert"></p><div class="form-row"><button class="btn btn-primary" id="dialog-submit" type="submit">Подтвердить</button><button class="btn btn-default" id="dialog-cancel" type="button">Назад</button></div></form></dialog>
 </main></section><div class="content-fade"></div></div><footer class="main-footer">Powered by <a href="#">YouDate</a></footer></div>
-<script src="booking-model.js?v=transfer2"></script><script src="expert-schedule-calendar.js?v=spec5"></script><script src="partner.js?v=transfer2"></script><script src="partner-shell.js?v=25"></script></body></html>
+<script src="booking-model.js?v=20261116-exception1"></script><script src="expert-schedule-calendar.js?v=20261116-merged2"></script><script src="partner.js?v=20261116-exception1"></script><script src="partner-shell.js?v=25"></script></body></html>
