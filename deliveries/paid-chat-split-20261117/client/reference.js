@@ -62,7 +62,12 @@
     find('#wait-description').textContent = '';
     find('#wait-channel-message').textContent = '';
     find('#wait-active-channel-message').textContent = '';
+    const waitingPaused = Boolean(subscription && kind === 'slot' && (capacity() === 0 || params.get('mode') === '2'));
+    find('#wait-active strong').textContent = waitingPaused ? 'Ожидание приостановлено' : 'Ожидание активно';
     if (cancelled) return;
+    if (waitingPaused) {
+      find('#wait-active-channel-message').textContent = 'Платные консультации выключены. Ожидание сохранится до указанного срока.';
+    }
     const eventAlreadyOccurred = kind === 'online' ? profile?.status !== 'offline' : profile?.status === 'online';
     if (eventAlreadyOccurred && !subscription) {
       find('#wait-description').textContent = kind === 'online' ? 'Эксперт уже в сети. Вы можете открыть чат; он может быть занят.' : 'Эксперт уже доступен. Вы можете открыть чат.';
