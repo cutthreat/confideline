@@ -6,12 +6,9 @@
   const dialogBody = manager.querySelector("#dialog-body");
   const dialogFooter = manager.querySelector("#dialog-footer");
   const category = manager.querySelector("#field-category");
-  const profileChecks = [...manager.querySelectorAll(".pf-profile-picker input")];
-  const selectedProfile = () => {
-    const selected = profileChecks.filter(control => control.checked);
-    return selected.length === 1 ? selected[0].id.replace("field-profile-", "") : "";
-  };
-  const differences = manager.querySelector("#field-differences");
+  const profileFilter = manager.querySelector("#field-profile-filter");
+  const selectedProfile = () => ["client", "expert"].includes(profileFilter.value) ? profileFilter.value : "";
+  const showDifferences = () => profileFilter.value === "differences";
   const pageSize = manager.querySelector("#field-page-size");
   const pages = manager.querySelector("#field-pages");
   const tableScroll = manager.querySelector(".pf-table-scroll");
@@ -124,7 +121,7 @@
 
   function save(field, changes, feedback = "Настройки сохранены.", color = "text-success") {
     const saved = persist(feedback, () => applyRules(field, changes), color);
-    if (saved && differences.checked && !hasDifferences(field) && !isAllMode) {
+    if (saved && showDifferences() && !hasDifferences(field) && !isAllMode) {
       message.textContent += " Настройки совпали. Поле скрыто фильтром.";
     }
     return saved;
@@ -273,8 +270,6 @@
   function syncRoleFilter() {
     const filtered = Boolean(selectedProfile());
     const canSortFlags = filtered;
-    differences.disabled = filtered;
-    if (filtered) differences.checked = false;
     flagSortButtons.forEach(button => {
       button.disabled = !canSortFlags;
       button.closest("th").title = canSortFlags ? "" : "Для сортировки выберите один тип анкеты";
@@ -298,8 +293,7 @@
 
   function resetFilters() {
     category.value = "";
-    profileChecks.forEach(control => { control.checked = true; });
-    differences.checked = false;
+    profileFilter.value = "";
     syncRoleFilter();
     startResults();
     category.focus();
@@ -316,7 +310,7 @@
     const baseline = isAllMode && editing ? baselineState() : null;
     const found = fieldsFor(type).filter(field => {
       return (!category.value || category.value === field.category) &&
-        (!differences.checked || hasDifferences(field) || (baseline && hasDifferences(field, baseline)));
+        (!showDifferences() || hasDifferences(field) || (baseline && hasDifferences(field, baseline)));
     });
     if (sort.key) {
       found.sort((first, second) => {
@@ -607,7 +601,7 @@
           return;
         }
         const baseline = baselineState();
-        const matchedFields = differences.checked && baseline && fieldsFor().some(field =>
+        const matchedFields = showDifferences() && baseline && fieldsFor().some(field =>
           hasDifferences(field, baseline) && !hasDifferences(field));
         localStorage.setItem(storageKey, JSON.stringify(state));
         for (const key of [editKey, draftKey, baseKey, rawKey, conflictKey]) sessionStorage.removeItem(key);
@@ -650,7 +644,7 @@
       if (isAllMode) params.set("mode", "all");
       history.replaceState({ ...history.state, profileFieldsUi: {
         category: category.value,
-        type: selectedProfile(), differences: differences.checked,
+        type: selectedProfile(), differences: showDifferences(),
         pageSize: pageSize.value, page, sort,
         scroll: document.querySelector(".wrapper").scrollTop
       } }, "");
@@ -690,7 +684,7 @@
     if ("close" in data) dialog.close();
   });
 
-  for (const control of [category, differences]) {
+  for (const control of [category]) {
     control.addEventListener("change", startResults);
   }
   pageSize.addEventListener("change", () => {
@@ -750,11 +744,10 @@
     event.preventDefault();
     moveField(handle.dataset.dragField, ids[next], event.key === "ArrowDown");
   });
-  profileChecks.forEach(control => control.addEventListener("change", () => {
-    if (!profileChecks.some(item => item.checked)) control.checked = true;
+  profileFilter.addEventListener("change", () => {
     syncRoleFilter();
     startResults();
-  }));
+  });
   const mobileQuery = matchMedia("(max-width: 767px)");
   const navToggle = document.querySelector(".sidebar-toggle");
   function syncSidebar() {
@@ -795,11 +788,11 @@
       const saved = save(field, { [type]: { [key]: control.checked } }, feedback,
         control.checked ? "text-success" : "text-danger");
       if (!saved) control.checked = rulesFor(field, type)[key];
-      if (sort.key === key || differences.checked || isAllMode) {
+      if (sort.key === key || showDifferences() || isAllMode) {
         renderRows(field.id);
         const selector = '[data-field="' + CSS.escape(field.id) + '"][data-setting="' + key +
           '"][data-profile-type="' + type + '"]';
-        (rows.querySelector(selector) || differences).focus();
+        (rows.querySelector(selector) || profileFilter).focus();
       }
     }
     if (control.name?.endsWith("-form") && control.form?.dataset.editField) {
@@ -827,7 +820,7 @@
       renderRows(field.id);
       const trigger = '[data-edit="' + CSS.escape(field.id) + '"]' +
         (editType ? '[data-edit-type="' + editType + '"]' : ':not([data-edit-type])');
-      focusReturn = rows.querySelector(trigger) || (differences.checked ? differences : category);
+      focusReturn = rows.querySelector(trigger) || (showDifferences() ? profileFilter : category);
     }
     dialog.close();
   });
@@ -839,10 +832,7 @@
     const saved = history.state?.profileFieldsUi;
     if (saved) {
       category.value = saved.category || "";
-      profileChecks.forEach(control => {
-        control.checked = !saved.type || control.id === "field-profile-" + saved.type;
-      });
-      differences.checked = Boolean(saved.differences);
+      profileFilter.value = saved.differences ? "differences" : (saved.type || "");
       pageSize.value = saved.pageSize || "20";
       page = saved.page || 1;
       sort = saved.sort || { key: "", descending: false };
