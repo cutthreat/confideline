@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Confideline · Ожидание уведомления в Follow</title>
+<style>
+  body { margin: 0; background: #eef2f6; color: #26384d; font: 14px/1.45 Inter, system-ui, sans-serif; }
+  main { max-width: 704px; margin: 0 auto; padding: 34px 16px; }
+  h1 { margin: 0; font-size: clamp(23px, 4vw, 29px); line-height: 1.15; }
+  .lead { margin: 8px 0 22px; color: #536579; }
+  .examples { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(284px, 100%), 1fr)); gap: 20px; }
+  figure { margin: 0; min-width: 0; }
+  figcaption { margin: 0 0 8px; color: #40536a; font-size: 13px; font-weight: 700; }
+  .pane-right { background: #f5f8fb; border: 1px solid #cdd8e3; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 2px #0f172a0a; }
+  .pane-head { padding: 8px 10px; border-bottom: 1px solid #dfe7ef; background: #f7fafc; }
+  .right-context-title { margin: 0 0 7px; color: #26384d; font-size: 13px; font-weight: 800; }
+  .right-tabs-refined { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+  .right-tab { display: block; padding: 0 6px; border: 1px solid #d2dce6; border-radius: 4px; background: #ffffffb8; color: #596879; font-size: 11px; line-height: 24px; }
+  .right-tab[aria-current] { background: #eaf3f9; border-color: #b8d1e4; color: #275f86; font-weight: 700; }
+  .right-context-body { padding: 8px; }
+  .context-section { margin: 0; padding: 8px; border: 1px solid #cdd8e3; border-radius: 10px; background: #fff; }
+  .context-section-title { margin: 0 0 6px; color: #40536a; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+  .context-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 0; }
+  .context-kpi { padding: 6px; border-radius: 8px; background: #f7fafc; min-width: 0; }
+  dt { color: #536579; font-size: 11px; line-height: 1.25; }
+  dd { margin: 2px 0 0; color: #223247; font-size: 12px; line-height: 1.35; font-weight: 650; overflow-wrap: anywhere; }
+  .notification-wait { grid-column: 1 / -1; }
+  .notification-wait[hidden] { display: none; }
+  .preview-toggle { display: inline-flex; gap: 7px; align-items: center; margin-top: 14px; color: #40536a; font-size: 12px; }
+  .preview-toggle input { margin: 0; accent-color: #275f86; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Уведомление в открытом диалоге</h1>
+  <p class="lead">Макет правой панели Chat V2 · вкладка Follow</p>
+  <div class="examples">
+    <figure>
+      <figcaption>Эксперт не в сети</figcaption>
+      <section class="pane-right" aria-label="Follow: ожидание выхода в сеть">
+        <header class="pane-head">
+          <p class="right-context-title">Контекст клиента</p>
+          <div class="right-tabs-refined">
+            <span class="right-tab">Клиент</span><span class="right-tab">AI</span>
+            <span class="right-tab">Оплата</span><span class="right-tab">Заметки</span>
+            <span class="right-tab" aria-current="true">Follow</span><span class="right-tab">Качество</span>
+          </div>
+        </header>
+        <div class="right-context-body" data-chat-follow-region>
+          <section class="context-section" aria-labelledby="online-title">
+            <h2 class="context-section-title" id="online-title">Следующий контакт</h2>
+            <dl class="context-grid">
+              <div class="context-kpi"><dt>Время</dt><dd>Завтра, 10:00</dd></div>
+              <div class="context-kpi"><dt>Причина</dt><dd>Запланировано агентом</dd></div>
+              <div class="context-kpi notification-wait"><dt>Клиент ждёт уведомления</dt><dd>Когда эксперт появится в сети</dd></div>
+            </dl>
+          </section>
+        </div>
+      </section>
+    </figure>
+    <figure>
+      <figcaption>Эксперт занят</figcaption>
+      <section class="pane-right" aria-label="Follow: ожидание освобождения">
+        <header class="pane-head">
+          <p class="right-context-title">Контекст клиента</p>
+          <div class="right-tabs-refined">
+            <span class="right-tab">Клиент</span><span class="right-tab">AI</span>
+            <span class="right-tab">Оплата</span><span class="right-tab">Заметки</span>
+            <span class="right-tab" aria-current="true">Follow</span><span class="right-tab">Качество</span>
+          </div>
+        </header>
+        <div class="right-context-body" data-chat-follow-region>
+          <section class="context-section" aria-labelledby="slot-title">
+            <h2 class="context-section-title" id="slot-title">Следующий контакт</h2>
+            <dl class="context-grid">
+              <div class="context-kpi"><dt>Время</dt><dd>Завтра, 10:00</dd></div>
+              <div class="context-kpi"><dt>Причина</dt><dd>Запланировано агентом</dd></div>
+              <div class="context-kpi notification-wait"><dt>Клиент ждёт уведомления</dt><dd>Когда эксперт освободится для консультации</dd></div>
+            </dl>
+          </section>
+        </div>
+      </section>
+    </figure>
+  </div>
+  <label class="preview-toggle"><input type="checkbox" id="show-finished"> Показать вид после завершения ожидания</label>
+</main>
+<script>
+  const showFinished = document.querySelector('#show-finished');
+  const waitingRows = document.querySelectorAll('.notification-wait');
+  function renderWaitingRows() {
+    for (const row of waitingRows) row.hidden = showFinished.checked;
+  }
+  showFinished.addEventListener('change', renderWaitingRows);
+  renderWaitingRows();
+</script>
+</body>
+</html>
