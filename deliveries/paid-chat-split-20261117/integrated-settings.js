@@ -7,7 +7,7 @@
   const storageKey = 'confideline-split-preview-v1-' + page + suffix;
   const status = document.querySelector('#conf-save-status');
   const actions = [
-    ['chat','Открыть чат'], ['wait','Уведомить о доступности'],
+    ['chat','Открыть чат'], ['wait','Уведомить о статусе'],
     ['booking','Открыть календарь записи'], ['link','Перейти по ссылке'],
     ['none','Не показывать кнопку']
   ];
