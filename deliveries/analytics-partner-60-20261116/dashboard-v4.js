@@ -90,15 +90,23 @@
   function selectPings(pings,opt) {
     const leads=new Map(), writtenEvents=new Set(), responseEvents=new Set();
     const observedThrough=snapshotTime(opt);
-    for(const ping of pings.filter(p=>p.id&&Number.isFinite(p.time)&&p.time<=observedThrough).sort((a,b)=>a.time-b.time)){
+    const source=pings.filter(p=>p.id&&Number.isFinite(p.time)&&p.time<=observedThrough).sort((a,b)=>a.time-b.time);
+    const writtenRefs=new Map(),responseRefs=new Map();
+    for(const ping of source){
+      for(const [refs,id] of [[writtenRefs,ping.writtenEventId],[responseRefs,ping.responseEventId]]){
+        if(id){if(!refs.has(id))refs.set(id,new Set());refs.get(id).add(ping.id);}
+      }
+    }
+    for(const ping of source){
       if(leads.has(ping.id))continue;
-      const writtenEvent=ping.writtenEventId??ping.id;
-      const responseEvent=ping.responseEventId??ping.id;
-      const written=Boolean(ping.writer)&&Number.isFinite(ping.writtenAt)&&ping.writtenAt>ping.time&&ping.writtenAt<=observedThrough&&!writtenEvents.has(writtenEvent);
-      const responded=written&&Number.isFinite(ping.respondedAt)&&ping.respondedAt>ping.writtenAt&&ping.respondedAt<=observedThrough&&!responseEvents.has(responseEvent);
+      const writtenEvent=ping.writtenEventId,responseEvent=ping.responseEventId;
+      const hasWritten=Number.isFinite(ping.writtenAt)&&ping.writtenAt>ping.time&&ping.writtenAt<=observedThrough;
+      const written=hasWritten&&Boolean(ping.writer)&&Boolean(writtenEvent)&&writtenRefs.get(writtenEvent)?.size===1&&!writtenEvents.has(writtenEvent);
+      const hasResponse=written&&Number.isFinite(ping.respondedAt)&&ping.respondedAt>ping.writtenAt&&ping.respondedAt<=observedThrough;
+      const responded=hasResponse&&Boolean(responseEvent)&&responseRefs.get(responseEvent)?.size===1&&!responseEvents.has(responseEvent);
       if(written)writtenEvents.add(writtenEvent);
       if(responded)responseEvents.add(responseEvent);
-      leads.set(ping.id,{ping,written,responded});
+      leads.set(ping.id,{ping,written,responded,unknownWrite:hasWritten&&!written,unknownResponse:hasResponse&&!responded});
     }
     const matchesProfile=ping=>opt.profile==='all'||ping.profile===opt.profile;
     const matchesAgent=agent=>opt.agent==='all'||agent===opt.agent;
@@ -111,7 +119,10 @@
   function summarizePings(pings,opt) {
     const {acquired,contacted,performed}=selectPings(pings,opt);
     return {acquired:acquired.length,contacted:contacted.length,responded:contacted.filter(lead=>lead.responded).length,
-      performed:performed.length,performedResponded:performed.filter(lead=>lead.responded).length};
+      unknownContact:acquired.filter(lead=>lead.unknownWrite).length,
+      resolvedContactResponses:contacted.filter(lead=>!lead.unknownResponse).length,
+      performed:performed.length,performedResponded:performed.filter(lead=>lead.responded).length,
+      resolvedPerformedResponses:performed.filter(lead=>!lead.unknownResponse).length};
   }
   function pingResponseTiming(pings,opt){
     const {contacted}=selectPings(pings,opt);
@@ -143,7 +154,7 @@
     const selectedTime=time=>reportTime(time,opt);
     const observedReply=x=>{
       const time=replyTime(x);
-      return time!==null&&time>=x.time&&time<=observedThrough?time:null;
+      return time!==null&&time>x.time&&time<=observedThrough?time:null;
     };
     const contacts=data.contacts.filter(c=>c.time<=observedThrough);
     const firstContacts=new Map();
@@ -152,6 +163,8 @@
     data.sessions.filter(s=>Number(s.debit)>0&&s.confirmed===true&&s.time<=observedThrough).slice().sort((a,b)=>a.time-b.time).forEach(s=>{if(!sessionById.has(s.id))sessionById.set(s.id,s);});
     const sessions=[...sessionById.values()];
     const events=[...firstContacts.values()].filter(x=>scope(x)&&selectedTime(x.time));
+    const ambiguousReplyOrder=events.filter(x=>replyTime(x)!==null&&replyTime(x)===x.time&&x.time<=observedThrough);
+    const responseBase=events.length-ambiguousReplyOrder.length;
     const replyEvents=[...firstContacts.values()].filter(x=>observedReply(x)!==null&&selectedTime(observedReply(x)));
     const replied=replyEvents.filter(replyScope);
     const unknownReplies=selectedAgent==='all'?replyEvents.filter(x=>!performer(x)&&aggregateProfile(x.profile)):[];
@@ -169,23 +182,37 @@
       if(outcomes.some(s=>s.time>contact.time))converted++;
       else if(outcomes.some(s=>s.time===contact.time))ambiguousReply++;
     }
-    const platformByPerson=new Map();
-    [...firstContacts.values()].sort((a,b)=>a.time-b.time).forEach(c=>{if(!platformByPerson.has(c.client))platformByPerson.set(c.client,c);});
-    const platformEntries=[...platformByPerson.values()].filter(c=>scope(c)&&selectedTime(c.time));
-    const ambiguousPlatform=platformEntries.filter(c=>firstPaid.get(c.client)?.time===c.time).length;
+    const platformByPerson=new Map(),ambiguousFirstInbound=new Set();
+    [...firstContacts.values()].sort((a,b)=>a.time-b.time).forEach(c=>{
+      if(!platformByPerson.has(c.client))platformByPerson.set(c.client,c);
+      else if(platformByPerson.get(c.client).time===c.time)ambiguousFirstInbound.add(c.client);
+    });
+    const platformEntries=[...platformByPerson.values()].filter(c=>!ambiguousFirstInbound.has(c.client)&&scope(c)&&selectedTime(c.time));
+    const unknownFirstInbound=selectedAgent==='all'&&opt.profile==='all'
+      ?[...platformByPerson.values()].filter(c=>ambiguousFirstInbound.has(c.client)&&aggregateProfile(c.profile)&&selectedTime(c.time)).length:0;
+    const ambiguousPlatform=unknownFirstInbound+platformEntries.filter(c=>firstPaid.get(c.client)?.time===c.time).length;
     const newPlatform=platformEntries.filter(c=>!firstPaid.has(c.client)||firstPaid.get(c.client).time>c.time);
     const platformAged=newPlatform.filter(aged);
     const firstPlatform=platformAged.filter(c=>{const s=firstPaid.get(c.client);return s&&s.time>c.time&&s.time<=c.time+30*DAY;});
-    const firstRepeat=[];
+    const firstRepeat=[],ambiguousFirstPairs=new Set();
     for(const first of firstPair.values()){
-      const next=sessions.find(s=>pairKey(s)===pairKey(first)&&s.id!==first.id&&s.time>first.time&&s.time<=first.time+30*DAY);
-      if(next)firstRepeat.push({first,next});
+      const pairSessions=sessions.filter(s=>pairKey(s)===pairKey(first));
+      if(pairSessions.filter(s=>s.time===first.time).length>1){ambiguousFirstPairs.add(pairKey(first));continue;}
+      const candidates=pairSessions.filter(s=>s.time>first.time&&s.time<=first.time+30*DAY);
+      if(candidates.length){
+        const next=candidates[0],sameTime=candidates.filter(s=>s.time===next.time);
+        const performerCertain=sameTime.every(s=>Boolean(s.agent)&&s.agent===next.agent);
+        firstRepeat.push({first,next,performerCertain});
+      }
     }
-    const repeatBase=[...firstPair.values()].filter(s=>detailAllowed(s.profile)&&profileOK(s.profile)&&selectedTime(s.time));
+    const allRepeatBase=[...firstPair.values()].filter(s=>detailAllowed(s.profile)&&profileOK(s.profile)&&selectedTime(s.time));
+    const ambiguousRepeatFirst=allRepeatBase.filter(s=>ambiguousFirstPairs.has(pairKey(s))).length;
+    const repeatBase=allRepeatBase.filter(s=>!ambiguousFirstPairs.has(pairKey(s)));
     const repeatAged=repeatBase.filter(aged);
     const repeatIds=new Set(firstRepeat.map(row=>row.first.id));
     const returned=repeatAged.filter(first=>repeatIds.has(first.id));
-    const performedRepeats=firstRepeat.map(row=>row.next).filter(s=>scope(s)&&selectedTime(s.time));
+    const performedRepeats=firstRepeat.filter(row=>row.performerCertain).map(row=>row.next).filter(s=>scope(s)&&selectedTime(s.time));
+    const ambiguousRepeatPerformer=selectedAgent==='all'?firstRepeat.filter(row=>!row.performerCertain&&aggregateProfile(row.next.profile)&&selectedTime(row.next.time)).length:0;
     const scopedClients=new Set(contacts.filter(x=>scope(x)||(observedReply(x)!==null&&replyScope(x))).map(x=>x.client).concat(sessions.filter(scope).map(x=>x.client)));
     const topups=data.topups.filter(x=>scopedClients.has(x.client)&&selectedTime(x.time));
     const reviews=(data.reviews||[]).filter(x=>scope(x)&&selectedTime(x.time));
@@ -198,11 +225,12 @@
     const pingPath=opt.profile==='all'||detailAllowed(opt.profile)?summarizePings(data.pings,{...opt,agent:selectedAgent}):summarizePings([],opt);
     return {events,replied,unknownReplies,detailRows,paid,clients:unique(paid.map(x=>x.client)),minutes:paid.reduce((n,x)=>n+x.minutes,0),
       debit:paid.reduce((n,x)=>n+x.debit,0),accrual:paid.reduce((n,x)=>n+x.accrual,0),
-      answered:events.filter(x=>observedReply(x)!==null).length,
+      answered:events.filter(x=>observedReply(x)!==null).length,responseBase,
       answeredContactIds:events.filter(x=>observedReply(x)!==null).map(x=>x.id),
+      ambiguousReplyOrderIds:ambiguousReplyOrder.map(x=>x.id),
       conversion:{n:converted,d:matureReplies.length-ambiguousReply,waiting:answeredContacts.length-matureReplies.length},
       firstPlatform:{n:firstPlatform.length,d:platformAged.length,waiting:newPlatform.length-platformAged.length},
-      ambiguousSequence:{reply:ambiguousReply,platform:ambiguousPlatform},
+      ambiguousSequence:{reply:ambiguousReply,platform:ambiguousPlatform,repeat:ambiguousRepeatFirst,repeatPerformer:ambiguousRepeatPerformer},
       repeat:{n:returned.length,d:repeatAged.length,waiting:repeatBase.length-repeatAged.length},
       repeatApplicable:isAgent||selectedAgent==='all',
       performedRepeats,
@@ -244,13 +272,13 @@
     const replies=result.replied.concat(result.unknownReplies);
     const candidates=kind==='sent'?replies:result.events;
     const visible=new Map(result.detailRows.map(row=>[row.id,row]));
-    const answered=new Set(result.answeredContactIds);
+    const answered=new Set(result.answeredContactIds),unknownOrder=new Set(result.ambiguousReplyOrderIds);
     const rows=[];
     let total=0;
     for (const contact of candidates) {
       const row=visible.get(contact.id);
       if(kind==='answered'&&!answered.has(contact.id)) continue;
-      if(kind==='unanswered'&&answered.has(contact.id)) continue;
+      if(kind==='unanswered'&&(answered.has(contact.id)||unknownOrder.has(contact.id))) continue;
       total++;
       if(row) rows.push(row);
     }
@@ -313,7 +341,7 @@
   const box=(title,description,body)=>'<section class="pa-box pa-report-box"><div class="pa-box-head"><div><h3>'+title+'</h3>'+(description?'<p>'+description+'</p>':'')+'</div></div>'+body+'</section>';
   const slot=id=>'<div id="'+id+'"></div>';
   const panel=(id,body)=>'<section id="v2-'+id+'" class="pa-report-panel" role="tabpanel" tabindex="0" aria-labelledby="tab-'+id+'"'+(id==='summary'?'':' hidden')+'><p class="pa-box pa-report-empty" hidden>'+t('Нет данных за выбранный период. Выберите даты из доступного интервала.','No data for this period. Choose dates within the available range.')+'</p>'+body+'</section>';
-  const linkSuffix=en?'?lang=en&v=business-20261117':'?v=business-20261117';
+  const linkSuffix=en?'?lang=en&v=handoff-20261117':'?v=handoff-20261117';
   root.innerHTML=
     '<div class="pa-header"><div><h2>'+t(mode==='agent'?'Аналитика агента':'Аналитика команды',mode==='agent'?'Agent analytics':'Team analytics')+'</h2><p>'+t(mode==='agent'?'Текущие диалоги и мои результаты':'Текущая нагрузка и результаты агентов',mode==='agent'?'Open conversations and my results':'Current workload and agent performance')+'</p></div><div class="pa-role-nav"><span class="pa-preview-label">'+t('Макеты','Previews')+'</span><a '+(mode==='agent'?'aria-current="page"':'')+' href="paces-agent.html'+linkSuffix+'">'+t('Агент','Agent')+'</a><a '+(mode==='manager'?'aria-current="page"':'')+' href="paces-supervisor.html'+linkSuffix+'">'+t('Руководитель','Supervisor')+'</a><span class="pa-demo">'+t('Условные данные','Sample data')+'</span></div></div>'+
     '<section class="pa-current" aria-labelledby="pa-current-title" aria-describedby="pa-work-scope"><div class="pa-section-head pa-current-heading"><div><h3 id="pa-current-title">'+t('Работа сейчас','Work now')+'</h3><p id="pa-work-scope"></p></div><a class="pa-work-link" target="_blank" rel="noopener" href="https://confideline.com/'+(en?'en':'ru')+'/admin/chat/v2?leadType=chats">'+t('Chat V2 · общий список','Chat V2 · general list')+' <i class="fa fa-external-link" aria-hidden="true"></i></a></div><div class="pa-live-grid"><div id="pa-work-summary"></div>'+
@@ -369,7 +397,7 @@
     if(!rows.length)return '<p class="pa-empty">'+t('Нет данных за выбранный период','No data for the selected period')+'</p>';
     const columns=[['name',mode==='manager'&&grouping==='agents'?t('Агент','Agent'):t('Анкета','Profile')],['chats',t('Новые диалоги','New conversations')],['answers',t('С ответом','Answered')],['replies',t('Первые ответы','First replies')],['median',t('Медиана, мин','Median, min')],['pingReplies',t('Ответы на исходящие','Outbound reply rate')],['conversion',t('Оплата после ответа, 30 дней','Paid after reply, 30 days')],['paid',t('Консультации','Consultations')],['repeats',t('Первые возвраты','First returns')],['clients',t('Клиенты','Customers')]];
     const ratio=(value,base)=>base?value/base:null;
-    const sortValue=(r,key)=>key==='answers'?ratio(r.answers,r.chats):key==='pingReplies'?ratio(r.pingReplies,r.pingSent):key==='conversion'?ratio(r.conversion.n,r.conversion.d):r[key];
+    const sortValue=(r,key)=>key==='answers'?ratio(r.answers,r.responseBase):key==='pingReplies'?ratio(r.pingReplies,r.pingSent):key==='conversion'?ratio(r.conversion.n,r.conversion.d):r[key];
     rows.sort((a,b)=>{
       const x=sortValue(a,sortKey),y=sortValue(b,sortKey);
       if(x===null||y===null)return Number(x===null)-Number(y===null);
@@ -378,12 +406,12 @@
     const tableRate=(value,base)=>base?Math.round(value/base*100)+'% · '+fmt(value)+' / '+fmt(base):'— · 0 / 0';
     const groupHead='<tr class="pa-column-groups"><th aria-hidden="true"></th><th scope="colgroup" colspan="2">'+t('По получателю','By recipient')+'</th><th scope="colgroup" colspan="7">'+t('По исполнителю','By performer')+'</th></tr>';
     const nameCell=r=>r.agent?'<button type="button" class="pa-agent-filter" data-select-agent="'+r.agent+'">'+r.name+'</button>':'<strong>'+r.name+'</strong>';
-    const body=rows.map(r=>'<tr><td>'+nameCell(r)+(r.note?'<br><small>'+r.note+'</small>':'')+'</td><td>'+fmt(r.chats)+'</td><td>'+tableRate(r.answers,r.chats)+'</td><td>'+fmt(r.replies)+'</td><td>'+(r.median===null?'—':fmt(r.median))+'</td><td>'+tableRate(r.pingReplies,r.pingSent)+'</td><td>'+tableRate(r.conversion.n,r.conversion.d)+'</td><td>'+fmt(r.paid)+'</td><td>'+fmt(r.repeats)+'</td><td>'+fmt(r.clients)+'</td></tr>').join('');
+    const body=rows.map(r=>'<tr><td>'+nameCell(r)+(r.note?'<br><small>'+r.note+'</small>':'')+'</td><td>'+fmt(r.chats)+'</td><td>'+tableRate(r.answers,r.responseBase)+'</td><td>'+fmt(r.replies)+'</td><td>'+(r.median===null?'—':fmt(r.median))+'</td><td>'+tableRate(r.pingReplies,r.pingSent)+'</td><td>'+tableRate(r.conversion.n,r.conversion.d)+'</td><td>'+fmt(r.paid)+'</td><td>'+fmt(r.repeats)+'</td><td>'+fmt(r.clients)+'</td></tr>').join('');
     return '<table class="table"><colgroup span="1"></colgroup><colgroup span="2"></colgroup><colgroup span="7"></colgroup><thead>'+groupHead+'<tr>'+columns.map(c=>'<th scope="col"'+(c[0]===sortKey?' aria-sort="'+(sortDesc?'descending':'ascending')+'"':'')+'><button type="button" class="pa-sort" data-sort="'+c[0]+'">'+c[1]+' '+(c[0]===sortKey?(sortDesc?'↓':'↑'):'↕')+'</button></th>').join('')+'</tr></thead><tbody>'+body+'</tbody></table>';
   }
   function comparisonRow(name,note,result,agent){
-    return {name,note,chats:result.events.length,answers:result.answered,replies:result.replied.length,median:result.medianReply,
-      pingReplies:result.pingPath.performedResponded,pingSent:result.pingPath.performed,paid:result.paid.length,repeats:result.performedRepeats.length,
+    return {name,note,chats:result.events.length,answers:result.answered,responseBase:result.responseBase,replies:result.replied.length,median:result.medianReply,
+      pingReplies:result.pingPath.performedResponded,pingSent:result.pingPath.resolvedPerformedResponses,paid:result.paid.length,repeats:result.performedRepeats.length,
       clients:result.clients,conversion:result.conversion,agent};
   }
   function associated(p,agent){
@@ -472,7 +500,7 @@
     const measurements={
       median:result=>({value:result.medianReply,text:result.medianReply===null?t('Нет ответов','No replies'):fmt(result.medianReply)+' '+t('мин','min')+' · '+t('ответов: ','replies: ')+fmt(result.replySamples)}),
       conversion:result=>compareRate(result.conversion.n,result.conversion.d),
-      ping:result=>compareRate(result.pingPath.performedResponded,result.pingPath.performed),
+      ping:result=>compareRate(result.pingPath.performedResponded,result.pingPath.resolvedPerformedResponses),
       paid:result=>({value:result.paid.length,text:fmt(result.paid.length)+' · '+t('сеансов','sessions')}),
       repeats:result=>({value:result.performedRepeats.length,text:fmt(result.performedRepeats.length)+' / '+fmt(result.paid.length)+' · '+t('из платных сеансов','of paid sessions')}),
     };
@@ -494,7 +522,7 @@
     const steps=[
       [t('Интерес к анкете','Profile interest'),missing,'',t('Просмотры анкет отсутствуют в выборке. Пинги учтены на следующем шаге.','Profile views are unavailable in this sample. Pings are counted at the next step.')],
       [t('Контакт','Contact'),t('Входящие: ','Inbound: ')+fmt(x.events.length),t('Пинги: ','Pings: ')+fmt(x.pingPath.acquired)+' · '+t('первые исходящие: ','first outbound messages: ')+fmt(x.pingPath.performed),t('Входящие считаются по первому сообщению клиента в паре. Поступившие пинги считаются по дате создания, первые исходящие — по дате отправки и автору.','Inbound counts use the customer’s first message to a profile. Received pings use creation date, and first outbound messages use send date and author.')],
-      [t('Общение','Conversation'),t('Входящие с ответом: ','Inbound answered: ')+rate(x.answered,x.events.length),t('Ответы на исходящие по пингам: ','Replies to ping outreach: ')+rate(x.pingPath.performedResponded,x.pingPath.performed),t('Доля входящих с ответом считается среди поступивших в период диалогов. Доля ответов на пинги считается среди первых исходящих, отправленных в период. Обе доли наблюдаются до среза.','The inbound share uses conversations that arrived in the period. The ping reply share uses first outreach messages sent in the period. Both are observed through the snapshot.')],
+      [t('Общение','Conversation'),t('Входящие с ответом: ','Inbound answered: ')+rate(x.answered,x.responseBase),t('Ответы на исходящие по пингам: ','Replies to ping outreach: ')+rate(x.pingPath.performedResponded,x.pingPath.resolvedPerformedResponses),t('Доля входящих с ответом считается среди поступивших в период диалогов. Доля ответов на пинги считается среди первых исходящих, отправленных в период. Обе доли наблюдаются до среза.','The inbound share uses conversations that arrived in the period. The ping reply share uses first outreach messages sent in the period. Both are observed through the snapshot.')],
       [t('Запрос','Request'),missing,'',t('События запросов на платный чат отсутствуют в выборке.','The sample contains no paid chat request events.')],
       [t('Подключение','Connection'),missing,'',t('События подключения к платному чату отсутствуют в выборке. Пробные консультации: нет данных.','The sample contains no paid chat connection events. Trial consultations: no data.')],
       [t('Платная консультация','Paid consultation'),fmt(x.paid.length),t('Сеансы с первым положительным списанием','Sessions with a first positive debit'),t('В период входит один сеанс на ID с первым подтверждённым положительным списанием.','Each session ID is counted once by its first confirmed positive debit.')],
@@ -589,11 +617,11 @@
       const rounded=Math.round(v*10)/10;
       return (rounded>0?'+':rounded<0?'−':'')+fmt(Math.abs(rounded))+(unit?' '+unit:'');
     };
-    const replyChange=y&&x.events.length&&y.events.length?100*(x.answered/x.events.length-y.answered/y.events.length):null;
+    const replyChange=y&&x.responseBase&&y.responseBase?100*(x.answered/x.responseBase-y.answered/y.responseBase):null;
     const conversionChange=y&&x.conversion.d&&y.conversion.d?100*(x.conversion.n/x.conversion.d-y.conversion.n/y.conversion.d):null;
     return {
       chats:delta(y?x.events.length-y.events.length:null,'')+(y?' · '+t('было ','was ')+fmt(y.events.length):''),
-      response:delta(replyChange,t('п. п.','pp'))+(y&&y.events.length?' · '+t('было ','was ')+fmt(y.answered)+' / '+fmt(y.events.length):''),
+      response:delta(replyChange,t('п. п.','pp'))+(y&&y.responseBase?' · '+t('было ','was ')+fmt(y.answered)+' / '+fmt(y.responseBase):''),
       paid:delta(y?x.paid.length-y.paid.length:null,'')+(y?' · '+t('было ','was ')+fmt(y.paid.length):''),
       conversion:delta(conversionChange,t('п. п.','pp'))+(y&&y.conversion.d?' · '+t('было ','was ')+fmt(y.conversion.n)+' / '+fmt(y.conversion.d):''),
       repeats:delta(y?x.performedRepeats.length-y.performedRepeats.length:null,'')+(y?' · '+t('было ','was ')+fmt(y.performedRepeats.length):''),
@@ -617,7 +645,7 @@
     if(mode==='manager') e('pa-back-team').hidden=!comparisonScope;
     const changes=compareKpis(x);
     e('v2-kpis').innerHTML=kpi('comments-o',t('Входящие диалоги','Incoming conversations'),fmt(x.events.length),t('первое сообщение клиента','first customer message'),'chats',changes.chats,'chats')+
-      kpi('reply',t('Входящие с ответом','Incoming with a reply'),x.events.length?Math.round(x.answered/x.events.length*100)+'%':'—',fmt(x.answered)+' / '+fmt(x.events.length),'responses',changes.response,'chats')+
+      kpi('reply',t('Входящие с ответом','Incoming with a reply'),x.responseBase?Math.round(x.answered/x.responseBase*100)+'%':'—',fmt(x.answered)+' / '+fmt(x.responseBase),'responses',changes.response,'chats')+
       kpi('commenting-o',t('Платные консультации','Paid consultations'),fmt(x.paid.length),t('Клиентов: ','Customers: ')+fmt(x.clients),'paid',changes.paid,'consultations')+
       kpi('exchange',t('Перешли к оплате','Converted to paid'),x.conversion.d?valueRatio(x.conversion):'—',fmt(x.conversion.n)+' / '+fmt(x.conversion.d)+' · '+t('после ответа','after first reply'),'conversion',changes.conversion,'funnel')+
       kpi('repeat',t('Первые возвраты','First returns'),fmt(x.performedRepeats.length),t('по дате второго сеанса','by date of second session'),'repeats',changes.repeats,'consultations')+
@@ -645,9 +673,9 @@
       '<p class="pa-note"><button type="button" class="btn btn-default" data-go-tab="consultations">'+t('Сеансы по фактическому исполнителю','Sessions by actual performer')+'</button></p>';
     const retentionScope=p?p.name:mode==='agent'?t('Закреплённые анкеты','Assigned profiles'):t('Вся команда','Entire team');
     e('v2-retention').innerHTML=(x.repeatApplicable
-      ?card(t('Вернулись к той же анкете','Returned to the same profile')+' · '+retentionScope,x.repeat,t('Вход — дата первой оплаченной консультации пары клиент—анкета. Процент рассчитывается по анкетам независимо от исполнителя.','Entry: first paid consultation date for each customer–profile pair. The return rate covers the profiles across providers.'))
+      ?card(t('Вернулись к той же анкете','Returned to the same profile')+' · '+retentionScope,x.repeat,t('Вход — дата первой оплаченной консультации пары клиент—анкета. Процент рассчитывается по анкетам независимо от исполнителя.','Entry: first paid consultation date for each customer–profile pair. The return rate covers the profiles across providers.')+orderNote(x.ambiguousSequence.repeat))
       :'<p class="pa-note">'+t('Чтобы увидеть 30-дневную долю возврата команды или анкеты, выберите «Все агенты».','Select “All agents” to see the 30-day return rate for the team or profile.')+'</p>')+
-      '<div class="pa-inline-metric"><span>'+t(mode==='agent'?'Первые возвраты, которые я провёл':'Проведённые первые возвраты',mode==='agent'?'First returns I handled':'First returns handled')+'</span><strong>'+fmt(x.performedRepeats.length)+'</strong></div><p class="pa-note">'+t('Вторая оплаченная консультация пары за 30 дней учитывается по дате её оплаты у фактического исполнителя. Начисления относятся к тому же исполнителю.','The pair’s second paid consultation within 30 days is counted by its debit date for the provider who performed it. Accrual belongs to the same provider.')+'</p>';
+      '<div class="pa-inline-metric"><span>'+t(mode==='agent'?'Первые возвраты, которые я провёл':'Проведённые первые возвраты',mode==='agent'?'First returns I handled':'First returns handled')+'</span><strong>'+fmt(x.performedRepeats.length)+'</strong></div><p class="pa-note">'+t('Вторая оплаченная консультация пары за 30 дней учитывается по дате её оплаты у фактического исполнителя. Начисления относятся к тому же исполнителю.','The pair’s second paid consultation within 30 days is counted by its debit date for the provider who performed it. Accrual belongs to the same provider.')+orderNote(x.ambiguousSequence.repeatPerformer)+'</p>';
     const ping=x.pingPath;
     const pingTiming=pingResponseTiming(data.pings,opt);
     const pingRate=(value,base)=>base?Math.round(value/base*100)+'% · '+fmt(value)+' / '+fmt(base):'—';
@@ -658,15 +686,16 @@
     const incomingPingRows=[
       {label:t('Поступившие пинги за период','Incoming pings in period'),value:ping.acquired,text:fmt(ping.acquired)},
       {label:t('По этим пингам написали клиенту','Customers contacted after these pings'),value:ping.contacted,text:pingRate(ping.contacted,ping.acquired),color:'pa-tone-2'},
-      {label:t('Клиент ответил на исходящее','Customers replied to these messages'),value:ping.responded,text:pingRate(ping.responded,ping.contacted),color:'pa-tone-3'},
+      {label:t('Клиент ответил на исходящее','Customers replied to these messages'),value:ping.responded,text:pingRate(ping.responded,ping.resolvedContactResponses),color:'pa-tone-3'},
     ];
     e('pa-ping-path').innerHTML=meterRows(incomingPingRows,ping.acquired)+
-      pingRow(t('Без исходящего к срезу','No outreach by snapshot'),fmt(ping.acquired-ping.contacted))+
+      pingRow(t('Без исходящего к срезу','No outreach by snapshot'),fmt(ping.acquired-ping.contacted-ping.unknownContact))+
+      (ping.unknownContact?pingRow(t('Не удалось связать с исходящим','Could not link outreach'),fmt(ping.unknownContact)):'')+
       pingRow(t('До первого исходящего по этим пингам','Time to first outreach for these pings'),pingTiming.count
         ?t('Медиана: ','Median: ')+(pingTiming.medianMinutes>=60?fmt(pingTiming.medianMinutes/60)+' '+t('ч','h'):fmt(pingTiming.medianMinutes)+' '+t('мин','min'))+' · '+t('пингов: ','pings: ')+fmt(pingTiming.count)
         :t('Нет данных','No data'))+
       pingRow(t(mode==='agent'?'Мои первые исходящие по пингам за период':'Первые исходящие по пингам за период',mode==='agent'?'My first outbound messages after pings in period':'First outbound messages after pings in period'),fmt(ping.performed))+
-      pingRow(t('Ответы на эти исходящие','Customer replies to this outreach'),pingRate(ping.performedResponded,ping.performed))+
+      pingRow(t('Ответы на эти исходящие','Customer replies to this outreach'),pingRate(ping.performedResponded,ping.resolvedPerformedResponses))+
       '<button type="button" class="btn btn-default" data-go-tab="chats" data-interaction="ping-outbound">'+t('Посмотреть исходящие','View outreach')+'</button>'+
       '<p class="pa-note">'+t('Каждая отдельная запись пинга учитывается один раз. Ответы на исходящие наблюдаем с момента отправки до даты среза. Исходящие за период считаются по дате сообщения и его автору.','Each distinct ping is counted once. We observe customer replies from outbound send time through the snapshot. Outbound messages in the period are counted by send date and author.')+'</p>';
     const financeNote=mode==='agent'
@@ -679,8 +708,9 @@
         :qualityItem(t('Платные консультации','Paid consultations'),fmt(x.paid.length))+qualityItem(t('Оплаченные минуты','Paid minutes'),fmt(x.minutes)));
     const median=x.medianReply===null?'—':fmt(x.medianReply)+' '+t('мин','min');
     e('pa-chats-metrics').innerHTML=qualityItem(t('Диалоги','Conversations'),fmt(x.events.length))+
-      qualityItem(t('С ответом','Answered'),x.events.length?Math.round(x.answered/x.events.length*100)+'%':'—',fmt(x.answered)+' / '+fmt(x.events.length))+
-      qualityItem(t('Без ответа к срезу','Unanswered at snapshot'),fmt(x.events.length-x.answered))+
+      qualityItem(t('С ответом','Answered'),x.responseBase?Math.round(x.answered/x.responseBase*100)+'%':'—',fmt(x.answered)+' / '+fmt(x.responseBase))+
+      qualityItem(t('Без ответа к срезу','Unanswered at snapshot'),fmt(x.responseBase-x.answered))+
+      (x.ambiguousReplyOrderIds.length?qualityItem(t('Неизвестен порядок ответа','Reply order unknown'),fmt(x.ambiguousReplyOrderIds.length)):'')+
       qualityItem(t('Первый ответ','First reply'),median,t('медиана','median'));
     e('pa-consultations-metrics').innerHTML=qualityItem(t('Сеансы','Sessions'),fmt(x.paid.length))+
       qualityItem(t('Клиенты','Customers'),fmt(x.clients),t('впервые оплатили: ','first-time payers: ')+fmt(x.firstPaid))+
