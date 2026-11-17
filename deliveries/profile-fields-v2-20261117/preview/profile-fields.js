@@ -6,7 +6,6 @@
   const dialogBody = manager.querySelector("#dialog-body");
   const dialogFooter = manager.querySelector("#dialog-footer");
   const category = manager.querySelector("#field-category");
-  const origin = manager.querySelector("#field-origin");
   const profileChecks = [...manager.querySelectorAll(".pf-profile-picker input")];
   const selectedProfile = () => {
     const selected = profileChecks.filter(control => control.checked);
@@ -298,7 +297,7 @@
   }
 
   function resetFilters() {
-    for (const control of [category, origin]) control.value = "";
+    category.value = "";
     profileChecks.forEach(control => { control.checked = true; });
     differences.checked = false;
     syncRoleFilter();
@@ -317,7 +316,6 @@
     const baseline = isAllMode && editing ? baselineState() : null;
     const found = fieldsFor(type).filter(field => {
       return (!category.value || category.value === field.category) &&
-        (!origin.value || origin.value === field.origin) &&
         (!differences.checked || hasDifferences(field) || (baseline && hasDifferences(field, baseline)));
     });
     if (sort.key) {
@@ -651,7 +649,7 @@
       if (selectedProfile()) params.set("type", selectedProfile());
       if (isAllMode) params.set("mode", "all");
       history.replaceState({ ...history.state, profileFieldsUi: {
-        category: category.value, origin: origin.value,
+        category: category.value,
         type: selectedProfile(), differences: differences.checked,
         pageSize: pageSize.value, page, sort,
         scroll: document.querySelector(".wrapper").scrollTop
@@ -692,7 +690,7 @@
     if ("close" in data) dialog.close();
   });
 
-  for (const control of [category, origin, differences]) {
+  for (const control of [category, differences]) {
     control.addEventListener("change", startResults);
   }
   pageSize.addEventListener("change", () => {
@@ -841,7 +839,6 @@
     const saved = history.state?.profileFieldsUi;
     if (saved) {
       category.value = saved.category || "";
-      origin.value = saved.origin || "";
       profileChecks.forEach(control => {
         control.checked = !saved.type || control.id === "field-profile-" + saved.type;
       });
