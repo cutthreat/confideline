@@ -99,8 +99,22 @@
     if (params.get('mode') === '2') card.querySelector('.cl-expert-price')?.remove();
     const action = cardActions[profile.status];
     const original = card.querySelector('[data-card-action="chat"]');
+    const subscription = activeSubscription(profile.id);
+    if (subscription && action?.action !== 'wait') {
+      const manage = document.createElement('button');
+      manage.type = 'button'; manage.className = 'cl-wait-manage';
+      manage.textContent = 'Ожидание уведомления';
+      manage.setAttribute('aria-label', 'Ожидание уведомления: ' + profile.name);
+      manage.setAttribute('aria-haspopup', 'dialog'); manage.setAttribute('aria-controls', 'wait');
+      note.after(manage);
+      manage.addEventListener('click', event => {
+        event.stopPropagation(); trigger = manage; waitProfile = profile.id;
+        waitKind = activeSubscription(profile.id)?.kind || 'slot';
+        showWait(); dialog.showModal(); find('#wait-title').focus();
+      });
+    }
     if (!action || action.action === 'none') { original.remove(); continue; }
-    const existingWait = action.action === 'wait' && activeSubscription(profile.id);
+    const existingWait = action.action === 'wait' && subscription;
     const paidDisabled = params.get('mode') === '2' || capacity() === 0;
     const blockedAction = action.action === 'booking' || (action.action === 'wait' && !existingWait && profile.status === 'busy');
     if (paidDisabled && blockedAction) {
@@ -149,6 +163,12 @@
   dialog.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => dialog.close()));
   dialog.addEventListener('close', () => {
     const profile = window.CatalogFilterFixtures.find(item => item.id === waitProfile);
+    if (trigger?.classList.contains('cl-wait-manage') && !activeSubscription(waitProfile)) {
+      const card = trigger.closest('.cl-expert-card');
+      trigger.remove();
+      (card?.querySelector('[data-card-action="chat"]') || card?.querySelector('.cl-expert-title a'))?.focus();
+      return;
+    }
     if (trigger && waitKind === 'slot' && profile?.status === 'busy' && (capacity() === 0 || params.get('mode') === '2') && !activeSubscription(waitProfile)) {
       const card = trigger.closest('.cl-expert-card');
       const note = card?.querySelector('.cl-availability-note');
