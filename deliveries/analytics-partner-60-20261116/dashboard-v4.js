@@ -57,7 +57,7 @@
       }
     }
     profiles.forEach((p,i) => {
-      for(let x=0;x<(i%3)+1;x++) pending.push({profile:p.id,agent:p.owner,age:5+i*4+x*3});
+      for(let x=0;x<(i%3)+1;x++) pending.push({id:(i+1)+'-'+(x+1),profile:p.id,agent:p.owner,age:5+i*4+x*3});
       const now = AS_OF-(15+i*7)*60000;
       contacts.push({id:'today'+i,client:'today-client'+i,profile:p.id,agent:p.owner,replyAgent:p.owner,time:now,answered:true,replyMinutes:3+i*2});
       if(i%2===0) sessions.push({id:'today-paid'+i,client:'today-client'+i,profile:p.id,agent:p.owner,time:now+12*60000,minutes:9+i,debit:48,accrual:12,confirmed:true});
@@ -199,6 +199,7 @@
     return {events,replied,unknownReplies,detailRows,paid,clients:unique(paid.map(x=>x.client)),minutes:paid.reduce((n,x)=>n+x.minutes,0),
       debit:paid.reduce((n,x)=>n+x.debit,0),accrual:paid.reduce((n,x)=>n+x.accrual,0),
       answered:events.filter(x=>observedReply(x)!==null).length,
+      answeredContactIds:events.filter(x=>observedReply(x)!==null).map(x=>x.id),
       conversion:{n:converted,d:matureReplies.length-ambiguousReply,waiting:answeredContacts.length-matureReplies.length},
       firstPlatform:{n:firstPlatform.length,d:platformAged.length,waiting:newPlatform.length-platformAged.length},
       ambiguousSequence:{reply:ambiguousReply,platform:ambiguousPlatform},
@@ -233,7 +234,30 @@
     }
     return ranges;
   }
-  if (typeof module!=='undefined'&&module.exports) module.exports={calculate,demoData,AS_OF,DAY,minskStart,inPeriod,summarizePings,summarizeWork,periodBins,replyDistribution,pingResponseTiming};
+  function periodCoverage(from,to,first,last){
+    const start=Math.max(from,first);
+    const end=Math.min(to+DAY-1,last);
+    const status=start>end?'outside':start>from||end<to+DAY-1?'partial':'full';
+    return {status,start,end};
+  }
+  function chatSelection(result,kind){
+    const replies=result.replied.concat(result.unknownReplies);
+    const candidates=kind==='sent'?replies:result.events;
+    const visible=new Map(result.detailRows.map(row=>[row.id,row]));
+    const answered=new Set(result.answeredContactIds);
+    const rows=[];
+    let total=0;
+    for (const contact of candidates) {
+      const row=visible.get(contact.id);
+      if(kind==='answered'&&!answered.has(contact.id)) continue;
+      if(kind==='unanswered'&&answered.has(contact.id)) continue;
+      total++;
+      if(row) rows.push(row);
+    }
+    rows.sort((a,b)=>kind==='sent'?b.replyObservedAt-a.replyObservedAt:b.time-a.time);
+    return {total,rows};
+  }
+  if (typeof module!=='undefined'&&module.exports) module.exports={calculate,demoData,AS_OF,DAY,minskStart,inPeriod,summarizePings,summarizeWork,periodBins,replyDistribution,pingResponseTiming,periodCoverage,chatSelection};
   if (typeof document==='undefined') return;
   const root=document.getElementById('partner-analytics');
   if (!root) return;
@@ -264,16 +288,19 @@
     ['finance',t(mode==='agent'?'Мои начисления':'Финансы',mode==='agent'?'My earnings':'Finances')]
   ];
   let tab='summary', grouping='agents', sortKey='name', sortDesc=false, openedBy=null;
+  let interactionFilter='incoming', interactionPage=0, comparisonScope=null;
   const numberFormat=new Intl.NumberFormat(en?'en-US':'ru-RU');
   const fmt=n=>numberFormat.format(n);
   const date=n=>new Intl.DateTimeFormat(en?'en-GB':'ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',timeZone:'Europe/Minsk'}).format(new Date(n));
   const timeFormat=new Intl.DateTimeFormat(en?'en-GB':'ru-RU',{hour:'2-digit',minute:'2-digit',hourCycle:'h23',timeZone:'Europe/Minsk'});
   const instant=n=>date(n)+' '+timeFormat.format(n);
   const firstSample=Math.min(...data.contacts.map(x=>x.time),...data.sessions.map(x=>x.time),...data.pings.map(x=>x.time));
+  const coverage=()=>periodCoverage(opt.from,opt.to,firstSample,AS_OF);
+  const amountDate=t('По дате оплаты консультации','By consultation payment date');
   const valueRatio=q=>q.d?Math.round(q.n/q.d*100)+'%':t('Недостаточно данных','Not enough data');
   const ratioDetail=q=>q.d?fmt(q.n)+' / '+fmt(q.d):t('Нет завершённых периодов наблюдения','No completed observation periods');
   const e=id=>document.getElementById(id);
-  const kpi=(icon,title,value,sub,detail,comparison,target)=>'<div class="pa-kpi"><button type="button" class="pa-kpi-nav" data-go-tab="'+target+'"><span class="pa-icon"><i class="fa fa-'+icon+'" aria-hidden="true"></i></span><span class="pa-kpi-text"><span class="pa-kpi-name">'+title+'</span><strong class="pa-kpi-value">'+value+'</strong><span class="pa-kpi-sub">'+sub+'</span><span class="pa-kpi-compare">'+comparison+'</span></span></button><button type="button" class="pa-kpi-info" data-detail="'+detail+'" aria-label="'+t('Как считается: ','About this metric: ')+title+'">ⓘ</button></div>';
+  const kpi=(icon,title,value,sub,detail,comparison,target)=>'<div class="pa-kpi"><button type="button" class="pa-kpi-nav" data-go-tab="'+target+'"'+(target==='chats'?' data-interaction="'+(detail==='responses'?'answered':'incoming')+'"':'')+'><span class="pa-icon"><i class="fa fa-'+icon+'" aria-hidden="true"></i></span><span class="pa-kpi-text"><span class="pa-kpi-name">'+title+'</span><strong class="pa-kpi-value">'+value+'</strong><span class="pa-kpi-sub">'+sub+'</span><span class="pa-kpi-compare">'+comparison+'</span></span></button><button type="button" class="pa-kpi-info" data-detail="'+detail+'" aria-label="'+t('Как считается: ','About this metric: ')+title+'">ⓘ</button></div>';
   const card=(title,obj,explain)=>{
     const fill=obj.d?obj.n/obj.d*100:0;
     return '<div class="pa-cohort-card"><div class="pa-cohort-title">'+title+'</div>'+
@@ -285,25 +312,26 @@
   const comparisonPanel='<section class="pa-box pa-table-box"><div class="pa-box-head"><div><h3 id="v2-table-title"></h3><p id="v2-table-sub"></p></div>'+(mode==='manager'?'<div class="pa-switch"><button type="button" data-group="agents">'+t('По агентам','By agent')+'</button><button type="button" data-group="profiles">'+t('По анкетам','By profile')+'</button></div>':'')+'</div><div class="pa-table-scroll" id="v2-table" tabindex="0" role="region" aria-labelledby="v2-table-title"></div></section>';
   const box=(title,description,body)=>'<section class="pa-box pa-report-box"><div class="pa-box-head"><div><h3>'+title+'</h3>'+(description?'<p>'+description+'</p>':'')+'</div></div>'+body+'</section>';
   const slot=id=>'<div id="'+id+'"></div>';
-  const panel=(id,body)=>'<section id="v2-'+id+'" class="pa-report-panel" role="tabpanel" tabindex="0" aria-labelledby="tab-'+id+'"'+(id==='summary'?'':' hidden')+'>'+body+'</section>';
-  const linkSuffix=en?'?lang=en&v=tabs-20261117':'?v=tabs-20261117';
+  const panel=(id,body)=>'<section id="v2-'+id+'" class="pa-report-panel" role="tabpanel" tabindex="0" aria-labelledby="tab-'+id+'"'+(id==='summary'?'':' hidden')+'><p class="pa-box pa-report-empty" hidden>'+t('Нет данных за выбранный период. Выберите даты из доступного интервала.','No data for this period. Choose dates within the available range.')+'</p>'+body+'</section>';
+  const linkSuffix=en?'?lang=en&v=business-20261117':'?v=business-20261117';
   root.innerHTML=
     '<div class="pa-header"><div><h2>'+t(mode==='agent'?'Аналитика агента':'Аналитика команды',mode==='agent'?'Agent analytics':'Team analytics')+'</h2><p>'+t(mode==='agent'?'Текущие диалоги и мои результаты':'Текущая нагрузка и результаты агентов',mode==='agent'?'Open conversations and my results':'Current workload and agent performance')+'</p></div><div class="pa-role-nav"><span class="pa-preview-label">'+t('Макеты','Previews')+'</span><a '+(mode==='agent'?'aria-current="page"':'')+' href="paces-agent.html'+linkSuffix+'">'+t('Агент','Agent')+'</a><a '+(mode==='manager'?'aria-current="page"':'')+' href="paces-supervisor.html'+linkSuffix+'">'+t('Руководитель','Supervisor')+'</a><span class="pa-demo">'+t('Условные данные','Sample data')+'</span></div></div>'+
-    '<section class="pa-current" aria-labelledby="pa-current-title" aria-describedby="pa-work-scope"><div class="pa-section-head pa-current-heading"><div><h3 id="pa-current-title">'+t('Работа сейчас','Work now')+'</h3><p id="pa-work-scope"></p></div><a class="pa-work-link" target="_blank" rel="noopener" href="https://confideline.com/'+(en?'en':'ru')+'/admin/chat/v2?leadType=chats">'+t('Открыть Chat V2','Open Chat V2')+' <i class="fa fa-external-link" aria-hidden="true"></i></a></div><div class="pa-live-grid"><div id="pa-work-summary"></div>'+
+    '<section class="pa-current" aria-labelledby="pa-current-title" aria-describedby="pa-work-scope"><div class="pa-section-head pa-current-heading"><div><h3 id="pa-current-title">'+t('Работа сейчас','Work now')+'</h3><p id="pa-work-scope"></p></div><a class="pa-work-link" target="_blank" rel="noopener" href="https://confideline.com/'+(en?'en':'ru')+'/admin/chat/v2?leadType=chats">'+t('Chat V2 · общий список','Chat V2 · general list')+' <i class="fa fa-external-link" aria-hidden="true"></i></a></div><div class="pa-live-grid"><div id="pa-work-summary"></div>'+
     '<section class="pa-box pa-today" aria-labelledby="pa-today-title"><h4 id="pa-today-title">'+t('Сегодня','Today')+'</h4><div class="pa-quality" id="pa-today-summary"></div></section></div></section>'+
-    '<div class="pa-toolbar"><div class="pa-tabs" role="tablist" aria-label="'+t('Раздел отчёта','Report section')+'">'+tabs.map(([id,label])=>'<button id="tab-'+id+'" class="pa-tab" type="button" role="tab" data-tab="'+id+'" aria-controls="v2-'+id+'" aria-selected="'+(id==='summary')+'" tabindex="'+(id==='summary'?0:-1)+'">'+label+'</button>').join('')+'</div>'+
-    '<form class="pa-filters" id="v2-filters"><label>'+t('Период','Period')+'<select id="v2-period" class="form-control"><option value="prev">'+t('Прошлый месяц','Previous month')+'</option><option value="30">'+t('Последние 30 дней','Last 30 days')+'</option><option value="7">'+t('Последние 7 дней','Last 7 days')+'</option><option value="custom">'+t('Выбрать даты','Custom dates')+'</option></select></label>'+
+    '<dialog id="pa-work-queue-dialog" aria-labelledby="pa-work-queue-title"><div class="pa-dialog-head"><div><h3 id="pa-work-queue-title"></h3><p id="pa-work-queue-scope"></p></div><button type="button" class="pa-close" id="pa-work-queue-close" data-close-work-queue aria-label="'+t('Закрыть','Close')+'">×</button></div><div id="pa-work-queue-content"></div></dialog>'+
+    '<button type="button" class="btn btn-default pa-work-toggle" id="pa-work-toggle" aria-expanded="false" aria-controls="pa-current-section">'+t('Работа сейчас','Work now')+'</button><div class="pa-toolbar"><div class="pa-tabs" role="tablist" aria-label="'+t('Раздел отчёта','Report section')+'">'+tabs.map(([id,label])=>'<button id="tab-'+id+'" class="pa-tab" type="button" role="tab" data-tab="'+id+'" aria-controls="v2-'+id+'" aria-selected="'+(id==='summary')+'" tabindex="'+(id==='summary'?0:-1)+'">'+label+'</button>').join('')+'</div>'+
+    '<button type="button" class="btn btn-default pa-filter-toggle" id="pa-filter-toggle" aria-expanded="false" aria-controls="v2-filters">'+t('Фильтры','Filters')+'</button><form class="pa-filters" id="v2-filters"><label>'+t('Период','Period')+'<select id="v2-period" class="form-control"><option value="prev">'+t('Прошлый месяц','Previous month')+'</option><option value="30">'+t('Последние 30 дней','Last 30 days')+'</option><option value="7">'+t('Последние 7 дней','Last 7 days')+'</option><option value="custom">'+t('Выбрать даты','Custom dates')+'</option></select></label>'+
     '<label class="pa-custom" id="v2-from-wrap" hidden>'+t('С','From')+'<input id="v2-from" class="form-control" type="date" value="2026-10-01"></label><label class="pa-custom" id="v2-to-wrap" hidden>'+t('По','To')+'<input id="v2-to" class="form-control" type="date" value="2026-10-31"></label>'+
     (mode==='manager'?'<label>'+t('Агент','Agent')+'<select id="v2-agent" class="form-control"><option value="all">'+t('Все агенты','All agents')+'</option>'+agents.map(a=>'<option value="'+a.id+'">'+a.name+'</option>').join('')+'</select></label>':'')+
     '<label>'+t('Анкета','Profile')+'<select id="v2-profile" class="form-control"><option value="all">'+allProfilesLabel+'</option>'+profiles.filter(p=>mode==='manager'||p.owner==='k').map(p=>'<option value="'+p.id+'">'+p.name+'</option>').join('')+'</select></label>'+
-    '<button class="btn btn-primary" type="submit">'+t('Применить','Apply')+'</button><button class="btn btn-default" type="button" id="v2-reset">'+t('Сбросить','Reset')+'</button><div class="pa-error" id="v2-error" role="alert" hidden></div></form><p class="pa-context" id="v2-context" aria-live="polite"></p></div>'+
+    '<button class="btn btn-primary" type="submit">'+t('Применить','Apply')+'</button><button class="btn btn-default" type="button" id="v2-reset">'+t('Сбросить','Reset')+'</button><div class="pa-error" id="v2-error" role="alert" hidden></div></form><p class="pa-context" id="v2-context" aria-live="polite"></p><p class="pa-coverage" id="pa-coverage" hidden></p></div>'+
     panel('summary',
-      '<div class="pa-section-head"><div><h3>'+t('Результаты за период','Results for the period')+'</h3><p id="pa-comparison-period"></p></div></div><div class="pa-kpis" id="v2-kpis"></div>'+
+      '<div class="pa-section-head"><div><h3>'+t('Результаты за период','Results for the period')+'</h3><p id="pa-comparison-period"></p></div>'+(mode==='manager'?'<button class="btn btn-default" id="pa-back-team" type="button" hidden>'+t('К сравнению команды','Back to team comparison')+'</button>':'')+'</div><div class="pa-kpis" id="v2-kpis"></div>'+
       box(t('Динамика входящих и консультаций','Incoming conversations and consultations over time'),t('Два отдельных показателя по датам событий','Two independent measures by event date'),slot('pa-summary-chart')))+
     (mode==='manager'?panel('team',
       '<div class="pa-grid-2 pa-report-grid">'+
       box(t('Очередь по агентам','Queue by agent'),t('Текущий срез · независимо от периода отчёта','Current snapshot · independent of the report period'),slot('v2-queue'))+
-      box(t('Сравнение агентов','Compare agents'),t('Показатели за выбранный период','Measures for the selected period'),'<label class="pa-team-select">'+t('Показатель','Measure')+'<select class="form-control" id="pa-team-selector"><option value="median">'+t('Медиана первого ответа','Median first reply time')+'</option><option value="conversion">'+t('Оплата после ответа, 30 дней','Paid after reply, 30 days')+'</option><option value="paid">'+t('Платные консультации','Paid consultations')+'</option><option value="repeats">'+t('Первые возвраты','First returns')+'</option></select></label>'+slot('pa-team-chart'))+'</div>'+
+      box(t('Сравнение агентов','Compare agents'),t('Для сравнения в одинаковых условиях выберите одну анкету.','Choose one profile to compare agents in a common context.'),'<label class="pa-team-select">'+t('Показатель','Measure')+'<select class="form-control" id="pa-team-selector"><option value="median">'+t('Медиана первого ответа','Median first reply time')+'</option><option value="conversion">'+t('Оплата после ответа, 30 дней','Paid after reply, 30 days')+'</option><option value="ping">'+t('Ответы на исходящие по пингам','Replies to ping outreach')+'</option><option value="paid">'+t('Платные консультации','Paid consultations')+'</option><option value="repeats">'+t('Первые возвраты','First returns')+'</option></select></label>'+slot('pa-team-chart'))+'</div>'+
       comparisonPanel):'')+
     panel('chats',
       '<div class="pa-grid-2 pa-report-grid">'+
@@ -312,7 +340,7 @@
       '<div class="pa-grid-2 pa-report-grid">'+
       box(t('Динамика пингов','Ping activity over time'),t('По дате создания пинга. Последующие действия наблюдаем до среза.','By ping creation date. Follow-up is observed through the snapshot.'),slot('pa-pings-chart'))+
       box(t('Распределение времени первого ответа','First reply time distribution'),t('Интервалы в минутах · по дате первого ответа','Minutes per interval · by date of the first reply'),slot('pa-reply-distribution'))+'</div>'+
-      '<details class="pa-box pa-report-box pa-interaction-details"><summary>'+t('Взаимодействия','Interactions')+'</summary><p>'+t(mode==='agent'?'Диалоги по сейчас закреплённым анкетам за выбранный период':'Примеры диалогов за выбранный период',mode==='agent'?'Conversations for currently assigned profiles in the selected period':'Example conversations in the selected period')+'</p><div class="pa-table-scroll" id="v2-interactions-table"></div></details>'+
+      '<details class="pa-box pa-report-box pa-interaction-details" id="pa-interaction-details"><summary>'+t('Диалоги и исходящие','Conversations and outreach')+'</summary><div class="pa-list-controls"><label>'+t('Показать','Show')+'<select class="form-control" id="pa-interaction-filter"><option value="incoming">'+t('Все поступившие диалоги','All incoming conversations')+'</option><option value="answered">'+t('Диалоги с первым ответом','Conversations with a first reply')+'</option><option value="unanswered">'+t('Диалоги без ответа к срезу','Unanswered conversations at snapshot')+'</option><option value="sent">'+t('Первые ответы за период','First replies sent in period')+'</option><option value="ping-outbound">'+t('Исходящие по пингам','Ping outreach')+'</option></select></label><p id="pa-interaction-count" aria-live="polite"></p></div><div class="pa-table-scroll" id="v2-interactions-table"></div><div id="pa-interaction-pages" class="pa-list-pages"></div></details>'+
       (mode==='agent'?comparisonPanel:''))+
     panel('funnel',
       box(t('Путь клиента','Customer journey'),t('Отдельные входы из чатов и пингов. Числа по шагам могут включать одни и те же пары.','Chats and pings have separate entry points. The same pairs can appear in more than one step.'),slot('pa-journey'))+
@@ -379,7 +407,7 @@
     return '<div><span>'+label+'</span><strong>'+value+'</strong>'+(description?'<small>'+description+'</small>':'')+'</div>';
   }
   function columnChart(bins,series,unit,label){
-    const covered=bin=>bin.to+DAY>firstSample&&bin.from<=AS_OF;
+    const covered=bin=>periodCoverage(bin.from,bin.to,firstSample,AS_OF).status!=='outside';
     if(!bins.some(covered))return '<p class="pa-empty">'+t('Этот период вне демонстрационной выборки.','The selected period is outside the sample dataset.')+'</p>';
     const start=bins[0].from, end=bins.at(-1).to+DAY-1;
     const partial=start<firstSample||end>AS_OF;
@@ -411,6 +439,16 @@
       '<li><div><span>'+label+'</span><strong>'+text+'</strong></div>'+
       (value===null?'':'<span class="pa-meter-track" aria-hidden="true"><i class="'+color+'" style="--pa-fill:'+(maximum?value/maximum*100:0)+'%"></i></span>')+'</li>').join('')+'</ul>';
   }
+  function compareRate(n,d){
+    if(!d) return {value:null,text:t('Нет базы','No observations')};
+    const value=100*n/d;
+    const sensitivity=Math.round(1000/d)/10;
+    return {
+      value,
+      text:fmt(Math.round(value))+'% · '+fmt(n)+' / '+fmt(d)+
+        ' · '+t('1 случай = ','1 case = ')+fmt(sensitivity)+t(' п. п.',' pp'),
+    };
+  }
   function renderCharts(){
     const bins=periodBins(data,opt);
     const activity=[['incoming',t('Входящие диалоги','Incoming conversations'),'pa-tone-1'],['paid',t('Платные консультации','Paid consultations'),'pa-tone-2']];
@@ -433,7 +471,8 @@
     const shows=agents.filter(a=>(opt.agent==='all'||opt.agent===a.id)&&(opt.profile==='all'||associatedInPeriod(profiles.find(p=>p.id===opt.profile),a.id)));
     const measurements={
       median:result=>({value:result.medianReply,text:result.medianReply===null?t('Нет ответов','No replies'):fmt(result.medianReply)+' '+t('мин','min')+' · '+t('ответов: ','replies: ')+fmt(result.replySamples)}),
-      conversion:result=>({value:result.conversion.d?result.conversion.n/result.conversion.d*100:null,text:result.conversion.d?valueRatio(result.conversion)+' · '+ratioDetail(result.conversion):t('Нет зрелой базы','No mature cohort')+' · 0 / 0'}),
+      conversion:result=>compareRate(result.conversion.n,result.conversion.d),
+      ping:result=>compareRate(result.pingPath.performedResponded,result.pingPath.performed),
       paid:result=>({value:result.paid.length,text:fmt(result.paid.length)+' · '+t('сеансов','sessions')}),
       repeats:result=>({value:result.performedRepeats.length,text:fmt(result.performedRepeats.length)+' / '+fmt(result.paid.length)+' · '+t('из платных сеансов','of paid sessions')}),
     };
@@ -441,8 +480,13 @@
       const result=calculate(data,{...opt,agent:a.id});
       return {label:a.name,...measurements[metric](result)};
     });
-    const scale=metric==='conversion'?100:Math.max(1,...rows.map(row=>row.value??0));
-    e('pa-team-chart').innerHTML=rows.length?meterRows(rows,scale):'<p class="pa-empty">'+t('Нет данных за выбранный период','No data for the selected period')+'</p>';
+    const ratioMetric=metric==='conversion'||metric==='ping';
+    const scale=ratioMetric?100:Math.max(1,...rows.map(row=>row.value??0));
+    const note=ratioMetric?t('Чем меньше база, тем сильнее один случай меняет процент.','Smaller samples are more sensitive to a single case.'):'';
+    const transfer=opt.profile==='a'||opt.profile==='f';
+    const handover=transfer&&inPeriod(day(45),opt.from,opt.to)
+      ?'<p class="pa-note">'+t('Анкета передана ','Profile transferred ')+date(day(45))+'. '+t('Обращения и действия учитываются по участникам на дату события.','Contacts and actions follow the people involved on each event date.')+'</p>':'';
+    e('pa-team-chart').innerHTML=rows.length?meterRows(rows,scale)+handover+(note?'<p class="pa-note">'+note+'</p>':''):'<p class="pa-empty">'+t('Нет данных за выбранный период','No data for the selected period')+'</p>';
   }
   function renderJourney(x){
     const missing=t('Нет данных','No data');
@@ -466,13 +510,19 @@
       :'<p class="pa-empty">'+t('За период нет первых ответов для распределения.','There are no first replies in the selected period.')+'</p>')+
       '<p class="pa-note">'+t('Время последующих ответов: нет данных.','Subsequent reply times: no data.')+'</p>';
   }
+  function workScope(agentId){
+    const agent=agents.find(a=>a.id===agentId);
+    const scope=agent?agent.name+t(' · все закреплённые сейчас анкеты',' · all currently assigned profiles'):t('Вся команда · все текущие анкеты','Entire team · all current profiles');
+    return scope+' · '+t('16 ноября, 15:00 Минск','16 November, 15:00 Minsk');
+  }
   function renderWork(){
     const work=summarizeWork(data,opt.agent);
-    const agent=agents.find(a=>a.id===opt.agent);
-    const scope=agent?agent.name+t(' · все закреплённые сейчас анкеты',' · all currently assigned profiles'):t('Вся команда · все текущие анкеты','Entire team · all current profiles');
-    e('pa-work-scope').textContent=scope+' · '+t('16 ноября, 15:00 Минск','16 November, 15:00 Minsk');
+    e('pa-work-scope').textContent=workScope(opt.agent);
     const age=work.oldest===null?t('Очередь пуста','Queue is empty'):t('Самое долгое ожидание: ','Oldest waiting: ')+fmt(work.oldest)+' '+t('мин','min');
-    e('pa-work-summary').innerHTML='<div class="pa-work pa-current-counts"><div class="pa-work-item"><strong>'+fmt(work.pending)+'</strong><span>'+t('диалогов ждут ответа','conversations awaiting a reply')+'</span><small>'+age+'</small></div><div class="pa-work-item"><strong>'+fmt(work.pings)+'</strong><span>'+t('пингов в очереди','pings in the queue')+'</span><small>'+t('Отдельно от входящих сообщений','Separate from incoming messages')+'</small></div></div>';
+    const counter=(type,count,label,note)=>'<button class="pa-work-item pa-work-queue-trigger" type="button" data-open-work-queue="'+type+'" aria-haspopup="dialog"><strong>'+fmt(count)+'</strong><span>'+label+'</span><small>'+note+'</small></button>';
+    e('pa-work-summary').innerHTML='<div class="pa-work pa-current-counts">'+
+      counter('chats',work.pending,t('Диалоги ждут ответа','Conversations awaiting reply'),age)+
+      counter('pings',work.pings,t('Пинги в очереди','Pings in queue'),t('Ожидают первого исходящего','Awaiting first outreach'))+'</div>';
     const today=work.today;
     e('pa-today-summary').innerHTML=qualityItem(t('Первые ответы','First replies sent'),fmt(today.replied.length+today.unknownReplies.length))+
       qualityItem(t('Время первого ответа','First reply time'),today.medianReply===null?'—':fmt(today.medianReply)+' '+t('мин','min'),t('медиана · ответов: ','median · replies: ')+fmt(today.replySamples))+
@@ -480,16 +530,55 @@
   }
   function renderTeamQueue(){
     if(mode!=='manager')return;
-    const queue=agents.map(agent=>({agent,work:summarizeWork(data,agent.id)})).filter(row=>row.work.pending)
-      .sort((a,b)=>b.work.oldest-a.work.oldest||b.work.pending-a.work.pending);
-    e('v2-queue').innerHTML=queue.length?queue.map(({agent,work})=>'<button class="pa-queue-row" type="button" data-select-agent="'+agent.id+'"><strong>'+agent.name+'</strong><span>'+fmt(work.pending)+' '+t('ждут ответа','awaiting reply')+'</span><small>'+t('Самое долгое ожидание: ','Oldest waiting: ')+fmt(work.oldest)+' '+t('мин','min')+'</small><i class="fa fa-angle-right" aria-hidden="true"></i></button>').join(''):'<p class="pa-empty">'+t('Нет ожидающих сообщений','No messages awaiting reply')+'</p>';
+    const queue=agents.map(agent=>({agent,work:summarizeWork(data,agent.id)})).filter(row=>row.work.pending||row.work.pings)
+      .sort((a,b)=>(b.work.oldest??-1)-(a.work.oldest??-1)||b.work.pending-a.work.pending||b.work.pings-a.work.pings);
+    e('v2-queue').innerHTML=queue.length?queue.map(({agent,work})=>'<div class="pa-team-queue-row">'+
+      '<button class="pa-agent-filter" type="button" data-select-agent="'+agent.id+'" aria-label="'+t('Аналитика агента: ','Analytics for agent: ')+agent.name+'">'+agent.name+'</button>'+
+      '<div><span>'+t('Чаты: ','Chats: ')+fmt(work.pending)+' · '+t('Пинги: ','Pings: ')+fmt(work.pings)+'</span>'+
+      (work.oldest===null?'':'<small>'+t('Самое долгое ожидание: ','Oldest waiting: ')+fmt(work.oldest)+' '+t('мин','min')+'</small>')+'</div>'+
+      '<button type="button" class="btn btn-default pa-team-queue-action" data-open-work-queue="both" data-queue-agent="'+agent.id+'" aria-haspopup="dialog" aria-label="'+t('Очередь агента: ','Queue for agent: ')+agent.name+'">'+t('Очередь','Queue')+'</button></div>').join(''):'<p class="pa-empty">'+t('Очередь пуста','Queue is empty')+'</p>';
   }
+  function workQueueEntries(kind,agentId){
+    const rows=kind==='chats'?data.pending:data.pings.filter(p=>p.open);
+    return rows.filter(row=>agentId==='all'||row.agent===agentId)
+      .map(row=>({...row,age:kind==='chats'?row.age:Math.floor((AS_OF-row.time)/60000)}))
+      .sort((a,b)=>b.age-a.age||a.id.localeCompare(b.id));
+  }
+  function openWorkQueue(trigger){
+    const agentId=trigger.dataset.queueAgent||opt.agent;
+    const kinds=trigger.dataset.openWorkQueue==='both'?['chats','pings']:[trigger.dataset.openWorkQueue];
+    const title=kind=>kind==='chats'?t('Диалоги ждут ответа','Conversations awaiting reply'):t('Пинги в очереди','Pings in queue');
+    const dialog=e('pa-work-queue-dialog');
+    e('pa-work-queue-title').textContent=kinds.length===2?t('Текущая очередь','Current queue'):title(kinds[0]);
+    e('pa-work-queue-scope').textContent=workScope(agentId)+' · '+t('Условные данные','Sample data');
+    e('pa-work-queue-content').innerHTML=kinds.map(kind=>{
+      const entries=workQueueEntries(kind,agentId);
+      const list=entries.map(row=>{
+        const profile=profiles.find(p=>p.id===row.profile).name;
+        const owner=agentId==='all'?' · '+agents.find(a=>a.id===row.agent).name:'';
+        const label=kind==='chats'?t('Диалог №','Conversation #')+row.id:t('Пинг №','Ping #')+row.id.replace('open-ping','');
+        return '<li><span><strong>'+label+'</strong><small>'+profile+owner+'</small></span><span>'+fmt(row.age)+' '+t('мин','min')+'</span></li>';
+      }).join('');
+      return '<section><h4>'+title(kind)+' · '+fmt(entries.length)+'</h4>'+
+        (list?'<ul class="pa-work-queue-list">'+list+'</ul>':'<p class="pa-empty">'+t('Очередь пуста','Queue is empty')+'</p>')+'</section>';
+    }).join('');
+    dialog.showModal();
+    e('pa-work-queue-close').focus();
+    dialog.addEventListener('close',()=>{if(trigger.isConnected)trigger.focus();},{once:true});
+  }
+  root.addEventListener('click',event=>{
+    const open=event.target.closest('[data-open-work-queue]');
+    if(open)openWorkQueue(open);
+    if(event.target.closest('[data-close-work-queue]'))e('pa-work-queue-dialog').close();
+  });
   function compareKpis(x){
     const span=opt.to-opt.from+DAY;
     const endsToday=AS_OF>=opt.to&&AS_OF<opt.to+DAY;
     const cutoff=AS_OF-span;
     const prior={...opt,from:opt.from-span,to:opt.to-span,asOf:cutoff,through:endsToday?cutoff:undefined};
-    const complete=prior.from>=minskStart(iso(day(99))) && opt.from>=minskStart(iso(day(99)));
+    const priorCoverage=periodCoverage(prior.from,prior.to,firstSample,prior.asOf);
+    const currentCoverage=coverage();
+    const complete=(endsToday?priorCoverage.start===prior.from&&currentCoverage.start===opt.from:priorCoverage.status==='full'&&currentCoverage.status==='full');
     e('pa-comparison-period').textContent=complete
       ? t('Сравнение с предыдущим равным периодом: ','Compared with the preceding period of the same length: ')+date(prior.from)+' — '+date(prior.to)+(endsToday?t(' · последний день до 15:00 в обеих выборках',' · final day through 15:00 in both periods'):'')
       : t('Предыдущий сопоставимый период вне выборки','The preceding comparable period is outside the dataset');
@@ -515,13 +604,24 @@
     renderWork();
     const x=calculate(data,opt), p=profiles.find(z=>z.id===opt.profile), a=agents.find(z=>z.id===opt.agent);
     e('v2-context').textContent=date(opt.from)+' — '+date(opt.to)+' · Europe/Minsk · '+(a?a.name:t('Все агенты','All agents'))+' · '+(p?p.name:allProfilesLabel);
+    const reportCoverage=coverage();
+    root.classList.toggle('pa-outside',reportCoverage.status==='outside');
+    root.querySelectorAll('.pa-report-empty').forEach(message=>{
+      message.hidden=reportCoverage.status!=='outside';
+    });
+    const coverageLabel=e('pa-coverage');
+    coverageLabel.hidden=reportCoverage.status==='full';
+    coverageLabel.textContent=reportCoverage.status==='outside'
+      ?t('Доступные данные: ','Available data: ')+instant(firstSample)+' — '+instant(AS_OF)
+      :t('Доступная часть периода: ','Available part of period: ')+instant(reportCoverage.start)+' — '+instant(reportCoverage.end);
+    if(mode==='manager') e('pa-back-team').hidden=!comparisonScope;
     const changes=compareKpis(x);
     e('v2-kpis').innerHTML=kpi('comments-o',t('Входящие диалоги','Incoming conversations'),fmt(x.events.length),t('первое сообщение клиента','first customer message'),'chats',changes.chats,'chats')+
       kpi('reply',t('Входящие с ответом','Incoming with a reply'),x.events.length?Math.round(x.answered/x.events.length*100)+'%':'—',fmt(x.answered)+' / '+fmt(x.events.length),'responses',changes.response,'chats')+
       kpi('commenting-o',t('Платные консультации','Paid consultations'),fmt(x.paid.length),t('Клиентов: ','Customers: ')+fmt(x.clients),'paid',changes.paid,'consultations')+
       kpi('exchange',t('Перешли к оплате','Converted to paid'),x.conversion.d?valueRatio(x.conversion):'—',fmt(x.conversion.n)+' / '+fmt(x.conversion.d)+' · '+t('после ответа','after first reply'),'conversion',changes.conversion,'funnel')+
       kpi('repeat',t('Первые возвраты','First returns'),fmt(x.performedRepeats.length),t('по дате второго сеанса','by date of second session'),'repeats',changes.repeats,'consultations')+
-      kpi('credit-card',t(mode==='agent'?'Мои начисления':'Начисления агентам',mode==='agent'?'My earnings':'Agent earnings'),fmt(x.accrual),t('кредиты','credits'),'accrual',changes.accrual,'finance');
+      kpi('credit-card',t(mode==='agent'?'Мои начисления':'Начисления агентам',mode==='agent'?'My earnings':'Agent earnings'),fmt(x.accrual)+' '+t('кред.','credits'),amountDate,'accrual',changes.accrual,'finance');
     const rows=[];
     if(mode==='manager'&&grouping==='agents'){
       agents.filter(a=>(opt.agent==='all'||a.id===opt.agent)&&(opt.profile==='all'||associatedInPeriod(profiles.find(p=>p.id===opt.profile),a.id))).forEach(a=>{const y=calculate(data,Object.assign({},opt,{agent:a.id}));rows.push(comparisonRow(a.name,t('Сейчас: ','Current: ')+profiles.filter(p=>p.owner===a.id).map(p=>p.name).join(', '),y,a.id));});
@@ -541,7 +641,8 @@
     const orderNote=count=>count?' '+t('Случаев с неустановленным порядком событий вне расчёта: ','Cases excluded because event order could not be determined: ')+fmt(count)+'.':'';
     const unknownNote=x.unknownReplies.length?' '+t('В командную когорту включены подтверждённые ответы без автора: ','The team cohort includes confirmed replies with an unknown author: ')+fmt(x.unknownReplies.length)+'.':'';
     e('v2-conversions').innerHTML=card(t('После первого ответа','After the first reply'),x.conversion,t('Вход — дата первого ответа агента. Из пар клиент—анкета: оплаченная консультация той же анкеты в следующие 30 дней.','Entry: date of the first agent reply. Customer–profile pairs with a paid consultation for that profile in the next 30 days.')+unknownNote+orderNote(x.ambiguousSequence.reply))+
-      card(t('Первая платная консультация на сайте','First paid consultation on the site'),x.firstPlatform,t('Вход — дата первого сообщения клиента на сайте. Клиент учитывается у получателя этого сообщения. Первое списание за консультацию может быть по другой анкете и у другого исполнителя в течение 30 дней.','Entry: date of the customer’s first incoming message on the site. The cohort is attributed to that message’s recipient. The first consultation debit may be for another profile and provider within 30 days.')+orderNote(x.ambiguousSequence.platform));
+      card(t('Первая оплата на сайте после первого входящего','First site payment after the first incoming message'),x.firstPlatform,t('Результат относится к получателю первого сообщения. Консультацию в течение 30 дней может провести другой агент или другая анкета.','Attributed to the recipient of the first message. The consultation within 30 days may be handled by another agent or profile.')+orderNote(x.ambiguousSequence.platform))+
+      '<p class="pa-note"><button type="button" class="btn btn-default" data-go-tab="consultations">'+t('Сеансы по фактическому исполнителю','Sessions by actual performer')+'</button></p>';
     const retentionScope=p?p.name:mode==='agent'?t('Закреплённые анкеты','Assigned profiles'):t('Вся команда','Entire team');
     e('v2-retention').innerHTML=(x.repeatApplicable
       ?card(t('Вернулись к той же анкете','Returned to the same profile')+' · '+retentionScope,x.repeat,t('Вход — дата первой оплаченной консультации пары клиент—анкета. Процент рассчитывается по анкетам независимо от исполнителя.','Entry: first paid consultation date for each customer–profile pair. The return rate covers the profiles across providers.'))
@@ -560,45 +661,78 @@
       {label:t('Клиент ответил на исходящее','Customers replied to these messages'),value:ping.responded,text:pingRate(ping.responded,ping.contacted),color:'pa-tone-3'},
     ];
     e('pa-ping-path').innerHTML=meterRows(incomingPingRows,ping.acquired)+
+      pingRow(t('Без исходящего к срезу','No outreach by snapshot'),fmt(ping.acquired-ping.contacted))+
       pingRow(t('До первого исходящего по этим пингам','Time to first outreach for these pings'),pingTiming.count
         ?t('Медиана: ','Median: ')+(pingTiming.medianMinutes>=60?fmt(pingTiming.medianMinutes/60)+' '+t('ч','h'):fmt(pingTiming.medianMinutes)+' '+t('мин','min'))+' · '+t('пингов: ','pings: ')+fmt(pingTiming.count)
         :t('Нет данных','No data'))+
       pingRow(t(mode==='agent'?'Мои первые исходящие по пингам за период':'Первые исходящие по пингам за период',mode==='agent'?'My first outbound messages after pings in period':'First outbound messages after pings in period'),fmt(ping.performed))+
       pingRow(t('Ответы на эти исходящие','Customer replies to this outreach'),pingRate(ping.performedResponded,ping.performed))+
+      '<button type="button" class="btn btn-default" data-go-tab="chats" data-interaction="ping-outbound">'+t('Посмотреть исходящие','View outreach')+'</button>'+
       '<p class="pa-note">'+t('Каждая отдельная запись пинга учитывается один раз. Ответы на исходящие наблюдаем с момента отправки до даты среза. Исходящие за период считаются по дате сообщения и его автору.','Each distinct ping is counted once. We observe customer replies from outbound send time through the snapshot. Outbound messages in the period are counted by send date and author.')+'</p>';
     const financeNote=mode==='agent'
       ?t('В демоданных начисления сгруппированы по дате первой оплаты консультации. Даты операций начисления отсутствуют.','In the sample dataset, earnings are grouped by the consultation’s first debit date. Accrual transaction dates are unavailable.')
       :t('Списания и начисления учитываются по консультациям выбранного исполнителя и анкеты. В демоданных начисления сгруппированы по дате первой оплаты консультации. Пополнения показаны по связанным клиентам и дате пополнения. Один клиент может войти в выборку нескольких агентов, поэтому их суммы пополнений не складываются.','Debits and earnings follow sessions for the selected provider and profile. In the sample dataset, earnings are grouped by each consultation’s first debit date. Top-ups follow linked customers and their top-up date. The same customer can be included for several agents, so their top-up totals do not add up to the team total.');
     e('pa-finance-detail').innerHTML=pingRow(t('Выплаты','Payouts'),t('Нет данных','No data'))+'<p class="pa-note">'+financeNote+'</p>';
     const creditsUnit=' '+t('кред.','credits');
-    e('pa-finance-metrics').innerHTML=qualityItem(t(mode==='agent'?'Мои начисления':'Начисления агентам',mode==='agent'?'My earnings':'Agent earnings'),fmt(x.accrual)+creditsUnit)+
-      (mode==='manager'?qualityItem(t('Списания за консультации','Session debits'),fmt(x.debit)+creditsUnit)+qualityItem(t('Пополнения клиентов','Customer top-ups'),fmt(x.topupAmount)+creditsUnit)
+    e('pa-finance-metrics').innerHTML=qualityItem(t(mode==='agent'?'Мои начисления':'Начисления агентам',mode==='agent'?'My earnings':'Agent earnings'),fmt(x.accrual)+creditsUnit,amountDate)+
+      (mode==='manager'?qualityItem(t('Списания за консультации','Session debits'),fmt(x.debit)+creditsUnit)+qualityItem(t('Пополнения связанных клиентов','Top-ups by linked customers'),fmt(x.topupAmount)+creditsUnit,t('Могут учитываться у нескольких агентов','May appear under multiple agents'))
         :qualityItem(t('Платные консультации','Paid consultations'),fmt(x.paid.length))+qualityItem(t('Оплаченные минуты','Paid minutes'),fmt(x.minutes)));
     const median=x.medianReply===null?'—':fmt(x.medianReply)+' '+t('мин','min');
     e('pa-chats-metrics').innerHTML=qualityItem(t('Диалоги','Conversations'),fmt(x.events.length))+
       qualityItem(t('С ответом','Answered'),x.events.length?Math.round(x.answered/x.events.length*100)+'%':'—',fmt(x.answered)+' / '+fmt(x.events.length))+
+      qualityItem(t('Без ответа к срезу','Unanswered at snapshot'),fmt(x.events.length-x.answered))+
       qualityItem(t('Первый ответ','First reply'),median,t('медиана','median'));
     e('pa-consultations-metrics').innerHTML=qualityItem(t('Сеансы','Sessions'),fmt(x.paid.length))+
       qualityItem(t('Клиенты','Customers'),fmt(x.clients),t('впервые оплатили: ','first-time payers: ')+fmt(x.firstPaid))+
       qualityItem(t('Оплаченные минуты','Paid minutes'),fmt(x.minutes));
-    const responseEvents=new Set(x.replied.concat(x.unknownReplies).map(c=>c.id));
-    const latestEvent=c=>responseEvents.has(c.id)?c.replyObservedAt:c.time;
-    const ints=x.detailRows.sort((a,b)=>latestEvent(b)-latestEvent(a)).slice(0,30);
-    const interactionHead=[t('Поступило','Received'),t('Клиент','Customer'),t('Анкета','Profile'),t('Поступило агенту','Received by'),t('Первый ответ','First reply'),t('Ответил','Replied by')];
-    e('v2-interactions-table').innerHTML=ints.length?'<table class="table"><thead><tr>'+interactionHead.map(label=>'<th scope="col">'+label+'</th>').join('')+'</tr></thead><tbody>'+ints.map(c=>{
-      const reply=c.replyObservedAt;
-      const customer=c.source==='ping'
-        ?t('Клиент','Customer')+' '+c.client.replace('ping-client','')+'<br><small>'+t('Ответ на пинг','Reply to a ping')+'</small>'
-        :t('Клиент','Customer')+' '+c.client.replace(/^(c|today-client)/,'');
-      return '<tr><td>'+date(c.time)+'</td><td>'+customer+'</td><td>'+profiles.find(p=>p.id===c.profile).name+'</td><td>'+agents.find(a=>a.id===c.agent).name+'</td><td>'+(reply===null?'—':date(reply))+'</td><td>'+(reply===null?'—':(agents.find(a=>a.id===c.replyAgent)?.name||t('Автор не установлен','Author unknown')))+'</td></tr>';
-    }).join('')+'</tbody></table>':'<p class="pa-empty">'+t('Нет данных за выбранный период','No data for the selected period')+'</p>';
+    renderInteractions(x);
     renderJourney(x);
     renderReplyDistribution(x);
     renderCharts();
     activateTab(tab);
   }
+  function renderInteractions(result=calculate(data,opt)){
+    const isOutreach=interactionFilter==='ping-outbound';
+    let selection;
+    if(isOutreach){
+      const sent=selectPings(data.pings,opt).performed;
+      const visible=sent.filter(({ping})=>mode==='manager'||profiles.some(p=>p.id===ping.profile&&p.owner===opt.agent));
+      selection={total:sent.length,rows:visible.sort((a,b)=>b.ping.writtenAt-a.ping.writtenAt)};
+    } else {
+      selection=chatSelection(result,interactionFilter);
+    }
+    const pageSize=12;
+    const lastPage=Math.max(0,Math.ceil(selection.rows.length/pageSize)-1);
+    interactionPage=Math.min(interactionPage,lastPage);
+    const offset=interactionPage*pageSize;
+    const ints=selection.rows.slice(offset,offset+pageSize);
+    const shown=selection.rows.length<selection.total
+      ?t('Доступно ','Available: ')+fmt(selection.rows.length)+' / '+fmt(selection.total)+' · '+t('История прежних анкет входит в итог.','The total includes work on former profiles.')
+      :(isOutreach?t('Исходящих: ','Outbound: '):t('Диалогов: ','Conversations: '))+fmt(selection.total);
+    e('pa-interaction-count').textContent=shown;
+    const interactionHead=isOutreach
+      ?[t('Пинг','Ping'),t('Анкета','Profile'),t('Исходящее','Outbound sent'),t('Автор','Author'),t('Ответ клиента','Customer reply')]
+      :[t('Поступило','Received'),t('Клиент','Customer'),t('Анкета','Profile'),t('Получатель','Recipient'),t('Первый ответ','First reply'),t('Ответил','Replied by'),t('Ожидание','Wait')];
+    e('v2-interactions-table').innerHTML=ints.length?'<table class="table"><thead><tr>'+interactionHead.map(label=>'<th scope="col">'+label+'</th>').join('')+'</tr></thead><tbody>'+ints.map(c=>{
+      if(isOutreach){
+        const {ping,responded}=c;
+        const profile=profiles.find(p=>p.id===ping.profile).name;
+        const author=agents.find(a=>a.id===ping.writer)?.name||t('Автор не установлен','Author unknown');
+        const response=responded?instant(ping.respondedAt):t('Без ответа к срезу','Unanswered at snapshot');
+        return '<tr><td>'+instant(ping.time)+'</td><td>'+profile+'</td><td>'+instant(ping.writtenAt)+'</td><td>'+author+'</td><td>'+response+'</td></tr>';
+      }
+      const reply=c.replyObservedAt;
+      const customer=c.source==='ping'
+        ?t('Клиент','Customer')+' '+c.client.replace('ping-client','')+'<br><small>'+t('Ответ на пинг','Reply to a ping')+'</small>'
+        :t('Клиент','Customer')+' '+c.client.replace(/^(c|today-client)/,'');
+      const wait=reply===null?'—':fmt(Math.round((reply-c.time)/6000)/10)+' '+t('мин','min');
+      return '<tr><td>'+instant(c.time)+'</td><td>'+customer+'</td><td>'+profiles.find(p=>p.id===c.profile).name+'</td><td>'+agents.find(a=>a.id===c.agent).name+'</td><td>'+(reply===null?'—':instant(reply))+'</td><td>'+(reply===null?'—':(agents.find(a=>a.id===c.replyAgent)?.name||t('Автор не установлен','Author unknown')))+'</td><td>'+wait+'</td></tr>';
+    }).join('')+'</tbody></table>':'<p class="pa-empty">'+t('В этой выборке нет доступных записей.','There are no accessible entries in this selection.')+'</p>';
+    e('pa-interaction-pages').innerHTML=lastPage?'<button type="button" class="btn btn-default" data-interaction-step="-1"'+(!interactionPage?' disabled':'')+'>'+t('Назад','Previous')+'</button><span>'+fmt(offset+1)+'–'+fmt(offset+ints.length)+' / '+fmt(selection.rows.length)+'</span><button type="button" class="btn btn-default" data-interaction-step="1"'+(interactionPage===lastPage?' disabled':'')+'>'+t('Дальше','Next')+'</button>':'';
+  }
   function activateTab(name){
     tab=name;
+    root.classList.toggle('pa-overview-active',name==='summary');
     for(const [id] of tabs){
       const active=id===tab;
       e('v2-'+id).hidden=!active;
@@ -607,18 +741,72 @@
       button.tabIndex=active?0:-1;
     }
   }
+  e('pa-filter-toggle').addEventListener('click',()=>{
+    const button=e('pa-filter-toggle');
+    const opening=button.getAttribute('aria-expanded')==='false';
+    button.setAttribute('aria-expanded',String(opening));
+    root.classList.toggle('pa-mobile-filters-open',opening);
+  });
+  const workSection=root.querySelector('.pa-current');
+  workSection.id='pa-current-section';
+  const workToggle=e('pa-work-toggle');
+  workToggle.addEventListener('click',()=>{
+    const opening=workToggle.getAttribute('aria-expanded')==='false';
+    workToggle.setAttribute('aria-expanded',String(opening));
+    root.classList.toggle('pa-mobile-work-open',opening);
+  });
+  e('pa-interaction-filter').addEventListener('change',()=>{
+    interactionFilter=e('pa-interaction-filter').value;
+    interactionPage=0;
+    renderInteractions();
+  });
   e('v2-period').addEventListener('change',()=>{const show=e('v2-period').value==='custom';e('v2-from-wrap').hidden=!show;e('v2-to-wrap').hidden=!show;});
   e('v2-filters').addEventListener('submit',ev=>{ev.preventDefault();e('v2-error').hidden=true;const choice=e('v2-period').value;
     if(choice==='custom'){const from=minskStart(e('v2-from').value),to=minskStart(e('v2-to').value);if(!Number.isFinite(from)||!Number.isFinite(to)||from>to||to>AS_OF){e('v2-error').textContent=t('Проверьте даты: начало не позже конца, конец не позже 16.11.2026.','Check dates: start must precede end, and end must be no later than 16 November 2026.');e('v2-error').hidden=false;return;}opt.from=from;opt.to=to;}else applyPreset(choice);
-    opt.profile=e('v2-profile').value;if(mode==='manager')opt.agent=e('v2-agent').value;render();});
+    opt.profile=e('v2-profile').value;if(mode==='manager')opt.agent=e('v2-agent').value;interactionPage=0;render();});
   e('v2-reset').addEventListener('click',()=>{e('v2-period').value='prev';e('v2-profile').value='all';if(mode==='manager')e('v2-agent').value='all';e('v2-from-wrap').hidden=true;e('v2-to-wrap').hidden=true;e('v2-error').hidden=true;opt.profile='all';opt.agent=mode==='agent'?'k':'all';applyPreset('prev');render();});
   root.addEventListener('click',ev=>{
     const b=ev.target.closest('button');if(!b)return;
     if(b.dataset.tab)activateTab(b.dataset.tab);
-    if(b.dataset.goTab){activateTab(b.dataset.goTab);e('v2-'+b.dataset.goTab).focus();}
+    if(b.dataset.goTab){
+      activateTab(b.dataset.goTab);
+      if(b.dataset.interaction&&coverage().status!=='outside'){
+        interactionFilter=b.dataset.interaction;
+        interactionPage=0;
+        e('pa-interaction-filter').value=interactionFilter;
+        const details=e('pa-interaction-details');
+        details.open=true;
+        renderInteractions();
+        details.querySelector('summary').focus();
+      } else {
+        e('v2-'+b.dataset.goTab).focus();
+      }
+    }
+    if(b.dataset.interactionStep){
+      interactionPage+=Number(b.dataset.interactionStep);
+      renderInteractions();
+      const pages=e('pa-interaction-pages');
+      (pages.querySelector('button:not([disabled])[data-interaction-step="'+b.dataset.interactionStep+'"]')||pages.querySelector('button:not([disabled])'))?.focus();
+    }
+    if(b.id==='pa-back-team'&&comparisonScope){
+      const previous=comparisonScope;
+      comparisonScope=null;
+      e('v2-agent').value=previous.agent;
+      syncProfileOptions();
+      e('v2-profile').value=previous.profile;
+      opt.agent=previous.agent;
+      opt.profile=previous.profile;
+      grouping=previous.grouping;
+      sortKey=previous.sortKey;
+      sortDesc=previous.sortDesc;
+      tab='team';
+      render();
+      e('tab-team').focus();
+    }
     if(b.dataset.group){grouping=b.dataset.group;sortKey='name';sortDesc=false;render();}
     if(b.dataset.sort){const key=b.dataset.sort;if(sortKey===key)sortDesc=!sortDesc;else{sortKey=key;sortDesc=false;}render();root.querySelector('[data-sort="'+key+'"]')?.focus();}
     if(b.dataset.selectAgent){
+      if(tab==='team') comparisonScope={agent:opt.agent,profile:opt.profile,grouping,sortKey,sortDesc};
       grouping='agents';
       e('v2-agent').value=b.dataset.selectAgent;
       syncProfileOptions();
