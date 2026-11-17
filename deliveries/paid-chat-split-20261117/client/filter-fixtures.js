@@ -1,0 +1,17 @@
+window.CatalogFilterFixtures = [
+  {
+    id: 'alisa', name: 'Алиса Берг', photo: '../../agent-schedule-20261112/client/assets/images/marina.png', status: 'offline',
+    areas: ['astrology', 'spiritual-practitioner', 'spiritual-mentor'], topics: ['career', 'life-path', 'finances'],
+    rating: 4.9, votes: 86, experience: 12, creditsPerMinute: 12, trialMinutes: 0,
+  },
+  {
+    id: 'vera', name: 'Вера Ланская', photo: '../../agent-schedule-20261112/client/assets/images/maria.png', status: 'busy',
+    areas: ['mediums', 'clairvoyant'], topics: ['family', 'love'],
+    rating: 4.6, votes: 58, experience: 6, creditsPerMinute: 30, trialMinutes: 0,
+  },
+  {
+    id: 'solara', name: 'Solara Ortiz', photo: '', status: 'online',
+    areas: ['taro', 'intuitive-consultant'], topics: ['love', 'growth'],
+    rating: 4.8, votes: 42, experience: 8, creditsPerMinute: 10, trialMinutes: 0,
+  },
+];

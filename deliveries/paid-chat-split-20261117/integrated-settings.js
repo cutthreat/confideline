@@ -1,0 +1,151 @@
+(() => {
+  const form = document.querySelector('#conf-integrated-form');
+  if (!form) return;
+  const page = form.dataset.page;
+  const scenario = new URLSearchParams(location.search).get('scenario') || '';
+  const suffix = /^[a-z0-9-]{1,40}$/.test(scenario) ? '-' + scenario : '';
+  const storageKey = 'confideline-split-preview-v1-' + page + suffix;
+  const status = document.querySelector('#conf-save-status');
+  const actions = [
+    ['chat','Открыть чат'], ['wait','Уведомить о доступности'],
+    ['booking','Открыть календарь записи'], ['link','Перейти по ссылке'],
+    ['none','Не показывать кнопку']
+  ];
+  const labels = window.CatalogActionLabels;
+  const rows = [['online', 'Онлайн'], ['busy', 'Занят'], ['offline', 'Не в сети']];
+  function make(tag, text, attrs = {}) {
+    const node = document.createElement(tag);
+    if (text) node.textContent = text;
+    Object.entries(attrs).forEach(([k,v]) => node.setAttribute(k,v));
+    return node;
+  }
+  function selectField(label, name, choices, value) {
+    const container = make('div','',{class:'form-group'});
+    const text = make('label',label,{for:name});
+    const input = make('select','',{class:'form-control',id:name,name});
+    choices.forEach(([v,t]) => input.add(new Option(t,v,false,v===value)));
+    container.append(text,input);
+    return {container,input};
+  }
+  if (page === 'catalog') {
+    const container = document.querySelector('#conf-button-fields');
+    rows.forEach(([id, title]) => {
+      const preset = labels.defaults[id];
+      const fs = make('fieldset','',{class:'conf-buttons-row'});
+      fs.append(make('legend',title));
+      const grid = make('div','',{class:'conf-grid'});
+      const caption = make('div','',{class:'form-group'});
+      const captionId = `caption-${id}`;
+      const label = make('label','Текст кнопки (русский)',{for:captionId});
+      const captionInput = make('input','',{class:'form-control',id:captionId,name:captionId,type:'text','aria-describedby':`caption-help-${id}`});
+      captionInput.value = preset.label;
+      const captionHelp = make('p', `До ${labels.limit} символов, одна строка.`, {class:'help-block',id:`caption-help-${id}`});
+      caption.append(label,captionInput,captionHelp);
+      const action = selectField('Действие',`action-${id}`,actions,preset.action);
+      const actionHint = make('p','После изменения действия проверьте, что текст кнопки ему соответствует.',{class:'help-block conf-action-hint',hidden:''});
+      action.container.append(actionHint);
+      grid.append(caption,action.container);
+      const linkGroup = make('div','',{class:'form-group',hidden:''});
+      const linkId = `link-${id}`;
+      const link = make('input','',{class:'form-control',id:linkId,name:linkId,type:'text',placeholder:'https:// или /страница'});
+      linkGroup.append(make('label','Адрес ссылки',{for:linkId}),link);
+      grid.append(linkGroup);
+      const updateAction = () => {
+        const hidden = action.input.value === 'none';
+        caption.hidden = hidden; captionInput.required = !hidden;
+        linkGroup.hidden = action.input.value !== 'link';
+        link.required = !linkGroup.hidden;
+      };
+      action.input.addEventListener('change',updateAction);
+      fs.append(grid); container.append(fs); updateAction();
+    });
+  }
+  const controls = () => Array.from(form.querySelectorAll('input[name],select[name],textarea[name]'));
+  function capture() {
+    return Object.fromEntries(controls().map(el => [el.name, el.type === 'checkbox' ? el.checked : el.value]));
+  }
+  function apply(values) {
+    controls().forEach(el => { if (!(el.name in values)) return; if (el.type === 'checkbox') el.checked = !!values[el.name]; else el.value = values[el.name]; });
+    form.querySelectorAll('select').forEach(el => el.dispatchEvent(new Event('change')));
+    displayPayment();
+  }
+  function displayPayment() {
+    const selected = form.querySelector('[name="paymentMode"]');
+    if (!selected) return;
+    const hasAdvance = selected.value === 'confirm';
+    document.getElementById('advance-field').hidden = !hasAdvance;
+    ['booking-payment-deadline','booking-full-refund','booking-late-policy','booking-late-fee','booking-grace','booking-no-show','booking-review-deadline','booking-payment-review'].forEach(id => {
+      const field=document.getElementById(id); if(field)field.closest('.form-group').hidden=!hasAdvance;
+    });
+    const late=document.getElementById('booking-late-policy'),fee=document.getElementById('booking-late-fee');
+    if(fee && late)fee.closest('.form-group').hidden=!hasAdvance || late.value!=='percent';
+    const payout=form.querySelector('[name="payoutSchedule"]');
+    if(payout){
+      const week=document.getElementById('payout-weekday-field'),month=document.getElementById('payout-monthday-field');
+      week.hidden=payout.value!=='weekly';month.hidden=payout.value!=='monthly';
+      week.querySelector('select').required=!week.hidden;month.querySelector('input').required=!month.hidden;
+    }
+  }
+  function displaySavedCatalog() {
+    if (page !== 'catalog') return;
+    ['catalog-filter-version','catalog-cards-version'].forEach(id => {
+      const el = document.getElementById(id), text = el.closest('.form-group').querySelector('.help-block span');
+      if (text) text.textContent = el.selectedOptions[0].textContent;
+    });
+  }
+  let saved = capture();
+  try { const existing = JSON.parse(localStorage.getItem(storageKey)); if (existing) { if (page === 'chat' && !('paidCapacity' in existing) && 'paidEnabled' in existing) existing.paidCapacity = existing.paidEnabled ? '1' : '0'; apply(existing); saved = capture(); } } catch (_) {}
+  const save = form.querySelector('button[type="submit"],.box-footer button');
+  const cancel = Array.from(form.querySelectorAll('.box-footer button')).find(b => b.textContent.trim() === 'Отменить изменения');
+  function displayPaid() {
+    const paid = form.querySelector('[name="paidCapacity"]');
+    if (!paid) return;
+    const enabled = Number(saved.paidCapacity) > 0;
+    document.getElementById('conf-paid-status').textContent = enabled ? 'Включён' : 'Выключен';
+  }
+  const refreshActionHints = () => {
+    if(page !== 'catalog') return;
+    rows.forEach(([id]) => {
+      const action = form.querySelector(`[name="action-${id}"]`);
+      const hint = action.closest('.form-group').querySelector('.conf-action-hint');
+      hint.hidden = action.value === 'none' || action.value === saved[`action-${id}`];
+    });
+  };
+  const updateDirty = () => { if (page === 'catalog') save.disabled = JSON.stringify(capture()) === JSON.stringify(saved); status.textContent = ''; displayPayment(); refreshActionHints(); };
+  form.addEventListener('input',event => {
+    if (event.target.name?.startsWith('caption-')) event.target.setCustomValidity('');
+    updateDirty();
+  });
+  form.addEventListener('change',updateDirty);
+  if (cancel) cancel.addEventListener('click',() => { apply(saved); updateDirty(); });
+  form.addEventListener('submit',event => {
+    event.preventDefault();
+    for (const el of form.querySelectorAll('input[name^="caption-"]')) {
+      if (el.closest('[hidden]') || labels.isValid(el.value)) continue;
+      el.setCustomValidity(`Введите подпись до ${labels.limit} символов в одну строку.`);
+      el.reportValidity();
+      el.setCustomValidity('');
+      return;
+    }
+    for (const el of form.querySelectorAll('input[name^="link-"]')) {
+      if (el.closest('[hidden]')) continue;
+      const value = el.value.trim();
+      let valid = /^\/(?![\/\\])\S*$/.test(value);
+      if (!valid) { try { valid = ['http:','https:'].includes(new URL(value).protocol); } catch (_) {} }
+      if (!valid) { el.setCustomValidity('Укажите корректный адрес ссылки.'); el.reportValidity(); el.setCustomValidity(''); return; }
+    }
+    const values = capture();
+    try {
+      const previous = JSON.parse(localStorage.getItem(storageKey) || "{}"); localStorage.setItem(storageKey,JSON.stringify({...previous,...values})); saved = values;
+      if (page === 'catalog') {
+        save.disabled = true;
+        displaySavedCatalog();
+      }
+      displayPaid(); refreshActionHints(); status.textContent = 'Настройки сохранены';
+    }
+    catch (_) { status.textContent = 'Не удалось сохранить настройки.'; }
+  });
+  document.querySelectorAll('#settings-sidebar a[role="button"]').forEach(a => a.addEventListener('click',e => { e.preventDefault(); const submenu = a.nextElementSibling; if (!submenu || !submenu.classList.contains('treeview-menu')) return; const open = a.getAttribute('aria-expanded') === 'true'; a.setAttribute('aria-expanded', String(!open)); submenu.style.display = open ? 'none' : 'block'; }));
+  document.querySelector('.sidebar-toggle')?.addEventListener('click',event => { event.preventDefault(); const mobile = matchMedia('(max-width: 767px)').matches; document.body.classList.toggle(mobile ? 'sidebar-open' : 'sidebar-collapse'); });
+  displayPayment(); displayPaid(); displaySavedCatalog(); updateDirty();
+})();
