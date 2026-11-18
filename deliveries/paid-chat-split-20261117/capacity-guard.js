@@ -6,19 +6,12 @@
   const note = document.querySelector('#paid-mode-note');
   if (!form || !input || !status || !feedback || !note) return;
   const params = new URLSearchParams(location.search);
-  const mode2 = params.get('mode') === '2';
-  const blocked = params.get('guard') || '';
-  function displayMode() {
-    if (!mode2) return;
-    input.disabled = true;
-    note.hidden = false;
-    status.textContent = 'Выключен';
+  if (params.get('mode') === '2') {
+    location.replace('../site-modes/mock/mode-2.html#chat');
+    return;
   }
+  const blocked = params.get('guard') || '';
   form.addEventListener('submit', event => {
-    if (mode2) {
-      queueMicrotask(displayMode);
-      return;
-    }
     if (Number(input.value) !== 0 || !['active', 'booking', 'both'].includes(blocked)) return;
     event.preventDefault();
     event.stopImmediatePropagation();
@@ -30,5 +23,4 @@
     feedback.setAttribute('role', 'alert');
   }, true);
   input.addEventListener('input', () => feedback.setAttribute('role', 'status'));
-  displayMode();
 })();
